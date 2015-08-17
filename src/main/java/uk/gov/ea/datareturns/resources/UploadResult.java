@@ -5,12 +5,23 @@ import java.util.List;
 
 public class UploadResult
 {
+	String returnType;
 	String outcome;
 	String key;
 	List<UploadError> errors = new ArrayList<UploadError>();
 
 	public UploadResult()
 	{
+	}
+
+	public String getReturnType()
+	{
+		return returnType;
+	}
+
+	public void setReturnType(String returnType)
+	{
+		this.returnType = returnType;
 	}
 
 	public String getOutcome()
@@ -43,8 +54,22 @@ public class UploadResult
 		this.errors = errors;
 	}
 
-	public void addError(String error)
+	public UploadError addError(String error)
 	{
-		this.errors.add(new UploadError(error));
+		UploadError err = new UploadError(error);
+		
+		this.errors.add(err);
+		
+		return err;
+	}
+
+	public void addErrors(List<UploadError> errors)
+	{
+		this.errors.addAll(errors);
+	}
+
+	public void addError(String reason, String lineNo, String columnName, String errValue)
+	{
+		this.errors.add(new UploadError(reason, lineNo, columnName, errValue));
 	}
 }
