@@ -11,7 +11,7 @@ import javax.servlet.FilterRegistration;
 
 import org.eclipse.jetty.servlets.CrossOriginFilter;
 
-import uk.gov.ea.datareturns.resources.DataExchangeConfiguration;
+import uk.gov.ea.datareturns.config.DataExchangeConfiguration;
 import uk.gov.ea.datareturns.resources.UploadResource;
 
 public class App extends Application<DataExchangeConfiguration>
@@ -27,15 +27,15 @@ public class App extends Application<DataExchangeConfiguration>
 	}
 
 	@Override
-	public void run(DataExchangeConfiguration configuration, Environment environment)
+	public void run(DataExchangeConfiguration config, Environment environment)
 	{
 		configureCors(environment);
-		environment.jersey().register(new UploadResource(configuration));
+		environment.jersey().register(new UploadResource(config));
 	}
 
-	private void configureCors(Environment environment)
+	private void configureCors(Environment env)
 	{
-		FilterRegistration.Dynamic filter = environment.servlets().addFilter("CORS", CrossOriginFilter.class);
+		FilterRegistration.Dynamic filter = env.servlets().addFilter("CORS", CrossOriginFilter.class);
 		filter.addMappingForUrlPatterns(EnumSet.allOf(DispatcherType.class), true, "/*");
 		filter.setInitParameter(CrossOriginFilter.ALLOWED_METHODS_PARAM, "GET,PUT,POST,DELETE,OPTIONS");
 		filter.setInitParameter(CrossOriginFilter.ALLOWED_ORIGINS_PARAM, "*");

@@ -1,4 +1,4 @@
-package uk.gov.ea.datareturns.resources;
+package uk.gov.ea.datareturns.config;
 
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;

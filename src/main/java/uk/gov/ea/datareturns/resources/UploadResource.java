@@ -21,12 +21,18 @@ import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
+import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.mail.EmailAttachment;
 import org.apache.commons.mail.EmailException;
 import org.apache.commons.mail.MultiPartEmail;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import uk.gov.ea.datareturns.config.DataExchangeConfiguration;
+import uk.gov.ea.datareturns.config.EmailSettings;
+import uk.gov.ea.datareturns.domain.SendResult;
+import uk.gov.ea.datareturns.domain.UploadError;
+import uk.gov.ea.datareturns.domain.UploadResult;
 import uk.gov.nationalarchives.csv.validator.api.java.CsvValidator;
 import uk.gov.nationalarchives.csv.validator.api.java.FailMessage;
 import uk.gov.nationalarchives.csv.validator.api.java.Substitution;
@@ -34,27 +40,21 @@ import uk.gov.nationalarchives.csv.validator.api.java.Substitution;
 import com.sun.jersey.core.header.FormDataContentDisposition;
 import com.sun.jersey.multipart.FormDataParam;
 
-//TODO validation would probably need be done in 2 stages
-
 @Path("/")
 @Produces(MediaType.APPLICATION_JSON)
 public class UploadResource
 {
 	DataExchangeConfiguration config;
-	MyDAO dao;
-	
+
 	private static final Logger LOGGER = LoggerFactory.getLogger(UploadResource.class);
 	private static Map<String, String> uploads = new HashMap<String, String>();
+	private static String SUCCESS = "SUCCESS";
+	private static String VALIDATION_FAILURE = "VALIDATION_FAILURE";
+	private static String SYSTEM_FAILURE = "SYSTEM_FAILURE";
 
 	public UploadResource(DataExchangeConfiguration config)
 	{
 		this.config = config;
-	}
-
-	public UploadResource(DataExchangeConfiguration config, MyDAO dao)
-	{
-		this.config = config;
-		this.dao = dao;
 	}
 
 	@POST
@@ -64,91 +64,52 @@ public class UploadResource
 	public UploadResult uploadFile(@FormDataParam("userId") int userId, @FormDataParam("fileUpload") InputStream uploadedInputStream,
 			@FormDataParam("fileUpload") FormDataContentDisposition fileDetail)
 	{
+		UploadResult result = new UploadResult();
 		String uploadedFileLocation = makePath(makePath(".", "uploaded"), fileDetail.getFileName());
-		String fileSchema = makePath(makePath(".", "uploaded"), "data-schema.csvs");
 
 		LOGGER.debug("uploadedFileLocation = " + uploadedFileLocation);
-		LOGGER.debug("fileSchema = " + fileSchema);
+		
+		result.setFileName(fileDetail.getFileName());
 
-		saveFile(uploadedInputStream, uploadedFileLocation);
-
-		UploadResult result = validateUpload(uploadedFileLocation, userId);
-
-		return result;
-	}
-
-	private void saveFile(InputStream uploadedInputStream, String uploadedFileLocation)
-	{
 		try
 		{
-			LOGGER.debug("Attempting to write to '" + uploadedFileLocation + "'");
 			writeToFile(uploadedInputStream, uploadedFileLocation);
-			LOGGER.debug("File written successfully to '" + uploadedFileLocation + "'");
-		} catch (IOException e)
+
+			String[] fields = extractEAIdentifiers(uploadedFileLocation);
+			result.setEaId(fields[0]);
+			result.setSiteName(fields[1]);
+			result.setReturnType(fields[2]);
+
+			String fileKey = UUID.randomUUID().toString();
+			uploads.put(fileKey, uploadedFileLocation);
+
+			result.setFileKey(fileKey);
+			result.setOutcome(SUCCESS);
+		} catch (Exception e)
 		{
-			LOGGER.debug("Failed writing to '" + uploadedFileLocation + "'");
-			e.printStackTrace();
-		}
-	}
-
-	private UploadResult validateUpload(String uploadedFileLocation, int userId)
-	{
-		Boolean failFast = false;
-		List<Substitution> pathSubstitutions = new ArrayList<Substitution>();
-
-		// Are all permits owned by this customer?
-		UploadResult result = verifyUserPermits(uploadedFileLocation, userId);
-
-		// Yes they are, validate content
-		if (result.getErrors().size() == 0)
-		{
-			String schemaPath = makePath(makePath(".", "uploaded"), makeSchemaName(result.getReturnType()));
-
-			// Validate contents
-			List<FailMessage> errors = CsvValidator.validate(uploadedFileLocation, schemaPath, failFast, pathSubstitutions, true);
-			LOGGER.debug("Validate done, total errors found = " + errors.size());
-
-			// All good
-			if (errors.size() == 0)
-			{
-				LOGGER.debug("File is VALID");
-				result.setOutcome("File uploaded to : " + uploadedFileLocation);
-
-				String key = UUID.randomUUID().toString();
-				result.setKey(key);
-				uploads.put(key, uploadedFileLocation);
-			} else
-			{
-				LOGGER.debug("File is INVALID");
-				result.setOutcome("File NOT uploaded : ");
-
-				for (FailMessage mess : errors)
-				{
-					LOGGER.debug("Error = " + mess.getMessage());
-					
-					UploadError err = result.addError(mess.getMessage());
-					
-					LOGGER.debug("  reason = " + err.getReason());
-					LOGGER.debug("  lineNo; = " + err.getLineNo());
-					LOGGER.debug("  columnName; = " + err.getColumnName());
-					LOGGER.debug("  errValue; = " + err.getErrValue());
-					LOGGER.debug("  meaningfulReason = " + err.getMeaningfulReason());
-					LOGGER.debug("  helpfulExample = " + err.getHelpfulExample());
-				}
-			}
+			result.setOutcome(SYSTEM_FAILURE);
+			result.setOutcomeMessage(e.getMessage());
 		}
 
 		return result;
 	}
 
-	private String makeSchemaName(String returnType)
+	@POST
+	@Path("/file-upload-validate")
+	@Produces(MediaType.APPLICATION_JSON)
+	public UploadResult validateFile(@FormParam("fileKey") String fileKey, @FormParam("eaId") String eaId, @FormParam("siteName") String siteName,
+			@FormParam("returnType") String returnType)
 	{
-		return returnType.toLowerCase().replace(" ", "_") + ".csvs";
-	}
+		UploadResult result = new UploadResult(fileKey, eaId, siteName, returnType);
 
-	private String makePath(String leftPart, String rightPart)
-	{
-		return leftPart + File.separator + rightPart;
+		String uploadedFileLocation = uploads.get(fileKey);
+		LOGGER.debug("uploadedFileLocation = " + uploadedFileLocation);
+		
+		result.setFileName(FilenameUtils.getName(uploadedFileLocation));
+		
+		validateUpload(uploadedFileLocation, result);
+
+		return result;
 	}
 
 	@POST
@@ -172,6 +133,129 @@ public class UploadResource
 		}
 
 		return result;
+	}
+
+	private UploadResult validateUpload(String uploadedFileLocation, UploadResult result)
+	{
+		Boolean failFast = false;
+		List<Substitution> pathSubstitutions = new ArrayList<Substitution>();
+
+		// Are all permits owned by this customer? - removed for sprint 5
+		// UploadResult result = verifyUserPermits(uploadedFileLocation, userId);
+
+		String schemaPath = makePath(makePath(".", "uploaded"), makeSchemaName(result.getReturnType()));
+
+		if (!fileExists(schemaPath))
+		{
+			result.setOutcome(SYSTEM_FAILURE);
+			result.setOutcomeMessage("Schema file '" + schemaPath +"' not found");
+
+			return result;
+		}
+
+		// Validate contents
+		List<FailMessage> errors = CsvValidator.validate(uploadedFileLocation, schemaPath, failFast, pathSubstitutions, true);
+		LOGGER.debug("Validate done, total errors found = " + errors.size());
+
+		// All good
+		if (errors.size() == 0)
+		{
+			LOGGER.debug("File is VALID");
+			result.setOutcome(SUCCESS);
+		} else
+		{
+			LOGGER.debug(VALIDATION_FAILURE);
+			result.setOutcome("File NOT uploaded : ");
+
+			for (FailMessage mess : errors)
+			{
+				LOGGER.debug("Error = " + mess.getMessage());
+
+				UploadError err = result.addError(mess.getMessage());
+
+				LOGGER.debug("  reason = " + err.getReason());
+				LOGGER.debug("  lineNo; = " + err.getLineNo());
+				LOGGER.debug("  columnName; = " + err.getColumnName());
+				LOGGER.debug("  errValue; = " + err.getErrValue());
+				LOGGER.debug("  meaningfulReason = " + err.getMeaningfulReason());
+				LOGGER.debug("  helpfulExample = " + err.getHelpfulExample());
+			}
+		}
+
+		return result;
+	}
+
+	private boolean fileExists(String filePath)
+	{
+		File f = new File(filePath);
+
+		return f.exists();
+	}
+
+	private String[] extractEAIdentifiers(String uploadedFileLocation)
+	{
+		File file = new File(uploadedFileLocation);
+		String fileName = FilenameUtils.getName(uploadedFileLocation); 
+		FileReader fr;
+		int lineNo = 1;
+		String[] fields = null;
+		boolean dataFound = false;
+
+		try
+		{
+			fr = new FileReader(file);
+			
+			BufferedReader br = new BufferedReader(fr);
+			String line;
+			
+			while ((line = br.readLine()) != null)
+			{
+				// Grab 1st 3 data fields used on verification page. Eventually will have multiple permits, only 1 needed for alpha
+				if (lineNo++ == 2)
+				{
+					fields = line.split(",(?=([^\"]*\"[^\"]*\")*[^\"]*$)", -1);
+
+					dataFound = true;
+
+					break;
+				}
+			}
+
+			br.close();
+			fr.close();
+
+		} catch (FileNotFoundException e)
+		{
+			throw new RuntimeException("Error opening file '" + fileName + "'");
+		} catch (IOException e)
+		{
+			throw new RuntimeException("Error reading file '" + fileName + "'");
+		}
+		
+		// Covers lots of different types of error
+		if (!dataFound)
+		{
+			if(lineNo == 1)
+			{
+				throw new RuntimeException("Empty file '" + fileName + "'");
+			}
+			else
+			{
+				throw new RuntimeException("File '" + fileName + "' must contain at least 1 data row");
+			}
+		}
+
+		return fields;
+	}
+
+	private String makeSchemaName(String returnType)
+	{
+		return returnType.toLowerCase().replace(" ", "_") + ".csvs";
+	}
+
+	private String makePath(String leftPart, String rightPart)
+	{
+		return leftPart + File.separator + rightPart;
 	}
 
 	private void sendNotification(String attachmentLocation) throws EmailException
@@ -263,7 +347,6 @@ public class UploadResource
 			e.printStackTrace();
 		}
 
-		result.setReturnType(returnType);
 		result.addErrors(errors);
 
 		return result;
@@ -271,11 +354,10 @@ public class UploadResource
 
 	private boolean verifyUserPermit(int userId, String permitNo, String uniqueId)
 	{
-//		String found = dao.findByUserIdPermitNo(userId, permitNo);
+		// String found = dao.findByUserIdPermitNo(userId, permitNo);
 		// TODO make call to db on both fields here but for now -
+		// System.out.println(found);
 
-	//	System.out.println(found);
-		
 		Map<String, String> userPermits = new HashMap<String, String>();
 		userPermits.put(makePermitIdentifier("1 - AB1234Z1", "Landfill Gas Monitoring", " - "), null);
 		userPermits.put(makePermitIdentifier("2 - AB1234Z2", "Landfill Gas Monitoring", " - "), null);
@@ -301,10 +383,12 @@ public class UploadResource
 		final int BUFFER_LENGTH = 1024;
 		final byte[] buffer = new byte[BUFFER_LENGTH];
 		OutputStream out = new FileOutputStream(new File(uploadedFileLocation));
+		
 		while ((read = uploadedInputStream.read(buffer)) != -1)
 		{
 			out.write(buffer, 0, read);
 		}
+		
 		out.flush();
 		out.close();
 	}

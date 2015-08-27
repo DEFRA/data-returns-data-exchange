@@ -1,4 +1,4 @@
-package uk.gov.ea.datareturns.resources;
+package uk.gov.ea.datareturns.domain;
 
 import java.util.HashMap;
 import java.util.Map;
