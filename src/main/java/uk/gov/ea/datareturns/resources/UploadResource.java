@@ -30,7 +30,6 @@ import org.slf4j.LoggerFactory;
 
 import uk.gov.ea.datareturns.config.DataExchangeConfiguration;
 import uk.gov.ea.datareturns.config.EmailSettings;
-import uk.gov.ea.datareturns.domain.SendResult;
 import uk.gov.ea.datareturns.domain.UploadError;
 import uk.gov.ea.datareturns.domain.UploadResult;
 import uk.gov.nationalarchives.csv.validator.api.java.CsvValidator;
@@ -115,9 +114,9 @@ public class UploadResource
 	@POST
 	@Path("/file-upload-send")
 	@Produces(MediaType.APPLICATION_JSON)
-	public SendResult sendFile(@FormParam("key") String fileKey)
+	public UploadResult sendFile(@FormParam("fileKey") String fileKey)
 	{
-		SendResult result = new SendResult();
+		UploadResult result = new UploadResult();
 
 		String uploadedFileLocation = uploads.get(fileKey);
 
@@ -125,11 +124,13 @@ public class UploadResource
 		{
 			sendNotification(uploadedFileLocation);
 			File f = new File(uploadedFileLocation);
-			result.setMessage("sent '" + f.getName() + "' successfully to MonitorPro'");
-		} catch (EmailException e)
+
+			result.setOutcome(SUCCESS);
+			result.setOutcomeMessage("sent '" + f.getName() + "' successfully to MonitorPro'");
+		} catch (Exception e)
 		{
-			result.setMessage("Failed to send notification to MonitorPro'");
-			e.printStackTrace();
+			result.setOutcome(SYSTEM_FAILURE);
+			result.setOutcomeMessage("Failed to send notification to MonitorPro");
 		}
 
 		return result;
@@ -164,6 +165,14 @@ public class UploadResource
 			result.setOutcome(SUCCESS);
 		} else
 		{
+			if (errors.size() == 1 && errors.get(0).getMessage().startsWith("Unable to read file"))
+			{
+				result.setOutcome(SYSTEM_FAILURE);
+				result.setOutcomeMessage("Uploaded file '" + FilenameUtils.getName(uploadedFileLocation) +"' not found");
+
+				return result;
+			}
+
 			LOGGER.debug(VALIDATION_FAILURE);
 			result.setOutcome("File NOT uploaded : ");
 
