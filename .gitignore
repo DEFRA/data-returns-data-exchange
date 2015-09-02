@@ -12,3 +12,6 @@ build
 .idea
 *.iml
 /nohup.out
+uploaded/empty.csv
+uploaded/no-data.csv
+uploaded/no-headers.csv
