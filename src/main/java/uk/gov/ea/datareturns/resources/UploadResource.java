@@ -174,6 +174,7 @@ public class UploadResource
 			}
 
 			LOGGER.debug(VALIDATION_FAILURE);
+			result.setFileName(FilenameUtils.getName(uploadedFileLocation));
 			result.setOutcome("File NOT uploaded : ");
 
 			for (FailMessage mess : errors)
