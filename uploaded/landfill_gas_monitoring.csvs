@@ -3,7 +3,6 @@ version 1.0
 @totalColumns 23
 //@quoted
 //Emissions Control Monitoring Schema (ECM)
-//Test
 /*The header of the schema file above, i.e. the statements version 1.0 and @totalColumns 23, indicates that this schema
   is using version 1.0 of the schema language (NB, not that it is version 1.0 of this particular schema),
   and that there are 23 columns in total in the file.*/
@@ -15,7 +14,7 @@ retType: is("Landfill Gas Monitoring") or is("Return type 1") or is("Return type
 dateSt: if($periodName/is(""),xDate or xTime or xDateTime)
 dateEn: xDate or xDateTime or xTime length(*,19) @optional
 periodName: if($dateSt/is(""),is("Period 1") or is("Period 2") or is("Q3 2013") length(0,30)) @ignoreCase //Period name data is to be supplied by EA
-periodYear: if($dateSt/is(""),notEmpty,range(1970,2999))
+periodYear: if($dateSt/is(""),notEmpty,range(1970,2999) or is(""))
 sampleRef: length(0,255) regex("^[0-9a-zA-Z," "]{0,255}$") @optional
 sampledBy: is("") or is("Sampled by 1") or is("Sampled by 2") or is("John Smith") length(*,255) @ignoreCase//Supplied by operator may be a restricted list
 monPoint: is("W1") or is("Monitor point 1") or is("Monitor point 2") or is("rrtr") length(*,255) @ignoreCase//Value from details held within the permit
