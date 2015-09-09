@@ -23,12 +23,14 @@ public class UploadError
 		this.meaningfulReasons.put("xDate", "Invalid date");
 		this.meaningfulReasons.put("range", "Invalid range");
 		this.meaningfulReasons.put("is", "Invalid value");
-		this.meaningfulReasons.put("notReg", "Permit Not Registered");
+		this.meaningfulReasons.put("regex", "Invalid character(s)");
+//		this.meaningfulReasons.put("notReg", "Permit Not Registered");
 
-		this.helpfulExamples.put("xDate", "Date should be complete and in format '99-99-9999' e.g. 15-12-2014");
+		this.helpfulExamples.put("xDate", "Date should be complete and in format 'YYY-MM-DD' e.g. 2014-12-15");
 		this.helpfulExamples.put("range", "Value should be between 1970 and 2999");
 		this.helpfulExamples.put("is", "Value needs to be either 'Metres' or 'Mbar'");
-		this.helpfulExamples.put("notReg", "You can only submit returns for Permits registered to you");
+		this.helpfulExamples.put("regex", "Value must be alphanumeric");
+//		this.helpfulExamples.put("notReg", "You can only submit returns for Permits registered to you");
 	}
 
 	public UploadError(String errLine)
