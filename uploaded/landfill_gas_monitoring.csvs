@@ -8,10 +8,11 @@ version 1.0
   and that there are 23 columns in total in the file.*/
 //The statements @separator and @quoted indicate that data is delimited by the ',' character i.e. is a CSV file, and that all columns are quoted
 //Fields which contain data referenced from Control Lists e.g. retType, contain dummy or representative data only, and are not specific to a Regime or Permit type//Changes made to Date time fields - set to Non Uk date format.  Checks that dateSt is valid date if PeriodName is empty
+//Amended dateSt to validate that format is correct if there is no value in periodName
 eaID: notEmpty length(1,30) regex("^[0-9a-zA-Z," "]{1,30}$")
 siteName: length(0,255) regex("^[0-9a-zA-Z," ","''"]{0,255}$") @optional
 retType: is("Landfill Gas Monitoring") or is("Return type 1") or is("Return type 2") or is("Water Abstraction Return") length(*,255) @ignoreCase//Return Type values are to be supplied from a Controlled List
-dateSt: if($periodName/is(""),xDate or xTime or xDateTime)
+dateSt: if($periodName/is(""),xDate or xTime or xDateTime,xDate or xTime or xDateTime)
 dateEn: xDate or xDateTime or xTime length(*,19) @optional
 periodName: if($dateSt/is(""),is("Period 1") or is("Period 2") or is("Q3 2013") length(0,30)) @ignoreCase //Period name data is to be supplied by EA
 periodYear: if($dateSt/is(""),notEmpty,range(1970,2999) or is(""))
