@@ -24,6 +24,7 @@ import javax.ws.rs.core.MediaType;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.mail.EmailAttachment;
 import org.apache.commons.mail.EmailException;
+import org.apache.commons.mail.HtmlEmail;
 import org.apache.commons.mail.MultiPartEmail;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -67,7 +68,7 @@ public class UploadResource
 		String uploadedFileLocation = makePath(makePath(".", "uploaded"), fileDetail.getFileName());
 
 		LOGGER.debug("uploadedFileLocation = " + uploadedFileLocation);
-		
+
 		result.setFileName(fileDetail.getFileName());
 
 		try
@@ -103,9 +104,9 @@ public class UploadResource
 
 		String uploadedFileLocation = uploads.get(fileKey);
 		LOGGER.debug("uploadedFileLocation = " + uploadedFileLocation);
-		
+
 		result.setFileName(FilenameUtils.getName(uploadedFileLocation));
-		
+
 		validateUpload(uploadedFileLocation, result);
 
 		return result;
@@ -114,7 +115,7 @@ public class UploadResource
 	@POST
 	@Path("/file-upload-send")
 	@Produces(MediaType.APPLICATION_JSON)
-	public UploadResult sendFile(@FormParam("fileKey") String fileKey)
+	public UploadResult sendFile(@FormParam("fileKey") String fileKey, @FormParam("emailcc") String userEmail)
 	{
 		UploadResult result = new UploadResult();
 
@@ -122,8 +123,14 @@ public class UploadResource
 
 		try
 		{
-			sendNotification(uploadedFileLocation);
 			File f = new File(uploadedFileLocation);
+
+			if (!userEmail.trim().isEmpty())
+			{
+				sendNotificationToUser(uploadedFileLocation, userEmail);
+			}
+
+			sendNotificationToMonitorPro(uploadedFileLocation);
 
 			result.setOutcome(SUCCESS);
 			result.setOutcomeMessage("sent '" + f.getName() + "' successfully to MonitorPro'");
@@ -149,7 +156,7 @@ public class UploadResource
 		if (!fileExists(schemaPath))
 		{
 			result.setOutcome(SYSTEM_FAILURE);
-			result.setOutcomeMessage("Schema file '" + schemaPath +"' not found");
+			result.setOutcomeMessage("Schema file '" + schemaPath + "' not found");
 
 			return result;
 		}
@@ -168,7 +175,7 @@ public class UploadResource
 			if (errors.size() == 1 && errors.get(0).getMessage().startsWith("Unable to read file"))
 			{
 				result.setOutcome(SYSTEM_FAILURE);
-				result.setOutcomeMessage("Uploaded file '" + FilenameUtils.getName(uploadedFileLocation) +"' not found");
+				result.setOutcomeMessage("Uploaded file '" + FilenameUtils.getName(uploadedFileLocation) + "' not found");
 
 				return result;
 			}
@@ -205,7 +212,7 @@ public class UploadResource
 	private String[] extractEAIdentifiers(String uploadedFileLocation)
 	{
 		File file = new File(uploadedFileLocation);
-		String fileName = FilenameUtils.getName(uploadedFileLocation); 
+		String fileName = FilenameUtils.getName(uploadedFileLocation);
 		FileReader fr;
 		int lineNo = 1;
 		String[] fields = null;
@@ -214,10 +221,10 @@ public class UploadResource
 		try
 		{
 			fr = new FileReader(file);
-			
+
 			BufferedReader br = new BufferedReader(fr);
 			String line;
-			
+
 			while ((line = br.readLine()) != null)
 			{
 				// Grab 1st 3 data fields used on verification page. Eventually will have multiple permits, only 1 needed for alpha
@@ -241,15 +248,14 @@ public class UploadResource
 		{
 			throw new RuntimeException("Error reading file '" + fileName + "'");
 		}
-		
+
 		// Covers lots of different types of error
 		if (!dataFound)
 		{
-			if(lineNo == 1)
+			if (lineNo == 1)
 			{
 				throw new RuntimeException("Empty file '" + fileName + "'");
-			}
-			else
+			} else
 			{
 				throw new RuntimeException("File '" + fileName + "' must contain at least 1 data row");
 			}
@@ -268,7 +274,36 @@ public class UploadResource
 		return leftPart + File.separator + rightPart;
 	}
 
-	private void sendNotification(String attachmentLocation) throws EmailException
+	private void sendNotificationToUser(String attachmentLocation, String userEmail) throws EmailException
+	{
+		EmailSettings settings = this.config.getEmailsettings();
+		String fileName = FilenameUtils.getName(attachmentLocation);
+		HtmlEmail email = new HtmlEmail();
+
+		email.setSubject("File '" + fileName + "' has been successfully submitted to the Environment Agency");
+
+		email.setHostName(settings.getHost());
+		email.setSmtpPort(settings.getPort());
+		email.addTo(userEmail);
+		email.setFrom(settings.getEmailFrom());
+		email.setMsg("<html><p>{username} has submitted file '" + fileName + "' to the Environment Agency</p></html>");
+		email.setStartTLSEnabled(settings.getTls());
+		email.setAuthentication(settings.getUser(), settings.getPassword());
+
+		LOGGER.debug("Sending email to user - ");
+		LOGGER.debug("  host - " + settings.getHost());
+		LOGGER.debug("  port - " + settings.getPort());
+		LOGGER.debug("  emailTo - " + settings.getEmailTo());
+		LOGGER.debug("  emailFrom - " + settings.getEmailFrom());
+		LOGGER.debug("  user - " + settings.getUser());
+		LOGGER.debug("  password - " + settings.getPassword());
+		LOGGER.debug("  tls - " + settings.getTls());
+		LOGGER.debug("  bodyMessage - " + settings.getBodyMessage());
+
+		email.send();
+	}
+
+	private void sendNotificationToMonitorPro(String attachmentLocation) throws EmailException
 	{
 		EmailSettings settings = this.config.getEmailsettings();
 
@@ -295,7 +330,7 @@ public class UploadResource
 
 		email.attach(fileAttachment);
 
-		LOGGER.debug("Sending email - ");
+		LOGGER.debug("Sending email to MonitorPro - ");
 		LOGGER.debug("  host - " + settings.getHost());
 		LOGGER.debug("  port - " + settings.getPort());
 		LOGGER.debug("  emailTo - " + settings.getEmailTo());
@@ -393,12 +428,12 @@ public class UploadResource
 		final int BUFFER_LENGTH = 1024;
 		final byte[] buffer = new byte[BUFFER_LENGTH];
 		OutputStream out = new FileOutputStream(new File(uploadedFileLocation));
-		
+
 		while ((read = uploadedInputStream.read(buffer)) != -1)
 		{
 			out.write(buffer, 0, read);
 		}
-		
+
 		out.flush();
 		out.close();
 	}
