@@ -10,6 +10,7 @@ import javax.servlet.DispatcherType;
 import javax.servlet.FilterRegistration;
 
 import org.eclipse.jetty.servlets.CrossOriginFilter;
+import org.glassfish.jersey.media.multipart.MultiPartFeature;
 
 import uk.gov.ea.datareturns.config.DataExchangeConfiguration;
 import uk.gov.ea.datareturns.resources.UploadResource;
@@ -31,6 +32,7 @@ public class App extends Application<DataExchangeConfiguration>
 	{
 		configureCors(environment);
 		environment.jersey().register(new UploadResource(config));
+		environment.jersey().register(new MultiPartFeature());
 	}
 
 	private void configureCors(Environment env)
