@@ -6,9 +6,12 @@ logging:
   appenders:
     - type: console
 server:
-    applicationConnectors:
-        - type: http
-          port: 9020
+  applicationConnectors:
+    - type: http
+      port: 9020
+  adminConnectors:
+    - type: http
+      port: 9021
 email:
   host: email-smtp.us-west-2.amazonaws.com
   port: 587
