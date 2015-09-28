@@ -26,10 +26,10 @@ public class UploadError
 		this.meaningfulReasons.put("regex", "Invalid character(s)");
 //		this.meaningfulReasons.put("notReg", "Permit Not Registered");
 
-		this.helpfulExamples.put("xDate", "Date should be complete and in format 'YYY-MM-DD' e.g. 2014-12-15");
+		this.helpfulExamples.put("xDate", "This date must be included in the format 'YYYY-MM-DD' eg 2015-10-31");
 		this.helpfulExamples.put("range", "Value should be between 1970 and 2999");
-		this.helpfulExamples.put("is", "Value needs to be either 'Metres' or 'Mbar'");
-		this.helpfulExamples.put("regex", "Value must be alphanumeric");
+		this.helpfulExamples.put("is", "This value must be either 'Metres' or 'Mbar'");
+		this.helpfulExamples.put("regex", "This value must only contain letters or numbers");
 //		this.helpfulExamples.put("notReg", "You can only submit returns for Permits registered to you");
 	}
 
@@ -128,6 +128,7 @@ public class UploadError
 		this.errValue = errValue;
 	}
 
+	// Probably some nice regex to do this
 	private void parseErrorMessage(String message)
 	{
 		int beginIndex = -1;
@@ -151,7 +152,7 @@ public class UploadError
 		errValue = message.substring(beginIndex);
 
 		this.reason = reason;
-		this.lineNo = lineNo;
+		this.lineNo = Integer.toString(Integer.parseInt(lineNo) + 1); // Allow for header row, maybe option available in lib?
 		this.columnName = columnName;
 		this.errValue = errValue;
 	}
