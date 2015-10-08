@@ -5,7 +5,7 @@
 	<groupId>data-returns-data-exchange</groupId>
 	<artifactId>data-returns-data-exchange</artifactId>
 	<version>1.0-SNAPSHOT</version>
-	<!-- <packaging>jar</packaging> -->
+	<packaging>jar</packaging>
 	<name>data-returns-data-exchange</name>
 	<url>http://maven.apache.org</url>
 
@@ -72,6 +72,16 @@
 
 	<build>
 		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<version>3.2</version>
+				<configuration>
+					<source>1.8</source>
+					<target>1.8</target>
+				</configuration>
+			</plugin>
+			
 			<!-- Make this jar executable -->
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
