@@ -1,0 +1,23 @@
+package uk.gov.ea.datareturns.exception.system;
+
+import static javax.ws.rs.core.Response.Status.INTERNAL_SERVER_ERROR;
+import static uk.gov.ea.datareturns.type.SystemException.FILE_READ;
+
+import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+
+import uk.gov.ea.datareturns.exception.ExceptionMessageContainer;
+
+public class FileReadException extends WebApplicationException
+{
+	private static final long serialVersionUID = 1L;
+
+	public FileReadException(String message)
+	{
+		super(Response.status(INTERNAL_SERVER_ERROR)
+				.entity(new ExceptionMessageContainer(FILE_READ.getCode(), message))
+				.type(MediaType.APPLICATION_JSON)
+				.build());
+	}
+}

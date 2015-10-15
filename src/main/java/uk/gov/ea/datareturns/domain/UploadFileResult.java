@@ -3,18 +3,23 @@ package uk.gov.ea.datareturns.domain;
 import java.util.ArrayList;
 import java.util.List;
 
-public class UploadResult
+public class UploadFileResult
 {
+	// TODO remove redundant properties
+	private int appStatusCode;
+	private String message;;
+
 	private String outcome;
 	private String outcomeMessage;;
 	private String fileName;
+
 	private String fileKey;
 	private String eaId;
 	private String siteName;
 	private String returnType;
-	private List<UploadError> errors;
+	private List<UploadFileError> errors;
 
-	public UploadResult()
+	public UploadFileResult()
 	{
 		this.fileKey = "";
 		this.outcome = "";
@@ -23,18 +28,38 @@ public class UploadResult
 		this.eaId = "";
 		this.siteName = "";
 		this.returnType = "";
-		this.errors = new ArrayList<UploadError>();
+		this.errors = new ArrayList<UploadFileError>();
 	}
 
-	public UploadResult(String key, String eaId, String siteName, String returnType)
+	public UploadFileResult(String key, String eaId, String siteName, String returnType)
 	{
 		this.fileKey = key;
 		this.eaId = eaId;
 		this.siteName = siteName;
 		this.returnType = returnType;
-		this.errors = new ArrayList<UploadError>();
+		this.errors = new ArrayList<UploadFileError>();
 	}
 	
+	public int getAppStatusCode()
+	{
+		return appStatusCode;
+	}
+
+	public void setAppStatusCode(int appStatusCode)
+	{
+		this.appStatusCode = appStatusCode;
+	}
+
+	public String getMessage()
+	{
+		return message;
+	}
+
+	public void setMessage(String message)
+	{
+		this.message = message;
+	}
+
 	public String getOutcome()
 	{
 		return outcome;
@@ -105,33 +130,33 @@ public class UploadResult
 		this.returnType = returnType;
 	}
 
-	public List<UploadError> getErrors()
+	public List<UploadFileError> getErrors()
 	{
 		return errors;
 	}
 
-	public void setErrors(List<UploadError> errors)
+	public void setErrors(List<UploadFileError> errors)
 	{
 		this.errors = errors;
 	}
 
-	public UploadError addError(String error)
+	public UploadFileError addError(String error)
 	{
-		UploadError err = new UploadError(error);
+		UploadFileError err = new UploadFileError(error);
 
 		this.errors.add(err);
 
 		return err;
 	}
 
-	public void addErrors(List<UploadError> errors)
+	public void addErrors(List<UploadFileError> errors)
 	{
 		this.errors.addAll(errors);
 	}
 
 	public void addError(String reason, String lineNo, String columnName, String errValue)
 	{
-		this.errors.add(new UploadError(reason, lineNo, columnName, errValue));
+		this.errors.add(new UploadFileError(reason, lineNo, columnName, errValue));
 	}
 
 }

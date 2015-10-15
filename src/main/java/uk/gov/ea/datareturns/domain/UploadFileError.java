@@ -3,7 +3,7 @@ package uk.gov.ea.datareturns.domain;
 import java.util.HashMap;
 import java.util.Map;
 
-public class UploadError
+public class UploadFileError
 {
 	String reason;
 	String lineNo;
@@ -13,7 +13,7 @@ public class UploadError
 	private Map<String, String> meaningfulReasons = new HashMap<String, String>();
 	private Map<String, String> helpfulExamples = new HashMap<String, String>();
 
-	public UploadError()
+	public UploadFileError()
 	{
 		this.reason = "";
 		this.lineNo = "";
@@ -33,13 +33,13 @@ public class UploadError
 //		this.helpfulExamples.put("notReg", "You can only submit returns for Permits registered to you");
 	}
 
-	public UploadError(String errLine)
+	public UploadFileError(String errLine)
 	{
 		this();
 		parseErrorMessage(errLine);
 	}
 
-	public UploadError(String reason, String lineNo, String columnName, String errValue)
+	public UploadFileError(String reason, String lineNo, String columnName, String errValue)
 	{
 		this();
 
