@@ -16,3 +16,5 @@ uploaded/empty.csv
 uploaded/no-data.csv
 uploaded/no-headers.csv
 /uploaded/
+/npm-debug.log
+/log/

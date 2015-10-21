@@ -1,10 +1,18 @@
 logging:
-  level: DEBUG
+  level: ERROR
   loggers:
+    uk.gov.ea.datareturns: DEBUG
     io.dropwizard: INFO
     org.eclipse: ERROR
   appenders:
     - type: console
+    - type: file
+      currentLogFilename: log/datareturns.log
+      archivedLogFilenamePattern: log/datareturns-%d.log
+      threshold: ALL
+      archive: true
+      archivedFileCount: 5
+      timeZone: UTC
 server:
   applicationConnectors:
     - type: http

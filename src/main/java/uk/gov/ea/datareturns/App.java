@@ -1,6 +1,5 @@
 package uk.gov.ea.datareturns;
 
-
 import io.dropwizard.Application;
 import io.dropwizard.setup.Bootstrap;
 import io.dropwizard.setup.Environment;
@@ -14,6 +13,7 @@ import org.eclipse.jetty.servlets.CrossOriginFilter;
 import org.glassfish.jersey.media.multipart.MultiPartFeature;
 
 import uk.gov.ea.datareturns.config.DataExchangeConfiguration;
+import uk.gov.ea.datareturns.health.DataReturnsHealthCheck;
 import uk.gov.ea.datareturns.resource.SubmitReturnsResource;
 
 public class App extends Application<DataExchangeConfiguration>
@@ -32,8 +32,11 @@ public class App extends Application<DataExchangeConfiguration>
 	public void run(DataExchangeConfiguration config, Environment environment)
 	{
 		configureCors(environment);
+		
 		environment.jersey().register(new SubmitReturnsResource(config));
 		environment.jersey().register(new MultiPartFeature());
+		
+		environment.healthChecks().register("template", new DataReturnsHealthCheck());
 	}
 
 	private void configureCors(Environment env)

@@ -33,6 +33,8 @@ import org.glassfish.jersey.media.multipart.FormDataParam;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.codahale.metrics.annotation.Timed;
+
 import uk.gov.ea.datareturns.config.DataExchangeConfiguration;
 import uk.gov.ea.datareturns.config.EmailSettings;
 import uk.gov.ea.datareturns.domain.UploadFileError;
@@ -62,7 +64,8 @@ public class SubmitReturnsResource
 	public static int APP_STATUS_SUCCESS_WITH_ERRORS = 801;
 
 	private static String FILE_TYPE_CSV = "csv";
-	private static String FILE_STORAGE_LOCATION = "schemas"; // TODO get this from somewhere?
+	private static String FILE_STORAGE_LOCATION = "uploaded"; // TODO get this from somewhere?
+	private static String FILE_SCHEMA_LOCATION = "schemas"; // TODO get this from somewhere?
 
 	private Map<String, String> fileKeys;
 	private Map<String, String> acceptableFileTypes;
@@ -81,6 +84,7 @@ public class SubmitReturnsResource
 	@Path("/upload")
 	@Consumes(MediaType.MULTIPART_FORM_DATA)
 	@Produces(MediaType.APPLICATION_JSON)
+	@Timed
 	public Response uploadFile(@FormDataParam("fileUpload") InputStream uploadedInputStream,
 			@FormDataParam("fileUpload") FormDataContentDisposition fileDetail)
 	{
@@ -117,6 +121,7 @@ public class SubmitReturnsResource
 	@GET
 	@Path("/validate")
 	@Produces(MediaType.APPLICATION_JSON)
+	@Timed
 	public Response validateFileUpload(@QueryParam("fileKey") String fileKey, @QueryParam("eaId") String eaId,
 			@QueryParam("siteName") String siteName, @QueryParam("returnType") String returnType)
 	{
@@ -137,6 +142,7 @@ public class SubmitReturnsResource
 	@POST
 	@Path("/complete")
 	@Produces(MediaType.APPLICATION_JSON)
+	@Timed
 	public Response completeFileUpload(@FormDataParam("fileKey") String fileKey, @FormDataParam("emailcc") String userEmail)
 	{
 		UploadFileResult result = new UploadFileResult();
@@ -163,7 +169,7 @@ public class SubmitReturnsResource
 		Boolean failFast = false;
 		List<Substitution> pathSubstitutions = new ArrayList<Substitution>();
 
-		String schemaLocation = makePath(makePath(".", FILE_STORAGE_LOCATION), makeSchemaName(result.getReturnType()));
+		String schemaLocation = makePath(makePath(".", FILE_SCHEMA_LOCATION), makeSchemaName(result.getReturnType()));
 
 		// Validate contents
 		List<FailMessage> errors = CsvValidator.validate(fileLocation, schemaLocation, failFast, pathSubstitutions, true);
