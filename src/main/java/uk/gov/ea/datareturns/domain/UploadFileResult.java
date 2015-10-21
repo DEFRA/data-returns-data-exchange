@@ -5,29 +5,22 @@ import java.util.List;
 
 public class UploadFileResult
 {
-	// TODO remove redundant properties
 	private int appStatusCode;
-	private String message;;
-
-	private String outcome;
-	private String outcomeMessage;;
 	private String fileName;
-
 	private String fileKey;
 	private String eaId;
 	private String siteName;
 	private String returnType;
+	private String message;
 	private List<UploadFileError> errors;
 
 	public UploadFileResult()
 	{
 		this.fileKey = "";
-		this.outcome = "";
-		this.outcomeMessage ="";
 		this.fileName = "";
-		this.eaId = "";
 		this.siteName = "";
 		this.returnType = "";
+		this.message = "";
 		this.errors = new ArrayList<UploadFileError>();
 	}
 
@@ -37,9 +30,10 @@ public class UploadFileResult
 		this.eaId = eaId;
 		this.siteName = siteName;
 		this.returnType = returnType;
+		this.message = "";
 		this.errors = new ArrayList<UploadFileError>();
 	}
-	
+
 	public int getAppStatusCode()
 	{
 		return appStatusCode;
@@ -48,36 +42,6 @@ public class UploadFileResult
 	public void setAppStatusCode(int appStatusCode)
 	{
 		this.appStatusCode = appStatusCode;
-	}
-
-	public String getMessage()
-	{
-		return message;
-	}
-
-	public void setMessage(String message)
-	{
-		this.message = message;
-	}
-
-	public String getOutcome()
-	{
-		return outcome;
-	}
-
-	public void setOutcome(String outcome)
-	{
-		this.outcome = outcome;
-	}
-
-	public String getOutcomeMessage()
-	{
-		return outcomeMessage;
-	}
-
-	public void setOutcomeMessage(String outcomeMessage)
-	{
-		this.outcomeMessage = outcomeMessage;
 	}
 
 	public String getFileName()
@@ -130,6 +94,16 @@ public class UploadFileResult
 		this.returnType = returnType;
 	}
 
+	public String getMessage()
+	{
+		return message;
+	}
+
+	public void setMessage(String message)
+	{
+		this.message = message;
+	}
+
 	public List<UploadFileError> getErrors()
 	{
 		return errors;
@@ -148,15 +122,4 @@ public class UploadFileResult
 
 		return err;
 	}
-
-	public void addErrors(List<UploadFileError> errors)
-	{
-		this.errors.addAll(errors);
-	}
-
-	public void addError(String reason, String lineNo, String columnName, String errValue)
-	{
-		this.errors.add(new UploadFileError(reason, lineNo, columnName, errValue));
-	}
-
 }

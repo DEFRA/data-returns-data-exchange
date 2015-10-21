@@ -157,8 +157,6 @@ public class SubmitReturnsResource
 
 		sendNotificationToMonitorPro(fileLocation);
 
-		result.setOutcomeMessage("sent '" + fileName + "' successfully to MonitorPro'");
-
 		result.setAppStatusCode(APP_STATUS_SUCCESS);
 
 		return Response.ok(result).build();
