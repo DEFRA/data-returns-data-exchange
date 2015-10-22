@@ -148,7 +148,6 @@ public class SubmitReturnsResource
 		UploadFileResult result = new UploadFileResult();
 
 		String fileLocation = retrieveFileLocationByKey(fileKey);
-		String fileName = FilenameUtils.getName(fileLocation);
 
 		if (!userEmail.trim().isEmpty())
 		{
