@@ -14,7 +14,7 @@ import org.glassfish.jersey.media.multipart.MultiPartFeature;
 
 import uk.gov.ea.datareturns.config.DataExchangeConfiguration;
 import uk.gov.ea.datareturns.health.DataReturnsHealthCheck;
-import uk.gov.ea.datareturns.resource.SubmitReturnsResource;
+import uk.gov.ea.datareturns.resource.DataExchangeResource;
 
 public class App extends Application<DataExchangeConfiguration>
 {
@@ -33,7 +33,7 @@ public class App extends Application<DataExchangeConfiguration>
 	{
 		configureCors(environment);
 		
-		environment.jersey().register(new SubmitReturnsResource(config));
+		environment.jersey().register(new DataExchangeResource(config));
 		environment.jersey().register(new MultiPartFeature());
 		
 		environment.healthChecks().register("template", new DataReturnsHealthCheck());

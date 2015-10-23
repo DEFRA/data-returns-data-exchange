@@ -6,7 +6,7 @@ import org.junit.runners.Suite.SuiteClasses;
 
 @RunWith(Suite.class)
 @SuiteClasses(
-{ SubmitReturnsIntegrationTests.class })
+{ DataExchangeIntegrationTests.class })
 public class AllTestsSuite
 {
 

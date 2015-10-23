@@ -1,5 +1,10 @@
 package uk.gov.ea.datareturns.resource;
 
+import static uk.gov.ea.datareturns.helper.CommonHelper.getFileType;
+import static uk.gov.ea.datareturns.helper.CommonHelper.makeFullPath;
+import static uk.gov.ea.datareturns.helper.DataExchangeHelper.generateUniqueFileKey;
+import static uk.gov.ea.datareturns.helper.DataExchangeHelper.makeSchemaName;
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -12,7 +17,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
@@ -33,8 +37,6 @@ import org.glassfish.jersey.media.multipart.FormDataParam;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.codahale.metrics.annotation.Timed;
-
 import uk.gov.ea.datareturns.config.DataExchangeConfiguration;
 import uk.gov.ea.datareturns.config.EmailSettings;
 import uk.gov.ea.datareturns.domain.UploadFileError;
@@ -52,12 +54,14 @@ import uk.gov.nationalarchives.csv.validator.api.java.CsvValidator;
 import uk.gov.nationalarchives.csv.validator.api.java.FailMessage;
 import uk.gov.nationalarchives.csv.validator.api.java.Substitution;
 
-@Path("/submit-returns")
-public class SubmitReturnsResource
+import com.codahale.metrics.annotation.Timed;
+
+@Path("/data-exchange")
+public class DataExchangeResource
 {
 	private DataExchangeConfiguration config;
 
-	private static final Logger LOGGER = LoggerFactory.getLogger(SubmitReturnsResource.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(DataExchangeResource.class);
 
 	// TODO not sure yet how best to handle these
 	public static int APP_STATUS_SUCCESS = 800;
@@ -70,7 +74,7 @@ public class SubmitReturnsResource
 	private Map<String, String> fileKeys;
 	private Map<String, String> acceptableFileTypes;
 
-	public SubmitReturnsResource(DataExchangeConfiguration config)
+	public DataExchangeResource(DataExchangeConfiguration config)
 	{
 		this.config = config;
 
@@ -89,7 +93,7 @@ public class SubmitReturnsResource
 			@FormDataParam("fileUpload") FormDataContentDisposition fileDetail)
 	{
 		UploadFileResult result = new UploadFileResult();
-		String fileLocation = makePath(makePath(".", FILE_STORAGE_LOCATION), fileDetail.getFileName());
+		String fileLocation = makeFullPath(makeFullPath(".", FILE_STORAGE_LOCATION), fileDetail.getFileName());
 
 		LOGGER.debug("fileLocation = " + fileLocation);
 
@@ -166,7 +170,7 @@ public class SubmitReturnsResource
 		Boolean failFast = false;
 		List<Substitution> pathSubstitutions = new ArrayList<Substitution>();
 
-		String schemaLocation = makePath(makePath(".", FILE_SCHEMA_LOCATION), makeSchemaName(result.getReturnType()));
+		String schemaLocation = makeFullPath(makeFullPath(".", FILE_SCHEMA_LOCATION), makeSchemaName(result.getReturnType()));
 
 		// Validate contents
 		List<FailMessage> errors = CsvValidator.validate(fileLocation, schemaLocation, failFast, pathSubstitutions, true);
@@ -259,16 +263,6 @@ public class SubmitReturnsResource
 		return fields;
 	}
 
-	private String makeSchemaName(String returnType)
-	{
-		return returnType.toLowerCase().replace(" ", "_") + ".csvs";
-	}
-
-	private String makePath(String leftPart, String rightPart)
-	{
-		return leftPart + File.separator + rightPart;
-	}
-
 	private void sendNotificationToUser(String attachmentLocation, String userEmail)
 	{
 		EmailSettings settings = this.config.getEmailsettings();
@@ -301,8 +295,7 @@ public class SubmitReturnsResource
 		} catch (EmailException e1)
 		{
 			throw new NotificationException("Failed to send email to '" + userEmail + "'");
-		}
-		catch (Exception e2)
+		} catch (Exception e2)
 		{
 			throw new NotificationException("Failed to send email to '" + userEmail + "'");
 		}
@@ -349,8 +342,7 @@ public class SubmitReturnsResource
 		} catch (EmailException e1)
 		{
 			throw new NotificationException("Failed to send email to MonitorPro");
-		}
-		catch (Exception e2)
+		} catch (Exception e2)
 		{
 			throw new NotificationException("Failed to send email to MonitorPro");
 		}
@@ -409,11 +401,6 @@ public class SubmitReturnsResource
 		}
 	}
 
-	private String generateUniqueFileKey()
-	{
-		return UUID.randomUUID().toString();
-	}
-
 	private boolean fileContainsMinRows(String filePath, int i)
 	{
 		File file = new File(filePath);
@@ -458,16 +445,4 @@ public class SubmitReturnsResource
 		return minRowsFound;
 	}
 
-	private String getFileType(String filePath)
-	{
-		String fileType = null;
-		int i = filePath.lastIndexOf('.');
-
-		if (i > 0)
-		{
-			fileType = filePath.substring(i + 1).toLowerCase();
-		}
-
-		return fileType;
-	}
 }

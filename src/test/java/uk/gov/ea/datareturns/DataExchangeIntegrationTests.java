@@ -1,13 +1,18 @@
-package uk.gov.ea.datareturns.resource;
+package uk.gov.ea.datareturns;
 
-import static javax.ws.rs.core.Response.Status.*;
+import static javax.ws.rs.core.Response.Status.BAD_REQUEST;
+import static javax.ws.rs.core.Response.Status.INTERNAL_SERVER_ERROR;
+import static javax.ws.rs.core.Response.Status.OK;
 import static org.assertj.core.api.Assertions.assertThat;
-import static uk.gov.ea.datareturns.resource.SubmitReturnsResource.*;
-import static uk.gov.ea.datareturns.type.ApplicationException.*;
-import static uk.gov.ea.datareturns.type.SystemException.*;
+import static uk.gov.ea.datareturns.resource.DataExchangeResource.APP_STATUS_SUCCESS;
+import static uk.gov.ea.datareturns.resource.DataExchangeResource.APP_STATUS_SUCCESS_WITH_ERRORS;
+import static uk.gov.ea.datareturns.type.ApplicationException.EMPTY_FILE;
+import static uk.gov.ea.datareturns.type.ApplicationException.FILE_KEY_MISMATCH;
 import static uk.gov.ea.datareturns.type.ApplicationException.INSUFFICIENT_DATA;
 import static uk.gov.ea.datareturns.type.ApplicationException.INVALID_FILE_CONTENTS;
 import static uk.gov.ea.datareturns.type.ApplicationException.INVALID_FILE_TYPE;
+import static uk.gov.ea.datareturns.type.SystemException.FILE_UNLOCATABLE;
+import static uk.gov.ea.datareturns.type.SystemException.NOTIFICATION;
 import io.dropwizard.client.JerseyClientBuilder;
 import io.dropwizard.client.JerseyClientConfiguration;
 import io.dropwizard.testing.ResourceHelpers;
@@ -23,18 +28,19 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import org.glassfish.jersey.client.ClientProperties;
-import org.glassfish.jersey.media.multipart.*;
+import org.glassfish.jersey.media.multipart.FormDataBodyPart;
+import org.glassfish.jersey.media.multipart.FormDataMultiPart;
+import org.glassfish.jersey.media.multipart.MultiPartFeature;
 import org.glassfish.jersey.media.multipart.file.StreamDataBodyPart;
 import org.junit.Rule;
 import org.junit.Test;
 
-import uk.gov.ea.datareturns.App;
 import uk.gov.ea.datareturns.config.DataExchangeConfiguration;
 import uk.gov.ea.datareturns.domain.UploadFileResult;
 
 import com.google.gson.Gson;
 
-public class SubmitReturnsIntegrationTests
+public class DataExchangeIntegrationTests
 {
 	public final static MediaType MEDIA_TYPE_CSV = new MediaType("text", "csv");
 
@@ -47,12 +53,6 @@ public class SubmitReturnsIntegrationTests
 	public final static String FILE_NON_CSV = "invalid-type.txt";
 	public final static String FILE_NON_TEXT = "binary.csv";
 
-	public final static String URI = "http://localhost:%d/submit-returns/%s";
-
-	public final static String STEP_UPLOAD = "upload";
-	public final static String STEP_VALIDATE = "validate";
-	public final static String STEP_COMPLETE = "complete";
-
 	@Rule
 	public final DropwizardAppRule<DataExchangeConfiguration> RULE = new DropwizardAppRule<>(App.class,
 			ResourceHelpers.resourceFilePath("configuration_test.yml"));
@@ -61,9 +61,7 @@ public class SubmitReturnsIntegrationTests
 	@Test
 	public void testEAIdentifierData()
 	{
-		final Client client = createUploadStepClient("test EA Identifier extraction");
-
-		final Response resp = performUploadStep(client, FILE_CSV_SUCCESS, MEDIA_TYPE_CSV);
+		final Response resp = performMultiPartUpload(FILE_CSV_SUCCESS, MEDIA_TYPE_CSV);
 		assertThat(resp.getStatus()).isEqualTo(OK.getStatusCode());
 
 		final UploadFileResult result = getResultFromResponse(resp);
@@ -77,9 +75,7 @@ public class SubmitReturnsIntegrationTests
 	@Test
 	public void testInvalidFileType()
 	{
-		final Client client = createUploadStepClient("test Invalid File Type");
-
-		final Response resp = performUploadStep(client, FILE_NON_CSV, MediaType.TEXT_PLAIN_TYPE);
+		final Response resp = performMultiPartUpload(FILE_NON_CSV, MediaType.TEXT_PLAIN_TYPE);
 		assertThat(resp.getStatus()).isEqualTo(BAD_REQUEST.getStatusCode());
 
 		final UploadFileResult result = getResultFromResponse(resp);
@@ -89,8 +85,7 @@ public class SubmitReturnsIntegrationTests
 	@Test
 	public void testEmptyFileFailure()
 	{
-		final Client client = createUploadStepClient("test Empty File Failure");
-		final Response resp = performUploadStep(client, FILE_CSV_EMPTY, MEDIA_TYPE_CSV);
+		final Response resp = performMultiPartUpload(FILE_CSV_EMPTY, MEDIA_TYPE_CSV);
 		assertThat(resp.getStatus()).isEqualTo(BAD_REQUEST.getStatusCode());
 
 		final UploadFileResult result = getResultFromResponse(resp);
@@ -100,9 +95,7 @@ public class SubmitReturnsIntegrationTests
 	@Test
 	public void testInsufficientData()
 	{
-		final Client client = createUploadStepClient("test Insufficient Data in file");
-
-		final Response resp = performUploadStep(client, FILE_CSV_INSUFFICIENT_DATA, MEDIA_TYPE_CSV);
+		final Response resp = performMultiPartUpload(FILE_CSV_INSUFFICIENT_DATA, MEDIA_TYPE_CSV);
 		assertThat(resp.getStatus()).isEqualTo(BAD_REQUEST.getStatusCode());
 
 		final UploadFileResult result = getResultFromResponse(resp);
@@ -112,9 +105,7 @@ public class SubmitReturnsIntegrationTests
 	@Test
 	public void testInvalidContents()
 	{
-		final Client client = createUploadStepClient("test Non text File Contents");
-
-		final Response resp = performUploadStep(client, FILE_NON_TEXT, MEDIA_TYPE_CSV);
+		final Response resp = performMultiPartUpload(FILE_NON_TEXT, MEDIA_TYPE_CSV);
 		assertThat(resp.getStatus()).isEqualTo(BAD_REQUEST.getStatusCode());
 
 		final UploadFileResult result = getResultFromResponse(resp);
@@ -127,9 +118,10 @@ public class SubmitReturnsIntegrationTests
 	@Test
 	public void testFileKeyMismatch()
 	{
-		final Client client = createValidateStepClient("test invalid File Key");
+		Client client = new JerseyClientBuilder(RULE.getEnvironment()).build("test invalid File Key");
+		String uri = String.format("http://localhost:%d/submit-returns/validate", RULE.getLocalPort());
+		Response resp = client.target(uri).queryParam("fileKey", UUID.randomUUID().toString()).request().get(Response.class);
 
-		final Response resp = performValidateStep(client, UUID.randomUUID().toString(), "invalid_return_type");
 		assertThat(resp.getStatus()).isEqualTo(BAD_REQUEST.getStatusCode());
 
 		final UploadFileResult result = getResultFromResponse(resp);
@@ -139,17 +131,17 @@ public class SubmitReturnsIntegrationTests
 	@Test
 	public void testMissingSchemaFile()
 	{
-		Client client = createUploadStepClient("test Missing Schema File 1/2");
-
-		Response resp = performUploadStep(client, FILE_CSV_SUCCESS, MEDIA_TYPE_CSV);
+		Response resp = performMultiPartUpload(FILE_CSV_SUCCESS, MEDIA_TYPE_CSV);
 		assertThat(resp.getStatus()).isEqualTo(OK.getStatusCode());
 
 		UploadFileResult result = resp.readEntity(UploadFileResult.class);
 		assertThat(result.getAppStatusCode()).isEqualTo(APP_STATUS_SUCCESS);
 
-		client = createValidateStepClient("test Missing Schema File 2/2");
-
-		resp = performValidateStep(client, result.getFileKey(), "invalid_return_type");
+		Client client = new JerseyClientBuilder(RULE.getEnvironment()).build("test Missing Schema File");
+		client.property(ClientProperties.READ_TIMEOUT, 1000);
+		String uri = String.format("http://localhost:%d/submit-returns/validate", RULE.getLocalPort());
+		resp = client.target(uri).queryParam("fileKey", result.getFileKey()).queryParam("returnType", "no_such_return_type").request()
+				.get(Response.class);
 		assertThat(resp.getStatus()).isEqualTo(INTERNAL_SERVER_ERROR.getStatusCode());
 
 		final UploadFileResult result2 = getResultFromResponse(resp);
@@ -159,17 +151,16 @@ public class SubmitReturnsIntegrationTests
 	@Test
 	public void testWithValidationErrors()
 	{
-		Client client = createUploadStepClient("test Validation Error(s) generated 1/2");
-
-		Response resp = performUploadStep(client, FILE_CSV_FAILURES, MEDIA_TYPE_CSV);
+		Response resp = performMultiPartUpload(FILE_CSV_FAILURES, MEDIA_TYPE_CSV);
 		assertThat(resp.getStatus()).isEqualTo(OK.getStatusCode());
 
 		UploadFileResult result = resp.readEntity(UploadFileResult.class);
 		assertThat(result.getAppStatusCode()).isEqualTo(APP_STATUS_SUCCESS);
 
-		client = createValidateStepClient("test Missing Schema File 2/2");
-
-		resp = performValidateStep(client, result.getFileKey(), result.getReturnType());
+		Client client = new JerseyClientBuilder(RULE.getEnvironment()).build("test Validation Error(s) generated");
+		String uri = String.format("http://localhost:%d/submit-returns/validate", RULE.getLocalPort());
+		resp = client.target(uri).queryParam("fileKey", result.getFileKey()).queryParam("returnType", result.getReturnType()).request()
+				.get(Response.class);
 		assertThat(resp.getStatus()).isEqualTo(OK.getStatusCode());
 
 		result = getResultFromResponse(resp);
@@ -183,25 +174,33 @@ public class SubmitReturnsIntegrationTests
 	@Test
 	public void testUserNotificationFailure()
 	{
-		Client client = createUploadStepClient("test Validation Error generation 1/3");
-
-		Response resp = performUploadStep(client, FILE_CSV_SUCCESS, MEDIA_TYPE_CSV);
+		Response resp = performMultiPartUpload(FILE_CSV_SUCCESS, MEDIA_TYPE_CSV);
 		assertThat(resp.getStatus()).isEqualTo(OK.getStatusCode());
 
 		UploadFileResult result = resp.readEntity(UploadFileResult.class);
 		assertThat(result.getAppStatusCode()).isEqualTo(APP_STATUS_SUCCESS);
 
-		client = createValidateStepClient("test Validation Error generation 2/3");
-
-		resp = performValidateStep(client, result.getFileKey(), result.getReturnType());
+		Client client = new JerseyClientBuilder(RULE.getEnvironment()).build("test Missing Schema File");
+		String uri = String.format("http://localhost:%d/submit-returns/validate", RULE.getLocalPort());
+		resp = client.target(uri).queryParam("fileKey", result.getFileKey()).queryParam("fileKey", result.getFileKey())
+				.queryParam("returnType", result.getReturnType()).request().get(Response.class);
 		assertThat(resp.getStatus()).isEqualTo(OK.getStatusCode());
 
 		result = resp.readEntity(UploadFileResult.class);
 		assertThat(result.getAppStatusCode()).isEqualTo(APP_STATUS_SUCCESS);
 
-		client = createCompleteStepClient("test Validation Error generation 3/3");
+		final FormDataMultiPart form = new FormDataMultiPart();
+		final FormDataBodyPart fdp1 = new FormDataBodyPart("fileKey", result.getFileKey());
+		form.bodyPart(fdp1);
+		final FormDataBodyPart fdp2 = new FormDataBodyPart("emailcc", "abc@abc.com");
+		form.bodyPart(fdp2);
 
-		resp = performCompleteStep(client, result.getFileKey());
+		JerseyClientConfiguration configuration = new JerseyClientConfiguration();
+		configuration.setChunkedEncodingEnabled(false);
+		client = new JerseyClientBuilder(RULE.getEnvironment()).using(configuration).build("xxxxSubmit returns test")
+				.register(MultiPartFeature.class);
+		uri = String.format("http://localhost:%d/submit-returns/complete", RULE.getLocalPort());
+		resp = client.target(uri).request().post(Entity.entity(form, form.getMediaType()), Response.class);
 		assertThat(resp.getStatus()).isEqualTo(INTERNAL_SERVER_ERROR.getStatusCode());
 
 		result = resp.readEntity(UploadFileResult.class);
@@ -210,70 +209,24 @@ public class SubmitReturnsIntegrationTests
 
 	// COMPLETE STEP START
 
-	private Client createUploadStepClient(String testName)
-	{
-		final JerseyClientConfiguration configuration = new JerseyClientConfiguration();
-		configuration.setChunkedEncodingEnabled(false);
-
-		final Client client = new JerseyClientBuilder(RULE.getEnvironment()).using(configuration).build(testName)
-				.register(MultiPartFeature.class);
-		client.property(ClientProperties.READ_TIMEOUT, 10000);
-
-		return client;
-	}
-
-	private Response performUploadStep(Client client, String testFileName, MediaType mediaType)
+	private Response performMultiPartUpload(String testFileName, MediaType mediaType)
 	{
 		final FormDataMultiPart form = new FormDataMultiPart();
 		final InputStream data = this.getClass().getResourceAsStream(makeFullPath(TEST_FILES_PATH, testFileName));
-		final String uri = String.format(URI, RULE.getLocalPort(), STEP_UPLOAD);
+		String uri = String.format("http://localhost:%d/submit-returns/upload", RULE.getLocalPort());
+
+		JerseyClientConfiguration configuration = new JerseyClientConfiguration();
+		configuration.setChunkedEncodingEnabled(false);
+
+		Client client = new JerseyClientBuilder(RULE.getEnvironment()).using(configuration).build("Submit returns test")
+				.register(MultiPartFeature.class);
+
 		final StreamDataBodyPart fdp1 = new StreamDataBodyPart("fileUpload", data, testFileName, mediaType);
 
 		form.bodyPart(fdp1);
 
 		final Response resp = client.register(MultiPartFeature.class).target(uri).request()
 				.post(Entity.entity(form, form.getMediaType()), Response.class);
-
-		return resp;
-	}
-
-	private Client createValidateStepClient(String testName)
-	{
-		final Client client = new JerseyClientBuilder(RULE.getEnvironment()).build(testName);
-
-		client.property(ClientProperties.READ_TIMEOUT, 10000);
-
-		return client;
-	}
-
-	private Response performValidateStep(Client client, String fileKey, String returnType)
-	{
-		final String uri = String.format(URI, RULE.getLocalPort(), STEP_VALIDATE);
-		final Response resp = client.target(uri).queryParam("fileKey", fileKey).queryParam("returnType", returnType).request().get(Response.class);
-
-		return resp;
-	}
-	
-	private Client createCompleteStepClient(String testName)
-	{
-		final JerseyClientConfiguration configuration = new JerseyClientConfiguration();
-		configuration.setChunkedEncodingEnabled(false);
-
-		final Client client = new JerseyClientBuilder(RULE.getEnvironment()).using(configuration).build(testName).register(MultiPartFeature.class);
-
-		return client;
-	}
-
-	private Response performCompleteStep(Client client, String fileKey)
-	{
-		final FormDataMultiPart form = new FormDataMultiPart();
-		final FormDataBodyPart fdp1 = new FormDataBodyPart("fileKey", fileKey);
-		form.bodyPart(fdp1);
-		final FormDataBodyPart fdp2 = new FormDataBodyPart("emailcc", "abc@abc.com");
-		form.bodyPart(fdp2);
-
-		final String uri = String.format(URI, RULE.getLocalPort(), STEP_COMPLETE);
-		final Response resp = client.target(uri).request().post(Entity.entity(form, form.getMediaType()), Response.class);
 
 		return resp;
 	}

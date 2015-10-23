@@ -4,11 +4,11 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 import org.junit.runners.Suite.SuiteClasses;
 
-import uk.gov.ea.datareturns.SubmitReturnsIntegrationTests;
+import uk.gov.ea.datareturns.DataExchangeIntegrationTests;
 
 @RunWith(Suite.class)
 @SuiteClasses(
-{ SubmitReturnsIntegrationTests.class })
+{ DataExchangeIntegrationTests.class })
 public class AllIntegrationTests
 {
 
