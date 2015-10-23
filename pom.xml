@@ -11,17 +11,19 @@
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<java-version>1.8</java-version>
+		<java.version>1.8</java.version>
 		<dropwizard.version>0.8.4</dropwizard.version>
 		<junit.version>4.12</junit.version>
 		<maven.compiler.version>3.2</maven.compiler.version>
-		<onejar-version>1.4.4</onejar-version>
+		<maven.surefire.plugin.version>2.18.1</maven.surefire.plugin.version>
+		<maven.jar.plugin.version>2.6</maven.jar.plugin.version>
+		<onejar.version>1.4.4</onejar.version>
 		<csv.validator.version>1.0</csv.validator.version>
 		<commons.email.version>1.4</commons.email.version>
 		<commons.io.version>2.4</commons.io.version>
 		<gson.version>2.4</gson.version>
 		<assertj.version>3.2.0</assertj.version>
-		<run.test.suite>**/AllTestsSuite.class</run.test.suite>
+		<run.test.suite>**/AllTests.class</run.test.suite>
 	</properties>
 
 	<dependencies>
@@ -125,13 +127,14 @@
 				<artifactId>maven-compiler-plugin</artifactId>
 				<version>${maven.compiler.version}</version>
 				<configuration>
-					<source>${java-version}</source>
-					<target>${java-version}</target>
+					<source>${java.version}</source>
+					<target>${java.version}</target>
 				</configuration>
 			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-surefire-plugin</artifactId>
+				<version>${maven.surefire.plugin.version}</version>
 				<configuration>
 					<includes>
 						<include>${run.test.suite}</include>
@@ -141,6 +144,7 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-jar-plugin</artifactId>
+				<version>${maven.jar.plugin.version}</version>
 				<configuration>
 					<archive>
 						<manifest>
@@ -152,7 +156,7 @@
 			<plugin>
 				<groupId>org.dstovall</groupId>
 				<artifactId>onejar-maven-plugin</artifactId>
-				<version>${onejar-version}</version>
+				<version>${onejar.version}</version>
 				<executions>
 					<execution>
 						<goals>

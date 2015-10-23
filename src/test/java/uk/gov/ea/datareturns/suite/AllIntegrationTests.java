@@ -4,7 +4,7 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 import org.junit.runners.Suite.SuiteClasses;
 
-import uk.gov.ea.datareturns.DataExchangeIntegrationTests;
+import uk.gov.ea.datareturns.resource.DataExchangeIntegrationTests;
 
 @RunWith(Suite.class)
 @SuiteClasses(
