@@ -1,0 +1,20 @@
+logging:
+  level: INFO
+  loggers:
+    uk.gov.ea.datareturns: DEBUG
+    io.dropwizard: INFO
+    org.glassfish: ERROR
+    org.eclipse: ERROR
+  appenders:
+    - type: console
+server:
+  applicationConnectors:
+    - type: http
+      port: 9090
+email:
+  host: 127.0.0.1
+  port: 1025
+  emailTo: import@monitorpro.com
+  emailFrom: data_returns@environment-agency.gov.uk
+  tls: false
+  bodyMessage: Data Returns Import file received

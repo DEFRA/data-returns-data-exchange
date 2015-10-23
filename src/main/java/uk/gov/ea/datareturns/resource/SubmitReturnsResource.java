@@ -55,7 +55,7 @@ import uk.gov.nationalarchives.csv.validator.api.java.Substitution;
 @Path("/submit-returns")
 public class SubmitReturnsResource
 {
-	DataExchangeConfiguration config;
+	private DataExchangeConfiguration config;
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(SubmitReturnsResource.class);
 
