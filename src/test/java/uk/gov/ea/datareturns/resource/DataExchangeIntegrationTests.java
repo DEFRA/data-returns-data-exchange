@@ -37,7 +37,7 @@ import org.junit.Test;
 
 import uk.gov.ea.datareturns.App;
 import uk.gov.ea.datareturns.config.DataExchangeConfiguration;
-import uk.gov.ea.datareturns.domain.UploadFileResult;
+import uk.gov.ea.datareturns.domain.DataExchangeResult;
 
 import com.google.gson.Gson;
 
@@ -73,7 +73,7 @@ public class DataExchangeIntegrationTests
 		final Response resp = performUploadStep(client, FILE_CSV_SUCCESS, MEDIA_TYPE_CSV);
 		assertThat(resp.getStatus()).isEqualTo(OK.getStatusCode());
 
-		final UploadFileResult result = getResultFromResponse(resp);
+		final DataExchangeResult result = getResultFromResponse(resp);
 		assertThat(result.getAppStatusCode()).isEqualTo(APP_STATUS_SUCCESS);
 		assertThat(result.getFileKey()).isNotEmpty();
 		assertThat(result.getEaId()).isNotEmpty();
@@ -89,7 +89,7 @@ public class DataExchangeIntegrationTests
 		final Response resp = performUploadStep(client, FILE_NON_CSV, MediaType.TEXT_PLAIN_TYPE);
 		assertThat(resp.getStatus()).isEqualTo(BAD_REQUEST.getStatusCode());
 
-		final UploadFileResult result = getResultFromResponse(resp);
+		final DataExchangeResult result = getResultFromResponse(resp);
 		assertThat(result.getAppStatusCode()).isEqualTo(INVALID_FILE_TYPE.getAppStatusCode());
 	}
 
@@ -100,7 +100,7 @@ public class DataExchangeIntegrationTests
 		final Response resp = performUploadStep(client, FILE_CSV_EMPTY, MEDIA_TYPE_CSV);
 		assertThat(resp.getStatus()).isEqualTo(BAD_REQUEST.getStatusCode());
 
-		final UploadFileResult result = getResultFromResponse(resp);
+		final DataExchangeResult result = getResultFromResponse(resp);
 		assertThat(result.getAppStatusCode()).isEqualTo(EMPTY_FILE.getAppStatusCode());
 	}
 
@@ -112,7 +112,7 @@ public class DataExchangeIntegrationTests
 		final Response resp = performUploadStep(client, FILE_CSV_INSUFFICIENT_DATA, MEDIA_TYPE_CSV);
 		assertThat(resp.getStatus()).isEqualTo(BAD_REQUEST.getStatusCode());
 
-		final UploadFileResult result = getResultFromResponse(resp);
+		final DataExchangeResult result = getResultFromResponse(resp);
 		assertThat(result.getAppStatusCode()).isEqualTo(INSUFFICIENT_DATA.getAppStatusCode());
 	}
 
@@ -124,7 +124,7 @@ public class DataExchangeIntegrationTests
 		final Response resp = performUploadStep(client, FILE_NON_TEXT, MEDIA_TYPE_CSV);
 		assertThat(resp.getStatus()).isEqualTo(BAD_REQUEST.getStatusCode());
 
-		final UploadFileResult result = getResultFromResponse(resp);
+		final DataExchangeResult result = getResultFromResponse(resp);
 		assertThat(result.getAppStatusCode()).isEqualTo(INVALID_FILE_CONTENTS.getAppStatusCode());
 	}
 
@@ -139,7 +139,7 @@ public class DataExchangeIntegrationTests
 		final Response resp = performValidateStep(client, generateUniqueFileKey(), "invalid_return_type");
 		assertThat(resp.getStatus()).isEqualTo(BAD_REQUEST.getStatusCode());
 
-		final UploadFileResult result = getResultFromResponse(resp);
+		final DataExchangeResult result = getResultFromResponse(resp);
 		assertThat(result.getAppStatusCode()).isEqualTo(FILE_KEY_MISMATCH.getAppStatusCode());
 	}
 
@@ -151,7 +151,7 @@ public class DataExchangeIntegrationTests
 		Response resp = performUploadStep(client, FILE_CSV_SUCCESS, MEDIA_TYPE_CSV);
 		assertThat(resp.getStatus()).isEqualTo(OK.getStatusCode());
 
-		UploadFileResult result = resp.readEntity(UploadFileResult.class);
+		DataExchangeResult result = resp.readEntity(DataExchangeResult.class);
 		assertThat(result.getAppStatusCode()).isEqualTo(APP_STATUS_SUCCESS);
 
 		client = createValidateStepClient("test Missing Schema File 2/2");
@@ -159,7 +159,7 @@ public class DataExchangeIntegrationTests
 		resp = performValidateStep(client, result.getFileKey(), "invalid_return_type");
 		assertThat(resp.getStatus()).isEqualTo(INTERNAL_SERVER_ERROR.getStatusCode());
 
-		final UploadFileResult result2 = getResultFromResponse(resp);
+		final DataExchangeResult result2 = getResultFromResponse(resp);
 		assertThat(result2.getAppStatusCode()).isEqualTo(FILE_UNLOCATABLE.getCode());
 	}
 
@@ -171,7 +171,7 @@ public class DataExchangeIntegrationTests
 		Response resp = performUploadStep(client, FILE_CSV_FAILURES, MEDIA_TYPE_CSV);
 		assertThat(resp.getStatus()).isEqualTo(OK.getStatusCode());
 
-		UploadFileResult result = resp.readEntity(UploadFileResult.class);
+		DataExchangeResult result = resp.readEntity(DataExchangeResult.class);
 		assertThat(result.getAppStatusCode()).isEqualTo(APP_STATUS_SUCCESS);
 
 		client = createValidateStepClient("test Missing Schema File 2/2");
@@ -197,7 +197,7 @@ public class DataExchangeIntegrationTests
 		Response resp = performUploadStep(client, FILE_CSV_SUCCESS, MEDIA_TYPE_CSV);
 		assertThat(resp.getStatus()).isEqualTo(OK.getStatusCode());
 
-		UploadFileResult result = resp.readEntity(UploadFileResult.class);
+		DataExchangeResult result = resp.readEntity(DataExchangeResult.class);
 		assertThat(result.getAppStatusCode()).isEqualTo(APP_STATUS_SUCCESS);
 
 		client = createValidateStepClient("test Validation Error generation 2/3");
@@ -205,7 +205,7 @@ public class DataExchangeIntegrationTests
 		resp = performValidateStep(client, result.getFileKey(), result.getReturnType());
 		assertThat(resp.getStatus()).isEqualTo(OK.getStatusCode());
 
-		result = resp.readEntity(UploadFileResult.class);
+		result = resp.readEntity(DataExchangeResult.class);
 		assertThat(result.getAppStatusCode()).isEqualTo(APP_STATUS_SUCCESS);
 
 		client = createCompleteStepClient("test Validation Error generation 3/3");
@@ -213,7 +213,7 @@ public class DataExchangeIntegrationTests
 		resp = performCompleteStep(client, result.getFileKey());
 		assertThat(resp.getStatus()).isEqualTo(INTERNAL_SERVER_ERROR.getStatusCode());
 
-		result = resp.readEntity(UploadFileResult.class);
+		result = resp.readEntity(DataExchangeResult.class);
 		assertThat(result.getAppStatusCode()).isEqualTo(NOTIFICATION.getCode());
 	}
 
@@ -286,10 +286,10 @@ public class DataExchangeIntegrationTests
 		return resp;
 	}
 
-	private UploadFileResult getResultFromResponse(Response resp)
+	private DataExchangeResult getResultFromResponse(Response resp)
 	{
 		final Gson gson = new Gson();
 
-		return gson.fromJson(resp.readEntity(String.class), UploadFileResult.class);
+		return gson.fromJson(resp.readEntity(String.class), DataExchangeResult.class);
 	}
 }

@@ -15,7 +15,7 @@ public class DataExchangeHelper
 	}
 
 	/**
-	 * Generate a random key using UUID class
+	 * Generate a unique key (uses UUID class for now)
 	 * @return
 	 */
 	public static String generateUniqueFileKey()

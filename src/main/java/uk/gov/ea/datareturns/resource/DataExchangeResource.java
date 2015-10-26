@@ -39,8 +39,8 @@ import org.slf4j.LoggerFactory;
 
 import uk.gov.ea.datareturns.config.DataExchangeConfiguration;
 import uk.gov.ea.datareturns.config.EmailSettings;
-import uk.gov.ea.datareturns.domain.UploadFileError;
-import uk.gov.ea.datareturns.domain.UploadFileResult;
+import uk.gov.ea.datareturns.domain.DataExchangeError;
+import uk.gov.ea.datareturns.domain.DataExchangeResult;
 import uk.gov.ea.datareturns.exception.application.EmptyFileException;
 import uk.gov.ea.datareturns.exception.application.FileKeyMismatchException;
 import uk.gov.ea.datareturns.exception.application.InsufficientDataException;
@@ -92,7 +92,8 @@ public class DataExchangeResource
 	public Response uploadFile(@FormDataParam("fileUpload") InputStream uploadedInputStream,
 			@FormDataParam("fileUpload") FormDataContentDisposition fileDetail)
 	{
-		UploadFileResult result = new UploadFileResult();
+
+		DataExchangeResult result = new DataExchangeResult();
 		String fileLocation = makeFullPath(makeFullPath(".", FILE_STORAGE_LOCATION), fileDetail.getFileName());
 
 		LOGGER.debug("fileLocation = " + fileLocation);
@@ -126,10 +127,11 @@ public class DataExchangeResource
 	@Path("/validate")
 	@Produces(MediaType.APPLICATION_JSON)
 	@Timed
+	// TODO serialize to DataExchangeResult here?
 	public Response validateFileUpload(@QueryParam("fileKey") String fileKey, @QueryParam("eaId") String eaId,
 			@QueryParam("siteName") String siteName, @QueryParam("returnType") String returnType)
 	{
-		UploadFileResult result = new UploadFileResult(fileKey, eaId, siteName, returnType);
+		DataExchangeResult result = new DataExchangeResult(fileKey, eaId, siteName, returnType);
 
 		String fileLocation = retrieveFileLocationByKey(fileKey);
 		LOGGER.debug("fileLocation = " + fileLocation);
@@ -147,13 +149,14 @@ public class DataExchangeResource
 	@Path("/complete")
 	@Produces(MediaType.APPLICATION_JSON)
 	@Timed
+	// TODO serialize to DataExchangeResult here?
 	public Response completeFileUpload(@FormDataParam("fileKey") String fileKey, @FormDataParam("emailcc") String userEmail)
 	{
-		UploadFileResult result = new UploadFileResult();
+		DataExchangeResult result = new DataExchangeResult();
 
 		String fileLocation = retrieveFileLocationByKey(fileKey);
 
-		if (!userEmail.trim().isEmpty())
+		if (userEmail!= null & !userEmail.trim().isEmpty())
 		{
 			sendNotificationToUser(fileLocation, userEmail);
 		}
@@ -165,7 +168,7 @@ public class DataExchangeResource
 		return Response.ok(result).build();
 	}
 
-	private UploadFileResult performValidation(String fileLocation, UploadFileResult result)
+	private DataExchangeResult performValidation(String fileLocation, DataExchangeResult result)
 	{
 		Boolean failFast = false;
 		List<Substitution> pathSubstitutions = new ArrayList<Substitution>();
@@ -190,7 +193,7 @@ public class DataExchangeResource
 			{
 				LOGGER.debug("Error = " + mess.getMessage());
 
-				UploadFileError err = result.addError(mess.getMessage());
+				DataExchangeError err = result.addError(mess.getMessage());
 
 				LOGGER.debug("  reason = " + err.getReason());
 				LOGGER.debug("  lineNo; = " + err.getLineNo());

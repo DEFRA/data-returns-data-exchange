@@ -3,7 +3,7 @@ package uk.gov.ea.datareturns.domain;
 import java.util.ArrayList;
 import java.util.List;
 
-public class UploadFileResult
+public class DataExchangeResult
 {
 	private int appStatusCode;
 	private String fileName;
@@ -12,26 +12,26 @@ public class UploadFileResult
 	private String siteName;
 	private String returnType;
 	private String message;
-	private List<UploadFileError> errors;
+	private List<DataExchangeError> errors;
 
-	public UploadFileResult()
+	public DataExchangeResult()
 	{
 		this.fileKey = "";
 		this.fileName = "";
 		this.siteName = "";
 		this.returnType = "";
 		this.message = "";
-		this.errors = new ArrayList<UploadFileError>();
+		this.errors = new ArrayList<DataExchangeError>();
 	}
 
-	public UploadFileResult(String key, String eaId, String siteName, String returnType)
+	public DataExchangeResult(String key, String eaId, String siteName, String returnType)
 	{
 		this.fileKey = key;
 		this.eaId = eaId;
 		this.siteName = siteName;
 		this.returnType = returnType;
 		this.message = "";
-		this.errors = new ArrayList<UploadFileError>();
+		this.errors = new ArrayList<DataExchangeError>();
 	}
 
 	public int getAppStatusCode()
@@ -104,19 +104,19 @@ public class UploadFileResult
 		this.message = message;
 	}
 
-	public List<UploadFileError> getErrors()
+	public List<DataExchangeError> getErrors()
 	{
 		return errors;
 	}
 
-	public void setErrors(List<UploadFileError> errors)
+	public void setErrors(List<DataExchangeError> errors)
 	{
 		this.errors = errors;
 	}
 
-	public UploadFileError addError(String error)
+	public DataExchangeError addError(String error)
 	{
-		UploadFileError err = new UploadFileError(error);
+		DataExchangeError err = new DataExchangeError(error);
 
 		this.errors.add(err);
 

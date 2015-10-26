@@ -20,15 +20,15 @@ public class CommonHelperTests
 		assertThat(result).isEqualTo(EXPECTED);
 	}
 
+	/**
+	 * Must always return lower case file extension
+	 */
 	@Test
 	public void testExtractFileType()
 	{
 		final String EXPECTED_FILE_TYPE = "csv";
 
-		String result = getFileType(makeFullPath(TEST_PATH, TEST_FILE));
-		assertThat(result).isEqualTo(EXPECTED_FILE_TYPE);
-
-		result = getFileType(makeFullPath(TEST_PATH.toUpperCase(), TEST_FILE.toUpperCase()));
+		String result = getFileType(makeFullPath(TEST_PATH.toUpperCase(), TEST_FILE.toUpperCase()));
 		assertThat(result).isEqualTo(EXPECTED_FILE_TYPE);
 	}
 }
