@@ -3,7 +3,14 @@ package uk.gov.ea.datareturns.domain;
 import java.util.ArrayList;
 import java.util.List;
 
-public class UploadFileResult
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
+// TODO trim all Strings coming in
+/**
+ * Simple POJO to contain values passed in/out of service
+ * Srrings will never be null
+ */
+public class DataExchangeResult
 {
 	private int appStatusCode;
 	private String fileName;
@@ -12,26 +19,35 @@ public class UploadFileResult
 	private String siteName;
 	private String returnType;
 	private String message;
-	private List<UploadFileError> errors;
+	private String userEmail;
+	private List<DataExchangeError> errors;
 
-	public UploadFileResult()
+	public DataExchangeResult()
 	{
-		this.fileKey = "";
 		this.fileName = "";
+		this.fileKey = "";
+		this.eaId = "";
 		this.siteName = "";
 		this.returnType = "";
 		this.message = "";
-		this.errors = new ArrayList<UploadFileError>();
+		this.userEmail = "";
+		this.errors = new ArrayList<DataExchangeError>();
 	}
 
-	public UploadFileResult(String key, String eaId, String siteName, String returnType)
+	public DataExchangeResult(String fileKey, String userEmail)
 	{
+		this();
+		this.fileKey = fileKey;
+		this.userEmail = userEmail;
+	}
+
+	public DataExchangeResult(String key, String eaId, String siteName, String returnType)
+	{
+		this();
 		this.fileKey = key;
 		this.eaId = eaId;
 		this.siteName = siteName;
 		this.returnType = returnType;
-		this.message = "";
-		this.errors = new ArrayList<UploadFileError>();
 	}
 
 	public int getAppStatusCode()
@@ -104,22 +120,38 @@ public class UploadFileResult
 		this.message = message;
 	}
 
-	public List<UploadFileError> getErrors()
+	public String getUserEmail()
+	{
+		return userEmail;
+	}
+
+	public void setUserEmail(String userEmail)
+	{
+		this.userEmail = userEmail;
+	}
+
+	public List<DataExchangeError> getErrors()
 	{
 		return errors;
 	}
 
-	public void setErrors(List<UploadFileError> errors)
+	public void setErrors(List<DataExchangeError> errors)
 	{
 		this.errors = errors;
 	}
 
-	public UploadFileError addError(String error)
+	public DataExchangeError addError(String error)
 	{
-		UploadFileError err = new UploadFileError(error);
+		DataExchangeError err = new DataExchangeError(error);
 
 		this.errors.add(err);
 
 		return err;
+	}
+	
+	@JsonIgnore
+	public boolean isSendUserEmail()
+	{
+		return !"".equals(userEmail.trim());
 	}
 }

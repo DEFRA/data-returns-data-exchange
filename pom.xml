@@ -13,6 +13,7 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<java.version>1.8</java.version>
 		<dropwizard.version>0.8.4</dropwizard.version>
+		<jersey.bean.validation>2.22.1</jersey.bean.validation>
 		<junit.version>4.12</junit.version>
 		<maven.compiler.version>3.2</maven.compiler.version>
 		<maven.surefire.plugin.version>2.18.1</maven.surefire.plugin.version>
@@ -69,6 +70,11 @@
 			<groupId>io.dropwizard.metrics</groupId>
 			<artifactId>metrics-core</artifactId>
 			<version>3.1.2</version>
+		</dependency>
+		<dependency>
+			<groupId>org.glassfish.jersey.ext</groupId>
+			<artifactId>jersey-bean-validation</artifactId>
+			<version>${jersey.bean.validation}</version>
 		</dependency>
 		<dependency>
 			<groupId>uk.gov.nationalarchives</groupId>

@@ -16,6 +16,8 @@ import uk.gov.ea.datareturns.config.DataExchangeConfiguration;
 import uk.gov.ea.datareturns.health.DataReturnsHealthCheck;
 import uk.gov.ea.datareturns.resource.DataExchangeResource;
 
+// TODO javadoc
+// TODO Security
 public class App extends Application<DataExchangeConfiguration>
 {
 	public static void main(String[] args) throws Exception
@@ -39,6 +41,7 @@ public class App extends Application<DataExchangeConfiguration>
 		environment.healthChecks().register("template", new DataReturnsHealthCheck());
 	}
 
+	// TODO sort this our for release
 	private void configureCors(Environment env)
 	{
 		FilterRegistration.Dynamic filter = env.servlets().addFilter("CORS", CrossOriginFilter.class);

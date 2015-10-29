@@ -15,6 +15,7 @@ import static uk.gov.ea.datareturns.type.ApplicationException.INVALID_FILE_CONTE
 import static uk.gov.ea.datareturns.type.ApplicationException.INVALID_FILE_TYPE;
 import static uk.gov.ea.datareturns.type.SystemException.FILE_UNLOCATABLE;
 import static uk.gov.ea.datareturns.type.SystemException.NOTIFICATION;
+import static uk.gov.ea.datareturns.type.SystemException.UNPROCESSABLE_ENTITY;
 import io.dropwizard.client.JerseyClientBuilder;
 import io.dropwizard.client.JerseyClientConfiguration;
 import io.dropwizard.testing.ResourceHelpers;
@@ -24,6 +25,7 @@ import java.io.InputStream;
 
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.Entity;
+import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
@@ -37,10 +39,22 @@ import org.junit.Test;
 
 import uk.gov.ea.datareturns.App;
 import uk.gov.ea.datareturns.config.DataExchangeConfiguration;
-import uk.gov.ea.datareturns.domain.UploadFileResult;
+import uk.gov.ea.datareturns.domain.DataExchangeResult;
 
 import com.google.gson.Gson;
 
+/**
+ * Integration test class for the DataExchangeResource REST service 
+ * Uses DropwizardAppRule so real HTTP requests are fired at the interface (using a grizzly server)
+ * 
+ * The tests are aimed mainly at verifying exceptions thrown from this service which are split in to -
+ *     System - returns a standard HTML error code
+ *     Application - returns a standard HTML error code + an application specific status code to help identify what went wrong
+ * 
+ * TODO may/may not implement testInvalidUploadInteface() & testInvalidCompleteInteface() tests as should be tested with e2e tests
+ * TODO not every single exception is tested - not sure if they ever will as e2e test should provide full coverage
+ *
+ */
 public class DataExchangeIntegrationTests
 {
 	public final static MediaType MEDIA_TYPE_CSV = new MediaType("text", "csv");
@@ -73,7 +87,7 @@ public class DataExchangeIntegrationTests
 		final Response resp = performUploadStep(client, FILE_CSV_SUCCESS, MEDIA_TYPE_CSV);
 		assertThat(resp.getStatus()).isEqualTo(OK.getStatusCode());
 
-		final UploadFileResult result = getResultFromResponse(resp);
+		final DataExchangeResult result = getResultFromResponse(resp);
 		assertThat(result.getAppStatusCode()).isEqualTo(APP_STATUS_SUCCESS);
 		assertThat(result.getFileKey()).isNotEmpty();
 		assertThat(result.getEaId()).isNotEmpty();
@@ -89,7 +103,7 @@ public class DataExchangeIntegrationTests
 		final Response resp = performUploadStep(client, FILE_NON_CSV, MediaType.TEXT_PLAIN_TYPE);
 		assertThat(resp.getStatus()).isEqualTo(BAD_REQUEST.getStatusCode());
 
-		final UploadFileResult result = getResultFromResponse(resp);
+		final DataExchangeResult result = getResultFromResponse(resp);
 		assertThat(result.getAppStatusCode()).isEqualTo(INVALID_FILE_TYPE.getAppStatusCode());
 	}
 
@@ -100,7 +114,7 @@ public class DataExchangeIntegrationTests
 		final Response resp = performUploadStep(client, FILE_CSV_EMPTY, MEDIA_TYPE_CSV);
 		assertThat(resp.getStatus()).isEqualTo(BAD_REQUEST.getStatusCode());
 
-		final UploadFileResult result = getResultFromResponse(resp);
+		final DataExchangeResult result = getResultFromResponse(resp);
 		assertThat(result.getAppStatusCode()).isEqualTo(EMPTY_FILE.getAppStatusCode());
 	}
 
@@ -112,7 +126,7 @@ public class DataExchangeIntegrationTests
 		final Response resp = performUploadStep(client, FILE_CSV_INSUFFICIENT_DATA, MEDIA_TYPE_CSV);
 		assertThat(resp.getStatus()).isEqualTo(BAD_REQUEST.getStatusCode());
 
-		final UploadFileResult result = getResultFromResponse(resp);
+		final DataExchangeResult result = getResultFromResponse(resp);
 		assertThat(result.getAppStatusCode()).isEqualTo(INSUFFICIENT_DATA.getAppStatusCode());
 	}
 
@@ -124,22 +138,38 @@ public class DataExchangeIntegrationTests
 		final Response resp = performUploadStep(client, FILE_NON_TEXT, MEDIA_TYPE_CSV);
 		assertThat(resp.getStatus()).isEqualTo(BAD_REQUEST.getStatusCode());
 
-		final UploadFileResult result = getResultFromResponse(resp);
+		final DataExchangeResult result = getResultFromResponse(resp);
 		assertThat(result.getAppStatusCode()).isEqualTo(INVALID_FILE_CONTENTS.getAppStatusCode());
 	}
 
 	// UPLOAD STEP END
 
 	// VALIDATE STEP START
+
+	// TODO may/may not implement
+	//	@Test
+	//	public void testInvalidUploadInteface()
+
+	@Test
+	public void testInvalidValidateInteface()
+	{
+		final Client client = createValidateStepClient("test invalid Validate Inteface ");
+
+		final Response resp = performValidateStep(client);
+		assertThat(resp.getStatus()).isEqualTo(UNPROCESSABLE_ENTITY.getCode());
+
+		// TODO Should check more specific error message? 
+	}
+
 	@Test
 	public void testFileKeyMismatch()
 	{
 		final Client client = createValidateStepClient("test invalid File Key");
 
-		final Response resp = performValidateStep(client, generateUniqueFileKey(), "invalid_return_type");
+		final Response resp = performValidateStep(client, generateUniqueFileKey(), "any_ea_id", "any_site_name", "invalid_return_type");
 		assertThat(resp.getStatus()).isEqualTo(BAD_REQUEST.getStatusCode());
 
-		final UploadFileResult result = getResultFromResponse(resp);
+		final DataExchangeResult result = getResultFromResponse(resp);
 		assertThat(result.getAppStatusCode()).isEqualTo(FILE_KEY_MISMATCH.getAppStatusCode());
 	}
 
@@ -151,16 +181,16 @@ public class DataExchangeIntegrationTests
 		Response resp = performUploadStep(client, FILE_CSV_SUCCESS, MEDIA_TYPE_CSV);
 		assertThat(resp.getStatus()).isEqualTo(OK.getStatusCode());
 
-		UploadFileResult result = resp.readEntity(UploadFileResult.class);
+		DataExchangeResult result = getResultFromResponse(resp);
 		assertThat(result.getAppStatusCode()).isEqualTo(APP_STATUS_SUCCESS);
 
 		client = createValidateStepClient("test Missing Schema File 2/2");
 
-		resp = performValidateStep(client, result.getFileKey(), "invalid_return_type");
+		resp = performValidateStep(client, result.getFileKey(), result.getEaId(), result.getSiteName(), "invalid_return_type");
 		assertThat(resp.getStatus()).isEqualTo(INTERNAL_SERVER_ERROR.getStatusCode());
 
-		final UploadFileResult result2 = getResultFromResponse(resp);
-		assertThat(result2.getAppStatusCode()).isEqualTo(FILE_UNLOCATABLE.getCode());
+		result = getResultFromResponse(resp);
+		assertThat(result.getAppStatusCode()).isEqualTo(FILE_UNLOCATABLE.getCode());
 	}
 
 	@Test
@@ -171,12 +201,12 @@ public class DataExchangeIntegrationTests
 		Response resp = performUploadStep(client, FILE_CSV_FAILURES, MEDIA_TYPE_CSV);
 		assertThat(resp.getStatus()).isEqualTo(OK.getStatusCode());
 
-		UploadFileResult result = resp.readEntity(UploadFileResult.class);
+		DataExchangeResult result = getResultFromResponse(resp);
 		assertThat(result.getAppStatusCode()).isEqualTo(APP_STATUS_SUCCESS);
 
-		client = createValidateStepClient("test Missing Schema File 2/2");
+		client = createValidateStepClient("test Validation Error(s) generated 2/2");
 
-		resp = performValidateStep(client, result.getFileKey(), result.getReturnType());
+		resp = performValidateStep(client, result.getFileKey(), result.getEaId(), result.getSiteName(), result.getReturnType());
 		assertThat(resp.getStatus()).isEqualTo(OK.getStatusCode());
 
 		result = getResultFromResponse(resp);
@@ -187,7 +217,7 @@ public class DataExchangeIntegrationTests
 	// VALIDATE STEP END
 
 	// COMPLETE STEP START
-	
+
 	@Test
 	// TODO fails if smtp server available
 	public void testUserNotificationFailure()
@@ -197,15 +227,15 @@ public class DataExchangeIntegrationTests
 		Response resp = performUploadStep(client, FILE_CSV_SUCCESS, MEDIA_TYPE_CSV);
 		assertThat(resp.getStatus()).isEqualTo(OK.getStatusCode());
 
-		UploadFileResult result = resp.readEntity(UploadFileResult.class);
+		DataExchangeResult result = getResultFromResponse(resp);
 		assertThat(result.getAppStatusCode()).isEqualTo(APP_STATUS_SUCCESS);
 
 		client = createValidateStepClient("test Validation Error generation 2/3");
 
-		resp = performValidateStep(client, result.getFileKey(), result.getReturnType());
+		resp = performValidateStep(client, result.getFileKey(), result.getEaId(), result.getSiteName(), result.getReturnType());
 		assertThat(resp.getStatus()).isEqualTo(OK.getStatusCode());
 
-		result = resp.readEntity(UploadFileResult.class);
+		result = getResultFromResponse(resp);
 		assertThat(result.getAppStatusCode()).isEqualTo(APP_STATUS_SUCCESS);
 
 		client = createCompleteStepClient("test Validation Error generation 3/3");
@@ -213,12 +243,23 @@ public class DataExchangeIntegrationTests
 		resp = performCompleteStep(client, result.getFileKey());
 		assertThat(resp.getStatus()).isEqualTo(INTERNAL_SERVER_ERROR.getStatusCode());
 
-		result = resp.readEntity(UploadFileResult.class);
+		result = getResultFromResponse(resp);
 		assertThat(result.getAppStatusCode()).isEqualTo(NOTIFICATION.getCode());
 	}
 
 	// COMPLETE STEP START
 
+	// TODO may/may not implement
+	//	@Test
+	//	public void testInvalidCompleteInteface()
+	//	{
+	//	}
+
+	/**
+	 * Create's a Jersey Client object ready for POST request used in Upload step
+	 * @param testName
+	 * @return
+	 */
 	private Client createUploadStepClient(String testName)
 	{
 		final JerseyClientConfiguration configuration = new JerseyClientConfiguration();
@@ -230,6 +271,13 @@ public class DataExchangeIntegrationTests
 		return client;
 	}
 
+	/**
+	 * Make POST request for Upload step
+	 * @param client
+	 * @param testFileName
+	 * @param mediaType
+	 * @return
+	 */
 	private Response performUploadStep(Client client, String testFileName, MediaType mediaType)
 	{
 		final FormDataMultiPart form = new FormDataMultiPart();
@@ -245,6 +293,11 @@ public class DataExchangeIntegrationTests
 		return resp;
 	}
 
+	/**
+	 * Create's a Jersey Client object ready for GET request used in Validate step
+	 * @param testName
+	 * @return
+	 */
 	private Client createValidateStepClient(String testName)
 	{
 		final Client client = new JerseyClientBuilder(RULE.getEnvironment()).build(testName);
@@ -254,14 +307,35 @@ public class DataExchangeIntegrationTests
 		return client;
 	}
 
-	private Response performValidateStep(Client client, String fileKey, String returnType)
+	/**
+	 * Make Get request for Validate step
+	 * @param client
+	 * @param args
+	 * @return
+	 */
+	private Response performValidateStep(Client client, String... args)
 	{
 		final String uri = String.format(URI, RULE.getLocalPort(), STEP_VALIDATE);
-		final Response resp = client.target(uri).queryParam("fileKey", fileKey).queryParam("returnType", returnType).request().get(Response.class);
+		final String[] paramNames =
+		{ "fileKey", "eaId", "siteName", "returnType" };
+		WebTarget wt = client.target(uri);
+		int i = 0;
+
+		for (String arg : args)
+		{
+			wt = wt.queryParam(paramNames[i++], arg);
+		}
+
+		final Response resp = wt.request().get(Response.class);
 
 		return resp;
 	}
 
+	/**
+	 * Create's a Jersey Client object ready for POST request used in Complete step
+	 * @param testName
+	 * @return
+	 */
 	private Client createCompleteStepClient(String testName)
 	{
 		final JerseyClientConfiguration configuration = new JerseyClientConfiguration();
@@ -272,6 +346,12 @@ public class DataExchangeIntegrationTests
 		return client;
 	}
 
+	/**
+	 * Make POST request for Complete step
+	 * @param client
+	 * @param fileKey
+	 * @return
+	 */
 	private Response performCompleteStep(Client client, String fileKey)
 	{
 		final FormDataMultiPart form = new FormDataMultiPart();
@@ -286,10 +366,15 @@ public class DataExchangeIntegrationTests
 		return resp;
 	}
 
-	private UploadFileResult getResultFromResponse(Response resp)
+	/**
+	 * Extract JSON data from Response
+	 * @param resp
+	 * @return
+	 */
+	private DataExchangeResult getResultFromResponse(Response resp)
 	{
 		final Gson gson = new Gson();
 
-		return gson.fromJson(resp.readEntity(String.class), UploadFileResult.class);
+		return gson.fromJson(resp.readEntity(String.class), DataExchangeResult.class);
 	}
 }
