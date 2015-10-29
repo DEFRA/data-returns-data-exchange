@@ -3,6 +3,13 @@ package uk.gov.ea.datareturns.domain;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
+// TODO trim all Strings coming in
+/**
+ * Simple POJO to contain values passed in/out of service
+ * Srrings will never be null
+ */
 public class DataExchangeResult
 {
 	private int appStatusCode;
@@ -12,26 +19,35 @@ public class DataExchangeResult
 	private String siteName;
 	private String returnType;
 	private String message;
+	private String userEmail;
 	private List<DataExchangeError> errors;
 
 	public DataExchangeResult()
 	{
-		this.fileKey = "";
 		this.fileName = "";
+		this.fileKey = "";
+		this.eaId = "";
 		this.siteName = "";
 		this.returnType = "";
 		this.message = "";
+		this.userEmail = "";
 		this.errors = new ArrayList<DataExchangeError>();
+	}
+
+	public DataExchangeResult(String fileKey, String userEmail)
+	{
+		this();
+		this.fileKey = fileKey;
+		this.userEmail = userEmail;
 	}
 
 	public DataExchangeResult(String key, String eaId, String siteName, String returnType)
 	{
+		this();
 		this.fileKey = key;
 		this.eaId = eaId;
 		this.siteName = siteName;
 		this.returnType = returnType;
-		this.message = "";
-		this.errors = new ArrayList<DataExchangeError>();
 	}
 
 	public int getAppStatusCode()
@@ -104,6 +120,16 @@ public class DataExchangeResult
 		this.message = message;
 	}
 
+	public String getUserEmail()
+	{
+		return userEmail;
+	}
+
+	public void setUserEmail(String userEmail)
+	{
+		this.userEmail = userEmail;
+	}
+
 	public List<DataExchangeError> getErrors()
 	{
 		return errors;
@@ -121,5 +147,11 @@ public class DataExchangeResult
 		this.errors.add(err);
 
 		return err;
+	}
+	
+	@JsonIgnore
+	public boolean isSendUserEmail()
+	{
+		return !"".equals(userEmail.trim());
 	}
 }

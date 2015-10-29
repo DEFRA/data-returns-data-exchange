@@ -19,6 +19,7 @@ import java.util.List;
 import java.util.Map;
 
 import javax.ws.rs.Consumes;
+import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
@@ -34,6 +35,7 @@ import org.apache.commons.mail.HtmlEmail;
 import org.apache.commons.mail.MultiPartEmail;
 import org.glassfish.jersey.media.multipart.FormDataContentDisposition;
 import org.glassfish.jersey.media.multipart.FormDataParam;
+import org.hibernate.validator.constraints.NotEmpty;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -56,7 +58,7 @@ import uk.gov.nationalarchives.csv.validator.api.java.Substitution;
 
 import com.codahale.metrics.annotation.Timed;
 
-@Path("/data-exchange")
+@Path("/data-exchange/")
 public class DataExchangeResource
 {
 	private DataExchangeConfiguration config;
@@ -123,17 +125,18 @@ public class DataExchangeResource
 		return Response.ok(result).build();
 	}
 
+	// TODO validate entity would be better
 	@GET
 	@Path("/validate")
+	@Consumes(MediaType.APPLICATION_FORM_URLENCODED)
 	@Produces(MediaType.APPLICATION_JSON)
 	@Timed
-	// TODO serialize to DataExchangeResult here?
-	public Response validateFileUpload(@QueryParam("fileKey") String fileKey, @QueryParam("eaId") String eaId,
-			@QueryParam("siteName") String siteName, @QueryParam("returnType") String returnType)
+	public Response validateFileUpload(@NotEmpty @QueryParam("fileKey") String fileKey, @NotEmpty @QueryParam("eaId") String eaId,
+			@NotEmpty @QueryParam("siteName") String siteName, @NotEmpty @QueryParam("returnType") String returnType)
 	{
 		DataExchangeResult result = new DataExchangeResult(fileKey, eaId, siteName, returnType);
 
-		String fileLocation = retrieveFileLocationByKey(fileKey);
+		String fileLocation = retrieveFileLocationByKey(result.getFileKey());
 		LOGGER.debug("fileLocation = " + fileLocation);
 
 		result.setFileName(FilenameUtils.getName(fileLocation));
@@ -145,20 +148,22 @@ public class DataExchangeResource
 		return Response.ok(result).build();
 	}
 
+	// TODO validate entity would be better
 	@POST
 	@Path("/complete")
+	@Consumes(MediaType.MULTIPART_FORM_DATA)
 	@Produces(MediaType.APPLICATION_JSON)
 	@Timed
-	// TODO serialize to DataExchangeResult here?
-	public Response completeFileUpload(@FormDataParam("fileKey") String fileKey, @FormDataParam("emailcc") String userEmail)
+	public Response completeFileUpload(@NotEmpty @FormDataParam("fileKey") String fileKey,
+			@DefaultValue("") @FormDataParam("userEmail") String userEmail)
 	{
-		DataExchangeResult result = new DataExchangeResult();
+		DataExchangeResult result = new DataExchangeResult(fileKey, userEmail);
 
-		String fileLocation = retrieveFileLocationByKey(fileKey);
+		String fileLocation = retrieveFileLocationByKey(result.getFileKey());
 
-		if (userEmail!= null & !userEmail.trim().isEmpty())
+		if (result.isSendUserEmail())
 		{
-			sendNotificationToUser(fileLocation, userEmail);
+			sendNotificationToUser(fileLocation, result.getUserEmail());
 		}
 
 		sendNotificationToMonitorPro(fileLocation);
@@ -207,6 +212,11 @@ public class DataExchangeResource
 		return result;
 	}
 
+	/**
+	 * Retrieves the stored file location from the supplied file key
+	 * @param fileKey
+	 * @return
+	 */
 	private String retrieveFileLocationByKey(String fileKey)
 	{
 		String fileLocation = fileKeys.get(fileKey);
@@ -219,6 +229,12 @@ public class DataExchangeResource
 		return fileLocation;
 	}
 
+	/**
+	 * Extracts EA Identifier field(s) from stored data file
+	 * Just for now, these are 1st 3 field values on row 2
+	 * @param fileLocation
+	 * @return
+	 */
 	private String[] extractEAIdentifiers(String fileLocation)
 	{
 		File file = new File(fileLocation);
@@ -266,6 +282,12 @@ public class DataExchangeResource
 		return fields;
 	}
 
+	// TODO refactor with sendNotificationToMonitorPro()
+	/**
+	 * Sends and Email to the supplied email address with uploaded file (un-modified) as an attachment
+	 * @param attachmentLocation
+	 * @param userEmail
+	 */
 	private void sendNotificationToUser(String attachmentLocation, String userEmail)
 	{
 		EmailSettings settings = this.config.getEmailsettings();
@@ -304,6 +326,11 @@ public class DataExchangeResource
 		}
 	}
 
+	// TODO refactor with sendNotificationToUser()
+	/**
+	 * Sends and Email to MonitorPro (also know as EMMA) with uploaded file (un-modified) as an attachment
+	 * @param attachmentLocation
+	 */
 	private void sendNotificationToMonitorPro(String attachmentLocation)
 	{
 		EmailSettings settings = this.config.getEmailsettings();
@@ -352,6 +379,11 @@ public class DataExchangeResource
 	}
 
 	// save uploaded file to new location
+	/**
+	 * Persist file stream to file location provided
+	 * @param uploadedInputStream
+	 * @param filePath
+	 */
 	private void writeToFile(InputStream uploadedInputStream, String filePath)
 	{
 		String fileName = FilenameUtils.getName(filePath);
@@ -379,6 +411,10 @@ public class DataExchangeResource
 		}
 	}
 
+	/**
+	 * Some pre-content file validation checks before handing over to CSV validation libary
+	 * @param filePath
+	 */
 	private void uploadStepValidation(String filePath)
 	{
 		String fileName = FilenameUtils.getName(filePath);
@@ -404,6 +440,12 @@ public class DataExchangeResource
 		}
 	}
 
+	/**
+	 * Verifys file contains (or not) minimum rows expected (currently 2) 
+	 * @param filePath
+	 * @param i
+	 * @return
+	 */
 	private boolean fileContainsMinRows(String filePath, int i)
 	{
 		File file = new File(filePath);
@@ -447,5 +489,4 @@ public class DataExchangeResource
 
 		return minRowsFound;
 	}
-
 }
