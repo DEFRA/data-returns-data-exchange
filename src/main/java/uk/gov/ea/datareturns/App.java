@@ -13,6 +13,7 @@ import org.eclipse.jetty.servlets.CrossOriginFilter;
 import org.glassfish.jersey.media.multipart.MultiPartFeature;
 
 import uk.gov.ea.datareturns.config.DataExchangeConfiguration;
+import uk.gov.ea.datareturns.database.PermitDatabase;
 import uk.gov.ea.datareturns.health.DataReturnsHealthCheck;
 import uk.gov.ea.datareturns.resource.DataExchangeResource;
 
@@ -33,12 +34,15 @@ public class App extends Application<DataExchangeConfiguration>
 	@Override
 	public void run(DataExchangeConfiguration config, Environment environment)
 	{
+		// TODO probably a better way of doing this?
+		PermitDatabase.setConfig(config.getPermitDatabaseConfig());
+
+		environment.healthChecks().register("Permit Database", new DataReturnsHealthCheck(PermitDatabase.getInstance()));
+		
 		configureCors(environment);
 		
 		environment.jersey().register(new DataExchangeResource(config));
 		environment.jersey().register(new MultiPartFeature());
-		
-		environment.healthChecks().register("template", new DataReturnsHealthCheck());
 	}
 
 	// TODO sort this our for release

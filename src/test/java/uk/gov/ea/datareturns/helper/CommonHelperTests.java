@@ -12,6 +12,13 @@ public class CommonHelperTests
 	final private String TEST_FILE = "test_file.csv";
 
 	@Test
+	public void testObjectCreation()
+	{
+		@SuppressWarnings("unused")
+		CommonHelper helper = new CommonHelper();
+	}
+
+	@Test
 	public void testMakeFullFilePath()
 	{
 		final String EXPECTED = "/this/is/a/test/folder/test_file.csv";
@@ -21,10 +28,23 @@ public class CommonHelperTests
 	}
 
 	/**
+	 * Must return null
+	 */
+	@Test
+	public void testExtractFileTypeFailure()
+	{
+		@SuppressWarnings("unused")
+		final String EXPECTED_FILE_TYPE = "csv";
+
+		String result = getFileType(makeFullPath("", ""));
+		assertThat(result).isEqualTo(null);
+	}
+
+	/**
 	 * Must always return lower case file extension
 	 */
 	@Test
-	public void testExtractFileType()
+	public void testExtractFileTypeSuccess()
 	{
 		final String EXPECTED_FILE_TYPE = "csv";
 

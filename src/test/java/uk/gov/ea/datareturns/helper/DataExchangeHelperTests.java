@@ -9,6 +9,14 @@ import org.junit.Test;
 public class DataExchangeHelperTests
 {
 	@Test
+	public void testObjectCreation()
+	{
+		@SuppressWarnings("unused")
+		DataExchangeHelper helper = new DataExchangeHelper();
+	}
+
+	
+	@Test
 	public void testMakeSchemaName()
 	{
 		final String EXPECTED = "landfill_gas_monitoring.csvs";

@@ -11,16 +11,6 @@ public final class ExceptionMessageContainer
 		this.message = message;
 	}
 
-	public ExceptionMessageContainer(int appStatusCode)
-	{
-		this.appStatusCode = appStatusCode;
-	}
-
-	public ExceptionMessageContainer(String message)
-	{
-		this.message = message;
-	}
-
 	public int getAppStatusCode()
 	{
 		return appStatusCode;

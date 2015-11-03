@@ -2,6 +2,7 @@ logging:
   level: ERROR
   loggers:
     uk.gov.ea.datareturns: DEBUG
+    com.healthmarketscience: DEBUG
     io.dropwizard: INFO
     org.eclipse: ERROR
   appenders:
@@ -20,6 +21,9 @@ server:
   adminConnectors:
     - type: http
       port: 9021
+misc:
+  fileUploadLocation: ./uploaded
+  schemaFileLocation: ./schemas
 email:
   host: 127.0.0.1
   port: 1025
@@ -27,3 +31,8 @@ email:
   emailFrom: data_returns@environment-agency.gov.uk
   tls: false
   bodyMessage: Data Returns Import file received
+permitDatabase:
+  location: ./database
+  name: FAR Information Tool_0810515_sitelistAug15_compliance2014_EPR_trimmed_renamed.mdb
+  permitTableName: OrigPerm
+  permitColumnName: Permit_Number

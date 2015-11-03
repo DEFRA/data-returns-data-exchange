@@ -29,6 +29,8 @@ public class CommonHelper
 		{
 			fileType = filePath.substring(i + 1).toLowerCase();
 		}
+		
+		// TODO maybe throw an exception if null?
 
 		return fileType;
 	}

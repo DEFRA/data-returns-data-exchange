@@ -44,30 +44,33 @@ import uk.gov.ea.datareturns.domain.DataExchangeResult;
 import com.google.gson.Gson;
 
 /**
- * Integration test class for the DataExchangeResource REST service 
- * Uses DropwizardAppRule so real HTTP requests are fired at the interface (using a grizzly server)
+ * Integration test class for the DataExchangeResource REST service.
+ * Uses DropwizardAppRule so real HTTP requests are fired at the interface (using grizzly server).
  * 
  * The tests are aimed mainly at verifying exceptions thrown from this service which are split in to -
- *     System - returns a standard HTML error code
- *     Application - returns a standard HTML error code + an application specific status code to help identify what went wrong
+ *     System - returns a standard HTML error code.
+ *     Application - returns a standard HTML error code + an application specific status code to help identify what went wrong.
  * 
  * TODO may/may not implement testInvalidUploadInteface() & testInvalidCompleteInteface() tests as should be tested with e2e tests
  * TODO not every single exception is tested - not sure if they ever will as e2e test should provide full coverage
- *
+ * TODO could refactor/reduce tests as many tests retest same code BUT too much is better so not a priority
  */
-public class DataExchangeIntegrationTests
+public class ResourceIntegrationTests
 {
 	public final static MediaType MEDIA_TYPE_CSV = new MediaType("text", "csv");
 
 	public final static String TEST_FILES_PATH = "/testfiles";
 
 	public final static String FILE_CSV_SUCCESS = "success.csv";
+	public final static String FILE_PERMIT_NOT_FOUND = "permit-not-found.csv";
 	public final static String FILE_CSV_FAILURES = "failures.csv";
 	public final static String FILE_CSV_EMPTY = "empty.csv";
 	public final static String FILE_CSV_INSUFFICIENT_DATA = "header-row-only.csv";
 	public final static String FILE_NON_CSV = "invalid-type.txt";
 	public final static String FILE_NON_TEXT = "binary.csv";
 
+	public final static String FILE_CONFIG = "configuration_test.yml";
+	
 	public final static String URI = "http://localhost:%d/data-exchange/%s";
 
 	public final static String STEP_UPLOAD = "upload";
@@ -76,7 +79,7 @@ public class DataExchangeIntegrationTests
 
 	@Rule
 	public final DropwizardAppRule<DataExchangeConfiguration> RULE = new DropwizardAppRule<>(App.class,
-			ResourceHelpers.resourceFilePath("configuration_test.yml"));
+			ResourceHelpers.resourceFilePath(FILE_CONFIG));
 
 	// UPLOAD STEP START
 	@Test
@@ -191,6 +194,43 @@ public class DataExchangeIntegrationTests
 
 		result = getResultFromResponse(resp);
 		assertThat(result.getAppStatusCode()).isEqualTo(FILE_UNLOCATABLE.getCode());
+	}
+
+	@Test
+	public void testPermitNumberFound()
+	{
+		Client client = createUploadStepClient("test Permit No Found 1/2");
+
+		Response resp = performUploadStep(client, FILE_CSV_SUCCESS, MEDIA_TYPE_CSV);
+		assertThat(resp.getStatus()).isEqualTo(OK.getStatusCode());
+
+		DataExchangeResult result = getResultFromResponse(resp);
+		assertThat(result.getAppStatusCode()).isEqualTo(APP_STATUS_SUCCESS);
+
+		client = createValidateStepClient("test Permit No Found 2/2");
+
+		resp = performValidateStep(client, result.getFileKey(), result.getEaId(), result.getSiteName(), result.getReturnType());
+		assertThat(resp.getStatus()).isEqualTo(OK.getStatusCode());
+
+		result = getResultFromResponse(resp);
+		assertThat(result.getAppStatusCode()).isEqualTo(APP_STATUS_SUCCESS);
+	}
+
+	@Test
+	public void testPermitNumberNotFound()
+	{
+		Client client = createUploadStepClient("test Permit No Not Found 1/2");
+
+		Response resp = performUploadStep(client, FILE_PERMIT_NOT_FOUND, MEDIA_TYPE_CSV);
+		assertThat(resp.getStatus()).isEqualTo(OK.getStatusCode());
+
+		DataExchangeResult result = getResultFromResponse(resp);
+		assertThat(result.getAppStatusCode()).isEqualTo(APP_STATUS_SUCCESS);
+
+		client = createValidateStepClient("test Permit No Not Found 2/2");
+
+		resp = performValidateStep(client, result.getFileKey(), result.getEaId(), result.getSiteName(), result.getReturnType());
+		assertThat(resp.getStatus()).isEqualTo(BAD_REQUEST.getStatusCode());
 	}
 
 	@Test
