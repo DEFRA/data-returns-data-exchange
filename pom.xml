@@ -13,6 +13,7 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<java.version>1.8</java.version>
 		<dropwizard.version>0.8.4</dropwizard.version>
+		<dropwizard.metrics.version>3.1.2</dropwizard.metrics.version>
 		<jersey.bean.validation>2.22.1</jersey.bean.validation>
 		<junit.version>4.12</junit.version>
 		<maven.compiler.version>3.2</maven.compiler.version>
@@ -69,7 +70,7 @@
 		<dependency>
 			<groupId>io.dropwizard.metrics</groupId>
 			<artifactId>metrics-core</artifactId>
-			<version>3.1.2</version>
+			<version>${dropwizard.metrics.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.glassfish.jersey.ext</groupId>
