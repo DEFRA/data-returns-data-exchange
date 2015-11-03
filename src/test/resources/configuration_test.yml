@@ -25,4 +25,4 @@ permitDatabase:
   location: ./src/test/resources/database
   name: permit_test_database.mdb
   permitTableName: OrigPerm
-  permitColumnName: Permit_Number
+  permitColumnName: Original Permit Number

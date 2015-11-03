@@ -33,6 +33,6 @@ email:
   bodyMessage: Data Returns Import file received
 permitDatabase:
   location: ./database
-  name: FAR Information Tool_0810515_sitelistAug15_compliance2014_EPR_trimmed_renamed.mdb
+  name: FAR Information Tool_0810515_sitelistAug15_compliance2014_EPR_trimmed.mdb
   permitTableName: OrigPerm
-  permitColumnName: Permit_Number
+  permitColumnName: Original Permit Number
