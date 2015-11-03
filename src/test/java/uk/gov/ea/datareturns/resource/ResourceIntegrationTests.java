@@ -21,6 +21,7 @@ import io.dropwizard.client.JerseyClientConfiguration;
 import io.dropwizard.testing.ResourceHelpers;
 import io.dropwizard.testing.junit.DropwizardAppRule;
 
+import java.io.File;
 import java.io.InputStream;
 
 import javax.ws.rs.client.Client;
@@ -29,13 +30,17 @@ import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+import org.apache.commons.io.FileUtils;
 import org.glassfish.jersey.client.ClientProperties;
 import org.glassfish.jersey.media.multipart.FormDataBodyPart;
 import org.glassfish.jersey.media.multipart.FormDataMultiPart;
 import org.glassfish.jersey.media.multipart.MultiPartFeature;
 import org.glassfish.jersey.media.multipart.file.StreamDataBodyPart;
+import org.junit.BeforeClass;
+import org.junit.FixMethodOrder;
 import org.junit.Rule;
 import org.junit.Test;
+import org.junit.runners.MethodSorters;
 
 import uk.gov.ea.datareturns.App;
 import uk.gov.ea.datareturns.config.DataExchangeConfiguration;
@@ -55,11 +60,13 @@ import com.google.gson.Gson;
  * TODO not every single exception is tested - not sure if they ever will as e2e test should provide full coverage
  * TODO could refactor/reduce tests as many tests retest same code BUT too much is better so not a priority
  */
+@FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class ResourceIntegrationTests
 {
 	public final static MediaType MEDIA_TYPE_CSV = new MediaType("text", "csv");
 
 	public final static String TEST_FILES_PATH = "/testfiles";
+	public final static String UPLOADED_PATH = "./uploaded";
 
 	public final static String FILE_CSV_SUCCESS = "success.csv";
 	public final static String FILE_PERMIT_NOT_FOUND = "permit-not-found.csv";
@@ -70,7 +77,7 @@ public class ResourceIntegrationTests
 	public final static String FILE_NON_TEXT = "binary.csv";
 
 	public final static String FILE_CONFIG = "configuration_test.yml";
-	
+
 	public final static String URI = "http://localhost:%d/data-exchange/%s";
 
 	public final static String STEP_UPLOAD = "upload";
@@ -78,8 +85,20 @@ public class ResourceIntegrationTests
 	public final static String STEP_COMPLETE = "complete";
 
 	@Rule
-	public final DropwizardAppRule<DataExchangeConfiguration> RULE = new DropwizardAppRule<>(App.class,
-			ResourceHelpers.resourceFilePath(FILE_CONFIG));
+	public final DropwizardAppRule<DataExchangeConfiguration> RULE = new DropwizardAppRule<>(App.class, ResourceHelpers.resourceFilePath(FILE_CONFIG));
+
+	@BeforeClass
+	public static void setUp()
+	{
+		// Safely delete ONLY known files before tests 
+		FileUtils.deleteQuietly(new File(makeFullPath(UPLOADED_PATH, FILE_CSV_SUCCESS)));
+		FileUtils.deleteQuietly(new File(makeFullPath(UPLOADED_PATH, FILE_PERMIT_NOT_FOUND)));
+		FileUtils.deleteQuietly(new File(makeFullPath(UPLOADED_PATH, FILE_CSV_FAILURES)));
+		FileUtils.deleteQuietly(new File(makeFullPath(UPLOADED_PATH, FILE_CSV_EMPTY)));
+		FileUtils.deleteQuietly(new File(makeFullPath(UPLOADED_PATH, FILE_CSV_INSUFFICIENT_DATA)));
+		FileUtils.deleteQuietly(new File(makeFullPath(UPLOADED_PATH, FILE_NON_CSV)));
+		FileUtils.deleteQuietly(new File(makeFullPath(UPLOADED_PATH, FILE_NON_TEXT)));
+	}
 
 	// UPLOAD STEP START
 	@Test
