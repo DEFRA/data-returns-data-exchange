@@ -280,10 +280,10 @@ public class DataExchangeResource
 
 		} catch (FileNotFoundException e)
 		{
-			throw new FileUnlocatableException("Cannot locate file '" + fileName + "'");
+			throw new FileUnlocatableException(e, "Cannot locate file '" + fileName + "'");
 		} catch (IOException e)
 		{
-			throw new FileReadException("Unable to read from file '" + fileName + "'");
+			throw new FileReadException(e, "Unable to read from file '" + fileName + "'");
 		}
 
 		// Non-text file
@@ -333,10 +333,10 @@ public class DataExchangeResource
 			email.send();
 		} catch (EmailException e1)
 		{
-			throw new NotificationException("Failed to send email to '" + userEmail + "'");
+			throw new NotificationException(e1, "Failed to send email to '" + userEmail + "'");
 		} catch (Exception e2)
 		{
-			throw new NotificationException("Failed to send email to '" + userEmail + "'");
+			throw new NotificationException(e2, "Failed to send email to '" + userEmail + "'");
 		}
 	}
 
@@ -385,10 +385,10 @@ public class DataExchangeResource
 			email.send();
 		} catch (EmailException e1)
 		{
-			throw new NotificationException("Failed to send email to MonitorPro");
+			throw new NotificationException(e1, "Failed to send email to MonitorPro");
 		} catch (Exception e2)
 		{
-			throw new NotificationException("Failed to send email to MonitorPro");
+			throw new NotificationException(e2, "Failed to send email to MonitorPro");
 		}
 	}
 

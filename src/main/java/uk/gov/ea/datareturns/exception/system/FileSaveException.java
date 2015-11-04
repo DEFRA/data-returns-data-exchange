@@ -13,9 +13,9 @@ public class FileSaveException extends WebApplicationException
 {
 	private static final long serialVersionUID = 1L;
 
-	public FileSaveException(String message)
+	public FileSaveException(Throwable cause, String message)
 	{
-		super(Response.status(INTERNAL_SERVER_ERROR)
+		super(cause, Response.status(INTERNAL_SERVER_ERROR)
 				.entity(new ExceptionMessageContainer(FILE_SAVE.getCode(), message))
 				.type(MediaType.APPLICATION_JSON)
 				.build());

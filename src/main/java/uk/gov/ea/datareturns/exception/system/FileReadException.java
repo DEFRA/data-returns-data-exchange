@@ -13,9 +13,9 @@ public class FileReadException extends WebApplicationException
 {
 	private static final long serialVersionUID = 1L;
 
-	public FileReadException(String message)
+	public FileReadException(Throwable cause, String message)
 	{
-		super(Response.status(INTERNAL_SERVER_ERROR)
+		super(cause, Response.status(INTERNAL_SERVER_ERROR)
 				.entity(new ExceptionMessageContainer(FILE_READ.getCode(), message))
 				.type(MediaType.APPLICATION_JSON)
 				.build());

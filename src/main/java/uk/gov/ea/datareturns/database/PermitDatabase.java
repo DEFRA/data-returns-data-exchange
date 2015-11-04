@@ -50,7 +50,7 @@ public class PermitDatabase
 				db = DatabaseBuilder.open(new File(fileLocation));
 			} catch (IOException e)
 			{
-				throw new FileUnlocatableException("Unable to locate Permit database  '" + fileLocation + "'");
+				throw new FileUnlocatableException(e, "Unable to locate Permit database  '" + fileLocation + "'");
 			}
 
 		}

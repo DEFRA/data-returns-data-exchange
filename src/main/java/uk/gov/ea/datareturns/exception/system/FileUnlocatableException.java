@@ -20,4 +20,12 @@ public class FileUnlocatableException extends WebApplicationException
 				.type(APPLICATION_JSON)
 				.build());
 	}
+
+	public FileUnlocatableException(Throwable cause, String message)
+	{
+		super(cause, Response.status(INTERNAL_SERVER_ERROR)
+				.entity(new ExceptionMessageContainer(FILE_UNLOCATABLE.getCode(), message))
+				.type(APPLICATION_JSON)
+				.build());
+	}
 }
