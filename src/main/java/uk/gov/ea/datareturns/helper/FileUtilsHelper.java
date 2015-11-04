@@ -1,13 +1,14 @@
 package uk.gov.ea.datareturns.helper;
 
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
+import java.io.InputStreamReader;
 
 import org.apache.commons.io.FilenameUtils;
 
@@ -15,7 +16,6 @@ import uk.gov.ea.datareturns.exception.system.FileReadException;
 import uk.gov.ea.datareturns.exception.system.FileSaveException;
 import uk.gov.ea.datareturns.exception.system.FileUnlocatableException;
 
-// TODO some of this should/could be farmed off to FileUtils
 public class FileUtilsHelper
 {
 	/**
@@ -23,34 +23,41 @@ public class FileUtilsHelper
 	 * @param uploadedInputStream
 	 * @param filePath
 	 */
-	public static void saveReturnsFile(InputStream uploadedInputStream, String filePath)
+	public static boolean saveReturnsFile(InputStream is, String fullFilePath)
 	{
-		String fileName = FilenameUtils.getName(filePath);
-		
-		int read;
-		final int BUFFER_LENGTH = 1024;
-		final byte[] buffer = new byte[BUFFER_LENGTH];
+		boolean ret = false;
+		String fileName = FilenameUtils.getName(fullFilePath);
+		File file = new File(fullFilePath);
 
 		try
 		{
-			OutputStream out = new FileOutputStream(new File(filePath));
-
-			while ((read = uploadedInputStream.read(buffer)) != -1)
+			BufferedReader br = new BufferedReader(new InputStreamReader(is));
+			BufferedWriter bw = new BufferedWriter(new FileWriter(file.getAbsoluteFile()));
+			String line;
+			
+			while ((line = br.readLine()) != null)
 			{
-				out.write(buffer, 0, read);
+				bw.write(line);
+				bw.newLine();
 			}
 
-			out.flush();
-			out.close();
+			bw.flush();
+			bw.close();
+			br.close();
+
+			ret = true;
 		} catch (FileNotFoundException e1)
 		{
-			throw new FileSaveException("Unable to save file to '" + fileName + "'");
+			throw new FileSaveException(e1, "Unable to save file to '" + fileName + "'");
 		} catch (IOException e2)
 		{
-			throw new FileReadException("Unable to read from file '" + fileName + "'");
+			throw new FileReadException(e2, "Unable to read from file '" + fileName + "'");
 		}
+
+		return ret;
 	}
-	
+
+	// TODO needs to be refactored to enable testing fully
 	/**
 	 * Verifys if file contains minimum rows expected (currently 2) 
 	 * @param filePath
@@ -61,17 +68,14 @@ public class FileUtilsHelper
 	{
 		File file = new File(filePath);
 		String fileName = FilenameUtils.getName(filePath);
-		FileReader fr;
 		int lineNo = 1;
 		boolean minRowsFound = false;
 
 		try
 		{
-			fr = new FileReader(file);
+			BufferedReader br = new BufferedReader(new FileReader(file));
+			String line;
 
-			BufferedReader br = new BufferedReader(fr);
-			String line = null;
-			
 			while ((line = br.readLine()) != null)
 			{
 				if (lineNo++ == 2)
@@ -83,14 +87,13 @@ public class FileUtilsHelper
 			}
 
 			br.close();
-			fr.close();
 
 		} catch (FileNotFoundException e1)
 		{
-			throw new FileUnlocatableException("Cannot locate file '" + fileName + "'");
+			throw new FileUnlocatableException(e1, "Cannot locate file '" + fileName + "'");
 		} catch (IOException e2)
 		{
-			throw new FileReadException("Unable to read from file '" + fileName + "'");
+			throw new FileReadException(e2, "Unable to read from file '" + fileName + "'");
 		}
 
 		return minRowsFound;
