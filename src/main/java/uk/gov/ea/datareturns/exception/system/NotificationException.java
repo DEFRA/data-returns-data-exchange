@@ -13,9 +13,9 @@ public class NotificationException extends WebApplicationException
 {
 	private static final long serialVersionUID = 1L;
 
-	public NotificationException(String message)
+	public NotificationException(Throwable cause, String message)
 	{
-		super(Response.status(INTERNAL_SERVER_ERROR)
+		super(cause, Response.status(INTERNAL_SERVER_ERROR)
 				.entity(new ExceptionMessageContainer(NOTIFICATION.getCode(), message))
 				.type(APPLICATION_JSON)
 				.build());
