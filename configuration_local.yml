@@ -6,21 +6,21 @@ logging:
     io.dropwizard: INFO
     org.eclipse: ERROR
   appenders:
-    - type: console
-    - type: file
-      currentLogFilename: log/datareturns.log
-      archivedLogFilenamePattern: log/datareturns-%d.log
-      threshold: ALL
-      archive: true
-      archivedFileCount: 5
-      timeZone: UTC
+  - type: console
+  - type: file
+    currentLogFilename: log/datareturns.log
+    archivedLogFilenamePattern: log/datareturns-%d.log
+    threshold: ALL
+    archive: true
+    archivedFileCount: 5
+    timeZone: UTC
 server:
   applicationConnectors:
-    - type: http
-      port: 9020
+  - type: http
+    port: 9020
   adminConnectors:
-    - type: http
-      port: 9021
+  - type: http
+    port: 9021
 misc:
   fileUploadLocation: ./uploaded
   schemaFileLocation: ./schemas
@@ -31,8 +31,10 @@ email:
   emailFrom: data_returns@environment-agency.gov.uk
   tls: false
   bodyMessage: Data Returns Import file received
-permitDatabase:
-  location: ./database
-  name: FAR Information Tool_0810515_sitelistAug15_compliance2014_EPR_trimmed.mdb
-  permitTableName: OrigPerm
-  permitColumnName: Original Permit Number
+database:
+  driverClass: com.p6spy.engine.spy.P6SpyDriver
+  url: jdbc:p6spy:postgresql://localhost:5432/data_returns
+  #url: jdbc:postgresql://localhost:5432/data_returns
+  #driverClass: org.postgresql.Driver
+  user: data_returns_owner
+  password: data_returns_owner

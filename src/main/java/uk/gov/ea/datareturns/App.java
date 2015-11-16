@@ -1,6 +1,8 @@
 package uk.gov.ea.datareturns;
 
 import io.dropwizard.Application;
+import io.dropwizard.jdbi.DBIFactory;
+import io.dropwizard.jdbi.bundles.DBIExceptionsBundle;
 import io.dropwizard.setup.Bootstrap;
 import io.dropwizard.setup.Environment;
 
@@ -11,10 +13,10 @@ import javax.servlet.FilterRegistration;
 
 import org.eclipse.jetty.servlets.CrossOriginFilter;
 import org.glassfish.jersey.media.multipart.MultiPartFeature;
+import org.skife.jdbi.v2.DBI;
 
 import uk.gov.ea.datareturns.config.DataExchangeConfiguration;
-import uk.gov.ea.datareturns.database.PermitDatabase;
-import uk.gov.ea.datareturns.health.DataReturnsHealthCheck;
+import uk.gov.ea.datareturns.dao.PermitDAO;
 import uk.gov.ea.datareturns.resource.DataExchangeResource;
 
 // TODO javadoc
@@ -29,19 +31,19 @@ public class App extends Application<DataExchangeConfiguration>
 	@Override
 	public void initialize(Bootstrap<DataExchangeConfiguration> bootstrap)
 	{
+		bootstrap.addBundle(new DBIExceptionsBundle());
 	}
 
 	@Override
 	public void run(DataExchangeConfiguration config, Environment environment)
 	{
-		// TODO probably a better way of doing this?
-		PermitDatabase.setConfig(config.getPermitDatabaseConfig());
-
-		environment.healthChecks().register("Permit Database", new DataReturnsHealthCheck(PermitDatabase.getInstance()));
-		
 		configureCors(environment);
-		
-		environment.jersey().register(new DataExchangeResource(config));
+
+		final DBIFactory factory = new DBIFactory();
+		final DBI jdbi = factory.build(environment, config.getDataSourceFactory(), "Data Returns Database");
+		final PermitDAO permitDAO = jdbi.onDemand(PermitDAO.class);
+
+		environment.jersey().register(new DataExchangeResource(config, permitDAO));
 		environment.jersey().register(new MultiPartFeature());
 	}
 

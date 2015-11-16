@@ -6,11 +6,11 @@ logging:
     org.glassfish: ERROR
     org.eclipse: ERROR
   appenders:
-    - type: console
+  - type: console
 server:
   applicationConnectors:
-    - type: http
-      port: 9090
+  - type: http
+    port: 9090
 misc:
   fileUploadLocation: ./uploaded
   schemaFileLocation: ./schemas
@@ -21,8 +21,8 @@ email:
   emailFrom: data_returns@environment-agency.gov.uk
   tls: false
   bodyMessage: Data Returns Import file received
-permitDatabase:
-  location: ./src/test/resources/database
-  name: permit_test_database.mdb
-  permitTableName: OrigPerm
-  permitColumnName: Original Permit Number
+database:
+  url: jdbc:postgresql://localhost:5432/data_returns
+  driverClass: org.postgresql.Driver
+  user: data_returns_owner
+  password: data_returns_owner

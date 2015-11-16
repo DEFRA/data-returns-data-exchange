@@ -5,21 +5,21 @@ logging:
     io.dropwizard: INFO
     org.eclipse: ERROR
   appenders:
-    - type: console
-    - type: file
-      currentLogFilename: log/datareturns.log
-      archivedLogFilenamePattern: log/datareturns-%d.log
-      threshold: ALL
-      archive: true
-      archivedFileCount: 5
-      timeZone: UTC
+  - type: console
+  - type: file
+    currentLogFilename: log/datareturns.log
+    archivedLogFilenamePattern: log/datareturns-%d.log
+    threshold: ALL
+    archive: true
+    archivedFileCount: 5
+    timeZone: UTC
 server:
   applicationConnectors:
-    - type: http
-      port: 9020
+  - type: http
+    port: 9020
   adminConnectors:
-    - type: http
-      port: 9021
+  - type: http
+    port: 9021
 misc:
   fileUploadLocation: ./uploaded
   schemaFileLocation: ./schemas
@@ -27,18 +27,13 @@ email:
   host: email-smtp.us-west-2.amazonaws.com
   port: 587
   tls: true
-#  emailTo: harry.common.uk@gmail.com
-#  emailFrom: harry.common.uk@gmail.com
-#  user: AKIAI7ZHYASLHRJWJYOQ
-#  password: Aivm8yLM4I31b+Iq5s2BZB3CeoIFAMpRFNE6s7MR1pcb
   emailTo: hkjtest@gmail.com
   emailFrom: hkjtest@gmail.com
   user: AKIAIXIKELZAJXERTANQ
   password: Aq0DdA7svkwx9ufu8oE1U/S5bNXExJ9RFmkQ/yZykrHc
   bodyMessage: Data Returns Import file received
-permitDatabase:
-  location: ./database
-  name: FAR Information Tool_0810515_sitelistAug15_compliance2014_EPR_trimmed.mdb
-  permitTableName: OrigPerm
-  permitColumnName: Original Permit Number
-  
+database:
+  url: jdbc:postgresql://localhost:5432/data_returns
+  driverClass: org.postgresql.Driver
+  user: data_returns_owner
+  password: data_returns_owner

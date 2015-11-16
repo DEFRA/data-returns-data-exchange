@@ -1,5 +1,4 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
 	<groupId>data-returns-data-exchange</groupId>
@@ -21,6 +20,10 @@
 		<maven.jar.plugin.version>2.6</maven.jar.plugin.version>
 		<onejar.version>1.4.4</onejar.version>
 		<csv.validator.version>1.0</csv.validator.version>
+		<liquibase.version>3.3.0</liquibase.version>
+		<liquibase.maven.plugin.version>3.0.5</liquibase.maven.plugin.version>
+		<postgresql.version>9.4-1205-jdbc42</postgresql.version>
+		<p6spy.version>2.1.4</p6spy.version>
 		<commons.email.version>1.4</commons.email.version>
 		<commons.io.version>2.4</commons.io.version>
 		<jackcess.version>2.1.2</jackcess.version>
@@ -72,6 +75,11 @@
 			<type>pom</type>
 		</dependency>
 		<dependency>
+			<groupId>io.dropwizard</groupId>
+			<artifactId>dropwizard-jdbi</artifactId>
+			<version>${dropwizard.version}</version>
+		</dependency>
+		<dependency>
 			<groupId>io.dropwizard.metrics</groupId>
 			<artifactId>metrics-core</artifactId>
 			<version>${dropwizard.metrics.version}</version>
@@ -85,6 +93,21 @@
 			<groupId>uk.gov.nationalarchives</groupId>
 			<artifactId>csv-validator-java-api</artifactId>
 			<version>${csv.validator.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.liquibase</groupId>
+			<artifactId>liquibase-core</artifactId>
+			<version>${liquibase.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.postgresql</groupId>
+			<artifactId>postgresql</artifactId>
+			<version>${postgresql.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>p6spy</groupId>
+			<artifactId>p6spy</artifactId>
+			<version>${p6spy.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.commons</groupId>
@@ -191,6 +214,23 @@
 					<execution>
 						<goals>
 							<goal>one-jar</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.liquibase</groupId>
+				<artifactId>liquibase-maven-plugin</artifactId>
+				<version>${liquibase.maven.plugin.version}</version>
+				<configuration>
+					<defaultSchemaName>data_returns_schema</defaultSchemaName>
+					<changelogSchemaName>data_returns_schema</changelogSchemaName>
+					<propertyFile>${liquibasePropertyFile}</propertyFile>
+				</configuration>
+				<executions>
+					<execution>
+						<goals>
+							<goal>update</goal>
 						</goals>
 					</execution>
 				</executions>

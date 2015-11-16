@@ -16,18 +16,8 @@ public final class ExceptionMessageContainer
 		return appStatusCode;
 	}
 
-	public void setAppStatusCode(int appStatusCode)
-	{
-		this.appStatusCode = appStatusCode;
-	}
-
 	public String getMessage()
 	{
 		return message;
-	}
-
-	public void setMessage(String message)
-	{
-		this.message = message;
 	}
 }
