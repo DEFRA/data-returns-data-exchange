@@ -15,7 +15,7 @@
 	</changeSet>
 
 	<changeSet id="create-permit-table" author="aharrison">
-		<createTable tableName="permit">
+		<createTable tableName="permit" tablespace="dr_data">
 			<column name="id" type="int" defaultValue="nextval('data_returns_schema.seq_permit_id')">
 				<constraints primaryKeyName="pk_permit_id" primaryKey="true" nullable="false"/>
 			</column>
@@ -56,7 +56,7 @@
 	<!-- END - Load environment specific data -->
 
 	<changeSet id="create-permit-id-index" author="aharrison">
-		<createIndex indexName="idx_permit_number" tableName="permit" unique="true">
+		<createIndex indexName="idx_permit_number" tableName="permit" unique="true" tablespace="dr_index">
 			<column name="permit_number" type="varchar(10)"/>	<!-- TODO guessed big enough, looks like could reduce to 8? -->
 		</createIndex>
 		<rollback>DROP INDEX idx_permit_number</rollback>
