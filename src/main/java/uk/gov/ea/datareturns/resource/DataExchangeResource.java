@@ -4,7 +4,8 @@ import static uk.gov.ea.datareturns.helper.CommonHelper.getFileType;
 import static uk.gov.ea.datareturns.helper.CommonHelper.makeFullPath;
 import static uk.gov.ea.datareturns.helper.DataExchangeHelper.generateUniqueFileKey;
 import static uk.gov.ea.datareturns.helper.DataExchangeHelper.makeSchemaName;
-import static uk.gov.ea.datareturns.helper.FileUtilsHelper.*;
+import static uk.gov.ea.datareturns.helper.FileUtilsHelper.fileContainsMinRows;
+import static uk.gov.ea.datareturns.helper.FileUtilsHelper.saveReturnsFile;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -40,9 +41,7 @@ import org.slf4j.LoggerFactory;
 
 import uk.gov.ea.datareturns.config.DataExchangeConfiguration;
 import uk.gov.ea.datareturns.config.EmailSettings;
-import uk.gov.ea.datareturns.config.PermitDatabaseConfig;
 import uk.gov.ea.datareturns.dao.PermitDAO;
-import uk.gov.ea.datareturns.database.PermitDatabase;
 import uk.gov.ea.datareturns.domain.DataExchangeError;
 import uk.gov.ea.datareturns.domain.DataExchangeResult;
 import uk.gov.ea.datareturns.exception.application.EmptyFileException;
@@ -65,6 +64,7 @@ import com.codahale.metrics.annotation.Timed;
 public class DataExchangeResource
 {
 	private DataExchangeConfiguration config;
+	private PermitDAO permitDAO;
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(DataExchangeResource.class);
 
@@ -77,9 +77,10 @@ public class DataExchangeResource
 	private Map<String, String> fileKeys;
 	private Map<String, String> acceptableFileTypes;
 
-	public DataExchangeResource(DataExchangeConfiguration config)
+	public DataExchangeResource(DataExchangeConfiguration config, PermitDAO permitDAO)
 	{
 		this.config = config;
+		this.permitDAO = permitDAO;
 		this.fileKeys = new HashMap<String, String>();
 		this.acceptableFileTypes = new HashMap<String, String>();
 		this.acceptableFileTypes.put(FILE_TYPE_CSV, "Comma Separated");
@@ -177,14 +178,9 @@ public class DataExchangeResource
 	}
 
 	// TODO try to move all methods code to helpers
-	private boolean permitNoExists(String eaId)
+	private boolean permitNoExists(String permitNumber)
 	{
-		PermitDatabaseConfig config = PermitDatabase.getConfig();
-
-		// TODO Table/Field names should be held in DAO, pass in for now as likely to change
-		PermitDAO dao = new PermitDAO(PermitDatabase.getInstance(), config.getPermitTableName(), config.getPermitColumnName());
-
-		return dao.permitNoExists(eaId);
+		return permitDAO.findByPermitNumber(permitNumber) != null;
 	}
 
 	private DataExchangeResult performContentValidation(String fileLocation, DataExchangeResult result)

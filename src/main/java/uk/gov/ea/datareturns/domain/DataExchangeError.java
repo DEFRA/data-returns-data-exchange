@@ -39,16 +39,6 @@ public class DataExchangeError
 		parseErrorMessage(errLine);
 	}
 
-	public DataExchangeError(String reason, String lineNo, String columnName, String errValue)
-	{
-		this();
-
-		this.reason = reason;
-		this.lineNo = lineNo;
-		this.columnName = columnName;
-		this.errValue = errValue;
-	}
-
 	public String getReason()
 	{
 		return this.reason;
