@@ -7,18 +7,11 @@
 	<preConditions>
 		<dbms type="postgresql"/>
 		<runningAs username="data_returns_owner"/>
+		<changeLogPropertyDefined property="permitDataFile"/>
 	</preConditions>
-
-	<changeSet id="create-permit-id-sequence" author="aharrison">
-		<createSequence sequenceName="seq_permit_id" incrementBy="1" startValue="1"/>
-		<rollback>DROP SEQUENCE seq_permit_id</rollback>
-	</changeSet>
 
 	<changeSet id="create-permit-table" author="aharrison">
 		<createTable tableName="permit" tablespace="dr_data">
-			<column name="id" type="int" defaultValue="nextval('data_returns_schema.seq_permit_id')">
-				<constraints primaryKeyName="pk_permit_id" primaryKey="true" nullable="false"/>
-			</column>
 			<column name="permit_number" type="varchar(10)">	<!-- TODO guessed big enough, looks like could reduce to 8? -->
 				<constraints nullable="false"/>
 			</column>
@@ -26,33 +19,16 @@
 		<rollback>DROP TABLE permit</rollback>
 	</changeSet>
 
-	<!-- START - Load environment specific data (keep separate for now as may differ) -->
+	<!-- START - Load environment specific data -->
 	
-	<!-- TODO pass in file location -->
-	<changeSet id="load-dev-permit-data" author="aharrison" context="dev">
+	<changeSet id="load-permit-data" author="aharrison">
 		<preConditions onFail="CONTINUE">
-			<sqlCheck expectedResult="0">select count(id) from permit</sqlCheck>
+			<sqlCheck expectedResult="0">select count(permit_number) from permit</sqlCheck>
 		</preConditions>
-		<loadData file="./src/main/resources/db/data/permits_dev.csv" tableName="permit"/>
+		<loadData file="${permitDataFile}" tableName="permit"/>
 		<rollback>DELETE * FROM permit</rollback>
 	</changeSet>
 
-	<changeSet id="load-test-permit-data" author="aharrison" context="test">
-		<preConditions onFail="CONTINUE">
-			<sqlCheck expectedResult="0">select count(id) from permit</sqlCheck>
-		</preConditions>
-		<loadData file="./src/main/resources/db/data/permits_test.csv" tableName="permit"/>
-		<rollback>DELETE * FROM permit</rollback>
-	</changeSet>
-
-	<changeSet id="load-prod-permit-data" author="aharrison" context="prod">
-		<preConditions onFail="CONTINUE">
-			<sqlCheck expectedResult="0">select count(id) from permit</sqlCheck>
-		</preConditions>
-		<loadData file="./src/main/resources/db/data/permits_prod.csv" tableName="permit"/>
-		<rollback>DELETE * FROM permit</rollback>
-	</changeSet>
-	
 	<!-- END - Load environment specific data -->
 
 	<changeSet id="create-permit-id-index" author="aharrison">
