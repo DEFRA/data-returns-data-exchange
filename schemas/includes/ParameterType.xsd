@@ -1,0 +1,26 @@
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" 
+           xmlns:lgm="http://ea.gov.uk/DR/LGM" 
+           attributeFormDefault="unqualified"
+           elementFormDefault="qualified">
+		   
+    <xs:include schemaLocation="XMLID.xsd" />
+    
+    <xs:simpleType name="parameterType">
+        <xs:restriction base="xs:string" >
+            <xs:enumeration value="Water"/>
+            <xs:enumeration value="Temperature"/>
+            <xs:enumeration value="Humidity"/>
+            <xs:enumeration value="pH"/>
+        </xs:restriction>
+    </xs:simpleType>
+    
+    <xs:complexType name="LFG_parameterType">
+        <xs:simpleContent>
+            <xs:extension base="parameterType">
+                <xs:attributeGroup ref="CommonAtts"/>
+            </xs:extension>
+        </xs:simpleContent>
+    </xs:complexType>
+    
+</xs:schema>
+

@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" 
+           xmlns:lgm="http://ea.gov.uk/DR/LGM" 
+           attributeFormDefault="unqualified"
+           elementFormDefault="qualified">
+		   
+    <xs:include schemaLocation="XMLID.xsd" />	
+    
+    <xs:simpleType name="unitType">
+        <xs:restriction base="xs:string" >
+            <xs:enumeration value="pH"/>
+            <xs:enumeration value=""/>
+            <xs:enumeration value="ng/l"/>
+            <xs:enumeration value="mg/l"/>
+            <xs:enumeration value="ug/l"/>
+            <xs:enumeration value="Metres"/>
+            <xs:enumeration value="Mbar"/>
+            <xs:enumeration value="m3"/>
+            <xs:minLength value="0"/>
+            <xs:maxLength value="30"/>
+        </xs:restriction>
+    </xs:simpleType>
+    
+    <xs:complexType name="LFG_unitType">
+        <xs:simpleContent>
+            <xs:extension base="unitType">
+                <xs:attributeGroup ref="CommonAtts"/>
+            </xs:extension>
+        </xs:simpleContent>
+    </xs:complexType>
+    
+    
+    
+    
+      
+</xs:schema>

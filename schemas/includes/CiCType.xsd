@@ -1,0 +1,27 @@
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" 
+           xmlns:lgm="http://ea.gov.uk/DR/LGM" 
+           attributeFormDefault="unqualified"
+           elementFormDefault="qualified">
+		   
+    <xs:include schemaLocation="XMLID.xsd" />
+    
+    <xs:simpleType name="CiCType">
+        <xs:restriction base="xs:string" > <!-- TODO - No length restriction defined -->
+            <xs:enumeration value=""/>
+            <xs:enumeration value="Yes"/>
+            <xs:enumeration value="No"/>
+            <xs:enumeration value="True"/>
+            <xs:enumeration value="False"/>
+        </xs:restriction>
+    </xs:simpleType>
+    
+    <xs:complexType name="LFG_CiCType">
+        <xs:simpleContent>
+            <xs:extension base="CiCType">
+                <xs:attributeGroup ref="CommonAtts"/>
+            </xs:extension>
+        </xs:simpleContent>
+    </xs:complexType>
+    
+    
+</xs:schema>

@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" 
+           xmlns:lgm="http://ea.gov.uk/DR/LGM" 
+           attributeFormDefault="unqualified"
+           elementFormDefault="qualified">
+		   
+    <xs:include schemaLocation="XMLID.xsd" />
+    
+    <xs:simpleType name="testMethodType">
+        <xs:restriction base="xs:string" >
+            <xs:enumeration value=""/>
+            <xs:enumeration value="Test method 1"/>
+            <xs:enumeration value="Test method 2"/>
+            <xs:enumeration value="Guess"/>
+            <xs:minLength value="0"/>
+            <xs:maxLength value="30"/>
+        </xs:restriction>
+    </xs:simpleType>
+    
+    <xs:complexType name="LFG_testMethodType">
+        <xs:simpleContent>
+            <xs:extension base="testMethodType">
+                <xs:attributeGroup ref="CommonAtts"/>
+            </xs:extension>
+        </xs:simpleContent>
+    </xs:complexType>
+    
+</xs:schema>
+

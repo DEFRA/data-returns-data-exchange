@@ -1,0 +1,52 @@
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" 
+           xmlns:lgm="http://ea.gov.uk/DR/LGM" 
+           attributeFormDefault="unqualified"
+           elementFormDefault="qualified">
+
+    <!-- Type definitions in separate files -->
+    <xs:include schemaLocation="includes/StringTypes.xsd" />
+    <xs:include schemaLocation="includes/MeasurePeriodList.xsd" />
+    <xs:include schemaLocation="includes/Dates.xsd" />
+    <xs:include schemaLocation="includes/ReturnType.xsd" />
+    <xs:include schemaLocation="includes/UnitType.xsd" />
+    <xs:include schemaLocation="includes/TestMethodType.xsd" />
+    <xs:include schemaLocation="includes/ParameterType.xsd" />
+    <xs:include schemaLocation="includes/CiCType.xsd" />
+
+    <xs:element name="returns">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="return" maxOccurs="unbounded" minOccurs="0">
+                    <xs:complexType>
+                        <xs:sequence>
+                            <xs:element type="LFG_Required_String" name="eaID"/>
+                            <xs:element type="LFG_mandatoryStringMax30" name="siteName"/>
+                            <xs:element type="LFG_returnType" name="retType"/>
+                            <xs:element type="LFG_DateTime" name="dateSt"/>
+                            <xs:element type="LFG_optionalValidDateTime" name="dateEn"/>
+                            <xs:element type="LFG_periodNameType" name="periodName"/> 
+                            <xs:element type="LFG_FourDigitYear" name="periodYear"/>
+                            <xs:element type="LFG_OptionalStringMax255" name="sampleRef"/>
+                            <xs:element type="LFG_OptionalStringMax255" name="sampledBy"/>
+                            <xs:element type="LFG_mandatoryStringMax255" name="monPoint"/>
+                            <xs:element type="LFG_parameterType" name="parameter"/>
+                            <xs:element type="LFG_mandatoryValueTypeMax30" name="value"/>
+                            <xs:element type="LFG_Optional_String" name="tValue"/>
+                            <xs:element type="LFG_unitType" name="Unit"/>
+                            <xs:element type="LFG_measurePeriodType" name="MeasurePeriod"/>
+                            <xs:element type="LFG_testMethodType" name="testMethod"/>
+                            <xs:element type="LFG_OptionalStringMax255" name="Comments"/>
+                            <xs:element type="LFG_CiCType" name="CiC"/>
+                            <xs:element type="LFG_OptionalStringMax255" name="addParameter1"/>
+                            <xs:element type="LFG_OptionalStringMax255" name="addParameter2"/>
+                            <xs:element type="LFG_OptionalStringMax255" name="addParameter3"/>
+                            <xs:element type="LFG_OptionalStringMax255" name="addParameter4"/>
+                            <xs:element type="LFG_OptionalStringMax255" name="addParameter5"/>
+                        </xs:sequence>
+                        <xs:attribute type="xs:integer" name="srcId" use="optional"/>
+                    </xs:complexType>
+                </xs:element>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+</xs:schema>

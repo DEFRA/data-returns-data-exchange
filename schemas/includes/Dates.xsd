@@ -1,0 +1,64 @@
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" 
+           xmlns:lgm="http://ea.gov.uk/DR/LGM" 
+           attributeFormDefault="unqualified"
+           elementFormDefault="qualified">
+		   
+    <xs:include schemaLocation="XMLID.xsd" />
+    <xs:include schemaLocation="StringTypes.xsd" />
+
+    <xs:simpleType name="FourDigitYear" >
+        <xs:restriction base="xs:integer">
+            <xs:pattern value="|[0-9]{4}"/>
+            <xs:minInclusive value="1970"/>
+            <xs:maxInclusive value="2999"/>
+        </xs:restriction>
+    </xs:simpleType>
+	
+    <xs:simpleType name="validDateTime">
+        <xs:union memberTypes="xs:date xs:time xs:dateTime"/>
+    </xs:simpleType>
+	
+    <xs:simpleType name="optionalValidDateTime">
+        <xs:union memberTypes="xs:date xs:time xs:dateTime emptyStringType"/>
+    </xs:simpleType>
+    
+    <xs:simpleType name="periodNameType">
+        <xs:restriction base="xs:string">
+            <xs:pattern value="([0-9a-zA-Z ])*"/>
+            <xs:minLength value="0"/>
+            <xs:maxLength value="30"/>
+        </xs:restriction>
+    </xs:simpleType>
+    
+    <xs:complexType name="LFG_periodNameType">
+        <xs:simpleContent>
+            <xs:extension base="periodNameType">
+                <xs:attributeGroup ref="CommonAtts"/>
+            </xs:extension>
+        </xs:simpleContent>
+    </xs:complexType>
+	
+    <xs:complexType name="LFG_FourDigitYear">
+        <xs:simpleContent>
+            <xs:extension base="FourDigitYear">
+                <xs:attributeGroup ref="CommonAtts"/>
+            </xs:extension>
+        </xs:simpleContent>
+    </xs:complexType>
+	
+    <xs:complexType name="LFG_DateTime">
+        <xs:simpleContent>
+            <xs:extension base="validDateTime">
+                <xs:attributeGroup ref="CommonAtts"/>
+            </xs:extension>
+        </xs:simpleContent>
+    </xs:complexType>
+    
+    <xs:complexType name="LFG_optionalValidDateTime">
+        <xs:simpleContent>
+            <xs:extension base="optionalValidDateTime">
+                <xs:attributeGroup ref="CommonAtts"/>
+            </xs:extension>
+        </xs:simpleContent>
+    </xs:complexType>
+</xs:schema>
