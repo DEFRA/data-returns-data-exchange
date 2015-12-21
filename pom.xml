@@ -13,7 +13,6 @@
 		<java.version>1.8</java.version>
 		<dropwizard.version>0.8.4</dropwizard.version>
 		<dropwizard.metrics.version>3.1.2</dropwizard.metrics.version>
-		<jersey.bean.validation>2.22.1</jersey.bean.validation>
 		<junit.version>4.12</junit.version>
 		<maven.compiler.version>3.2</maven.compiler.version>
 		<maven.surefire.plugin.version>2.18.1</maven.surefire.plugin.version>
@@ -26,7 +25,10 @@
 		<p6spy.version>2.1.4</p6spy.version>
 		<commons.email.version>1.4</commons.email.version>
 		<commons.io.version>2.4</commons.io.version>
-		<jackcess.version>2.1.2</jackcess.version>
+		<xerces.version>2.11.0</xerces.version>
+		<saxon-dom.version>8.7</saxon-dom.version>
+		<jackson-dataformat-xml.version>2.6.3</jackson-dataformat-xml.version>
+		<codehaus.woodstox.version>4.4.1</codehaus.woodstox.version>
 
 		<!-- Test -->
 		<mockito.version>1.10.19</mockito.version>
@@ -85,11 +87,6 @@
 			<version>${dropwizard.metrics.version}</version>
 		</dependency>
 		<dependency>
-			<groupId>org.glassfish.jersey.ext</groupId>
-			<artifactId>jersey-bean-validation</artifactId>
-			<version>${jersey.bean.validation}</version>
-		</dependency>
-		<dependency>
 			<groupId>uk.gov.nationalarchives</groupId>
 			<artifactId>csv-validator-java-api</artifactId>
 			<version>${csv.validator.version}</version>
@@ -122,22 +119,28 @@
 		<dependency>
 			<groupId>xerces</groupId>
 			<artifactId>xercesImpl</artifactId>
-			<version>2.11.0</version>
+			<version>${xerces.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>net.sf.saxon</groupId>
 			<artifactId>saxon-dom</artifactId>
-			<version>8.7</version>
+			<version>${saxon-dom.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>com.fasterxml.jackson.dataformat</groupId>
 			<artifactId>jackson-dataformat-xml</artifactId>
-			<version>2.6.3</version>
+			<version>${jackson-dataformat-xml.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.codehaus.woodstox</groupId>
 			<artifactId>woodstox-core-asl</artifactId>
-			<version>4.4.1</version>
+			<version>${codehaus.woodstox.version}</version>
+			<exclusions>
+				<exclusion>
+					<artifactId>stax-api</artifactId>
+					<groupId>javax.xml.stream</groupId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 
 		<!-- Test -->
