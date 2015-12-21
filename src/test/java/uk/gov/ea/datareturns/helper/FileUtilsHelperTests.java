@@ -2,9 +2,9 @@ package uk.gov.ea.datareturns.helper;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
-import static uk.gov.ea.datareturns.helper.CommonHelper.makeFullPath;
+import static uk.gov.ea.datareturns.helper.CommonHelper.makeFullFilePath;
 import static uk.gov.ea.datareturns.helper.FileUtilsHelper.fileContainsMinRows;
-import static uk.gov.ea.datareturns.helper.FileUtilsHelper.saveReturnsFile;
+import static uk.gov.ea.datareturns.helper.FileUtilsHelper.saveFile;
 
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
@@ -42,7 +42,7 @@ public class FileUtilsHelperTests
 	{
 		InputStream inputStream = new ByteArrayInputStream("any string".getBytes(StandardCharsets.UTF_8));
 
-		assertThat(saveReturnsFile(inputStream, makeFullPath("./uploaded", FILE_CSV_SUCCESS))).isEqualTo(true);
+		assertThat(saveFile(inputStream, makeFullFilePath("./uploaded", FILE_CSV_SUCCESS))).isEqualTo(true);
 	}
 
 	@Test
@@ -52,7 +52,7 @@ public class FileUtilsHelperTests
 
 		try
 		{
-			saveReturnsFile(inputStream, makeFullPath("any_directory", FILE_CSV_SUCCESS));
+			saveFile(inputStream, makeFullFilePath("any_directory", FILE_CSV_SUCCESS));
 		} catch (Exception e)
 		{
 			assertThat(e).isInstanceOf(FileSaveException.class);
@@ -72,7 +72,7 @@ public class FileUtilsHelperTests
 			PowerMockito.whenNew(BufferedReader.class).withArguments(isReader).thenReturn(bufferedReader);
 			PowerMockito.when(bufferedReader.readLine()).thenReturn("any old junk").thenThrow(new IOException("testSaveReturnsReadFailure"));
 
-			boolean ret = saveReturnsFile(mockIS, makeFullPath("./uploaded", FILE_CSV_SUCCESS));
+			boolean ret = saveFile(mockIS, makeFullFilePath("./uploaded", FILE_CSV_SUCCESS));
 			assertThat(ret).isFalse();
 		} catch (Exception e)
 		{
@@ -85,28 +85,22 @@ public class FileUtilsHelperTests
 	{
 		try
 		{
-			fileContainsMinRows(makeFullPath("any_directory", FILE_CSV_SUCCESS), 2);
+			fileContainsMinRows(makeFullFilePath("any_directory", FILE_CSV_SUCCESS), 2);
 		} catch (Exception e)
 		{
 			assertThat(e).isInstanceOf(FileUnlocatableException.class);
 		}
 	}
 
-// TODO test for IOException when fileContainsMinRows() refactored
-//	@Test
-//	public void testMinimalDataFileReadFailure()
-//	{
-//	}
-
 	@Test
 	public void testLessThanMinimumData()
 	{
-		assertThat(fileContainsMinRows(makeFullPath(TEST_FILES_PATH, FILE_CSV_INSUFFICIENT_DATA), 2)).isFalse();
+		assertThat(fileContainsMinRows(makeFullFilePath(TEST_FILES_PATH, FILE_CSV_INSUFFICIENT_DATA), 2)).isFalse();
 	}
 
 	@Test
 	public void testSufficientData()
 	{
-		assertThat(fileContainsMinRows(makeFullPath(TEST_FILES_PATH, FILE_CSV_SUCCESS), 2)).isTrue();
+		assertThat(fileContainsMinRows(makeFullFilePath(TEST_FILES_PATH, FILE_CSV_SUCCESS), 2)).isTrue();
 	}
 }

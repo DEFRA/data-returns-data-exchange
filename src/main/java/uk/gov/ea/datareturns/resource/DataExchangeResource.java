@@ -1,37 +1,30 @@
 package uk.gov.ea.datareturns.resource;
 
-import static uk.gov.ea.datareturns.helper.CommonHelper.getFileType;
-import static uk.gov.ea.datareturns.helper.CommonHelper.makeFullPath;
-import static uk.gov.ea.datareturns.helper.DataExchangeHelper.generateUniqueFileKey;
-import static uk.gov.ea.datareturns.helper.DataExchangeHelper.makeSchemaName;
-import static uk.gov.ea.datareturns.helper.FileUtilsHelper.fileContainsMinRows;
-import static uk.gov.ea.datareturns.helper.FileUtilsHelper.saveReturnsFile;
+import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
+import static javax.ws.rs.core.MediaType.MULTIPART_FORM_DATA;
+import static uk.gov.ea.datareturns.helper.CommonHelper.makeFullFilePath;
+import static uk.gov.ea.datareturns.helper.DataExchangeHelper.generateFileKey;
+import static uk.gov.ea.datareturns.helper.FileUtilsHelper.saveFile;
+import static uk.gov.ea.datareturns.helper.XMLUtilsHelper.deserializeFromXML;
+import static uk.gov.ea.datareturns.helper.XMLUtilsHelper.transformToString;
+import static uk.gov.ea.datareturns.type.AppStatusCode.APP_STATUS_SUCCESS;
+import static uk.gov.ea.datareturns.type.AppStatusCode.APP_STATUS_FAILED_WITH_ERRORS;
 
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.IOException;
 import java.io.InputStream;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import javax.ws.rs.Consumes;
-import javax.ws.rs.DefaultValue;
-import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
-import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.mail.EmailAttachment;
 import org.apache.commons.mail.EmailException;
-import org.apache.commons.mail.HtmlEmail;
 import org.apache.commons.mail.MultiPartEmail;
 import org.glassfish.jersey.media.multipart.FormDataContentDisposition;
 import org.glassfish.jersey.media.multipart.FormDataParam;
@@ -41,189 +34,200 @@ import org.slf4j.LoggerFactory;
 
 import uk.gov.ea.datareturns.config.DataExchangeConfiguration;
 import uk.gov.ea.datareturns.config.EmailSettings;
+import uk.gov.ea.datareturns.config.MiscSettings;
+import uk.gov.ea.datareturns.convert.ConvertCSVToXML;
+import uk.gov.ea.datareturns.convert.ConvertFileToFile;
 import uk.gov.ea.datareturns.dao.PermitDAO;
-import uk.gov.ea.datareturns.domain.DataExchangeError;
-import uk.gov.ea.datareturns.domain.DataExchangeResult;
-import uk.gov.ea.datareturns.exception.application.EmptyFileException;
+import uk.gov.ea.datareturns.domain.result.CompleteResult;
+import uk.gov.ea.datareturns.domain.result.DataExchangeResult;
+import uk.gov.ea.datareturns.domain.result.GeneralResult;
+import uk.gov.ea.datareturns.domain.result.UploadResult;
+import uk.gov.ea.datareturns.domain.result.ValidationResult;
 import uk.gov.ea.datareturns.exception.application.FileKeyMismatchException;
-import uk.gov.ea.datareturns.exception.application.InsufficientDataException;
-import uk.gov.ea.datareturns.exception.application.InvalidFileContentsException;
-import uk.gov.ea.datareturns.exception.application.InvalidFileTypeException;
+import uk.gov.ea.datareturns.exception.application.MultiplePermitsException;
 import uk.gov.ea.datareturns.exception.application.PermitNotFoundException;
-import uk.gov.ea.datareturns.exception.system.FileReadException;
-import uk.gov.ea.datareturns.exception.system.FileUnlocatableException;
 import uk.gov.ea.datareturns.exception.system.NotificationException;
-import uk.gov.nationalarchives.csv.validator.api.java.CsvValidator;
-import uk.gov.nationalarchives.csv.validator.api.java.FailMessage;
-import uk.gov.nationalarchives.csv.validator.api.java.Substitution;
+import uk.gov.ea.datareturns.factory.ConvertFactory;
+import uk.gov.ea.datareturns.validate.Validate;
+import uk.gov.ea.datareturns.validate.ValidateXML;
 
 import com.codahale.metrics.annotation.Timed;
 
-// TODO gradually moving code to helpers to simplify unit testing - may end up in 'proper' classes eventually 
 @Path("/data-exchange/")
 public class DataExchangeResource
 {
+	private static final Logger LOGGER = LoggerFactory.getLogger(DataExchangeResource.class);
+
 	private DataExchangeConfiguration config;
 	private PermitDAO permitDAO;
 
-	private static final Logger LOGGER = LoggerFactory.getLogger(DataExchangeResource.class);
+	private final String XSLT_UNIQUE_IDENTIFIERS = "get_unique_identifiers.xslt";
+	private final String XSLT_PERMIT_NOS = "get_unique_permit_nos.xslt";
 
-	// TODO not sure yet how best to handle these
-	public static int APP_STATUS_SUCCESS = 800;
-	public static int APP_STATUS_SUCCESS_WITH_ERRORS = 801;
-
-	private static String FILE_TYPE_CSV = "csv";
+	// TODO things that could/should be held in database?
+	private final String CORE_SCHEMA_FILE = "data-returns-core-schema.xsd";
+	private final String CORE_TRANSLATIONS_FILE = "data-returns-core-translations.xml";
+	private final String PERMIT_NO_FIELD_ID = "EA_ID";
+	private final String[] uniqueIdentifierIds = new String[] { "EA_ID", "Site_Name", "Rtn_Type" };
 
 	private Map<String, String> fileKeys;
-	private Map<String, String> acceptableFileTypes;
 
 	public DataExchangeResource(DataExchangeConfiguration config, PermitDAO permitDAO)
 	{
 		this.config = config;
 		this.permitDAO = permitDAO;
 		this.fileKeys = new HashMap<String, String>();
-		this.acceptableFileTypes = new HashMap<String, String>();
-		this.acceptableFileTypes.put(FILE_TYPE_CSV, "Comma Separated");
-	}
-
-	@POST
-	@Path("/upload")
-	@Consumes(MediaType.MULTIPART_FORM_DATA)
-	@Produces(MediaType.APPLICATION_JSON)
-	@Timed
-	public Response uploadFile(@FormDataParam("fileUpload") InputStream uploadedInputStream,
-			@FormDataParam("fileUpload") FormDataContentDisposition fileDetail)
-	{
-		DataExchangeResult result = new DataExchangeResult();
-		String fileLocation = makeFullPath(this.config.getMiscSettings().getFileUploadLocation(), fileDetail.getFileName());
-
-		LOGGER.debug("fileLocation = " + fileLocation);
-
-		result.setFileName(fileDetail.getFileName());
-
-		saveReturnsFile(uploadedInputStream, fileLocation);
-
-		// Validate file (as much as possible) ready for "validate" step
-		uploadStepValidation(fileLocation);
-
-		// TODO configurable somewhere?
-		String[] fields = extractEAIdentifiers(fileLocation);
-		String fileKey = generateUniqueFileKey();
-
-		result.setFileKey(fileKey);
-		result.setEaId(fields[0]);
-		result.setSiteName(fields[1]);
-		result.setReturnType(fields[2]);
-
-		// TODO where is best place to hold these?
-		fileKeys.put(fileKey, fileLocation);
-
-		result.setAppStatusCode(APP_STATUS_SUCCESS);
-
-		return Response.ok(result).build();
-	}
-
-	// TODO validate entity would be better
-	@GET
-	@Path("/validate")
-	@Consumes(MediaType.APPLICATION_FORM_URLENCODED)
-	@Produces(MediaType.APPLICATION_JSON)
-	@Timed
-	public Response validateFileUpload(@NotEmpty @QueryParam("fileKey") String fileKey, @NotEmpty @QueryParam("eaId") String eaId,
-			@NotEmpty @QueryParam("siteName") String siteName, @NotEmpty @QueryParam("returnType") String returnType)
-	{
-		DataExchangeResult result = new DataExchangeResult(fileKey, eaId, siteName, returnType);
-
-		String fileLocation = retrieveFileLocationByKey(result.getFileKey());
-		LOGGER.debug("fileLocation = " + fileLocation);
-
-		// TODO single permit number check (for now)
-		if (!permitNoExists(eaId))
-		{
-			throw new PermitNotFoundException("Permit no '" + eaId + "' not found");
-		}
-
-		result.setFileName(FilenameUtils.getName(fileLocation));
-
-		performContentValidation(fileLocation, result);
-
-		result.setAppStatusCode(result.getErrors().size() == 0 ? APP_STATUS_SUCCESS : APP_STATUS_SUCCESS_WITH_ERRORS);
-
-		return Response.ok(result).build();
-	}
-
-	// TODO validate entity would be better
-	@POST
-	@Path("/complete")
-	@Consumes(MediaType.MULTIPART_FORM_DATA)
-	@Produces(MediaType.APPLICATION_JSON)
-	@Timed
-	public Response completeFileUpload(@NotEmpty @FormDataParam("fileKey") String fileKey,
-			@DefaultValue("") @FormDataParam("userEmail") String userEmail)
-	{
-		DataExchangeResult result = new DataExchangeResult(fileKey, userEmail);
-
-		String fileLocation = retrieveFileLocationByKey(result.getFileKey());
-
-		if (result.isSendUserEmail())
-		{
-			sendNotificationToUser(fileLocation, result.getUserEmail());
-		}
-
-		sendNotificationToMonitorPro(fileLocation);
-
-		result.setAppStatusCode(APP_STATUS_SUCCESS);
-
-		return Response.ok(result).build();
-	}
-
-	// TODO try to move all methods code to helpers
-	private boolean permitNoExists(String permitNumber)
-	{
-		return permitDAO.findByPermitNumber(permitNumber) != null;
-	}
-
-	private DataExchangeResult performContentValidation(String fileLocation, DataExchangeResult result)
-	{
-		Boolean failFast = false;
-		List<Substitution> pathSubstitutions = new ArrayList<Substitution>();
-
-		String schemaLocation = makeFullPath(this.config.getMiscSettings().getSchemaFileLocation(), makeSchemaName(result.getReturnType()));
-
-		// Validate contents
-		List<FailMessage> errors = CsvValidator.validate(fileLocation, schemaLocation, failFast, pathSubstitutions, true);
-		LOGGER.debug("Validate done, total errors found = " + errors.size());
-
-		if (errors.size() > 0)
-		{
-			if (errors.size() == 1 && errors.get(0).getMessage().startsWith("Unable to read file"))
-			{
-				throw new FileUnlocatableException(errors.get(0).getMessage());
-			}
-
-			LOGGER.debug("Validation failed");
-			result.setFileName(FilenameUtils.getName(fileLocation));
-
-			for (FailMessage mess : errors)
-			{
-				LOGGER.debug("Error = " + mess.getMessage());
-
-				DataExchangeError err = result.addError(mess.getMessage());
-
-				LOGGER.debug("  reason = " + err.getReason());
-				LOGGER.debug("  lineNo; = " + err.getLineNo());
-				LOGGER.debug("  columnName; = " + err.getColumnName());
-				LOGGER.debug("  errValue; = " + err.getErrValue());
-				LOGGER.debug("  meaningfulReason = " + err.getMeaningfulReason());
-				LOGGER.debug("  helpfulExample = " + err.getHelpfulExample());
-			}
-		}
-
-		return result;
 	}
 
 	/**
-	 * Retrieves the stored file location from the supplied file key
+	 * REST method to handle Returns file upload.
+	 * 		1. Save uploaded file
+	 * 		2. Convert uploaded file
+	 * 		3. Apply Permit number validations
+	 * 		4. Apply File content validations
+	 * @param is
+	 * @param fileDetail
+	 * @return JSON object
+	 */
+	@POST
+	@Path("/upload")
+	@Consumes(MULTIPART_FORM_DATA)
+	@Produces(APPLICATION_JSON)
+	@Timed
+	public Response uploadFile(@FormDataParam("fileUpload") InputStream is, @FormDataParam("fileUpload") FormDataContentDisposition fileDetail)
+	{
+		MiscSettings settings = config.getMiscSettings();
+		String uploadedFile = makeFullFilePath(settings.getUploadedLocation(), fileDetail.getFileName());
+
+		// 1. Save uploaded file
+		saveFile(is, uploadedFile);
+
+		// 2. Convert uploaded file
+		ConvertFileToFile converter = ConvertFactory.getConverter(getConverterType(uploadedFile));
+		converter.setFileToConvert(uploadedFile);
+		converter.setOutputLocation(settings.getOutputLocation());
+		converter.convert();
+
+		String workingFile = converter.getConvertedFile();
+
+		// 3. Apply Permit number validations
+		validatePermitNo(workingFile);
+
+		// 4. Apply File content validations
+		ValidationResult validateResult = validateFile(workingFile);
+
+		// Whoohoo! prepare success or failure response
+
+		UploadResult uploadResult = new UploadResult(fileDetail.getFileName());
+		DataExchangeResult result = new DataExchangeResult(uploadResult);
+
+		if (validateResult.isValid())
+		{
+			// TODO needs determining exactly what the front-end needs
+			GeneralResult generalResult = getUniqueIdentifiers(workingFile);
+			result.setGeneralResult(generalResult);
+
+			// Pointer to the file
+			uploadResult.setFileKey(generateFileKey());
+			result.setAppStatusCode(APP_STATUS_SUCCESS.getAppStatusCode());
+
+			// TODO store fileKey in database
+			fileKeys.put(uploadResult.getFileKey(), uploadedFile);
+		} else
+		{
+			result.setValidationResult(validateResult);
+			result.setAppStatusCode(APP_STATUS_FAILED_WITH_ERRORS.getAppStatusCode());
+		}
+
+		return Response.ok(result).build();
+	}
+
+	// TODO validate entity would be better?
+	@POST
+	@Path("/complete")
+	@Produces(APPLICATION_JSON)
+	@Timed
+	public Response completeFileUpload(@NotEmpty @FormDataParam("fileKey") String fileKey, @NotEmpty @FormDataParam("userEmail") String userEmail)
+	{
+		CompleteResult completeResult = new CompleteResult();
+		DataExchangeResult result = new DataExchangeResult(completeResult);
+
+		completeResult.setFileKey(fileKey);
+		completeResult.setUserEmail(userEmail);
+
+		String fileLocation = retrieveFileLocationByKey(completeResult.getFileKey());
+
+		sendNotificationToMonitorPro(fileLocation);
+
+		result.setAppStatusCode(APP_STATUS_SUCCESS.getAppStatusCode());
+
+		return Response.ok(result).build();
+	}
+
+	/**
+	 * Determines the converter type using file name extension
+	 * @param fileName
+	 * @return
+	 */
+	private String getConverterType(String fileName)
+	{
+		return FilenameUtils.getExtension(fileName);
+	}
+
+	/**
+	 * Apply File content validations
+	 * @param workingFile
+	 * @return
+	 */
+	private ValidationResult validateFile(String workingFile)
+	{
+		MiscSettings settings = config.getMiscSettings();
+
+		// Validate XML file
+		String schemaFile = makeFullFilePath(settings.getSchemaLocation(), CORE_SCHEMA_FILE);
+		String xsltLocation = settings.getXsltLocation();
+		String translationsFile = makeFullFilePath(settings.getXmlLocation(), CORE_TRANSLATIONS_FILE);
+		Validate validate = new ValidateXML(schemaFile, workingFile, translationsFile, xsltLocation);
+
+		return validate.validate();
+	}
+
+	/**
+	 * Apply Permit number validations
+	 * @param workingFile
+	 * @return
+	 */
+	private GeneralResult validatePermitNo(String workingFile)
+	{
+		LOGGER.debug("Performing Permit No validations");
+
+		Map<String, String> params = new HashMap<String, String>();
+		params.put("nodeName", PERMIT_NO_FIELD_ID);
+
+		String result = transformToString(workingFile, makeFullFilePath(config.getMiscSettings().getXsltLocation(), XSLT_PERMIT_NOS), params);
+
+		GeneralResult generalResult = deserializeFromXML(result, GeneralResult.class);
+
+		// Release 1 - single permit only
+		if (generalResult.getResultCount() > 1)
+		{
+			throw new MultiplePermitsException("Multiple Permits found in file '" + FilenameUtils.getName(workingFile) + "'");
+		}
+
+		String permitNo = generalResult.getSingleResultValue();
+
+		if (permitDAO.findByPermitNumber(permitNo) == null)
+		{
+			throw new PermitNotFoundException("Permit no '" + permitNo + "' not found");
+		}
+
+		LOGGER.debug("Permit is valid'");
+
+		return generalResult;
+	}
+
+	/**
+	 * Retrieve stored file location by key
 	 * @param fileKey
 	 * @return
 	 */
@@ -240,103 +244,21 @@ public class DataExchangeResource
 	}
 
 	/**
-	 * Extracts EA Identifier field(s) from stored data file
-	 * Just for now, these are 1st 3 field values on row 2
+	 * Extract values that identify a unique EA return type
 	 * @param fileLocation
+	 * @param ids
 	 * @return
 	 */
-	private String[] extractEAIdentifiers(String fileLocation)
+	private GeneralResult getUniqueIdentifiers(String fileLocation)
 	{
-		File file = new File(fileLocation);
-		String fileName = FilenameUtils.getName(fileLocation);
-		FileReader fr;
-		int lineNo = 1;
-		String[] fields = null;
+		Map<String, String> params = new HashMap<String, String>();
+		params.put("nodeNames", String.join(",", uniqueIdentifierIds));
 
-		try
-		{
-			fr = new FileReader(file);
+		String result = transformToString(fileLocation, makeFullFilePath(config.getMiscSettings().getXsltLocation(), XSLT_UNIQUE_IDENTIFIERS), params);
 
-			BufferedReader br = new BufferedReader(fr);
-			String line;
-
-			while ((line = br.readLine()) != null)
-			{
-				// Grab 1st 3 data fields used on verification page. Eventually will have multiple permits, only 1 needed for alpha
-				if (lineNo++ == 2)
-				{
-					fields = line.split(",(?=([^\"]*\"[^\"]*\")*[^\"]*$)", -1);
-
-					break;
-				}
-			}
-
-			br.close();
-			fr.close();
-
-		} catch (FileNotFoundException e)
-		{
-			throw new FileUnlocatableException(e, "Cannot locate file '" + fileName + "'");
-		} catch (IOException e)
-		{
-			throw new FileReadException(e, "Unable to read from file '" + fileName + "'");
-		}
-
-		// Non-text file
-		// TODO needs better way than just checking field count 
-		if (fields == null || fields.length < 3)
-		{
-			throw new InvalidFileContentsException("File '" + fileName + "' contains invalid contents");
-		}
-
-		return fields;
+		return deserializeFromXML(result, GeneralResult.class);
 	}
 
-	// TODO refactor with sendNotificationToMonitorPro()
-	/**
-	 * Sends and Email to the supplied email address with uploaded file (un-modified) as an attachment
-	 * @param attachmentLocation
-	 * @param userEmail
-	 */
-	private void sendNotificationToUser(String attachmentLocation, String userEmail)
-	{
-		EmailSettings settings = this.config.getEmailsettings();
-		String fileName = FilenameUtils.getName(attachmentLocation);
-		HtmlEmail email = new HtmlEmail();
-
-		try
-		{
-			email.setSubject("File '" + fileName + "' has been successfully submitted to the Environment Agency");
-
-			email.setHostName(settings.getHost());
-			email.setSmtpPort(settings.getPort());
-			email.addTo(userEmail);
-			email.setFrom(settings.getEmailFrom());
-			email.setMsg("<html><p>{username} has submitted file '" + fileName + "' to the Environment Agency</p></html>");
-			email.setStartTLSEnabled(settings.getTls());
-			email.setAuthentication(settings.getUser(), settings.getPassword());
-
-			LOGGER.debug("Sending email to user - ");
-			LOGGER.debug("  host - " + settings.getHost());
-			LOGGER.debug("  port - " + settings.getPort());
-			LOGGER.debug("  emailTo - " + settings.getEmailTo());
-			LOGGER.debug("  emailFrom - " + settings.getEmailFrom());
-			LOGGER.debug("  user - " + settings.getUser());
-			LOGGER.debug("  password - " + settings.getPassword());
-			LOGGER.debug("  tls - " + settings.getTls());
-			LOGGER.debug("  bodyMessage - " + settings.getBodyMessage());
-
-			email.send();
-		} catch (EmailException e1)
-		{
-			throw new NotificationException(e1, "Failed to send email to '" + userEmail + "'");
-		} catch (Exception e2)
-		{
-			throw new NotificationException(e2, "Failed to send email to '" + userEmail + "'");
-		}
-	}
-
-	// TODO refactor with sendNotificationToUser()
 	/**
 	 * Sends and Email to MonitorPro (also know as EMMA) with uploaded file (un-modified) as an attachment
 	 * @param attachmentLocation
@@ -385,35 +307,6 @@ public class DataExchangeResource
 		} catch (Exception e2)
 		{
 			throw new NotificationException(e2, "Failed to send email to MonitorPro");
-		}
-	}
-
-	/**
-	 * Some pre-content file validation checks before handing over to CSV validation libary
-	 * @param filePath
-	 */
-	private void uploadStepValidation(String filePath)
-	{
-		String fileName = FilenameUtils.getName(filePath);
-
-		// Reject if extension is not csv
-		String fileType = getFileType(filePath);
-		if (fileType == null || !this.acceptableFileTypes.containsKey(fileType))
-		{
-			throw new InvalidFileTypeException("File '" + fileName + "' must be CSV");
-		}
-
-		// Reject if file is empty
-		File f = new File(filePath);
-		if (f.length() == 0)
-		{
-			throw new EmptyFileException("File '" + fileName + "' cannot be empty");
-		}
-
-		// Reject if file does not contain at least 2 rows (assumed to be header & data rows)
-		if (!fileContainsMinRows(filePath, 2))
-		{
-			throw new InsufficientDataException("File '" + fileName + "' must contain a header and at least 1 data row");
 		}
 	}
 }

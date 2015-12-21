@@ -1,51 +1,52 @@
 package uk.gov.ea.datareturns.resource;
 
-import static javax.ws.rs.core.Response.Status.BAD_REQUEST;
-import static javax.ws.rs.core.Response.Status.INTERNAL_SERVER_ERROR;
 import static javax.ws.rs.core.Response.Status.OK;
 import static org.assertj.core.api.Assertions.assertThat;
-import static uk.gov.ea.datareturns.helper.CommonHelper.makeFullPath;
-import static uk.gov.ea.datareturns.helper.DataExchangeHelper.generateUniqueFileKey;
-import static uk.gov.ea.datareturns.resource.DataExchangeResource.APP_STATUS_SUCCESS;
-import static uk.gov.ea.datareturns.resource.DataExchangeResource.APP_STATUS_SUCCESS_WITH_ERRORS;
-import static uk.gov.ea.datareturns.type.ApplicationException.EMPTY_FILE;
-import static uk.gov.ea.datareturns.type.ApplicationException.FILE_KEY_MISMATCH;
-import static uk.gov.ea.datareturns.type.ApplicationException.INSUFFICIENT_DATA;
-import static uk.gov.ea.datareturns.type.ApplicationException.INVALID_FILE_CONTENTS;
-import static uk.gov.ea.datareturns.type.ApplicationException.INVALID_FILE_TYPE;
-import static uk.gov.ea.datareturns.type.SystemException.FILE_UNLOCATABLE;
-import static uk.gov.ea.datareturns.type.SystemException.NOTIFICATION;
-import static uk.gov.ea.datareturns.type.SystemException.UNPROCESSABLE_ENTITY;
+import static uk.gov.ea.datareturns.helper.CommonHelper.makeFullFilePath;
+import static uk.gov.ea.datareturns.helper.FileUtilsHelper.createDirectory;
+import static uk.gov.ea.datareturns.helper.FileUtilsHelper.deleteDirectory;
+import static uk.gov.ea.datareturns.helper.XMLUtilsHelper.serializeToJSON;
+import static uk.gov.ea.datareturns.helper.XMLUtilsHelper.serializeToXML;
+import static uk.gov.ea.datareturns.type.AppStatusCode.APP_STATUS_FAILED_WITH_ERRORS;
+import static uk.gov.ea.datareturns.type.AppStatusCode.APP_STATUS_SUCCESS;
+import static uk.gov.ea.datareturns.type.ApplicationException.INVALID_CONTENTS;
+import static uk.gov.ea.datareturns.type.ApplicationException.MULTIPLE_PERMITS;
+import static uk.gov.ea.datareturns.type.ApplicationException.NO_RETURNS;
+import static uk.gov.ea.datareturns.type.ApplicationException.PERMIT_NOT_FOUND;
+import static uk.gov.ea.datareturns.type.ApplicationException.UNSUPPORTED_FILE_TYPE;
 import io.dropwizard.client.JerseyClientBuilder;
 import io.dropwizard.client.JerseyClientConfiguration;
 import io.dropwizard.testing.ResourceHelpers;
 import io.dropwizard.testing.junit.DropwizardAppRule;
 
-import java.io.File;
 import java.io.InputStream;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.Entity;
-import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-import org.apache.commons.io.FileUtils;
 import org.glassfish.jersey.client.ClientProperties;
 import org.glassfish.jersey.media.multipart.FormDataBodyPart;
 import org.glassfish.jersey.media.multipart.FormDataMultiPart;
 import org.glassfish.jersey.media.multipart.MultiPartFeature;
 import org.glassfish.jersey.media.multipart.file.StreamDataBodyPart;
+import org.junit.AfterClass;
 import org.junit.BeforeClass;
+import org.junit.ClassRule;
 import org.junit.FixMethodOrder;
-import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runners.MethodSorters;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import uk.gov.ea.datareturns.App;
 import uk.gov.ea.datareturns.config.DataExchangeConfiguration;
-import uk.gov.ea.datareturns.domain.DataExchangeResult;
+import uk.gov.ea.datareturns.domain.result.DataExchangeResult;
 
+import com.fasterxml.jackson.databind.SerializationFeature;
 import com.google.gson.Gson;
 
 /**
@@ -56,263 +57,187 @@ import com.google.gson.Gson;
  *     System - returns a standard HTML error code.
  *     Application - returns a standard HTML error code + an application specific status code to help identify what went wrong.
  * 
- * TODO may/may not implement testInvalidUploadInteface() & testInvalidCompleteInteface() tests as should be tested with e2e tests
  * TODO not every single exception is tested - not sure if they ever will as e2e test should provide full coverage
  * TODO could refactor/reduce tests as many tests retest same code BUT too much is better so not a priority
+ * TODO expand bigtime assertions - kept to a minimum to complete Trello card "Complete Upload Validation Code Changes. Back End - PART 1"
  */
-@FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class ResourceIntegrationTests
 {
+	private static final Logger LOGGER = LoggerFactory.getLogger(ResourceIntegrationTests.class);
+
 	public final static MediaType MEDIA_TYPE_CSV = new MediaType("text", "csv");
+	public final static MediaType MEDIA_TYPE_XML = new MediaType("application", "xml");
 
-	public final static String TEST_FILES_PATH = "/testfiles";
-	public final static String UPLOADED_PATH = "./uploaded";
-
-	public final static String FILE_CSV_SUCCESS = "success.csv";
-	public final static String FILE_PERMIT_NOT_FOUND = "permit-not-found.csv";
-	public final static String FILE_CSV_FAILURES = "failures.csv";
+	public final static String FILE_UNSUPPORTED_TYPE = "binary.exe";
+	public final static String FILE_NON_CSV_CONTENTS = "binary.csv";
 	public final static String FILE_CSV_EMPTY = "empty.csv";
 	public final static String FILE_CSV_INSUFFICIENT_DATA = "header-row-only.csv";
-	public final static String FILE_NON_CSV = "invalid-type.txt";
-	public final static String FILE_NON_TEXT = "binary.csv";
+	public final static String FILE_CSV_MUTLIPLE_PERMITS = "multiple_permits.csv";
+	public final static String FILE_PERMIT_NOT_FOUND = "permit-not-found.csv";
+	public final static String FILE_PERMIT_FOUND = "permit-found.csv";
+	public final static String FILE_CSV_FAILURES = "failures.csv";
+	public final static String FILE_CSV_SUCCESS = "success.csv";
 
 	public final static String FILE_CONFIG = "configuration_test.yml";
+
+	public final static String TRUE = "true";
 
 	public final static String URI = "http://localhost:%d/data-exchange/%s";
 
 	public final static String STEP_UPLOAD = "upload";
-	public final static String STEP_VALIDATE = "validate";
 	public final static String STEP_COMPLETE = "complete";
 
-	@Rule
-	public final DropwizardAppRule<DataExchangeConfiguration> RULE = new DropwizardAppRule<>(App.class, ResourceHelpers.resourceFilePath(FILE_CONFIG));
+	private static Boolean debugMode;
+	private static String testTimeout;
+
+	@ClassRule
+	public static final DropwizardAppRule<DataExchangeConfiguration> RULE = new DropwizardAppRule<DataExchangeConfiguration>(App.class,
+			ResourceHelpers.resourceFilePath(FILE_CONFIG));
 
 	@BeforeClass
 	public static void setUp()
 	{
-		// Safely delete ONLY known files before tests 
-		FileUtils.deleteQuietly(new File(makeFullPath(UPLOADED_PATH, FILE_CSV_SUCCESS)));
-		FileUtils.deleteQuietly(new File(makeFullPath(UPLOADED_PATH, FILE_PERMIT_NOT_FOUND)));
-		FileUtils.deleteQuietly(new File(makeFullPath(UPLOADED_PATH, FILE_CSV_FAILURES)));
-		FileUtils.deleteQuietly(new File(makeFullPath(UPLOADED_PATH, FILE_CSV_EMPTY)));
-		FileUtils.deleteQuietly(new File(makeFullPath(UPLOADED_PATH, FILE_CSV_INSUFFICIENT_DATA)));
-		FileUtils.deleteQuietly(new File(makeFullPath(UPLOADED_PATH, FILE_NON_CSV)));
-		FileUtils.deleteQuietly(new File(makeFullPath(UPLOADED_PATH, FILE_NON_TEXT)));
+		setDebugState();
+		createTestDirectory(RULE.getConfiguration().getMiscSettings().getOutputLocation());
 	}
 
-	// UPLOAD STEP START
-	@Test
-	public void testEAIdentifierData()
+	@AfterClass
+	public static void cleanup()
 	{
-		final Client client = createUploadStepClient("test EA Identifier extraction");
+		String cleanupAfterTestRun = RULE.getConfiguration().getMiscSettings().getCleanupAfterTestRun();
 
+		if (cleanupAfterTestRun != null && TRUE.equals(cleanupAfterTestRun.toLowerCase()))
+		{
+			deleteDirectory(RULE.getConfiguration().getMiscSettings().getOutputLocation());
+		}
+	}
+
+	@Test
+	public void testUnsupportedFileTypeFailure()
+	{
+		final Client client = createUploadStepClient("test Unsupported File Type Failure");
+		final Response resp = performUploadStep(client, FILE_UNSUPPORTED_TYPE, MEDIA_TYPE_CSV);
+		assertThat(resp.getStatus()).isEqualTo(OK.getStatusCode());
+
+		final DataExchangeResult result = getResultFromResponse(resp);
+		assertThat(result.getAppStatusCode()).isEqualTo(UNSUPPORTED_FILE_TYPE.getAppStatusCode());
+
+		dumpResult(result);
+	}
+
+	@Test
+	public void testInvalidFileContentsFailure()
+	{
+		final Client client = createUploadStepClient("test Invalid File Contents Failure");
+		final Response resp = performUploadStep(client, FILE_NON_CSV_CONTENTS, MEDIA_TYPE_CSV);
+		assertThat(resp.getStatus()).isEqualTo(OK.getStatusCode());
+
+		final DataExchangeResult result = getResultFromResponse(resp);
+		assertThat(result.getAppStatusCode()).isEqualTo(INVALID_CONTENTS.getAppStatusCode());
+
+		dumpResult(result);
+	}
+
+	@Test
+	public void testNoReturnsFailure()
+	{
+		final Client client = createUploadStepClient("test Empty File Failure");
+		final Response resp = performUploadStep(client, FILE_CSV_EMPTY, MEDIA_TYPE_CSV);
+		assertThat(resp.getStatus()).isEqualTo(OK.getStatusCode());
+
+		final DataExchangeResult result = getResultFromResponse(resp);
+		assertThat(result.getAppStatusCode()).isEqualTo(NO_RETURNS.getAppStatusCode());
+
+		dumpResult(result);
+	}
+
+	@Test
+	public void testInsufficientDataFailure()
+	{
+		final Client client = createUploadStepClient("test NO Return(s) in file Failure");
+		final Response resp = performUploadStep(client, FILE_CSV_INSUFFICIENT_DATA, MEDIA_TYPE_CSV);
+		assertThat(resp.getStatus()).isEqualTo(OK.getStatusCode());
+
+		final DataExchangeResult result = getResultFromResponse(resp);
+		assertThat(result.getAppStatusCode()).isEqualTo(NO_RETURNS.getAppStatusCode());
+
+		dumpResult(result);
+	}
+
+	@Test
+	public void testMutiplePermitsFailure()
+	{
+		final Client client = createUploadStepClient("test Multiple Permits Failure");
+		final Response resp = performUploadStep(client, FILE_CSV_MUTLIPLE_PERMITS, MEDIA_TYPE_CSV);
+		assertThat(resp.getStatus()).isEqualTo(OK.getStatusCode());
+
+		final DataExchangeResult result = getResultFromResponse(resp);
+		assertThat(result.getAppStatusCode()).isEqualTo(MULTIPLE_PERMITS.getAppStatusCode());
+
+		dumpResult(result);
+	}
+
+	@Test
+	public void testPermitNumberFoundSuccess()
+	{
+		final Client client = createUploadStepClient("test Permit Found Success");
+		final Response resp = performUploadStep(client, FILE_PERMIT_FOUND, MEDIA_TYPE_CSV);
+		assertThat(resp.getStatus()).isEqualTo(OK.getStatusCode());
+
+		final DataExchangeResult result = getResultFromResponse(resp);
+		assertThat(result.getAppStatusCode()).isEqualTo(APP_STATUS_SUCCESS.getAppStatusCode());
+
+		dumpResult(result);
+	}
+
+	@Test
+	public void testPermitNumberNotFoundFailure()
+	{
+		final Client client = createUploadStepClient("test Permit Not Found Failure");
+		final Response resp = performUploadStep(client, FILE_PERMIT_NOT_FOUND, MEDIA_TYPE_CSV);
+		assertThat(resp.getStatus()).isEqualTo(OK.getStatusCode());
+
+		final DataExchangeResult result = getResultFromResponse(resp);
+		assertThat(result.getAppStatusCode()).isEqualTo(PERMIT_NOT_FOUND.getAppStatusCode());
+
+		dumpResult(result);
+	}
+
+	// TODO this could be big!
+	@Test
+	public void testValidationErrorsFailure()
+	{
+		final Client client = createUploadStepClient("test Validation Errors Failure");
+		final Response resp = performUploadStep(client, FILE_CSV_FAILURES, MEDIA_TYPE_CSV);
+		assertThat(resp.getStatus()).isEqualTo(OK.getStatusCode());
+
+		final DataExchangeResult result = getResultFromResponse(resp);
+		assertThat(result.getAppStatusCode()).isEqualTo(APP_STATUS_FAILED_WITH_ERRORS.getAppStatusCode());
+
+		dumpResult(result);
+	}
+
+	// TODO only as far as "upload" for now
+	@Test
+	public void testEndToEndSuccess()
+	{
+		final Client client = createUploadStepClient("test End To End Success");
 		final Response resp = performUploadStep(client, FILE_CSV_SUCCESS, MEDIA_TYPE_CSV);
 		assertThat(resp.getStatus()).isEqualTo(OK.getStatusCode());
 
 		final DataExchangeResult result = getResultFromResponse(resp);
-		assertThat(result.getAppStatusCode()).isEqualTo(APP_STATUS_SUCCESS);
-		assertThat(result.getFileKey()).isNotEmpty();
-		assertThat(result.getEaId()).isNotEmpty();
-		assertThat(result.getSiteName()).isNotEmpty();
-		assertThat(result.getReturnType()).isNotEmpty();
+		assertThat(result.getAppStatusCode()).isEqualTo(APP_STATUS_SUCCESS.getAppStatusCode());
+
+		dumpResult(result);
 	}
 
-	@Test
-	public void testInvalidFileType()
-	{
-		final Client client = createUploadStepClient("test Invalid File Type");
-
-		final Response resp = performUploadStep(client, FILE_NON_CSV, MediaType.TEXT_PLAIN_TYPE);
-		assertThat(resp.getStatus()).isEqualTo(BAD_REQUEST.getStatusCode());
-
-		final DataExchangeResult result = getResultFromResponse(resp);
-		assertThat(result.getAppStatusCode()).isEqualTo(INVALID_FILE_TYPE.getAppStatusCode());
-	}
-
-	@Test
-	public void testEmptyFileFailure()
-	{
-		final Client client = createUploadStepClient("test Empty File Failure");
-		final Response resp = performUploadStep(client, FILE_CSV_EMPTY, MEDIA_TYPE_CSV);
-		assertThat(resp.getStatus()).isEqualTo(BAD_REQUEST.getStatusCode());
-
-		final DataExchangeResult result = getResultFromResponse(resp);
-		assertThat(result.getAppStatusCode()).isEqualTo(EMPTY_FILE.getAppStatusCode());
-	}
-
-	@Test
-	public void testInsufficientData()
-	{
-		final Client client = createUploadStepClient("test Insufficient Data in file");
-
-		final Response resp = performUploadStep(client, FILE_CSV_INSUFFICIENT_DATA, MEDIA_TYPE_CSV);
-		assertThat(resp.getStatus()).isEqualTo(BAD_REQUEST.getStatusCode());
-
-		final DataExchangeResult result = getResultFromResponse(resp);
-		assertThat(result.getAppStatusCode()).isEqualTo(INSUFFICIENT_DATA.getAppStatusCode());
-	}
-
-	@Test
-	public void testInvalidContents()
-	{
-		final Client client = createUploadStepClient("test Non text File Contents");
-
-		final Response resp = performUploadStep(client, FILE_NON_TEXT, MEDIA_TYPE_CSV);
-		assertThat(resp.getStatus()).isEqualTo(BAD_REQUEST.getStatusCode());
-
-		final DataExchangeResult result = getResultFromResponse(resp);
-		assertThat(result.getAppStatusCode()).isEqualTo(INVALID_FILE_CONTENTS.getAppStatusCode());
-	}
-
-	// UPLOAD STEP END
-
-	// VALIDATE STEP START
-
-	// TODO may/may not implement
-	//	@Test
-	//	public void testInvalidUploadInteface()
-
-	@Test
-	public void testInvalidValidateInteface()
-	{
-		final Client client = createValidateStepClient("test invalid Validate Inteface ");
-
-		final Response resp = performValidateStep(client);
-		assertThat(resp.getStatus()).isEqualTo(UNPROCESSABLE_ENTITY.getCode());
-
-		// TODO Should check more specific error message? 
-	}
-
-	@Test
-	public void testFileKeyMismatch()
-	{
-		final Client client = createValidateStepClient("test invalid File Key");
-
-		final Response resp = performValidateStep(client, generateUniqueFileKey(), "any_ea_id", "any_site_name", "invalid_return_type");
-		assertThat(resp.getStatus()).isEqualTo(BAD_REQUEST.getStatusCode());
-
-		final DataExchangeResult result = getResultFromResponse(resp);
-		assertThat(result.getAppStatusCode()).isEqualTo(FILE_KEY_MISMATCH.getAppStatusCode());
-	}
-
-	@Test
-	public void testMissingSchemaFile()
-	{
-		Client client = createUploadStepClient("test Missing Schema File 1/2");
-
-		Response resp = performUploadStep(client, FILE_CSV_SUCCESS, MEDIA_TYPE_CSV);
-		assertThat(resp.getStatus()).isEqualTo(OK.getStatusCode());
-
-		DataExchangeResult result = getResultFromResponse(resp);
-		assertThat(result.getAppStatusCode()).isEqualTo(APP_STATUS_SUCCESS);
-
-		client = createValidateStepClient("test Missing Schema File 2/2");
-
-		resp = performValidateStep(client, result.getFileKey(), result.getEaId(), result.getSiteName(), "invalid_return_type");
-		assertThat(resp.getStatus()).isEqualTo(INTERNAL_SERVER_ERROR.getStatusCode());
-
-		result = getResultFromResponse(resp);
-		assertThat(result.getAppStatusCode()).isEqualTo(FILE_UNLOCATABLE.getCode());
-	}
-
-	@Test
-	public void testPermitNumberFound()
-	{
-		Client client = createUploadStepClient("test Permit No Found 1/2");
-
-		Response resp = performUploadStep(client, FILE_CSV_SUCCESS, MEDIA_TYPE_CSV);
-		assertThat(resp.getStatus()).isEqualTo(OK.getStatusCode());
-
-		DataExchangeResult result = getResultFromResponse(resp);
-		assertThat(result.getAppStatusCode()).isEqualTo(APP_STATUS_SUCCESS);
-
-		client = createValidateStepClient("test Permit No Found 2/2");
-
-		resp = performValidateStep(client, result.getFileKey(), result.getEaId(), result.getSiteName(), result.getReturnType());
-		assertThat(resp.getStatus()).isEqualTo(OK.getStatusCode());
-
-		result = getResultFromResponse(resp);
-		assertThat(result.getAppStatusCode()).isEqualTo(APP_STATUS_SUCCESS);
-	}
-
-	@Test
-	public void testPermitNumberNotFound()
-	{
-		Client client = createUploadStepClient("test Permit No Not Found 1/2");
-
-		Response resp = performUploadStep(client, FILE_PERMIT_NOT_FOUND, MEDIA_TYPE_CSV);
-		assertThat(resp.getStatus()).isEqualTo(OK.getStatusCode());
-
-		DataExchangeResult result = getResultFromResponse(resp);
-		assertThat(result.getAppStatusCode()).isEqualTo(APP_STATUS_SUCCESS);
-
-		client = createValidateStepClient("test Permit No Not Found 2/2");
-
-		resp = performValidateStep(client, result.getFileKey(), result.getEaId(), result.getSiteName(), result.getReturnType());
-		assertThat(resp.getStatus()).isEqualTo(BAD_REQUEST.getStatusCode());
-	}
-
-	@Test
-	public void testWithValidationErrors()
-	{
-		Client client = createUploadStepClient("test Validation Error(s) generated 1/2");
-
-		Response resp = performUploadStep(client, FILE_CSV_FAILURES, MEDIA_TYPE_CSV);
-		assertThat(resp.getStatus()).isEqualTo(OK.getStatusCode());
-
-		DataExchangeResult result = getResultFromResponse(resp);
-		assertThat(result.getAppStatusCode()).isEqualTo(APP_STATUS_SUCCESS);
-
-		client = createValidateStepClient("test Validation Error(s) generated 2/2");
-
-		resp = performValidateStep(client, result.getFileKey(), result.getEaId(), result.getSiteName(), result.getReturnType());
-		assertThat(resp.getStatus()).isEqualTo(OK.getStatusCode());
-
-		result = getResultFromResponse(resp);
-		assertThat(result.getAppStatusCode()).isEqualTo(APP_STATUS_SUCCESS_WITH_ERRORS);
-		assertThat(result.getErrors().size()).isNotEqualTo(0);
-	}
-
-	// VALIDATE STEP END
-
-	// COMPLETE STEP START
-
-	@Test
-	// TODO fails if smtp server available
-	public void testUserNotificationFailure()
-	{
-		Client client = createUploadStepClient("test Validation Error generation 1/3");
-
-		Response resp = performUploadStep(client, FILE_CSV_SUCCESS, MEDIA_TYPE_CSV);
-		assertThat(resp.getStatus()).isEqualTo(OK.getStatusCode());
-
-		DataExchangeResult result = getResultFromResponse(resp);
-		assertThat(result.getAppStatusCode()).isEqualTo(APP_STATUS_SUCCESS);
-
-		client = createValidateStepClient("test Validation Error generation 2/3");
-
-		resp = performValidateStep(client, result.getFileKey(), result.getEaId(), result.getSiteName(), result.getReturnType());
-		assertThat(resp.getStatus()).isEqualTo(OK.getStatusCode());
-
-		result = getResultFromResponse(resp);
-		assertThat(result.getAppStatusCode()).isEqualTo(APP_STATUS_SUCCESS);
-
-		client = createCompleteStepClient("test Validation Error generation 3/3");
-
-		resp = performCompleteStep(client, result.getFileKey());
-		assertThat(resp.getStatus()).isEqualTo(INTERNAL_SERVER_ERROR.getStatusCode());
-
-		result = getResultFromResponse(resp);
-		assertThat(result.getAppStatusCode()).isEqualTo(NOTIFICATION.getCode());
-	}
-
-	// COMPLETE STEP START
-
-	// TODO may/may not implement
-	//	@Test
-	//	public void testInvalidCompleteInteface()
-	//	{
-	//	}
+	// TODO missing column
+	// TODO columns out of sequence
+	// TODO extra columns
+	// TODO missing xsd file
+	// TODO missing translation file
+	// TODO missing xslt files
+	// TODO + complete step tests etc...
 
 	/**
 	 * Create's a Jersey Client object ready for POST request used in Upload step
@@ -325,7 +250,7 @@ public class ResourceIntegrationTests
 		configuration.setChunkedEncodingEnabled(false);
 
 		final Client client = new JerseyClientBuilder(RULE.getEnvironment()).using(configuration).build(testName).register(MultiPartFeature.class);
-		client.property(ClientProperties.READ_TIMEOUT, 10000);
+		client.property(ClientProperties.READ_TIMEOUT, testTimeout);
 
 		return client;
 	}
@@ -339,53 +264,15 @@ public class ResourceIntegrationTests
 	 */
 	private Response performUploadStep(Client client, String testFileName, MediaType mediaType)
 	{
+		final String testFilesLocation = RULE.getConfiguration().getMiscSettings().getTestFilesLocation();
 		final FormDataMultiPart form = new FormDataMultiPart();
-		final InputStream data = this.getClass().getResourceAsStream(makeFullPath(TEST_FILES_PATH, testFileName));
+		final InputStream data = this.getClass().getResourceAsStream(makeFullFilePath(testFilesLocation, testFileName));
 		final String uri = String.format(URI, RULE.getLocalPort(), STEP_UPLOAD);
 		final StreamDataBodyPart fdp1 = new StreamDataBodyPart("fileUpload", data, testFileName, mediaType);
 
 		form.bodyPart(fdp1);
 
-		final Response resp = client.register(MultiPartFeature.class).target(uri).request()
-				.post(Entity.entity(form, form.getMediaType()), Response.class);
-
-		return resp;
-	}
-
-	/**
-	 * Create's a Jersey Client object ready for GET request used in Validate step
-	 * @param testName
-	 * @return
-	 */
-	private Client createValidateStepClient(String testName)
-	{
-		final Client client = new JerseyClientBuilder(RULE.getEnvironment()).build(testName);
-
-		client.property(ClientProperties.READ_TIMEOUT, 10000);
-
-		return client;
-	}
-
-	/**
-	 * Make Get request for Validate step
-	 * @param client
-	 * @param args
-	 * @return
-	 */
-	private Response performValidateStep(Client client, String... args)
-	{
-		final String uri = String.format(URI, RULE.getLocalPort(), STEP_VALIDATE);
-		final String[] paramNames =
-		{ "fileKey", "eaId", "siteName", "returnType" };
-		WebTarget wt = client.target(uri);
-		int i = 0;
-
-		for (String arg : args)
-		{
-			wt = wt.queryParam(paramNames[i++], arg);
-		}
-
-		final Response resp = wt.request().get(Response.class);
+		final Response resp = client.register(MultiPartFeature.class).target(uri).request().post(Entity.entity(form, form.getMediaType()), Response.class);
 
 		return resp;
 	}
@@ -435,5 +322,40 @@ public class ResourceIntegrationTests
 		final Gson gson = new Gson();
 
 		return gson.fromJson(resp.readEntity(String.class), DataExchangeResult.class);
+	}
+
+	/**
+	 * Creates a "new" directory for testing use
+	 * @param dir
+	 */
+	private static void createTestDirectory(String dir)
+	{
+		deleteDirectory(dir);
+		createDirectory(dir);
+	}
+
+	private static void setDebugState()
+	{
+		String defaultTestTimeout = RULE.getConfiguration().getMiscSettings().getDefaultTestTimeout();
+		String debugTestTimeout = RULE.getConfiguration().getMiscSettings().getDebugTestTimeout();
+
+		debugMode = TRUE.equals(RULE.getConfiguration().getMiscSettings().getDebugMode().toLowerCase()) ? true : false;
+		testTimeout = (debugMode ? (debugTestTimeout == null ? defaultTestTimeout : debugTestTimeout) : defaultTestTimeout);
+
+		LOGGER.debug("Debug Mode is '" + debugMode + "'");
+		LOGGER.debug("Test Timeout is '" + Integer.parseInt(testTimeout) / 1000 + "' seconds");
+	}
+
+	// TODO DEBUG
+	private void dumpResult(DataExchangeResult result)
+	{
+		if (debugMode)
+		{
+			Map<SerializationFeature, Boolean> config = new HashMap<SerializationFeature, Boolean>();
+			config.put(SerializationFeature.INDENT_OUTPUT, true);
+
+			System.out.println(serializeToXML(result, config));
+			System.out.println(serializeToJSON(result, config));
+		}
 	}
 }

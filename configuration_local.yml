@@ -22,8 +22,12 @@ server:
   - type: http
     port: 9021
 misc:
-  fileUploadLocation: ./uploaded
-  schemaFileLocation: ./schemas
+  uploadedLocation: ./uploaded
+  outputLocation: ./output
+  schemaLocation: ./external_resources/schema
+  xsltLocation: ./external_resources/xslt
+  xmlLocation: ./external_resources/xml
+  debugMode: true
 email:
   host: 127.0.0.1
   port: 1025

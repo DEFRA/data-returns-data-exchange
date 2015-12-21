@@ -12,8 +12,16 @@ server:
   - type: http
     port: 9090
 misc:
-  fileUploadLocation: ./uploaded
-  schemaFileLocation: ./schemas
+  uploadedLocation: ./uploaded
+  outputLocation: ./test_output
+  schemaLocation: ./external_resources/schema
+  xsltLocation: ./external_resources/xslt
+  xmlLocation: ./external_resources/xml
+  testFilesLocation: /testfiles
+  defaultTestTimeout: 10000
+  debugTestTimeout : 10000000
+  debugMode: true
+  cleanupAfterTestRun: true
 email:
   host: 127.0.0.1
   port: 1025

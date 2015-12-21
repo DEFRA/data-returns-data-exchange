@@ -1,5 +1,8 @@
 package uk.gov.ea.datareturns.helper;
 
+import static java.nio.file.Files.readAllBytes;
+import static java.nio.file.Paths.get;
+
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
@@ -10,7 +13,10 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import uk.gov.ea.datareturns.exception.system.FileReadException;
 import uk.gov.ea.datareturns.exception.system.FileSaveException;
@@ -18,23 +24,27 @@ import uk.gov.ea.datareturns.exception.system.FileUnlocatableException;
 
 public class FileUtilsHelper
 {
+	private static final Logger LOGGER = LoggerFactory.getLogger(FileUtilsHelper.class);
+
 	/**
 	 * Persist file stream to file location provided
-	 * @param uploadedInputStream
 	 * @param filePath
+	 * @return
 	 */
-	public static boolean saveReturnsFile(InputStream is, String fullFilePath)
+	public static boolean saveFile(InputStream is, String filePath)
 	{
 		boolean ret = false;
-		String fileName = FilenameUtils.getName(fullFilePath);
-		File file = new File(fullFilePath);
+		String fileName = FilenameUtils.getName(filePath);
+		File file = new File(filePath);
+
+		LOGGER.debug("Saving file '" + filePath + "'");
 
 		try
 		{
 			BufferedReader br = new BufferedReader(new InputStreamReader(is));
 			BufferedWriter bw = new BufferedWriter(new FileWriter(file.getAbsoluteFile()));
 			String line;
-			
+
 			while ((line = br.readLine()) != null)
 			{
 				bw.write(line);
@@ -54,17 +64,35 @@ public class FileUtilsHelper
 			throw new FileReadException(e2, "Unable to read from file '" + fileName + "'");
 		}
 
+		LOGGER.debug("File saved successfully");
+
 		return ret;
 	}
 
-	// TODO needs to be refactored to enable testing fully
+	public static String loadFileAsString(String filePath)
+	{
+		String content = null;
+		
+		try
+		{
+			content = new String(readAllBytes(get(filePath)));
+		} catch (IOException e)
+		{
+			throw new FileReadException(e, "Unable to read from file '" + filePath + "'");
+		}
+
+		return content;
+	}
+
+	// TODO needs to be refactored to enable full testing
 	/**
-	 * Verifys if file contains minimum rows expected (currently 2) 
+	 * Verify file contains minimum rows expected.
+	 * The count includes Header row and cannot guarantee they are complete
 	 * @param filePath
 	 * @param i
 	 * @return
 	 */
-	public static boolean fileContainsMinRows(String filePath, int i)
+	public static boolean fileContainsMinRows(String filePath, int minRows)
 	{
 		File file = new File(filePath);
 		String fileName = FilenameUtils.getName(filePath);
@@ -74,11 +102,12 @@ public class FileUtilsHelper
 		try
 		{
 			BufferedReader br = new BufferedReader(new FileReader(file));
+			@SuppressWarnings("unused")
 			String line;
 
 			while ((line = br.readLine()) != null)
 			{
-				if (lineNo++ == 2)
+				if (lineNo++ == minRows)
 				{
 					minRowsFound = true;
 
@@ -97,5 +126,47 @@ public class FileUtilsHelper
 		}
 
 		return minRowsFound;
+	}
+
+	public static boolean fileExists(String fileLocation)
+	{
+		File f = new File(fileLocation);
+
+		LOGGER.debug("Checking if file '" + fileLocation + "' exists");
+
+		LOGGER.debug("File does " + (f.exists() ? "" : "not") + " exist");
+
+		return f.exists();
+	}
+
+	public static String makeFullPath(String dir, String file)
+	{
+		return dir + File.separatorChar + file;
+	}
+	
+	public static void deleteDirectory(String dir)
+	{
+		try
+		{
+			FileUtils.deleteDirectory(new File(dir));
+
+		} catch (IOException e)
+		{
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	
+	public static void createDirectory(String dir)
+	{
+
+		try
+		{
+			FileUtils.forceMkdir(new File(dir));
+		} catch (IOException e1)
+		{
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
 	}
 }

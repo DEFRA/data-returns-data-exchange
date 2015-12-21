@@ -2,7 +2,7 @@ package uk.gov.ea.datareturns.helper;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.ea.datareturns.helper.CommonHelper.getFileType;
-import static uk.gov.ea.datareturns.helper.CommonHelper.makeFullPath;
+import static uk.gov.ea.datareturns.helper.CommonHelper.makeFullFilePath;
 
 import org.junit.Test;
 
@@ -23,7 +23,7 @@ public class CommonHelperTests
 	{
 		final String EXPECTED = "/this/is/a/test/folder/test_file.csv";
 
-		final String result = makeFullPath(TEST_PATH, TEST_FILE);
+		final String result = makeFullFilePath(TEST_PATH, TEST_FILE);
 		assertThat(result).isEqualTo(EXPECTED);
 	}
 
@@ -36,7 +36,7 @@ public class CommonHelperTests
 		@SuppressWarnings("unused")
 		final String EXPECTED_FILE_TYPE = "csv";
 
-		String result = getFileType(makeFullPath("", ""));
+		String result = getFileType(makeFullFilePath("", ""));
 		assertThat(result).isEqualTo(null);
 	}
 
@@ -48,7 +48,7 @@ public class CommonHelperTests
 	{
 		final String EXPECTED_FILE_TYPE = "csv";
 
-		String result = getFileType(makeFullPath(TEST_PATH.toUpperCase(), TEST_FILE.toUpperCase()));
+		String result = getFileType(makeFullFilePath(TEST_PATH.toUpperCase(), TEST_FILE.toUpperCase()));
 		assertThat(result).isEqualTo(EXPECTED_FILE_TYPE);
 	}
 }

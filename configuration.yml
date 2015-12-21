@@ -21,8 +21,11 @@ server:
   - type: http
     port: 9021
 misc:
-  fileUploadLocation: ./uploaded
-  schemaFileLocation: ./schemas
+  uploadedLocation: ./uploaded
+  outputLocation: ./output
+  schemaLocation: ./external_resources/schema
+  xsltLocation: ./external_resources/xslt
+  xmlLocation: ./external_resources/xml
 email:
   host: email-smtp.us-west-2.amazonaws.com
   port: 587

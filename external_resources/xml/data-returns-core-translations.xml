@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Translations>
+	<TranslateTo>
+		<ElementName elementId="EA_ID"><![CDATA[The 'eaID' value needs to be complete and valid]]></ElementName>
+		<ElementName elementId="Site_Name"><![CDATA[The 'Site_Name' is dodgy]]></ElementName>
+		<ElementName elementId="Rtn_Type"><![CDATA[The 'Rtn_Type' is dodgy]]></ElementName>
+		<ElementName elementId="Mon_Date"><![CDATA[The 'dateSt' value needs to be included in the format 'YYYY-MM-DD' eg 2015-10-31]]></ElementName>
+		<ElementName elementId="Mon_Date_End"><![CDATA[The 'Mon_Date_End' is dodgy]]></ElementName>
+		<ElementName elementId="Mon_Period"><![CDATA[The 'Mon_Period' is dodgy]]></ElementName>
+		<ElementName elementId="Smpl_Ref"><![CDATA[The 'Smpl_Ref' is dodgy]]></ElementName>
+		<ElementName elementId="Smpl_By"><![CDATA[The 'Smpl_By' is dodgy]]></ElementName>
+		<ElementName elementId="Mon_Point"><![CDATA[The 'Mon_Point' is dodgy]]></ElementName>
+		<ElementName elementId="Parameter"><![CDATA[The 'Parameter' is dodgy]]></ElementName>
+		<ElementName elementId="Value"><![CDATA[The 'Value' is dodgy]]></ElementName>
+		<ElementName elementId="Txt_Value"><![CDATA[The 'Txt_Value' is dodgy]]></ElementName>
+		<ElementName elementId="Unit"><![CDATA[The 'Unit' is dodgy]]></ElementName>
+		<ElementName elementId="Ref_Period"><![CDATA[The 'Ref_Period' is dodgy]]></ElementName>
+		<ElementName elementId="Meth_Stand"><![CDATA[The 'Meth_Stand' is dodgy]]></ElementName>
+		<ElementName elementId="Comments"><![CDATA[The 'Comments' is dodgy]]></ElementName>
+		<ElementName elementId="CiC"><![CDATA[The 'CiC' is dodgy]]></ElementName>
+		<ElementName elementId="CAS"><![CDATA[The 'CAS' is dodgy]]></ElementName>
+		<ElementName elementId="RD_Code"><![CDATA[The 'RD_Code' is dodgy]]></ElementName>
+	</TranslateTo>
+</Translations>

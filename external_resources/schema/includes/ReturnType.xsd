@@ -1,0 +1,38 @@
+
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" 
+           xmlns:lgm="http://ea.gov.uk/DR/LGM" 
+           attributeFormDefault="unqualified"
+           elementFormDefault="qualified">
+		   
+    <xs:include schemaLocation="XMLID.xsd" />	
+       
+    <xs:simpleType name="returnType">
+        <xs:restriction base="xs:string" >
+            <xs:enumeration value="EPR/IED self monitoring periodic Air (point source) emissions return"/>
+            <xs:enumeration value="EPR/IED self monitoring periodic Air (ambient) monitoring return"/>
+            <xs:enumeration value="EPR/IED self monitoring periodic Leachate level return"/>
+            <xs:enumeration value="EPR/IED self monitoring periodic Leachate quality return"/>
+            <xs:enumeration value="EPR/IED self monitoring periodic Surface Water emissions return"/>
+            <xs:enumeration value="EPR/IED self monitoring periodic Groundwater quality/level return"/>
+            <xs:enumeration value="EPR/IED self monitoring periodic Landfill Gas surface emissions return"/>
+            <xs:enumeration value="EPR/IED self monitoring periodic Landfill Gas surface water quality return"/>
+            <xs:enumeration value="EPR/IED self monitoring periodic Landfill Gas perimeter monitoring return"/>
+            <xs:enumeration value="EPR/IED self monitoring periodic Landfill Gas in waste monitoring return"/>
+            <xs:enumeration value="EPR/IED self monitoring periodic Landfill Gas infrastructure monitoring return"/>
+            <xs:enumeration value="EPR/IED self monitoring periodic Sewer, ETP or Tankering emissions return"/>
+            <xs:enumeration value="EPR/IED self monitoring periodic leachate production/treatment"/>
+            <xs:enumeration value="EPR/IED self monitoring periodic landfill gas production/treatment"/>
+            <xs:enumeration value="EPR/IED schedule 5/6 incident report"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+
+    <xs:complexType name="LFG_returnType">
+        <xs:simpleContent>
+            <xs:extension base="returnType">
+                <xs:attributeGroup ref="CommonAtts"/>
+            </xs:extension>
+        </xs:simpleContent>
+    </xs:complexType>
+    
+</xs:schema>

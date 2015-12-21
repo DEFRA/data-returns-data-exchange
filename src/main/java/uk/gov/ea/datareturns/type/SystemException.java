@@ -1,6 +1,6 @@
 package uk.gov.ea.datareturns.type;
 
-// TODO UNPROCESSABLE_ENTITY must be avaliable os some standard lib somewhere? (not just Spring)
+// TODO UNPROCESSABLE_ENTITY must be avaliable in some standard lib somewhere? (not just Spring)
 public enum SystemException
 {
 	FILE_SAVE(601, "Cannot Save File"), 

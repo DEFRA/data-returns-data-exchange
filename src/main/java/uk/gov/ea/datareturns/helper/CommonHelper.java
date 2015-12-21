@@ -6,13 +6,18 @@ public class CommonHelper
 {
 	/**
 	 * Returns a full OS independent file path
-	 * @param leftPart
-	 * @param rightPart
+	 * @param dir
+	 * @param fileName
 	 * @return
 	 */
-	public static String makeFullPath(String leftPart, String rightPart)
+	public static String makeFullFilePath(String dir, String fileName)
 	{
-		return leftPart + File.separator + rightPart;
+		return dir + File.separator + fileName;
+	}
+
+	public static String makeFileName(String leftPart, String rightPart)
+	{
+		return leftPart + "." + rightPart;
 	}
 
 	/**
