@@ -91,8 +91,7 @@ public class ResourceIntegrationTests
 	private static String testTimeout;
 
 	@ClassRule
-	public static final DropwizardAppRule<DataExchangeConfiguration> RULE = new DropwizardAppRule<DataExchangeConfiguration>(App.class,
-			ResourceHelpers.resourceFilePath(FILE_CONFIG));
+	public static final DropwizardAppRule<DataExchangeConfiguration> RULE = new DropwizardAppRule<DataExchangeConfiguration>(App.class, FILE_CONFIG);
 
 	@BeforeClass
 	public static void setUp()
