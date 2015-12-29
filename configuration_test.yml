@@ -30,7 +30,7 @@ email:
   tls: false
   bodyMessage: Data Returns Import file received
 database:
-  url: jdbc:postgresql://data-returns.cn1r9x2itg1r.eu-west-1.rds.amazonaws.com:5432
+  url: jdbc:postgresql://data-returns.cn1r9x2itg1r.eu-west-1.rds.amazonaws.com:5432/data-returns
   driverClass: org.postgresql.Driver
   user: data_returns_owner
   password: data_returns_owner
