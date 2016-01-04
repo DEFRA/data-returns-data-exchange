@@ -78,7 +78,7 @@ public class ResourceIntegrationTests
 	public final static String FILE_CSV_FAILURES = "failures.csv";
 	public final static String FILE_CSV_SUCCESS = "success.csv";
 
-	public final static String FILE_CONFIG = "configuration_test.yml";
+	public final static String FILE_CONFIG = System.getProperty("configFile");
 
 	public final static String TRUE = "true";
 

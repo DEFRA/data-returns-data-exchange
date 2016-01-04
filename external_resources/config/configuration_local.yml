@@ -3,6 +3,7 @@ logging:
   loggers:
     uk.gov.ea.datareturns: DEBUG
     io.dropwizard: INFO
+    org.glassfish: ERROR
     org.eclipse: ERROR
   appenders:
   - type: console
@@ -22,21 +23,26 @@ server:
     port: 9021
 misc:
   uploadedLocation: ./uploaded
-  outputLocation: ./output
+  outputLocation: ./test_output
   schemaLocation: ./external_resources/schema
   xsltLocation: ./external_resources/xslt
   xmlLocation: ./external_resources/xml
+  testFilesLocation: /testfiles
+  defaultTestTimeout: 10000
+  debugTestTimeout : 10000000
+  debugMode: true
+  cleanupAfterTestRun: true
 email:
-  host: email-smtp.us-west-2.amazonaws.com
-  port: 587
-  tls: true
-  emailTo: hkjtest@gmail.com
-  emailFrom: hkjtest@gmail.com
-  user: AKIAIXIKELZAJXERTANQ
-  password: Aq0DdA7svkwx9ufu8oE1U/S5bNXExJ9RFmkQ/yZykrHc
+  host: 127.0.0.1
+  port: 1025
+  emailTo: import@monitorpro.com
+  emailFrom: data_returns@environment-agency.gov.uk
+  tls: false
   bodyMessage: Data Returns Import file received
 database:
-  url: jdbc:postgresql://localhost:5432/data_returns
-  driverClass: org.postgresql.Driver
+  driverClass: com.p6spy.engine.spy.P6SpyDriver
+  url: jdbc:p6spy:postgresql://localhost:5432/data_returns
+  #url: jdbc:postgresql://localhost:5432/data_returns
+  #driverClass: org.postgresql.Driver
   user: data_returns_owner
   password: data_returns_owner

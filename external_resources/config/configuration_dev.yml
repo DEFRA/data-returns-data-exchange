@@ -7,10 +7,20 @@ logging:
     org.eclipse: ERROR
   appenders:
   - type: console
+  - type: file
+    currentLogFilename: log/datareturns.log
+    archivedLogFilenamePattern: log/datareturns-%d.log
+    threshold: ALL
+    archive: true
+    archivedFileCount: 5
+    timeZone: UTC
 server:
   applicationConnectors:
   - type: http
-    port: 9090
+    port: 9020
+  adminConnectors:
+  - type: http
+    port: 9021
 misc:
   uploadedLocation: ./uploaded
   outputLocation: ./test_output
@@ -19,8 +29,8 @@ misc:
   xmlLocation: ./external_resources/xml
   testFilesLocation: /testfiles
   defaultTestTimeout: 10000
-  debugTestTimeout : 10000000
-  debugMode: true
+  debugTestTimeout : 10000
+  debugMode: false
   cleanupAfterTestRun: true
 email:
   host: 127.0.0.1
