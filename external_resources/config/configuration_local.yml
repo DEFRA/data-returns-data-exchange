@@ -23,7 +23,7 @@ server:
     port: 9021
 misc:
   uploadedLocation: ./uploaded
-  outputLocation: ./test_output
+  outputLocation: ./output
   schemaLocation: ./external_resources/schema
   xsltLocation: ./external_resources/xslt
   xmlLocation: ./external_resources/xml
@@ -31,7 +31,7 @@ misc:
   defaultTestTimeout: 10000
   debugTestTimeout : 10000000
   debugMode: true
-  cleanupAfterTestRun: true
+  cleanupAfterTestRun: false
 email:
   host: 127.0.0.1
   port: 1025
