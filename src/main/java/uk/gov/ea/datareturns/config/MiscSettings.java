@@ -23,11 +23,8 @@ public class MiscSettings
 	@NotEmpty
 	private String xmlLocation;
 
-	private String testFilesLocation;
+	@NotEmpty
 	private String debugMode;
-	private String defaultTestTimeout;
-	private String debugTestTimeout;
-	private String cleanupAfterTestRun;
 
 	public MiscSettings()
 	{
@@ -83,16 +80,6 @@ public class MiscSettings
 		this.xmlLocation = xmlLocation;
 	}
 
-	public String getTestFilesLocation()
-	{
-		return testFilesLocation;
-	}
-
-	public void setTestFilesLocation(String testFilesLocation)
-	{
-		this.testFilesLocation = testFilesLocation;
-	}
-
 	public String getDebugMode()
 	{
 		return debugMode;
@@ -101,35 +88,5 @@ public class MiscSettings
 	public void setDebugMode(String debugMode)
 	{
 		this.debugMode = debugMode;
-	}
-
-	public String getDefaultTestTimeout()
-	{
-		return defaultTestTimeout;
-	}
-
-	public void setDefaultTestTimeout(String defaultTestTimeout)
-	{
-		this.defaultTestTimeout = defaultTestTimeout;
-	}
-
-	public String getDebugTestTimeout()
-	{
-		return debugTestTimeout;
-	}
-
-	public void setDebugTestTimeout(String debugTestTimeout)
-	{
-		this.debugTestTimeout = debugTestTimeout;
-	}
-
-	public String getCleanupAfterTestRun()
-	{
-		return cleanupAfterTestRun;
-	}
-
-	public void setCleanupAfterTestRun(String cleanupAfterTestRun)
-	{
-		this.cleanupAfterTestRun = cleanupAfterTestRun;
 	}
 }

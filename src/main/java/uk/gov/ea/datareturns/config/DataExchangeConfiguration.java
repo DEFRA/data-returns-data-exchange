@@ -2,8 +2,6 @@ package uk.gov.ea.datareturns.config;
 
 import io.dropwizard.Configuration;
 import io.dropwizard.db.DataSourceFactory;
-import io.dropwizard.server.DefaultServerFactory;
-import io.dropwizard.server.ServerFactory;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
@@ -23,8 +21,12 @@ public class DataExchangeConfiguration extends Configuration
 	@Valid
 	@NotNull
 	private MiscSettings miscSettings = new MiscSettings();
-		
-	 @JsonProperty("database")
+
+	@Valid
+	@NotNull
+	private TestSettings testSettings = new TestSettings();
+
+	@JsonProperty("database")
 	public void setDatabase(DataSourceFactory database)
 	{
 		this.database = database;
@@ -35,7 +37,7 @@ public class DataExchangeConfiguration extends Configuration
 	{
 		return database;
 	}
-	
+
 	@JsonProperty("email")
 	public EmailSettings getEmailsettings()
 	{
@@ -47,7 +49,7 @@ public class DataExchangeConfiguration extends Configuration
 	{
 		this.emailsettings = emailsettings;
 	}
-	
+
 	@JsonProperty("misc")
 	public MiscSettings getMiscSettings()
 	{
@@ -58,5 +60,17 @@ public class DataExchangeConfiguration extends Configuration
 	public void setMiscSettings(MiscSettings miscSettings)
 	{
 		this.miscSettings = miscSettings;
+	}
+
+	@JsonProperty("test")
+	public TestSettings getTestSettings()
+	{
+		return testSettings;
+	}
+
+	@JsonProperty("test")
+	public void setTestSettings(TestSettings testSettings)
+	{
+		this.testSettings = testSettings;
 	}
 }

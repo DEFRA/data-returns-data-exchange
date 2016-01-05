@@ -27,10 +27,10 @@ misc:
   schemaLocation: ./external_resources/schema
   xsltLocation: ./external_resources/xslt
   xmlLocation: ./external_resources/xml
-  testFilesLocation: /testfiles
-  defaultTestTimeout: 10000
-  debugTestTimeout : 10000
   debugMode: false
+test:
+  testFilesLocation: /testfiles
+  testTimeout: 10000
   cleanupAfterTestRun: true
 email:
   host: 127.0.0.1

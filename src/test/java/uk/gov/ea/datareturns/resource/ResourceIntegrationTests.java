@@ -101,9 +101,7 @@ public class ResourceIntegrationTests
 	@AfterClass
 	public static void cleanup() throws IOException
 	{
-		String cleanupAfterTestRun = RULE.getConfiguration().getMiscSettings().getCleanupAfterTestRun();
-
-		if (cleanupAfterTestRun != null && TRUE.equals(cleanupAfterTestRun.toLowerCase()))
+		if (TRUE.equals(RULE.getConfiguration().getTestSettings().getCleanupAfterTestRun().toLowerCase()))
 		{
 			deleteDirectory(RULE.getConfiguration().getMiscSettings().getOutputLocation());
 		}
@@ -261,10 +259,10 @@ public class ResourceIntegrationTests
 	 */
 	private Response performUploadStep(Client client, String testFileName, MediaType mediaType)
 	{
-		final String testFilesLocation = RULE.getConfiguration().getMiscSettings().getTestFilesLocation();
+		final String testFilesLocation = RULE.getConfiguration().getTestSettings().getTestFilesLocation();
 		final FormDataMultiPart form = new FormDataMultiPart();
 		final InputStream data = this.getClass().getResourceAsStream(makeFullFilePath(testFilesLocation, testFileName));
-		final String uri = String.format(URI, RULE.getLocalPort(), STEP_UPLOAD);
+		final String uri = createURIForStep(STEP_UPLOAD);
 		final StreamDataBodyPart fdp1 = new StreamDataBodyPart("fileUpload", data, testFileName, mediaType);
 
 		form.bodyPart(fdp1);
@@ -303,7 +301,7 @@ public class ResourceIntegrationTests
 		final FormDataBodyPart fdp2 = new FormDataBodyPart("emailcc", "abc@abc.com");
 		form.bodyPart(fdp2);
 
-		final String uri = String.format(URI, RULE.getLocalPort(), STEP_COMPLETE);
+		final String uri = createURIForStep(STEP_COMPLETE);
 		final Response resp = client.target(uri).request().post(Entity.entity(form, form.getMediaType()), Response.class);
 
 		return resp;
@@ -334,14 +332,16 @@ public class ResourceIntegrationTests
 
 	private static void setDebugState()
 	{
-		String defaultTestTimeout = RULE.getConfiguration().getMiscSettings().getDefaultTestTimeout();
-		String debugTestTimeout = RULE.getConfiguration().getMiscSettings().getDebugTestTimeout();
-
 		debugMode = TRUE.equals(RULE.getConfiguration().getMiscSettings().getDebugMode().toLowerCase()) ? true : false;
-		testTimeout = (debugMode ? (debugTestTimeout == null ? defaultTestTimeout : debugTestTimeout) : defaultTestTimeout);
+		testTimeout = RULE.getConfiguration().getTestSettings().getTestTimeout();
 
 		LOGGER.debug("Debug Mode is '" + debugMode + "'");
 		LOGGER.debug("Test Timeout is '" + Integer.parseInt(testTimeout) / 1000 + "' seconds");
+	}
+
+	private String createURIForStep(String step)
+	{
+		return String.format(URI, RULE.getLocalPort(), step);
 	}
 
 	// TODO DEBUG
