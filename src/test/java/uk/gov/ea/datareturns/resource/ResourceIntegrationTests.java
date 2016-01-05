@@ -16,9 +16,9 @@ import static uk.gov.ea.datareturns.type.ApplicationException.PERMIT_NOT_FOUND;
 import static uk.gov.ea.datareturns.type.ApplicationException.UNSUPPORTED_FILE_TYPE;
 import io.dropwizard.client.JerseyClientBuilder;
 import io.dropwizard.client.JerseyClientConfiguration;
-import io.dropwizard.testing.ResourceHelpers;
 import io.dropwizard.testing.junit.DropwizardAppRule;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
@@ -36,9 +36,7 @@ import org.glassfish.jersey.media.multipart.file.StreamDataBodyPart;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.ClassRule;
-import org.junit.FixMethodOrder;
 import org.junit.Test;
-import org.junit.runners.MethodSorters;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -94,14 +92,14 @@ public class ResourceIntegrationTests
 	public static final DropwizardAppRule<DataExchangeConfiguration> RULE = new DropwizardAppRule<DataExchangeConfiguration>(App.class, FILE_CONFIG);
 
 	@BeforeClass
-	public static void setUp()
+	public static void setUp() throws IOException
 	{
 		setDebugState();
 		createTestDirectory(RULE.getConfiguration().getMiscSettings().getOutputLocation());
 	}
 
 	@AfterClass
-	public static void cleanup()
+	public static void cleanup() throws IOException
 	{
 		String cleanupAfterTestRun = RULE.getConfiguration().getMiscSettings().getCleanupAfterTestRun();
 
@@ -326,8 +324,9 @@ public class ResourceIntegrationTests
 	/**
 	 * Creates a "new" directory for testing use
 	 * @param dir
+	 * @throws IOException 
 	 */
-	private static void createTestDirectory(String dir)
+	private static void createTestDirectory(String dir) throws IOException
 	{
 		deleteDirectory(dir);
 		createDirectory(dir);

@@ -4,14 +4,11 @@ import static java.nio.file.Files.readAllBytes;
 import static java.nio.file.Paths.get;
 
 import java.io.BufferedReader;
-import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
@@ -27,52 +24,31 @@ public class FileUtilsHelper
 	private static final Logger LOGGER = LoggerFactory.getLogger(FileUtilsHelper.class);
 
 	/**
-	 * Persist file stream to file location provided
+	 * Persist file stream to file location provided creating directory if required
 	 * @param filePath
 	 * @return
 	 */
 	public static boolean saveFile(InputStream is, String filePath)
 	{
-		boolean ret = false;
-		String fileName = FilenameUtils.getName(filePath);
-		File file = new File(filePath);
-
 		LOGGER.debug("Saving file '" + filePath + "'");
 
 		try
 		{
-			BufferedReader br = new BufferedReader(new InputStreamReader(is));
-			BufferedWriter bw = new BufferedWriter(new FileWriter(file.getAbsoluteFile()));
-			String line;
-
-			while ((line = br.readLine()) != null)
-			{
-				bw.write(line);
-				bw.newLine();
-			}
-
-			bw.flush();
-			bw.close();
-			br.close();
-
-			ret = true;
-		} catch (FileNotFoundException e1)
+			FileUtils.copyInputStreamToFile(is, new File(filePath));
+		} catch (IOException e)
 		{
-			throw new FileSaveException(e1, "Unable to save file to '" + fileName + "'");
-		} catch (IOException e2)
-		{
-			throw new FileReadException(e2, "Unable to read from file '" + fileName + "'");
+			throw new FileSaveException(e, "Unable to save file to '" + filePath + "'");
 		}
 
 		LOGGER.debug("File saved successfully");
 
-		return ret;
+		return true;
 	}
 
 	public static String loadFileAsString(String filePath)
 	{
 		String content = null;
-		
+
 		try
 		{
 			content = new String(readAllBytes(get(filePath)));
@@ -143,30 +119,14 @@ public class FileUtilsHelper
 	{
 		return dir + File.separatorChar + file;
 	}
-	
-	public static void deleteDirectory(String dir)
-	{
-		try
-		{
-			FileUtils.deleteDirectory(new File(dir));
 
-		} catch (IOException e)
-		{
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+	public static void deleteDirectory(String dir) throws IOException
+	{
+		FileUtils.deleteDirectory(new File(dir));
 	}
-	
-	public static void createDirectory(String dir)
-	{
 
-		try
-		{
-			FileUtils.forceMkdir(new File(dir));
-		} catch (IOException e1)
-		{
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		}
+	public static void createDirectory(String dir) throws IOException
+	{
+		FileUtils.forceMkdir(new File(dir));
 	}
 }

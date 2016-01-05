@@ -22,8 +22,8 @@ server:
   - type: http
     port: 9021
 misc:
-  uploadedLocation: ./uploaded
-  outputLocation: ./output
+  uploadedLocation: ./external_resources/uploaded
+  outputLocation: ./external_resources/output
   schemaLocation: ./external_resources/schema
   xsltLocation: ./external_resources/xslt
   xmlLocation: ./external_resources/xml

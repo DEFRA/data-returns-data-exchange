@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
+import org.apache.commons.io.FilenameUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -13,6 +14,7 @@ import uk.gov.ea.datareturns.exception.application.InvalidContentsException;
 import uk.gov.ea.datareturns.exception.application.NoReturnsException;
 import uk.gov.ea.datareturns.exception.system.FileReadException;
 import uk.gov.ea.datareturns.exception.system.FileSaveException;
+import uk.gov.ea.datareturns.helper.FileUtilsHelper;
 import fr.dralagen.Csv2xml;
 
 public class ConvertCSVToXML extends ConvertFileToFile
@@ -26,7 +28,7 @@ public class ConvertCSVToXML extends ConvertFileToFile
 	public ConvertCSVToXML()
 	{
 	}
-	
+
 	@Override
 	public int convert()
 	{
@@ -35,6 +37,14 @@ public class ConvertCSVToXML extends ConvertFileToFile
 
 		String fileToConvert = getFileToConvert();
 		String convertedFile = getXMLFileLocation();
+
+		try
+		{
+			FileUtilsHelper.createDirectory(FilenameUtils.getPath(convertedFile));
+		} catch (IOException e)
+		{
+			throw new FileSaveException(e, "Unable to save file to '" + convertedFile + "'");
+		}
 
 		LOGGER.debug("Converting file '" + fileToConvert + "' to '" + convertedFile + "'");
 
@@ -69,14 +79,14 @@ public class ConvertCSVToXML extends ConvertFileToFile
 		{
 			throw new NoReturnsException("No Returns found in file '" + fileToConvert + "'");
 		}
-		
+
 		LOGGER.debug("File converted successfully for " + rowsConverted + " returns");
 
 		setConvertedFile(convertedFile);
-		
+
 		return rowsConverted;
 	}
-	
+
 	public String getConvertedFile()
 	{
 		return super.getConvertedFile();
