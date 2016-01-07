@@ -231,6 +231,7 @@
 				<artifactId>liquibase-maven-plugin</artifactId>
 				<version>${liquibase.maven.plugin.version}</version>
 				<configuration>
+					<promptOnNonLocalDatabase>false</promptOnNonLocalDatabase>
 					<defaultSchemaName>data_returns_schema</defaultSchemaName>
 					<changelogSchemaName>data_returns_schema</changelogSchemaName>
 					<propertyFile>${liquibasePropertyFile}</propertyFile>
