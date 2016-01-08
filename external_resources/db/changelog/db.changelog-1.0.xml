@@ -11,7 +11,7 @@
 	</preConditions>
 
 	<changeSet id="create-permit-table" author="aharrison">
-		<createTable tableName="permit" tablespace="dr_data">
+		<createTable tableName="permit">
 			<column name="permit_number" type="varchar(10)">	<!-- TODO guessed big enough, looks like could reduce to 8? -->
 				<constraints nullable="false"/>
 			</column>
@@ -32,7 +32,7 @@
 	<!-- END - Load environment specific data -->
 
 	<changeSet id="create-permit-id-index" author="aharrison">
-		<createIndex indexName="idx_permit_number" tableName="permit" unique="true" tablespace="dr_index">
+		<createIndex indexName="idx_permit_number" tableName="permit" unique="true">
 			<column name="permit_number" type="varchar(10)"/>	<!-- TODO guessed big enough, looks like could reduce to 8? -->
 		</createIndex>
 		<rollback>DROP INDEX idx_permit_number</rollback>
