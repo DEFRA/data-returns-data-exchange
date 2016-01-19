@@ -30,7 +30,7 @@
         </xs:restriction>
     </xs:simpleType>
     
-    <xs:complexType name="LFG_periodNameType">
+    <xs:complexType name="EPR_periodNameType">
         <xs:simpleContent>
             <xs:extension base="periodNameType">
                 <xs:attributeGroup ref="CommonAtts"/>
@@ -38,7 +38,7 @@
         </xs:simpleContent>
     </xs:complexType>
 	
-    <xs:complexType name="LFG_FourDigitYear">
+    <xs:complexType name="EPR_FourDigitYear">
         <xs:simpleContent>
             <xs:extension base="FourDigitYear">
                 <xs:attributeGroup ref="CommonAtts"/>
@@ -46,7 +46,7 @@
         </xs:simpleContent>
     </xs:complexType>
 	
-    <xs:complexType name="LFG_DateTime">
+    <xs:complexType name="EPR_DateTime">
         <xs:simpleContent>
             <xs:extension base="validDateTime">
                 <xs:attributeGroup ref="CommonAtts"/>
@@ -54,7 +54,7 @@
         </xs:simpleContent>
     </xs:complexType>
     
-    <xs:complexType name="LFG_optionalValidDateTime">
+    <xs:complexType name="EPR_optionalValidDateTime">
         <xs:simpleContent>
             <xs:extension base="optionalValidDateTime">
                 <xs:attributeGroup ref="CommonAtts"/>

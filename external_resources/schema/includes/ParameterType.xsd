@@ -1,26 +1,2150 @@
-<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" 
-           xmlns:lgm="http://ea.gov.uk/DR/LGM" 
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+           xmlns:lgm="http://ea.gov.uk/DR/LGM"
            attributeFormDefault="unqualified"
            elementFormDefault="qualified">
-		   
+
     <xs:include schemaLocation="XMLID.xsd" />
-    
+
     <xs:simpleType name="parameterType">
         <xs:restriction base="xs:string" >
-            <xs:enumeration value="Water"/>
-            <xs:enumeration value="Temperature"/>
-            <xs:enumeration value="Humidity"/>
+            <xs:enumeration value="Atmos Pressure"/>
+            <xs:enumeration value="CH4"/>
+            <xs:enumeration value="CO"/>
+            <xs:enumeration value="Methane"/>
+            <xs:enumeration value="NOX"/>
+            <xs:enumeration value="O2"/>
+            <xs:enumeration value="Oxygen"/>
+            <xs:enumeration value="SOX"/>
+            <xs:enumeration value="Temp"/>
+
+
+            <!--TODO Some of the following Parameters contain commas-->
+            <!-- The list values are derived from DEP V5.0 Controlled List of
+            Parameters (above list) and Chemical Standards listing (below)-->
+
+            <xs:enumeration value="(Chloromethyl)benzene"/>
+
+            <xs:enumeration value="1,1'-Azobisformamide"/>
+
+            <xs:enumeration value="1,1'-Dimethyl-4,4'-bipyridinium Dichloride, Respirable Dust"/>
+
+            <xs:enumeration value="1,1'-Ethylene-2,2'-bipyridinium Dibromide"/>
+
+            <xs:enumeration value="2,2'-Dichloro-4,4'-methylenedianiline"/>
+
+            <xs:enumeration value="2,2'-Iminodi(ethylamine)"/>
+
+            <xs:enumeration value="2,2'-Methylenebis(4-chlorophenol)"/>
+
+            <xs:enumeration value="2,2'-Oxydiethanol"/>
+
+            <xs:enumeration value="4,4'-Methylenebis(2-chlorobenzenamine)"/>
+
+            <xs:enumeration value="4,4'-Methylenebis(benzenamine)"/>
+
+            <xs:enumeration value="4,4'-Methylenedianiline"/>
+
+            <xs:enumeration value="6,6'-Di-tert-butyl-4,4'-thiodi-m-cresol"/>
+
+            <xs:enumeration value="Abamectin"/>
+
+            <xs:enumeration value="Acetaldehyde"/>
+
+            <xs:enumeration value="4-Acetamidophenol, Inhalable Dust"/>
+
+            <xs:enumeration value="Acetaminophen, Inhalable Dust"/>
+
+            <xs:enumeration value="Acetic Anhydride"/>
+
+            <xs:enumeration value="Acetone"/>
+
+            <xs:enumeration value="Acetonitrile"/>
+
+            <xs:enumeration value="2-Acetoxybenzoic Acid"/>
+
+            <xs:enumeration value="Acrolein"/>
+
+            <xs:enumeration value="Acrylaldehyde"/>
+
+            <xs:enumeration value="Acrylamide"/>
+
+            <xs:enumeration value="Acrylonitrile"/>
+
+            <xs:enumeration value="Alachlor"/>
+
+            <xs:enumeration value="Aldicarb"/>
+
+            <xs:enumeration value="Aldrin"/>
+
+            <xs:enumeration value="Alkylaluminium Compounds"/>
+
+            <xs:enumeration value="Allyl Alcohol"/>
+
+            <xs:enumeration value="alpha-Chloroacetophenone"/>
+
+            <xs:enumeration value="alpha-Chlorotoluene"/>
+
+            <xs:enumeration value="alpha-D-Glucopyranosyl beta-D-Fructofuranoside"/>
+
+            <xs:enumeration value="alpha-Methylstyrene"/>
+
+            <xs:enumeration value="Alumina"/>
+
+            <xs:enumeration value="Aluminium"/>
+
+            <xs:enumeration value="Aluminium Alkyl Compounds"/>
+
+            <xs:enumeration value="Aluminium Oxides"/>
+
+            <xs:enumeration value="Aluminium Salts, Soluble"/>
+
+            <xs:enumeration value="4-Amino-3,5,6-trichloropicolinic Acid"/>
+
+            <xs:enumeration value="4-Aminoaniline"/>
+
+            <xs:enumeration value="2-Aminoethanol"/>
+
+            <xs:enumeration value="Ammonia"/>
+
+            <xs:enumeration value="Ammonium"/>
+
+            <xs:enumeration value="Ammonium Amidosulphate"/>
+
+            <xs:enumeration value="Ammonium Chloride, Fume"/>
+
+            <xs:enumeration value="Ammonium Sulphamidate"/>
+
+            <xs:enumeration value="Amyl Methyl Ketone"/>
+
+            <xs:enumeration value="Aniline"/>
+
+            <xs:enumeration value="Anilinomethane"/>
+
+            <xs:enumeration value="Anthracene"/>
+
+            <xs:enumeration value="Antimony"/>
+
+            <xs:enumeration value="Arsenic"/>
+
+            <xs:enumeration value="Arsenic Trihydride"/>
+
+            <xs:enumeration value="Arsine"/>
+
+            <xs:enumeration value="Asbestos"/>
+
+            <xs:enumeration value="Asphalt, Petroleum Fumes"/>
+
+            <xs:enumeration value="Aspirin"/>
+
+            <xs:enumeration value="Atrazine"/>
+
+            <xs:enumeration value="Azabenzene"/>
+
+            <xs:enumeration value="Azacyclohexane"/>
+
+            <xs:enumeration value="Azamethiphos"/>
+
+            <xs:enumeration value="3-Azapentane-1,5-diamine"/>
+
+            <xs:enumeration value="Azinphos-methyl"/>
+
+            <xs:enumeration value="Azodicarbonamide"/>
+
+            <xs:enumeration value="Barium"/>
+
+            <xs:enumeration value="Barium Sulphate"/>
+
+            <xs:enumeration value="BBP"/>
+
+            <xs:enumeration value="Bentazone"/>
+
+            <xs:enumeration value="Benzenamine"/>
+
+            <xs:enumeration value="Benzene"/>
+
+            <xs:enumeration value="Benzene-1,2,4-tricarboxylic Acid 1,2-Anhydride"/>
+
+            <xs:enumeration value="Benzene-1,2-dicarboxylic Anhydride"/>
+
+            <xs:enumeration value="Benzene-1,2-diol"/>
+
+            <xs:enumeration value="Benzene-1,3-diol"/>
+
+            <xs:enumeration value="Benzene-1,4-diamine"/>
+
+            <xs:enumeration value="Benzene-1,4-diol"/>
+
+            <xs:enumeration value="Benzo[a]pyrene"/>
+
+            <xs:enumeration value="Benzo[b]fluoranthene"/>
+
+            <xs:enumeration value="Benzo[g,h,i]perylene"/>
+
+            <xs:enumeration value="Benzo[j,k]fluorene"/>
+
+            <xs:enumeration value="Benzo[k]fluoranthene"/>
+
+            <xs:enumeration value="Benzyl Butyl Benzene-1,2-dicarboxylate"/>
+
+            <xs:enumeration value="Benzyl Butyl Phthalate"/>
+
+            <xs:enumeration value="Benzyl Chloride"/>
+
+            <xs:enumeration value="Beryllium"/>
+
+            <xs:enumeration value="beta-D-Fructofuranosyl alpha-D-Glucopyranoside"/>
+
+            <xs:enumeration value="Biocides"/>
+
+            <xs:enumeration value="Biological Oxygen Demand"/>
+
+            <xs:enumeration value="Biphenyl"/>
+
+            <xs:enumeration value="2,2-Bis(hydroxymethyl)propane-1,3-diol"/>
+
+            <xs:enumeration value="Bis(2-aminoethyl)amine"/>
+
+            <xs:enumeration value="Bis(2-ethylhexyl) Phthalate"/>
+
+            <xs:enumeration value="Bis(2-hydroxyethyl) Ether"/>
+
+            <xs:enumeration value="Bis(2-methylpropyl) Phthalate"/>
+
+            <xs:enumeration value="Bis(4-tert-butyl-5-hydroxy-2-tolyl) Sulphide"/>
+
+            <xs:enumeration value="Bis(6-methylheptyl) Phthalate"/>
+
+            <xs:enumeration value="Bis(7-methyloctyl) Phthalate"/>
+
+            <xs:enumeration value="Bis(8-methylnonyl) Phthalate"/>
+
+            <xs:enumeration value="Bis(chloromethyl) Ether"/>
+
+            <xs:enumeration value="Bismuth Telluride"/>
+
+            <xs:enumeration value="BOD"/>
+
+            <xs:enumeration value="Borax Decahydrate"/>
+
+            <xs:enumeration value="Borax Pentahydrate"/>
+
+            <xs:enumeration value="Boric Anhydride"/>
+
+            <xs:enumeration value="Bornan-2-one"/>
+
+            <xs:enumeration value="Boron"/>
+
+            <xs:enumeration value="Boron Tribromide"/>
+
+            <xs:enumeration value="Bromacil"/>
+
+            <xs:enumeration value="Bromate"/>
+
+            <xs:enumeration value="Bromine"/>
+
+            <xs:enumeration value="2-Bromo-2-chloro-1,1,1-trifluoroethane"/>
+
+            <xs:enumeration value="Bromodichloromethane"/>
+
+            <xs:enumeration value="Bromoform"/>
+
+            <xs:enumeration value="Bromomethane"/>
+
+            <xs:enumeration value="Bromoxynil"/>
+
+            <xs:enumeration value="Burnt Lime"/>
+
+            <xs:enumeration value="Buta-1,3-diene"/>
+
+            <xs:enumeration value="1,3-Butadiene"/>
+
+            <xs:enumeration value="Butan-1-ol"/>
+
+            <xs:enumeration value="Butan-2-ol"/>
+
+            <xs:enumeration value="Butan-2-one"/>
+
+            <xs:enumeration value="Butan-2-one Peroxides"/>
+
+            <xs:enumeration value="Butan-2-yl Acetate"/>
+
+            <xs:enumeration value="Butane"/>
+
+            <xs:enumeration value="Butanol"/>
+
+            <xs:enumeration value="2-Butoxyethanol"/>
+
+            <xs:enumeration value="2-Butoxyethyl Acetate"/>
+
+            <xs:enumeration value="Butyl 2-hydroxypropanoate"/>
+
+            <xs:enumeration value="Butyl Acetate"/>
+
+            <xs:enumeration value="Butyl Acrylate"/>
+
+            <xs:enumeration value="Butyl Alcohol"/>
+
+            <xs:enumeration value="Butyl Benzyl Phthalate"/>
+
+            <xs:enumeration value="Butyl Chloroformate"/>
+
+            <xs:enumeration value="Butyl Ethyl Ketone"/>
+
+            <xs:enumeration value="Butyl Lactate"/>
+
+            <xs:enumeration value="Butyl Methyl Ketone"/>
+
+            <xs:enumeration value="Butyl Prop-2-enoate"/>
+
+            <xs:enumeration value="C10–C13 Chloroalkanes"/>
+
+            <xs:enumeration value="C7-C9 Dialkyl Phthalates"/>
+
+            <xs:enumeration value="Cadmium"/>
+
+            <xs:enumeration value="Cadmium Monoxide"/>
+
+            <xs:enumeration value="Cadmium Oxide"/>
+
+            <xs:enumeration value="Cadmium Sulphide and Cadmium Sulphide Pigments (Respirable Dust) (As Cd)"/>
+
+            <xs:enumeration value="Cadmium(II) Oxide"/>
+
+            <xs:enumeration value="Caesium Hydroxide"/>
+
+            <xs:enumeration value="Calcium Carbonate"/>
+
+            <xs:enumeration value="Calcium Cyanamide"/>
+
+            <xs:enumeration value="Calcium Dihydroxide"/>
+
+            <xs:enumeration value="Calcium Hydroxide"/>
+
+            <xs:enumeration value="Calcium Monoxide"/>
+
+            <xs:enumeration value="Calcium Oxide"/>
+
+            <xs:enumeration value="Calcium Silicate"/>
+
+            <xs:enumeration value="Calcium(II) Sulphate Dihydrate"/>
+
+            <xs:enumeration value="Camphor"/>
+
+            <xs:enumeration value="Caprolactam"/>
+
+            <xs:enumeration value="Captan"/>
+
+            <xs:enumeration value="Carbendazim"/>
+
+            <xs:enumeration value="Carbinol"/>
+
+            <xs:enumeration value="Carbodiimide"/>
+
+            <xs:enumeration value="Carbofuran"/>
+
+            <xs:enumeration value="Carbon Black"/>
+
+            <xs:enumeration value="Carbon Dioxide"/>
+
+            <xs:enumeration value="Carbon Disulphide"/>
+
+            <xs:enumeration value="Carbon Monoxide"/>
+
+            <xs:enumeration value="Carbon Oxychloride"/>
+
+            <xs:enumeration value="Carbon Tetrachloride"/>
+
+            <xs:enumeration value="Carbonic Dichloride"/>
+
+            <xs:enumeration value="Caustic Potash"/>
+
+            <xs:enumeration value="Caustic Soda"/>
+
+            <xs:enumeration value="Cellulose"/>
+
+            <xs:enumeration value="Cesium Hydroxide"/>
+
+            <xs:enumeration value="CFC-114"/>
+
+            <xs:enumeration value="Chemical Oxygen Demand"/>
+
+            <xs:enumeration value="Chloral Hydrate"/>
+
+            <xs:enumeration value="Chloramide"/>
+
+            <xs:enumeration value="Chlorate"/>
+
+            <xs:enumeration value="Chlordane"/>
+
+            <xs:enumeration value="Chlorfenvinphos"/>
+
+            <xs:enumeration value="Chloric Acid"/>
+
+            <xs:enumeration value="Chloride"/>
+
+            <xs:enumeration value="Chlorine"/>
+
+            <xs:enumeration value="Chlorine Dioxide"/>
+
+            <xs:enumeration value="Chlorite"/>
+
+            <xs:enumeration value="1-Chloro-2,3-epoxypropane"/>
+
+            <xs:enumeration value="1-Chloro-4-nitrobenzene"/>
+
+            <xs:enumeration value="1-Chloro-2,2,2-trifluoroethyl Difluoromethyl Ether"/>
+
+            <xs:enumeration value="4-Chloro-3-methylphenol"/>
+
+            <xs:enumeration value="2-Chloro-1-phenylethanone"/>
+
+            <xs:enumeration value="2-Chloro-1-(2,4-dichlorophenyl)ethenyl Diethyl Phosphate"/>
+
+            <xs:enumeration value="2-Chloro-1,1,2-trifluoroethyl Difluoromethyl Ether"/>
+
+            <xs:enumeration value="2-Chloro-1-(2,4-dichlorophenyl)vinyl Diethyl Phosphate"/>
+
+            <xs:enumeration value="Chloroacetaldehyde"/>
+
+            <xs:enumeration value="Chloroacetic Acid"/>
+
+            <xs:enumeration value="2-Chloroacetophenone"/>
+
+            <xs:enumeration value="Chlorobenzene"/>
+
+            <xs:enumeration value="3-Chlorochlordene"/>
+
+            <xs:enumeration value="Chlorodifluoromethane"/>
+
+            <xs:enumeration value="2-Chloroethanal"/>
+
+            <xs:enumeration value="Chloroethane"/>
+
+            <xs:enumeration value="2-Chloroethanol"/>
+
+            <xs:enumeration value="Chloroethene"/>
+
+            <xs:enumeration value="Chloroethene Polymer"/>
+
+            <xs:enumeration value="Chloroform"/>
+
+            <xs:enumeration value="Chloroformyl Chloride"/>
+
+            <xs:enumeration value="Chloromethane"/>
+
+            <xs:enumeration value="Chloromethyl Phenyl Ketone"/>
+
+            <xs:enumeration value="Chloronitrotoluenes"/>
+
+            <xs:enumeration value="4-Chlorophenol"/>
+
+            <xs:enumeration value="2-Chlorophenol"/>
+
+            <xs:enumeration value="3-Chlorophenol"/>
+
+            <xs:enumeration value="Chloropicrin"/>
+
+            <xs:enumeration value="3-Chloropropylene Oxide"/>
+
+            <xs:enumeration value="Chlorosulphonic Acid"/>
+
+            <xs:enumeration value="Chlorothalonil"/>
+
+            <xs:enumeration value="Chlorotoluron"/>
+
+            <xs:enumeration value="Chlorpropham"/>
+
+            <xs:enumeration value="Chlorpyrifos"/>
+
+            <xs:enumeration value="Chlorpyrifos-ethyl"/>
+
+            <xs:enumeration value="Chromium"/>
+
+            <xs:enumeration value="Chromium(II) Compounds (As Cr)"/>
+
+            <xs:enumeration value="Chromium(III) Compounds (As Cr)"/>
+
+            <xs:enumeration value="Chromium(VI) Compounds (As Cr)"/>
+
+            <xs:enumeration value="Clostridium perfringens (Including Spores)"/>
+
+            <xs:enumeration value="Cobalt"/>
+
+            <xs:enumeration value="COD"/>
+
+            <xs:enumeration value="Coliform Bacteria"/>
+
+            <xs:enumeration value="Coliforms - Total"/>
+
+            <xs:enumeration value="Colony Counts"/>
+
+            <xs:enumeration value="Colour"/>
+
+            <xs:enumeration value="Colouration (After Filtration)"/>
+
+            <xs:enumeration value="Colouration (After Simple Filtration)"/>
+
+            <xs:enumeration value="Conductivity"/>
+
+            <xs:enumeration value="Copper"/>
+
+            <xs:enumeration value="Cotton Dust"/>
+
+            <xs:enumeration value="Coumaphos"/>
+
+            <xs:enumeration value="Crag Herbicide"/>
+
+            <xs:enumeration value="Cryofluorane"/>
+
+            <xs:enumeration value="Cumene"/>
+
+            <xs:enumeration value="Cyanamide"/>
+
+            <xs:enumeration value="Cyanazine"/>
+
+            <xs:enumeration value="Cyanide"/>
+
+            <xs:enumeration value="4-Cyano-2,6-diiodophenol"/>
+
+            <xs:enumeration value="Cyanogen Chloride"/>
+
+            <xs:enumeration value="Cyclohexanamine"/>
+
+            <xs:enumeration value="Cyclohexane"/>
+
+            <xs:enumeration value="Cyclohexanol"/>
+
+            <xs:enumeration value="Cyclohexanone"/>
+
+            <xs:enumeration value="Cyclohexyl Alcohol"/>
+
+            <xs:enumeration value="Cyclopenta-1,3-diene Dimer"/>
+
+            <xs:enumeration value="Cyfluthrin"/>
+
+            <xs:enumeration value="Cypermethrin"/>
+
+            <xs:enumeration value="2,4-D"/>
+
+            <xs:enumeration value="2,4-DB"/>
+
+            <xs:enumeration value="DBP"/>
+
+            <xs:enumeration value="DCHP"/>
+
+            <xs:enumeration value="DCM"/>
+
+            <xs:enumeration value="2,4-DCP"/>
+
+            <xs:enumeration value="DDT"/>
+
+            <xs:enumeration value="DEHP"/>
+
+            <xs:enumeration value="DEK"/>
+
+            <xs:enumeration value="Demetons"/>
+
+            <xs:enumeration value="DEP"/>
+
+            <xs:enumeration value="2,6-Di-tert-butyl-p-cresol"/>
+
+            <xs:enumeration value="2,6-Di-tert-butyl-4-methylphenol"/>
+
+            <xs:enumeration value="Di(2-ethylhexyl) Phthalate"/>
+
+            <xs:enumeration value="Diacetyl Ether"/>
+
+            <xs:enumeration value="Diallyl Phthalate"/>
+
+            <xs:enumeration value="Diatomaceous Earth, Natural, Respirable Dust"/>
+
+            <xs:enumeration value="Diazinon"/>
+
+            <xs:enumeration value="Dibenzoyl Peroxide"/>
+
+            <xs:enumeration value="Dibismuth Tritelluride"/>
+
+            <xs:enumeration value="Diboron Trioxide"/>
+
+            <xs:enumeration value="1,2-Dibromo-3-chloropropane"/>
+
+            <xs:enumeration value="2,6-Dibromo-4-cyanophenol"/>
+
+            <xs:enumeration value="3,5-Dibromo-4-hydroxybenzonitrile"/>
+
+            <xs:enumeration value="Dibromoacetonitrile"/>
+
+            <xs:enumeration value="Dibromochloromethane"/>
+
+            <xs:enumeration value="1,2-Dibromoethane"/>
+
+            <xs:enumeration value="Dibutyl Benzene-1,2-dicarboxylate"/>
+
+            <xs:enumeration value="Dibutyl Hydrogen Phosphate"/>
+
+            <xs:enumeration value="Dibutyl Phosphate"/>
+
+            <xs:enumeration value="Dibutyl Phthalate"/>
+
+            <xs:enumeration value="3,5-Dichloro-N-(1,1-dimethylprop-2-ynyl)benzamide"/>
+
+            <xs:enumeration value="1,3-Dichloro-5,5-dimethylimidazolidine-2,4-dione"/>
+
+            <xs:enumeration value="1,2-Dichloro-1,1,2,2-tetrafluoroethane"/>
+
+            <xs:enumeration value="1,3-Dichloro-5,5-dimethylhydantoin"/>
+
+            <xs:enumeration value="Dichloroacetate"/>
+
+            <xs:enumeration value="Dichloroacetonitrile"/>
+
+            <xs:enumeration value="Dichloroacetylene"/>
+
+            <xs:enumeration value="Dichlorobenzene"/>
+
+            <xs:enumeration value="1,2-Dichlorobenzene"/>
+
+            <xs:enumeration value="1,4-Dichlorobenzene"/>
+
+            <xs:enumeration value="Dichlorodiphenyltrichloroethane"/>
+
+            <xs:enumeration value="1,2-Dichloroethane"/>
+
+            <xs:enumeration value="1,1-Dichloroethane"/>
+
+            <xs:enumeration value="1,1-Dichloroethene"/>
+
+            <xs:enumeration value="1,2-Dichloroethene"/>
+
+            <xs:enumeration value="2,2-Dichloroethenyl Dimethyl Phosphate"/>
+
+            <xs:enumeration value="Dichloroethyne"/>
+
+            <xs:enumeration value="Dichlorofluoromethane"/>
+
+            <xs:enumeration value="Dichloromethane"/>
+
+            <xs:enumeration value="Dichloromethyl Bromide"/>
+
+            <xs:enumeration value="Dichlorophen"/>
+
+            <xs:enumeration value="2,4-Dichlorophenol"/>
+
+            <xs:enumeration value="2,4-Dichlorophenoxyacetic Acid"/>
+
+            <xs:enumeration value="1,2-Dichloropropane"/>
+
+            <xs:enumeration value="1,3-Dichloropropene"/>
+
+            <xs:enumeration value="2,2-Dichlorovinyl Dimethyl Phosphate"/>
+
+            <xs:enumeration value="Dichlorprop"/>
+
+            <xs:enumeration value="Dichlorvos"/>
+
+            <xs:enumeration value="Dicyclohexyl Benzene-1,2-dicarboxylate"/>
+
+            <xs:enumeration value="Dicyclohexyl Phthalate"/>
+
+            <xs:enumeration value="Dicyclopentadiene"/>
+
+            <xs:enumeration value="Dieldrin"/>
+
+            <xs:enumeration value="Diethyl Benzene-1,2-dicarboxylate"/>
+
+            <xs:enumeration value="Diethyl Ether"/>
+
+            <xs:enumeration value="Diethyl Ketone"/>
+
+            <xs:enumeration value="Diethyl Phthalate"/>
+
+            <xs:enumeration value="Diethyl Sulphate"/>
+
+            <xs:enumeration value="Diethylamine"/>
+
+            <xs:enumeration value="Diethylene Glycol"/>
+
+            <xs:enumeration value="Diethylene Glycol Monobutyl Ether"/>
+
+            <xs:enumeration value="Diethylene Glycol Monomethyl Ether"/>
+
+            <xs:enumeration value="Diflubenzuron"/>
+
+            <xs:enumeration value="Dihydrogen Selenide (As Se)"/>
+
+            <xs:enumeration value="Diisobutyl Benzene-1,2-dicarboxylate"/>
+
+            <xs:enumeration value="Diisobutyl Ketone"/>
+
+            <xs:enumeration value="Diisobutyl Phthalate"/>
+
+            <xs:enumeration value="Diisodecyl Benzene-1,2-dicarboxylate"/>
+
+            <xs:enumeration value="Diisodecyl Phthalate"/>
+
+            <xs:enumeration value="Diisononyl Benzene-1,2-dicarboxylate"/>
+
+            <xs:enumeration value="Diisononyl Phthalate"/>
+
+            <xs:enumeration value="Diisooctyl Benzene-1,2-dicarboxylate"/>
+
+            <xs:enumeration value="Diisooctyl Phthalate"/>
+
+            <xs:enumeration value="Diisopropyl Ether"/>
+
+            <xs:enumeration value="Diisopropylamine"/>
+
+            <xs:enumeration value="Dimethoate"/>
+
+            <xs:enumeration value="Dimethoxymethane"/>
+
+            <xs:enumeration value="Dimethyl Benzene-1,2-dicarboxylate"/>
+
+            <xs:enumeration value="Dimethyl Ether"/>
+
+            <xs:enumeration value="Dimethyl Ketone"/>
+
+            <xs:enumeration value="Dimethyl Phthalate"/>
+
+            <xs:enumeration value="Dimethyl Sulphate"/>
+
+            <xs:enumeration value="Dimethylamine"/>
+
+            <xs:enumeration value="2-Dimethylaminoethanol"/>
+
+            <xs:enumeration value="Dimethylformamide"/>
+
+            <xs:enumeration value="2,6-Dimethylheptan-4-one"/>
+
+            <xs:enumeration value="2,2-Dimethylpropane"/>
+
+            <xs:enumeration value="2,6-Dinitro-N,N-dipropyl-4-(trifluoromethyl)benzamine"/>
+
+            <xs:enumeration value="2,6-Dinitro-N,N-dipropyl-4-(trifluoromethyl)aniline"/>
+
+            <xs:enumeration value="Dinitrobenzenes"/>
+
+            <xs:enumeration value="Dinitrogen Oxide"/>
+
+            <xs:enumeration value="Dinonyl Benzene-1,2-carboxylate"/>
+
+            <xs:enumeration value="Dinonyl Phthalate"/>
+
+            <xs:enumeration value="Dioctyl Phthalates"/>
+
+            <xs:enumeration value="1,4-Dioxacyclohexane"/>
+
+            <xs:enumeration value="3,6-Dioxadecanol"/>
+
+            <xs:enumeration value="1,4-Dioxane"/>
+
+            <xs:enumeration value="1,3-Dioxo-1,3-dihydroisobenzofuran-5-carboxylic Acid"/>
+
+            <xs:enumeration value="Diphenyl Ether"/>
+
+            <xs:enumeration value="Diphenylamine"/>
+
+            <xs:enumeration value="Diphosphorus Pentasulphide"/>
+
+            <xs:enumeration value="Diphosphorus Pentoxide"/>
+
+            <xs:enumeration value="Diprop-2-enyl Benzene-1,2-dicarboxylate"/>
+
+            <xs:enumeration value="Dipropylene Glycol Monomethyl Ether"/>
+
+            <xs:enumeration value="Diquat Dibromide"/>
+
+            <xs:enumeration value="Di-sec-octyl Benzene-1,2-dicarboxylate"/>
+
+            <xs:enumeration value="Di-sec-octyl Phthalate"/>
+
+            <xs:enumeration value="Disodium Disulphite"/>
+
+            <xs:enumeration value="Disodium Tetraborate Decahydrate"/>
+
+            <xs:enumeration value="Disodium Tetraborate Pentahydrate"/>
+
+            <xs:enumeration value="Disodium Tetraborate, Anhydrous"/>
+
+            <xs:enumeration value="Dissolved or Emulsified Hydrocarbons"/>
+
+            <xs:enumeration value="Dissolved Oxygen"/>
+
+            <xs:enumeration value="Disulphur Dichloride"/>
+
+            <xs:enumeration value="Diuron"/>
+
+            <xs:enumeration value="DMF"/>
+
+            <xs:enumeration value="DMP"/>
+
+            <xs:enumeration value="DO"/>
+
+            <xs:enumeration value="DOPs"/>
+
+            <xs:enumeration value="Doramectin"/>
+
+            <xs:enumeration value="Edetic Acid"/>
+
+            <xs:enumeration value="EDTA"/>
+
+            <xs:enumeration value="Emery"/>
+
+            <xs:enumeration value="Endosulfan"/>
+
+            <xs:enumeration value="Endrin"/>
+
+            <xs:enumeration value="Enflurane"/>
+
+            <xs:enumeration value="Entero Viruses"/>
+
+            <xs:enumeration value="Enterococci"/>
+
+            <xs:enumeration value="Environmental Tobacco Smoke"/>
+
+            <xs:enumeration value="Epichlorohydrin"/>
+
+            <xs:enumeration value="1,2-Epoxyethane"/>
+
+            <xs:enumeration value="1,2-Epoxypropane"/>
+
+            <xs:enumeration value="Escherichia coli (E.coli)"/>
+
+            <xs:enumeration value="Ethanal"/>
+
+            <xs:enumeration value="Ethanamine"/>
+
+            <xs:enumeration value="Ethane-1,2-dioic Acid"/>
+
+            <xs:enumeration value="Ethane-1,2-diol"/>
+
+            <xs:enumeration value="Ethanenitrile"/>
+
+            <xs:enumeration value="Ethanethiol"/>
+
+            <xs:enumeration value="Ethanoic Anhydride"/>
+
+            <xs:enumeration value="Ethanol"/>
+
+            <xs:enumeration value="Ethenone"/>
+
+            <xs:enumeration value="Ethenylbenzene"/>
+
+            <xs:enumeration value="Ethoxyethane"/>
+
+            <xs:enumeration value="2-Ethoxyethanol"/>
+
+            <xs:enumeration value="2-Ethoxyethyl Acetate"/>
+
+            <xs:enumeration value="Ethyl 2-Cyanoprop-2-enoate"/>
+
+            <xs:enumeration value="Ethyl Acetate"/>
+
+            <xs:enumeration value="Ethyl Acrylate"/>
+
+            <xs:enumeration value="Ethyl Alcohol"/>
+
+            <xs:enumeration value="Ethyl Chloride"/>
+
+            <xs:enumeration value="Ethyl Chloroformate"/>
+
+            <xs:enumeration value="Ethyl Cyanoacrylate"/>
+
+            <xs:enumeration value="Ethyl Formate"/>
+
+            <xs:enumeration value="Ethyl Hexahydro-1H-azepine-1-carbothioate"/>
+
+            <xs:enumeration value="Ethyl Hydrosulphide"/>
+
+            <xs:enumeration value="Ethyl Methanoate"/>
+
+            <xs:enumeration value="Ethyl Methyl Ketone"/>
+
+            <xs:enumeration value="Ethyl Methyl Ketone Peroxides"/>
+
+            <xs:enumeration value="Ethyl Prop-2-enoate"/>
+
+            <xs:enumeration value="Ethylamine"/>
+
+            <xs:enumeration value="Ethylbenzene"/>
+
+            <xs:enumeration value="Ethylene Chlorohydrin"/>
+
+            <xs:enumeration value="Ethylene Dibromide"/>
+
+            <xs:enumeration value="Ethylene Dichloride"/>
+
+            <xs:enumeration value="Ethylene Glycol"/>
+
+            <xs:enumeration value="Ethylene Glycol Monobutyl Ether"/>
+
+            <xs:enumeration value="Ethylene Glycol Monobutyl Ether Acetate"/>
+
+            <xs:enumeration value="Ethylene Glycol Monoethyl Ether"/>
+
+            <xs:enumeration value="Ethylene Glycol Monoethyl Ether Acetate"/>
+
+            <xs:enumeration value="Ethylene Glycol Monomethyl Ether"/>
+
+            <xs:enumeration value="Ethylene Glycol Monomethyl Ether Acetate"/>
+
+            <xs:enumeration value="Ethylene Oxide"/>
+
+            <xs:enumeration value="Ethylenecarboxamide"/>
+
+            <xs:enumeration value="Ethylenediaminetetraacetic Acid"/>
+
+            <xs:enumeration value="2-Ethylhexyl Chloroformate"/>
+
+            <xs:enumeration value="Ethylidene Dichloride"/>
+
+            <xs:enumeration value="4-Ethylmorpholine"/>
+
+            <xs:enumeration value="ETS"/>
+
+            <xs:enumeration value="Faecal Coliforms"/>
+
+            <xs:enumeration value="Faecal Streptococci"/>
+
+            <xs:enumeration value="Fenchlorphos"/>
+
+            <xs:enumeration value="Fenitrothion"/>
+
+            <xs:enumeration value="Fenoprop"/>
+
+            <xs:enumeration value="Ferric Oxide"/>
+
+            <xs:enumeration value="Ferrous Foundry Particulate"/>
+
+            <xs:enumeration value="Flour Dust"/>
+
+            <xs:enumeration value="Flucofuron"/>
+
+            <xs:enumeration value="Fluoranthene"/>
+
+            <xs:enumeration value="Fluoride"/>
+
+            <xs:enumeration value="Fluorine"/>
+
+            <xs:enumeration value="Flusilazole"/>
+
+            <xs:enumeration value="Formaldehyde"/>
+
+            <xs:enumeration value="Formaldehyde Dimethyl Acetal"/>
+
+            <xs:enumeration value="Formamide"/>
+
+            <xs:enumeration value="Formic Acid"/>
+
+            <xs:enumeration value="Formonitrile"/>
+
+            <xs:enumeration value="2-Formylfuran"/>
+
+            <xs:enumeration value="2-Furaldehyde"/>
+
+            <xs:enumeration value="Furan-2,5-dione"/>
+
+            <xs:enumeration value="Furan-2-carbaldehyde"/>
+
+            <xs:enumeration value="Furfural"/>
+
+            <xs:enumeration value="gamma-1,2,3,4,5,6-Hexachlorocyclohexane"/>
+
+            <xs:enumeration value="gamma-HCH"/>
+
+            <xs:enumeration value="Germane"/>
+
+            <xs:enumeration value="Germanium Hydride"/>
+
+            <xs:enumeration value="Germanium Tetrahydride"/>
+
+            <xs:enumeration value="Glutaraldehyde"/>
+
+            <xs:enumeration value="Glycerin"/>
+
+            <xs:enumeration value="Glycerol, Mist"/>
+
+            <xs:enumeration value="Glycinol"/>
+
+            <xs:enumeration value="Grain Dust"/>
+
+            <xs:enumeration value="Grammite"/>
+
+            <xs:enumeration value="Graphite"/>
+
+            <xs:enumeration value="Gypsum"/>
+
+            <xs:enumeration value="Halogenoplatinum Compounds (As Pt)"/>
+
+            <xs:enumeration value="Halothane"/>
+
+            <xs:enumeration value="Hardness"/>
+
+            <xs:enumeration value="Hardwood Dust"/>
+
+            <xs:enumeration value="HCB"/>
+
+            <xs:enumeration value="HCBD"/>
+
+            <xs:enumeration value="HCFC-21"/>
+
+            <xs:enumeration value="HCFC-22"/>
+
+            <xs:enumeration value="Heavy Metals"/>
+
+            <xs:enumeration value="Heptachlor"/>
+
+            <xs:enumeration value="Heptachlor Epoxide"/>
+
+            <xs:enumeration value="Heptan-2-one"/>
+
+            <xs:enumeration value="Heptan-3-one"/>
+
+            <xs:enumeration value="Heptane"/>
+
+            <xs:enumeration value="Hexachlorobenzene"/>
+
+            <xs:enumeration value="Hexachlorobutadiene"/>
+
+            <xs:enumeration value="Hexachlorocyclohexane"/>
+
+            <xs:enumeration value="Hexahydro-1,4-diazine"/>
+
+            <xs:enumeration value="Hexahydro-1H-azepin-2-one"/>
+
+            <xs:enumeration value="Hexahydroaniline"/>
+
+            <xs:enumeration value="Hexahydrocresol"/>
+
+            <xs:enumeration value="Hexahydropyridine"/>
+
+            <xs:enumeration value="Hexan-2-one"/>
+
+            <xs:enumeration value="Hexane"/>
+
+            <xs:enumeration value="1,6-Hexanolactam"/>
+
+            <xs:enumeration value="Hexylene Glycol"/>
+
+            <xs:enumeration value="HFC-134a"/>
+
+            <xs:enumeration value="Hydrated Lime"/>
+
+            <xs:enumeration value="Hydrazine"/>
+
+            <xs:enumeration value="Hydrobromic Acid"/>
+
+            <xs:enumeration value="Hydrochloric Acid (Gas and Aerosol Mists)"/>
+
+            <xs:enumeration value="Hydrocyanic Acid"/>
+
+            <xs:enumeration value="Hydrofluoric Acid (As F)"/>
+
+            <xs:enumeration value="Hydrogen Bromide"/>
+
+            <xs:enumeration value="Hydrogen Chloride (Gas and Aerosol Mists)"/>
+
+            <xs:enumeration value="Hydrogen Cyanide"/>
+
+            <xs:enumeration value="Hydrogen Fluoride (As F)"/>
+
+            <xs:enumeration value="Hydrogen Peroxide"/>
+
+            <xs:enumeration value="Hydrogen Selenide (As Se)"/>
+
+            <xs:enumeration value="Hydrogen Sulphide"/>
+
+            <xs:enumeration value="Hydroquinone"/>
+
+            <xs:enumeration value="4-Hydroxy-3,5-diiodobenzonitrile"/>
+
+            <xs:enumeration value="4-Hydroxy-4-methylpentan-2-one"/>
+
+            <xs:enumeration value="Hydroxybenzene"/>
+
+            <xs:enumeration value="2-Hydroxypropyl Acrylate"/>
+
+            <xs:enumeration value="IBA"/>
+
+            <xs:enumeration value="Imazethapyr"/>
+
+            <xs:enumeration value="Indene"/>
+
+            <xs:enumeration value="Indeno[1,2,3-cd]pyrene"/>
+
+            <xs:enumeration value="Indium and Its compounds (As In)"/>
+
+            <xs:enumeration value="Iodine"/>
+
+            <xs:enumeration value="Iodoform"/>
+
+            <xs:enumeration value="Iodomethane"/>
+
+            <xs:enumeration value="Ioxynil"/>
+
+            <xs:enumeration value="IPA"/>
+
+            <xs:enumeration value="Iron"/>
+
+            <xs:enumeration value="Iron Oxide"/>
+
+            <xs:enumeration value="Iron Pentacarbonyl (As Fe)"/>
+
+            <xs:enumeration value="Iron Salts (As Fe)"/>
+
+            <xs:enumeration value="Iron(III) Oxide"/>
+
+            <xs:enumeration value="Isoamyl Alcohol"/>
+
+            <xs:enumeration value="Isoamyl Methyl Ketone"/>
+
+            <xs:enumeration value="Isobenzofuran-1,3-dione"/>
+
+            <xs:enumeration value="Isobutyl Acetate"/>
+
+            <xs:enumeration value="Isobutyl Alcohol"/>
+
+            <xs:enumeration value="Isobutyl Methyl Ketone"/>
+
+            <xs:enumeration value="Isocyanates, All (As -NCO)"/>
+
+            <xs:enumeration value="Isodrin"/>
+
+            <xs:enumeration value="Isoflurane"/>
+
+            <xs:enumeration value="Isooctyl Alcohol"/>
+
+            <xs:enumeration value="Isopentane"/>
+
+            <xs:enumeration value="Isophorone"/>
+
+            <xs:enumeration value="2-Isopropoxyphenyl Methylcarbamate"/>
+
+            <xs:enumeration value="2-Isopropoxypropane"/>
+
+            <xs:enumeration value="Isopropyl (3-Chlorophenyl)carbamate"/>
+
+            <xs:enumeration value="Isopropyl Acetate"/>
+
+            <xs:enumeration value="Isopropyl Alcohol"/>
+
+            <xs:enumeration value="Isopropyl Chloroformate"/>
+
+            <xs:enumeration value="Isopropyl m-Chlorocarbanilate"/>
+
+            <xs:enumeration value="Isopropylbenzene"/>
+
+            <xs:enumeration value="Isoproturon"/>
+
+            <xs:enumeration value="Isovalerone"/>
+
+            <xs:enumeration value="Ivermectin"/>
+
+            <xs:enumeration value="Kaolin, Respirable Dust"/>
+
+            <xs:enumeration value="Ketene"/>
+
+            <xs:enumeration value="Kieselguhr"/>
+
+            <xs:enumeration value="Laughing Gas"/>
+
+            <xs:enumeration value="Lead"/>
+
+            <xs:enumeration value="Lime"/>
+
+            <xs:enumeration value="Lime Nitrogen"/>
+
+            <xs:enumeration value="Limestone"/>
+
+            <xs:enumeration value="Lindane"/>
+
+            <xs:enumeration value="Linuron"/>
+
+            <xs:enumeration value="Liquefied Petroleum Gas"/>
+
+            <xs:enumeration value="Lithium Hydride"/>
+
+            <xs:enumeration value="Lithium Hydroxide"/>
+
+            <xs:enumeration value="LPG"/>
+
+            <xs:enumeration value="Machine-Made Mineral Fibre"/>
+
+            <xs:enumeration value="Magnesite"/>
+
+            <xs:enumeration value="Magnesium Carbonate"/>
+
+            <xs:enumeration value="Magnesium Oxide (As Mg)"/>
+
+            <xs:enumeration value="Malachite Green"/>
+
+            <xs:enumeration value="Malathion"/>
+
+            <xs:enumeration value="Maleic Anhydride"/>
+
+            <xs:enumeration value="Mancozeb"/>
+
+            <xs:enumeration value="Maneb"/>
+
+            <xs:enumeration value="Manganese"/>
+
+            <xs:enumeration value="Manganese Ethylenebis(dithiocarbamate)"/>
+
+            <xs:enumeration value="Manganese Zinc Ethylenebis(dithiocarbamate)"/>
+
+            <xs:enumeration value="Man-Made Vitreous Fibres"/>
+
+            <xs:enumeration value="Marble"/>
+
+            <xs:enumeration value="MBK"/>
+
+            <xs:enumeration value="MbOCA"/>
+
+            <xs:enumeration value="MCPA"/>
+
+            <xs:enumeration value="MCPP"/>
+
+            <xs:enumeration value="MDA"/>
+
+            <xs:enumeration value="Mecoprop"/>
+
+            <xs:enumeration value="MEK"/>
+
+            <xs:enumeration value="MEKP"/>
+
+            <xs:enumeration value="Mercaptoacetic Acid"/>
+
+            <xs:enumeration value="Mercaptodimethur"/>
+
+            <xs:enumeration value="Mercury"/>
+
+            <xs:enumeration value="Methacrylic Acid"/>
+
+            <xs:enumeration value="Methacrylonitrile"/>
+
+            <xs:enumeration value="Methanal"/>
+
+            <xs:enumeration value="Methanamide"/>
+
+            <xs:enumeration value="Methanethiol"/>
+
+            <xs:enumeration value="Methanoic Acid"/>
+
+            <xs:enumeration value="Methanol"/>
+
+            <xs:enumeration value="Methiocarb"/>
+
+            <xs:enumeration value="Methoxychlor"/>
+
+            <xs:enumeration value="2-Methoxyethanol"/>
+
+            <xs:enumeration value="2-Methoxyethyl Acetate"/>
+
+            <xs:enumeration value="Methoxymethane"/>
+
+            <xs:enumeration value="1-Methoxypropan-2-yl Acetate"/>
+
+            <xs:enumeration value="1-Methoxypropan-2-ol"/>
+
+            <xs:enumeration value="1-Methoxypropyl Acetate"/>
+
+            <xs:enumeration value="1-Methyl-2,4,6-nitrobenzene"/>
+
+            <xs:enumeration value="1-Methyl-2-pyrrolidone"/>
+
+            <xs:enumeration value="Methyl 2-Cyanoacrylate"/>
+
+            <xs:enumeration value="Methyl 2-Cyanoprop-2-enoate"/>
+
+            <xs:enumeration value="Methyl 2-Methylacrylate"/>
+
+            <xs:enumeration value="Methyl 2-Methylprop-2-enoate"/>
+
+            <xs:enumeration value="Methyl Acetate"/>
+
+            <xs:enumeration value="Methyl Alcohol"/>
+
+            <xs:enumeration value="Methyl Bromide"/>
+
+            <xs:enumeration value="Methyl Chloride"/>
+
+            <xs:enumeration value="Methyl Cyanide"/>
+
+            <xs:enumeration value="Methyl Cyanoacrylate"/>
+
+            <xs:enumeration value="Methyl Ethyl Ketone"/>
+
+            <xs:enumeration value="Methyl Ethyl Ketone Peroxides"/>
+
+            <xs:enumeration value="Methyl Iodide"/>
+
+            <xs:enumeration value="Methyl Isoamyl Ketone"/>
+
+            <xs:enumeration value="Methyl Isobutyl Ketone"/>
+
+            <xs:enumeration value="Methyl Mercaptan"/>
+
+            <xs:enumeration value="Methyl Methacrylate"/>
+
+            <xs:enumeration value="Methyl Pentyl Ketone"/>
+
+            <xs:enumeration value="Methyl Propyl Ketone"/>
+
+            <xs:enumeration value="Methyl Sulfhydrate"/>
+
+            <xs:enumeration value="Methyl tert-Butyl Ether"/>
+
+            <xs:enumeration value="2-Methylacrylic Acid"/>
+
+            <xs:enumeration value="2-Methylacrylonitrile"/>
+
+            <xs:enumeration value="Methylal"/>
+
+            <xs:enumeration value="2-Methylbenzenamine"/>
+
+            <xs:enumeration value="Methylbenzene"/>
+
+            <xs:enumeration value="4-Methylbenzenesulphonyl Chloride"/>
+
+            <xs:enumeration value="3-Methylbutan-1-ol"/>
+
+            <xs:enumeration value="2-Methylbutane"/>
+
+            <xs:enumeration value="3-Methylbutanol"/>
+
+            <xs:enumeration value="Methylcyclohexanol"/>
+
+            <xs:enumeration value="2-Methylcyclohexanone"/>
+
+            <xs:enumeration value="Methylene Dichloride"/>
+
+            <xs:enumeration value="1-Methylethyl Chloroformate"/>
+
+            <xs:enumeration value="5-Methylheptan-3-one"/>
+
+            <xs:enumeration value="6-Methylheptanol"/>
+
+            <xs:enumeration value="5-Methylhexan-2-one"/>
+
+            <xs:enumeration value="2-Methyloxirane"/>
+
+            <xs:enumeration value="4-Methylpentan-2-one"/>
+
+            <xs:enumeration value="4-Methylpentan-2-ol"/>
+
+            <xs:enumeration value="2-Methylpentane-2,4-diol"/>
+
+            <xs:enumeration value="Methylphenols"/>
+
+            <xs:enumeration value="2-Methylprop-2-enoic Acid"/>
+
+            <xs:enumeration value="2-Methylprop-2-enenitrile"/>
+
+            <xs:enumeration value="2-Methylpropan-2-ol"/>
+
+            <xs:enumeration value="2-Methylpropan-1-ol"/>
+
+            <xs:enumeration value="2-Methylpropan-2-yl Acetate"/>
+
+            <xs:enumeration value="2-Methylpropanol"/>
+
+            <xs:enumeration value="2-Methylpropyl Acetate"/>
+
+            <xs:enumeration value="1-Methylpyrrolidin-2-one"/>
+
+            <xs:enumeration value="Metolachlor"/>
+
+            <xs:enumeration value="Mevinphos"/>
+
+            <xs:enumeration value="Mica"/>
+
+            <xs:enumeration value="Micro-cell"/>
+
+            <xs:enumeration value="Microcystin-LR"/>
+
+            <xs:enumeration value="Mineral Oils"/>
+
+            <xs:enumeration value="Mineral Oils and Hydrocarbons"/>
+
+            <xs:enumeration value="MMMF"/>
+
+            <xs:enumeration value="MMVF"/>
+
+            <xs:enumeration value="Molinate"/>
+
+            <xs:enumeration value="Molybdenum"/>
+
+            <xs:enumeration value="Monochloramine"/>
+
+            <xs:enumeration value="Monochloroacetate"/>
+
+            <xs:enumeration value="Monochloroacetic Acid"/>
+
+            <xs:enumeration value="Morpholine"/>
+
+            <xs:enumeration value="MPK"/>
+
+            <xs:enumeration value="MTBE"/>
+
+            <xs:enumeration value="N-(1-Ethylpropyl)-3,4-dimethyl-2,6-dinitroaniline"/>
+
+            <xs:enumeration value="N-(1-Ethylpropyl)-3,4-dimethyl-2,6-dinitrobenzenamine"/>
+
+            <xs:enumeration value="N,N-Diethylethanamine"/>
+
+            <xs:enumeration value="N,N-Dimethylacetamide"/>
+
+            <xs:enumeration value="N,N-Dimethylaniline"/>
+
+            <xs:enumeration value="N,N-Dimethylbenzenamine"/>
+
+            <xs:enumeration value="N,N-Dimethylethanamine"/>
+
+            <xs:enumeration value="N,N-Dimethylethylamine"/>
+
+            <xs:enumeration value="N,N-Dimethylmethanamide"/>
+
+            <xs:enumeration value="Naphthalene"/>
+
+            <xs:enumeration value="n-Butyl Acrylate"/>
+
+            <xs:enumeration value="n-Butyl Chloroformate"/>
+
+            <xs:enumeration value="Neopentane"/>
+
+            <xs:enumeration value="N-ethylethanamine"/>
+
+            <xs:enumeration value="n-Heptane"/>
+
+            <xs:enumeration value="n-Hexane"/>
+
+            <xs:enumeration value="Nickel"/>
+
+            <xs:enumeration value="Nickel Carbonyl (As Ni)"/>
+
+            <xs:enumeration value="Nicotine"/>
+
+            <xs:enumeration value="N-Isopropylpropan-2-amine"/>
+
+            <xs:enumeration value="Nitrate"/>
+
+            <xs:enumeration value="Nitric Acid"/>
+
+            <xs:enumeration value="Nitrilotriacetic Acid"/>
+
+            <xs:enumeration value="Nitrite"/>
+
+            <xs:enumeration value="Nitrobenzene"/>
+
+            <xs:enumeration value="Nitrogen"/>
+
+            <xs:enumeration value="Nitrogen Dioxide"/>
+
+            <xs:enumeration value="Nitrogen Oxides"/>
+
+            <xs:enumeration value="Nitromethane"/>
+
+            <xs:enumeration value="2-Nitropropane"/>
+
+            <xs:enumeration value="Nitrous Oxide"/>
+
+            <xs:enumeration value="N-Methylaniline"/>
+
+            <xs:enumeration value="N-Methylbenzenamine"/>
+
+            <xs:enumeration value="N-Methylmethanamine"/>
+
+            <xs:enumeration value="Nonylphenol"/>
+
+            <xs:enumeration value="N-Phenylaniline"/>
+
+            <xs:enumeration value="N-Phenylbenzenamine"/>
+
+            <xs:enumeration value="n-Propyl Acetate"/>
+
+            <xs:enumeration value="NTA"/>
+
+            <xs:enumeration value="O,O,O,O-Tetraethyl Dithiopyrophosphate"/>
+
+            <xs:enumeration value="o-Acetylsalicyclic Acid"/>
+
+            <xs:enumeration value="Octylphenol"/>
+
+            <xs:enumeration value="o-Dichlorobenzene"/>
+
+            <xs:enumeration value="Odour"/>
+
+            <xs:enumeration value="Oil of Mirbane"/>
+
+            <xs:enumeration value="Omethoate"/>
+
+            <xs:enumeration value="o-Phenylenepyrene"/>
+
+            <xs:enumeration value="Organohalogens"/>
+
+            <xs:enumeration value="Organophosphorous compounds"/>
+
+            <xs:enumeration value="Organotin compounds"/>
+
+            <xs:enumeration value="ortho-Dichlorobenzene"/>
+
+            <xs:enumeration value="Orthophosphoric Acid"/>
+
+            <xs:enumeration value="Osmic Acid"/>
+
+            <xs:enumeration value="Osmium Tetraoxide"/>
+
+            <xs:enumeration value="Osmium(VIII) Oxide"/>
+
+            <xs:enumeration value="o-Toluidene"/>
+
+            <xs:enumeration value="Oxacyclopentane"/>
+
+            <xs:enumeration value="3-Oxaheptanol"/>
+
+            <xs:enumeration value="Oxalic Acid"/>
+
+            <xs:enumeration value="3-Oxapentane-1,5-diol"/>
+
+            <xs:enumeration value="Oxidisability"/>
+
+            <xs:enumeration value="Oxirane"/>
+
+            <xs:enumeration value="Ozone"/>
+
+            <xs:enumeration value="p,p'-DDT"/>
+
+            <xs:enumeration value="PAHs"/>
+
+            <xs:enumeration value="para,para'-DDT"/>
+
+            <xs:enumeration value="Paracetamol, Inhalable Dust"/>
+
+            <xs:enumeration value="para-Dichlorobenzene"/>
+
+            <xs:enumeration value="Paraffin Wax, Fume"/>
+
+            <xs:enumeration value="p-Aramid Respirable Fibres"/>
+
+            <xs:enumeration value="para-Nitrochlorobenzene"/>
+
+            <xs:enumeration value="Paraquat Dichloride, Respirable Dust"/>
+
+            <xs:enumeration value="Parathion"/>
+
+            <xs:enumeration value="Particles"/>
+
+            <xs:enumeration value="Particles (PM10)"/>
+
+            <xs:enumeration value="PCBs"/>
+
+            <xs:enumeration value="PCDDs and PCDFs (Polychlorinated Dibenzodioxins and Dibenzofurans)"/>
+
+            <xs:enumeration value="p-Chloro-m-cresol"/>
+
+            <xs:enumeration value="PCSDs"/>
+
+            <xs:enumeration value="p-Dichlorobenzene"/>
+
+            <xs:enumeration value="Pendimethalin"/>
+
+            <xs:enumeration value="penta-BDPE"/>
+
+            <xs:enumeration value="Pentabromodiphenyl Ether"/>
+
+            <xs:enumeration value="Pentacarbonyliron (As Fe)"/>
+
+            <xs:enumeration value="Pentachlorobenzene"/>
+
+            <xs:enumeration value="Pentachlorophenol"/>
+
+            <xs:enumeration value="Pentachlorophosphorane"/>
+
+            <xs:enumeration value="Pentaerythritol"/>
+
+            <xs:enumeration value="Pentan-2-one"/>
+
+            <xs:enumeration value="Pentan-3-one"/>
+
+            <xs:enumeration value="Pentane"/>
+
+            <xs:enumeration value="Pentane-1,5-dione"/>
+
+            <xs:enumeration value="Pentyl Acetates (All Isomers)"/>
+
+            <xs:enumeration value="Perchlorobenzene"/>
+
+            <xs:enumeration value="Perchlorobutadiene"/>
+
+            <xs:enumeration value="Perchloroethene"/>
+
+            <xs:enumeration value="Permethrin"/>
+
+            <xs:enumeration value="Pesticides - Total"/>
+
+            <xs:enumeration value="Pesticides (Other Than Aldrin, Dieldrin, Heptachlor, Heptachlor Epoxide)"/>
+
+            <xs:enumeration value="Petroleum Hydrocarbons"/>
+
             <xs:enumeration value="pH"/>
+
+            <xs:enumeration value="Phenacyl Chloride"/>
+
+            <xs:enumeration value="Phenol"/>
+
+            <xs:enumeration value="Phenolic Compounds"/>
+
+            <xs:enumeration value="Phenols (Phenol Index) Paranitraniline 4-Aminoantipyrene"/>
+
+            <xs:enumeration value="Phenoxybenzene"/>
+
+            <xs:enumeration value="Phenyl Alcohol"/>
+
+            <xs:enumeration value="Phenyl Chloride"/>
+
+            <xs:enumeration value="Phenylamine"/>
+
+            <xs:enumeration value="Phenylbenzene"/>
+
+            <xs:enumeration value="Phenylethene"/>
+
+            <xs:enumeration value="2-Phenylpropane"/>
+
+            <xs:enumeration value="2-Phenylpropene"/>
+
+            <xs:enumeration value="Phorate"/>
+
+            <xs:enumeration value="Phosgene"/>
+
+            <xs:enumeration value="Phosphates"/>
+
+            <xs:enumeration value="Phosphine"/>
+
+            <xs:enumeration value="Phosphoric Acid"/>
+
+            <xs:enumeration value="Phosphoric Anhydride"/>
+
+            <xs:enumeration value="Phosphoric Trichloride"/>
+
+            <xs:enumeration value="Phosphorus"/>
+
+            <xs:enumeration value="Phosphorus (Elemental, and Inorganic Compounds of)"/>
+
+            <xs:enumeration value="Phosphorus Hydride"/>
+
+            <xs:enumeration value="Phosphorus Oxychloride"/>
+
+            <xs:enumeration value="Phosphorus Pentachloride"/>
+
+            <xs:enumeration value="Phosphorus Pentasulphide"/>
+
+            <xs:enumeration value="Phosphorus Pentoxide"/>
+
+            <xs:enumeration value="Phosphorus Trichloride"/>
+
+            <xs:enumeration value="Phosphorus Trihydride"/>
+
+            <xs:enumeration value="Phosphorus(III) Chloride"/>
+
+            <xs:enumeration value="Phosphorus(V) Chloride"/>
+
+            <xs:enumeration value="Phosphorus(V) Oxide"/>
+
+            <xs:enumeration value="Phosphorus(V) Sulphide"/>
+
+            <xs:enumeration value="Phosphoryl Trichloride"/>
+
+            <xs:enumeration value="Phthalic Anhydride"/>
+
+            <xs:enumeration value="Picloram"/>
+
+            <xs:enumeration value="Picric Acid"/>
+
+            <xs:enumeration value="Piperazine"/>
+
+            <xs:enumeration value="Piperazine Dihydrochloride"/>
+
+            <xs:enumeration value="Piperidine"/>
+
+            <xs:enumeration value="Pirimicarb"/>
+
+            <xs:enumeration value="Pirimiphos-methyl"/>
+
+            <xs:enumeration value="Plaster of Paris"/>
+
+            <xs:enumeration value="Platinum"/>
+
+            <xs:enumeration value="Platinum Compounds, Soluble (As Pt)"/>
+
+            <xs:enumeration value="PNCB"/>
+
+            <xs:enumeration value="Polychlorinated Biphenyls"/>
+
+            <xs:enumeration value="Polycyclic Aromatic Hydrocarbons"/>
+
+            <xs:enumeration value="Polyvinyl Chloride"/>
+
+            <xs:enumeration value="Portland Cement"/>
+
+            <xs:enumeration value="Potassium Hydroxide"/>
+
+            <xs:enumeration value="p-Phenylenediamine"/>
+
+            <xs:enumeration value="Prochloraz"/>
+
+            <xs:enumeration value="Prop-2-enal"/>
+
+            <xs:enumeration value="Prop-2-enamide"/>
+
+            <xs:enumeration value="Prop-2-enenitrile"/>
+
+            <xs:enumeration value="Prop-2-enol"/>
+
+            <xs:enumeration value="Prop-2-enyl Alchohol"/>
+
+            <xs:enumeration value="Prop-2-yn-1-ol"/>
+
+            <xs:enumeration value="Prop-2-ynyl Alcohol"/>
+
+            <xs:enumeration value="Propan-1-ol"/>
+
+            <xs:enumeration value="Propan-2-ol"/>
+
+            <xs:enumeration value="Propan-2-one"/>
+
+            <xs:enumeration value="Propane-1,2,3-triol"/>
+
+            <xs:enumeration value="Propane-1,2-diol"/>
+
+            <xs:enumeration value="Propanoic Acid"/>
+
+            <xs:enumeration value="Propanol"/>
+
+            <xs:enumeration value="Propargyl Alcohol"/>
+
+            <xs:enumeration value="Propetamphos"/>
+
+            <xs:enumeration value="Propionic Acid"/>
+
+            <xs:enumeration value="Propoxur"/>
+
+            <xs:enumeration value="Propranolol"/>
+
+            <xs:enumeration value="Propyl Acetate"/>
+
+            <xs:enumeration value="Propyl Alcohol"/>
+
+            <xs:enumeration value="Propylene Dichloride"/>
+
+            <xs:enumeration value="Propylene Glycol"/>
+
+            <xs:enumeration value="Propylene Glycol Monomethyl Ether"/>
+
+            <xs:enumeration value="Propylene Glycol Monomethyl Ether Acetate"/>
+
+            <xs:enumeration value="Propylene Oxide"/>
+
+            <xs:enumeration value="Propyzamide"/>
+
+            <xs:enumeration value="Pseudomonas aeruginosa"/>
+
+            <xs:enumeration value="p-Toluenesulphonyl Chloride"/>
+
+            <xs:enumeration value="Pulverised Fuel Ash"/>
+
+            <xs:enumeration value="PVC"/>
+
+            <xs:enumeration value="Pyrethrum"/>
+
+            <xs:enumeration value="Pyridin-2-amine"/>
+
+            <xs:enumeration value="Pyridine"/>
+
+            <xs:enumeration value="2-Pyridylamine"/>
+
+            <xs:enumeration value="Pyriproxyfen"/>
+
+            <xs:enumeration value="Pyrocatechol"/>
+
+            <xs:enumeration value="Quicklime"/>
+
+            <xs:enumeration value="R-114"/>
+
+            <xs:enumeration value="R-134a"/>
+
+            <xs:enumeration value="R-21"/>
+
+            <xs:enumeration value="R-22"/>
+
+            <xs:enumeration value="R-30"/>
+
+            <xs:enumeration value="R-40"/>
+
+            <xs:enumeration value="Radon"/>
+
+            <xs:enumeration value="Refractory Ceramic Fibres and Special Purpose Fibres"/>
+
+            <xs:enumeration value="Residual Organic Carbon"/>
+
+            <xs:enumeration value="Resorcinol"/>
+
+            <xs:enumeration value="Rhodium (As Rh)"/>
+
+            <xs:enumeration value="Ronnel"/>
+
+            <xs:enumeration value="Rontenone"/>
+
+            <xs:enumeration value="Rosin-Based Solder Flux Fume"/>
+
+            <xs:enumeration value="Rouge"/>
+
+            <xs:enumeration value="Rubber Fume"/>
+
+            <xs:enumeration value="Rubber Process Dust"/>
+
+            <xs:enumeration value="Saccharose"/>
+
+            <xs:enumeration value="Salinity"/>
+
+            <xs:enumeration value="Salmonella"/>
+
+            <xs:enumeration value="Saxitoxin"/>
+
+            <xs:enumeration value="2-sec-Butylphenol"/>
+
+            <xs:enumeration value="sec-Butyl Acetate"/>
+
+            <xs:enumeration value="sec-Butyl Alcohol"/>
+
+            <xs:enumeration value="sec-Butyl Ethyl Ketone"/>
+
+            <xs:enumeration value="Selenium"/>
+
+            <xs:enumeration value="Silane"/>
+
+            <xs:enumeration value="Silene"/>
+
+            <xs:enumeration value="Silica, Amorphous"/>
+
+            <xs:enumeration value="Silica, Fused Respirable Dust"/>
+
+            <xs:enumeration value="Silica, Respirable Crystalline"/>
+
+            <xs:enumeration value="Silicon"/>
+
+            <xs:enumeration value="Silicon (Organic Compounds of)"/>
+
+            <xs:enumeration value="Silicon Carbide (Not Whiskers)"/>
+
+            <xs:enumeration value="Silicon Dioxide, Amorphous"/>
+
+            <xs:enumeration value="Silicon Dioxide, Fused Respirable Dust"/>
+
+            <xs:enumeration value="Silicon Dioxide, Respirable Crystalline"/>
+
+            <xs:enumeration value="Silicon Hydride"/>
+
+            <xs:enumeration value="Silicon Tetrahydride"/>
+
+            <xs:enumeration value="Silver"/>
+
+            <xs:enumeration value="Silver Compounds, Soluble (As Ag)"/>
+
+            <xs:enumeration value="Silvex"/>
+
+            <xs:enumeration value="Simazine"/>
+
+            <xs:enumeration value="Slaked Lime"/>
+
+            <xs:enumeration value="Sodium"/>
+
+            <xs:enumeration value="Sodium 2-(2,4-Dichlorophenoxy)ethyl Sulphate"/>
+
+            <xs:enumeration value="Sodium Azide"/>
+
+            <xs:enumeration value="Sodium Bisulphite"/>
+
+            <xs:enumeration value="Sodium Hydrogen Sulphite"/>
+
+            <xs:enumeration value="Sodium Hydroxide"/>
+
+            <xs:enumeration value="Sodium Metabisulphite"/>
+
+            <xs:enumeration value="Softwood Dust"/>
+
+            <xs:enumeration value="Starch"/>
+
+            <xs:enumeration value="Styrene"/>
+
+            <xs:enumeration value="Substances Affecting the Taste of the Shellfish"/>
+
+            <xs:enumeration value="Substances Extractable with Chloroform"/>
+
+            <xs:enumeration value="Substances Possessing Carcinogenic, Mutagenic or Teratogenic Properties in or via the Aquatic Environment"/>
+
+            <xs:enumeration value="Subtilisins"/>
+
+            <xs:enumeration value="Sucrose"/>
+
+            <xs:enumeration value="Sulcofuron"/>
+
+            <xs:enumeration value="Sulfanylacetic Acid"/>
+
+            <xs:enumeration value="Sulfotep"/>
+
+            <xs:enumeration value="Sulphate"/>
+
+            <xs:enumeration value="Sulphinyl Chloride"/>
+
+            <xs:enumeration value="Sulphur Dioxide"/>
+
+            <xs:enumeration value="Sulphur Hexafluoride"/>
+
+            <xs:enumeration value="Sulphur Monochloride"/>
+
+            <xs:enumeration value="Sulphur Oxychloride"/>
+
+            <xs:enumeration value="Sulphuric Oxyfluoride"/>
+
+            <xs:enumeration value="Sulphuryl Difluoride"/>
+
+            <xs:enumeration value="Surface-Active Substances Reacting with Methylene Blue (Lauryl Sulphate)"/>
+
+            <xs:enumeration value="Suspended Solids"/>
+
+            <xs:enumeration value="2,4,5-T"/>
+
+            <xs:enumeration value="Talc, Respirable Dust"/>
+
+            <xs:enumeration value="Tantalum"/>
+
+            <xs:enumeration value="Tarry Residues and Floating Materials"/>
+
+            <xs:enumeration value="Taste"/>
+
+            <xs:enumeration value="2,4,6-TCP"/>
+
+            <xs:enumeration value="TEA"/>
+
+            <xs:enumeration value="Tecnazene"/>
+
+            <xs:enumeration value="TEDP"/>
+
+            <xs:enumeration value="Tellurium"/>
+
+            <xs:enumeration value="Temperature"/>
+
+            <xs:enumeration value="Terbuthylazine"/>
+
+            <xs:enumeration value="Terphenyls"/>
+
+            <xs:enumeration value="tert-Butyl Acetate"/>
+
+            <xs:enumeration value="tert-Butyl Alcohol"/>
+
+            <xs:enumeration value="tert-Butyl Methyl Ether"/>
+
+            <xs:enumeration value="1,1,2,2-Tetrabromoethane"/>
+
+            <xs:enumeration value="Tetracarbonylnickel (As Ni)"/>
+
+            <xs:enumeration value="Tetracarbonylnickel(0) (As Ni)"/>
+
+            <xs:enumeration value="1,2,4,5-Tetrachloro-3-nitrobenzene"/>
+
+            <xs:enumeration value="2,4,5,6-Tetrachlorobenzene-1,3-dicarbonitrile"/>
+
+            <xs:enumeration value="Tetrachloroethene"/>
+
+            <xs:enumeration value="Tetrachloromethane"/>
+
+            <xs:enumeration value="1,1,1,2-Tetrafluoroethane"/>
+
+            <xs:enumeration value="Tetrahydro-1,4-dioxin"/>
+
+            <xs:enumeration value="Tetrahydro-2H-1,4-oxazine"/>
+
+            <xs:enumeration value="Tetrahydrofuran"/>
+
+            <xs:enumeration value="Tetrasodium Pyrophosphate"/>
+
+            <xs:enumeration value="TGIC"/>
+
+            <xs:enumeration value="Thallium"/>
+
+            <xs:enumeration value="THF"/>
+
+            <xs:enumeration value="Thiabendazole"/>
+
+            <xs:enumeration value="Thioglycolic Acid"/>
+
+            <xs:enumeration value="Thionyl Chloride"/>
+
+            <xs:enumeration value="Thiosulfan"/>
+
+            <xs:enumeration value="Tin"/>
+
+            <xs:enumeration value="Tin Compounds, Inorganic"/>
+
+            <xs:enumeration value="Titanium"/>
+
+            <xs:enumeration value="Titanium Dioxide"/>
+
+            <xs:enumeration value="Titanium(IV) Oxide"/>
+
+            <xs:enumeration value="TNT"/>
+
+            <xs:enumeration value="TOC"/>
+
+            <xs:enumeration value="Toluene"/>
+
+            <xs:enumeration value="Tolyl Chloride"/>
+
+            <xs:enumeration value="2-Tolylamine"/>
+
+            <xs:enumeration value="Tosyl Chloride"/>
+
+            <xs:enumeration value="Total Indicative Dose (for Radioactivity)"/>
+
+            <xs:enumeration value="Total Organic Carbon"/>
+
+            <xs:enumeration value="2,4,5-TP"/>
+
+            <xs:enumeration value="TPP"/>
+
+            <xs:enumeration value="Transparency"/>
+
+            <xs:enumeration value="Tri-2-tolyl Phosphate"/>
+
+            <xs:enumeration value="Triallate"/>
+
+            <xs:enumeration value="Triazophos"/>
+
+            <xs:enumeration value="Tribromoborane"/>
+
+            <xs:enumeration value="Tribromomethane"/>
+
+            <xs:enumeration value="Tributyl Phosphate"/>
+
+            <xs:enumeration value="Tributyltin"/>
+
+            <xs:enumeration value="Tributyltin Compounds"/>
+
+            <xs:enumeration value="1,1,1-Trichloro-2,2-bis(4-chlorophenyl)ethane"/>
+
+            <xs:enumeration value="1,1,1-Trichloro-2,2-bis(chlorophenyl)ethane"/>
+
+            <xs:enumeration value="Trichloroacetaldehyde Monohydrate"/>
+
+            <xs:enumeration value="Trichloroacetate"/>
+
+            <xs:enumeration value="1,2,4-Trichlorobenzene"/>
+
+            <xs:enumeration value="Trichlorobenzene"/>
+
+            <xs:enumeration value="1,1,1-Trichloroethane"/>
+
+            <xs:enumeration value="1,1,2-Trichloroethane"/>
+
+            <xs:enumeration value="2,2,2-Trichloroethane-1,1-diol"/>
+
+            <xs:enumeration value="1,1,2-Trichloroethene"/>
+
+            <xs:enumeration value="Trichloroethene"/>
+
+            <xs:enumeration value="Trichloroethylene"/>
+
+            <xs:enumeration value="Trichloromethane"/>
+
+            <xs:enumeration value="Trichloronitromethane"/>
+
+            <xs:enumeration value="2,4,6-Trichlorophenol"/>
+
+            <xs:enumeration value="2,4,5-Trichlorophenoxyacetic Acid"/>
+
+            <xs:enumeration value="Trichlorophosphine"/>
+
+            <xs:enumeration value="Triethylamine"/>
+
+            <xs:enumeration value="Trifluralin"/>
+
+            <xs:enumeration value="Triglycidyl Isocyanurate"/>
+
+            <xs:enumeration value="Trihalomethanes"/>
+
+            <xs:enumeration value="Triiodomethane"/>
+
+            <xs:enumeration value="Trimellitic Anhydride"/>
+
+            <xs:enumeration value="Trimethyl Phosphite"/>
+
+            <xs:enumeration value="Trimethylbenzenes"/>
+
+            <xs:enumeration value="3,5,5-Trimethylcyclohex-2-enone"/>
+
+            <xs:enumeration value="2,4,6-Trinitrophenol"/>
+
+            <xs:enumeration value="2,4,6-Trinitrotoluene"/>
+
+            <xs:enumeration value="Tri-o-tolyl Phosphate"/>
+
+            <xs:enumeration value="Triphenyl Phosphate"/>
+
+            <xs:enumeration value="Triphenyltin and Its Derivatives"/>
+
+            <xs:enumeration value="Tris(2-methylphenyl) Phosphate"/>
+
+            <xs:enumeration value="Tritium"/>
+
+            <xs:enumeration value="TSPP"/>
+
+            <xs:enumeration value="Tungsten and Its Compounds (As W)"/>
+
+            <xs:enumeration value="Turbidity"/>
+
+            <xs:enumeration value="Turpentine"/>
+
+            <xs:enumeration value="Uranium"/>
+
+            <xs:enumeration value="Vanadium"/>
+
+            <xs:enumeration value="Vanadium Pentoxide"/>
+
+            <xs:enumeration value="Vanadium(V) Oxide"/>
+
+            <xs:enumeration value="Vinyl Chloride"/>
+
+            <xs:enumeration value="Vinyl Cyanide"/>
+
+            <xs:enumeration value="Vinylbenzene"/>
+
+            <xs:enumeration value="Vinylidene Chloride"/>
+
+            <xs:enumeration value="Wool Process Dust"/>
+
+            <xs:enumeration value="Xylenes"/>
+
+            <xs:enumeration value="Yttrium"/>
+
+            <xs:enumeration value="Zinc"/>
+
+            <xs:enumeration value="Zinc Chloride, Fume"/>
+
+            <xs:enumeration value="Zinc Distearate"/>
+
+            <xs:enumeration value="Zinc Stearate"/>
+
+            <xs:enumeration value="Zinc(II) Octadecanoate"/>
+
         </xs:restriction>
     </xs:simpleType>
-    
-    <xs:complexType name="LFG_parameterType">
+
+    <xs:complexType name="EPR_parameterType">
         <xs:simpleContent>
             <xs:extension base="parameterType">
                 <xs:attributeGroup ref="CommonAtts"/>
             </xs:extension>
         </xs:simpleContent>
     </xs:complexType>
-    
-</xs:schema>
 
+</xs:schema>

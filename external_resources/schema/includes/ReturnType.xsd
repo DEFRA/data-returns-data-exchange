@@ -27,7 +27,7 @@
     </xs:simpleType>
 
 
-    <xs:complexType name="LFG_returnType">
+    <xs:complexType name="EPR_returnType">
         <xs:simpleContent>
             <xs:extension base="returnType">
                 <xs:attributeGroup ref="CommonAtts"/>

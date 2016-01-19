@@ -1,0 +1,16 @@
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+           xmlns:lgm="http://ea.gov.uk/DR/LGM"
+           attributeFormDefault="unqualified"
+           elementFormDefault="qualified">
+
+    <xs:include schemaLocation="XMLID.xsd" />
+
+    <xs:complexType name="EPR_commentsType">
+        <xs:simpleContent>
+            <xs:extension base="commentsType">
+                <xs:attributeGroup ref="CommonAtts"/>
+            </xs:extension>
+        </xs:simpleContent>
+    </xs:complexType>
+
+</xs:schema>

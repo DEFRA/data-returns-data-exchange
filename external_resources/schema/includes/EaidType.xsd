@@ -1,0 +1,24 @@
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+           xmlns:lgm="http://ea.gov.uk/DR/LGM"
+           attributeFormDefault="unqualified"
+           elementFormDefault="qualified">
+
+    <xs:include schemaLocation="XMLID.xsd" />
+
+    <xs:simpleType name="eaidType">
+        <xs:restriction base="xs:string" >
+            <xs:pattern value="([0-9a-zA-Z ])*"/>
+            <xs:minLength value="1"/>
+            <xs:maxLength value="30"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:complexType name="EPR_eaidType">
+        <xs:simpleContent>
+            <xs:extension base="eaidType">
+                <xs:attributeGroup ref="CommonAtts"/>
+            </xs:extension>
+        </xs:simpleContent>
+    </xs:complexType>
+
+</xs:schema>

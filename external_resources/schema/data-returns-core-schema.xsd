@@ -1,44 +1,59 @@
-<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" 
-           xmlns:lgm="http://ea.gov.uk/DR/LGM" 
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+           xmlns:lgm="http://ea.gov.uk/DR/LGM"
            attributeFormDefault="unqualified"
            elementFormDefault="qualified">
 
-    <!-- Type definitions in separate files -->
-    <xs:include schemaLocation="includes/StringTypes.xsd" />
-    <xs:include schemaLocation="includes/MeasurePeriodList.xsd" />
-    <xs:include schemaLocation="includes/Dates.xsd" />
-    <xs:include schemaLocation="includes/ReturnType.xsd" />
-    <xs:include schemaLocation="includes/UnitType.xsd" />
-    <xs:include schemaLocation="includes/TestMethodType.xsd" />
-    <xs:include schemaLocation="includes/ParameterType.xsd" />
-    <xs:include schemaLocation="includes/CiCType.xsd" />
+           <!--TODO Decision - No dependencies on associated fields i.e. Mon_Date to be Mandatory
+           and Mon_Period Optional
+           Note:RemovedMonDateType-->
 
-    <xs:element name="returns">
+    <!-- Type definitions in separate files -->
+    <xs:include schemaLocation="includes/EaidType.xsd" />
+    <xs:include schemaLocation="includes/ReturnType.xsd" />
+    <xs:include schemaLocation="includes/MonPointType.xsd" />
+    <xs:include schemaLocation="includes/Dates.xsd" />
+    <xs:include schemaLocation="includes/ParameterType.xsd" />
+    <xs:include schemaLocation="includes/ValueType.xsd" /><!--TODO Does this need to be included here?-->
+    <xs:include schemaLocation="includes/UnitType.xsd" />
+    <xs:include schemaLocation="includes/RefPeriodType.xsd" />
+    <xs:include schemaLocation="includes/MonPeriodType.xsd" /><!--TODO Dependency on Mon_Date not set-->
+    <xs:include schemaLocation="includes/SampleRefType.xsd" />
+    <xs:include schemaLocation="includes/SampleByType.xsd" />
+    <xs:include schemaLocation="includes/SiteNameType.xsd" />
+    <xs:include schemaLocation="includes/CommentsType.xsd" /><!--TODO Does this need to be included here?-->
+    <xs:include schemaLocation="includes/TestMethodType.xsd" />
+    <xs:include schemaLocation="includes/CiCType.xsd" />
+    <xs:include schemaLocation="includes/CasType.xsd" />
+    <xs:include schemaLocation="includes/RdCode.xsd" />
+    <xs:include schemaLocation="includes/StringTypes.xsd" />
+
+
+    <xs:element name="returns"><!--Removed duplicate Mon_Date and Unit elements-->
         <xs:complexType>
             <xs:sequence>
                 <xs:element name="return" maxOccurs="unbounded" minOccurs="1">
                     <xs:complexType>
                         <xs:all>
-							<!-- TODO only core columns used for Part 1, set all types correctly -->
-                            <xs:element type="LFG_Required_String" name="EA_ID"/>
-                            <xs:element type="LFG_OptionalStringMax255" name="Site_Name"/>
-                            <xs:element type="LFG_returnType" name="Rtn_Type"/>
-                            <xs:element type="LFG_DateTime" name="Mon_Date"/>
-                            <xs:element type="LFG_optionalValidDateTime" name="Mon_Date_End"/>
-                            <xs:element type="LFG_OptionalStringMax255" name="Mon_Period"/> 
-                            <xs:element type="LFG_OptionalStringMax255" name="Smpl_Ref"/>
-                            <xs:element type="LFG_OptionalStringMax255" name="Smpl_By"/>
-                            <xs:element type="LFG_Required_String" name="Mon_Point"/>
-                            <xs:element type="LFG_Required_String" name="Parameter"/>
-                            <xs:element type="LFG_mandatoryValueTypeMax30" name="Value"/>
-                            <xs:element type="LFG_OptionalStringMax255" name="Txt_Value"/>
-                            <xs:element type="LFG_unitType" name="Unit"/>
-                            <xs:element type="LFG_OptionalStringMax255" name="Ref_Period"/>
-                            <xs:element type="LFG_OptionalStringMax255" name="Meth_Stand"/>
-                            <xs:element type="LFG_OptionalStringMax255" name="Comments"/>
-                            <xs:element type="LFG_OptionalStringMax255" name="CiC"/>
-                            <xs:element type="LFG_OptionalStringMax255" name="CAS"/>
-                            <xs:element type="LFG_OptionalStringMax255" name="RD_Code"/> 
+							              <xs:element type="EPR_Required_String" name="EA_ID"/>
+                            <xs:element type="EPR_mandatoryStringMax255" name="Rtn_Type"/>
+                            <xs:element type="EPR_Required_String" name="Mon_Point"/>
+                            <xs:element type="EPR_DateTime" name="Mon_Date"/>
+                            <xs:element type="EPR_mandatoryStringMax255" name="Parameter"/>
+                            <xs:element type="EPR_mandatoryStringMax30" name="Value"/>
+                            <xs:element type="EPR_mandatoryStringMax30" name="Unit"/>
+                            <xs:element type="EPR_OptionalStringMax255" name="Txt_Value"/>
+                            <xs:element type="EPR_OptionalStringMax255" name="Ref_Period"/><!--TODO Sometimes mandatory-->
+                            <xs:element type="EPR_OptionalStringMax30" name="Mon_Period"/><!--TODO Sometimes mandatory-->
+                            <xs:element type="EPR_optionalValidDateTime" name="Mon_Date_End"/>
+                            <xs:element type="EPR_OptionalStringMax255" name="Smpl_Ref"/>
+                            <xs:element type="EPR_OptionalStringMax255" name="Smpl_By"/>
+                            <xs:element type="EPR_OptionalStringMax255" name="Txt_Value"/>
+                            <xs:element type="EPR_OptionalStringMax255" name="Site_Name"/>
+                            <xs:element type="EPR_OptionalStringMax255" name="Comments"/>
+                            <xs:element type="EPR_OptionalStringMax30" name="Meth_Stand"/>
+                            <xs:element type="EPR_OptionalStringMax255" name="CiC"/>
+                            <xs:element type="EPR_OptionalStringMax255" name="CAS"/>
+                            <xs:element type="EPR_OptionalStringMax255" name="RD_Code"/>
                         </xs:all>
                         <xs:attribute type="xs:integer" name="srcId" use="optional"/>
                     </xs:complexType>

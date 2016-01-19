@@ -1,16 +1,16 @@
-<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" 
-           xmlns:lgm="http://ea.gov.uk/DR/LGM" 
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+           xmlns:lgm="http://ea.gov.uk/DR/LGM"
            attributeFormDefault="unqualified"
            elementFormDefault="qualified">
-    
+
     <xs:include schemaLocation="XMLID.xsd" />
-    
+
     <xs:simpleType name="emptyStringType">
         <xs:restriction base="xs:string">
             <xs:enumeration value=""/>
         </xs:restriction>
-    </xs:simpleType>	   
-     
+    </xs:simpleType>
+
     <xs:simpleType name="OptionalStringMax255">
         <xs:restriction base="xs:string">
             <xs:pattern value="([0-9a-zA-Z ])*"/>
@@ -18,13 +18,13 @@
             <xs:maxLength value="255"/>
         </xs:restriction>
     </xs:simpleType>
-    
+
     <xs:simpleType name="optionalString">
         <xs:restriction base="xs:string">
             <xs:minLength value="0"/>
         </xs:restriction>
     </xs:simpleType>
-    
+
     <xs:simpleType name="mandatoryStringMax255" >
         <xs:restriction base="xs:string">
             <xs:pattern value="([0-9a-zA-Z ])*"/>
@@ -32,13 +32,13 @@
             <xs:maxLength value="255"/>
         </xs:restriction>
     </xs:simpleType>
-    
+
     <xs:simpleType name="mandatoryString">
         <xs:restriction base="xs:string">
             <xs:minLength value="1"/>
         </xs:restriction>
     </xs:simpleType>
-    
+
     <xs:simpleType name="mandatoryStringMax30" >
         <xs:restriction base="xs:string">
             <xs:pattern value="([0-9a-zA-Z ])*"/>
@@ -46,40 +46,48 @@
             <xs:maxLength value="30"/>
         </xs:restriction>
     </xs:simpleType>
-    
+
     <xs:simpleType name="mandatoryValueTypeMax30" >
         <xs:restriction base="xs:string">
-            <xs:pattern value="([0-9,-.%|True|False|Yes|No])*"/>
+            <xs:pattern value="([0-9,-.%<>|True|False|Yes|No])*"/>
             <xs:minLength value="1"/>
             <xs:maxLength value="30"/>
         </xs:restriction>
     </xs:simpleType>
-    
-    <xs:complexType name="LFG_mandatoryValueTypeMax30">
+
+    <xs:simpleType name="OptionalStringMax30">
+        <xs:restriction base="xs:string">
+            <xs:pattern value="([0-9a-zA-Z][<>-.])*"/>
+            <xs:minLength value="0"/>
+            <xs:maxLength value="30"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:complexType name="EPR_mandatoryValueTypeMax30">
         <xs:simpleContent>
             <xs:extension base="mandatoryValueTypeMax30">
                 <xs:attributeGroup ref="CommonAtts"/>
             </xs:extension>
         </xs:simpleContent>
     </xs:complexType>
-    
-    <xs:complexType name="LFG_mandatoryStringMax255">
+
+    <xs:complexType name="EPR_mandatoryStringMax255">
         <xs:simpleContent>
             <xs:extension base="mandatoryStringMax255">
                 <xs:attributeGroup ref="CommonAtts"/>
             </xs:extension>
         </xs:simpleContent>
     </xs:complexType>
-    
-    <xs:complexType name="LFG_mandatoryStringMax30">
+
+    <xs:complexType name="EPR_mandatoryStringMax30">
         <xs:simpleContent>
             <xs:extension base="mandatoryStringMax30">
                 <xs:attributeGroup ref="CommonAtts"/>
             </xs:extension>
         </xs:simpleContent>
     </xs:complexType>
-    
-    <xs:complexType name="LFG_Required_String">
+
+    <xs:complexType name="EPR_Required_String">
         <xs:simpleContent>
             <xs:extension base="mandatoryString">
                 <xs:attributeGroup ref="CommonAtts"/>
@@ -87,17 +95,25 @@
         </xs:simpleContent>
     </xs:complexType>
 
-    <xs:complexType name="LFG_Optional_String">
+    <xs:complexType name="EPR_Optional_String">
         <xs:simpleContent>
             <xs:extension base="optionalString">
                 <xs:attributeGroup ref="CommonAtts"/>
             </xs:extension>
         </xs:simpleContent>
     </xs:complexType>
-    
-    <xs:complexType name="LFG_OptionalStringMax255">
+
+    <xs:complexType name="EPR_OptionalStringMax255">
         <xs:simpleContent>
             <xs:extension base="OptionalStringMax255">
+                <xs:attributeGroup ref="CommonAtts"/>
+            </xs:extension>
+        </xs:simpleContent>
+    </xs:complexType>
+
+    <xs:complexType name="EPR_OptionalStringMax30">
+        <xs:simpleContent>
+            <xs:extension base="OptionalStringMax30">
                 <xs:attributeGroup ref="CommonAtts"/>
             </xs:extension>
         </xs:simpleContent>

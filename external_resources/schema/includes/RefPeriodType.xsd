@@ -1,0 +1,47 @@
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+           xmlns:lgm="http://ea.gov.uk/DR/LGM"
+           attributeFormDefault="unqualified"
+           elementFormDefault="qualified">
+
+    <xs:include schemaLocation="XMLID.xsd" />
+
+    <xs:simpleType name="refPeriodType">
+      <xs:restriction base="xs:string" >
+        <!--TODO Values derived from DEP 1st user testing version -
+        2.4 Controlled list - Reference Period-->
+          <xs:enumeration value="Continuous"/>
+          <xs:enumeration value="Continuous - as appropriate to reference"/>
+          <xs:enumeration value="½-hr average"/>
+          <xs:enumeration value="Daily average"/>
+          <xs:enumeration value="Daily Mean"/>
+          <xs:enumeration value="Daily mean of validated hourly averages"/>
+          <xs:enumeration value="Calendar monthly mean"/>
+          <xs:enumeration value="Monthly mean of validated hourly averages"/>
+          <xs:enumeration value="Periodic - as appropriate to reference"/>
+          <xs:enumeration value="periodic over minimum 30 minute, maximum 8 hour period"/>
+          <xs:enumeration value="periodic over minimum 1 hour period"/>
+          <xs:enumeration value="95% of all 10-minute averages in any 24-hour period"/>
+          <xs:enumeration value="95% of validated hourly averages within a calendar year"/>
+          <xs:enumeration value="95% of validated daily means within a calendar year"/>
+          <xs:enumeration value="Bi-annual periodic measurement average value over sample period of between 6 and 8 hours."/>
+          <xs:enumeration value="Instantaneous"/>
+          <xs:enumeration value="Spot sample"/>
+          <xs:enumeration value="MEPP"/>
+          <xs:enumeration value="MEPP - Up gradient"/>
+          <xs:enumeration value="MEPP - Down or Cross gradient"/>
+          <xs:enumeration value="m>AOD"/>
+          <xs:enumeration value="m>cell base"/>
+          <xs:enumeration value="Hourly mean"/>
+          <xs:enumeration value="2 Hours"/>
+      </xs:restriction>
+    </xs:simpleType>
+
+    <xs:complexType name="EPR_refPeriodType">
+        <xs:simpleContent>
+            <xs:extension base="refPeriodType">
+                <xs:attributeGroup ref="CommonAtts"/>
+            </xs:extension>
+        </xs:simpleContent>
+    </xs:complexType>
+
+</xs:schema>

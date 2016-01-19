@@ -15,7 +15,7 @@
         </xs:restriction>
     </xs:simpleType>
     
-    <xs:complexType name="LFG_CiCType">
+    <xs:complexType name="EPR_CiCType">
         <xs:simpleContent>
             <xs:extension base="CiCType">
                 <xs:attributeGroup ref="CommonAtts"/>
