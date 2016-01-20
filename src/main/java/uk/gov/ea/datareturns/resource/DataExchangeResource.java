@@ -7,8 +7,8 @@ import static uk.gov.ea.datareturns.helper.DataExchangeHelper.generateFileKey;
 import static uk.gov.ea.datareturns.helper.FileUtilsHelper.saveFile;
 import static uk.gov.ea.datareturns.helper.XMLUtilsHelper.deserializeFromXML;
 import static uk.gov.ea.datareturns.helper.XMLUtilsHelper.transformToString;
-import static uk.gov.ea.datareturns.type.AppStatusCode.APP_STATUS_SUCCESS;
 import static uk.gov.ea.datareturns.type.AppStatusCode.APP_STATUS_FAILED_WITH_ERRORS;
+import static uk.gov.ea.datareturns.type.AppStatusCode.APP_STATUS_SUCCESS;
 
 import java.io.File;
 import java.io.InputStream;
@@ -21,7 +21,6 @@ import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Response;
 
-import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.mail.EmailAttachment;
 import org.apache.commons.mail.EmailException;
@@ -36,7 +35,6 @@ import uk.gov.ea.datareturns.config.DataExchangeConfiguration;
 import uk.gov.ea.datareturns.config.EmailSettings;
 import uk.gov.ea.datareturns.config.MiscSettings;
 import uk.gov.ea.datareturns.convert.ConvertCSVToXML;
-import uk.gov.ea.datareturns.convert.ConvertFileToFile;
 import uk.gov.ea.datareturns.dao.PermitDAO;
 import uk.gov.ea.datareturns.domain.result.CompleteResult;
 import uk.gov.ea.datareturns.domain.result.DataExchangeResult;
@@ -46,8 +44,9 @@ import uk.gov.ea.datareturns.domain.result.ValidationResult;
 import uk.gov.ea.datareturns.exception.application.FileKeyMismatchException;
 import uk.gov.ea.datareturns.exception.application.MultiplePermitsException;
 import uk.gov.ea.datareturns.exception.application.PermitNotFoundException;
+import uk.gov.ea.datareturns.exception.application.UnsupportedFileTypeException;
 import uk.gov.ea.datareturns.exception.system.NotificationException;
-import uk.gov.ea.datareturns.factory.ConvertFactory;
+import uk.gov.ea.datareturns.type.FileType;
 import uk.gov.ea.datareturns.validate.Validate;
 import uk.gov.ea.datareturns.validate.ValidateXML;
 
@@ -68,7 +67,8 @@ public class DataExchangeResource
 	private final String CORE_SCHEMA_FILE = "data-returns-core-schema.xsd";
 	private final String CORE_TRANSLATIONS_FILE = "data-returns-core-translations.xml";
 	private final String PERMIT_NO_FIELD_ID = "EA_ID";
-	private final String[] uniqueIdentifierIds = new String[] { "EA_ID", "Site_Name", "Rtn_Type" };
+	private final String[] uniqueIdentifierIds = new String[]
+	{ "EA_ID", "Site_Name", "Rtn_Type" };
 
 	private Map<String, String> fileKeys;
 
@@ -81,10 +81,11 @@ public class DataExchangeResource
 
 	/**
 	 * REST method to handle Returns file upload.
-	 * 		1. Save uploaded file
-	 * 		2. Convert uploaded file
-	 * 		3. Apply Permit number validations
-	 * 		4. Apply File content validations
+	 *      1. Validate upload file
+	 * 		2. Save upload file
+	 * 		3. Convert upload file to XML
+	 * 		4. Apply Permit number validations
+	 * 		5. Apply File content validations
 	 * @param is
 	 * @param fileDetail
 	 * @return JSON object
@@ -99,24 +100,25 @@ public class DataExchangeResource
 		MiscSettings settings = config.getMiscSettings();
 		String uploadedFile = makeFullFilePath(settings.getUploadedLocation(), fileDetail.getFileName());
 
-		// 1. Save uploaded file
+		// 1. Validate upload file
+		validateUploadFile(uploadedFile);
+
+		// 2. Save upload file
 		saveFile(is, uploadedFile);
 
-		// 2. Convert uploaded file
-		ConvertFileToFile converter = ConvertFactory.getConverter(getConverterType(uploadedFile));
-		converter.setFileToConvert(uploadedFile);
-		converter.setOutputLocation(settings.getOutputLocation());
+		// 3. Convert uploaded file to XML
+		ConvertCSVToXML converter = new ConvertCSVToXML(settings.getCsvSeparator(), uploadedFile, settings.getOutputLocation());
 		converter.convert();
 
 		String workingFile = converter.getConvertedFile();
 
-		// 3. Apply Permit number validations
+		// 4. Apply Permit number validations
 		validatePermitNo(workingFile);
 
-		// 4. Apply File content validations
+		// 5. Apply File content validations
 		ValidationResult validateResult = validateFile(workingFile);
 
-		// Whoohoo! prepare success or failure response
+		// Whoohoo! prepare success/failure response
 
 		UploadResult uploadResult = new UploadResult(fileDetail.getFileName());
 		DataExchangeResult result = new DataExchangeResult(uploadResult);
@@ -131,7 +133,7 @@ public class DataExchangeResource
 			uploadResult.setFileKey(generateFileKey());
 			result.setAppStatusCode(APP_STATUS_SUCCESS.getAppStatusCode());
 
-			// TODO store fileKey in database
+			// TODO store fileKey in database/redis?
 			fileKeys.put(uploadResult.getFileKey(), uploadedFile);
 		} else
 		{
@@ -162,6 +164,21 @@ public class DataExchangeResource
 		result.setAppStatusCode(APP_STATUS_SUCCESS.getAppStatusCode());
 
 		return Response.ok(result).build();
+	}
+
+	/**
+	 * Basic file validation
+	 * @param uploadedFile
+	 */
+	private void validateUploadFile(String uploadedFile)
+	{
+		String fileType = getConverterType(uploadedFile);
+
+		// Release 1 must be csv
+		if (!fileType.equalsIgnoreCase(FileType.CSV.getFileType()))
+		{
+			throw new UnsupportedFileTypeException("Unsupported file type '" + fileType + "'");
+		}
 	}
 
 	/**

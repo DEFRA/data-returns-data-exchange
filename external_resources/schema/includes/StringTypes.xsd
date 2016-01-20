@@ -13,7 +13,7 @@
 
     <xs:simpleType name="OptionalStringMax255">
         <xs:restriction base="xs:string">
-            <xs:pattern value="([0-9a-zA-Z ])*"/>
+            <xs:pattern value="([0-9a-zA-Z ;,&lt;&gt;&amp;])*"/>
             <xs:minLength value="0"/>
             <xs:maxLength value="255"/>
         </xs:restriction>
@@ -49,7 +49,7 @@
 
     <xs:simpleType name="mandatoryValueTypeMax30" >
         <xs:restriction base="xs:string">
-            <xs:pattern value="([0-9,-.%<>|True|False|Yes|No])*"/>
+            <xs:pattern value="([0-9,-.%&lt;&gt;|True|False|Yes|No])*"/>
             <xs:minLength value="1"/>
             <xs:maxLength value="30"/>
         </xs:restriction>
@@ -57,7 +57,7 @@
 
     <xs:simpleType name="OptionalStringMax30">
         <xs:restriction base="xs:string">
-            <xs:pattern value="([0-9a-zA-Z][<>-.])*"/>
+<!--             <xs:pattern value="([0-9a-zA-Z ;,&lt;&gt;-.])*"/> -->
             <xs:minLength value="0"/>
             <xs:maxLength value="30"/>
         </xs:restriction>

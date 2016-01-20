@@ -20,7 +20,7 @@
         <xs:enumeration value="Monthly"/>
         <xs:enumeration value="Monthly - until gas extraction commences"/>
         <xs:enumeration value="Once every two months"/>
-        <xs:enumeration value="Pre-operation "&" significant operational change"/>
+        <xs:enumeration value="Pre-operation &amp; significant operational change"/>
         <xs:enumeration value="Quarterly"/>
         <xs:enumeration value="Twice a year"/>
         <xs:enumeration value="Twice per year (minimum)"/>

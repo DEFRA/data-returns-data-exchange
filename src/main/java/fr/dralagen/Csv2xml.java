@@ -329,15 +329,18 @@ public class Csv2xml {
                     while ( j < splited.length
                             && (splited[j].equals("") || splited[j].charAt(splited[j].length() - 1) != '"')
                             ) {
-                        field += ";" + splited[j];
+                    	// AH replaced ; to allow embedded commas
+                        field += delimiter + splited[j];
                         ++j;
                     }
                 }
 
                 // we find the end field
                 if (j < splited.length) {
-                    field += ";" + splited[j];
-                    field = field.substring(0, field.length() - 2);
+                	// AH replaced ; to allow embedded commas
+                    field += delimiter + splited[j];
+                    // AH Fixed bug that chopped off 2 characters not 1
+                    field = field.substring(0, field.length() - 1);
                     fieldOpened = false;
                 }
             }

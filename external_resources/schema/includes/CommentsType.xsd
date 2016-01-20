@@ -7,7 +7,7 @@
 
     <xs:complexType name="EPR_commentsType">
         <xs:simpleContent>
-            <xs:extension base="commentsType">
+            <xs:extension base="OptionalStringMax255">
                 <xs:attributeGroup ref="CommonAtts"/>
             </xs:extension>
         </xs:simpleContent>

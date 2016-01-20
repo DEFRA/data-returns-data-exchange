@@ -7,7 +7,7 @@
 
     <xs:simpleType name="valueType">
         <xs:restriction base="xs:string" >
-            <xs:pattern value="([0-9a-zA-Z ])*"/>
+            <xs:pattern value="([0-9a-zA-Z -.&lt;&gt;])*"/>
             <xs:minLength value="0"/>
             <xs:maxLength value="30"/>
         </xs:restriction>

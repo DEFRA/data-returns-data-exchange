@@ -24,6 +24,9 @@ public class MiscSettings
 	private String xmlLocation;
 
 	@NotEmpty
+	private String csvSeparator;
+	
+	@NotEmpty
 	private String debugMode;
 
 	public MiscSettings()
@@ -78,6 +81,16 @@ public class MiscSettings
 	public void setXmlLocation(String xmlLocation)
 	{
 		this.xmlLocation = xmlLocation;
+	}
+
+	public String getCsvSeparator()
+	{
+		return csvSeparator;
+	}
+
+	public void setCsvSeparator(String csvSeparator)
+	{
+		this.csvSeparator = csvSeparator;
 	}
 
 	public String getDebugMode()

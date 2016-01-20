@@ -2,7 +2,7 @@
 <Translations>
 	<TranslateTo>
 		<ElementName elementId="EA_ID"><![CDATA[EA unique identifier, EA_ID, not recognised. Make sure it’s exactly the same as given in your original permit, licence or mineral extractions agreement.]]></ElementName>
-		<ElementName elementId="Rtn_Type"><![CDATA[/Return type not recognised. You must give a valid return type exactly as it’s given in this list supplied by EA.]]></ElementName>
+		<ElementName elementId="Rtn_Type"><![CDATA[Return type not recognised. You must give a valid return type exactly as it’s given in this list supplied by EA.]]></ElementName>
 		<ElementName elementId="Mon_Point"><![CDATA[Monitoring point not recognised. Check your data.]]></ElementName>
 		<ElementName elementId="Mon_Date"><![CDATA[Date not recognised. You need to format the date as 'YYYY-MM-DD' eg 2015-10-31.]]></ElementName>
 		<ElementName elementId="Parameter"><![CDATA[Parameter not recognised. See controlled list 3 for allowable parameters.]]></ElementName>

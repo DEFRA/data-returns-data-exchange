@@ -1,5 +1,10 @@
 package uk.gov.ea.datareturns.convert;
 
+import static uk.gov.ea.datareturns.helper.CommonHelper.makeFullFilePath;
+import static uk.gov.ea.datareturns.type.FileType.CSV;
+import static uk.gov.ea.datareturns.type.FileType.XML;
+
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -17,26 +22,78 @@ import uk.gov.ea.datareturns.exception.system.FileSaveException;
 import uk.gov.ea.datareturns.helper.FileUtilsHelper;
 import fr.dralagen.Csv2xml;
 
-public class ConvertCSVToXML extends ConvertFileToFile
+public class ConvertCSVToXML
 {
 	private static final Logger LOGGER = LoggerFactory.getLogger(ConvertCSVToXML.class);
 
 	private final String ROOT_ELEMENT = "returns";
-	private final String RETURN_ELEMENT = "return";
-	private final String DELIMITER = ",";
+	private final String ROW_ELEMENT = "return";
 
-	public ConvertCSVToXML()
+	private String separator;
+	private String fileToConvert;
+	private String outputLocation;
+	private String convertedFile;
+
+	public ConvertCSVToXML(String separator, String fileToConvert, String outputLocation)
 	{
+		this.separator = separator;
+		this.fileToConvert = fileToConvert;
+		this.outputLocation = outputLocation;
+		
+		this.convertedFile = getXMLFileLocation();
 	}
 
-	@Override
+	public String getSeparator()
+	{
+		return separator;
+	}
+
+	public void setSeparator(String separator)
+	{
+		this.separator = separator;
+	}
+
+	public String getFileToConvert()
+	{
+		return fileToConvert;
+	}
+
+	public void setFileToConvert(String fileToConvert)
+	{
+		this.fileToConvert = fileToConvert;
+	}
+
+	public String getOutputLocation()
+	{
+		return outputLocation;
+	}
+
+	public void setOutputLocation(String outputLocation)
+	{
+		this.outputLocation = outputLocation;
+	}
+
+	public String getConvertedFile()
+	{
+		return convertedFile;
+	}
+
+	/**
+	 * Changes csv extension to xml
+	 * @return
+	 */
+	protected String getXMLFileLocation()
+	{
+		String fileNameIn = new File(fileToConvert).getName();
+		String fileNameOut = fileNameIn.replaceAll(CSV.getFileType(), XML.getFileType());
+
+		return makeFullFilePath(outputLocation, fileNameOut);
+	}
+
 	public int convert()
 	{
 		Csv2xml converter = new Csv2xml();
 		int rowsConverted = -1;
-
-		String fileToConvert = getFileToConvert();
-		String convertedFile = getXMLFileLocation();
 
 		try
 		{
@@ -54,7 +111,7 @@ public class ConvertCSVToXML extends ConvertFileToFile
 		{
 			InputStream csvInput = Csv2xml.getInputStream(fileToConvert);
 
-			rowsConverted = converter.convert(csvInput, DELIMITER, RETURN_ELEMENT);
+			rowsConverted = converter.convert(csvInput, separator, ROW_ELEMENT);
 
 			OutputStream xmlOutput = new FileOutputStream(convertedFile);
 
@@ -82,14 +139,6 @@ public class ConvertCSVToXML extends ConvertFileToFile
 
 		LOGGER.debug("File converted successfully for " + rowsConverted + " returns");
 
-		setConvertedFile(convertedFile);
-
 		return rowsConverted;
 	}
-
-	public String getConvertedFile()
-	{
-		return super.getConvertedFile();
-	}
-
 }

@@ -27,6 +27,7 @@ misc:
   schemaLocation: ./external_resources/schema
   xsltLocation: ./external_resources/xslt
   xmlLocation: ./external_resources/xml
+  csvSeparator: ","
   debugMode: true
 test:
   testFilesLocation: /testfiles

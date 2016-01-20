@@ -67,6 +67,8 @@ public class ResourceIntegrationTests
 	public final static MediaType MEDIA_TYPE_XML = new MediaType("application", "xml");
 
 	public final static String FILE_UNSUPPORTED_TYPE = "binary.exe";
+	public final static String FILE_EMBEDDED_COMMAS = "embedded-commas.csv";
+	public final static String FILE_EMBEDDED_XML_CHARS = "embedded-xml-chars.csv";
 	public final static String FILE_NON_CSV_CONTENTS = "binary.csv";
 	public final static String FILE_CSV_EMPTY = "empty.csv";
 	public final static String FILE_CSV_INSUFFICIENT_DATA = "header-row-only.csv";
@@ -107,6 +109,28 @@ public class ResourceIntegrationTests
 		}
 	}
 
+	@Test
+	public void testEmbeddedSeparatorsSuccess()
+	{
+		final Client client = createUploadStepClient("test Embedded Separators Success");
+		final Response resp = performUploadStep(client, FILE_EMBEDDED_COMMAS, MEDIA_TYPE_CSV);
+		assertThat(resp.getStatus()).isEqualTo(OK.getStatusCode());
+
+		final DataExchangeResult result = getResultFromResponse(resp);
+		assertThat(result.getAppStatusCode()).isEqualTo(APP_STATUS_SUCCESS.getAppStatusCode());
+	}
+	
+	@Test
+	public void testEmbeddedXMLCharsSuccess()
+	{
+		final Client client = createUploadStepClient("test Embedded XML Chars Success");
+		final Response resp = performUploadStep(client, FILE_EMBEDDED_XML_CHARS, MEDIA_TYPE_CSV);
+		assertThat(resp.getStatus()).isEqualTo(OK.getStatusCode());
+
+		final DataExchangeResult result = getResultFromResponse(resp);
+		assertThat(result.getAppStatusCode()).isEqualTo(APP_STATUS_SUCCESS.getAppStatusCode());
+	}
+		
 	@Test
 	public void testUnsupportedFileTypeFailure()
 	{

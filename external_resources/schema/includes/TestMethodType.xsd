@@ -39,7 +39,7 @@
             <xs:enumeration value="BS EN ISO 6878 followed by BS EN ISO 15681- 1"/>
             <xs:enumeration value="BS EN ISO 9562"/>
             <xs:enumeration value="BS EN/TS 1948-4"/>
-            <xs:enumeration value="BS ISO 11338-1 & BS-ISO 11338-2."/>
+            <xs:enumeration value="BS ISO 11338-1 &amp; BS-ISO 11338-2."/>
             <xs:enumeration value="BS ISO 15705"/>
             <xs:enumeration value="BS ISO 15713"/>
             <xs:enumeration value="Calibrated handheld monitoring instrument"/>
