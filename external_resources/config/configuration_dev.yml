@@ -34,11 +34,13 @@ test:
   testTimeout: 10000
   cleanupAfterTestRun: true
 email:
-  host: 127.0.0.1
-  port: 1025
-  emailTo: import@monitorpro.com
-  emailFrom: data_returns@environment-agency.gov.uk
-  tls: false
+  host: email-smtp.eu-west-1.amazonaws.com
+  port: 587
+  user: AKIAIXX25ZNDL33YHUIA
+  password: AmK/wWewBglYrvpyRmnLCPm7KlEcXJqPHMJIao585bzP
+  emailTo: ea.importer@ehsdata.com
+  emailFrom: datareturns@envage.co.uk
+  tls: true
   bodyMessage: Data Returns Import file received
 database:
   url: jdbc:postgresql://data-returns.cn1r9x2itg1r.eu-west-1.rds.amazonaws.com:5432/data_returns
