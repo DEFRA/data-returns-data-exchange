@@ -21,6 +21,10 @@ server:
   adminConnectors:
   - type: http
     port: 9021
+fileStorage:
+  redis:
+    host: localhost
+    port: 6379
 misc:
   uploadedLocation: ./external_resources/uploaded
   outputLocation: ./external_resources/output

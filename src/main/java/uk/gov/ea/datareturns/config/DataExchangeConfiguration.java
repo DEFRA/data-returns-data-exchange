@@ -20,6 +20,10 @@ public class DataExchangeConfiguration extends Configuration
 
 	@Valid
 	@NotNull
+	private FileStorageSettings fileStorageSettings = new FileStorageSettings();
+
+	@Valid
+	@NotNull
 	private MiscSettings miscSettings = new MiscSettings();
 
 	@Valid
@@ -48,6 +52,18 @@ public class DataExchangeConfiguration extends Configuration
 	public void setEmailsettings(EmailSettings emailsettings)
 	{
 		this.emailsettings = emailsettings;
+	}
+
+	@JsonProperty("fileStorage")
+	public FileStorageSettings getFileStorageSettings()
+	{
+		return fileStorageSettings;
+	}
+
+	@JsonProperty("fileStorage")
+	public void setFileStorageSettings(FileStorageSettings fileStorageSettings)
+	{
+		this.fileStorageSettings = fileStorageSettings;
 	}
 
 	@JsonProperty("misc")

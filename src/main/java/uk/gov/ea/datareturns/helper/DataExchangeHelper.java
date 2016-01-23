@@ -42,14 +42,4 @@ public class DataExchangeHelper
 	{
 		return returnType.toLowerCase().replace(" ", "_") + "_translations.xml";
 	}
-
-	/**
-	 * Generate a unique key (uses UUID class for now)
-	 * @return
-	 */
-	public static String generateFileKey()
-	{
-		return UUID.randomUUID().toString();
-	}
-
 }

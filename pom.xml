@@ -29,6 +29,7 @@
 		<saxon-dom.version>8.7</saxon-dom.version>
 		<jackson-dataformat-xml.version>2.6.3</jackson-dataformat-xml.version>
 		<codehaus.woodstox.version>4.4.1</codehaus.woodstox.version>
+		<redis.client.version>2.8.0</redis.client.version>
 
 		<!-- Test -->
 		<mockito.version>1.10.19</mockito.version>
@@ -141,6 +142,11 @@
 					<groupId>javax.xml.stream</groupId>
 				</exclusion>
 			</exclusions>
+		</dependency>
+		<dependency>
+			<groupId>redis.clients</groupId>
+			<artifactId>jedis</artifactId>
+			<version>${redis.client.version}</version>
 		</dependency>
 
 		<!-- Test -->

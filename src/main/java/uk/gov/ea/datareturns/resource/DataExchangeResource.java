@@ -3,7 +3,6 @@ package uk.gov.ea.datareturns.resource;
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 import static javax.ws.rs.core.MediaType.MULTIPART_FORM_DATA;
 import static uk.gov.ea.datareturns.helper.CommonHelper.makeFullFilePath;
-import static uk.gov.ea.datareturns.helper.DataExchangeHelper.generateFileKey;
 import static uk.gov.ea.datareturns.helper.FileUtilsHelper.saveFile;
 import static uk.gov.ea.datareturns.helper.XMLUtilsHelper.deserializeFromXML;
 import static uk.gov.ea.datareturns.helper.XMLUtilsHelper.transformToString;
@@ -34,6 +33,7 @@ import org.slf4j.LoggerFactory;
 import uk.gov.ea.datareturns.config.DataExchangeConfiguration;
 import uk.gov.ea.datareturns.config.EmailSettings;
 import uk.gov.ea.datareturns.config.MiscSettings;
+import uk.gov.ea.datareturns.config.RedisSettings;
 import uk.gov.ea.datareturns.convert.ConvertCSVToXML;
 import uk.gov.ea.datareturns.dao.PermitDAO;
 import uk.gov.ea.datareturns.domain.result.CompleteResult;
@@ -46,6 +46,7 @@ import uk.gov.ea.datareturns.exception.application.MultiplePermitsException;
 import uk.gov.ea.datareturns.exception.application.PermitNotFoundException;
 import uk.gov.ea.datareturns.exception.application.UnsupportedFileTypeException;
 import uk.gov.ea.datareturns.exception.system.NotificationException;
+import uk.gov.ea.datareturns.storage.FileStorage;
 import uk.gov.ea.datareturns.type.FileType;
 import uk.gov.ea.datareturns.validate.Validate;
 import uk.gov.ea.datareturns.validate.ValidateXML;
@@ -60,6 +61,8 @@ public class DataExchangeResource
 	private DataExchangeConfiguration config;
 	private PermitDAO permitDAO;
 
+	private FileStorage fileStorage;
+
 	private final String XSLT_UNIQUE_IDENTIFIERS = "get_unique_identifiers.xslt";
 	private final String XSLT_PERMIT_NOS = "get_unique_permit_nos.xslt";
 
@@ -70,13 +73,13 @@ public class DataExchangeResource
 	private final String[] uniqueIdentifierIds = new String[]
 	{ "EA_ID", "Site_Name", "Rtn_Type" };
 
-	private Map<String, String> fileKeys;
-
 	public DataExchangeResource(DataExchangeConfiguration config, PermitDAO permitDAO)
 	{
 		this.config = config;
 		this.permitDAO = permitDAO;
-		this.fileKeys = new HashMap<String, String>();
+
+		RedisSettings settings = config.getFileStorageSettings().getRedisSettings();
+		this.fileStorage = new FileStorage(settings.getHost(), Integer.parseInt(settings.getPort()));
 	}
 
 	/**
@@ -97,6 +100,8 @@ public class DataExchangeResource
 	@Timed
 	public Response uploadFile(@FormDataParam("fileUpload") InputStream is, @FormDataParam("fileUpload") FormDataContentDisposition fileDetail)
 	{
+		LOGGER.debug("/data-exchange/upload called");
+
 		MiscSettings settings = config.getMiscSettings();
 		String uploadedFile = makeFullFilePath(settings.getUploadedLocation(), fileDetail.getFileName());
 
@@ -125,18 +130,19 @@ public class DataExchangeResource
 
 		if (validateResult.isValid())
 		{
+			LOGGER.debug("uploaded file is valid");
+
 			// TODO needs determining exactly what the front-end needs
 			GeneralResult generalResult = getUniqueIdentifiers(workingFile);
 			result.setGeneralResult(generalResult);
 
 			// Pointer to the file
-			uploadResult.setFileKey(generateFileKey());
+			uploadResult.setFileKey(fileStorage.saveLocation(workingFile));
 			result.setAppStatusCode(APP_STATUS_SUCCESS.getAppStatusCode());
-
-			// TODO store fileKey in database/redis?
-			fileKeys.put(uploadResult.getFileKey(), uploadedFile);
 		} else
 		{
+			LOGGER.debug("uploaded file contains error(s)");
+
 			result.setValidationResult(validateResult);
 			result.setAppStatusCode(APP_STATUS_FAILED_WITH_ERRORS.getAppStatusCode());
 		}
@@ -151,6 +157,8 @@ public class DataExchangeResource
 	@Timed
 	public Response completeFileUpload(@NotEmpty @FormDataParam("fileKey") String fileKey, @NotEmpty @FormDataParam("userEmail") String userEmail)
 	{
+		LOGGER.debug("/data-exchange/complete called");
+
 		CompleteResult completeResult = new CompleteResult();
 		DataExchangeResult result = new DataExchangeResult(completeResult);
 
@@ -250,12 +258,16 @@ public class DataExchangeResource
 	 */
 	private String retrieveFileLocationByKey(String fileKey)
 	{
-		String fileLocation = fileKeys.get(fileKey);
+		LOGGER.debug("retrieving file location for fileKey '" + fileKey + "'");
+
+		String fileLocation = this.fileStorage.getLocation(fileKey);
 
 		if (fileLocation == null)
 		{
 			throw new FileKeyMismatchException("Unable to locate file using file key '" + fileKey + "'");
 		}
+
+		LOGGER.debug("Retrieved '" + fileLocation + "'");
 
 		return fileLocation;
 	}
