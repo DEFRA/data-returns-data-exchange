@@ -5,6 +5,7 @@ import static javax.ws.rs.core.MediaType.MULTIPART_FORM_DATA;
 import static uk.gov.ea.datareturns.helper.CommonHelper.makeFullFilePath;
 import static uk.gov.ea.datareturns.helper.FileUtilsHelper.saveFile;
 import static uk.gov.ea.datareturns.helper.XMLUtilsHelper.deserializeFromXML;
+import static uk.gov.ea.datareturns.helper.XMLUtilsHelper.serializeToJSON;
 import static uk.gov.ea.datareturns.helper.XMLUtilsHelper.transformToString;
 import static uk.gov.ea.datareturns.type.AppStatusCode.APP_STATUS_FAILED_WITH_ERRORS;
 import static uk.gov.ea.datareturns.type.AppStatusCode.APP_STATUS_SUCCESS;
@@ -14,10 +15,13 @@ import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
 
 import org.apache.commons.io.FilenameUtils;
@@ -52,6 +56,7 @@ import uk.gov.ea.datareturns.validate.Validate;
 import uk.gov.ea.datareturns.validate.ValidateXML;
 
 import com.codahale.metrics.annotation.Timed;
+import com.fasterxml.jackson.databind.SerializationFeature;
 
 @Path("/data-exchange/")
 public class DataExchangeResource
@@ -167,9 +172,15 @@ public class DataExchangeResource
 
 		String fileLocation = retrieveFileLocationByKey(completeResult.getFileKey());
 
+		LOGGER.debug("sending notification");
 		sendNotificationToMonitorPro(fileLocation);
+		LOGGER.debug("notification sent");
 
 		result.setAppStatusCode(APP_STATUS_SUCCESS.getAppStatusCode());
+
+		Map<SerializationFeature, Boolean> config = new HashMap<SerializationFeature, Boolean>();
+		config.put(SerializationFeature.INDENT_OUTPUT, true);
+		LOGGER.debug("returning result = " + serializeToJSON(result, config));
 
 		return Response.ok(result).build();
 	}
@@ -329,7 +340,11 @@ public class DataExchangeResource
 			LOGGER.debug("  password - " + settings.getPassword());
 			LOGGER.debug("  tls - " + settings.getTls());
 			LOGGER.debug("  bodyMessage - " + settings.getBodyMessage());
+
+			LOGGER.debug("before send email");
+			
 			email.send();
+			LOGGER.debug("after send email");
 		} catch (EmailException e1)
 		{
 			throw new NotificationException(e1, "Failed to send email to MonitorPro");
