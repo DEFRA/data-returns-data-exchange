@@ -24,6 +24,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.mail.EmailAttachment;
 import org.apache.commons.mail.EmailException;
@@ -50,6 +51,7 @@ import uk.gov.ea.datareturns.exception.application.MultiplePermitsException;
 import uk.gov.ea.datareturns.exception.application.PermitNotFoundException;
 import uk.gov.ea.datareturns.exception.application.UnsupportedFileTypeException;
 import uk.gov.ea.datareturns.exception.system.NotificationException;
+import uk.gov.ea.datareturns.helper.FileUtilsHelper;
 import uk.gov.ea.datareturns.storage.FileStorage;
 import uk.gov.ea.datareturns.type.FileType;
 import uk.gov.ea.datareturns.validate.Validate;
@@ -341,8 +343,9 @@ public class DataExchangeResource
 			LOGGER.debug("  tls - " + settings.getTls());
 			LOGGER.debug("  bodyMessage - " + settings.getBodyMessage());
 
+			FileUtilsHelper.fileExists(attachmentLocation);
 			LOGGER.debug("before send email");
-			
+
 			email.send();
 			LOGGER.debug("after send email");
 		} catch (EmailException e1)
