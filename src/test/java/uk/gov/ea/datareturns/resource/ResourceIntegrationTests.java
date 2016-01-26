@@ -58,6 +58,7 @@ import com.google.gson.Gson;
  * TODO not every single exception is tested - not sure if they ever will as e2e test should provide full coverage
  * TODO could refactor/reduce tests as many tests retest same code BUT too much is better so not a priority
  * TODO expand bigtime assertions - kept to a minimum to complete Trello card "Complete Upload Validation Code Changes. Back End - PART 1"
+ * TODO deserialise and check indivdiual validation failures
  */
 public class ResourceIntegrationTests
 {
@@ -77,6 +78,8 @@ public class ResourceIntegrationTests
 	public final static String FILE_PERMIT_FOUND = "permit-found.csv";
 	public final static String FILE_CSV_FAILURES = "failures.csv";
 	public final static String FILE_CSV_SUCCESS = "success.csv";
+	public final static String FILE_CSV_VALID_VALUE_CHARS = "valid-value-field-chars.csv";
+	public final static String FILE_CSV_INVALID_VALUE_CHARS = "invalid-value-field-chars.csv";
 
 	public final static String FILE_CONFIG = System.getProperty("configFile");
 
@@ -107,6 +110,27 @@ public class ResourceIntegrationTests
 		{
 			deleteDirectory(RULE.getConfiguration().getMiscSettings().getOutputLocation());
 		}
+	}
+
+	// TODO combine and check actual errors
+	@Test
+	public void testValueField()
+	{
+		Client client = createUploadStepClient("test Value field vakid values");
+		Response resp = performUploadStep(client, FILE_CSV_VALID_VALUE_CHARS, MEDIA_TYPE_CSV);
+		assertThat(resp.getStatus()).isEqualTo(OK.getStatusCode());
+
+		DataExchangeResult result = getResultFromResponse(resp);
+		dumpResult(result);
+		assertThat(result.getAppStatusCode()).isEqualTo(APP_STATUS_SUCCESS.getAppStatusCode());
+
+		client = createUploadStepClient("test Value field invalid values");
+		resp = performUploadStep(client, FILE_CSV_INVALID_VALUE_CHARS, MEDIA_TYPE_CSV);
+		assertThat(resp.getStatus()).isEqualTo(OK.getStatusCode());
+
+		result = getResultFromResponse(resp);
+		dumpResult(result);
+		assertThat(result.getAppStatusCode()).isEqualTo(APP_STATUS_FAILED_WITH_ERRORS.getAppStatusCode());
 	}
 
 	@Test
