@@ -38,10 +38,8 @@ test:
   testTimeout: 10000
   cleanupAfterTestRun: true
 email:
-  host: email-smtp.eu-west-1.amazonaws.com
-  port: 587
-  user: AKIAIXX25ZNDL33YHUIA
-  password: AmK/wWewBglYrvpyRmnLCPm7KlEcXJqPHMJIao585bzP
+  host: 10.208.4.62
+  port: 25
   emailTo: ea.importer@ehsdata.com
   emailFrom: datareturns@envage.co.uk
   tls: true

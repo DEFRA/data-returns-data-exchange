@@ -22,8 +22,6 @@ public class EmailSettings
 	@NotEmpty
 	private String emailFrom;
 
-	private String user;
-	private String password;
 	private boolean tls;
 	private String bodyMessage;
 	
@@ -33,8 +31,6 @@ public class EmailSettings
 		this.port = 0;
 		this.emailTo = "";
 		this.emailFrom = "";
-		this.user = "";
-		this.password = "";
 		this.tls = false;
 		this.bodyMessage = "";
 	}
@@ -85,30 +81,6 @@ public class EmailSettings
 	public void setEmailFrom(String emailFrom)
 	{
 		this.emailFrom = emailFrom;
-	}
-
-	@JsonProperty
-	public String getUser()
-	{
-		return this.user;
-	}
-
-	@JsonProperty
-	public void setUser(String user)
-	{
-		this.user = user;
-	}
-
-	@JsonProperty
-	public String getPassword()
-	{
-		return this.password;
-	}
-
-	@JsonProperty
-	public void setPassword(String password)
-	{
-		this.password = password;
 	}
 
 	@JsonProperty

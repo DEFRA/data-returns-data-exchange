@@ -321,7 +321,6 @@ public class DataExchangeResource
 			email.setFrom(settings.getEmailFrom());
 			email.setMsg(settings.getBodyMessage());
 			email.setStartTLSEnabled(settings.getTls());
-			email.setAuthentication(settings.getUser(), settings.getPassword());
 
 			EmailAttachment attachment = new EmailAttachment();
 			attachment.setDisposition(EmailAttachment.ATTACHMENT);
@@ -338,8 +337,6 @@ public class DataExchangeResource
 			LOGGER.debug("  port - " + settings.getPort());
 			LOGGER.debug("  emailTo - " + settings.getEmailTo());
 			LOGGER.debug("  emailFrom - " + settings.getEmailFrom());
-			LOGGER.debug("  user - " + settings.getUser());
-			LOGGER.debug("  password - " + settings.getPassword());
 			LOGGER.debug("  tls - " + settings.getTls());
 			LOGGER.debug("  bodyMessage - " + settings.getBodyMessage());
 
