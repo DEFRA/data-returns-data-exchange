@@ -120,11 +120,11 @@ public class FileStorage
 
 			try
 			{
-//				System.out.println("Uploading a new object to S3 from a file\n");
+				//				System.out.println("Uploading a new object to S3 from a file\n");
 				File file = new File(fileLocation);
 				LOGGER.debug("before S3 PUT to " + bucketName);
 				s3client.putObject(new PutObjectRequest(bucketName, key, file));
-				for(Bucket b: s3client.listBuckets())
+				for (Bucket b : s3client.listBuckets())
 				{
 					LOGGER.debug(b.getName().toString());
 				}
@@ -144,6 +144,11 @@ public class FileStorage
 				System.out.println("Caught an AmazonClientException, which " + "means the client encountered " + "an internal error while trying to "
 						+ "communicate with S3, " + "such as not being able to access the network.");
 				System.out.println("Error Message: " + ace.getMessage());
+			} catch (Exception e)
+			{
+				System.out.println("ERRRRRRRRRRROR");
+				e.printStackTrace();
+				System.out.println("ERRRRRRRRRRROR");
 			}
 		}
 
