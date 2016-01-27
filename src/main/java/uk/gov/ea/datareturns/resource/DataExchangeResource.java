@@ -15,16 +15,12 @@ import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
-import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
 
-import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.mail.EmailAttachment;
 import org.apache.commons.mail.EmailException;
@@ -85,8 +81,9 @@ public class DataExchangeResource
 		this.config = config;
 		this.permitDAO = permitDAO;
 
+		String environment = config.getMiscSettings().getEnvironment();
 		RedisSettings settings = config.getFileStorageSettings().getRedisSettings();
-		this.fileStorage = new FileStorage(settings.getHost(), Integer.parseInt(settings.getPort()));
+		this.fileStorage = new FileStorage(environment, settings.getHost(), Integer.parseInt(settings.getPort()));
 	}
 
 	/**
@@ -143,17 +140,19 @@ public class DataExchangeResource
 			GeneralResult generalResult = getUniqueIdentifiers(workingFile);
 			result.setGeneralResult(generalResult);
 
-			// Pointer to the file
-			uploadResult.setFileKey(fileStorage.saveLocation(workingFile));
 			result.setAppStatusCode(APP_STATUS_SUCCESS.getAppStatusCode());
 		} else
 		{
 			LOGGER.debug("uploaded file contains error(s)");
 
+			uploadResult.setFileKey(fileStorage.saveFailedFile(workingFile));
+			
+			
 			result.setValidationResult(validateResult);
 			result.setAppStatusCode(APP_STATUS_FAILED_WITH_ERRORS.getAppStatusCode());
 		}
 
+		
 		return Response.ok(result).build();
 	}
 
@@ -273,16 +272,17 @@ public class DataExchangeResource
 	{
 		LOGGER.debug("retrieving file location for fileKey '" + fileKey + "'");
 
-		String fileLocation = this.fileStorage.getLocation(fileKey);
-
-		if (fileLocation == null)
-		{
-			throw new FileKeyMismatchException("Unable to locate file using file key '" + fileKey + "'");
-		}
-
-		LOGGER.debug("Retrieved '" + fileLocation + "'");
-
-		return fileLocation;
+//		String fileLocation = this.fileStorage.retrieveFileByKey(fileKey);
+//
+//		if (fileLocation == null)
+//		{
+//			throw new FileKeyMismatchException("Unable to locate file using file key '" + fileKey + "'");
+//		}
+//
+//		LOGGER.debug("Retrieved '" + fileLocation + "'");
+//
+//		return fileLocation;
+		return null;
 	}
 
 	/**

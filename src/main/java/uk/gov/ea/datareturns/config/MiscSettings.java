@@ -9,6 +9,9 @@ import org.hibernate.validator.constraints.NotEmpty;
 public class MiscSettings
 {
 	@NotEmpty
+	private String environment;
+	
+	@NotEmpty
 	private String uploadedLocation;
 
 	@NotEmpty
@@ -31,6 +34,16 @@ public class MiscSettings
 
 	public MiscSettings()
 	{
+	}
+
+	public String getEnvironment()
+	{
+		return environment;
+	}
+
+	public void setEnvironment(String environment)
+	{
+		this.environment = environment;
 	}
 
 	public String getUploadedLocation()
