@@ -146,6 +146,8 @@ public class DataExchangeResource
 			LOGGER.debug("uploaded file contains error(s)");
 
 			uploadResult.setFileKey(fileStorage.saveFailedFile(workingFile));
+			
+			
 			result.setValidationResult(validateResult);
 			result.setAppStatusCode(APP_STATUS_FAILED_WITH_ERRORS.getAppStatusCode());
 		}
@@ -270,16 +272,17 @@ public class DataExchangeResource
 	{
 		LOGGER.debug("retrieving file location for fileKey '" + fileKey + "'");
 
-		String fileLocation = this.fileStorage.retrieveFileByKey(fileKey);
-
-		if (fileLocation == null)
-		{
-			throw new FileKeyMismatchException("Unable to locate file using file key '" + fileKey + "'");
-		}
-
-		LOGGER.debug("Retrieved '" + fileLocation + "'");
-
-		return fileLocation;
+//		String fileLocation = this.fileStorage.retrieveFileByKey(fileKey);
+//
+//		if (fileLocation == null)
+//		{
+//			throw new FileKeyMismatchException("Unable to locate file using file key '" + fileKey + "'");
+//		}
+//
+//		LOGGER.debug("Retrieved '" + fileLocation + "'");
+//
+//		return fileLocation;
+		return null;
 	}
 
 	/**

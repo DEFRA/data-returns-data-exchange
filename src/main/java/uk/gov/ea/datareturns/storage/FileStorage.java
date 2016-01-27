@@ -1,6 +1,9 @@
 package uk.gov.ea.datareturns.storage;
 
 import java.io.File;
+import java.io.FileOutputStream;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.UUID;
 
 import org.slf4j.Logger;
@@ -14,7 +17,9 @@ import com.amazonaws.auth.EnvironmentVariableCredentialsProvider;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3Client;
 import com.amazonaws.services.s3.model.Bucket;
+import com.amazonaws.services.s3.model.GetObjectRequest;
 import com.amazonaws.services.s3.model.PutObjectRequest;
+import com.amazonaws.services.s3.model.S3Object;
 
 public class FileStorage
 {
@@ -25,8 +30,8 @@ public class FileStorage
 
 	public final static String BUCKET_ROOT = "data-returns";
 	public final static String BUCKET_DEV = "dev";
-	public final static String BUCKET_RESULT_FAILURE = "failure";
-	public final static String BUCKET_RESULT_SUCCESS = "success";
+	public final static String BUCKET_OUTCOME_FAILURE = "failure";
+	public final static String BUCKET_OUTCOME_SUCCESS = "success";
 	public final static String BUCKET_PATH_SEPARATOR = "/";
 
 	private Jedis storage;
@@ -88,16 +93,21 @@ public class FileStorage
 
 	public String saveFailedFile(String fileLocation)
 	{
-		return saveFile(BUCKET_RESULT_FAILURE, fileLocation);
+		return saveFile(BUCKET_OUTCOME_FAILURE, fileLocation);
 	}
 
 	public String saveSuccessFile(String fileLocation)
 	{
-		return saveFile(BUCKET_RESULT_SUCCESS, fileLocation);
+		return saveFile(BUCKET_OUTCOME_SUCCESS, fileLocation);
 	}
 
+	public String getFailedFile(String fileLocation)
+	{
+		return saveFile(BUCKET_OUTCOME_FAILURE, fileLocation);
+	}
+	
 	// TODO transaction
-	public String saveFile(String result, String fileLocation)
+	public String saveFile(String outcome, String fileLocation)
 	{
 		String key = generateFileKey();
 
@@ -110,7 +120,7 @@ public class FileStorage
 		// Non-local environments use S3 buckets
 		if (!ENV_LOCAL.equalsIgnoreCase(environment))
 		{
-			String bucketName = getFullBucketName(result);
+			String bucketName = getFullBucketName(outcome);
 
 			LOGGER.debug("Saving file to S3 Bucket '" + bucketName + "'");
 
@@ -124,9 +134,12 @@ public class FileStorage
 				File file = new File(fileLocation);
 				LOGGER.debug("before S3 PUT to " + bucketName);
 				s3client.putObject(new PutObjectRequest(bucketName, key, file));
-				for (Bucket b : s3client.listBuckets())
+				LOGGER.debug("after S3 PUT to " + bucketName);
+
+				System.out.println("Listing buckets");
+				for (Bucket bucket : s3client.listBuckets())
 				{
-					LOGGER.debug(b.getName().toString());
+					System.out.println(" - " + bucket.getName());
 				}
 				LOGGER.debug("after S3 PUT");
 
@@ -157,23 +170,75 @@ public class FileStorage
 		return key;
 	}
 
+	public String retrieveFileByKey(String outcome, String key)
+	{
+		String fileLocation = null;
+
+		if (!ENV_LOCAL.equalsIgnoreCase(environment))
+		{
+			String bucketName = getFullBucketName(outcome);
+
+			LOGGER.debug("Creating EnvironmentVariableCredentialsProvider() client");
+			AmazonS3 s3client = new AmazonS3Client(new EnvironmentVariableCredentialsProvider());
+			LOGGER.debug("Client created = " + s3client);
+
+			LOGGER.debug("Retrieving file from S3 Bucket '" + bucketName + "'");
+
+			LOGGER.debug("get object from S3 " + bucketName);
+			S3Object obj = s3client.getObject(new GetObjectRequest(bucketName, key));
+			LOGGER.debug("got object " + obj);
+
+			LOGGER.debug("get IS on object " + obj);
+			InputStream objectData = obj.getObjectContent();
+			LOGGER.debug("got IS " + objectData);
+
+			LOGGER.debug("writing to file ./external_resources/output/abc.txt");
+			copyInputStreamToFile(objectData, new File("./external_resources/output/abc.txt"));
+			LOGGER.debug("write complete");
+
+			try
+			{
+				objectData.close();
+			} catch (Exception e)
+			{
+				System.out.println("ERRRRRRRRRRROR");
+				e.printStackTrace();
+				System.out.println("ERRRRRRRRRRROR");
+			}
+			
+			fileLocation = "./external_resources/output/abc.txt";
+		}
+		else
+		{
+			fileLocation = this.storage.get(key);
+		}
+		
+		LOGGER.debug("retrieveFileByKey() complete");
+
+		return fileLocation;
+	}
+	
+	private void copyInputStreamToFile(InputStream in, File file)
+	{
+		try
+		{
+			OutputStream out = new FileOutputStream(file);
+			byte[] buf = new byte[1024];
+			int len;
+			while ((len = in.read(buf)) > 0)
+			{
+				out.write(buf, 0, len);
+			}
+			out.close();
+			in.close();
+		} catch (Exception e)
+		{
+			e.printStackTrace();
+		}
+	}
+
 	private String getFullBucketName(String result)
 	{
 		return "s3://" + BUCKET_ROOT + BUCKET_PATH_SEPARATOR + environment + BUCKET_PATH_SEPARATOR + result;
-	}
-
-	public String retrieveFileByKey(String key)
-	{
-		String fileLocation = this.storage.get(key);
-
-		if (ENV_LOCAL.equalsIgnoreCase(environment))
-		{
-			// TODO read from local
-		} else
-		{
-			// TODO read from s3
-		}
-
-		return fileLocation;
 	}
 }
