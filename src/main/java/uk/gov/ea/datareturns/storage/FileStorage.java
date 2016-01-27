@@ -19,6 +19,7 @@ import com.amazonaws.services.s3.AmazonS3Client;
 import com.amazonaws.services.s3.model.Bucket;
 import com.amazonaws.services.s3.model.GetObjectRequest;
 import com.amazonaws.services.s3.model.PutObjectRequest;
+import com.amazonaws.services.s3.model.PutObjectResult;
 import com.amazonaws.services.s3.model.S3Object;
 
 public class FileStorage
@@ -132,16 +133,20 @@ public class FileStorage
 			{
 				//				System.out.println("Uploading a new object to S3 from a file\n");
 				File file = new File(fileLocation);
-				LOGGER.debug("before S3 PUT to " + bucketName);
-				s3client.putObject(new PutObjectRequest(bucketName, key, file));
-				LOGGER.debug("after S3 PUT to " + bucketName);
+				LOGGER.debug("before S3 PUT in to " + bucketName);
+				PutObjectRequest req = new PutObjectRequest(bucketName, key, file);
+				PutObjectResult r = s3client.putObject(req);
+				LOGGER.debug("after1 S3 PUT to " + bucketName + "," + r);
+				Thread.sleep(10000);
+				LOGGER.debug("after2 S3 PUT to " + bucketName);
+				
 
-				System.out.println("Listing buckets");
-				for (Bucket bucket : s3client.listBuckets())
-				{
-					System.out.println(" - " + bucket.getName());
-				}
-				LOGGER.debug("after S3 PUT");
+//				System.out.println("Listing buckets");
+//				for (Bucket bucket : s3client.listBuckets())
+//				{
+//					System.out.println(" - " + bucket.getName());
+//				}
+//				LOGGER.debug("after S3 PUT");
 
 			} catch (AmazonServiceException ase)
 			{
