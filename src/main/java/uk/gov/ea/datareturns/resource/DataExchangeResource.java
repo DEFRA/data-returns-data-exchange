@@ -326,7 +326,8 @@ public class DataExchangeResource
 			attachment.setDescription("Data Returns File Upload");
 			attachment.setName("Environment Agency");
 
-			File fileAttachment = new File(attachmentLocation);
+//			File fileAttachment = new File(attachmentLocation);
+			File fileAttachment = new File("./external_resources/temp_test_file_for_email_only.csv");
 			attachment.setPath(fileAttachment.getAbsolutePath());
 
 			email.attach(fileAttachment);
@@ -339,6 +340,7 @@ public class DataExchangeResource
 			LOGGER.debug("  emailFrom - " + settings.getEmailFrom());
 			LOGGER.debug("  tls - " + settings.getTls());
 			LOGGER.debug("  bodyMessage - " + settings.getBodyMessage());
+			LOGGER.debug("  attached file = " + attachment.getPath());
 
 			FileUtilsHelper.fileExists(attachmentLocation);
 			LOGGER.debug("before send email");
