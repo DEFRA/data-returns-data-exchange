@@ -334,6 +334,7 @@ public class DataExchangeResource
 			LOGGER.debug("Sending email to MonitorPro - ");
 			LOGGER.debug("  host - " + settings.getHost());
 			LOGGER.debug("  port - " + settings.getPort());
+			LOGGER.debug("  subject - " + settings.getSubject());
 			LOGGER.debug("  emailTo - " + settings.getEmailTo());
 			LOGGER.debug("  emailFrom - " + settings.getEmailFrom());
 			LOGGER.debug("  tls - " + settings.getTls());
