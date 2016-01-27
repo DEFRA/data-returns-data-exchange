@@ -312,11 +312,10 @@ public class DataExchangeResource
 
 		try
 		{
-			// TODO pass this in?
-			email.setSubject("Landfill Gas Monitoring");
-
 			email.setHostName(settings.getHost());
 			email.setSmtpPort(settings.getPort());
+
+			email.setSubject(settings.getSubject());
 			email.addTo(settings.getEmailTo());
 			email.setFrom(settings.getEmailFrom());
 			email.setMsg(settings.getBodyMessage());

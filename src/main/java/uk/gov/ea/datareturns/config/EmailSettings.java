@@ -17,6 +17,9 @@ public class EmailSettings
 	private int port;
 
 	@NotEmpty
+	private String subject;
+
+	@NotEmpty
 	private String emailTo;
 
 	@NotEmpty
@@ -57,6 +60,18 @@ public class EmailSettings
 	public void setPort(int port)
 	{
 		this.port = port;
+	}
+
+	@JsonProperty
+	public String getSubject()
+	{
+		return subject;
+	}
+
+	@JsonProperty
+	public void setSubject(String subject)
+	{
+		this.subject = subject;
 	}
 
 	@JsonProperty
