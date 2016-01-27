@@ -26,6 +26,7 @@ fileStorage:
     host: 10.208.4.75
     port: 6379
 misc:
+  environment: dev
   uploadedLocation: ./external_resources/uploaded
   outputLocation: ./external_resources/output
   schemaLocation: ./external_resources/schema
