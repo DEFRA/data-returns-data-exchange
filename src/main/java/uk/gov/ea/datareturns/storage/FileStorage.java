@@ -131,14 +131,19 @@ public class FileStorage
 
 			try
 			{
+				LOGGER.debug("before list buckets");
+				for (Bucket bucket : s3client.listBuckets()) {
+					System.out.println(" - " + bucket.getName());
+				}
+				LOGGER.debug("after list buckets");
+				
 				//				System.out.println("Uploading a new object to S3 from a file\n");
 				File file = new File(fileLocation);
-				LOGGER.debug("before S3 PUT in to " + bucketName);
 				PutObjectRequest req = new PutObjectRequest(bucketName, key, file);
+				LOGGER.debug("req = " + req);
+				LOGGER.debug("before S3 PUT in to " + bucketName);
 				PutObjectResult r = s3client.putObject(req);
 				LOGGER.debug("after1 S3 PUT to " + bucketName + "," + r);
-				Thread.sleep(10000);
-				LOGGER.debug("after2 S3 PUT to " + bucketName);
 				
 
 //				System.out.println("Listing buckets");
@@ -167,6 +172,10 @@ public class FileStorage
 				System.out.println("ERRRRRRRRRRROR");
 				e.printStackTrace();
 				System.out.println("ERRRRRRRRRRROR");
+			}
+			finally
+			{
+				System.out.println("Finally");
 			}
 		}
 
@@ -244,6 +253,7 @@ public class FileStorage
 
 	private String getFullBucketName(String result)
 	{
-		return "s3://" + BUCKET_ROOT + BUCKET_PATH_SEPARATOR + environment + BUCKET_PATH_SEPARATOR + result;
+		return BUCKET_ROOT + BUCKET_PATH_SEPARATOR + environment + BUCKET_PATH_SEPARATOR + result;
+//		return "s3://" + BUCKET_ROOT + BUCKET_PATH_SEPARATOR + environment + BUCKET_PATH_SEPARATOR + result;
 	}
 }
