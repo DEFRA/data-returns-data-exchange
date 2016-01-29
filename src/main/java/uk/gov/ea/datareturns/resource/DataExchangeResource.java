@@ -134,24 +134,24 @@ public class DataExchangeResource
 
 		if (validateResult.isValid())
 		{
-			LOGGER.debug("uploaded file is valid");
+			LOGGER.debug("File '" + fileDetail.getFileName() + "' is VALID");
 
-			// TODO needs determining exactly what the front-end needs
+			// TODO needs determining exactly what the front-end needs i.e. part 2 work
 			GeneralResult generalResult = getUniqueIdentifiers(workingFile);
 			result.setGeneralResult(generalResult);
+
+			uploadResult.setFileKey(fileStorage.saveValidFile(workingFile));
 
 			result.setAppStatusCode(APP_STATUS_SUCCESS.getAppStatusCode());
 		} else
 		{
-			LOGGER.debug("uploaded file contains error(s)");
+			LOGGER.debug("File '" + fileDetail.getFileName() + "' is INVALID");
 
-			uploadResult.setFileKey(fileStorage.saveFailedFile(workingFile));
-			
+			uploadResult.setFileKey(fileStorage.saveInvalidFile(workingFile));
 			
 			result.setValidationResult(validateResult);
 			result.setAppStatusCode(APP_STATUS_FAILED_WITH_ERRORS.getAppStatusCode());
 		}
-
 		
 		return Response.ok(result).build();
 	}
@@ -171,7 +171,8 @@ public class DataExchangeResource
 		completeResult.setFileKey(fileKey);
 		completeResult.setUserEmail(userEmail);
 
-		String fileLocation = retrieveFileLocationByKey(completeResult.getFileKey());
+		String saveFileLocation = config.getMiscSettings().getOutputLocation();
+		String fileLocation = fileStorage.retrieveValidFileByKey(completeResult.getFileKey(), saveFileLocation);
 
 		LOGGER.debug("sending notification");
 		sendNotificationToMonitorPro(fileLocation);
@@ -261,28 +262,6 @@ public class DataExchangeResource
 		LOGGER.debug("Permit is valid'");
 
 		return generalResult;
-	}
-
-	/**
-	 * Retrieve stored file location by key
-	 * @param fileKey
-	 * @return
-	 */
-	private String retrieveFileLocationByKey(String fileKey)
-	{
-		LOGGER.debug("retrieving file location for fileKey '" + fileKey + "'");
-
-//		String fileLocation = this.fileStorage.retrieveFileByKey(fileKey);
-//
-//		if (fileLocation == null)
-//		{
-//			throw new FileKeyMismatchException("Unable to locate file using file key '" + fileKey + "'");
-//		}
-//
-//		LOGGER.debug("Retrieved '" + fileLocation + "'");
-//
-//		return fileLocation;
-		return null;
 	}
 
 	/**

@@ -264,11 +264,19 @@ public class ResourceIntegrationTests
 	@Test
 	public void testEndToEndSuccess()
 	{
-		final Client client = createUploadStepClient("test End To End Success");
-		final Response resp = performUploadStep(client, FILE_CSV_SUCCESS, MEDIA_TYPE_CSV);
+		Client client = createUploadStepClient("test End To End Success");
+		Response resp = performUploadStep(client, FILE_CSV_SUCCESS, MEDIA_TYPE_CSV);
 		assertThat(resp.getStatus()).isEqualTo(OK.getStatusCode());
 
-		final DataExchangeResult result = getResultFromResponse(resp);
+		DataExchangeResult result = getResultFromResponse(resp);
+		assertThat(result.getAppStatusCode()).isEqualTo(APP_STATUS_SUCCESS.getAppStatusCode());
+
+		dumpResult(result);
+		
+		resp = performCompleteStep(client, result.getUploadResult().getFileKey());
+		assertThat(resp.getStatus()).isEqualTo(OK.getStatusCode());
+
+		result = getResultFromResponse(resp);
 		assertThat(result.getAppStatusCode()).isEqualTo(APP_STATUS_SUCCESS.getAppStatusCode());
 
 		dumpResult(result);
