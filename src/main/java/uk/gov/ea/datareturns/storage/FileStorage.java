@@ -19,6 +19,8 @@ import uk.gov.ea.datareturns.helper.FileUtilsHelper;
 
 import com.amazonaws.AmazonClientException;
 import com.amazonaws.AmazonServiceException;
+import com.amazonaws.ClientConfiguration;
+import com.amazonaws.Protocol;
 import com.amazonaws.auth.EnvironmentVariableCredentialsProvider;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3Client;
@@ -122,7 +124,12 @@ public class FileStorage
 
 			try
 			{
-				AmazonS3 s3client = new AmazonS3Client(new EnvironmentVariableCredentialsProvider());
+				ClientConfiguration clientConfig = new ClientConfiguration();
+				clientConfig.setProtocol(Protocol.HTTP);
+				clientConfig.setProxyHost("10.208.4.62");
+				clientConfig.setProxyPort(3128);
+
+				AmazonS3 s3client = new AmazonS3Client(new EnvironmentVariableCredentialsProvider(), clientConfig);
 
 				LOGGER.debug("Saving file '" + fileName + "' to S3 Bucket '" + BUCKET + "' in folder '" + key + "'");
 				s3client.putObject(new PutObjectRequest(BUCKET, key, new File(fileLocation)));
