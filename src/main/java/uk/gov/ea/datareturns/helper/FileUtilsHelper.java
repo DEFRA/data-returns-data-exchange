@@ -120,6 +120,15 @@ public class FileUtilsHelper
 		return dir + File.separatorChar + file;
 	}
 
+	public static void deleteFile(String filePath) throws IOException
+	{
+		LOGGER.debug("Deleting file '" + filePath + "'");
+		
+		FileUtils.forceDelete(new File(filePath));
+
+		LOGGER.debug("File deleted successfully");
+	}
+
 	public static void deleteDirectory(String dir) throws IOException
 	{
 		FileUtils.deleteDirectory(new File(dir));

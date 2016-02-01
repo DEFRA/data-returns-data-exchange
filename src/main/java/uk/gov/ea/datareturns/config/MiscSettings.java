@@ -2,6 +2,8 @@ package uk.gov.ea.datareturns.config;
 
 import org.hibernate.validator.constraints.NotEmpty;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 /**
  * @author adrianharrison
  * Holds miscellaneous settings from configuration file
@@ -10,7 +12,7 @@ public class MiscSettings
 {
 	@NotEmpty
 	private String environment;
-	
+
 	@NotEmpty
 	private String uploadedLocation;
 
@@ -28,7 +30,9 @@ public class MiscSettings
 
 	@NotEmpty
 	private String csvSeparator;
-	
+
+	private S3ProxySettings s3ProxySettings = new S3ProxySettings();
+
 	@NotEmpty
 	private String debugMode;
 
@@ -104,6 +108,18 @@ public class MiscSettings
 	public void setCsvSeparator(String csvSeparator)
 	{
 		this.csvSeparator = csvSeparator;
+	}
+
+	@JsonProperty("s3Proxy")
+	public S3ProxySettings getS3ProxySettings()
+	{
+		return s3ProxySettings;
+	}
+
+	@JsonProperty("s3Proxy")
+	public void setS3ProxySettings(S3ProxySettings s3ProxySettings)
+	{
+		this.s3ProxySettings = s3ProxySettings;
 	}
 
 	public String getDebugMode()

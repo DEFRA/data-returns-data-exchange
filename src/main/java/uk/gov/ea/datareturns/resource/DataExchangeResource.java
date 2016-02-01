@@ -2,6 +2,7 @@ package uk.gov.ea.datareturns.resource;
 
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 import static javax.ws.rs.core.MediaType.MULTIPART_FORM_DATA;
+import static uk.gov.ea.datareturns.helper.CommonHelper.isLocalEnvironment;
 import static uk.gov.ea.datareturns.helper.CommonHelper.makeFullFilePath;
 import static uk.gov.ea.datareturns.helper.FileUtilsHelper.saveFile;
 import static uk.gov.ea.datareturns.helper.XMLUtilsHelper.deserializeFromXML;
@@ -35,6 +36,7 @@ import uk.gov.ea.datareturns.config.DataExchangeConfiguration;
 import uk.gov.ea.datareturns.config.EmailSettings;
 import uk.gov.ea.datareturns.config.MiscSettings;
 import uk.gov.ea.datareturns.config.RedisSettings;
+import uk.gov.ea.datareturns.config.S3ProxySettings;
 import uk.gov.ea.datareturns.convert.ConvertCSVToXML;
 import uk.gov.ea.datareturns.dao.PermitDAO;
 import uk.gov.ea.datareturns.domain.result.CompleteResult;
@@ -42,7 +44,6 @@ import uk.gov.ea.datareturns.domain.result.DataExchangeResult;
 import uk.gov.ea.datareturns.domain.result.GeneralResult;
 import uk.gov.ea.datareturns.domain.result.UploadResult;
 import uk.gov.ea.datareturns.domain.result.ValidationResult;
-import uk.gov.ea.datareturns.exception.application.FileKeyMismatchException;
 import uk.gov.ea.datareturns.exception.application.MultiplePermitsException;
 import uk.gov.ea.datareturns.exception.application.PermitNotFoundException;
 import uk.gov.ea.datareturns.exception.application.UnsupportedFileTypeException;
@@ -60,6 +61,8 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 public class DataExchangeResource
 {
 	private static final Logger LOGGER = LoggerFactory.getLogger(DataExchangeResource.class);
+
+	public final static String ENV_LOCAL = "local";
 
 	private DataExchangeConfiguration config;
 	private PermitDAO permitDAO;
@@ -81,9 +84,24 @@ public class DataExchangeResource
 		this.config = config;
 		this.permitDAO = permitDAO;
 
+		RedisSettings redisSettings = config.getFileStorageSettings().getRedisSettings();
+
 		String environment = config.getMiscSettings().getEnvironment();
-		RedisSettings settings = config.getFileStorageSettings().getRedisSettings();
-		this.fileStorage = new FileStorage(environment, settings.getHost(), Integer.parseInt(settings.getPort()));
+		String redisHost = redisSettings.getHost();
+		int redisPort = Integer.parseInt(redisSettings.getPort());
+
+		if (!isLocalEnvironment(environment))
+		{
+			S3ProxySettings s3Settings = config.getMiscSettings().getS3ProxySettings();
+			String s3Type = s3Settings.getType();
+			String s3Host = s3Settings.getHost();
+			int s3Port = Integer.parseInt(s3Settings.getPort());
+
+			this.fileStorage = new FileStorage(environment, redisHost, redisPort, s3Type, s3Host, s3Port);
+		} else
+		{
+			this.fileStorage = new FileStorage(environment, redisHost, redisPort);
+		}
 	}
 
 	/**
@@ -134,25 +152,25 @@ public class DataExchangeResource
 
 		if (validateResult.isValid())
 		{
-			LOGGER.debug("uploaded file is valid");
+			LOGGER.debug("File '" + fileDetail.getFileName() + "' is VALID");
 
-			// TODO needs determining exactly what the front-end needs
+			// TODO needs determining exactly what the front-end needs i.e. part 2 work
 			GeneralResult generalResult = getUniqueIdentifiers(workingFile);
 			result.setGeneralResult(generalResult);
+
+			uploadResult.setFileKey(fileStorage.saveValidFile(workingFile));
 
 			result.setAppStatusCode(APP_STATUS_SUCCESS.getAppStatusCode());
 		} else
 		{
-			LOGGER.debug("uploaded file contains error(s)");
+			LOGGER.debug("File '" + fileDetail.getFileName() + "' is INVALID");
 
-			uploadResult.setFileKey(fileStorage.saveFailedFile(workingFile));
-			
-			
+			uploadResult.setFileKey(fileStorage.saveInvalidFile(workingFile));
+
 			result.setValidationResult(validateResult);
 			result.setAppStatusCode(APP_STATUS_FAILED_WITH_ERRORS.getAppStatusCode());
 		}
 
-		
 		return Response.ok(result).build();
 	}
 
@@ -171,7 +189,8 @@ public class DataExchangeResource
 		completeResult.setFileKey(fileKey);
 		completeResult.setUserEmail(userEmail);
 
-		String fileLocation = retrieveFileLocationByKey(completeResult.getFileKey());
+		String saveFileLocation = config.getMiscSettings().getOutputLocation();
+		String fileLocation = fileStorage.retrieveValidFileByKey(completeResult.getFileKey(), saveFileLocation);
 
 		LOGGER.debug("sending notification");
 		sendNotificationToMonitorPro(fileLocation);
@@ -264,28 +283,6 @@ public class DataExchangeResource
 	}
 
 	/**
-	 * Retrieve stored file location by key
-	 * @param fileKey
-	 * @return
-	 */
-	private String retrieveFileLocationByKey(String fileKey)
-	{
-		LOGGER.debug("retrieving file location for fileKey '" + fileKey + "'");
-
-//		String fileLocation = this.fileStorage.retrieveFileByKey(fileKey);
-//
-//		if (fileLocation == null)
-//		{
-//			throw new FileKeyMismatchException("Unable to locate file using file key '" + fileKey + "'");
-//		}
-//
-//		LOGGER.debug("Retrieved '" + fileLocation + "'");
-//
-//		return fileLocation;
-		return null;
-	}
-
-	/**
 	 * Extract values that identify a unique EA return type
 	 * @param fileLocation
 	 * @param ids
@@ -326,7 +323,7 @@ public class DataExchangeResource
 			attachment.setDescription("Data Returns File Upload");
 			attachment.setName("Environment Agency");
 
-//			File fileAttachment = new File(attachmentLocation);
+			//			File fileAttachment = new File(attachmentLocation);
 			File fileAttachment = new File("./external_resources/temp_test_file_for_email_only.csv");
 			attachment.setPath(fileAttachment.getAbsolutePath());
 
