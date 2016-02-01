@@ -1,5 +1,8 @@
 package uk.gov.ea.datareturns.storage;
 
+import static com.amazonaws.Protocol.HTTP;
+import static com.amazonaws.Protocol.HTTPS;
+import static uk.gov.ea.datareturns.helper.CommonHelper.isLocalEnvironment;
 import static uk.gov.ea.datareturns.helper.FileUtilsHelper.makeFullPath;
 import static uk.gov.ea.datareturns.helper.FileUtilsHelper.saveFile;
 
@@ -28,30 +31,38 @@ import com.amazonaws.services.s3.model.GetObjectRequest;
 import com.amazonaws.services.s3.model.PutObjectRequest;
 import com.amazonaws.services.s3.model.S3Object;
 
+// TODO make generic instead of passing fixed env settings in
 public class FileStorage
 {
 	private static final Logger LOGGER = LoggerFactory.getLogger(FileStorage.class);
 
-	public final static String ENV_LOCAL = "local";
-	public final static String ENV_DEV = "dev";
-
+	// TODO could all come from configuration file?
 	public final static String BUCKET = "data-returns";
 	public final static String FOLDER_DEV = "dev";
 	public final static String FOLDER_FAILURE = "failure";
 	public final static String FOLDER_SUCCESS = "success";
 	public final static String SEPARATOR = "/";
+	public final static String PROTOCOL_HTTP = "http";
 
 	private Jedis fileKeyStorage;
+	private ClientConfiguration s3Config;
 	private String environment;
-	private String host;
-	private int port;
 
-	public FileStorage(String environment, String host, int port)
+	public FileStorage(String environment, String redisHost, int redisPort)
 	{
 		this.environment = environment;
-		this.host = host;
-		this.port = port;
-		this.fileKeyStorage = new Jedis(this.host, this.port);
+
+		this.fileKeyStorage = new Jedis(redisHost, redisPort);
+	}
+
+	public FileStorage(String environment, String redisHost, int redisPort, String s3ProxyType, String s3ProxyHost, int s3ProxyPort)
+	{
+		this(environment, redisHost, redisPort);
+
+		this.s3Config = new ClientConfiguration();
+		this.s3Config.setProtocol(getProtocolFromType(s3ProxyType));
+		this.s3Config.setProxyHost(s3ProxyHost);
+		this.s3Config.setProxyPort(s3ProxyPort);
 	}
 
 	public String getEnvironment()
@@ -64,24 +75,9 @@ public class FileStorage
 		this.environment = environment;
 	}
 
-	public String getHost()
+	public ClientConfiguration getS3Config()
 	{
-		return host;
-	}
-
-	public void setHost(String host)
-	{
-		this.host = host;
-	}
-
-	public int getPort()
-	{
-		return port;
-	}
-
-	public void setPort(int port)
-	{
-		this.port = port;
+		return s3Config;
 	}
 
 	public Jedis getfileKeyStorage()
@@ -112,7 +108,7 @@ public class FileStorage
 		LOGGER.debug("File key '" + fileKey + "' generated for file '" + fileLocation + "'");
 
 		// Non-local environments use S3
-		if (!ENV_LOCAL.equalsIgnoreCase(environment))
+		if (!isLocalEnvironment(environment))
 		{
 			LOGGER.debug("In Non-local environment");
 
@@ -124,12 +120,7 @@ public class FileStorage
 
 			try
 			{
-				ClientConfiguration clientConfig = new ClientConfiguration();
-				clientConfig.setProtocol(Protocol.HTTP);
-				clientConfig.setProxyHost("10.208.4.62");
-				clientConfig.setProxyPort(3128);
-
-				AmazonS3 s3client = new AmazonS3Client(new EnvironmentVariableCredentialsProvider(), clientConfig);
+				AmazonS3 s3client = new AmazonS3Client(new EnvironmentVariableCredentialsProvider(), s3Config);
 
 				LOGGER.debug("Saving file '" + fileName + "' to S3 Bucket '" + BUCKET + "' in folder '" + key + "'");
 				s3client.putObject(new PutObjectRequest(BUCKET, key, new File(fileLocation)));
@@ -171,7 +162,7 @@ public class FileStorage
 		LOGGER.debug("File Location = '" + fileLocation + "'");
 
 		// Non-local environments use S3
-		if (!ENV_LOCAL.equalsIgnoreCase(environment))
+		if (!isLocalEnvironment(environment))
 		{
 			LOGGER.debug("In Non-local environment");
 
@@ -180,12 +171,7 @@ public class FileStorage
 
 			try
 			{
-				ClientConfiguration clientConfig = new ClientConfiguration();
-				clientConfig.setProtocol(Protocol.HTTP);
-				clientConfig.setProxyHost("10.208.4.62");
-				clientConfig.setProxyPort(3128);
-
-				AmazonS3 s3client = new AmazonS3Client(new EnvironmentVariableCredentialsProvider(), clientConfig);
+				AmazonS3 s3client = new AmazonS3Client(new EnvironmentVariableCredentialsProvider(), s3Config);
 
 				LOGGER.debug("Retrieving file '" + fileName + "' from S3 Bucket '" + BUCKET + "'");
 				S3Object s3object = s3client.getObject(new GetObjectRequest(BUCKET, key));
@@ -204,11 +190,16 @@ public class FileStorage
 		return fileLocation;
 	}
 
+	private Protocol getProtocolFromType(String protocol)
+	{
+		return (PROTOCOL_HTTP.equalsIgnoreCase(protocol) ? HTTP : HTTPS);
+	}
+
 	/**
 	 * Generate a unique key (uses UUID class for now)
 	 * @return
 	 */
-	public String generateFileKey()
+	private String generateFileKey()
 	{
 		return UUID.randomUUID().toString();
 	}

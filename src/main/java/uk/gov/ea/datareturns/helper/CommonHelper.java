@@ -4,6 +4,8 @@ import java.io.File;
 
 public class CommonHelper
 {
+	public final static String ENV_LOCAL = "local";
+
 	/**
 	 * Returns a full OS independent file path
 	 * @param dir
@@ -34,9 +36,14 @@ public class CommonHelper
 		{
 			fileType = filePath.substring(i + 1).toLowerCase();
 		}
-		
+
 		// TODO maybe throw an exception if null?
 
 		return fileType;
+	}
+
+	public static boolean isLocalEnvironment(String environment)
+	{
+		return (ENV_LOCAL.equalsIgnoreCase(environment));
 	}
 }

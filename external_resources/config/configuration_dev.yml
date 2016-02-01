@@ -33,6 +33,10 @@ misc:
   xsltLocation: ./external_resources/xslt
   xmlLocation: ./external_resources/xml
   csvSeparator: ","
+  s3Proxy:
+    type: http
+    host: 10.208.4.62
+    port: 3128
   debugMode: false
 test:
   testFilesLocation: /testfiles
