@@ -180,7 +180,12 @@ public class FileStorage
 
 			try
 			{
-				AmazonS3 s3client = new AmazonS3Client(new EnvironmentVariableCredentialsProvider());
+				ClientConfiguration clientConfig = new ClientConfiguration();
+				clientConfig.setProtocol(Protocol.HTTP);
+				clientConfig.setProxyHost("10.208.4.62");
+				clientConfig.setProxyPort(3128);
+
+				AmazonS3 s3client = new AmazonS3Client(new EnvironmentVariableCredentialsProvider(), clientConfig);
 
 				LOGGER.debug("Retrieving file '" + fileName + "' from S3 Bucket '" + BUCKET + "'");
 				S3Object s3object = s3client.getObject(new GetObjectRequest(BUCKET, key));
