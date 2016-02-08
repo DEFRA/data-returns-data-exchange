@@ -46,7 +46,7 @@ email:
   host: 10.208.4.62
   port: 25
   subject: EA_TEST_ENVIRONMENT
-  emailTo: hkjtest@gmail.com
+  emailTo: ea.importer@ehsdata.com
   emailFrom: datareturns@envage.co.uk
   tls: true
   bodyMessage: Data Returns Import file received
