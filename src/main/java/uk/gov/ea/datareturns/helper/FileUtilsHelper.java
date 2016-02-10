@@ -113,7 +113,7 @@ public class FileUtilsHelper
 	public static String makeCSVFileType(String file)
 	{
 		String fileType = FilenameUtils.getExtension(file);
-
+		
 		if (fileType == null)
 		{
 			return makeFileType(file, CSV.getFileType());

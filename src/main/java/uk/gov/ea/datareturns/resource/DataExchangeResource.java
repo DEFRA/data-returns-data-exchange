@@ -189,7 +189,7 @@ public class DataExchangeResource
 		String outputLocation = settings.getOutputLocation();
 		String orgFileLocation = fileStorage.retrieveValidFileByKey(orgFileKey, outputLocation);
 		String xslt = makeFullFilePath(settings.getXsltLocation(), XSLT_CONVERT_TO_CSV);
-
+		
 		ConvertXMLToCSV converter = new ConvertXMLToCSV(settings.getCsvSeparator(), orgFileLocation, outputLocation, xslt);
 		String newFileLocation = converter.convert();
 

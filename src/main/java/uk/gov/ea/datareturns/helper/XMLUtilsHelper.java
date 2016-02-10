@@ -40,7 +40,7 @@ public class XMLUtilsHelper
 	public static String transformToString(String xml, String xslt, Map<String, String> params)
 	{
 		Transformer transformer = createTransformer(xslt, params);
-
+		
 		return transformToString(transformer, xml);
 	}
 
@@ -61,7 +61,7 @@ public class XMLUtilsHelper
 
 			transformer.transform(new StreamSource(xml), result);
 			StringBuffer sb = outWriter.getBuffer();
-			
+
 			output = sb.toString();
 		} catch (TransformerFactoryConfigurationError | TransformerException e)
 		{

@@ -51,7 +51,7 @@ public class FileStorage
 	public FileStorage(String environment, String redisHost, int redisPort)
 	{
 		this.environment = environment;
-
+		
 		this.fileKeyStorage = new Jedis(redisHost, redisPort);
 	}
 
@@ -140,7 +140,7 @@ public class FileStorage
 		} else
 		{
 			fileKeyStorage.set(fileKey, fileLocation);
-			LOGGER.debug("File key '" + fileKey + "' saved in Redis");
+			LOGGER.debug("File key '" + fileKey + "' saved in Redis with file location '" + fileLocation + "'");
 		}
 
 		LOGGER.debug("File stored successfully");
@@ -159,25 +159,28 @@ public class FileStorage
 			throw new FileKeyMismatchException("Unable to locate file using file key '" + fileKey + "'");
 		}
 
-		LOGGER.debug("File Location = '" + fileLocation + "'");
+		LOGGER.debug("Redis file key '" + fileKey + "' holds file location '" + fileLocation + "'");
 
 		// Non-local environments use S3
 		if (!isLocalEnvironment(environment))
 		{
 			LOGGER.debug("In Non-local environment");
 
-			String fileName = FilenameUtils.getName(fileLocation);
-			String key = makeFileDestinationPath(outcome, fileName);
+			// Note : only filename is stored in non-local env
+			
+			String key = makeFileDestinationPath(outcome, fileLocation);
 
 			try
 			{
 				AmazonS3 s3client = new AmazonS3Client(new EnvironmentVariableCredentialsProvider(), s3Config);
 
-				LOGGER.debug("Retrieving file '" + fileName + "' from S3 Bucket '" + BUCKET + "'");
+				LOGGER.debug("Retrieving file '" + fileLocation + "' from S3 Bucket '" + BUCKET + "'");
 				S3Object s3object = s3client.getObject(new GetObjectRequest(BUCKET, key));
-				LOGGER.debug("File Retrieved successfully");
-
-				saveFile(s3object.getObjectContent(), makeFullPath(saveFileLocation, fileName));
+				LOGGER.debug("File '" + fileLocation + "' retrieved successfully");
+				
+				fileLocation = makeFullPath(saveFileLocation, fileLocation);
+				
+				saveFile(s3object.getObjectContent(), fileLocation);
 			} catch (AmazonServiceException ase)
 			{
 				throw new GeneralServiceException(ase, "AWS failed to process getObject() request");
