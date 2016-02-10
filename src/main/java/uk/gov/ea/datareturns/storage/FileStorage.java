@@ -116,7 +116,7 @@ public class FileStorage
 			fileKeyStorage.set(fileKey, fileName);
 			LOGGER.debug("File key '" + fileKey + "' saved in Redis with file name '" + fileName + "'");
 
-			String key = makeFileDestinationPath(outcome, fileName);
+			String key = makeFileDestinationPath(outcome, fileLocation);
 
 			try
 			{
@@ -152,21 +152,22 @@ public class FileStorage
 	{
 		LOGGER.debug("Retrieving file location from Redis using file key '" + fileKey + "'");
 
-		String fileLocation = fileKeyStorage.get(fileKey);
+		String storedfileLocation = fileKeyStorage.get(fileKey);
+		String fileLocation = null;
 
-		if (fileLocation == null)
+		if (storedfileLocation == null)
 		{
 			throw new FileKeyMismatchException("Unable to locate file using file key '" + fileKey + "'");
 		}
 
-		LOGGER.debug("File Location = '" + fileLocation + "'");
+		LOGGER.debug("Stored File Location = '" + storedfileLocation + "'");
 
 		// Non-local environments use S3
 		if (!isLocalEnvironment(environment))
 		{
 			LOGGER.debug("In Non-local environment");
 
-			String fileName = FilenameUtils.getName(fileLocation);
+			String fileName = FilenameUtils.getName(storedfileLocation);
 			String key = makeFileDestinationPath(outcome, fileName);
 
 			try
@@ -177,7 +178,8 @@ public class FileStorage
 				S3Object s3object = s3client.getObject(new GetObjectRequest(BUCKET, key));
 				LOGGER.debug("File Retrieved successfully");
 
-				saveFile(s3object.getObjectContent(), makeFullPath(saveFileLocation, fileName));
+				fileLocation = makeFullPath(saveFileLocation, storedfileLocation);
+				saveFile(s3object.getObjectContent(), fileLocation);
 			} catch (AmazonServiceException ase)
 			{
 				throw new GeneralServiceException(ase, "AWS failed to process getObject() request");
@@ -185,6 +187,9 @@ public class FileStorage
 			{
 				throw new GeneralServiceException(ace, "General AWS communication failure");
 			}
+		} else
+		{
+			fileLocation = storedfileLocation;
 		}
 
 		return fileLocation;
