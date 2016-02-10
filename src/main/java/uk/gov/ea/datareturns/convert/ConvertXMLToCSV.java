@@ -58,8 +58,6 @@ public class ConvertXMLToCSV
 
 		String contents = transformToString(fileToConvert, xslt, params);
 
-		LOGGER.debug("contents = " + contents);
-		
 		LOGGER.debug("File '" + fileToConvert + "' converted successfully");
 
 		FileUtilsHelper.saveStringToFile(contents, convertedFile);

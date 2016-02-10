@@ -166,7 +166,7 @@ public class FileStorage
 		{
 			LOGGER.debug("In Non-local environment");
 
-			// Only filename is stored in non-local env
+			// Note : only filename is stored in non-local env
 			
 			String key = makeFileDestinationPath(outcome, fileLocation);
 

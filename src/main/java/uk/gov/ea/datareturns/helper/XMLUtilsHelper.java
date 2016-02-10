@@ -39,12 +39,8 @@ public class XMLUtilsHelper
 	 */
 	public static String transformToString(String xml, String xslt, Map<String, String> params)
 	{
-		LOGGER.debug("xml = " + xml + ",  xslt = " + xslt);
-
 		Transformer transformer = createTransformer(xslt, params);
 		
-		LOGGER.debug("transformer = " + transformer);
-
 		return transformToString(transformer, xml);
 	}
 
@@ -66,10 +62,7 @@ public class XMLUtilsHelper
 			transformer.transform(new StreamSource(xml), result);
 			StringBuffer sb = outWriter.getBuffer();
 
-			LOGGER.debug("sb.toString() = " + sb.toString());
-
 			output = sb.toString();
-			LOGGER.debug("output = " + output);
 		} catch (TransformerFactoryConfigurationError | TransformerException e)
 		{
 			// TODO Auto-generated catch block
