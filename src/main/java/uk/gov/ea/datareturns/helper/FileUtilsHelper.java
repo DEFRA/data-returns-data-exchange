@@ -112,13 +112,19 @@ public class FileUtilsHelper
 	 */
 	public static String makeCSVFileType(String file)
 	{
+		LOGGER.debug("file : " + file);
+
 		String fileType = FilenameUtils.getExtension(file);
+		
+		LOGGER.debug("fileType : " + fileType);
 
 		if (fileType == null)
 		{
+			LOGGER.debug("fileType == null, returning : " + makeFileType(file, CSV.getFileType()));
 			return makeFileType(file, CSV.getFileType());
 		} else
 		{
+			LOGGER.debug("fileType != null, returning : " + makeFileType(file.substring(0, file.indexOf(fileType) - 1), CSV.getFileType()));
 			return makeFileType(file.substring(0, file.indexOf(fileType) - 1), CSV.getFileType());
 		}
 	}
