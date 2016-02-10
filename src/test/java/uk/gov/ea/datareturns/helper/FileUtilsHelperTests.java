@@ -1,28 +1,10 @@
 package uk.gov.ea.datareturns.helper;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.mock;
-import static uk.gov.ea.datareturns.helper.CommonHelper.makeFullFilePath;
-import static uk.gov.ea.datareturns.helper.FileUtilsHelper.fileContainsMinRows;
-import static uk.gov.ea.datareturns.helper.FileUtilsHelper.saveFile;
-
-import java.io.BufferedReader;
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.nio.charset.StandardCharsets;
-
 import org.junit.FixMethodOrder;
 import org.junit.Test;
 import org.junit.runners.MethodSorters;
-import org.mockito.Mockito;
-import org.powermock.api.mockito.PowerMockito;
 
-import uk.gov.ea.datareturns.exception.system.FileReadException;
-import uk.gov.ea.datareturns.exception.system.FileSaveException;
-import uk.gov.ea.datareturns.exception.system.FileUnlocatableException;
-
+// TODO add all unit tests
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class FileUtilsHelperTests
 {
@@ -79,28 +61,4 @@ public class FileUtilsHelperTests
 //			assertThat(e).isInstanceOf(FileReadException.class);
 //		}
 //	}
-
-	@Test
-	public void testMinimalDataFileNotFound()
-	{
-		try
-		{
-			fileContainsMinRows(makeFullFilePath("any_directory", FILE_CSV_SUCCESS), 2);
-		} catch (Exception e)
-		{
-			assertThat(e).isInstanceOf(FileUnlocatableException.class);
-		}
-	}
-
-	@Test
-	public void testLessThanMinimumData()
-	{
-		assertThat(fileContainsMinRows(makeFullFilePath(TEST_FILES_PATH, FILE_CSV_INSUFFICIENT_DATA), 2)).isFalse();
-	}
-
-	@Test
-	public void testSufficientData()
-	{
-		assertThat(fileContainsMinRows(makeFullFilePath(TEST_FILES_PATH, FILE_CSV_SUCCESS), 2)).isTrue();
-	}
 }

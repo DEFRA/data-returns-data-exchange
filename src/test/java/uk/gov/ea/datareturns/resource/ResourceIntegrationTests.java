@@ -57,8 +57,8 @@ import com.google.gson.Gson;
  * 
  * TODO not every single exception is tested - not sure if they ever will as e2e test should provide full coverage
  * TODO could refactor/reduce tests as many tests retest same code BUT too much is better so not a priority
- * TODO expand bigtime assertions - kept to a minimum to complete Trello card "Complete Upload Validation Code Changes. Back End - PART 1"
- * TODO deserialise and check indivdiual validation failures
+ * TODO expand big time assertions - kept to a minimum to complete Trello card "Complete Upload Validation Code Changes. Back End - PART 1"
+ * TODO deserialise and check individual validation failures
  */
 public class ResourceIntegrationTests
 {
@@ -260,8 +260,10 @@ public class ResourceIntegrationTests
 		dumpResult(result);
 	}
 
-// TODO commented out temporarily to get build working
-//	// TODO only as far as "upload" for now
+	
+	// TODO only as far as "upload" for now
+	
+	// TODO commented out temporarily to get jenkins dev working
 //	@Test
 //	public void testEndToEndSuccess()
 //	{
@@ -286,10 +288,13 @@ public class ResourceIntegrationTests
 	// TODO missing column
 	// TODO columns out of sequence
 	// TODO extra columns
+	// TODO extra data
 	// TODO missing xsd file
 	// TODO missing translation file
 	// TODO missing xslt files
+	// TODO large/average file uploads
 	// TODO + complete step tests etc...
+	// TODO & loads more
 
 	/**
 	 * Create's a Jersey Client object ready for POST request used in Upload step
@@ -308,7 +313,7 @@ public class ResourceIntegrationTests
 	}
 
 	/**
-	 * Make POST request for Upload step
+	 * POST request for Upload step
 	 * @param client
 	 * @param testFileName
 	 * @param mediaType
@@ -345,7 +350,7 @@ public class ResourceIntegrationTests
 	}
 
 	/**
-	 * Make POST request for Complete step
+	 * POST request for Complete step
 	 * @param client
 	 * @param fileKey
 	 * @return
@@ -355,11 +360,11 @@ public class ResourceIntegrationTests
 		final FormDataMultiPart form = new FormDataMultiPart();
 		final FormDataBodyPart fdp1 = new FormDataBodyPart("fileKey", fileKey);
 		form.bodyPart(fdp1);
-		final FormDataBodyPart fdp2 = new FormDataBodyPart("emailcc", "abc@abc.com");
+		final FormDataBodyPart fdp2 = new FormDataBodyPart("userEmail", "abc@abc.com");
 		form.bodyPart(fdp2);
 
 		final String uri = createURIForStep(STEP_COMPLETE);
-		final Response resp = client.target(uri).request().post(Entity.entity(form, form.getMediaType()), Response.class);
+		final Response resp = client.register(MultiPartFeature.class).target(uri).request().post(Entity.entity(form, form.getMediaType()), Response.class);
 
 		return resp;
 	}

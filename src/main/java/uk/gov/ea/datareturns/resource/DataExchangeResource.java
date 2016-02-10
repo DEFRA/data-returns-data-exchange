@@ -6,7 +6,6 @@ import static uk.gov.ea.datareturns.helper.CommonHelper.isLocalEnvironment;
 import static uk.gov.ea.datareturns.helper.CommonHelper.makeFullFilePath;
 import static uk.gov.ea.datareturns.helper.FileUtilsHelper.saveFile;
 import static uk.gov.ea.datareturns.helper.XMLUtilsHelper.deserializeFromXML;
-import static uk.gov.ea.datareturns.helper.XMLUtilsHelper.serializeToJSON;
 import static uk.gov.ea.datareturns.helper.XMLUtilsHelper.transformToString;
 import static uk.gov.ea.datareturns.type.AppStatusCode.APP_STATUS_FAILED_WITH_ERRORS;
 import static uk.gov.ea.datareturns.type.AppStatusCode.APP_STATUS_SUCCESS;
@@ -38,6 +37,7 @@ import uk.gov.ea.datareturns.config.MiscSettings;
 import uk.gov.ea.datareturns.config.RedisSettings;
 import uk.gov.ea.datareturns.config.S3ProxySettings;
 import uk.gov.ea.datareturns.convert.ConvertCSVToXML;
+import uk.gov.ea.datareturns.convert.ConvertXMLToCSV;
 import uk.gov.ea.datareturns.dao.PermitDAO;
 import uk.gov.ea.datareturns.domain.result.CompleteResult;
 import uk.gov.ea.datareturns.domain.result.DataExchangeResult;
@@ -48,14 +48,12 @@ import uk.gov.ea.datareturns.exception.application.MultiplePermitsException;
 import uk.gov.ea.datareturns.exception.application.PermitNotFoundException;
 import uk.gov.ea.datareturns.exception.application.UnsupportedFileTypeException;
 import uk.gov.ea.datareturns.exception.system.NotificationException;
-import uk.gov.ea.datareturns.helper.FileUtilsHelper;
 import uk.gov.ea.datareturns.storage.FileStorage;
 import uk.gov.ea.datareturns.type.FileType;
 import uk.gov.ea.datareturns.validate.Validate;
 import uk.gov.ea.datareturns.validate.ValidateXML;
 
 import com.codahale.metrics.annotation.Timed;
-import com.fasterxml.jackson.databind.SerializationFeature;
 
 @Path("/data-exchange/")
 public class DataExchangeResource
@@ -69,8 +67,10 @@ public class DataExchangeResource
 
 	private FileStorage fileStorage;
 
+	// TODO rename by regime/return type? 
 	private final String XSLT_UNIQUE_IDENTIFIERS = "get_unique_identifiers.xslt";
 	private final String XSLT_PERMIT_NOS = "get_unique_permit_nos.xslt";
+	private final String XSLT_CONVERT_TO_CSV = "convert_to_csv.xslt";
 
 	// TODO things that could/should be held in database?
 	private final String CORE_SCHEMA_FILE = "data-returns-core-schema.xsd";
@@ -122,7 +122,7 @@ public class DataExchangeResource
 	@Timed
 	public Response uploadFile(@FormDataParam("fileUpload") InputStream is, @FormDataParam("fileUpload") FormDataContentDisposition fileDetail)
 	{
-		LOGGER.debug("/data-exchange/upload called");
+		LOGGER.debug("/data-exchange/upload request received");
 
 		MiscSettings settings = config.getMiscSettings();
 		String uploadedFile = makeFullFilePath(settings.getUploadedLocation(), fileDetail.getFileName());
@@ -145,7 +145,7 @@ public class DataExchangeResource
 		// 5. Apply File content validations
 		ValidationResult validateResult = validateFile(workingFile);
 
-		// Whoohoo! prepare success/failure response
+		// Woohoo! prepare success/failure response
 
 		UploadResult uploadResult = new UploadResult(fileDetail.getFileName());
 		DataExchangeResult result = new DataExchangeResult(uploadResult);
@@ -177,30 +177,33 @@ public class DataExchangeResource
 	// TODO validate entity would be better?
 	@POST
 	@Path("/complete")
+	@Consumes(MULTIPART_FORM_DATA)
 	@Produces(APPLICATION_JSON)
 	@Timed
-	public Response completeFileUpload(@NotEmpty @FormDataParam("fileKey") String fileKey, @NotEmpty @FormDataParam("userEmail") String userEmail)
+	public Response completeUpload(@NotEmpty @FormDataParam("fileKey") String orgFileKey, @NotEmpty @FormDataParam("userEmail") String userEmail)
 	{
-		LOGGER.debug("/data-exchange/complete called");
+		LOGGER.debug("/data-exchange/complete request received");
+
+		MiscSettings settings = config.getMiscSettings();
+
+		String outputLocation = settings.getOutputLocation();
+		String orgFileLocation = fileStorage.retrieveValidFileByKey(orgFileKey, outputLocation);
+		String xslt = makeFullFilePath(settings.getXsltLocation(), XSLT_CONVERT_TO_CSV);
+
+		ConvertXMLToCSV converter = new ConvertXMLToCSV(settings.getCsvSeparator(), orgFileLocation, outputLocation, xslt);
+		String newFileLocation = converter.convert();
+
+		sendNotifications(newFileLocation);
 
 		CompleteResult completeResult = new CompleteResult();
+
+		// TODO only really need to return app status code - leaving these in for now though
+		completeResult.setFileKey(orgFileKey);
+		completeResult.setUserEmail(userEmail);
+		
 		DataExchangeResult result = new DataExchangeResult(completeResult);
 
-		completeResult.setFileKey(fileKey);
-		completeResult.setUserEmail(userEmail);
-
-		String saveFileLocation = config.getMiscSettings().getOutputLocation();
-		String fileLocation = fileStorage.retrieveValidFileByKey(completeResult.getFileKey(), saveFileLocation);
-
-		LOGGER.debug("sending notification");
-		sendNotificationToMonitorPro(fileLocation);
-		LOGGER.debug("notification sent");
-
 		result.setAppStatusCode(APP_STATUS_SUCCESS.getAppStatusCode());
-
-		Map<SerializationFeature, Boolean> config = new HashMap<SerializationFeature, Boolean>();
-		config.put(SerializationFeature.INDENT_OUTPUT, true);
-		LOGGER.debug("returning result = " + serializeToJSON(result, config));
 
 		return Response.ok(result).build();
 	}
@@ -299,16 +302,18 @@ public class DataExchangeResource
 	}
 
 	/**
-	 * Sends and Email to MonitorPro (also know as EMMA) with uploaded file (un-modified) as an attachment
+	 * Send notifications upload is complete - currently just email to MonitorPro with csv attachment
 	 * @param attachmentLocation
 	 */
-	private void sendNotificationToMonitorPro(String attachmentLocation)
+	private void sendNotifications(String attachmentLocation)
 	{
-		EmailSettings settings = this.config.getEmailsettings();
-		MultiPartEmail email = new MultiPartEmail();
+		LOGGER.debug("Sending Email with attachment '" + attachmentLocation + "'");
 
 		try
 		{
+			EmailSettings settings = this.config.getEmailsettings();
+			MultiPartEmail email = new MultiPartEmail();
+
 			email.setHostName(settings.getHost());
 			email.setSmtpPort(settings.getPort());
 
@@ -323,13 +328,12 @@ public class DataExchangeResource
 			attachment.setDescription("Data Returns File Upload");
 			attachment.setName("Environment Agency");
 
-			//			File fileAttachment = new File(attachmentLocation);
-			File fileAttachment = new File("./external_resources/temp_test_file_for_email_only.csv");
+			File fileAttachment = new File(attachmentLocation);
 			attachment.setPath(fileAttachment.getAbsolutePath());
 
 			email.attach(fileAttachment);
 
-			LOGGER.debug("Sending email to MonitorPro - ");
+			LOGGER.debug("Email details - ");
 			LOGGER.debug("  host - " + settings.getHost());
 			LOGGER.debug("  port - " + settings.getPort());
 			LOGGER.debug("  subject - " + settings.getSubject());
@@ -339,11 +343,7 @@ public class DataExchangeResource
 			LOGGER.debug("  bodyMessage - " + settings.getBodyMessage());
 			LOGGER.debug("  attached file = " + attachment.getPath());
 
-			FileUtilsHelper.fileExists(attachmentLocation);
-			LOGGER.debug("before send email");
-
 			email.send();
-			LOGGER.debug("after send email");
 		} catch (EmailException e1)
 		{
 			throw new NotificationException(e1, "Failed to send email to MonitorPro");
@@ -351,5 +351,7 @@ public class DataExchangeResource
 		{
 			throw new NotificationException(e2, "Failed to send email to MonitorPro");
 		}
+
+		LOGGER.debug("Email sent");
 	}
 }

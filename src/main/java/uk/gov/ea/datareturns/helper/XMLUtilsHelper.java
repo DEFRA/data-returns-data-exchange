@@ -244,7 +244,7 @@ public class XMLUtilsHelper
 		return documentToString(docTo);
 	}
 
-	// TODO DEBUG
+	// TODO move to DebugUtilsHelper class
 	public static String serializeToXML(Object objIn, Map<SerializationFeature, Boolean> config)
 	{
 		XmlMapper mapper = new XmlMapper();

@@ -63,10 +63,17 @@ public class ValidateXML implements Validate
 		// If validation successful, add user friendly info to result object
 		if (!result.isValid())
 		{
+			LOGGER.debug("File '" + xmlFile + "' is INVALID");
+
+			// TODO exit if error count too many? - the next steps are slow
+			
 			Map<String, String> params = new HashMap<String, String>();
 			params.put("lineNos", result.getSchemaErrors().getErrorLineNosAsString());
 
 			// Get source line nos
+			LOGGER.debug("Getting source line nos");
+
+			// TODO XLST needs to be made more efficient, slow with large files 
 			String xsltFileLocation = makeFullPath(xsltLocation, XSLT_GET_SOURCE_ROW_NUMS);
 			String lineNos = transformToString(xmlFile, xsltFileLocation, params);
 			ValidationResult validationResult = (ValidationResult) deserializeFromXML(lineNos, ValidationResult.class);
@@ -75,6 +82,7 @@ public class ValidateXML implements Validate
 //			System.out.println(serializeToXML(validationResult, config));
 			
 			// Get user-friendly message translations
+			LOGGER.debug("Getting user-friendly error message translations");
 			String fullXml = mergeXML(serializeToXML(result), loadFileAsString(translationsFile));
 			xsltFileLocation = makeFullPath(xsltLocation, XSLT_TRANSLATE_FAILURE_MESSAGES);
 			ValidationResult translationResult = DataExchangeHelper.transformToResult(fullXml, xsltFileLocation, ValidationResult.class);
@@ -87,6 +95,7 @@ public class ValidateXML implements Validate
 			 * Unable to use this currently as current release does not provide a "preserve" existing values 
 			 * option but is due in a future release making these 2 methods redundant.
 			 */
+
 			mergeSourceLineNos(result, validationResult);
 			mergeUserFriendlyMessages(result, translationResult);
 		}
@@ -145,6 +154,8 @@ public class ValidateXML implements Validate
 	 */
 	private void mergeSourceLineNos(ValidationResult target, ValidationResult source)
 	{
+		LOGGER.debug("Merging source line nos");
+
 		Map<String, LineError> targetErrors = target.getSchemaErrors().getLineErrors();
 
 		if (targetErrors.size() > 0)
@@ -169,6 +180,8 @@ public class ValidateXML implements Validate
 	 */
 	private static void mergeUserFriendlyMessages(ValidationResult target, ValidationResult source)
 	{
+		LOGGER.debug("Merging user-friendly error message translations");
+
 		Map<String, LineError> targetErrors = target.getSchemaErrors().getLineErrors();
 
 		if (targetErrors.size() > 0)

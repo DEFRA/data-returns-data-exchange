@@ -48,29 +48,14 @@ public class ConvertCSVToXML
 		return separator;
 	}
 
-	public void setSeparator(String separator)
-	{
-		this.separator = separator;
-	}
-
 	public String getFileToConvert()
 	{
 		return fileToConvert;
 	}
 
-	public void setFileToConvert(String fileToConvert)
-	{
-		this.fileToConvert = fileToConvert;
-	}
-
 	public String getOutputLocation()
 	{
 		return outputLocation;
-	}
-
-	public void setOutputLocation(String outputLocation)
-	{
-		this.outputLocation = outputLocation;
 	}
 
 	public String getConvertedFile()
