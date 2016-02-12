@@ -1,7 +1,7 @@
 package uk.gov.ea.datareturns.type;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static uk.gov.ea.datareturns.type.SystemException.UNPROCESSABLE_ENTITY;
+import static uk.gov.ea.datareturns.type.SystemExceptionType.UNPROCESSABLE_ENTITY;
 
 import org.junit.Test;
 
@@ -10,8 +10,8 @@ public class SystemExceptionTests
 	@Test
 	public void testObjectInstantiated()
 	{
-		assertThat(SystemException.values().length).isGreaterThan(0);
-		assertThat(SystemException.valueOf("UNPROCESSABLE_ENTITY").getCode()).isEqualTo(422);
+		assertThat(SystemExceptionType.values().length).isGreaterThan(0);
+		assertThat(SystemExceptionType.valueOf("UNPROCESSABLE_ENTITY").getCode()).isEqualTo(422);
 	}
 
 	/**

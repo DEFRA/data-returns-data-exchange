@@ -1,5 +1,9 @@
 package uk.gov.ea.datareturns.helper;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static uk.gov.ea.datareturns.helper.FileUtilsHelper.getFileType;
+import static uk.gov.ea.datareturns.helper.FileUtilsHelper.makeFullPath;
+
 import org.junit.FixMethodOrder;
 import org.junit.Test;
 import org.junit.runners.MethodSorters;
@@ -12,6 +16,9 @@ public class FileUtilsHelperTests
 	public final static String FILE_CSV_SUCCESS = "success.csv";
 	public final static String FILE_CSV_INSUFFICIENT_DATA = "header-row-only.csv";
 
+//	final private String TEST_PATH = "/this/is/a/test/folder";
+//	final private String TEST_FILE = "test_file.csv";
+	
 	@Test
 	public void testObjectCreation()
 	{
@@ -19,8 +26,42 @@ public class FileUtilsHelperTests
 		FileUtilsHelper helper = new FileUtilsHelper();
 	}
 
-	// TODO all tests
+	// TODO all tests - check all and add missing
 	
+//	@Test
+//	public void testMakeFullFilePath()
+//	{
+//		final String EXPECTED = "/this/is/a/test/folder/test_file.csv";
+//
+//		final String result = makeFullPath(TEST_PATH, TEST_FILE);
+//		assertThat(result).isEqualTo(EXPECTED);
+//	}
+//
+//	/**
+//	 * Must return null
+//	 */
+//	@Test
+//	public void testExtractFileTypeFailure()
+//	{
+//		@SuppressWarnings("unused")
+//		final String EXPECTED_FILE_TYPE = "csv";
+//
+//		String result = getFileType(makeFullPath("", ""));
+//		assertThat(result).isEqualTo(null);
+//	}
+//
+//	/**
+//	 * Must always return lower case file extension
+//	 */
+//	@Test
+//	public void testExtractFileTypeSuccess()
+//	{
+//		final String EXPECTED_FILE_TYPE = "csv";
+//
+//		String result = getFileType(makeFullPath(TEST_PATH.toUpperCase(), TEST_FILE.toUpperCase()));
+//		assertThat(result).isEqualTo(EXPECTED_FILE_TYPE);
+//	}
+//	
 //	@Test
 //	public void testSaveReturnsFileSuccess()
 //	{

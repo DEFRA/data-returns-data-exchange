@@ -1,7 +1,7 @@
 package uk.gov.ea.datareturns.type;
 
 // TODO UNPROCESSABLE_ENTITY must be available in some standard lib somewhere? (not just Spring)
-public enum SystemException
+public enum SystemExceptionType
 {
 	FILE_SAVE(601, "Cannot Save File"), 
 	FILE_UNLOCATABLE(602, "Cannot Locate File"), 
@@ -20,7 +20,7 @@ public enum SystemException
 	private final int code;
 	private final String reason;
 
-	SystemException(int code, String reason)
+	SystemExceptionType(int code, String reason)
 	{
 		this.code = code;
 		this.reason = reason;

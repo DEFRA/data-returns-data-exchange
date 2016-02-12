@@ -2,18 +2,19 @@ package uk.gov.ea.datareturns.resource;
 
 import static javax.ws.rs.core.Response.Status.OK;
 import static org.assertj.core.api.Assertions.assertThat;
-import static uk.gov.ea.datareturns.helper.CommonHelper.makeFullFilePath;
 import static uk.gov.ea.datareturns.helper.FileUtilsHelper.createDirectory;
 import static uk.gov.ea.datareturns.helper.FileUtilsHelper.deleteDirectory;
+import static uk.gov.ea.datareturns.helper.FileUtilsHelper.makeFullPath;
 import static uk.gov.ea.datareturns.helper.XMLUtilsHelper.serializeToJSON;
 import static uk.gov.ea.datareturns.helper.XMLUtilsHelper.serializeToXML;
-import static uk.gov.ea.datareturns.type.AppStatusCode.APP_STATUS_FAILED_WITH_ERRORS;
-import static uk.gov.ea.datareturns.type.AppStatusCode.APP_STATUS_SUCCESS;
-import static uk.gov.ea.datareturns.type.ApplicationException.INVALID_CONTENTS;
-import static uk.gov.ea.datareturns.type.ApplicationException.MULTIPLE_PERMITS;
-import static uk.gov.ea.datareturns.type.ApplicationException.NO_RETURNS;
-import static uk.gov.ea.datareturns.type.ApplicationException.PERMIT_NOT_FOUND;
-import static uk.gov.ea.datareturns.type.ApplicationException.*;
+import static uk.gov.ea.datareturns.type.AppStatusCodeType.APP_STATUS_FAILED_WITH_ERRORS;
+import static uk.gov.ea.datareturns.type.AppStatusCodeType.APP_STATUS_SUCCESS;
+import static uk.gov.ea.datareturns.type.ApplicationExceptionType.FILE_KEY_MISMATCH;
+import static uk.gov.ea.datareturns.type.ApplicationExceptionType.INVALID_CONTENTS;
+import static uk.gov.ea.datareturns.type.ApplicationExceptionType.MULTIPLE_PERMITS;
+import static uk.gov.ea.datareturns.type.ApplicationExceptionType.NO_RETURNS;
+import static uk.gov.ea.datareturns.type.ApplicationExceptionType.PERMIT_NOT_FOUND;
+import static uk.gov.ea.datareturns.type.ApplicationExceptionType.UNSUPPORTED_FILE_TYPE;
 import io.dropwizard.client.JerseyClientBuilder;
 import io.dropwizard.client.JerseyClientConfiguration;
 import io.dropwizard.testing.junit.DropwizardAppRule;
@@ -115,7 +116,7 @@ public class ResourceIntegrationTests
 	///////////////////////////////////////////////////////////////////////////////////////////
 	//////////////////////// Start Application Exception handling tests ///////////////////////
 	///////////////////////////////////////////////////////////////////////////////////////////
-	
+
 	@Test
 	public void testUnsupportedFileType()
 	{
@@ -137,7 +138,7 @@ public class ResourceIntegrationTests
 		final DataExchangeResult result = getResultFromResponse(resp);
 		assertThat(result.getAppStatusCode()).isEqualTo(INVALID_CONTENTS.getAppStatusCode());
 	}
-	
+
 	@Test
 	public void testNoReturns()
 	{
@@ -187,23 +188,21 @@ public class ResourceIntegrationTests
 		result = getResultFromResponse(resp);
 		assertThat(result.getAppStatusCode()).isEqualTo(FILE_KEY_MISMATCH.getAppStatusCode());
 	}
-	
+
 	///////////////////////////////////////////////////////////////////////////////////////////
 	/////////////////////// End Application Exception handling tests //////////////////////////
 	///////////////////////////////////////////////////////////////////////////////////////////
 
-	
 	///////////////////////////////////////////////////////////////////////////////////////////
 	///////////////////////////////////////////////////////////////////////////////////////////
 	///////////////////////////////////////////////////////////////////////////////////////////
 	//////////////////////// Start Application Exception handling tests ///////////////////////
 	///////////////////////////////////////////////////////////////////////////////////////////
-	
+
 	///////////////////////////////////////////////////////////////////////////////////////////
 	/////////////////////////// End System Exception handling tests ///////////////////////////
 	///////////////////////////////////////////////////////////////////////////////////////////
 
-	
 	///////////////////////////////////////////////////////////////////////////////////////////
 	///////////////////////////////////////////////////////////////////////////////////////////
 	///////////////////////////////////////////////////////////////////////////////////////////
@@ -211,7 +210,7 @@ public class ResourceIntegrationTests
 	///////////////////////////////////////////////////////////////////////////////////////////
 
 	// TODO expand to test individual validation failures
-	
+
 	@Test
 	public void testValidationErrors()
 	{
@@ -224,7 +223,7 @@ public class ResourceIntegrationTests
 
 		dumpResult(result);
 	}
-	
+
 	@Test
 	public void testAcceptableValueFieldChars()
 	{
@@ -246,7 +245,7 @@ public class ResourceIntegrationTests
 		DataExchangeResult result = getResultFromResponse(resp);
 		assertThat(result.getAppStatusCode()).isEqualTo(APP_STATUS_FAILED_WITH_ERRORS.getAppStatusCode());
 	}
-	
+
 	@Test
 	public void testEmbeddedSeparators()
 	{
@@ -257,7 +256,7 @@ public class ResourceIntegrationTests
 		final DataExchangeResult result = getResultFromResponse(resp);
 		assertThat(result.getAppStatusCode()).isEqualTo(APP_STATUS_SUCCESS.getAppStatusCode());
 	}
-	
+
 	@Test
 	public void testEmbeddedXMLChars()
 	{
@@ -268,11 +267,10 @@ public class ResourceIntegrationTests
 		final DataExchangeResult result = getResultFromResponse(resp);
 		assertThat(result.getAppStatusCode()).isEqualTo(APP_STATUS_SUCCESS.getAppStatusCode());
 	}
-	
+
 	///////////////////////////////////////////////////////////////////////////////////////////
 	/////////////////////////////// End Content Validation tests //////////////////////////////
 	///////////////////////////////////////////////////////////////////////////////////////////
-
 
 	///////////////////////////////////////////////////////////////////////////////////////////
 	///////////////////////////////////////////////////////////////////////////////////////////
@@ -294,46 +292,45 @@ public class ResourceIntegrationTests
 	}
 
 	// TODO only as far as "upload" for now
-	
-//	// TODO commented out temporarily to get jenkins dev working
-//	@Test
-//	public void testEndToEndSuccess()
-//	{
-//		Client client = createUploadStepClient("test End To End Success");
-//		Response resp = performUploadStep(client, FILE_CSV_SUCCESS, MEDIA_TYPE_CSV);
-//		assertThat(resp.getStatus()).isEqualTo(OK.getStatusCode());
-//
-//		DataExchangeResult result = getResultFromResponse(resp);
-//		assertThat(result.getAppStatusCode()).isEqualTo(APP_STATUS_SUCCESS.getAppStatusCode());
-//
-//		dumpResult(result);
-//		
-//		resp = performCompleteStep(client, result.getUploadResult().getFileKey());
-//		assertThat(resp.getStatus()).isEqualTo(OK.getStatusCode());
-//
-//		result = getResultFromResponse(resp);
-//		assertThat(result.getAppStatusCode()).isEqualTo(APP_STATUS_SUCCESS.getAppStatusCode());
-//
-//		dumpResult(result);
-//	}
+
+	//	// TODO commented out temporarily to get jenkins dev working
+	//	@Test
+	//	public void testEndToEndSuccess()
+	//	{
+	//		Client client = createUploadStepClient("test End To End Success");
+	//		Response resp = performUploadStep(client, FILE_CSV_SUCCESS, MEDIA_TYPE_CSV);
+	//		assertThat(resp.getStatus()).isEqualTo(OK.getStatusCode());
+	//
+	//		DataExchangeResult result = getResultFromResponse(resp);
+	//		assertThat(result.getAppStatusCode()).isEqualTo(APP_STATUS_SUCCESS.getAppStatusCode());
+	//
+	//		dumpResult(result);
+	//		
+	//		resp = performCompleteStep(client, result.getUploadResult().getFileKey());
+	//		assertThat(resp.getStatus()).isEqualTo(OK.getStatusCode());
+	//
+	//		result = getResultFromResponse(resp);
+	//		assertThat(result.getAppStatusCode()).isEqualTo(APP_STATUS_SUCCESS.getAppStatusCode());
+	//
+	//		dumpResult(result);
+	//	}
 
 	///////////////////////////////////////////////////////////////////////////////////////////
 	///////////////////////////////// End Miscellaneous tests ////////////////////////////////
 	///////////////////////////////////////////////////////////////////////////////////////////
-	
-	
-//	@Test
-//	public void testInsufficientDataFailure()
-//	{
-//		final Client client = createUploadStepClient("test NO Return(s) in file Failure");
-//		final Response resp = performUploadStep(client, FILE_CSV_INSUFFICIENT_DATA, MEDIA_TYPE_CSV);
-//		assertThat(resp.getStatus()).isEqualTo(OK.getStatusCode());
-//
-//		final DataExchangeResult result = getResultFromResponse(resp);
-//		assertThat(result.getAppStatusCode()).isEqualTo(NO_RETURNS.getAppStatusCode());
-//
-//		dumpResult(result);
-//	}
+
+	//	@Test
+	//	public void testInsufficientDataFailure()
+	//	{
+	//		final Client client = createUploadStepClient("test NO Return(s) in file Failure");
+	//		final Response resp = performUploadStep(client, FILE_CSV_INSUFFICIENT_DATA, MEDIA_TYPE_CSV);
+	//		assertThat(resp.getStatus()).isEqualTo(OK.getStatusCode());
+	//
+	//		final DataExchangeResult result = getResultFromResponse(resp);
+	//		assertThat(result.getAppStatusCode()).isEqualTo(NO_RETURNS.getAppStatusCode());
+	//
+	//		dumpResult(result);
+	//	}
 	// TODO missing column
 	// TODO columns out of sequence
 	// TODO extra columns
@@ -372,7 +369,7 @@ public class ResourceIntegrationTests
 	{
 		final String testFilesLocation = RULE.getConfiguration().getTestSettings().getTestFilesLocation();
 		final FormDataMultiPart form = new FormDataMultiPart();
-		final InputStream data = this.getClass().getResourceAsStream(makeFullFilePath(testFilesLocation, testFileName));
+		final InputStream data = this.getClass().getResourceAsStream(makeFullPath(testFilesLocation, testFileName));
 		final String uri = createURIForStep(STEP_UPLOAD);
 		final StreamDataBodyPart fdp1 = new StreamDataBodyPart("fileUpload", data, testFileName, mediaType);
 

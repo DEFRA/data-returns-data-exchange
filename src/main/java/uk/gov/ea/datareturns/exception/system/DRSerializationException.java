@@ -1,7 +1,7 @@
 package uk.gov.ea.datareturns.exception.system;
 
 import static javax.ws.rs.core.Response.Status.OK;
-import static uk.gov.ea.datareturns.type.SystemException.DESERIALIZE;
+import static uk.gov.ea.datareturns.type.SystemExceptionType.DESERIALIZE;
 
 public class DRSerializationException extends AbstractDRSystemException
 {

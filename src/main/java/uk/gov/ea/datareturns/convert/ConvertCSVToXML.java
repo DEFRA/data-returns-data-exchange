@@ -1,6 +1,6 @@
 package uk.gov.ea.datareturns.convert;
 
-import static uk.gov.ea.datareturns.helper.CommonHelper.makeFullFilePath;
+import static uk.gov.ea.datareturns.helper.FileUtilsHelper.makeFullPath;
 import static uk.gov.ea.datareturns.type.FileType.CSV;
 import static uk.gov.ea.datareturns.type.FileType.XML;
 
@@ -40,7 +40,7 @@ public class ConvertCSVToXML
 		this.separator = separator;
 		this.fileToConvert = fileToConvert;
 		this.outputLocation = outputLocation;
-		
+
 		this.convertedFile = getXMLFileLocation();
 	}
 
@@ -73,7 +73,7 @@ public class ConvertCSVToXML
 		String fileNameIn = new File(fileToConvert).getName();
 		String fileNameOut = fileNameIn.replaceAll(CSV.getFileType(), XML.getFileType());
 
-		return makeFullFilePath(outputLocation, fileNameOut);
+		return makeFullPath(outputLocation, fileNameOut);
 	}
 
 	public int convert()

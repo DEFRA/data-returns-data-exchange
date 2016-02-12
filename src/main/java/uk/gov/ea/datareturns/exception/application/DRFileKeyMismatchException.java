@@ -1,7 +1,7 @@
 package uk.gov.ea.datareturns.exception.application;
 
 import static javax.ws.rs.core.Response.Status.OK;
-import static uk.gov.ea.datareturns.type.ApplicationException.FILE_KEY_MISMATCH;
+import static uk.gov.ea.datareturns.type.ApplicationExceptionType.FILE_KEY_MISMATCH;
 
 public class DRFileKeyMismatchException extends AbstractDRApplicationException
 {

@@ -1,7 +1,7 @@
 package uk.gov.ea.datareturns.exception.application;
 
 import static javax.ws.rs.core.Response.Status.OK;
-import static uk.gov.ea.datareturns.type.ApplicationException.UNSUPPORTED_FILE_TYPE;
+import static uk.gov.ea.datareturns.type.ApplicationExceptionType.UNSUPPORTED_FILE_TYPE;
 
 public class DRUnsupportedFileTypeException extends AbstractDRApplicationException
 {

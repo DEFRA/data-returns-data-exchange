@@ -1,7 +1,7 @@
 package uk.gov.ea.datareturns.exception.application;
 
 import static javax.ws.rs.core.Response.Status.OK;
-import static uk.gov.ea.datareturns.type.ApplicationException.INVALID_CONTENTS;
+import static uk.gov.ea.datareturns.type.ApplicationExceptionType.INVALID_CONTENTS;
 
 public class DRInvalidContentsException extends AbstractDRApplicationException
 {

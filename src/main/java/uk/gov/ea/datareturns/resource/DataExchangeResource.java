@@ -3,12 +3,12 @@ package uk.gov.ea.datareturns.resource;
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 import static javax.ws.rs.core.MediaType.MULTIPART_FORM_DATA;
 import static uk.gov.ea.datareturns.helper.CommonHelper.isLocalEnvironment;
-import static uk.gov.ea.datareturns.helper.CommonHelper.makeFullFilePath;
+import static uk.gov.ea.datareturns.helper.FileUtilsHelper.makeFullPath;
 import static uk.gov.ea.datareturns.helper.FileUtilsHelper.saveFile;
 import static uk.gov.ea.datareturns.helper.XMLUtilsHelper.deserializeFromXML;
 import static uk.gov.ea.datareturns.helper.XMLUtilsHelper.transformToString;
-import static uk.gov.ea.datareturns.type.AppStatusCode.APP_STATUS_FAILED_WITH_ERRORS;
-import static uk.gov.ea.datareturns.type.AppStatusCode.APP_STATUS_SUCCESS;
+import static uk.gov.ea.datareturns.type.AppStatusCodeType.APP_STATUS_FAILED_WITH_ERRORS;
+import static uk.gov.ea.datareturns.type.AppStatusCodeType.APP_STATUS_SUCCESS;
 
 import java.io.File;
 import java.io.InputStream;
@@ -125,7 +125,7 @@ public class DataExchangeResource
 		LOGGER.debug("/data-exchange/upload request received");
 
 		MiscSettings settings = config.getMiscSettings();
-		String uploadedFile = makeFullFilePath(settings.getUploadedLocation(), fileDetail.getFileName());
+		String uploadedFile = makeFullPath(settings.getUploadedLocation(), fileDetail.getFileName());
 
 		// 1. Validate upload file
 		validateUploadFile(uploadedFile);
@@ -188,8 +188,8 @@ public class DataExchangeResource
 
 		String outputLocation = settings.getOutputLocation();
 		String orgFileLocation = fileStorage.retrieveValidFileByKey(orgFileKey, outputLocation);
-		String xslt = makeFullFilePath(settings.getXsltLocation(), XSLT_CONVERT_TO_CSV);
-		
+		String xslt = makeFullPath(settings.getXsltLocation(), XSLT_CONVERT_TO_CSV);
+
 		ConvertXMLToCSV converter = new ConvertXMLToCSV(settings.getCsvSeparator(), orgFileLocation, outputLocation, xslt);
 		String newFileLocation = converter.convert();
 
@@ -200,7 +200,7 @@ public class DataExchangeResource
 		// TODO only really need to return app status code - leaving these in for now though
 		completeResult.setFileKey(orgFileKey);
 		completeResult.setUserEmail(userEmail);
-		
+
 		DataExchangeResult result = new DataExchangeResult(completeResult);
 
 		result.setAppStatusCode(APP_STATUS_SUCCESS.getAppStatusCode());
@@ -243,9 +243,9 @@ public class DataExchangeResource
 		MiscSettings settings = config.getMiscSettings();
 
 		// Validate XML file
-		String schemaFile = makeFullFilePath(settings.getSchemaLocation(), CORE_SCHEMA_FILE);
+		String schemaFile = makeFullPath(settings.getSchemaLocation(), CORE_SCHEMA_FILE);
 		String xsltLocation = settings.getXsltLocation();
-		String translationsFile = makeFullFilePath(settings.getXmlLocation(), CORE_TRANSLATIONS_FILE);
+		String translationsFile = makeFullPath(settings.getXmlLocation(), CORE_TRANSLATIONS_FILE);
 		Validate validate = new ValidateXML(schemaFile, workingFile, translationsFile, xsltLocation);
 
 		return validate.validate();
@@ -263,7 +263,7 @@ public class DataExchangeResource
 		Map<String, String> params = new HashMap<String, String>();
 		params.put("nodeName", PERMIT_NO_FIELD_ID);
 
-		String result = transformToString(workingFile, makeFullFilePath(config.getMiscSettings().getXsltLocation(), XSLT_PERMIT_NOS), params);
+		String result = transformToString(workingFile, makeFullPath(config.getMiscSettings().getXsltLocation(), XSLT_PERMIT_NOS), params);
 
 		GeneralResult generalResult = deserializeFromXML(result, GeneralResult.class);
 
@@ -296,7 +296,7 @@ public class DataExchangeResource
 		Map<String, String> params = new HashMap<String, String>();
 		params.put("nodeNames", String.join(",", uniqueIdentifierIds));
 
-		String result = transformToString(fileLocation, makeFullFilePath(config.getMiscSettings().getXsltLocation(), XSLT_UNIQUE_IDENTIFIERS), params);
+		String result = transformToString(fileLocation, makeFullPath(config.getMiscSettings().getXsltLocation(), XSLT_UNIQUE_IDENTIFIERS), params);
 
 		return deserializeFromXML(result, GeneralResult.class);
 	}

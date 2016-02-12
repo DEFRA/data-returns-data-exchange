@@ -1,7 +1,7 @@
 package uk.gov.ea.datareturns.type;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static uk.gov.ea.datareturns.type.ApplicationException.PERMIT_NOT_FOUND;
+import static uk.gov.ea.datareturns.type.ApplicationExceptionType.PERMIT_NOT_FOUND;
 
 import org.junit.Test;
 
@@ -10,8 +10,8 @@ public class ApplicationExceptionTests
 	@Test
 	public void testObjectInstantiated()
 	{
-		assertThat(ApplicationException.values().length).isGreaterThan(0);
-		assertThat(ApplicationException.valueOf("PERMIT_NOT_FOUND").getAppStatusCode()).isEqualTo(704);
+		assertThat(ApplicationExceptionType.values().length).isGreaterThan(0);
+		assertThat(ApplicationExceptionType.valueOf("PERMIT_NOT_FOUND").getAppStatusCode()).isEqualTo(704);
 	}
 
 	/**

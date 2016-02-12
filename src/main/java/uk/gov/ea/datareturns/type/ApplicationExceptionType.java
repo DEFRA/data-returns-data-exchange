@@ -1,6 +1,6 @@
 package uk.gov.ea.datareturns.type;
 
-public enum ApplicationException
+public enum ApplicationExceptionType
 {
 	UNSUPPORTED_FILE_TYPE(700, "Unsupported File Type"), 
 	INVALID_CONTENTS(701, "Invalid contents"), 
@@ -13,7 +13,7 @@ public enum ApplicationException
 	private int appStatusCode;
 	private String reason;
 
-	ApplicationException(int appStatusCode, String reason)
+	ApplicationExceptionType(int appStatusCode, String reason)
 	{
 		this.appStatusCode = appStatusCode;
 		this.reason = reason;

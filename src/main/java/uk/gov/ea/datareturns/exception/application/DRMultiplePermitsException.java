@@ -1,7 +1,7 @@
 package uk.gov.ea.datareturns.exception.application;
 
 import static javax.ws.rs.core.Response.Status.OK;
-import static uk.gov.ea.datareturns.type.ApplicationException.MULTIPLE_PERMITS;
+import static uk.gov.ea.datareturns.type.ApplicationExceptionType.MULTIPLE_PERMITS;
 
 public class DRMultiplePermitsException extends AbstractDRApplicationException
 {

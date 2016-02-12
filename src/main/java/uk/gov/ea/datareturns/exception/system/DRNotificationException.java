@@ -1,7 +1,7 @@
 package uk.gov.ea.datareturns.exception.system;
 
 import static javax.ws.rs.core.Response.Status.OK;
-import static uk.gov.ea.datareturns.type.SystemException.NOTIFICATION;
+import static uk.gov.ea.datareturns.type.SystemExceptionType.NOTIFICATION;
 
 public class DRNotificationException extends AbstractDRSystemException
 {

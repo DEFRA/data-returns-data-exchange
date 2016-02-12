@@ -1,7 +1,7 @@
 package uk.gov.ea.datareturns.exception.application;
 
 import static javax.ws.rs.core.Response.Status.OK;
-import static uk.gov.ea.datareturns.type.ApplicationException.COLUMN_NAME_NOT_FOUND;
+import static uk.gov.ea.datareturns.type.ApplicationExceptionType.COLUMN_NAME_NOT_FOUND;
 
 public class DRColumnNameNotFoundException extends AbstractDRApplicationException
 {

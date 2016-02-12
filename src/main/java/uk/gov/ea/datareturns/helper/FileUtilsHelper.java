@@ -109,9 +109,29 @@ public class FileUtilsHelper
 	 */
 	public static String makeFullPath(String dir, String file)
 	{
-		return dir + File.separatorChar + file;
+		return dir + File.separator + file;
 	}
 
+	/**
+	 * Extracts and returns the file extension (in lower case) from the supplied file name 
+	 * @param filePath
+	 * @return
+	 */
+	public static String getFileType(String filePath)
+	{
+		String fileType = null;
+		int i = filePath.lastIndexOf('.');
+
+		if (i > 0)
+		{
+			fileType = filePath.substring(i + 1).toLowerCase();
+		}
+
+		// TODO maybe throw an exception if null?
+
+		return fileType;
+	}
+	
 	/**
 	 *  Make a CSV file name type
 	 * @param file

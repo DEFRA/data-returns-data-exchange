@@ -1,54 +1,34 @@
 package uk.gov.ea.datareturns.helper;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static uk.gov.ea.datareturns.helper.CommonHelper.getFileType;
-import static uk.gov.ea.datareturns.helper.CommonHelper.makeFullFilePath;
+import static uk.gov.ea.datareturns.helper.CommonHelper.isLocalEnvironment;
 
 import org.junit.Test;
 
 public class CommonHelperTests
 {
-	final private String TEST_PATH = "/this/is/a/test/folder";
-	final private String TEST_FILE = "test_file.csv";
-
 	@Test
-	public void testObjectCreation()
+	public void coverage()
 	{
 		@SuppressWarnings("unused")
 		CommonHelper helper = new CommonHelper();
 	}
 
 	@Test
-	public void testMakeFullFilePath()
+	public void testIsLocalEnvironment()
 	{
-		final String EXPECTED = "/this/is/a/test/folder/test_file.csv";
-
-		final String result = makeFullFilePath(TEST_PATH, TEST_FILE);
-		assertThat(result).isEqualTo(EXPECTED);
+		assertThat(isLocalEnvironment("local")).isTrue();
+		assertThat(isLocalEnvironment("LoCal")).isTrue();
+		assertThat(isLocalEnvironment("LOCAL")).isTrue();
 	}
 
-	/**
-	 * Must return null
-	 */
 	@Test
-	public void testExtractFileTypeFailure()
+	public void testIsNotLocalEnvironment()
 	{
-		@SuppressWarnings("unused")
-		final String EXPECTED_FILE_TYPE = "csv";
-
-		String result = getFileType(makeFullFilePath("", ""));
-		assertThat(result).isEqualTo(null);
-	}
-
-	/**
-	 * Must always return lower case file extension
-	 */
-	@Test
-	public void testExtractFileTypeSuccess()
-	{
-		final String EXPECTED_FILE_TYPE = "csv";
-
-		String result = getFileType(makeFullFilePath(TEST_PATH.toUpperCase(), TEST_FILE.toUpperCase()));
-		assertThat(result).isEqualTo(EXPECTED_FILE_TYPE);
+		assertThat(isLocalEnvironment("dev")).isFalse();
+		assertThat(isLocalEnvironment("test")).isFalse();
+		assertThat(isLocalEnvironment("preprod")).isFalse();
+		assertThat(isLocalEnvironment("prod")).isFalse();
+		assertThat(isLocalEnvironment("anthing")).isFalse();
 	}
 }
