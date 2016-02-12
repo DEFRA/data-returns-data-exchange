@@ -60,7 +60,7 @@ public class ConvertXMLToCSV
 
 		LOGGER.debug("File '" + fileToConvert + "' converted successfully");
 
-		FileUtilsHelper.saveStringToFile(contents, convertedFile);
+		FileUtilsHelper.saveFile(contents, convertedFile);
 
 		return convertedFile;
 	}

@@ -22,22 +22,109 @@ public class FileUtilsHelper
 	private static final Logger LOGGER = LoggerFactory.getLogger(FileUtilsHelper.class);
 
 	/**
-	 * Persist String contents to file
-	 * @param contents
-	 * @param fileOut
+	 * Create full file path
+	 * @param dir
+	 * @param file
 	 * @return
 	 */
-	public static boolean saveStringToFile(String contents, String fileOut)
+	public static String makeFullPath(String dir, String file)
 	{
-		LOGGER.debug("Saving String to file '" + fileOut + "'");
-		
-		FileUtilsHelper.saveFile(new ByteArrayInputStream(contents.getBytes()), fileOut);
-
-		LOGGER.debug("String saved to file successfully");
-
-		return true;
+		return dir + File.separator + file;
 	}
 
+	/**
+	 * Make full file name
+	 * @param file
+	 * @param ext
+	 * @return
+	 */
+	public static String makeFileName(String file, String ext)
+	{
+		return file + "." + ext;
+	}
+
+	/**
+	 * Extracts and returns the file extension (in lower case) from the supplied file name 
+	 * @param filePath
+	 * @return
+	 */
+	public static String getFileType(String filePath)
+	{
+		String fileType = null;
+		int i = filePath.lastIndexOf('.');
+
+		if (i > 0)
+		{
+			fileType = filePath.substring(i + 1).toLowerCase();
+		}
+
+		// TODO maybe throw an exception if null?
+
+		return fileType;
+	}
+
+	/**
+	 *  Make a CSV file name type
+	 * @param file
+	 * @return
+	 */
+	public static String makeCSVFileType(String file)
+	{
+		String fileType = FilenameUtils.getExtension(file);
+
+		if (fileType == null || fileType.length() == 0)
+		{
+			return makeFileName(file, CSV.getFileType());
+		} else
+		{
+			return makeFileName(file.substring(0, file.indexOf(fileType) - 1), CSV.getFileType());
+		}
+	}
+	
+	/**
+	 * Create directory
+	 * @param dir
+	 * @throws IOException
+	 */
+	public static void createDirectory(String dir) throws IOException
+	{
+		LOGGER.debug("Creating directory '" + dir + "'");
+
+		FileUtils.forceMkdir(new File(dir));
+
+		LOGGER.debug("Directory created successfully");
+	}
+	
+	/**
+	 * Delete directory
+	 * @param dir
+	 * @throws IOException
+	 */
+	public static void deleteDirectory(String dir) throws IOException
+	{
+		LOGGER.debug("Deleting directory '" + dir + "'");
+		
+		FileUtils.deleteDirectory(new File(dir));
+
+		LOGGER.debug("Directory deleted successfully");
+	}
+
+	/**
+	 * Checks if file or directory exists
+	 * @param fileLocation
+	 * @return
+	 */
+	public static boolean fileOrDirectoryExists(String fileLocation)
+	{
+		LOGGER.debug("Checking if file '" + fileLocation + "' exists");
+
+		boolean ret = new File(fileLocation).exists();
+
+		LOGGER.debug("File does" + (ret ? "" : " not") + " exist");
+
+		return ret;
+	}
+	
 	/**
 	 * Persist file stream to file location provided, directory is automatically created if required
 	 * @param is
@@ -46,7 +133,7 @@ public class FileUtilsHelper
 	 */
 	public static boolean saveFile(InputStream is, String filePath)
 	{
-		LOGGER.debug("Saving file '" + filePath + "'");
+		LOGGER.debug("Saving Input Stream to file '" + filePath + "'");
 
 		try
 		{
@@ -59,6 +146,37 @@ public class FileUtilsHelper
 		LOGGER.debug("File '" + filePath + "' saved successfully");
 
 		return true;
+	}
+
+	/**
+	 * Persist String contents to file
+	 * @param contents
+	 * @param fileOut
+	 * @return
+	 */
+	public static boolean saveFile(String contents, String fileOut)
+	{
+		LOGGER.debug("Saving String to file '" + fileOut + "'");
+		
+		FileUtilsHelper.saveFile(new ByteArrayInputStream(contents.getBytes()), fileOut);
+
+		LOGGER.debug("String saved to file successfully");
+
+		return true;
+	}
+	
+	/**
+	 * Delete file
+	 * @param filePath
+	 * @throws IOException
+	 */
+	public static void deleteFile(String filePath) throws IOException
+	{
+		LOGGER.debug("Deleting file '" + filePath + "'");
+
+		FileUtils.forceDelete(new File(filePath));
+
+		LOGGER.debug("File deleted successfully");
 	}
 
 	/**
@@ -83,125 +201,5 @@ public class FileUtilsHelper
 		LOGGER.debug("File Loaded successfully");
 		
 		return content;
-	}
-
-	/**
-	 * Checks if file or directory exists
-	 * @param fileLocation
-	 * @return
-	 */
-	public static boolean fileOrDirectoryExists(String fileLocation)
-	{
-		LOGGER.debug("Checking if file '" + fileLocation + "' exists");
-
-		boolean ret = new File(fileLocation).exists();
-
-		LOGGER.debug("File does" + (ret ? "" : " not") + " exist");
-
-		return ret;
-	}
-
-	/**
-	 * Create full file path
-	 * @param dir
-	 * @param file
-	 * @return
-	 */
-	public static String makeFullPath(String dir, String file)
-	{
-		return dir + File.separator + file;
-	}
-
-	/**
-	 * Extracts and returns the file extension (in lower case) from the supplied file name 
-	 * @param filePath
-	 * @return
-	 */
-	public static String getFileType(String filePath)
-	{
-		String fileType = null;
-		int i = filePath.lastIndexOf('.');
-
-		if (i > 0)
-		{
-			fileType = filePath.substring(i + 1).toLowerCase();
-		}
-
-		// TODO maybe throw an exception if null?
-
-		return fileType;
-	}
-	
-	/**
-	 *  Make a CSV file name type
-	 * @param file
-	 * @return
-	 */
-	public static String makeCSVFileType(String file)
-	{
-		String fileType = FilenameUtils.getExtension(file);
-
-		// TODO should really handle case where file extension ready exists file name?
-		
-		if (fileType == null)
-		{
-			return makeFileType(file, CSV.getFileType());
-		} else
-		{
-			return makeFileType(file.substring(0, file.indexOf(fileType) - 1), CSV.getFileType());
-		}
-	}
-
-	/**
-	 * Make full file name
-	 * @param file
-	 * @param fileType
-	 * @return
-	 */
-	public static String makeFileType(String file, String fileType)
-	{
-		return file + "." + fileType;
-	}
-
-	/**
-	 * Delete file
-	 * @param filePath
-	 * @throws IOException
-	 */
-	public static void deleteFile(String filePath) throws IOException
-	{
-		LOGGER.debug("Deleting file '" + filePath + "'");
-
-		FileUtils.forceDelete(new File(filePath));
-
-		LOGGER.debug("File deleted successfully");
-	}
-
-	/**
-	 * Delete directory
-	 * @param dir
-	 * @throws IOException
-	 */
-	public static void deleteDirectory(String dir) throws IOException
-	{
-		LOGGER.debug("Deleting directory '" + dir + "'");
-		
-		FileUtils.deleteDirectory(new File(dir));
-
-		LOGGER.debug("Directory deleted successfully");
-	}
-
-	/**
-	 * Create directory
-	 * @param dir
-	 * @throws IOException
-	 */
-	public static void createDirectory(String dir) throws IOException
-	{
-		LOGGER.debug("Creating directory '" + dir + "'");
-
-		FileUtils.forceMkdir(new File(dir));
-
-		LOGGER.debug("Directory created successfully");
 	}
 }

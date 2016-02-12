@@ -9,25 +9,19 @@ import java.io.IOException;
 import org.apache.commons.io.FileUtils;
 import org.junit.After;
 import org.junit.Before;
-import org.junit.FixMethodOrder;
 import org.junit.Test;
-import org.junit.runners.MethodSorters;
 
-// TODO IOException tests need implementing
+// TODO implement IOException tests
 
 /**
- * File Utility Helper class unit/integeration tests
- * @author adrianharrison
- *
+ * File Utility Helper class integration tests
  */
-@FixMethodOrder(MethodSorters.NAME_ASCENDING)
-public class FileUtilsHelperTests
+public class FileUtilHelperIntegrationTests
 {
 	private final static String TEST_ROOT_DIRECTORY = "test_root_directory";
 	private final static String TEST_DIRECTORY = "test_directory";
 	private final static String TEST_FILE_NAME = "test_file";
 	private final static String TEST_CSV_EXT = "csv";
-	private final static String TEST_XML_EXT = "xml";
 	private final static String TEST_FILE_CONTENTS = "up the City!";
 
 	@Test
@@ -47,59 +41,6 @@ public class FileUtilsHelperTests
 	public void cleanUp() throws IOException
 	{
 		FileUtils.deleteDirectory(new File(TEST_ROOT_DIRECTORY));
-	}
-
-	@Test
-	public void testMakeFullPath()
-	{
-		String expected = getTestFullCSVFilename();
-		String actual = FileUtilsHelper.makeFullPath(getTestFullDirectory(), getTestCSVFileName());
-
-		assertThat(expected).isEqualTo(actual);
-	}
-
-	@Test
-	public void testMakeFileType()
-	{
-		String expected = getTestCSVFileName();
-		String actual = FileUtilsHelper.makeFileName(TEST_FILE_NAME, "csv");
-
-		assertThat(expected).isEqualTo(actual);
-	}
-
-	@Test
-	public void testGetFileTypeWithExtension()
-	{
-		String expected = "csv";
-		String actual = FileUtilsHelper.getFileType(getTestCSVFileName());
-
-		assertThat(expected).isEqualTo(actual);
-	}
-
-	@Test
-	public void testGetFileTypeWithoutExtension()
-	{
-		String actual = FileUtilsHelper.getFileType(TEST_FILE_NAME);
-
-		assertThat(actual).isNull();
-	}
-
-	@Test
-	public void testMakeGetFileTypeWithExtension()
-	{
-		String expected = getTestCSVFileName();
-		String actual = FileUtilsHelper.makeCSVFileType(getTestXMLFileName());
-
-		assertThat(expected).isEqualTo(actual);
-	}
-
-	@Test
-	public void testMakeGetFileTypeWithoutExtension()
-	{
-		String expected = getTestCSVFileName();
-		String actual = FileUtilsHelper.makeCSVFileType(TEST_FILE_NAME);
-
-		assertThat(expected).isEqualTo(actual);
 	}
 
 	@Test
@@ -272,11 +213,6 @@ public class FileUtilsHelperTests
 		return TEST_FILE_NAME + "." + TEST_CSV_EXT;
 	}
 
-	private String getTestXMLFileName()
-	{
-		return TEST_FILE_NAME + "." + TEST_XML_EXT;
-	}
-
 	private String getTestRootDirectory()
 	{
 		return TEST_ROOT_DIRECTORY;
@@ -295,12 +231,6 @@ public class FileUtilsHelperTests
 	private String getTestFullCSVFilename()
 	{
 		return getTestFullDirectory() + File.separator + getTestCSVFileName();
-	}
-
-	@SuppressWarnings("unused")
-	private String getTestFullXMLFilename()
-	{
-		return getTestFullDirectory() + File.separator + getTestXMLFileName();
 	}
 
 	public void createTestFile() throws IOException
