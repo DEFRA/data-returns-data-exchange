@@ -14,8 +14,8 @@ import org.apache.commons.io.FilenameUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import uk.gov.ea.datareturns.exception.system.FileReadException;
-import uk.gov.ea.datareturns.exception.system.FileSaveException;
+import uk.gov.ea.datareturns.exception.system.DRFileReadException;
+import uk.gov.ea.datareturns.exception.system.DRFileSaveException;
 
 public class FileUtilsHelper
 {
@@ -29,7 +29,11 @@ public class FileUtilsHelper
 	 */
 	public static boolean saveStringToFile(String contents, String fileOut)
 	{
+		LOGGER.debug("Saving String to file '" + fileOut + "'");
+		
 		FileUtilsHelper.saveFile(new ByteArrayInputStream(contents.getBytes()), fileOut);
+
+		LOGGER.debug("String saved to file successfully");
 
 		return true;
 	}
@@ -49,7 +53,7 @@ public class FileUtilsHelper
 			FileUtils.copyInputStreamToFile(is, new File(filePath));
 		} catch (IOException e)
 		{
-			throw new FileSaveException(e, "Unable to save file to '" + filePath + "'");
+			throw new DRFileSaveException(e, "Unable to save file to '" + filePath + "'");
 		}
 
 		LOGGER.debug("File '" + filePath + "' saved successfully");
@@ -58,12 +62,14 @@ public class FileUtilsHelper
 	}
 
 	/**
-	 * Read file contents as String
+	 * Read file contents to String
 	 * @param filePath
 	 * @return
 	 */
 	public static String loadFileAsString(String filePath)
 	{
+		LOGGER.debug("Loading file '" + filePath + "' to String");
+
 		String content = null;
 
 		try
@@ -71,30 +77,32 @@ public class FileUtilsHelper
 			content = new String(readAllBytes(get(filePath)));
 		} catch (IOException e)
 		{
-			throw new FileReadException(e, "Unable to read from file '" + filePath + "'");
+			throw new DRFileReadException(e, "Unable to read from file '" + filePath + "'");
 		}
 
+		LOGGER.debug("File Loaded successfully");
+		
 		return content;
 	}
 
 	/**
-	 * Check file exists
+	 * Checks if file or directory exists
 	 * @param fileLocation
 	 * @return
 	 */
-	public static boolean fileExists(String fileLocation)
+	public static boolean fileOrDirectoryExists(String fileLocation)
 	{
-		File f = new File(fileLocation);
-
 		LOGGER.debug("Checking if file '" + fileLocation + "' exists");
 
-		LOGGER.debug("File does" + (f.exists() ? "" : " not") + " exist");
+		boolean ret = new File(fileLocation).exists();
 
-		return f.exists();
+		LOGGER.debug("File does" + (ret ? "" : " not") + " exist");
+
+		return ret;
 	}
 
 	/**
-	 * Creates full file path
+	 * Create full file path
 	 * @param dir
 	 * @param file
 	 * @return
@@ -104,15 +112,16 @@ public class FileUtilsHelper
 		return dir + File.separatorChar + file;
 	}
 
-	// TODO should really handle case where file extensional ready exists file name?
 	/**
-	 * Create file name with .csv extension
+	 *  Make a CSV file name type
 	 * @param file
 	 * @return
 	 */
 	public static String makeCSVFileType(String file)
 	{
 		String fileType = FilenameUtils.getExtension(file);
+
+		// TODO should really handle case where file extension ready exists file name?
 		
 		if (fileType == null)
 		{
@@ -155,7 +164,11 @@ public class FileUtilsHelper
 	 */
 	public static void deleteDirectory(String dir) throws IOException
 	{
+		LOGGER.debug("Deleting directory '" + dir + "'");
+		
 		FileUtils.deleteDirectory(new File(dir));
+
+		LOGGER.debug("Directory deleted successfully");
 	}
 
 	/**
@@ -165,6 +178,10 @@ public class FileUtilsHelper
 	 */
 	public static void createDirectory(String dir) throws IOException
 	{
+		LOGGER.debug("Creating directory '" + dir + "'");
+
 		FileUtils.forceMkdir(new File(dir));
+
+		LOGGER.debug("Directory created successfully");
 	}
 }

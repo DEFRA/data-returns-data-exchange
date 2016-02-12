@@ -21,6 +21,11 @@ import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 import org.xml.sax.InputSource;
 
+import uk.gov.ea.datareturns.exception.system.DRConversionException;
+import uk.gov.ea.datareturns.exception.system.DRDeserializationException;
+import uk.gov.ea.datareturns.exception.system.DRSerializationException;
+import uk.gov.ea.datareturns.exception.system.DRTransformerException;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
@@ -65,9 +70,9 @@ public class XMLUtilsHelper
 			output = sb.toString();
 		} catch (TransformerFactoryConfigurationError | TransformerException e)
 		{
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			throw new DRTransformerException(e, "Failed transformation");
 		}
+		
 
 		return output;
 	}
@@ -87,8 +92,7 @@ public class XMLUtilsHelper
 			result = xmlToResult(writer.toString(), clazz);
 		} catch (TransformerFactoryConfigurationError | TransformerException e)
 		{
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			throw new DRTransformerException(e, "Failed transform xml");
 		}
 
 		return result;
@@ -106,8 +110,7 @@ public class XMLUtilsHelper
 			doc = builder.parse(new InputSource(new StringReader(xml)));
 		} catch (Exception e)
 		{
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			throw new DRConversionException(e, "Failed to convert Document from String");
 		}
 
 		return doc;
@@ -127,10 +130,9 @@ public class XMLUtilsHelper
 
 			transformer.transform(domSource, result);
 			output = writer.toString();
-		} catch (TransformerException ex)
+		} catch (TransformerException e)
 		{
-			// TODO Auto-generated catch block
-			ex.printStackTrace();
+			throw new DRTransformerException(e, "Failed to transform Document to String");
 		}
 
 		return output;
@@ -152,8 +154,7 @@ public class XMLUtilsHelper
 			out = mapper.writeValueAsString(objIn);
 		} catch (Exception e)
 		{
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			throw new DRSerializationException(e, "Failed to serialize String");
 		}
 
 		return out;
@@ -173,8 +174,7 @@ public class XMLUtilsHelper
 			objOut = mapper.readValue(xml, clazz);
 		} catch (Exception e)
 		{
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			throw new DRDeserializationException(e, "Failed to deserialize xml");
 		}
 
 		return objOut;
@@ -190,8 +190,7 @@ public class XMLUtilsHelper
 			result = xmlMapper.readValue(xml, clazz);
 		} catch (IOException e)
 		{
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			throw new DRDeserializationException(e, "Failed to deserialize xml");
 		}
 
 		return result;
@@ -215,8 +214,7 @@ public class XMLUtilsHelper
 			transformer = TransformerFactory.newInstance().newTransformer(new StreamSource(xslt));
 		} catch (TransformerConfigurationException | TransformerFactoryConfigurationError e)
 		{
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			throw new DRTransformerException(e, "Failed to create transformer");
 		}
 
 		return transformer;

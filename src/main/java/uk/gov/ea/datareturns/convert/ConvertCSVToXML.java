@@ -14,11 +14,12 @@ import java.io.OutputStream;
 import org.apache.commons.io.FilenameUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.w3c.dom.DOMException;
 
-import uk.gov.ea.datareturns.exception.application.InvalidContentsException;
-import uk.gov.ea.datareturns.exception.application.NoReturnsException;
-import uk.gov.ea.datareturns.exception.system.FileReadException;
-import uk.gov.ea.datareturns.exception.system.FileSaveException;
+import uk.gov.ea.datareturns.exception.application.DRInvalidContentsException;
+import uk.gov.ea.datareturns.exception.application.DRNoReturnsException;
+import uk.gov.ea.datareturns.exception.system.DRFileReadException;
+import uk.gov.ea.datareturns.exception.system.DRFileSaveException;
 import uk.gov.ea.datareturns.helper.FileUtilsHelper;
 import fr.dralagen.Csv2xml;
 
@@ -85,7 +86,7 @@ public class ConvertCSVToXML
 			FileUtilsHelper.createDirectory(FilenameUtils.getPath(convertedFile));
 		} catch (IOException e)
 		{
-			throw new FileSaveException(e, "Unable to save file to '" + convertedFile + "'");
+			throw new DRFileSaveException(e, "Unable to save file to '" + convertedFile + "'");
 		}
 
 		LOGGER.debug("Converting file '" + fileToConvert + "' to '" + convertedFile + "'");
@@ -107,19 +108,19 @@ public class ConvertCSVToXML
 
 		} catch (FileNotFoundException e1)
 		{
-			throw new FileSaveException(e1, "Unable to save file to '" + convertedFile + "'");
+			throw new DRFileSaveException(e1, "Unable to save file to '" + convertedFile + "'");
 		} catch (IOException e2)
 		{
-			throw new FileReadException(e2, "Unable to read from file '" + fileToConvert + "'");
-		} catch (org.w3c.dom.DOMException e3)
+			throw new DRFileReadException(e2, "Unable to read from file '" + fileToConvert + "'");
+		} catch (DOMException e3)
 		{
-			throw new InvalidContentsException("Unable to read from file '" + fileToConvert + "'");
+			throw new DRInvalidContentsException("Invalid contents found in file '" + fileToConvert + "'");
 		}
 
 		// File must contain at least 1 return
 		if (rowsConverted == 0)
 		{
-			throw new NoReturnsException("No Returns found in file '" + fileToConvert + "'");
+			throw new DRNoReturnsException("No Returns found in file '" + fileToConvert + "'");
 		}
 
 		LOGGER.debug("File converted successfully for " + rowsConverted + " returns");

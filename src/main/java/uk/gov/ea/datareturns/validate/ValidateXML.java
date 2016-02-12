@@ -21,11 +21,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xml.sax.SAXException;
 
-import com.fasterxml.jackson.databind.SerializationFeature;
-
 import uk.gov.ea.datareturns.domain.LineError;
 import uk.gov.ea.datareturns.domain.SchemaErrorHandler;
 import uk.gov.ea.datareturns.domain.result.ValidationResult;
+import uk.gov.ea.datareturns.exception.system.DRFileValidationException;
 import uk.gov.ea.datareturns.helper.DataExchangeHelper;
 
 public class ValidateXML implements Validate
@@ -55,18 +54,13 @@ public class ValidateXML implements Validate
 
 		ValidationResult result = validate(schemaFile, xmlFile);
 
-//		// TODO DEBUG
-//		Map<SerializationFeature, Boolean> config = new HashMap<SerializationFeature, Boolean>();
-//		config.put(SerializationFeature.INDENT_OUTPUT, true);
-//		System.out.println(serializeToXML(result, config));
-
 		// If validation successful, add user friendly info to result object
 		if (!result.isValid())
 		{
 			LOGGER.debug("File '" + xmlFile + "' is INVALID");
 
 			// TODO exit if error count too many? - the next steps are slow
-			
+
 			Map<String, String> params = new HashMap<String, String>();
 			params.put("lineNos", result.getSchemaErrors().getErrorLineNosAsString());
 
@@ -78,18 +72,12 @@ public class ValidateXML implements Validate
 			String lineNos = transformToString(xmlFile, xsltFileLocation, params);
 			ValidationResult validationResult = (ValidationResult) deserializeFromXML(lineNos, ValidationResult.class);
 
-			// TODO DEBUG
-//			System.out.println(serializeToXML(validationResult, config));
-			
 			// Get user-friendly message translations
 			LOGGER.debug("Getting user-friendly error message translations");
 			String fullXml = mergeXML(serializeToXML(result), loadFileAsString(translationsFile));
 			xsltFileLocation = makeFullPath(xsltLocation, XSLT_TRANSLATE_FAILURE_MESSAGES);
 			ValidationResult translationResult = DataExchangeHelper.transformToResult(fullXml, xsltFileLocation, ValidationResult.class);
 
-			// TODO DEBUG
-//			System.out.println(serializeToXML(translationResult, config));
-			
 			/* NOTE : The following methods add additional info programatically despite Jackson providing
 			 * "update" functionality for existing objects.
 			 * Unable to use this currently as current release does not provide a "preserve" existing values 
@@ -99,9 +87,6 @@ public class ValidateXML implements Validate
 			mergeSourceLineNos(result, validationResult);
 			mergeUserFriendlyMessages(result, translationResult);
 		}
-
-		// TODO DEBUG
-//		System.out.println(serializeToXML(result, config));
 
 		LOGGER.debug("File validated successfully with " + result.getSchemaErrors().getErrorCount() + " error(s)");
 
@@ -136,12 +121,10 @@ public class ValidateXML implements Validate
 			transformResult.setSchemaErrors(errorHandler.getSchemaErrors());
 		} catch (SAXException e)
 		{
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			throw new DRFileValidationException(e, "Unable to validate '" + xml + "' with schema '" + xsd + "'");
 		} catch (IOException e)
 		{
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			throw new DRFileValidationException(e, "Unable to validate '" + xml + "' with schema '" + xsd + "'");
 		}
 
 		return transformResult;

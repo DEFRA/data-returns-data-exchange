@@ -44,10 +44,10 @@ import uk.gov.ea.datareturns.domain.result.DataExchangeResult;
 import uk.gov.ea.datareturns.domain.result.GeneralResult;
 import uk.gov.ea.datareturns.domain.result.UploadResult;
 import uk.gov.ea.datareturns.domain.result.ValidationResult;
-import uk.gov.ea.datareturns.exception.application.MultiplePermitsException;
-import uk.gov.ea.datareturns.exception.application.PermitNotFoundException;
-import uk.gov.ea.datareturns.exception.application.UnsupportedFileTypeException;
-import uk.gov.ea.datareturns.exception.system.NotificationException;
+import uk.gov.ea.datareturns.exception.application.DRMultiplePermitsException;
+import uk.gov.ea.datareturns.exception.application.DRPermitNotFoundException;
+import uk.gov.ea.datareturns.exception.application.DRUnsupportedFileTypeException;
+import uk.gov.ea.datareturns.exception.system.DRNotificationException;
 import uk.gov.ea.datareturns.storage.FileStorage;
 import uk.gov.ea.datareturns.type.FileType;
 import uk.gov.ea.datareturns.validate.Validate;
@@ -219,7 +219,7 @@ public class DataExchangeResource
 		// Release 1 must be csv
 		if (!fileType.equalsIgnoreCase(FileType.CSV.getFileType()))
 		{
-			throw new UnsupportedFileTypeException("Unsupported file type '" + fileType + "'");
+			throw new DRUnsupportedFileTypeException("Unsupported file type '" + fileType + "'");
 		}
 	}
 
@@ -270,14 +270,14 @@ public class DataExchangeResource
 		// Release 1 - single permit only
 		if (generalResult.getResultCount() > 1)
 		{
-			throw new MultiplePermitsException("Multiple Permits found in file '" + FilenameUtils.getName(workingFile) + "'");
+			throw new DRMultiplePermitsException("Multiple Permits found in file '" + FilenameUtils.getName(workingFile) + "'");
 		}
 
 		String permitNo = generalResult.getSingleResultValue();
 
 		if (permitDAO.findByPermitNumber(permitNo) == null)
 		{
-			throw new PermitNotFoundException("Permit no '" + permitNo + "' not found");
+			throw new DRPermitNotFoundException("Permit no '" + permitNo + "' not found");
 		}
 
 		LOGGER.debug("Permit is valid'");
@@ -346,10 +346,10 @@ public class DataExchangeResource
 			email.send();
 		} catch (EmailException e1)
 		{
-			throw new NotificationException(e1, "Failed to send email to MonitorPro");
+			throw new DRNotificationException(e1, "Failed to send email to MonitorPro");
 		} catch (Exception e2)
 		{
-			throw new NotificationException(e2, "Failed to send email to MonitorPro");
+			throw new DRNotificationException(e2, "Failed to send email to MonitorPro");
 		}
 
 		LOGGER.debug("Email sent");

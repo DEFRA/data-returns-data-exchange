@@ -5,6 +5,8 @@ import java.util.TreeMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import uk.gov.ea.datareturns.exception.application.DRColumnNameNotFoundException;
+
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlElementWrapper;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
@@ -50,8 +52,7 @@ public class SchemaErrors
 			// Column name found
 			if (!m.find())
 			{
-				// TODO Auto-generated catch block
-				throw new RuntimeException("can't find column name!");
+				throw new DRColumnNameNotFoundException("Column name not found in message '" + errorMessage + "'");
 			}
 
 			String columnName = m.group(1);

@@ -1,7 +1,5 @@
 package uk.gov.ea.datareturns.helper;
 
-import java.util.UUID;
-
 import javax.xml.transform.Transformer;
 
 import org.slf4j.Logger;
@@ -26,20 +24,5 @@ public class DataExchangeHelper
 		T result = XMLUtilsHelper.transformToResult(transformer, xml, clazz);
 
 		return result;
-	}
-
-	/**
-	 * Replace all spaces with underscore and make lowercase
-	 * @param returnType
-	 * @return
-	 */
-	public static String makeSchemaName(String returnType)
-	{
-		return returnType.toLowerCase().replace(" ", "_") + ".xsd";
-	}
-
-	public static String makeTranslationsName(String returnType)
-	{
-		return returnType.toLowerCase().replace(" ", "_") + "_translations.xml";
 	}
 }

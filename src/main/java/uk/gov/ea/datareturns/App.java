@@ -21,6 +21,7 @@ import uk.gov.ea.datareturns.resource.DataExchangeResource;
 
 // TODO javadoc
 // TODO Security
+// TODO reduce log statements?
 public class App extends Application<DataExchangeConfiguration>
 {
 	public static void main(String[] args) throws Exception

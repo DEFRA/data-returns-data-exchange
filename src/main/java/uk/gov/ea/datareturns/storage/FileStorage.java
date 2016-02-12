@@ -15,9 +15,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import redis.clients.jedis.Jedis;
-import uk.gov.ea.datareturns.exception.application.FileKeyMismatchException;
-import uk.gov.ea.datareturns.exception.system.FileDeleteException;
-import uk.gov.ea.datareturns.exception.system.GeneralServiceException;
+import uk.gov.ea.datareturns.exception.application.DRFileKeyMismatchException;
+import uk.gov.ea.datareturns.exception.system.DRFileDeleteException;
+import uk.gov.ea.datareturns.exception.system.DRExternalServiceException;
 import uk.gov.ea.datareturns.helper.FileUtilsHelper;
 
 import com.amazonaws.AmazonClientException;
@@ -129,13 +129,13 @@ public class FileStorage
 				FileUtilsHelper.deleteFile(fileLocation);
 			} catch (AmazonServiceException ase)
 			{
-				throw new GeneralServiceException(ase, "AWS failed to process putObject() request");
+				throw new DRExternalServiceException(ase, "AWS failed to process putObject() request");
 			} catch (AmazonClientException ace)
 			{
-				throw new GeneralServiceException(ace, "General AWS communication failure");
+				throw new DRExternalServiceException(ace, "General AWS communication failure");
 			} catch (IOException e)
 			{
-				throw new FileDeleteException(e, "Unable to delete file to '" + fileLocation + "'");
+				throw new DRFileDeleteException(e, "Unable to delete file to '" + fileLocation + "'");
 			}
 		} else
 		{
@@ -156,7 +156,7 @@ public class FileStorage
 
 		if (fileLocation == null)
 		{
-			throw new FileKeyMismatchException("Unable to locate file using file key '" + fileKey + "'");
+			throw new DRFileKeyMismatchException("Unable to locate file using file key '" + fileKey + "'");
 		}
 
 		LOGGER.debug("Redis file key '" + fileKey + "' holds file location '" + fileLocation + "'");
@@ -183,10 +183,10 @@ public class FileStorage
 				saveFile(s3object.getObjectContent(), fileLocation);
 			} catch (AmazonServiceException ase)
 			{
-				throw new GeneralServiceException(ase, "AWS failed to process getObject() request");
+				throw new DRExternalServiceException(ase, "AWS failed to process getObject() request");
 			} catch (AmazonClientException ace)
 			{
-				throw new GeneralServiceException(ace, "General AWS communication failure");
+				throw new DRExternalServiceException(ace, "General AWS communication failure");
 			}
 		}
 

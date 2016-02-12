@@ -6,6 +6,8 @@ public class CommonHelper
 {
 	public final static String ENV_LOCAL = "local";
 
+	// TODO merge/delete some of these
+	
 	/**
 	 * Returns a full OS independent file path
 	 * @param dir
