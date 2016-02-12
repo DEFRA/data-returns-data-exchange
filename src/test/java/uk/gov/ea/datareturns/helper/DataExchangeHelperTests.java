@@ -5,11 +5,11 @@ import org.junit.Test;
 public class DataExchangeHelperTests
 {
 	@Test
-	public void testObjectCreation()
+	public void coverage()
 	{
 		@SuppressWarnings("unused")
 		DataExchangeHelper helper = new DataExchangeHelper();
 	}
 	
-	// TODO transformToResult test
+	// TODO implement all tests
 }

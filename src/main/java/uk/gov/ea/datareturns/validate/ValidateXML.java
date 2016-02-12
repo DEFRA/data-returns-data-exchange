@@ -1,5 +1,6 @@
 package uk.gov.ea.datareturns.validate;
 
+import static uk.gov.ea.datareturns.helper.DataExchangeHelper.transformToResult;
 import static uk.gov.ea.datareturns.helper.FileUtilsHelper.loadFileAsString;
 import static uk.gov.ea.datareturns.helper.FileUtilsHelper.makeFullPath;
 import static uk.gov.ea.datareturns.helper.XMLUtilsHelper.deserializeFromXML;
@@ -25,7 +26,6 @@ import uk.gov.ea.datareturns.domain.LineError;
 import uk.gov.ea.datareturns.domain.SchemaErrorHandler;
 import uk.gov.ea.datareturns.domain.result.ValidationResult;
 import uk.gov.ea.datareturns.exception.system.DRFileValidationException;
-import uk.gov.ea.datareturns.helper.DataExchangeHelper;
 
 public class ValidateXML implements Validate
 {
@@ -76,7 +76,7 @@ public class ValidateXML implements Validate
 			LOGGER.debug("Getting user-friendly error message translations");
 			String fullXml = mergeXML(serializeToXML(result), loadFileAsString(translationsFile));
 			xsltFileLocation = makeFullPath(xsltLocation, XSLT_TRANSLATE_FAILURE_MESSAGES);
-			ValidationResult translationResult = DataExchangeHelper.transformToResult(fullXml, xsltFileLocation, ValidationResult.class);
+			ValidationResult translationResult = transformToResult(fullXml, xsltFileLocation, ValidationResult.class);
 
 			/* NOTE : The following methods add additional info programatically despite Jackson providing
 			 * "update" functionality for existing objects.

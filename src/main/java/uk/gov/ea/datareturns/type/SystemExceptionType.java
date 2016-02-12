@@ -1,6 +1,5 @@
 package uk.gov.ea.datareturns.type;
 
-// TODO UNPROCESSABLE_ENTITY must be available in some standard lib somewhere? (not just Spring)
 public enum SystemExceptionType
 {
 	FILE_SAVE(601, "Cannot Save File"), 
@@ -10,12 +9,12 @@ public enum SystemExceptionType
 	SERVICE(605, "Service failure"),
 	FILE_DELETE(606, "Cannot Delete File"), 
 	VALIDATION(607, "Validation failed"), 
-	TRANSFORMER(607, "Transformation failed"), 
-	SERIALIZATION(608, "Serialize failed"), 
-	DESERIALIZE(609, "Deserialize failed"), 
-	CONVERSION(610, "Conversion failed"), 
+	TRANSFORMER(608, "Transformation failed"), 
+	SERIALIZATION(609, "Serialize failed"), 
+	DESERIALIZE(610, "Deserialize failed"), 
+	CONVERSION(611, "Conversion failed"), 
 	
-	UNPROCESSABLE_ENTITY(422, "Unprocessable entity");
+	UNPROCESSABLE_ENTITY(422, "Unprocessable entity"); // Must be available in some standard lib somewhere? (not just Spring)
 
 	private final int code;
 	private final String reason;
