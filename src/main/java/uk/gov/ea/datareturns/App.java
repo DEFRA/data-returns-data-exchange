@@ -21,7 +21,7 @@ import uk.gov.ea.datareturns.resource.DataExchangeResource;
 
 // TODO javadoc
 // TODO Security
-// TODO reduce log statements?
+// TODO reduce/refactor log statements?
 public class App extends Application<DataExchangeConfiguration>
 {
 	public static void main(String[] args) throws Exception
@@ -48,7 +48,7 @@ public class App extends Application<DataExchangeConfiguration>
 		environment.jersey().register(new MultiPartFeature());
 	}
 
-	// TODO sort this our for release
+	// TODO CORS config for release?
 	private void configureCors(Environment env)
 	{
 		FilterRegistration.Dynamic filter = env.servlets().addFilter("CORS", CrossOriginFilter.class);

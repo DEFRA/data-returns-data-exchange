@@ -120,7 +120,7 @@ public class ResourceIntegrationTests
 	@Test
 	public void testUnsupportedFileType()
 	{
-		final Client client = createUploadStepClient("test Unsupported File Type");
+		final Client client = createClient("test Unsupported File Type");
 		final Response resp = performUploadStep(client, FILE_UNSUPPORTED_TYPE, MEDIA_TYPE_CSV);
 		assertThat(resp.getStatus()).isEqualTo(OK.getStatusCode());
 
@@ -131,7 +131,7 @@ public class ResourceIntegrationTests
 	@Test
 	public void testInvalidFileContents()
 	{
-		final Client client = createUploadStepClient("test Invalid File Contents");
+		final Client client = createClient("test Invalid File Contents");
 		final Response resp = performUploadStep(client, FILE_NON_CSV_CONTENTS, MEDIA_TYPE_CSV);
 		assertThat(resp.getStatus()).isEqualTo(OK.getStatusCode());
 
@@ -142,7 +142,7 @@ public class ResourceIntegrationTests
 	@Test
 	public void testNoReturns()
 	{
-		final Client client = createUploadStepClient("test No returns");
+		final Client client = createClient("test No returns");
 		final Response resp = performUploadStep(client, FILE_CSV_EMPTY, MEDIA_TYPE_CSV);
 		assertThat(resp.getStatus()).isEqualTo(OK.getStatusCode());
 
@@ -153,7 +153,7 @@ public class ResourceIntegrationTests
 	@Test
 	public void testMutiplePermits()
 	{
-		final Client client = createUploadStepClient("test Multiple Permits");
+		final Client client = createClient("test Multiple Permits");
 		final Response resp = performUploadStep(client, FILE_CSV_MUTLIPLE_PERMITS, MEDIA_TYPE_CSV);
 		assertThat(resp.getStatus()).isEqualTo(OK.getStatusCode());
 
@@ -164,7 +164,7 @@ public class ResourceIntegrationTests
 	@Test
 	public void testPermitNumberNotFound()
 	{
-		final Client client = createUploadStepClient("test Permit Number Not Found");
+		final Client client = createClient("test Permit Number Not Found");
 		final Response resp = performUploadStep(client, FILE_PERMIT_NOT_FOUND, MEDIA_TYPE_CSV);
 		assertThat(resp.getStatus()).isEqualTo(OK.getStatusCode());
 
@@ -175,7 +175,7 @@ public class ResourceIntegrationTests
 	@Test
 	public void testFileKeyMismatch()
 	{
-		Client client = createUploadStepClient("test File Key mismatch");
+		Client client = createClient("test File Key mismatch");
 		Response resp = performUploadStep(client, FILE_CSV_SUCCESS, MEDIA_TYPE_CSV);
 		assertThat(resp.getStatus()).isEqualTo(OK.getStatusCode());
 
@@ -214,7 +214,7 @@ public class ResourceIntegrationTests
 	@Test
 	public void testValidationErrors()
 	{
-		final Client client = createUploadStepClient("test Validation Errors");
+		final Client client = createClient("test Validation Errors");
 		final Response resp = performUploadStep(client, FILE_CSV_FAILURES, MEDIA_TYPE_CSV);
 		assertThat(resp.getStatus()).isEqualTo(OK.getStatusCode());
 
@@ -227,7 +227,7 @@ public class ResourceIntegrationTests
 	@Test
 	public void testAcceptableValueFieldChars()
 	{
-		Client client = createUploadStepClient("test Acceptable Value Field Characters");
+		Client client = createClient("test Acceptable Value Field Characters");
 		Response resp = performUploadStep(client, FILE_CSV_VALID_VALUE_CHARS, MEDIA_TYPE_CSV);
 		assertThat(resp.getStatus()).isEqualTo(OK.getStatusCode());
 
@@ -238,7 +238,7 @@ public class ResourceIntegrationTests
 	@Test
 	public void testUnacceptableValueFieldChars()
 	{
-		Client client = createUploadStepClient("test Unacceptable Value Field Characters");
+		Client client = createClient("test Unacceptable Value Field Characters");
 		Response resp = performUploadStep(client, FILE_CSV_INVALID_VALUE_CHARS, MEDIA_TYPE_CSV);
 		assertThat(resp.getStatus()).isEqualTo(OK.getStatusCode());
 
@@ -249,7 +249,7 @@ public class ResourceIntegrationTests
 	@Test
 	public void testEmbeddedSeparators()
 	{
-		final Client client = createUploadStepClient("test Embedded separator characters");
+		final Client client = createClient("test Embedded separator characters");
 		final Response resp = performUploadStep(client, FILE_EMBEDDED_COMMAS, MEDIA_TYPE_CSV);
 		assertThat(resp.getStatus()).isEqualTo(OK.getStatusCode());
 
@@ -260,7 +260,7 @@ public class ResourceIntegrationTests
 	@Test
 	public void testEmbeddedXMLChars()
 	{
-		final Client client = createUploadStepClient("test Embedded XML Characters");
+		final Client client = createClient("test Embedded XML Characters");
 		final Response resp = performUploadStep(client, FILE_EMBEDDED_XML_CHARS, MEDIA_TYPE_CSV);
 		assertThat(resp.getStatus()).isEqualTo(OK.getStatusCode());
 
@@ -281,7 +281,7 @@ public class ResourceIntegrationTests
 	@Test
 	public void testPermitNumberFound()
 	{
-		final Client client = createUploadStepClient("test Permit Number Found");
+		final Client client = createClient("test Permit Number Found");
 		final Response resp = performUploadStep(client, FILE_PERMIT_FOUND, MEDIA_TYPE_CSV);
 		assertThat(resp.getStatus()).isEqualTo(OK.getStatusCode());
 
@@ -291,46 +291,11 @@ public class ResourceIntegrationTests
 		dumpResult(result);
 	}
 
-	// TODO only as far as "upload" for now
-
-	//	// TODO commented out temporarily to get jenkins dev working
-	//	@Test
-	//	public void testEndToEndSuccess()
-	//	{
-	//		Client client = createUploadStepClient("test End To End Success");
-	//		Response resp = performUploadStep(client, FILE_CSV_SUCCESS, MEDIA_TYPE_CSV);
-	//		assertThat(resp.getStatus()).isEqualTo(OK.getStatusCode());
-	//
-	//		DataExchangeResult result = getResultFromResponse(resp);
-	//		assertThat(result.getAppStatusCode()).isEqualTo(APP_STATUS_SUCCESS.getAppStatusCode());
-	//
-	//		dumpResult(result);
-	//		
-	//		resp = performCompleteStep(client, result.getUploadResult().getFileKey());
-	//		assertThat(resp.getStatus()).isEqualTo(OK.getStatusCode());
-	//
-	//		result = getResultFromResponse(resp);
-	//		assertThat(result.getAppStatusCode()).isEqualTo(APP_STATUS_SUCCESS.getAppStatusCode());
-	//
-	//		dumpResult(result);
-	//	}
-
 	///////////////////////////////////////////////////////////////////////////////////////////
 	///////////////////////////////// End Miscellaneous tests ////////////////////////////////
 	///////////////////////////////////////////////////////////////////////////////////////////
 
-	//	@Test
-	//	public void testInsufficientDataFailure()
-	//	{
-	//		final Client client = createUploadStepClient("test NO Return(s) in file Failure");
-	//		final Response resp = performUploadStep(client, FILE_CSV_INSUFFICIENT_DATA, MEDIA_TYPE_CSV);
-	//		assertThat(resp.getStatus()).isEqualTo(OK.getStatusCode());
-	//
-	//		final DataExchangeResult result = getResultFromResponse(resp);
-	//		assertThat(result.getAppStatusCode()).isEqualTo(NO_RETURNS.getAppStatusCode());
-	//
-	//		dumpResult(result);
-	//	}
+	// TODO missing integration tests
 	// TODO missing column
 	// TODO columns out of sequence
 	// TODO extra columns
@@ -339,15 +304,18 @@ public class ResourceIntegrationTests
 	// TODO missing translation file
 	// TODO missing xslt files
 	// TODO large/average file uploads
-	// TODO + complete step tests etc...
-	// TODO & loads more
+	// TODO email failure
+	// TODO email success (not sure if possible from here?)
+	// TODO + many more
+
+	// TODO CSV converter library (Csv2xml.java) needs forking, including/completing tests etc... also!
 
 	/**
 	 * Create's a Jersey Client object ready for POST request used in Upload step
 	 * @param testName
 	 * @return
 	 */
-	private Client createUploadStepClient(String testName)
+	private Client createClient(String testName)
 	{
 		final JerseyClientConfiguration configuration = new JerseyClientConfiguration();
 		configuration.setChunkedEncodingEnabled(false);
@@ -378,21 +346,6 @@ public class ResourceIntegrationTests
 		final Response resp = client.register(MultiPartFeature.class).target(uri).request().post(Entity.entity(form, form.getMediaType()), Response.class);
 
 		return resp;
-	}
-
-	/**
-	 * Create's a Jersey Client object ready for POST request used in Complete step
-	 * @param testName
-	 * @return
-	 */
-	private Client createCompleteStepClient(String testName)
-	{
-		final JerseyClientConfiguration configuration = new JerseyClientConfiguration();
-		configuration.setChunkedEncodingEnabled(false);
-
-		final Client client = new JerseyClientBuilder(RULE.getEnvironment()).using(configuration).build(testName).register(MultiPartFeature.class);
-
-		return client;
 	}
 
 	/**
@@ -428,7 +381,7 @@ public class ResourceIntegrationTests
 	}
 
 	/**
-	 * Creates a "new" directory for testing use
+	 * Creates a directory for testing use
 	 * @param dir
 	 * @throws IOException 
 	 */
@@ -438,6 +391,9 @@ public class ResourceIntegrationTests
 		createDirectory(dir);
 	}
 
+	/**
+	 * Set debug state from configuration file
+	 */
 	private static void setDebugState()
 	{
 		debugMode = TRUE.equals(RULE.getConfiguration().getMiscSettings().getDebugMode().toLowerCase()) ? true : false;
@@ -447,12 +403,20 @@ public class ResourceIntegrationTests
 		LOGGER.debug("Test Timeout is '" + Integer.parseInt(testTimeout) / 1000 + "' seconds");
 	}
 
+	/**
+	 * Create URI
+	 * @param step
+	 * @return
+	 */
 	private String createURIForStep(String step)
 	{
 		return String.format(URI, RULE.getLocalPort(), step);
 	}
 
-	// TODO DEBUG
+	/**
+	 * Debug method to output Result data in XML and JSON
+	 * @param result
+	 */
 	private void dumpResult(DataExchangeResult result)
 	{
 		if (debugMode)
@@ -460,8 +424,8 @@ public class ResourceIntegrationTests
 			Map<SerializationFeature, Boolean> config = new HashMap<SerializationFeature, Boolean>();
 			config.put(SerializationFeature.INDENT_OUTPUT, true);
 
-			System.out.println(serializeToXML(result, config));
-			System.out.println(serializeToJSON(result, config));
+			LOGGER.debug(serializeToXML(result, config));
+			LOGGER.debug(serializeToJSON(result, config));
 		}
 	}
 }
