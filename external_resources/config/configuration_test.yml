@@ -35,7 +35,7 @@ misc:
   csvSeparator: ","
   s3Proxy:
     type: http
-    host: 10.208.4.62
+    host: 10.208.5.53
     port: 3128
   debugMode: false
 test:
