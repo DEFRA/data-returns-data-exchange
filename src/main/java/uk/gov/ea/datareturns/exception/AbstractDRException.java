@@ -7,8 +7,12 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 public abstract class AbstractDRException extends WebApplicationException
 {
+	private static final Logger LOGGER = LoggerFactory.getLogger(AbstractDRException.class);
 	private static final long serialVersionUID = 1L;
 
 	public AbstractDRException(Status htmlStatusCode, int appStatusCode, String message)
@@ -25,5 +29,7 @@ public abstract class AbstractDRException extends WebApplicationException
 				.entity(new ExceptionMessageContainer(appStatusCode, message))
 				.type(MediaType.APPLICATION_JSON)
 				.build());
+		
+		LOGGER.error("A System exception has occurred - ", cause);
 	}
 }
