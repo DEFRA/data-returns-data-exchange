@@ -246,6 +246,10 @@
 					<promptOnNonLocalDatabase>false</promptOnNonLocalDatabase>
 					<defaultSchemaName>data_returns_schema</defaultSchemaName>
 					<changelogSchemaName>data_returns_schema</changelogSchemaName>
+					<driver>${driver}</driver>
+					<url>${url}</url>
+					<username>${username}</username>
+					<password>${password}</password>
 					<propertyFile>${liquibasePropertyFile}</propertyFile>
 				</configuration>
 				<executions>

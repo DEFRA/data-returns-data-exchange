@@ -1,124 +1,61 @@
 package uk.gov.ea.datareturns.config;
 
-import javax.validation.constraints.Max;
-import javax.validation.constraints.Min;
-
-import org.hibernate.validator.constraints.NotEmpty;
-
-import com.fasterxml.jackson.annotation.JsonProperty;
-
+/**
+ * Email settings (Monitorpro)
+ *
+ */
 public class EmailSettings
 {
-	@NotEmpty
 	private String host;
-
-	@Min(1)
-	@Max(65535)
 	private int port;
-
-	@NotEmpty
 	private String subject;
-
-	@NotEmpty
 	private String emailTo;
-
-	@NotEmpty
 	private String emailFrom;
-
 	private boolean tls;
 	private String bodyMessage;
-	
-	public EmailSettings()
-	{
-		this.host = "";
-		this.port = 0;
-		this.emailTo = "";
-		this.emailFrom = "";
-		this.tls = false;
-		this.bodyMessage = "";
-	}
 
-	@JsonProperty
-	public String getHost()
-	{
-		return this.host;
-	}
-
-	@JsonProperty
-	public void setHost(String host)
+	public EmailSettings(String host, String port, String subject, String emailTo, String emailFrom, String tls, String bodyMessage)
 	{
 		this.host = host;
+		this.port = Integer.parseInt(port);
+		this.emailTo = emailTo;
+		this.emailFrom = emailFrom;
+		this.tls = Boolean.parseBoolean(tls);
+		this.bodyMessage = bodyMessage;
 	}
 
-	@JsonProperty
+	public String getHost()
+	{
+		return host;
+	}
+
 	public int getPort()
 	{
-		return this.port;
+		return port;
 	}
 
-	@JsonProperty
-	public void setPort(int port)
-	{
-		this.port = port;
-	}
-
-	@JsonProperty
 	public String getSubject()
 	{
 		return subject;
 	}
 
-	@JsonProperty
-	public void setSubject(String subject)
-	{
-		this.subject = subject;
-	}
-
-	@JsonProperty
 	public String getEmailTo()
 	{
-		return this.emailTo;
+		return emailTo;
 	}
 
-	@JsonProperty
-	public void setEmailTo(String emailTo)
-	{
-		this.emailTo = emailTo;
-	}
-
-	@JsonProperty
 	public String getEmailFrom()
 	{
-		return this.emailFrom;
+		return emailFrom;
 	}
 
-	@JsonProperty
-	public void setEmailFrom(String emailFrom)
+	public boolean isTls()
 	{
-		this.emailFrom = emailFrom;
+		return tls;
 	}
 
-	@JsonProperty
-	public boolean getTls()
-	{
-		return this.tls;
-	}
-
-	@JsonProperty
-	public void setTls(boolean tls)
-	{
-		this.tls = tls;
-	}
-
-	@JsonProperty
 	public String getBodyMessage()
 	{
-		return this.bodyMessage;
-	}
-
-	@JsonProperty
-	public void setBodyMessage(String bodyMessage)
-	{
-		this.bodyMessage = bodyMessage;
+		return bodyMessage;
 	}
 }

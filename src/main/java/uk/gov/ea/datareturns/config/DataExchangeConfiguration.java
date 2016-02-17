@@ -1,5 +1,6 @@
 package uk.gov.ea.datareturns.config;
 
+import static uk.gov.ea.datareturns.helper.CommonHelper.getEnvVar;
 import io.dropwizard.Configuration;
 import io.dropwizard.db.DataSourceFactory;
 
@@ -10,17 +11,21 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class DataExchangeConfiguration extends Configuration
 {
-	@Valid
-	@NotNull
-	private DataSourceFactory database = new DataSourceFactory();
+	public static final String ENV_VAR_REDIS_HOST = "DR_REDIS_HOST";
+	public static final String ENV_VAR_REDIS_PORT = "DR_REDIS_PORT";
 
-	@Valid
-	@NotNull
-	private EmailSettings emailsettings = new EmailSettings();
+	public static final String ENV_VAR_MONITOR_PRO_HOST = "DR_MONITOR_PRO_HOST";
+	public static final String ENV_VAR_MONITOR_PRO_PORT = "DR_MONITOR_PRO_PORT";
+	public static final String ENV_VAR_MONITOR_PRO_SUBJECT = "DR_MONITOR_PRO_SUBJECT";
+	public static final String ENV_VAR_MONITOR_EMAIL_TO = "DR_MONITOR_PRO_EMAIL_TO";
+	public static final String ENV_VAR_MONITOR_EMAIl_FROM = "DR_MONITOR_PRO_EMAIl_FROM";
+	public static final String ENV_VAR_MONITOR_TLS = "DR_MONITOR_PRO_TLS";
+	public static final String ENV_VAR_MONITOR_BODY_MESSAGE = "DR_MONITOR_PRO_BODY_MESSAGE";
 
-	@Valid
-	@NotNull
-	private FileStorageSettings fileStorageSettings = new FileStorageSettings();
+	public static final String ENV_VAR_DATABASE_URL = "DR_DATABASE_URL";
+	public static final String ENV_VAR_DATABASE_USER = "DR_DATABASE_USER";
+	public static final String ENV_VAR_DATABASE_PASSWORD = "DR_DATABASE_PASSWORD";
+	public static final String ENV_VAR_DATABASE_DRIVER_CLASS = "DR_DATABASE_DRIVER_CLASS";
 
 	@Valid
 	@NotNull
@@ -30,40 +35,30 @@ public class DataExchangeConfiguration extends Configuration
 	@NotNull
 	private TestSettings testSettings = new TestSettings();
 
-	@JsonProperty("database")
-	public void setDatabase(DataSourceFactory database)
-	{
-		this.database = database;
-	}
+	private FileStorageSettings fileStorageSettings;
+	private EmailSettings emailsettings;
+	private DataSourceFactory database;
 
-	@JsonProperty("database")
-	public DataSourceFactory getDataSourceFactory()
+	public DataExchangeConfiguration()
 	{
-		return database;
-	}
+		fileStorageSettings = new FileStorageSettings();
+		fileStorageSettings.setRedisSettings(getEnvVar(ENV_VAR_REDIS_HOST), getEnvVar(ENV_VAR_REDIS_PORT));
 
-	@JsonProperty("email")
-	public EmailSettings getEmailsettings()
-	{
-		return emailsettings;
-	}
+		String monProHost = getEnvVar(ENV_VAR_MONITOR_PRO_HOST);
+		String monProPort = getEnvVar(ENV_VAR_MONITOR_PRO_PORT);
+		String monProSubject = getEnvVar(ENV_VAR_MONITOR_PRO_SUBJECT);
+		String monProEmailTo = getEnvVar(ENV_VAR_MONITOR_EMAIL_TO);
+		String monProEmailFrom = getEnvVar(ENV_VAR_MONITOR_EMAIl_FROM);
+		String monProTLS = getEnvVar(ENV_VAR_MONITOR_TLS);
+		String monProBodyMessage = getEnvVar(ENV_VAR_MONITOR_BODY_MESSAGE);
 
-	@JsonProperty("email")
-	public void setEmailsettings(EmailSettings emailsettings)
-	{
-		this.emailsettings = emailsettings;
-	}
+		emailsettings = new EmailSettings(monProHost, monProPort, monProSubject, monProEmailTo, monProEmailFrom, monProTLS, monProBodyMessage);
 
-	@JsonProperty("fileStorage")
-	public FileStorageSettings getFileStorageSettings()
-	{
-		return fileStorageSettings;
-	}
-
-	@JsonProperty("fileStorage")
-	public void setFileStorageSettings(FileStorageSettings fileStorageSettings)
-	{
-		this.fileStorageSettings = fileStorageSettings;
+		database = new DataSourceFactory();
+		database.setUrl(getEnvVar(ENV_VAR_DATABASE_URL));
+		database.setUser(getEnvVar(ENV_VAR_DATABASE_USER));
+		database.setPassword(getEnvVar(ENV_VAR_DATABASE_PASSWORD));
+		database.setDriverClass(getEnvVar(ENV_VAR_DATABASE_DRIVER_CLASS));
 	}
 
 	@JsonProperty("misc")
@@ -88,5 +83,20 @@ public class DataExchangeConfiguration extends Configuration
 	public void setTestSettings(TestSettings testSettings)
 	{
 		this.testSettings = testSettings;
+	}
+
+	public FileStorageSettings getFileStorageSettings()
+	{
+		return fileStorageSettings;
+	}
+
+	public EmailSettings getEmailsettings()
+	{
+		return emailsettings;
+	}
+
+	public DataSourceFactory getDataSourceFactory()
+	{
+		return database;
 	}
 }

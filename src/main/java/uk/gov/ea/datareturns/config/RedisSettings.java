@@ -1,36 +1,22 @@
 package uk.gov.ea.datareturns.config;
 
-import org.hibernate.validator.constraints.NotEmpty;
-
 /**
- * @author adrianharrison
- * Holds redis settings from configuration file
+ * Redis settings
  */
 public class RedisSettings
 {
-	@NotEmpty
 	private String host;
-
-	@NotEmpty
 	private String port;
 
-	public void setPort(String port)
+	public RedisSettings(String host, String port)
 	{
+		this.host = host;
 		this.port = port;
-	}
-
-	public RedisSettings()
-	{
 	}
 
 	public String getHost()
 	{
 		return host;
-	}
-
-	public void setHost(String host)
-	{
-		this.host = host;
 	}
 
 	public String getPort()

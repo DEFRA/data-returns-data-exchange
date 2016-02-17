@@ -17,19 +17,11 @@ import org.junit.Test;
  */
 public class ApplicationExceptionTypeTests
 {
-	public static int TYPE_COUNT = 7;
-
 	@Test
 	public void coverage()
 	{
 		assertThat(ApplicationExceptionType.values().length).isGreaterThan(0);
 		assertThat(ApplicationExceptionType.valueOf("UNSUPPORTED_FILE_TYPE").getAppStatusCode()).isEqualTo(700);
-	}
-
-	@Test
-	public void testCountTypes()
-	{
-		assertThat(ApplicationExceptionType.values().length).isEqualTo(TYPE_COUNT);
 	}
 
 	@Test

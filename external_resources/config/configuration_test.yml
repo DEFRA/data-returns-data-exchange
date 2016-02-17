@@ -21,10 +21,6 @@ server:
   adminConnectors:
   - type: http
     port: 9021
-fileStorage:
-  redis:
-    host: 10.208.5.97
-    port: 6379
 misc:
   environment: test
   uploadedLocation: ./external_resources/uploaded
@@ -33,25 +29,8 @@ misc:
   xsltLocation: ./external_resources/xslt
   xmlLocation: ./external_resources/xml
   csvSeparator: ","
-  s3Proxy:
-    type: http
-    host: 10.208.5.53
-    port: 3128
   debugMode: false
 test:
   testFilesLocation: /testfiles
   testTimeout: 10000
   cleanupAfterTestRun: true
-email:
-  host: 10.208.5.53
-  port: 25
-  subject: EA_TEST_ENVIRONMENT
-  emailTo: ea.importer@ehsdata.com
-  emailFrom: datareturns@envage.co.uk
-  tls: true
-  bodyMessage: Data Returns Import file received
-database:
-  url: jdbc:postgresql://data-returns-test.cn1r9x2itg1r.eu-west-1.rds.amazonaws.com:5432/data_returns
-  driverClass: org.postgresql.Driver
-  user: data_returns_owner
-  password: data_returns_owner

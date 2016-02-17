@@ -21,10 +21,6 @@ server:
   adminConnectors:
   - type: http
     port: 9021
-fileStorage:
-  redis:
-    host: localhost
-    port: 6379
 misc:
   environment: local
   uploadedLocation: ./external_resources/uploaded
@@ -38,18 +34,3 @@ test:
   testFilesLocation: /testfiles
   testTimeout: 1000000
   cleanupAfterTestRun: false
-email:
-  host: 127.0.0.1
-  port: 1025
-  subject: EA_TEST_ENVIRONMENT
-  emailTo: import@monitorpro.com
-  emailFrom: data_returns@environment-agency.gov.uk
-  tls: false
-  bodyMessage: Data Returns Import file received
-database:
-  driverClass: com.p6spy.engine.spy.P6SpyDriver
-  url: jdbc:p6spy:postgresql://localhost:5432/data_returns
-  #url: jdbc:postgresql://localhost:5432/data_returns
-  #driverClass: org.postgresql.Driver
-  user: data_returns_owner
-  password: data_returns_owner

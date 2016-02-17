@@ -22,19 +22,11 @@ import org.junit.Test;
  */
 public class SystemExceptionTypeTests
 {
-	public static int TYPE_COUNT = 12;
-
 	@Test
 	public void coverage()
 	{
 		assertThat(SystemExceptionType.values().length).isGreaterThan(0);
 		assertThat(SystemExceptionType.valueOf("FILE_SAVE").getCode()).isEqualTo(601);
-	}
-
-	@Test
-	public void testCountTypes()
-	{
-		assertThat(SystemExceptionType.values().length).isEqualTo(TYPE_COUNT);
 	}
 
 	@Test
