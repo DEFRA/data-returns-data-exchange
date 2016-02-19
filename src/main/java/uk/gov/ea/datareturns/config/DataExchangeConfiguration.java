@@ -42,10 +42,10 @@ public class DataExchangeConfiguration extends Configuration
 	public DataExchangeConfiguration()
 	{
 		fileStorageSettings = new FileStorageSettings();
-		fileStorageSettings.setRedisSettings(getEnvVar(ENV_VAR_REDIS_HOST), getEnvVar(ENV_VAR_REDIS_PORT));
+		fileStorageSettings.setRedisSettings(getEnvVar(ENV_VAR_REDIS_HOST), Integer.parseInt(getEnvVar(ENV_VAR_REDIS_PORT)));
 
 		String monProHost = getEnvVar(ENV_VAR_MONITOR_PRO_HOST);
-		String monProPort = getEnvVar(ENV_VAR_MONITOR_PRO_PORT);
+		int monProPort = Integer.parseInt(getEnvVar(ENV_VAR_MONITOR_PRO_PORT));
 		String monProSubject = getEnvVar(ENV_VAR_MONITOR_PRO_SUBJECT);
 		String monProEmailTo = getEnvVar(ENV_VAR_MONITOR_EMAIL_TO);
 		String monProEmailFrom = getEnvVar(ENV_VAR_MONITOR_EMAIl_FROM);

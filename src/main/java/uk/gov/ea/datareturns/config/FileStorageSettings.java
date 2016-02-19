@@ -18,7 +18,7 @@ public class FileStorageSettings
 		return redisSettings;
 	}
 
-	public void setRedisSettings(String redisHost, String redisPort)
+	public void setRedisSettings(String redisHost, int redisPort)
 	{
 		this.redisSettings = new RedisSettings(redisHost, redisPort);
 	}

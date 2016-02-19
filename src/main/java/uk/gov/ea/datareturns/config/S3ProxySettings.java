@@ -6,13 +6,13 @@ public class S3ProxySettings
 {
 	private String type;
 	private String host;
-	private String port;
+	private int port;
 
 	public S3ProxySettings()
 	{
 		this.type = "";
 		this.host = "";
-		this.port = "";
+		this.port = 0;
 	}
 
 	@JsonProperty
@@ -40,13 +40,13 @@ public class S3ProxySettings
 	}
 
 	@JsonProperty
-	public String getPort()
+	public int getPort()
 	{
 		return this.port;
 	}
 
 	@JsonProperty
-	public void setPort(String port)
+	public void setPort(int port)
 	{
 		this.port = port;
 	}

@@ -14,10 +14,10 @@ public class EmailSettings
 	private boolean tls;
 	private String bodyMessage;
 
-	public EmailSettings(String host, String port, String subject, String emailTo, String emailFrom, String tls, String bodyMessage)
+	public EmailSettings(String host, int port, String subject, String emailTo, String emailFrom, String tls, String bodyMessage)
 	{
 		this.host = host;
-		this.port = Integer.parseInt(port);
+		this.port = port;
 		this.emailTo = emailTo;
 		this.emailFrom = emailFrom;
 		this.tls = Boolean.parseBoolean(tls);
