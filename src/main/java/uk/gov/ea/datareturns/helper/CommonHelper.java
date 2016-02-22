@@ -12,6 +12,11 @@ public class CommonHelper
 		return (LOCAL.getEnvironment().equalsIgnoreCase(environment));
 	}
 
+	/**
+	 * Read an environment variable
+	 * @param envVarName
+	 * @return
+	 */
 	public static String getEnvVar(String envVarName)
 	{
 		String envVarVal = System.getenv(envVarName);

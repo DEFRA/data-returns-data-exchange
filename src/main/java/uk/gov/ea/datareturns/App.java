@@ -38,6 +38,8 @@ public class App extends Application<DataExchangeConfiguration>
 	@Override
 	public void run(DataExchangeConfiguration config, Environment environment)
 	{
+		config.additionalConfig();
+		
 		configureCors(environment);
 
 		final DBIFactory factory = new DBIFactory();

@@ -88,15 +88,15 @@ public class DataExchangeResource
 
 		String environment = config.getMiscSettings().getEnvironment();
 		String redisHost = redisSettings.getHost();
-		int redisPort = Integer.parseInt(redisSettings.getPort());
+		int redisPort = redisSettings.getPort();
 
 		if (!isLocalEnvironment(environment))
 		{
-			S3ProxySettings s3Settings = config.getMiscSettings().getS3ProxySettings();
+			S3ProxySettings s3Settings = config.getS3Settings();
 			String s3Type = s3Settings.getType();
 			String s3Host = s3Settings.getHost();
-			int s3Port = Integer.parseInt(s3Settings.getPort());
-
+			int s3Port = s3Settings.getPort();
+			
 			this.fileStorage = new FileStorage(environment, redisHost, redisPort, s3Type, s3Host, s3Port);
 		} else
 		{

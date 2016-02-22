@@ -6,9 +6,9 @@ package uk.gov.ea.datareturns.config;
 public class RedisSettings
 {
 	private String host;
-	private String port;
+	private int port;
 
-	public RedisSettings(String host, String port)
+	public RedisSettings(String host, int port)
 	{
 		this.host = host;
 		this.port = port;
@@ -19,7 +19,7 @@ public class RedisSettings
 		return host;
 	}
 
-	public String getPort()
+	public int getPort()
 	{
 		return port;
 	}
