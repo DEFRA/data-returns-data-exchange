@@ -1,53 +1,34 @@
 package uk.gov.ea.datareturns.config;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 
+/**
+ * Holds S3 storage settings
+ */
 public class S3ProxySettings
 {
 	private String type;
 	private String host;
 	private int port;
 
-	public S3ProxySettings()
+	public S3ProxySettings(String type, String host, int port)
 	{
-		this.type = "";
-		this.host = "";
-		this.port = 0;
+		this.type = type;
+		this.host = host;
+		this.port = port;
 	}
 
-	@JsonProperty
 	public String getType()
 	{
 		return type;
 	}
 
-	@JsonProperty
-	public void setType(String type)
-	{
-		this.type = type;
-	}
-
-	@JsonProperty
 	public String getHost()
 	{
 		return this.host;
 	}
 
-	@JsonProperty
-	public void setHost(String host)
-	{
-		this.host = host;
-	}
-
-	@JsonProperty
 	public int getPort()
 	{
 		return this.port;
-	}
-
-	@JsonProperty
-	public void setPort(int port)
-	{
-		this.port = port;
 	}
 }

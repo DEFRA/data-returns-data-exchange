@@ -1,6 +1,7 @@
 package uk.gov.ea.datareturns.config;
 
 import static uk.gov.ea.datareturns.helper.CommonHelper.getEnvVar;
+import static uk.gov.ea.datareturns.helper.CommonHelper.isLocalEnvironment;
 import io.dropwizard.Configuration;
 import io.dropwizard.db.DataSourceFactory;
 
@@ -39,34 +40,13 @@ public class DataExchangeConfiguration extends Configuration
 	private TestSettings testSettings = new TestSettings();
 
 	private FileStorageSettings fileStorageSettings;
+	private S3ProxySettings s3Settings;
 	private EmailSettings emailsettings;
+
 	private DataSourceFactory database;
 
 	public DataExchangeConfiguration()
 	{
-		fileStorageSettings = new FileStorageSettings();
-		fileStorageSettings.setRedisSettings(getEnvVar(ENV_VAR_REDIS_HOST), Integer.parseInt(getEnvVar(ENV_VAR_REDIS_PORT)));
-
-		S3ProxySettings s3Settings = miscSettings.getS3ProxySettings();
-		s3Settings.setType(getEnvVar(ENV_VAR_DR_S3_TYPE));
-		s3Settings.setHost(getEnvVar(ENV_VAR_DR_S3_HOST));
-		s3Settings.setPort(Integer.parseInt(getEnvVar(ENV_VAR_DR_S3_PORT)));
-
-		String monProHost = getEnvVar(ENV_VAR_MONITOR_PRO_HOST);
-		int monProPort = Integer.parseInt(getEnvVar(ENV_VAR_MONITOR_PRO_PORT));
-		String monProSubject = getEnvVar(ENV_VAR_MONITOR_PRO_SUBJECT);
-		String monProEmailTo = getEnvVar(ENV_VAR_MONITOR_EMAIL_TO);
-		String monProEmailFrom = getEnvVar(ENV_VAR_MONITOR_EMAIl_FROM);
-		String monProTLS = getEnvVar(ENV_VAR_MONITOR_TLS);
-		String monProBodyMessage = getEnvVar(ENV_VAR_MONITOR_BODY_MESSAGE);
-
-		emailsettings = new EmailSettings(monProHost, monProPort, monProSubject, monProEmailTo, monProEmailFrom, monProTLS, monProBodyMessage);
-
-		database = new DataSourceFactory();
-		database.setUrl(getEnvVar(ENV_VAR_DATABASE_URL));
-		database.setUser(getEnvVar(ENV_VAR_DATABASE_USER));
-		database.setPassword(getEnvVar(ENV_VAR_DATABASE_PASSWORD));
-		database.setDriverClass(getEnvVar(ENV_VAR_DATABASE_DRIVER_CLASS));
 	}
 
 	@JsonProperty("misc")
@@ -98,6 +78,11 @@ public class DataExchangeConfiguration extends Configuration
 		return fileStorageSettings;
 	}
 
+	public S3ProxySettings getS3Settings()
+	{
+		return s3Settings;
+	}
+
 	public EmailSettings getEmailsettings()
 	{
 		return emailsettings;
@@ -106,5 +91,40 @@ public class DataExchangeConfiguration extends Configuration
 	public DataSourceFactory getDataSourceFactory()
 	{
 		return database;
+
+	}
+
+	/**
+	 * Extra configuration details needed in addition to standard Dropwizard routine as required environment variables differ by environment  
+	 */
+	public void additionalConfig()
+	{
+		fileStorageSettings = new FileStorageSettings();
+		fileStorageSettings.setRedisSettings(getEnvVar(ENV_VAR_REDIS_HOST), Integer.parseInt(getEnvVar(ENV_VAR_REDIS_PORT)));
+
+		// Non-mandatory for local environment
+		if (!isLocalEnvironment(miscSettings.getEnvironment()))
+		{
+			String s3Type = getEnvVar(ENV_VAR_DR_S3_TYPE);
+			String s3Host = getEnvVar(ENV_VAR_DR_S3_HOST);
+			int s3Port = Integer.parseInt(getEnvVar(ENV_VAR_DR_S3_PORT));
+			s3Settings = new S3ProxySettings(s3Type, s3Host, s3Port);
+		}
+
+		String monProHost = getEnvVar(ENV_VAR_MONITOR_PRO_HOST);
+		int monProPort = Integer.parseInt(getEnvVar(ENV_VAR_MONITOR_PRO_PORT));
+		String monProSubject = getEnvVar(ENV_VAR_MONITOR_PRO_SUBJECT);
+		String monProEmailTo = getEnvVar(ENV_VAR_MONITOR_EMAIL_TO);
+		String monProEmailFrom = getEnvVar(ENV_VAR_MONITOR_EMAIl_FROM);
+		String monProTLS = getEnvVar(ENV_VAR_MONITOR_TLS);
+		String monProBodyMessage = getEnvVar(ENV_VAR_MONITOR_BODY_MESSAGE);
+
+		emailsettings = new EmailSettings(monProHost, monProPort, monProSubject, monProEmailTo, monProEmailFrom, monProTLS, monProBodyMessage);
+
+		database = new DataSourceFactory();
+		database.setUrl(getEnvVar(ENV_VAR_DATABASE_URL));
+		database.setUser(getEnvVar(ENV_VAR_DATABASE_USER));
+		database.setPassword(getEnvVar(ENV_VAR_DATABASE_PASSWORD));
+		database.setDriverClass(getEnvVar(ENV_VAR_DATABASE_DRIVER_CLASS));
 	}
 }
