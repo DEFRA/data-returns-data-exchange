@@ -95,7 +95,7 @@ public class DataExchangeConfiguration extends Configuration
 	}
 
 	/**
-	 * Extra configuration details needed in addition to standard Dropwizard routine as required environment variables differ by environment  
+	 * Extra configuration details required after standard Dropwizard config.  
 	 */
 	public void additionalConfig()
 	{
