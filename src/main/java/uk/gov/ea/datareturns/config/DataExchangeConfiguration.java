@@ -13,6 +13,9 @@ public class DataExchangeConfiguration extends Configuration
 {
 	public static final String ENV_VAR_REDIS_HOST = "DR_REDIS_HOST";
 	public static final String ENV_VAR_REDIS_PORT = "DR_REDIS_PORT";
+	public static final String ENV_VAR_DR_S3_TYPE = "DR_S3_TYPE";
+	public static final String ENV_VAR_DR_S3_HOST = "DR_S3_HOST";
+	public static final String ENV_VAR_DR_S3_PORT = "DR_S3_PORT";
 
 	public static final String ENV_VAR_MONITOR_PRO_HOST = "DR_MONITOR_PRO_HOST";
 	public static final String ENV_VAR_MONITOR_PRO_PORT = "DR_MONITOR_PRO_PORT";
@@ -43,6 +46,11 @@ public class DataExchangeConfiguration extends Configuration
 	{
 		fileStorageSettings = new FileStorageSettings();
 		fileStorageSettings.setRedisSettings(getEnvVar(ENV_VAR_REDIS_HOST), Integer.parseInt(getEnvVar(ENV_VAR_REDIS_PORT)));
+
+		S3ProxySettings s3Settings = miscSettings.getS3ProxySettings();
+		s3Settings.setType(getEnvVar(ENV_VAR_DR_S3_TYPE));
+		s3Settings.setHost(getEnvVar(ENV_VAR_DR_S3_HOST));
+		s3Settings.setPort(Integer.parseInt(getEnvVar(ENV_VAR_DR_S3_PORT)));
 
 		String monProHost = getEnvVar(ENV_VAR_MONITOR_PRO_HOST);
 		int monProPort = Integer.parseInt(getEnvVar(ENV_VAR_MONITOR_PRO_PORT));

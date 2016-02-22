@@ -31,13 +31,14 @@ public class MiscSettings
 	@NotEmpty
 	private String csvSeparator;
 
-	private S3ProxySettings s3ProxySettings = new S3ProxySettings();
+	private S3ProxySettings s3ProxySettings;
 
 	@NotEmpty
 	private String debugMode;
 
 	public MiscSettings()
 	{
+		this.s3ProxySettings = new S3ProxySettings();
 	}
 
 	public String getEnvironment()

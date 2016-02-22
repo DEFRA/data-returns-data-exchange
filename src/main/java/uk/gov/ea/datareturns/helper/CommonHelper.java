@@ -15,7 +15,7 @@ public class CommonHelper
 	public static String getEnvVar(String envVarName)
 	{
 		String envVarVal = System.getenv(envVarName);
-
+System.out.println(envVarName + " contains '" + envVarVal + "'");
 		if (envVarVal == null)
 		{
 			throw new DREnvironmentException("Environment variable '" + envVarName + "' not found");
