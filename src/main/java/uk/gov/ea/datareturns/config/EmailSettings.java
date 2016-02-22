@@ -18,6 +18,7 @@ public class EmailSettings
 	{
 		this.host = host;
 		this.port = port;
+		this.subject = subject;
 		this.emailTo = emailTo;
 		this.emailFrom = emailFrom;
 		this.tls = Boolean.parseBoolean(tls);
