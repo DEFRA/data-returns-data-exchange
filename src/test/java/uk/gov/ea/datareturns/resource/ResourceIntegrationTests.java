@@ -117,77 +117,77 @@ public class ResourceIntegrationTests
 	//////////////////////// Start Application Exception handling tests ///////////////////////
 	///////////////////////////////////////////////////////////////////////////////////////////
 
-	@Test
-	public void testUnsupportedFileType()
-	{
-		final Client client = createClient("test Unsupported File Type");
-		final Response resp = performUploadStep(client, FILE_UNSUPPORTED_TYPE, MEDIA_TYPE_CSV);
-		assertThat(resp.getStatus()).isEqualTo(OK.getStatusCode());
-
-		final DataExchangeResult result = getResultFromResponse(resp);
-		assertThat(result.getAppStatusCode()).isEqualTo(UNSUPPORTED_FILE_TYPE.getAppStatusCode());
-	}
-
-	@Test
-	public void testInvalidFileContents()
-	{
-		final Client client = createClient("test Invalid File Contents");
-		final Response resp = performUploadStep(client, FILE_NON_CSV_CONTENTS, MEDIA_TYPE_CSV);
-		assertThat(resp.getStatus()).isEqualTo(OK.getStatusCode());
-
-		final DataExchangeResult result = getResultFromResponse(resp);
-		assertThat(result.getAppStatusCode()).isEqualTo(INVALID_CONTENTS.getAppStatusCode());
-	}
-
-	@Test
-	public void testNoReturns()
-	{
-		final Client client = createClient("test No returns");
-		final Response resp = performUploadStep(client, FILE_CSV_EMPTY, MEDIA_TYPE_CSV);
-		assertThat(resp.getStatus()).isEqualTo(OK.getStatusCode());
-
-		final DataExchangeResult result = getResultFromResponse(resp);
-		assertThat(result.getAppStatusCode()).isEqualTo(NO_RETURNS.getAppStatusCode());
-	}
-
-	@Test
-	public void testMutiplePermits()
-	{
-		final Client client = createClient("test Multiple Permits");
-		final Response resp = performUploadStep(client, FILE_CSV_MUTLIPLE_PERMITS, MEDIA_TYPE_CSV);
-		assertThat(resp.getStatus()).isEqualTo(OK.getStatusCode());
-
-		final DataExchangeResult result = getResultFromResponse(resp);
-		assertThat(result.getAppStatusCode()).isEqualTo(MULTIPLE_PERMITS.getAppStatusCode());
-	}
-
-	@Test
-	public void testPermitNumberNotFound()
-	{
-		final Client client = createClient("test Permit Number Not Found");
-		final Response resp = performUploadStep(client, FILE_PERMIT_NOT_FOUND, MEDIA_TYPE_CSV);
-		assertThat(resp.getStatus()).isEqualTo(OK.getStatusCode());
-
-		final DataExchangeResult result = getResultFromResponse(resp);
-		assertThat(result.getAppStatusCode()).isEqualTo(PERMIT_NOT_FOUND.getAppStatusCode());
-	}
-
-	@Test
-	public void testFileKeyMismatch()
-	{
-		Client client = createClient("test File Key mismatch");
-		Response resp = performUploadStep(client, FILE_CSV_SUCCESS, MEDIA_TYPE_CSV);
-		assertThat(resp.getStatus()).isEqualTo(OK.getStatusCode());
-
-		DataExchangeResult result = getResultFromResponse(resp);
-		assertThat(result.getAppStatusCode()).isEqualTo(APP_STATUS_SUCCESS.getAppStatusCode());
-
-		resp = performCompleteStep(client, "anything");
-		assertThat(resp.getStatus()).isEqualTo(OK.getStatusCode());
-
-		result = getResultFromResponse(resp);
-		assertThat(result.getAppStatusCode()).isEqualTo(FILE_KEY_MISMATCH.getAppStatusCode());
-	}
+//	@Test
+//	public void testUnsupportedFileType()
+//	{
+//		final Client client = createClient("test Unsupported File Type");
+//		final Response resp = performUploadStep(client, FILE_UNSUPPORTED_TYPE, MEDIA_TYPE_CSV);
+//		assertThat(resp.getStatus()).isEqualTo(OK.getStatusCode());
+//
+//		final DataExchangeResult result = getResultFromResponse(resp);
+//		assertThat(result.getAppStatusCode()).isEqualTo(UNSUPPORTED_FILE_TYPE.getAppStatusCode());
+//	}
+//
+//	@Test
+//	public void testInvalidFileContents()
+//	{
+//		final Client client = createClient("test Invalid File Contents");
+//		final Response resp = performUploadStep(client, FILE_NON_CSV_CONTENTS, MEDIA_TYPE_CSV);
+//		assertThat(resp.getStatus()).isEqualTo(OK.getStatusCode());
+//
+//		final DataExchangeResult result = getResultFromResponse(resp);
+//		assertThat(result.getAppStatusCode()).isEqualTo(INVALID_CONTENTS.getAppStatusCode());
+//	}
+//
+//	@Test
+//	public void testNoReturns()
+//	{
+//		final Client client = createClient("test No returns");
+//		final Response resp = performUploadStep(client, FILE_CSV_EMPTY, MEDIA_TYPE_CSV);
+//		assertThat(resp.getStatus()).isEqualTo(OK.getStatusCode());
+//
+//		final DataExchangeResult result = getResultFromResponse(resp);
+//		assertThat(result.getAppStatusCode()).isEqualTo(NO_RETURNS.getAppStatusCode());
+//	}
+//
+//	@Test
+//	public void testMutiplePermits()
+//	{
+//		final Client client = createClient("test Multiple Permits");
+//		final Response resp = performUploadStep(client, FILE_CSV_MUTLIPLE_PERMITS, MEDIA_TYPE_CSV);
+//		assertThat(resp.getStatus()).isEqualTo(OK.getStatusCode());
+//
+//		final DataExchangeResult result = getResultFromResponse(resp);
+//		assertThat(result.getAppStatusCode()).isEqualTo(MULTIPLE_PERMITS.getAppStatusCode());
+//	}
+//
+//	@Test
+//	public void testPermitNumberNotFound()
+//	{
+//		final Client client = createClient("test Permit Number Not Found");
+//		final Response resp = performUploadStep(client, FILE_PERMIT_NOT_FOUND, MEDIA_TYPE_CSV);
+//		assertThat(resp.getStatus()).isEqualTo(OK.getStatusCode());
+//
+//		final DataExchangeResult result = getResultFromResponse(resp);
+//		assertThat(result.getAppStatusCode()).isEqualTo(PERMIT_NOT_FOUND.getAppStatusCode());
+//	}
+//
+//	@Test
+//	public void testFileKeyMismatch()
+//	{
+//		Client client = createClient("test File Key mismatch");
+//		Response resp = performUploadStep(client, FILE_CSV_SUCCESS, MEDIA_TYPE_CSV);
+//		assertThat(resp.getStatus()).isEqualTo(OK.getStatusCode());
+//
+//		DataExchangeResult result = getResultFromResponse(resp);
+//		assertThat(result.getAppStatusCode()).isEqualTo(APP_STATUS_SUCCESS.getAppStatusCode());
+//
+//		resp = performCompleteStep(client, "anything");
+//		assertThat(resp.getStatus()).isEqualTo(OK.getStatusCode());
+//
+//		result = getResultFromResponse(resp);
+//		assertThat(result.getAppStatusCode()).isEqualTo(FILE_KEY_MISMATCH.getAppStatusCode());
+//	}
 
 	///////////////////////////////////////////////////////////////////////////////////////////
 	/////////////////////// End Application Exception handling tests //////////////////////////
@@ -211,51 +211,51 @@ public class ResourceIntegrationTests
 
 	// TODO expand to test individual validation failures
 
-	@Test
-	public void testValidationErrors()
-	{
-		final Client client = createClient("test Validation Errors");
-		final Response resp = performUploadStep(client, FILE_CSV_FAILURES, MEDIA_TYPE_CSV);
-		assertThat(resp.getStatus()).isEqualTo(OK.getStatusCode());
-
-		final DataExchangeResult result = getResultFromResponse(resp);
-		assertThat(result.getAppStatusCode()).isEqualTo(APP_STATUS_FAILED_WITH_ERRORS.getAppStatusCode());
-
-		dumpResult(result);
-	}
-
-	@Test
-	public void testAcceptableValueFieldChars()
-	{
-		Client client = createClient("test Acceptable Value Field Characters");
-		Response resp = performUploadStep(client, FILE_CSV_VALID_VALUE_CHARS, MEDIA_TYPE_CSV);
-		assertThat(resp.getStatus()).isEqualTo(OK.getStatusCode());
-
-		DataExchangeResult result = getResultFromResponse(resp);
-		assertThat(result.getAppStatusCode()).isEqualTo(APP_STATUS_SUCCESS.getAppStatusCode());
-	}
-
-	@Test
-	public void testUnacceptableValueFieldChars()
-	{
-		Client client = createClient("test Unacceptable Value Field Characters");
-		Response resp = performUploadStep(client, FILE_CSV_INVALID_VALUE_CHARS, MEDIA_TYPE_CSV);
-		assertThat(resp.getStatus()).isEqualTo(OK.getStatusCode());
-
-		DataExchangeResult result = getResultFromResponse(resp);
-		assertThat(result.getAppStatusCode()).isEqualTo(APP_STATUS_FAILED_WITH_ERRORS.getAppStatusCode());
-	}
-
-	@Test
-	public void testEmbeddedSeparators()
-	{
-		final Client client = createClient("test Embedded separator characters");
-		final Response resp = performUploadStep(client, FILE_EMBEDDED_COMMAS, MEDIA_TYPE_CSV);
-		assertThat(resp.getStatus()).isEqualTo(OK.getStatusCode());
-
-		final DataExchangeResult result = getResultFromResponse(resp);
-		assertThat(result.getAppStatusCode()).isEqualTo(APP_STATUS_SUCCESS.getAppStatusCode());
-	}
+//	@Test
+//	public void testValidationErrors()
+//	{
+//		final Client client = createClient("test Validation Errors");
+//		final Response resp = performUploadStep(client, FILE_CSV_FAILURES, MEDIA_TYPE_CSV);
+//		assertThat(resp.getStatus()).isEqualTo(OK.getStatusCode());
+//
+//		final DataExchangeResult result = getResultFromResponse(resp);
+//		assertThat(result.getAppStatusCode()).isEqualTo(APP_STATUS_FAILED_WITH_ERRORS.getAppStatusCode());
+//
+//		dumpResult(result);
+//	}
+//
+//	@Test
+//	public void testAcceptableValueFieldChars()
+//	{
+//		Client client = createClient("test Acceptable Value Field Characters");
+//		Response resp = performUploadStep(client, FILE_CSV_VALID_VALUE_CHARS, MEDIA_TYPE_CSV);
+//		assertThat(resp.getStatus()).isEqualTo(OK.getStatusCode());
+//
+//		DataExchangeResult result = getResultFromResponse(resp);
+//		assertThat(result.getAppStatusCode()).isEqualTo(APP_STATUS_SUCCESS.getAppStatusCode());
+//	}
+//
+//	@Test
+//	public void testUnacceptableValueFieldChars()
+//	{
+//		Client client = createClient("test Unacceptable Value Field Characters");
+//		Response resp = performUploadStep(client, FILE_CSV_INVALID_VALUE_CHARS, MEDIA_TYPE_CSV);
+//		assertThat(resp.getStatus()).isEqualTo(OK.getStatusCode());
+//
+//		DataExchangeResult result = getResultFromResponse(resp);
+//		assertThat(result.getAppStatusCode()).isEqualTo(APP_STATUS_FAILED_WITH_ERRORS.getAppStatusCode());
+//	}
+//
+//	@Test
+//	public void testEmbeddedSeparators()
+//	{
+//		final Client client = createClient("test Embedded separator characters");
+//		final Response resp = performUploadStep(client, FILE_EMBEDDED_COMMAS, MEDIA_TYPE_CSV);
+//		assertThat(resp.getStatus()).isEqualTo(OK.getStatusCode());
+//
+//		final DataExchangeResult result = getResultFromResponse(resp);
+//		assertThat(result.getAppStatusCode()).isEqualTo(APP_STATUS_SUCCESS.getAppStatusCode());
+//	}
 
 	@Test
 	public void testEmbeddedXMLChars()
@@ -278,18 +278,18 @@ public class ResourceIntegrationTests
 	//////////////////////////////// Start Miscellaneous tests ////////////////////////////////
 	///////////////////////////////////////////////////////////////////////////////////////////
 
-	@Test
-	public void testPermitNumberFound()
-	{
-		final Client client = createClient("test Permit Number Found");
-		final Response resp = performUploadStep(client, FILE_PERMIT_FOUND, MEDIA_TYPE_CSV);
-		assertThat(resp.getStatus()).isEqualTo(OK.getStatusCode());
-
-		final DataExchangeResult result = getResultFromResponse(resp);
-		assertThat(result.getAppStatusCode()).isEqualTo(APP_STATUS_SUCCESS.getAppStatusCode());
-
-		dumpResult(result);
-	}
+//	@Test
+//	public void testPermitNumberFound()
+//	{
+//		final Client client = createClient("test Permit Number Found");
+//		final Response resp = performUploadStep(client, FILE_PERMIT_FOUND, MEDIA_TYPE_CSV);
+//		assertThat(resp.getStatus()).isEqualTo(OK.getStatusCode());
+//
+//		final DataExchangeResult result = getResultFromResponse(resp);
+//		assertThat(result.getAppStatusCode()).isEqualTo(APP_STATUS_SUCCESS.getAppStatusCode());
+//
+//		dumpResult(result);
+//	}
 
 	///////////////////////////////////////////////////////////////////////////////////////////
 	///////////////////////////////// End Miscellaneous tests ////////////////////////////////
