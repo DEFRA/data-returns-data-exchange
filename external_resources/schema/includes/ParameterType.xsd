@@ -222,7 +222,7 @@
           <xs:enumeration value="Alachlor"/>
           <xs:enumeration value="Aldicarb"/>
           <xs:enumeration value="Aldrin"/>
-          <xs:enumeration value="Aliphatics <C10-C12"/>
+          <xs:enumeration value="Aliphatics &lt;C10-C12"/>
           <xs:enumeration value="Aliphatics > EC12-EC35 (aq)"/>
           <xs:enumeration value="Aliphatics >C12-C16 (aq)"/>
           <xs:enumeration value="Aliphatics >C16-C21 (aq)"/>
@@ -376,7 +376,7 @@
           <xs:enumeration value="C7-C9 Dialkyl Phthalates"/>
           <xs:enumeration value="Cadmium"/>
           <xs:enumeration value="Cadmium - Total Unfiltered"/>
-          <xs:enumeration value="Cadmium & thallium and their compounds (total)"/>
+          <xs:enumeration value="Cadmium &amp; thallium and their compounds (total)"/>
           <xs:enumeration value="Cadmium and its compounds, expressed as cadmium (Total Cd)"/>
           <xs:enumeration value="Cadmium Oxide"/>
           <xs:enumeration value="Cadmium Sulphide and Cadmium Sulphide Pigments (Respirable Dust) (As Cd)"/>
