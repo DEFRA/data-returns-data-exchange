@@ -13,7 +13,6 @@
 
     <xs:simpleType name="OptionalStringMax255">
         <xs:restriction base="xs:string">
-            <xs:pattern value="([0-9a-zA-Z ;,&lt;&gt;&amp;])*"/>
             <xs:minLength value="0"/>
             <xs:maxLength value="255"/>
         </xs:restriction>
