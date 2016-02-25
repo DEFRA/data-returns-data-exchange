@@ -8,17 +8,15 @@ public class EmailSettings
 {
 	private String host;
 	private int port;
-	private String subject;
 	private String emailTo;
 	private String emailFrom;
 	private boolean tls;
 	private String bodyMessage;
 
-	public EmailSettings(String host, int port, String subject, String emailTo, String emailFrom, String tls, String bodyMessage)
+	public EmailSettings(String host, int port, String emailTo, String emailFrom, String tls, String bodyMessage)
 	{
 		this.host = host;
 		this.port = port;
-		this.subject = subject;
 		this.emailTo = emailTo;
 		this.emailFrom = emailFrom;
 		this.tls = Boolean.parseBoolean(tls);
@@ -33,11 +31,6 @@ public class EmailSettings
 	public int getPort()
 	{
 		return port;
-	}
-
-	public String getSubject()
-	{
-		return subject;
 	}
 
 	public String getEmailTo()

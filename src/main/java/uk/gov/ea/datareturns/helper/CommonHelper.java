@@ -7,13 +7,19 @@ public class CommonHelper
 {
 	public final static String ENV_LOCAL = "local";
 
+	/**
+	 * Determines if app running in local environment 
+	 * @param environment
+	 * @return
+	 */
+	// TODO probably belongs DataExchangeConfiguration
 	public static boolean isLocalEnvironment(String environment)
 	{
 		return (LOCAL.getEnvironment().equalsIgnoreCase(environment));
 	}
 
 	/**
-	 * Read an environment variable
+	 * Read an environment variable - assumes variable is mandatory
 	 * @param envVarName
 	 * @return
 	 */

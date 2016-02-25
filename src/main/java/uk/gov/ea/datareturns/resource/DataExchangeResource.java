@@ -3,6 +3,9 @@ package uk.gov.ea.datareturns.resource;
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 import static javax.ws.rs.core.MediaType.MULTIPART_FORM_DATA;
 import static uk.gov.ea.datareturns.helper.CommonHelper.isLocalEnvironment;
+import static uk.gov.ea.datareturns.helper.DataExchangeHelper.getDatabaseNameFromPermitNo;
+import static uk.gov.ea.datareturns.helper.DataExchangeHelper.isAlphaNumericPermitNo;
+import static uk.gov.ea.datareturns.helper.DataExchangeHelper.isNumericPermitNo;
 import static uk.gov.ea.datareturns.helper.FileUtilsHelper.makeFullPath;
 import static uk.gov.ea.datareturns.helper.FileUtilsHelper.saveFile;
 import static uk.gov.ea.datareturns.helper.XMLUtilsHelper.deserializeFromXML;
@@ -44,6 +47,7 @@ import uk.gov.ea.datareturns.domain.result.DataExchangeResult;
 import uk.gov.ea.datareturns.domain.result.GeneralResult;
 import uk.gov.ea.datareturns.domain.result.UploadResult;
 import uk.gov.ea.datareturns.domain.result.ValidationResult;
+import uk.gov.ea.datareturns.exception.application.DRInvalidPermitNoException;
 import uk.gov.ea.datareturns.exception.application.DRMultiplePermitsException;
 import uk.gov.ea.datareturns.exception.application.DRPermitNotFoundException;
 import uk.gov.ea.datareturns.exception.application.DRUnsupportedFileTypeException;
@@ -54,6 +58,8 @@ import uk.gov.ea.datareturns.validate.Validate;
 import uk.gov.ea.datareturns.validate.ValidateXML;
 
 import com.codahale.metrics.annotation.Timed;
+
+// TODO move some methods to helper classes
 
 @Path("/data-exchange/")
 public class DataExchangeResource
@@ -96,7 +102,7 @@ public class DataExchangeResource
 			String s3Type = s3Settings.getType();
 			String s3Host = s3Settings.getHost();
 			int s3Port = s3Settings.getPort();
-			
+
 			this.fileStorage = new FileStorage(environment, redisHost, redisPort, s3Type, s3Host, s3Port);
 		} else
 		{
@@ -180,7 +186,8 @@ public class DataExchangeResource
 	@Consumes(MULTIPART_FORM_DATA)
 	@Produces(APPLICATION_JSON)
 	@Timed
-	public Response completeUpload(@NotEmpty @FormDataParam("fileKey") String orgFileKey, @NotEmpty @FormDataParam("userEmail") String userEmail)
+	public Response completeUpload(@NotEmpty @FormDataParam("fileKey") String orgFileKey, @NotEmpty @FormDataParam("userEmail") String userEmail,
+			@NotEmpty @FormDataParam("orgFileName") String orgFileName, @NotEmpty @FormDataParam("permitNo") String permitNo)
 	{
 		LOGGER.debug("/data-exchange/complete request received");
 
@@ -193,7 +200,7 @@ public class DataExchangeResource
 		ConvertXMLToCSV converter = new ConvertXMLToCSV(settings.getCsvSeparator(), orgFileLocation, outputLocation, xslt);
 		String newFileLocation = converter.convert();
 
-		sendNotifications(newFileLocation);
+		sendNotifications(newFileLocation, permitNo);
 
 		CompleteResult completeResult = new CompleteResult();
 
@@ -275,6 +282,14 @@ public class DataExchangeResource
 
 		String permitNo = generalResult.getSingleResultValue();
 
+		// Validate the permit no format even though it's valid as exists in permit list but 
+		// need to make sure it'll work later when determining database name for email subject
+		// TODO will need more work after Beta Pilot
+		if (!isNumericPermitNo(permitNo) && !isAlphaNumericPermitNo(permitNo))
+		{
+			throw new DRInvalidPermitNoException("Permit no '" + permitNo + "' is invalid");
+		}
+
 		if (permitDAO.findByPermitNumber(permitNo) == null)
 		{
 			throw new DRPermitNotFoundException("Permit no '" + permitNo + "' not found");
@@ -304,8 +319,11 @@ public class DataExchangeResource
 	/**
 	 * Send notifications upload is complete - currently just email to MonitorPro with csv attachment
 	 * @param attachmentLocation
+	 * @param permitNo 
+	 * @param orgFileName 
 	 */
-	private void sendNotifications(String attachmentLocation)
+	// TODO move to own class hierarchy - also needs tests 
+	private void sendNotifications(String attachmentLocation, String permitNo)
 	{
 		LOGGER.debug("Sending Email with attachment '" + attachmentLocation + "'");
 
@@ -313,11 +331,12 @@ public class DataExchangeResource
 		{
 			EmailSettings settings = this.config.getEmailsettings();
 			MultiPartEmail email = new MultiPartEmail();
+			String subject = getDatabaseNameFromPermitNo(permitNo);
 
 			email.setHostName(settings.getHost());
 			email.setSmtpPort(settings.getPort());
 
-			email.setSubject(settings.getSubject());
+			email.setSubject(subject);
 			email.addTo(settings.getEmailTo());
 			email.setFrom(settings.getEmailFrom());
 			email.setMsg(settings.getBodyMessage());
@@ -336,7 +355,7 @@ public class DataExchangeResource
 			LOGGER.debug("Email details - ");
 			LOGGER.debug("  host - " + settings.getHost());
 			LOGGER.debug("  port - " + settings.getPort());
-			LOGGER.debug("  subject - " + settings.getSubject());
+			LOGGER.debug("  subject - " + subject);
 			LOGGER.debug("  emailTo - " + settings.getEmailTo());
 			LOGGER.debug("  emailFrom - " + settings.getEmailFrom());
 			LOGGER.debug("  tls - " + settings.isTls());

@@ -9,7 +9,8 @@ public enum ApplicationExceptionType
 	PERMIT_NOT_FOUND(704, "Permit not found"),
 	FILE_KEY_MISMATCH(705, "File Key Mismatch"),
 	COLUMN_NAME_NOT_FOUND(706, "Column name not found in schema error message"), 
-	ENVIRONMENT(707, "Environment configuration failure");
+	INVALID_PERMIT_NO(707, "Invalid Permit number"), 
+	ENVIRONMENT(708, "Environment configuration failure");
 
 	private int appStatusCode;
 	private String reason;

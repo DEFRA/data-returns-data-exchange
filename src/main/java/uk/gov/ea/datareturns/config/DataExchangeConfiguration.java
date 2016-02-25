@@ -20,7 +20,6 @@ public class DataExchangeConfiguration extends Configuration
 
 	public static final String ENV_VAR_MONITOR_PRO_HOST = "DR_MONITOR_PRO_HOST";
 	public static final String ENV_VAR_MONITOR_PRO_PORT = "DR_MONITOR_PRO_PORT";
-	public static final String ENV_VAR_MONITOR_PRO_SUBJECT = "DR_MONITOR_PRO_SUBJECT";
 	public static final String ENV_VAR_MONITOR_EMAIL_TO = "DR_MONITOR_PRO_EMAIL_TO";
 	public static final String ENV_VAR_MONITOR_EMAIl_FROM = "DR_MONITOR_PRO_EMAIl_FROM";
 	public static final String ENV_VAR_MONITOR_TLS = "DR_MONITOR_PRO_TLS";
@@ -113,13 +112,12 @@ public class DataExchangeConfiguration extends Configuration
 
 		String monProHost = getEnvVar(ENV_VAR_MONITOR_PRO_HOST);
 		int monProPort = Integer.parseInt(getEnvVar(ENV_VAR_MONITOR_PRO_PORT));
-		String monProSubject = getEnvVar(ENV_VAR_MONITOR_PRO_SUBJECT);
 		String monProEmailTo = getEnvVar(ENV_VAR_MONITOR_EMAIL_TO);
 		String monProEmailFrom = getEnvVar(ENV_VAR_MONITOR_EMAIl_FROM);
 		String monProTLS = getEnvVar(ENV_VAR_MONITOR_TLS);
 		String monProBodyMessage = getEnvVar(ENV_VAR_MONITOR_BODY_MESSAGE);
 
-		emailsettings = new EmailSettings(monProHost, monProPort, monProSubject, monProEmailTo, monProEmailFrom, monProTLS, monProBodyMessage);
+		emailsettings = new EmailSettings(monProHost, monProPort, monProEmailTo, monProEmailFrom, monProTLS, monProBodyMessage);
 
 		database = new DataSourceFactory();
 		database.setUrl(getEnvVar(ENV_VAR_DATABASE_URL));

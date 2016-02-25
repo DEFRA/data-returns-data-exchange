@@ -12,7 +12,7 @@ import static uk.gov.ea.datareturns.type.AppStatusCodeType.APP_STATUS_SUCCESS;
 import static uk.gov.ea.datareturns.type.ApplicationExceptionType.FILE_KEY_MISMATCH;
 import static uk.gov.ea.datareturns.type.ApplicationExceptionType.INVALID_CONTENTS;
 import static uk.gov.ea.datareturns.type.ApplicationExceptionType.MULTIPLE_PERMITS;
-import static uk.gov.ea.datareturns.type.ApplicationExceptionType.NO_RETURNS;
+import static uk.gov.ea.datareturns.type.ApplicationExceptionType.*;
 import static uk.gov.ea.datareturns.type.ApplicationExceptionType.PERMIT_NOT_FOUND;
 import static uk.gov.ea.datareturns.type.ApplicationExceptionType.UNSUPPORTED_FILE_TYPE;
 import io.dropwizard.client.JerseyClientBuilder;
@@ -48,6 +48,8 @@ import uk.gov.ea.datareturns.domain.result.DataExchangeResult;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.google.gson.Gson;
 
+// TODO run local/non-all environments in single run
+
 /**
  * Integration test class for the DataExchangeResource REST service.
  * Uses DropwizardAppRule so real HTTP requests are fired at the interface (using grizzly server).
@@ -55,9 +57,6 @@ import com.google.gson.Gson;
  * The tests are aimed mainly at verifying exceptions thrown from this service which are split in to -
  *     System - returns a standard HTML error code.
  *     Application - returns a standard HTML error code + an application specific status code to help identify what went wrong.
- * 
- * TODO not every single exception is tested - not sure if they ever will as e2e test should provide full coverage
- * TODO deserialise and check individual validation failures
  */
 public class ResourceIntegrationTests
 {
@@ -75,6 +74,7 @@ public class ResourceIntegrationTests
 	public final static String FILE_CSV_MUTLIPLE_PERMITS = "multiple_permits.csv";
 	public final static String FILE_PERMIT_NOT_FOUND = "permit-not-found.csv";
 	public final static String FILE_PERMIT_FOUND = "permit-found.csv";
+	public final static String FILE_INVALID_PERMIT_NO = "invalid-permit-no.csv";
 	public final static String FILE_CSV_FAILURES = "failures.csv";
 	public final static String FILE_CSV_SUCCESS = "success.csv";
 	public final static String FILE_CSV_VALID_VALUE_CHARS = "valid-value-field-chars.csv";
@@ -162,6 +162,17 @@ public class ResourceIntegrationTests
 	}
 
 	@Test
+	public void testInvalidPermitNumber()
+	{
+		final Client client = createClient("test Invalid Permit Number");
+		final Response resp = performUploadStep(client, FILE_INVALID_PERMIT_NO, MEDIA_TYPE_CSV);
+		assertThat(resp.getStatus()).isEqualTo(OK.getStatusCode());
+
+		final DataExchangeResult result = getResultFromResponse(resp);
+		assertThat(result.getAppStatusCode()).isEqualTo(INVALID_PERMIT_NO.getAppStatusCode());
+	}
+
+	@Test
 	public void testPermitNumberNotFound()
 	{
 		final Client client = createClient("test Permit Number Not Found");
@@ -196,9 +207,11 @@ public class ResourceIntegrationTests
 	///////////////////////////////////////////////////////////////////////////////////////////
 	///////////////////////////////////////////////////////////////////////////////////////////
 	///////////////////////////////////////////////////////////////////////////////////////////
-	//////////////////////// Start Application Exception handling tests ///////////////////////
+	////////////////////////// Start System Exception handling tests //////////////////////////
 	///////////////////////////////////////////////////////////////////////////////////////////
-
+	
+	// TODO system exception tests
+	
 	///////////////////////////////////////////////////////////////////////////////////////////
 	/////////////////////////// End System Exception handling tests ///////////////////////////
 	///////////////////////////////////////////////////////////////////////////////////////////
@@ -209,7 +222,7 @@ public class ResourceIntegrationTests
 	///////////////////////////// Start Content Validation tests ////////////////////////////
 	///////////////////////////////////////////////////////////////////////////////////////////
 
-	// TODO expand to test individual validation failures
+	// TODO expand to test individual validation errors
 
 	@Test
 	public void testValidationErrors()
@@ -306,6 +319,7 @@ public class ResourceIntegrationTests
 	// TODO large/average file uploads
 	// TODO email failure
 	// TODO email success (not sure if possible from here?)
+	// TODO currently only tests as far as key mismatch, need somehow to test email and full e2e
 	// TODO + many more
 
 	// TODO CSV converter library (Csv2xml.java) needs forking, including/completing tests etc... also!
@@ -361,6 +375,10 @@ public class ResourceIntegrationTests
 		form.bodyPart(fdp1);
 		final FormDataBodyPart fdp2 = new FormDataBodyPart("userEmail", "abc@abc.com");
 		form.bodyPart(fdp2);
+		final FormDataBodyPart fdp3 = new FormDataBodyPart("orgFileName", "any_file_name.csv");
+		form.bodyPart(fdp3);
+		final FormDataBodyPart fdp4 = new FormDataBodyPart("permitNo", "12345");
+		form.bodyPart(fdp4);
 
 		final String uri = createURIForStep(STEP_COMPLETE);
 		final Response resp = client.register(MultiPartFeature.class).target(uri).request().post(Entity.entity(form, form.getMediaType()), Response.class);
