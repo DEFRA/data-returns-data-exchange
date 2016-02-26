@@ -79,6 +79,8 @@ public class ResourceIntegrationTests
 	public final static String FILE_CSV_SUCCESS = "success.csv";
 	public final static String FILE_CSV_VALID_VALUE_CHARS = "valid-value-field-chars.csv";
 	public final static String FILE_CSV_INVALID_VALUE_CHARS = "invalid-value-field-chars.csv";
+	public final static String FILE_CSV_REQUIRED_FIELDS_ONLY = "required-fields-only.csv";
+	public final static String FILE_CSV_REQUIRED_FIELDS_MISSING = "required-fields-missing.csv";
 
 	public final static String FILE_CONFIG = System.getProperty("configFile");
 
@@ -139,6 +141,39 @@ public class ResourceIntegrationTests
 		assertThat(result.getAppStatusCode()).isEqualTo(INVALID_CONTENTS.getAppStatusCode());
 	}
 
+	/**
+	 * Tests that the backend will load a csv file which only contains the mandatory fields.
+	 */
+	@Test
+	public void testRequiredFieldsOnly()
+	{
+		final Client client = createClient("test Required Fields Only");
+		final Response resp = performUploadStep(client, FILE_CSV_REQUIRED_FIELDS_ONLY, MEDIA_TYPE_CSV);
+		assertThat(resp.getStatus()).isEqualTo(OK.getStatusCode());
+
+		final DataExchangeResult result = getResultFromResponse(resp);
+		assertThat(result.getAppStatusCode()).isEqualTo(APP_STATUS_SUCCESS.getAppStatusCode());
+		
+		// TODO Would like to improve this to check the number of schema validation errors returned but these objects are null.
+		//assertThat(result.getValidationResult().getSchemaErrors().getErrorCount()).isEqualTo(0);
+	}
+
+	/**
+	 * Tests that the backend won't load a csv file that does not include all mandatory fields.
+	 */
+	@Test
+	public void testRequiredFieldsMissing()
+	{
+		final Client client = createClient("test Required Fields Missing");
+		final Response resp = performUploadStep(client, FILE_CSV_REQUIRED_FIELDS_MISSING, MEDIA_TYPE_CSV);
+		assertThat(resp.getStatus()).isEqualTo(OK.getStatusCode());
+
+		final DataExchangeResult result = getResultFromResponse(resp);
+		assertThat(result.getAppStatusCode()).isEqualTo(APP_STATUS_FAILED_WITH_ERRORS.getAppStatusCode());
+		//assertThat(result.getValidationResult().getSchemaErrors().getErrorCount()).isEqualTo(0);
+	}
+
+	
 	@Test
 	public void testNoReturns()
 	{

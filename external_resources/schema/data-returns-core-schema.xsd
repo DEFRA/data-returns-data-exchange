@@ -35,24 +35,24 @@
                     <xs:complexType>
                         <xs:all>
 				            <xs:element type="EPR_Required_String" name="EA_ID"/>
-                            <xs:element type="EPR_mandatoryStringMax255" name="Site_Name"/>
+                            <xs:element type="EPR_mandatoryStringMax255" name="Site_Name" minOccurs="0"/>
                             <xs:element type="EPR_returnType" name="Rtn_Type"/>
                             <xs:element type="EPR_DateTime" name="Mon_Date"/>
-                            <xs:element type="EPR_optionalValidDateTime" name="Mon_Date_End"/>
-                            <xs:element type="EPR_OptionalStringMax30" name="Mon_Period"/><!--TODO Sometimes mandatory-->
-                            <xs:element type="EPR_OptionalStringMax255" name="Smpl_Ref"/>
-                            <xs:element type="EPR_OptionalStringMax255" name="Smpl_By"/>
+                            <xs:element type="EPR_optionalValidDateTime" name="Mon_Date_End" minOccurs="0"/>
+                            <xs:element type="EPR_OptionalStringMax30" name="Mon_Period" minOccurs="0"/><!--TODO Sometimes mandatory-->
+                            <xs:element type="EPR_OptionalStringMax255" name="Smpl_Ref" minOccurs="0"/>
+                            <xs:element type="EPR_OptionalStringMax255" name="Smpl_By" minOccurs="0"/>
                             <xs:element type="EPR_mandatoryStringMax30" name="Mon_Point"/>
                             <xs:element type="EPR_parameterType" name="Parameter"/>
                             <xs:element type="EPR_valueType" name="Value"/>
-                            <xs:element type="EPR_OptionalStringMax255" name="Txt_Value"/>
+                            <xs:element type="EPR_OptionalStringMax255" name="Txt_Value" minOccurs="0"/>
                             <xs:element type="EPR_unitType" name="Unit"/>
-                            <xs:element type="EPR_OptionalStringMax255" name="Ref_Period"/><!--TODO Sometimes mandatory-->
-                            <xs:element type="EPR_OptionalStringMax30" name="Meth_Stand"/>
-                            <xs:element type="EPR_OptionalStringMax255" name="Comments"/>
-                            <xs:element type="EPR_OptionalStringMax255" name="CiC"/>
-                            <xs:element type="EPR_OptionalStringMax255" name="CAS"/>
-                            <xs:element type="EPR_OptionalStringMax255" name="RD_Code"/>
+                            <xs:element type="EPR_OptionalStringMax255" name="Ref_Period" minOccurs="0"/><!--TODO Sometimes mandatory-->
+                            <xs:element type="EPR_OptionalStringMax30" name="Meth_Stand" minOccurs="0"/>
+                            <xs:element type="EPR_OptionalStringMax255" name="Comments" minOccurs="0"/>
+                            <xs:element type="EPR_OptionalStringMax255" name="CiC" minOccurs="0"/>
+                            <xs:element type="EPR_OptionalStringMax255" name="CAS" minOccurs="0"/>
+                            <xs:element type="EPR_OptionalStringMax255" name="RD_Code" minOccurs="0"/>
                         </xs:all>
                         <xs:attribute type="xs:integer" name="srcId" use="optional"/>
                     </xs:complexType>
