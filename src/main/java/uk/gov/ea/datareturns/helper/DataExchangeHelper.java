@@ -8,10 +8,10 @@ import javax.xml.transform.Transformer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import uk.gov.ea.datareturns.domain.dataexchange.EmmaDatabase;
 import uk.gov.ea.datareturns.exception.application.DRInvalidPermitNoException;
 
-public class DataExchangeHelper
-{
+public class DataExchangeHelper {
 	@SuppressWarnings("unused")
 	private static final Logger LOGGER = LoggerFactory.getLogger(DataExchangeHelper.class);
 
@@ -21,23 +21,18 @@ public class DataExchangeHelper
 	private static String ALPHA_NUMERIC_PERMIT_NO_REGEX = "^[A-Za-z][A-Za-z]";
 	private static Pattern alphaNnumPermitNoPattern = Pattern.compile(ALPHA_NUMERIC_PERMIT_NO_REGEX);
 
-	// TODO from configuration file?
-	public static String DATABASE_LOWER_NUMERIC_NAME = "EA_LP_10000_TO_69000_LIST";
 	public static int DATABASE_LOWER_NUMERIC_BOUNDARY = 69999; // Bizarre qwerk, Not in label range
-	public static String DATABASE_UPPER_NUMERIC_NAME = "EA_LP_70000_ABOVE_LIST";
-	public static String DATABASE_LOWER_ALPHA_NUMERIC_NAME = "EA_LP_AA_TO_GZ_LIST";
 	public static char DATABASE_UPPER_ALPHA_NUMERIC_BOUNDARY = 'G';
-	public static String DATABASE_UPPER_ALPHA_NUMERIC_NAME = "EA_LP_HA_TO_ZZ_LIST";
 
 	/**
 	 * Perform XSL transformation
+	 * 
 	 * @param xml
 	 * @param xslt
 	 * @param params
 	 * @return
 	 */
-	public static <T> T transformToResult(String xml, String xslt, Class<T> clazz)
-	{
+	public static <T> T transformToResult(String xml, String xslt, Class<T> clazz) {
 		Transformer transformer = XMLUtilsHelper.createTransformer(xslt);
 
 		T result = XMLUtilsHelper.transformToResult(transformer, xml, clazz);
@@ -47,11 +42,11 @@ public class DataExchangeHelper
 
 	/**
 	 * Number between 5-6 digits long
+	 * 
 	 * @param permitNo
 	 * @return
 	 */
-	public static boolean isNumericPermitNo(String permitNo)
-	{
+	public static boolean isNumericPermitNo(String permitNo) {
 		Matcher m = numPermitNoPattern.matcher(permitNo);
 		boolean ret = m.find();
 
@@ -60,12 +55,12 @@ public class DataExchangeHelper
 
 	// TODO limited validation for Beta Pilot - needs fully implementing later
 	/**
-	 * Must start with at least 2 letters. 
+	 * Must start with at least 2 letters.
+	 * 
 	 * @param permitNo
 	 * @return
 	 */
-	public static boolean isAlphaNumericPermitNo(String permitNo)
-	{
+	public static boolean isAlphaNumericPermitNo(String permitNo) {
 		Matcher m = alphaNnumPermitNoPattern.matcher(permitNo);
 		boolean ret = m.find();
 
@@ -73,35 +68,27 @@ public class DataExchangeHelper
 	}
 
 	/**
-	 * Determines database name from the permit no. 
+	 * Determines database name from the permit no.
+	 * 
 	 * @param permitNo
 	 * @return
 	 */
-	// TODO could do in xslt?
-	public static String getDatabaseNameFromPermitNo(String permitNo)
-	{
-		if (isNumericPermitNo(permitNo))
-		{
-			if (Integer.parseInt(permitNo) <= DATABASE_LOWER_NUMERIC_BOUNDARY)
-			{
-				return DATABASE_LOWER_NUMERIC_NAME;
-			} else
-			{
-				return DATABASE_UPPER_NUMERIC_NAME;
+	public static EmmaDatabase getDatabaseTypeFromPermitNo(String permitNo) {
+		if (isNumericPermitNo(permitNo)) {
+			if (Integer.parseInt(permitNo) <= DATABASE_LOWER_NUMERIC_BOUNDARY) {
+				return EmmaDatabase.LOWER_NUMERIC;
+			} else {
+				return EmmaDatabase.UPPER_NUMERIC;
 			}
-		} else if (isAlphaNumericPermitNo(permitNo))
-		{
+		} else if (isAlphaNumericPermitNo(permitNo)) {
 			char startLetter = permitNo.toUpperCase().charAt(0);
 
-			if (startLetter <= DATABASE_UPPER_ALPHA_NUMERIC_BOUNDARY)
-			{
-				return DATABASE_LOWER_ALPHA_NUMERIC_NAME;
-			} else
-			{
-				return DATABASE_UPPER_ALPHA_NUMERIC_NAME;
+			if (startLetter <= DATABASE_UPPER_ALPHA_NUMERIC_BOUNDARY) {
+				return EmmaDatabase.LOWER_ALPHANUMERIC;
+			} else {
+				return EmmaDatabase.UPPER_ALPHANUMERIC;
 			}
-		} else
-		{
+		} else {
 			throw new DRInvalidPermitNoException("Permit no '" + permitNo + "' is invalid");
 		}
 	}
