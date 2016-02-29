@@ -1,0 +1,6 @@
+/*
+ * DROP AND RECREATE THE DATA_RETURNS DATABASE
+ */
+DROP DATABASE IF EXISTS data_returns;
+CREATE DATABASE data_returns OWNER data_returns_owner ENCODING 'UTF8';
+GRANT ALL PRIVILEGES ON DATABASE data_returns TO data_returns_owner;

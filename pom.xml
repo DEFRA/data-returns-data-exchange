@@ -1,4 +1,5 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
 	<groupId>data-returns-data-exchange</groupId>
@@ -19,7 +20,7 @@
 		<maven.jar.plugin.version>2.6</maven.jar.plugin.version>
 		<onejar.version>1.4.4</onejar.version>
 		<csv.validator.version>1.0</csv.validator.version>
-		<liquibase.version>3.3.0</liquibase.version>
+		<liquibase.version>3.4.2</liquibase.version>
 		<liquibase.maven.plugin.version>3.0.5</liquibase.maven.plugin.version>
 		<postgresql.version>9.4-1205-jdbc42</postgresql.version>
 		<p6spy.version>2.1.4</p6spy.version>
@@ -238,6 +239,83 @@
 					</execution>
 				</executions>
 			</plugin>
+
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>sql-maven-plugin</artifactId>
+				<version>1.5</version>
+
+				<dependencies>
+					<dependency>
+						<groupId>org.postgresql</groupId>
+						<artifactId>postgresql</artifactId>
+						<version>9.4.1208</version>
+					</dependency>
+				</dependencies>
+
+				<!-- common configuration shared by all executions -->
+				<configuration>
+					<driver>org.postgresql.Driver</driver>
+					<url>jdbc:postgresql://localhost:5432/data_returns</url>
+					<username>data_returns_owner</username>
+					<password>data_returns_owner</password>
+				</configuration>
+
+				<executions>
+					<!-- This command can be executed using mvn sql:execute@create-user -->
+					<!-- 
+					TODO: This cannot be done at this point as by default postgres does not have a superuser account availabnle
+					to use over JDBC.
+							
+					It does however work if you are able to pass it a superuser and password to use that is not the data_returns_owner
+					<execution>
+						<id>create-user</id>
+						<goals>
+							<goal>execute</goal>
+						</goals>
+						<configuration>
+							<url>jdbc:postgresql://localhost:5432/postgres</url>
+							<username>**** an existing superuser</username>
+							<password>**** a password for an existing superuser</password>
+							<autocommit>true</autocommit>
+							<srcFiles>
+								<srcFile>${basedir}/external_resources/db/sql/1-create-user.sql</srcFile>
+							</srcFiles>
+							<onError>continue</onError>
+						</configuration>
+					</execution>
+					-->
+					
+					<!-- This command can be executed using mvn sql:execute@prepare-database -->
+					<execution>
+						<id>prepare-database</id>
+						<configuration>
+							<url>jdbc:postgresql://localhost:5432/postgres</url>
+							<username>data_returns_owner</username>
+							<password>data_returns_owner</password>
+							<autocommit>true</autocommit>
+							<srcFiles>
+								<srcFile>${basedir}/external_resources/db/sql/2-prepare-database.sql</srcFile>
+							</srcFiles>
+						</configuration>
+					</execution>
+					<!-- This command can be executed using mvn sql:execute@create-schema -->
+					<execution>
+						<id>create-schema</id>
+						<configuration>
+							<url>jdbc:postgresql://localhost:5432/data_returns</url>
+							<username>data_returns_owner</username>
+							<password>data_returns_owner</password>
+							<autocommit>true</autocommit>
+							<srcFiles>
+								<srcFile>${basedir}/external_resources/db/sql/3-create-schema.sql</srcFile>
+							</srcFiles>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+
+
 			<plugin>
 				<groupId>org.liquibase</groupId>
 				<artifactId>liquibase-maven-plugin</artifactId>
