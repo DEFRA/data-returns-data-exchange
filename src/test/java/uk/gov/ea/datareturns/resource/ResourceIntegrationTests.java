@@ -11,13 +11,11 @@ import static uk.gov.ea.datareturns.type.AppStatusCodeType.APP_STATUS_FAILED_WIT
 import static uk.gov.ea.datareturns.type.AppStatusCodeType.APP_STATUS_SUCCESS;
 import static uk.gov.ea.datareturns.type.ApplicationExceptionType.FILE_KEY_MISMATCH;
 import static uk.gov.ea.datareturns.type.ApplicationExceptionType.INVALID_CONTENTS;
+import static uk.gov.ea.datareturns.type.ApplicationExceptionType.INVALID_PERMIT_NO;
 import static uk.gov.ea.datareturns.type.ApplicationExceptionType.MULTIPLE_PERMITS;
-import static uk.gov.ea.datareturns.type.ApplicationExceptionType.*;
+import static uk.gov.ea.datareturns.type.ApplicationExceptionType.NO_RETURNS;
 import static uk.gov.ea.datareturns.type.ApplicationExceptionType.PERMIT_NOT_FOUND;
 import static uk.gov.ea.datareturns.type.ApplicationExceptionType.UNSUPPORTED_FILE_TYPE;
-import io.dropwizard.client.JerseyClientBuilder;
-import io.dropwizard.client.JerseyClientConfiguration;
-import io.dropwizard.testing.junit.DropwizardAppRule;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -41,12 +39,15 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.fasterxml.jackson.databind.SerializationFeature;
+import com.google.gson.Gson;
+
+import io.dropwizard.client.JerseyClientBuilder;
+import io.dropwizard.client.JerseyClientConfiguration;
+import io.dropwizard.testing.junit.DropwizardAppRule;
 import uk.gov.ea.datareturns.App;
 import uk.gov.ea.datareturns.config.DataExchangeConfiguration;
 import uk.gov.ea.datareturns.domain.result.DataExchangeResult;
-
-import com.fasterxml.jackson.databind.SerializationFeature;
-import com.google.gson.Gson;
 
 // TODO run local/non-all environments in single run
 
@@ -364,7 +365,7 @@ public class ResourceIntegrationTests
 	 * @param testName
 	 * @return
 	 */
-	private Client createClient(String testName)
+	private static Client createClient(String testName)
 	{
 		final JerseyClientConfiguration configuration = new JerseyClientConfiguration();
 		configuration.setChunkedEncodingEnabled(false);
@@ -384,17 +385,24 @@ public class ResourceIntegrationTests
 	 */
 	private Response performUploadStep(Client client, String testFileName, MediaType mediaType)
 	{
+		Response response = null;
 		final String testFilesLocation = RULE.getConfiguration().getTestSettings().getTestFilesLocation();
-		final FormDataMultiPart form = new FormDataMultiPart();
-		final InputStream data = this.getClass().getResourceAsStream(makeFullPath(testFilesLocation, testFileName));
-		final String uri = createURIForStep(STEP_UPLOAD);
-		final StreamDataBodyPart fdp1 = new StreamDataBodyPart("fileUpload", data, testFileName, mediaType);
-
-		form.bodyPart(fdp1);
-
-		final Response resp = client.register(MultiPartFeature.class).target(uri).request().post(Entity.entity(form, form.getMediaType()), Response.class);
-
-		return resp;
+		try (
+			final FormDataMultiPart form = new FormDataMultiPart();
+			final InputStream data = this.getClass().getResourceAsStream(makeFullPath(testFilesLocation, testFileName));
+		) {
+			final String uri = createURIForStep(STEP_UPLOAD);
+			final StreamDataBodyPart fdp1 = new StreamDataBodyPart("fileUpload", data, testFileName, mediaType);
+	
+			form.bodyPart(fdp1);
+	
+			response = client.register(MultiPartFeature.class).target(uri).request().post(Entity.entity(form, form.getMediaType()), Response.class);
+	
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return response;
 	}
 
 	/**
@@ -403,22 +411,25 @@ public class ResourceIntegrationTests
 	 * @param fileKey
 	 * @return
 	 */
-	private Response performCompleteStep(Client client, String fileKey)
+	private static Response performCompleteStep(Client client, String fileKey)
 	{
-		final FormDataMultiPart form = new FormDataMultiPart();
-		final FormDataBodyPart fdp1 = new FormDataBodyPart("fileKey", fileKey);
-		form.bodyPart(fdp1);
-		final FormDataBodyPart fdp2 = new FormDataBodyPart("userEmail", "abc@abc.com");
-		form.bodyPart(fdp2);
-		final FormDataBodyPart fdp3 = new FormDataBodyPart("orgFileName", "any_file_name.csv");
-		form.bodyPart(fdp3);
-		final FormDataBodyPart fdp4 = new FormDataBodyPart("permitNo", "12345");
-		form.bodyPart(fdp4);
-
-		final String uri = createURIForStep(STEP_COMPLETE);
-		final Response resp = client.register(MultiPartFeature.class).target(uri).request().post(Entity.entity(form, form.getMediaType()), Response.class);
-
-		return resp;
+		Response response = null;
+		try (final FormDataMultiPart form = new FormDataMultiPart()) {
+			final FormDataBodyPart fdp1 = new FormDataBodyPart("fileKey", fileKey);
+			form.bodyPart(fdp1);
+			final FormDataBodyPart fdp2 = new FormDataBodyPart("userEmail", "abc@abc.com");
+			form.bodyPart(fdp2);
+			final FormDataBodyPart fdp3 = new FormDataBodyPart("orgFileName", "any_file_name.csv");
+			form.bodyPart(fdp3);
+			final FormDataBodyPart fdp4 = new FormDataBodyPart("permitNo", "12345");
+			form.bodyPart(fdp4);
+	
+			final String uri = createURIForStep(STEP_COMPLETE);
+			response = client.register(MultiPartFeature.class).target(uri).request().post(Entity.entity(form, form.getMediaType()), Response.class);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return response;
 	}
 
 	/**
@@ -426,7 +437,7 @@ public class ResourceIntegrationTests
 	 * @param resp
 	 * @return
 	 */
-	private DataExchangeResult getResultFromResponse(Response resp)
+	private static DataExchangeResult getResultFromResponse(Response resp)
 	{
 		final Gson gson = new Gson();
 
@@ -461,7 +472,7 @@ public class ResourceIntegrationTests
 	 * @param step
 	 * @return
 	 */
-	private String createURIForStep(String step)
+	private static String createURIForStep(String step)
 	{
 		return String.format(URI, RULE.getLocalPort(), step);
 	}
@@ -470,7 +481,7 @@ public class ResourceIntegrationTests
 	 * Debug method to output Result data in XML and JSON
 	 * @param result
 	 */
-	private void dumpResult(DataExchangeResult result)
+	private static void dumpResult(DataExchangeResult result)
 	{
 		if (debugMode)
 		{

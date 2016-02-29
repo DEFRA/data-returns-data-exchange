@@ -30,13 +30,6 @@ public class FileUtilsHelperTests
 	private final static String TEST_XML_EXT = "xml";
 	private final static String TEST_FILE_CONTENTS = "up the City!";
 
-	@Test
-	public void coverage()
-	{
-		@SuppressWarnings("unused")
-		FileUtilsHelper helper = new FileUtilsHelper();
-	}
-
 	@Before
 	public void setup() throws IOException
 	{
@@ -267,38 +260,38 @@ public class FileUtilsHelperTests
 
 	// Helper methods
 
-	private String getTestCSVFileName()
+	private static String getTestCSVFileName()
 	{
 		return TEST_FILE_NAME + "." + TEST_CSV_EXT;
 	}
 
-	private String getTestXMLFileName()
+	private static String getTestXMLFileName()
 	{
 		return TEST_FILE_NAME + "." + TEST_XML_EXT;
 	}
 
-	private String getTestRootDirectory()
+	private static String getTestRootDirectory()
 	{
 		return TEST_ROOT_DIRECTORY;
 	}
 
-	private String getTestDirectory()
+	private static String getTestDirectory()
 	{
 		return TEST_DIRECTORY;
 	}
 
-	private String getTestFullDirectory()
+	private static String getTestFullDirectory()
 	{
 		return getTestRootDirectory() + File.separator + getTestDirectory();
 	}
 
-	private String getTestFullCSVFilename()
+	private static String getTestFullCSVFilename()
 	{
 		return getTestFullDirectory() + File.separator + getTestCSVFileName();
 	}
 
 	@SuppressWarnings("unused")
-	private String getTestFullXMLFilename()
+	private static String getTestFullXMLFilename()
 	{
 		return getTestFullDirectory() + File.separator + getTestXMLFileName();
 	}

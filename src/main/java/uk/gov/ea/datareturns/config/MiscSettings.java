@@ -2,8 +2,6 @@ package uk.gov.ea.datareturns.config;
 
 import org.hibernate.validator.constraints.NotEmpty;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-
 /**
  * @author adrianharrison
  * Holds miscellaneous settings from configuration file

@@ -17,10 +17,10 @@ import org.slf4j.LoggerFactory;
 import uk.gov.ea.datareturns.exception.system.DRFileReadException;
 import uk.gov.ea.datareturns.exception.system.DRFileSaveException;
 
-public class FileUtilsHelper
+public abstract class FileUtilsHelper
 {
 	private static final Logger LOGGER = LoggerFactory.getLogger(FileUtilsHelper.class);
-
+	
 	/**
 	 * Create full file path
 	 * @param dir

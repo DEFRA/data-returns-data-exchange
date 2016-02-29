@@ -219,25 +219,15 @@ public class DataExchangeResource
 	 * Basic file validation
 	 * @param uploadedFile
 	 */
-	private void validateUploadFile(String uploadedFile)
+	private static void validateUploadFile(String uploadedFile)
 	{
-		String fileType = getConverterType(uploadedFile);
+		String fileType = FilenameUtils.getExtension(uploadedFile);
 
 		// Release 1 must be csv
 		if (!fileType.equalsIgnoreCase(FileType.CSV.getFileType()))
 		{
 			throw new DRUnsupportedFileTypeException("Unsupported file type '" + fileType + "'");
 		}
-	}
-
-	/**
-	 * Determines the converter type using file name extension
-	 * @param fileName
-	 * @return
-	 */
-	private String getConverterType(String fileName)
-	{
-		return FilenameUtils.getExtension(fileName);
 	}
 
 	/**

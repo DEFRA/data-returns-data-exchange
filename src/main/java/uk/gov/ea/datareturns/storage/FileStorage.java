@@ -51,7 +51,6 @@ public class FileStorage
 	public FileStorage(String environment, String redisHost, int redisPort)
 	{
 		this.environment = environment;
-		
 		this.fileKeyStorage = new Jedis(redisHost, redisPort);
 	}
 
@@ -65,25 +64,6 @@ public class FileStorage
 		this.s3Config.setProxyPort(s3ProxyPort);
 	}
 
-	public String getEnvironment()
-	{
-		return environment;
-	}
-
-	public void setEnvironment(String environment)
-	{
-		this.environment = environment;
-	}
-
-	public ClientConfiguration getS3Config()
-	{
-		return s3Config;
-	}
-
-	public Jedis getfileKeyStorage()
-	{
-		return fileKeyStorage;
-	}
 
 	public String saveInvalidFile(String fileLocation)
 	{
@@ -170,12 +150,13 @@ public class FileStorage
 			
 			String key = makeFileDestinationPath(outcome, fileLocation);
 
-			try
-			{
-				AmazonS3 s3client = new AmazonS3Client(new EnvironmentVariableCredentialsProvider(), s3Config);
-
-				LOGGER.debug("Retrieving file '" + fileLocation + "' from S3 Bucket '" + BUCKET + "'");
+			AmazonS3 s3client = new AmazonS3Client(new EnvironmentVariableCredentialsProvider(), s3Config);
+			LOGGER.debug("Retrieving file '" + fileLocation + "' from S3 Bucket '" + BUCKET + "'");
+			try (
 				S3Object s3object = s3client.getObject(new GetObjectRequest(BUCKET, key));
+			)
+			{
+
 				LOGGER.debug("File '" + fileLocation + "' retrieved successfully");
 				
 				fileLocation = makeFullPath(saveFileLocation, fileLocation);
@@ -184,16 +165,16 @@ public class FileStorage
 			} catch (AmazonServiceException ase)
 			{
 				throw new DRExternalServiceException(ase, "AWS failed to process getObject() request");
-			} catch (AmazonClientException ace)
+			} catch (AmazonClientException | IOException e)
 			{
-				throw new DRExternalServiceException(ace, "General AWS communication failure");
+				throw new DRExternalServiceException(e, "General AWS communication failure");
 			}
 		}
 
 		return fileLocation;
 	}
 
-	private Protocol getProtocolFromType(String protocol)
+	private static Protocol getProtocolFromType(String protocol)
 	{
 		return (PROTOCOL_HTTP.equalsIgnoreCase(protocol) ? HTTP : HTTPS);
 	}
@@ -202,7 +183,7 @@ public class FileStorage
 	 * Generate a unique key (uses UUID class for now)
 	 * @return
 	 */
-	private String generateFileKey()
+	private static String generateFileKey()
 	{
 		return UUID.randomUUID().toString();
 	}

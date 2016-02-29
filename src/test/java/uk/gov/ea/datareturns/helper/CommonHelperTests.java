@@ -8,13 +8,6 @@ import org.junit.Test;
 public class CommonHelperTests
 {
 	@Test
-	public void coverage()
-	{
-		@SuppressWarnings("unused")
-		CommonHelper helper = new CommonHelper();
-	}
-
-	@Test
 	public void testIsLocalEnvironment()
 	{
 		assertThat(isLocalEnvironment("local")).isTrue();

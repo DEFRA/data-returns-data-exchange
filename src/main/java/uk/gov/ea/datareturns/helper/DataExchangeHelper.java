@@ -11,7 +11,8 @@ import org.slf4j.LoggerFactory;
 import uk.gov.ea.datareturns.domain.dataexchange.EmmaDatabase;
 import uk.gov.ea.datareturns.exception.application.DRInvalidPermitNoException;
 
-public class DataExchangeHelper {
+public abstract class DataExchangeHelper
+{
 	@SuppressWarnings("unused")
 	private static final Logger LOGGER = LoggerFactory.getLogger(DataExchangeHelper.class);
 

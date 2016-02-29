@@ -70,7 +70,7 @@ public class ValidateXML implements Validate
 			// TODO XLST needs to be made more efficient, slow with large files 
 			String xsltFileLocation = makeFullPath(xsltLocation, XSLT_GET_SOURCE_ROW_NUMS);
 			String lineNos = transformToString(xmlFile, xsltFileLocation, params);
-			ValidationResult validationResult = (ValidationResult) deserializeFromXML(lineNos, ValidationResult.class);
+			ValidationResult validationResult = deserializeFromXML(lineNos, ValidationResult.class);
 
 			// Get user-friendly message translations
 			LOGGER.debug("Getting user-friendly error message translations");
@@ -135,7 +135,7 @@ public class ValidateXML implements Validate
 	 * @param target
 	 * @param source
 	 */
-	private void mergeSourceLineNos(ValidationResult target, ValidationResult source)
+	private static void mergeSourceLineNos(ValidationResult target, ValidationResult source)
 	{
 		LOGGER.debug("Merging source line nos");
 

@@ -3,7 +3,7 @@ package uk.gov.ea.datareturns.helper;
 import static uk.gov.ea.datareturns.type.EnvironmentType.LOCAL;
 import uk.gov.ea.datareturns.exception.application.DREnvironmentException;
 
-public class CommonHelper
+public abstract class CommonHelper
 {
 	public final static String ENV_LOCAL = "local";
 

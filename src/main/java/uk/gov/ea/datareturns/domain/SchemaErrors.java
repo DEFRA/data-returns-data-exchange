@@ -87,8 +87,8 @@ public class SchemaErrors
 			lineNos.append(v.getInputLineNo() + ",");
 
 		});
-
-		return lineNos.toString().substring(0, lineNos.toString().length() - 1);
+		lineNos.setLength(Math.max(0, lineNos.length() - 1));
+		return lineNos.toString();
 	}
 
 	/**
@@ -96,7 +96,7 @@ public class SchemaErrors
 	 * @param id
 	 * @return
 	 */
-	private String makeKey(String id)
+	private static String makeKey(String id)
 	{
 		return ID_PREFIX + id;
 	}

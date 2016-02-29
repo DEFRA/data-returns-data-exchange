@@ -12,13 +12,6 @@ import uk.gov.ea.datareturns.exception.application.DRInvalidPermitNoException;
 public class DataExchangeHelperTests
 {
 	@Test
-	public void coverage()
-	{
-		@SuppressWarnings("unused")
-		DataExchangeHelper helper = new DataExchangeHelper();
-	}
-
-	@Test
 	public void testInValidNumericPermitNo()
 	{
 		assertThat(isNumericPermitNo("1234")).isFalse();

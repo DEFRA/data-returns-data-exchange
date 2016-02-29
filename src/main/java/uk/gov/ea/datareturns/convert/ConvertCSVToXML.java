@@ -93,18 +93,13 @@ public class ConvertCSVToXML
 
 		converter.createNewDocument(ROOT_ELEMENT);
 
-		try
+		try (
+				InputStream csvInput = Csv2xml.getInputStream(fileToConvert);
+				OutputStream xmlOutput = new FileOutputStream(convertedFile);
+			)
 		{
-			InputStream csvInput = Csv2xml.getInputStream(fileToConvert);
-
 			rowsConverted = converter.convert(csvInput, separator, ROW_ELEMENT);
-
-			OutputStream xmlOutput = new FileOutputStream(convertedFile);
-
 			converter.writeTo(xmlOutput);
-
-			xmlOutput.close();
-			csvInput.close();
 
 		} catch (FileNotFoundException e1)
 		{

@@ -51,7 +51,7 @@ public class App extends Application<DataExchangeConfiguration>
 	}
 
 	// TODO CORS config for release?
-	private void configureCors(Environment env)
+	private static void configureCors(Environment env)
 	{
 		FilterRegistration.Dynamic filter = env.servlets().addFilter("CORS", CrossOriginFilter.class);
 		filter.addMappingForUrlPatterns(EnumSet.allOf(DispatcherType.class), true, "/*");
