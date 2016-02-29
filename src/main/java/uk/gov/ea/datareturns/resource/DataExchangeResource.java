@@ -3,9 +3,6 @@ package uk.gov.ea.datareturns.resource;
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 import static javax.ws.rs.core.MediaType.MULTIPART_FORM_DATA;
 import static uk.gov.ea.datareturns.helper.CommonHelper.isLocalEnvironment;
-import static uk.gov.ea.datareturns.helper.DataExchangeHelper.getDatabaseNameFromPermitNo;
-import static uk.gov.ea.datareturns.helper.DataExchangeHelper.isAlphaNumericPermitNo;
-import static uk.gov.ea.datareturns.helper.DataExchangeHelper.isNumericPermitNo;
 import static uk.gov.ea.datareturns.helper.FileUtilsHelper.makeFullPath;
 import static uk.gov.ea.datareturns.helper.FileUtilsHelper.saveFile;
 import static uk.gov.ea.datareturns.helper.XMLUtilsHelper.deserializeFromXML;
@@ -34,14 +31,18 @@ import org.hibernate.validator.constraints.NotEmpty;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.codahale.metrics.annotation.Timed;
+
 import uk.gov.ea.datareturns.config.DataExchangeConfiguration;
 import uk.gov.ea.datareturns.config.EmailSettings;
+import uk.gov.ea.datareturns.config.EmmaDatabaseSettings;
 import uk.gov.ea.datareturns.config.MiscSettings;
 import uk.gov.ea.datareturns.config.RedisSettings;
 import uk.gov.ea.datareturns.config.S3ProxySettings;
 import uk.gov.ea.datareturns.convert.ConvertCSVToXML;
 import uk.gov.ea.datareturns.convert.ConvertXMLToCSV;
 import uk.gov.ea.datareturns.dao.PermitDAO;
+import uk.gov.ea.datareturns.domain.dataexchange.EmmaDatabase;
 import uk.gov.ea.datareturns.domain.result.CompleteResult;
 import uk.gov.ea.datareturns.domain.result.DataExchangeResult;
 import uk.gov.ea.datareturns.domain.result.GeneralResult;
@@ -52,12 +53,11 @@ import uk.gov.ea.datareturns.exception.application.DRMultiplePermitsException;
 import uk.gov.ea.datareturns.exception.application.DRPermitNotFoundException;
 import uk.gov.ea.datareturns.exception.application.DRUnsupportedFileTypeException;
 import uk.gov.ea.datareturns.exception.system.DRNotificationException;
+import uk.gov.ea.datareturns.helper.DataExchangeHelper;
 import uk.gov.ea.datareturns.storage.FileStorage;
 import uk.gov.ea.datareturns.type.FileType;
 import uk.gov.ea.datareturns.validate.Validate;
 import uk.gov.ea.datareturns.validate.ValidateXML;
-
-import com.codahale.metrics.annotation.Timed;
 
 // TODO move some methods to helper classes
 
@@ -285,7 +285,8 @@ public class DataExchangeResource
 		// Validate the permit no format even though it's valid as exists in permit list but 
 		// need to make sure it'll work later when determining database name for email subject
 		// TODO will need more work after Beta Pilot
-		if (!isNumericPermitNo(permitNo) && !isAlphaNumericPermitNo(permitNo))
+		if (!DataExchangeHelper.isNumericPermitNo(permitNo) 
+				&& !DataExchangeHelper.isAlphaNumericPermitNo(permitNo))
 		{
 			throw new DRInvalidPermitNoException("Permit no '" + permitNo + "' is invalid");
 		}
@@ -327,11 +328,14 @@ public class DataExchangeResource
 	{
 		LOGGER.debug("Sending Email with attachment '" + attachmentLocation + "'");
 
+		EmmaDatabaseSettings dbSettings = this.config.getEmmaDatabaseSettings();
+		
 		try
 		{
-			EmailSettings settings = this.config.getEmailsettings();
-			MultiPartEmail email = new MultiPartEmail();
-			String subject = getDatabaseNameFromPermitNo(permitNo);
+			final EmailSettings settings = this.config.getEmailsettings();
+			final MultiPartEmail email = new MultiPartEmail();
+			final EmmaDatabase type = DataExchangeHelper.getDatabaseTypeFromPermitNo(permitNo);
+			String subject = dbSettings.getDatabaseName(type);
 
 			email.setHostName(settings.getHost());
 			email.setSmtpPort(settings.getPort());

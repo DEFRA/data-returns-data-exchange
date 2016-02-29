@@ -1,12 +1,12 @@
 package uk.gov.ea.datareturns.helper;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static uk.gov.ea.datareturns.helper.DataExchangeHelper.getDatabaseNameFromPermitNo;
 import static uk.gov.ea.datareturns.helper.DataExchangeHelper.isAlphaNumericPermitNo;
 import static uk.gov.ea.datareturns.helper.DataExchangeHelper.isNumericPermitNo;
 
 import org.junit.Test;
 
+import uk.gov.ea.datareturns.domain.dataexchange.EmmaDatabase;
 import uk.gov.ea.datareturns.exception.application.DRInvalidPermitNoException;
 
 public class DataExchangeHelperTests
@@ -54,37 +54,37 @@ public class DataExchangeHelperTests
 	@Test
 	public void testLowerDBNameFromNumericPermitNo()
 	{
-		String expected = "EA_LP_10000_TO_69000_LIST";
+		EmmaDatabase expected = EmmaDatabase.LOWER_NUMERIC;
 
-		assertThat(getDatabaseNameFromPermitNo("10000")).isEqualTo(expected);
-		assertThat(getDatabaseNameFromPermitNo("69999")).isEqualTo(expected);
+		assertThat(DataExchangeHelper.getDatabaseTypeFromPermitNo("10000")).isEqualTo(expected);
+		assertThat(DataExchangeHelper.getDatabaseTypeFromPermitNo("69999")).isEqualTo(expected);
 	}
 
 	@Test
 	public void testUpperDBNameFromNumericPermitNo()
 	{
-		String expected = "EA_LP_70000_ABOVE_LIST";
+		EmmaDatabase expected = EmmaDatabase.UPPER_NUMERIC;
 
-		assertThat(getDatabaseNameFromPermitNo("70000")).isEqualTo(expected);
-		assertThat(getDatabaseNameFromPermitNo("969001")).isEqualTo(expected);
+		assertThat(DataExchangeHelper.getDatabaseTypeFromPermitNo("70000")).isEqualTo(expected);
+		assertThat(DataExchangeHelper.getDatabaseTypeFromPermitNo("969001")).isEqualTo(expected);
 	}
 
 	@Test
 	public void testLowerDBNameFromAlphaNumericPermitNo()
 	{
-		String expected = "EA_LP_AA_TO_GZ_LIST";
+		EmmaDatabase expected = EmmaDatabase.LOWER_ALPHANUMERIC;
 
-		assertThat(getDatabaseNameFromPermitNo("aa123")).isEqualTo(expected);
-		assertThat(getDatabaseNameFromPermitNo("gZ123")).isEqualTo(expected);
+		assertThat(DataExchangeHelper.getDatabaseTypeFromPermitNo("aa123")).isEqualTo(expected);
+		assertThat(DataExchangeHelper.getDatabaseTypeFromPermitNo("gZ123")).isEqualTo(expected);
 	}
 
 	@Test
 	public void testUpperDBNameFromAlphaNumericPermitNo()
 	{
-		String expected = "EA_LP_HA_TO_ZZ_LIST";
+		EmmaDatabase expected = EmmaDatabase.UPPER_ALPHANUMERIC;
 
-		assertThat(getDatabaseNameFromPermitNo("Ha123")).isEqualTo(expected);
-		assertThat(getDatabaseNameFromPermitNo("zZ123")).isEqualTo(expected);
+		assertThat(DataExchangeHelper.getDatabaseTypeFromPermitNo("Ha123")).isEqualTo(expected);
+		assertThat(DataExchangeHelper.getDatabaseTypeFromPermitNo("zZ123")).isEqualTo(expected);
 	}
 
 	@Test
@@ -92,7 +92,7 @@ public class DataExchangeHelperTests
 	{
 		try
 		{
-			getDatabaseNameFromPermitNo(";a123");
+			DataExchangeHelper.getDatabaseTypeFromPermitNo(";a123");
 		} catch (Exception e)
 		{
 			assertThat(e).isInstanceOf(DRInvalidPermitNoException.class);

@@ -21,7 +21,7 @@ public class DataExchangeConfiguration extends Configuration
 	public static final String ENV_VAR_MONITOR_PRO_HOST = "DR_MONITOR_PRO_HOST";
 	public static final String ENV_VAR_MONITOR_PRO_PORT = "DR_MONITOR_PRO_PORT";
 	public static final String ENV_VAR_MONITOR_EMAIL_TO = "DR_MONITOR_PRO_EMAIL_TO";
-	public static final String ENV_VAR_MONITOR_EMAIl_FROM = "DR_MONITOR_PRO_EMAIl_FROM";
+	public static final String ENV_VAR_MONITOR_EMAIL_FROM = "DR_MONITOR_PRO_EMAIl_FROM";
 	public static final String ENV_VAR_MONITOR_TLS = "DR_MONITOR_PRO_TLS";
 	public static final String ENV_VAR_MONITOR_BODY_MESSAGE = "DR_MONITOR_PRO_BODY_MESSAGE";
 
@@ -34,6 +34,10 @@ public class DataExchangeConfiguration extends Configuration
 	@NotNull
 	private MiscSettings miscSettings = new MiscSettings();
 
+	@Valid
+	@NotNull
+	private EmmaDatabaseSettings emmaDatabaseSettings = new EmmaDatabaseSettings();
+	
 	@Valid
 	@NotNull
 	private TestSettings testSettings = new TestSettings();
@@ -70,6 +74,27 @@ public class DataExchangeConfiguration extends Configuration
 	public void setTestSettings(TestSettings testSettings)
 	{
 		this.testSettings = testSettings;
+	}
+	
+	
+
+	/**
+	 * Retrieve the available settings for the upload to the EMMA database
+	 * @return an instance of {@link EmmaDatabaseSettings}
+	 */
+	@JsonProperty("emmaDatabase")
+	public EmmaDatabaseSettings getEmmaDatabaseSettings() {
+		return emmaDatabaseSettings;
+	}
+
+	
+	/**
+	 * Set the available settings for the upload to the EMMA database
+	 * @param emmaDatabaseSettings instance of {@link EmmaDatabaseSettings}
+	 */
+	@JsonProperty("emmaDatabase")
+	public void setEmmaDatabaseSettings(EmmaDatabaseSettings emmaDatabaseSettings) {
+		this.emmaDatabaseSettings = emmaDatabaseSettings;
 	}
 
 	public FileStorageSettings getFileStorageSettings()
@@ -113,7 +138,7 @@ public class DataExchangeConfiguration extends Configuration
 		String monProHost = getEnvVar(ENV_VAR_MONITOR_PRO_HOST);
 		int monProPort = Integer.parseInt(getEnvVar(ENV_VAR_MONITOR_PRO_PORT));
 		String monProEmailTo = getEnvVar(ENV_VAR_MONITOR_EMAIL_TO);
-		String monProEmailFrom = getEnvVar(ENV_VAR_MONITOR_EMAIl_FROM);
+		String monProEmailFrom = getEnvVar(ENV_VAR_MONITOR_EMAIL_FROM);
 		String monProTLS = getEnvVar(ENV_VAR_MONITOR_TLS);
 		String monProBodyMessage = getEnvVar(ENV_VAR_MONITOR_BODY_MESSAGE);
 
