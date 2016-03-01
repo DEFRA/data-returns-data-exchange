@@ -27,11 +27,12 @@
 		<commons.email.version>1.4</commons.email.version>
 		<commons.io.version>2.4</commons.io.version>
 		<xerces.version>2.11.0</xerces.version>
-		<saxon-dom.version>8.7</saxon-dom.version>
 		<jackson-dataformat-xml.version>2.6.3</jackson-dataformat-xml.version>
 		<codehaus.woodstox.version>4.4.1</codehaus.woodstox.version>
 		<redis.client.version>2.8.0</redis.client.version>
 		<aws.java.sdk.version>1.10.49</aws.java.sdk.version>
+		<saxon.version>9.1.0.8</saxon.version>
+
 
 		<!-- Test -->
 		<mockito.version>1.10.19</mockito.version>
@@ -124,10 +125,18 @@
 			<artifactId>xercesImpl</artifactId>
 			<version>${xerces.version}</version>
 		</dependency>
+
 		<dependency>
-			<groupId>net.sf.saxon</groupId>
-			<artifactId>saxon-dom</artifactId>
-			<version>${saxon-dom.version}</version>
+			<groupId>net.sourceforge.saxon</groupId>
+			<artifactId>saxon</artifactId>
+			<version>${saxon.version}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>net.sourceforge.saxon</groupId>
+			<artifactId>saxon</artifactId>
+			<version>${saxon.version}</version>
+			<classifier>dom</classifier>
 		</dependency>
 		<dependency>
 			<groupId>com.fasterxml.jackson.dataformat</groupId>
@@ -195,6 +204,19 @@
 		</dependency>
 	</dependencies>
 	<build>
+		<resources>
+			<resource>
+				<directory>src/main/java</directory>
+			</resource>
+			<resource>
+				<filtering>false</filtering>
+				<directory>src/main/resources</directory>
+				<includes>
+					<include>**/*</include>
+				</includes>
+			</resource>
+		</resources>
+
 		<plugins>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
@@ -263,29 +285,16 @@
 
 				<executions>
 					<!-- This command can be executed using mvn sql:execute@create-user -->
-					<!-- 
-					TODO: This cannot be done at this point as by default postgres does not have a superuser account availabnle
-					to use over JDBC.
-							
-					It does however work if you are able to pass it a superuser and password to use that is not the data_returns_owner
-					<execution>
-						<id>create-user</id>
-						<goals>
-							<goal>execute</goal>
-						</goals>
-						<configuration>
-							<url>jdbc:postgresql://localhost:5432/postgres</url>
-							<username>**** an existing superuser</username>
-							<password>**** a password for an existing superuser</password>
-							<autocommit>true</autocommit>
-							<srcFiles>
-								<srcFile>${basedir}/external_resources/db/sql/1-create-user.sql</srcFile>
-							</srcFiles>
-							<onError>continue</onError>
-						</configuration>
-					</execution>
-					-->
-					
+					<!-- TODO: This cannot be done at this point as by default postgres 
+						does not have a superuser account availabnle to use over JDBC. It does however 
+						work if you are able to pass it a superuser and password to use that is not 
+						the data_returns_owner <execution> <id>create-user</id> <goals> <goal>execute</goal> 
+						</goals> <configuration> <url>jdbc:postgresql://localhost:5432/postgres</url> 
+						<username>**** an existing superuser</username> <password>**** a password 
+						for an existing superuser</password> <autocommit>true</autocommit> <srcFiles> 
+						<srcFile>${basedir}/external_resources/db/sql/1-create-user.sql</srcFile> 
+						</srcFiles> <onError>continue</onError> </configuration> </execution> -->
+
 					<!-- This command can be executed using mvn sql:execute@prepare-database -->
 					<execution>
 						<id>prepare-database</id>
@@ -339,11 +348,6 @@
 				</executions>
 			</plugin>
 		</plugins>
-		<resources>
-			<resource>
-				<directory>src/main/java</directory>
-			</resource>
-		</resources>
 	</build>
 	<pluginRepositories>
 		<pluginRepository>

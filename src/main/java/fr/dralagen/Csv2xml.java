@@ -245,13 +245,11 @@ public class Csv2xml {
      * @param out Write the xml document in output
      */
     public void writeTo(OutputStream out) {
-        ByteArrayOutputStream baos = null;
-        OutputStreamWriter osw = null;
+        try (
+            	ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            	OutputStreamWriter osw = new OutputStreamWriter(baos, "UTF-8");
+        	) {
 
-        try {
-
-            baos = new ByteArrayOutputStream();
-            osw = new OutputStreamWriter(baos, "UTF-8");
 
             TransformerFactory tranFactory = TransformerFactory.newInstance();
             Transformer aTransformer = tranFactory.newTransformer();
@@ -270,21 +268,6 @@ public class Csv2xml {
 
         } catch (Exception exp) {
             exp.printStackTrace();
-        } finally {
-            if (osw != null) {
-                try {
-                    osw.close();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-            if (baos != null) {
-                try {
-                    baos.close();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
         }
     }
 

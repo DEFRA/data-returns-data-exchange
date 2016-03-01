@@ -1,5 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<xsl:stylesheet version="2.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:fn="http://www.w3.org/2005/xpath-functions">
+<xsl:stylesheet version="2.0" 
+				xmlns:xsl="http://www.w3.org/1999/XSL/Transform" 
+				xmlns:xs="http://www.w3.org/2001/XMLSchema" 
+				xmlns:fn="http://www.w3.org/2005/xpath-functions">
 
 	<xsl:output method="text" encoding="UTF-8" indent="no" omit-xml-declaration="yes" />
 	
@@ -93,11 +96,11 @@
 	</xsl:template>
 
 	<xsl:template match="Mon_Date">
-		<xsl:call-template name="add-non-delimited-value"/>
+		<xsl:call-template name="add-date-time"/>
 	</xsl:template>
 
 	<xsl:template match="Mon_Date_End">
-		<xsl:call-template name="add-non-delimited-value"/>
+		<xsl:call-template name="add-date-time"/>
 	</xsl:template>
 
 	<xsl:template match="Mon_Period">
@@ -170,8 +173,32 @@
 		<xsl:value-of select="normalize-space(.)" />
 	</xsl:template>
 
+	<xsl:template name="add-date-time">
+		<xsl:variable name="dtVal" select="normalize-space(.)" />
+		
+		<xsl:analyze-string select="$dtVal"
+							regex="(\d+)-(\d{{2}})-(\d+)(T\d{{2}}:\d{{2}}:\d{{2}})?">
+			<xsl:matching-substring>
+				<xsl:choose>
+					<xsl:when test="string-length(regex-group(1)) = 4">
+						<!-- Date is already in international format (yyyy-mm-dd) -->
+						<xsl:value-of select="concat(regex-group(1), '-', regex-group(2), '-', regex-group(3))"/>
+					</xsl:when>
+					<xsl:otherwise>
+						<!-- Date is in UK format dd-mm-yyyy, convert to international format -->
+						<xsl:value-of select="concat(regex-group(3), '-', regex-group(2), '-', regex-group(1))"/>
+					</xsl:otherwise>
+				</xsl:choose>
+				<xsl:value-of select="regex-group(4)"/>
+			</xsl:matching-substring>
+			<xsl:non-matching-substring>
+				<xsl:message>convert_to_csv.xslt: Invalid date (<xsl:value-of select="."/>) encountered, ignoring.</xsl:message>
+			</xsl:non-matching-substring>
+		</xsl:analyze-string>
+	</xsl:template>
+
+
 	<xsl:template name="add-quote-delimited-value">
 		<xsl:value-of select="$quote"/><xsl:call-template name="add-non-delimited-value"/><xsl:value-of select="$quote"/>
 	</xsl:template>
-
 </xsl:stylesheet>
