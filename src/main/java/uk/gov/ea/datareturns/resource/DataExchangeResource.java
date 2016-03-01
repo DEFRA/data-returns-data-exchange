@@ -265,8 +265,9 @@ public class DataExchangeResource
 		GeneralResult generalResult = deserializeFromXML(result, GeneralResult.class);
 
 		// Release 1 - single permit only
-		if (generalResult.getResultCount() > 1)
-		{
+		if (generalResult == null || generalResult.getResultCount() == 0) {
+			throw new DRPermitNotFoundException("No permits were found in file '" + FilenameUtils.getName(workingFile) + "'");
+		} else if (generalResult.getResultCount() > 1) {
 			throw new DRMultiplePermitsException("Multiple Permits found in file '" + FilenameUtils.getName(workingFile) + "'");
 		}
 

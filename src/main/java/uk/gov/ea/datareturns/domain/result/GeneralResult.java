@@ -32,19 +32,25 @@ public class GeneralResult
 	@JsonIgnore
 	public String getSingleResultValue()
 	{
-		Map.Entry<String, Result> entry = transformationResults.getResults().entrySet().iterator().next();
-		Result result = entry.getValue();
-
-		return result.getValue();
+		if (transformationResults.getResults() != null) {
+			Map.Entry<String, Result> entry = transformationResults.getResults().entrySet().iterator().next();
+			Result result = entry.getValue();
+			
+			return result.getValue();
+		}
+		return null;
 	}
 
 	@JsonIgnore
 	public Result getResultById(String Id)
 	{
-		Map<String, Result> results = transformationResults.getResults();
-		Entry<String, Result> result = results.entrySet().stream().filter(r -> r.getValue().getId().contains(Id)).findFirst().orElse(null);
-
-		return result.getValue();
+		if (transformationResults.getResults() != null) {
+			Map<String, Result> results = transformationResults.getResults();
+			Entry<String, Result> result = results.entrySet().stream().filter(r -> r.getValue().getId().contains(Id)).findFirst().orElse(null);
+			
+			return result.getValue();
+		}
+		return null;
 	}
 
 	/** 
@@ -54,6 +60,9 @@ public class GeneralResult
 	@JacksonXmlProperty(localName = "ResultCount")
 	public int getResultCount()
 	{
-		return transformationResults.getResults().size();
+		if (transformationResults.getResults() != null) {
+			return transformationResults.getResults().size();
+		}
+		return 0;
 	}
 }
