@@ -19,3 +19,8 @@ uploaded/no-headers.csv
 /npm-debug.log
 /log/
 /output/
+nbactions.xml
+api_local.sh
+build_me.sh
+env_vars.sh
+external_resources/schema/includes/xsd_issues.txt
