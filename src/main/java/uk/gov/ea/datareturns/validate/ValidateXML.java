@@ -27,8 +27,7 @@ import uk.gov.ea.datareturns.domain.SchemaErrorHandler;
 import uk.gov.ea.datareturns.domain.result.ValidationResult;
 import uk.gov.ea.datareturns.exception.system.DRFileValidationException;
 
-public class ValidateXML implements Validate
-{
+public class ValidateXML implements Validate {
 	private static final Logger LOGGER = LoggerFactory.getLogger(ValidateXML.class);
 
 	private final String XSLT_GET_SOURCE_ROW_NUMS = "get_src_row_id.xslt";
@@ -39,8 +38,7 @@ public class ValidateXML implements Validate
 	private String translationsFile;
 	private String xsltLocation;
 
-	public ValidateXML(String schemaFile, String xmlFile, String translationsFile, String xsltLocation)
-	{
+	public ValidateXML(String schemaFile, String xmlFile, String translationsFile, String xsltLocation) {
 		this.schemaFile = schemaFile;
 		this.xmlFile = xmlFile;
 		this.translationsFile = translationsFile;
@@ -48,15 +46,13 @@ public class ValidateXML implements Validate
 	}
 
 	@Override
-	public ValidationResult validate()
-	{
+	public ValidationResult validate() {
 		LOGGER.debug("Validating file '" + xmlFile + "' against schema '" + schemaFile + "'");
 
 		ValidationResult result = validate(schemaFile, xmlFile);
 
 		// If validation successful, add user friendly info to result object
-		if (!result.isValid())
-		{
+		if (!result.isValid()) {
 			LOGGER.debug("File '" + xmlFile + "' is INVALID");
 
 			// TODO exit if error count too many? - the next steps are slow
@@ -67,7 +63,7 @@ public class ValidateXML implements Validate
 			// Get source line nos
 			LOGGER.debug("Getting source line nos");
 
-			// TODO XLST needs to be made more efficient, slow with large files 
+			// TODO XLST needs to be made more efficient, slow with large files
 			String xsltFileLocation = makeFullPath(xsltLocation, XSLT_GET_SOURCE_ROW_NUMS);
 			String lineNos = transformToString(xmlFile, xsltFileLocation, params);
 			ValidationResult validationResult = deserializeFromXML(lineNos, ValidationResult.class);
@@ -76,12 +72,16 @@ public class ValidateXML implements Validate
 			LOGGER.debug("Getting user-friendly error message translations");
 			String fullXml = mergeXML(serializeToXML(result), loadFileAsString(translationsFile));
 			xsltFileLocation = makeFullPath(xsltLocation, XSLT_TRANSLATE_FAILURE_MESSAGES);
+			
+			
 			ValidationResult translationResult = transformToResult(fullXml, xsltFileLocation, ValidationResult.class);
 
-			/* NOTE : The following methods add additional info programatically despite Jackson providing
-			 * "update" functionality for existing objects.
-			 * Unable to use this currently as current release does not provide a "preserve" existing values 
-			 * option but is due in a future release making these 2 methods redundant.
+			/*
+			 * NOTE : The following methods add additional info programatically
+			 * despite Jackson providing "update" functionality for existing
+			 * objects. Unable to use this currently as current release does not
+			 * provide a "preserve" existing values option but is due in a
+			 * future release making these 2 methods redundant.
 			 */
 
 			mergeSourceLineNos(result, validationResult);
@@ -95,16 +95,15 @@ public class ValidateXML implements Validate
 
 	/**
 	 * Validates supplied XML file against it's schema.
+	 * 
 	 * @param xsd
 	 * @param xml
 	 * @return
 	 */
-	public ValidationResult validate(String xsd, String xml)
-	{
+	public ValidationResult validate(String xsd, String xml) {
 		ValidationResult transformResult = null;
 
-		try
-		{
+		try {
 			SchemaFactory schemaFactory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
 
 			Schema schema = schemaFactory.newSchema(new StreamSource(xsd));
@@ -119,11 +118,9 @@ public class ValidateXML implements Validate
 
 			transformResult = new ValidationResult();
 			transformResult.setSchemaErrors(errorHandler.getSchemaErrors());
-		} catch (SAXException e)
-		{
+		} catch (SAXException e) {
 			throw new DRFileValidationException(e, "Unable to validate '" + xml + "' with schema '" + xsd + "'");
-		} catch (IOException e)
-		{
+		} catch (IOException e) {
 			throw new DRFileValidationException(e, "Unable to validate '" + xml + "' with schema '" + xsd + "'");
 		}
 
@@ -132,25 +129,29 @@ public class ValidateXML implements Validate
 
 	/**
 	 * Merges source line nos into target object
+	 * 
 	 * @param target
 	 * @param source
 	 */
-	private static void mergeSourceLineNos(ValidationResult target, ValidationResult source)
-	{
+	private static void mergeSourceLineNos(ValidationResult target, ValidationResult source) {
 		LOGGER.debug("Merging source line nos");
 
 		Map<String, LineError> targetErrors = target.getSchemaErrors().getLineErrors();
 
-		if (targetErrors.size() > 0)
-		{
+		if (targetErrors.size() > 0) {
 			Map<String, LineError> sourceErrors = source.getSchemaErrors().getLineErrors();
 
 			// May not be all validation errors so won't have output line no
-			if (sourceErrors != null)
-			{
+			if (sourceErrors != null) {
 				targetErrors.forEach((key, targetError) -> {
-					targetError.setOutputLineNo(sourceErrors.get(key).getOutputLineNo());
-					targetError.setErrorValue(sourceErrors.get(key).getErrorValue());
+					final LineError error = sourceErrors.get(key);
+
+					if (error != null) {
+						targetError.setOutputLineNo(error.getOutputLineNo());
+						targetError.setErrorValue(error.getErrorValue());
+					} else {
+						LOGGER.debug("Encountered key in target error list not found in source error list: " + key);
+					}
 				});
 			}
 		}
@@ -158,21 +159,21 @@ public class ValidateXML implements Validate
 
 	/**
 	 * Merges user-friendly error messages into target object
+	 * 
 	 * @param target
 	 * @param source
 	 */
-	private static void mergeUserFriendlyMessages(ValidationResult target, ValidationResult source)
-	{
+	private static void mergeUserFriendlyMessages(ValidationResult target, ValidationResult source) {
 		LOGGER.debug("Merging user-friendly error message translations");
 
 		Map<String, LineError> targetErrors = target.getSchemaErrors().getLineErrors();
 
-		if (targetErrors.size() > 0)
-		{
+		if (targetErrors.size() > 0) {
 			Map<String, LineError> sourceErrors = source.getSchemaErrors().getLineErrors();
 
 			targetErrors.forEach((key, targetError) -> {
-				targetError.getErrorDetail().setOutputMessage(sourceErrors.get(key).getErrorDetail().getOutputMessage());
+				targetError.getErrorDetail()
+						.setOutputMessage(sourceErrors.get(key).getErrorDetail().getOutputMessage());
 			});
 		}
 	}
