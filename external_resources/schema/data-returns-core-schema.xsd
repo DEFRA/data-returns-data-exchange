@@ -35,10 +35,10 @@
                     <xs:complexType>
                         <xs:all>
 				            <xs:element type="EPR_Required_String" name="EA_ID"/>
-                            <xs:element type="EPR_mandatoryStringMax255" name="Site_Name" minOccurs="0"/>
+                            <xs:element type="EPR_OptionalStringMax255" name="Site_Name" minOccurs="0"/>
                             <xs:element type="EPR_returnType" name="Rtn_Type"/>
                             <xs:element type="EPR_DateTime" name="Mon_Date"/>
-                            <xs:element type="EPR_optionalValidDateTime" name="Mon_Date_End" minOccurs="0"/>
+                            <!--<xs:element type="EPR_optionalValidDateTime" name="Mon_Date_End" minOccurs="0"/>-->
                             <xs:element type="EPR_OptionalStringMax30" name="Mon_Period" minOccurs="0"/><!--TODO Sometimes mandatory-->
                             <xs:element type="EPR_OptionalStringMax255" name="Smpl_Ref" minOccurs="0"/>
                             <xs:element type="EPR_OptionalStringMax255" name="Smpl_By" minOccurs="0"/>
