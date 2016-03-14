@@ -37,86 +37,6 @@ public class FileUtilHelperIntegrationTests
 	}
 
 	@Test
-	public void testCreateDirectory() throws IOException
-	{
-		String fullDir = getTestFullDirectory();
-
-		// Make sure directory does not exist to start with
-		File dir = new File(fullDir);
-		assertThat(dir.exists()).isFalse();
-
-		FileUtilsHelper.createDirectory(fullDir);
-
-		assertThat(dir.exists()).isTrue();
-	}
-
-	@Test
-	public void testDeleteDirectory() throws IOException
-	{
-		String fullDir = getTestFullDirectory();
-
-		// Make sure directory exists to start with
-		FileUtils.forceMkdir(new File(fullDir));
-		File dir = new File(fullDir);
-		assertThat(dir.exists()).isTrue();
-
-		FileUtilsHelper.deleteDirectory(fullDir);
-
-		assertThat(dir.exists()).isFalse();
-	}
-
-	@Test
-	public void testDirectoryExists() throws IOException
-	{
-		String fullDir = getTestFullDirectory();
-
-		FileUtils.forceMkdir(new File(fullDir));
-
-		assertThat(FileUtilsHelper.fileOrDirectoryExists(fullDir)).isTrue();
-	}
-
-	@Test
-	public void testDirectoryDoesNotExist() throws IOException
-	{
-		String dirExists = getTestFullDirectory();
-
-		// Make sure directory exists to start with
-		File dir = new File(dirExists);
-		FileUtils.forceMkdir(new File(dirExists));
-		assertThat(dir.exists()).isTrue();
-
-		String missingDir = dirExists + File.separator + "missing_dir";
-		assertThat(FileUtilsHelper.fileOrDirectoryExists(missingDir)).isFalse();
-	}
-
-	@Test
-	public void testFileExists() throws IOException
-	{
-		String fullDir = getTestFullDirectory();
-		String fullFile = getTestFullCSVFilename();
-
-		// Create file
-		FileUtils.forceMkdir(new File(fullDir));
-		createTestFile();
-
-		assertThat(FileUtilsHelper.fileOrDirectoryExists(fullFile)).isTrue();
-	}
-
-	@Test
-	public void testFileDoesNotExist() throws IOException
-	{
-		String dirExists = getTestFullDirectory();
-
-		// Make sure directory exists to start with
-		File dir = new File(dirExists);
-		FileUtils.forceMkdir(new File(dirExists));
-		assertThat(dir.exists()).isTrue();
-
-		String missingFile = getTestFullCSVFilename();
-		assertThat(FileUtilsHelper.fileOrDirectoryExists(missingFile)).isFalse();
-	}
-
-	@Test
 	public void testSaveInputStreamToFile() throws IOException
 	{
 		String dirExists = getTestFullDirectory();
@@ -131,27 +51,7 @@ public class FileUtilHelperIntegrationTests
 		File f = new File(fullFile);
 		assertThat(f.exists()).isFalse();
 
-		FileUtilsHelper.saveFile(new ByteArrayInputStream(TEST_FILE_CONTENTS.getBytes()), fullFile);
-
-		assertThat(f.exists()).isTrue();
-	}
-
-	@Test
-	public void testSaveStringToFile() throws IOException
-	{
-		String dirExists = getTestFullDirectory();
-		String fullFile = getTestFullCSVFilename();
-
-		// Make sure directory exists to start with
-		File dir = new File(dirExists);
-		FileUtils.forceMkdir(new File(dirExists));
-		assertThat(dir.exists()).isTrue();
-
-		// Make sure file doesn't exist to start with
-		File f = new File(fullFile);
-		assertThat(f.exists()).isFalse();
-
-		FileUtilsHelper.saveFile(TEST_FILE_CONTENTS, fullFile);
+		FileUtilsHelper.saveFile(new ByteArrayInputStream(TEST_FILE_CONTENTS.getBytes()), f);
 
 		assertThat(f.exists()).isTrue();
 	}
@@ -175,28 +75,6 @@ public class FileUtilHelperIntegrationTests
 		FileUtilsHelper.deleteFile(fullFile);
 
 		assertThat(f.exists()).isFalse();
-	}
-
-	@Test
-	public void testLoadFileAsString() throws IOException
-	{
-		String dirExists = getTestFullDirectory();
-		String fullFile = getTestFullCSVFilename();
-		String expected = TEST_FILE_CONTENTS;
-
-		// Make sure directory exists to start with
-		File dir = new File(dirExists);
-		FileUtils.forceMkdir(new File(dirExists));
-		assertThat(dir.exists()).isTrue();
-
-		// Create file and check it exists
-		File f = new File(fullFile);
-		FileUtils.copyInputStreamToFile(new ByteArrayInputStream(TEST_FILE_CONTENTS.getBytes()), new File(fullFile));
-		assertThat(f.exists()).isTrue();
-
-		String actual = FileUtilsHelper.loadFileAsString(fullFile);
-
-		assertThat(expected).isEqualTo(actual);
 	}
 
 	// Helper methods

@@ -10,9 +10,9 @@ public class ErrorDetail
 	@JacksonXmlProperty(localName = "ErrorLevel")
 	private String errorLevel;
 
-	@JacksonXmlCData
-	@JacksonXmlProperty(localName = "InputMessage")
-	private String inputMessage;
+//	@JacksonXmlCData
+//	@JacksonXmlProperty(localName = "InputMessage")
+//	private String inputMessage;
 
 	@JacksonXmlCData
 	@JacksonXmlProperty(localName = "OutputMessage")
@@ -23,10 +23,10 @@ public class ErrorDetail
 	{
 	}
 
-	public ErrorDetail(String errorLevel, String inputMessage)
+	public ErrorDetail(String errorLevel, String outputMessage)
 	{
 		this.errorLevel = errorLevel;
-		this.inputMessage = inputMessage;
+		this.outputMessage = outputMessage;
 	}
 
 	public String getErrorLevel()
@@ -37,16 +37,6 @@ public class ErrorDetail
 	public void setErrorLevel(String errorLevel)
 	{
 		this.errorLevel = errorLevel;
-	}
-
-	public String getInputMessage()
-	{
-		return inputMessage;
-	}
-
-	public void setInputMessage(String inputMessage)
-	{
-		this.inputMessage = inputMessage;
 	}
 
 	public String getOutputMessage()

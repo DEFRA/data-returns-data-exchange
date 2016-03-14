@@ -11,8 +11,7 @@ import org.slf4j.LoggerFactory;
 import uk.gov.ea.datareturns.domain.dataexchange.EmmaDatabase;
 import uk.gov.ea.datareturns.exception.application.DRInvalidPermitNoException;
 
-public abstract class DataExchangeHelper
-{
+public abstract class DataExchangeHelper {
 	@SuppressWarnings("unused")
 	private static final Logger LOGGER = LoggerFactory.getLogger(DataExchangeHelper.class);
 
@@ -22,24 +21,10 @@ public abstract class DataExchangeHelper
 	private static String ALPHA_NUMERIC_PERMIT_NO_REGEX = "^[A-Za-z][A-Za-z]";
 	private static Pattern alphaNnumPermitNoPattern = Pattern.compile(ALPHA_NUMERIC_PERMIT_NO_REGEX);
 
-	public static int DATABASE_LOWER_NUMERIC_BOUNDARY = 69999; // Bizarre qwerk, Not in label range
+	public static int DATABASE_LOWER_NUMERIC_BOUNDARY = 69999; // Bizarre qwerk,
+																// Not in label
+																// range
 	public static char DATABASE_UPPER_ALPHA_NUMERIC_BOUNDARY = 'G';
-
-	/**
-	 * Perform XSL transformation
-	 * 
-	 * @param xml
-	 * @param xslt
-	 * @param params
-	 * @return
-	 */
-	public static <T> T transformToResult(String xml, String xslt, Class<T> clazz) {
-		Transformer transformer = XMLUtilsHelper.createTransformer(xslt);
-
-		T result = XMLUtilsHelper.transformToResult(transformer, xml, clazz);
-
-		return result;
-	}
 
 	/**
 	 * Number between 5-6 digits long

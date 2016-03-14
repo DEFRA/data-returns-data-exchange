@@ -2,12 +2,7 @@ package uk.gov.ea.datareturns.domain;
 
 import java.util.Map;
 import java.util.TreeMap;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
-import uk.gov.ea.datareturns.exception.application.DRColumnNameNotFoundException;
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlElementWrapper;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
 
@@ -15,12 +10,7 @@ import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
  * @author adrianharrison
  * Records "selected" errors generated during Schema validation
  */
-public class SchemaErrors
-{
-	public static final String ID_PREFIX = "Line_";
-	private String regex = "'(.*?)'";
-	private Pattern p = Pattern.compile(regex);
-
+public class SchemaErrors {
 	@JacksonXmlElementWrapper(useWrapping = false)
 	private Map<String, LineError> lineErrors;
 
@@ -35,35 +25,12 @@ public class SchemaErrors
 		return lineErrors;
 	}
 
-	/**
-	 * Stores a single XML Element error generated from Xerces. 
-	 * Multiple messages can be generated, ones beginning "cvc-complex-type" contain the source column name.
-	 * @param lineNo
-	 * @param errorLevel
-	 * @param errorMessage
-	 */
-	public void addLineError(int lineNo, String errorLevel, String errorMessage)
-	{
-		if (errorMessage.startsWith("cvc-complex-type"))
-		{
-			String key = null;
-			Matcher m = p.matcher(errorMessage);
 
-			// Column name found
-			if (!m.find())
-			{
-				throw new DRColumnNameNotFoundException("Column name not found in message '" + errorMessage + "'");
-			}
-
-			String columnName = m.group(1);
-			key = makeKey(Integer.toString(lineNo));
-
-			LineError err = new LineError(columnName, Integer.toString(lineNo), errorLevel, errorMessage);
-
-			this.lineErrors.put(key, err);
-		}
+	public void addLineErrror(LineError error) {
+		this.lineErrors.put("Error_" + this.lineErrors.size(), error);
 	}
-
+	
+	
 	/** 
 	 * Return total error count
 	 * @return
@@ -74,30 +41,4 @@ public class SchemaErrors
 		return lineErrors.size();
 	}
 
-	/**
-	 * Returns a comma separated list of XML line numbers.
-	 * @return
-	 */
-	@JsonIgnore
-	public String getErrorLineNosAsString()
-	{
-		StringBuilder lineNos = new StringBuilder();
-
-		lineErrors.forEach((k, v) -> {
-			lineNos.append(v.getInputLineNo() + ",");
-
-		});
-		lineNos.setLength(Math.max(0, lineNos.length() - 1));
-		return lineNos.toString();
-	}
-
-	/**
-	 * Make Map key value in the format "Line_999" where '999' is XML line no
-	 * @param id
-	 * @return
-	 */
-	private static String makeKey(String id)
-	{
-		return ID_PREFIX + id;
-	}
 }

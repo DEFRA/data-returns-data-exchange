@@ -18,10 +18,6 @@ public class LineError
 	@JacksonXmlProperty(localName = "ErrorValue")
 	private String errorValue;
 	
-	@JacksonXmlProperty(localName = "InputLineNo")
-	@JsonInclude(Include.NON_NULL)
-	private String inputLineNo;
-
 	@JacksonXmlProperty(localName = "OutputLineNo")
 	@JsonInclude(Include.NON_NULL)
 	private String outputLineNo;
@@ -32,13 +28,6 @@ public class LineError
 
 	public LineError()
 	{
-	}
-
-	public LineError(String columnName, String lineNo, String errorLevel, String errorMessage)
-	{
-		this.columnName = columnName;
-		this.inputLineNo = lineNo;
-		this.errorDetail = new ErrorDetail(errorLevel, errorMessage);
 	}
 
 	public String getColumnName()
@@ -59,16 +48,6 @@ public class LineError
 	public void setErrorValue(String errorValue)
 	{
 		this.errorValue = errorValue;
-	}
-
-	public String getInputLineNo()
-	{
-		return inputLineNo;
-	}
-
-	public void setInputLineNo(String inputLineNo)
-	{
-		this.inputLineNo = inputLineNo;
 	}
 
 	public String getOutputLineNo()

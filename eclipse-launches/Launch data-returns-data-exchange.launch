@@ -21,6 +21,10 @@
 <mapEntry key="DR_REDIS_HOST" value="localhost"/>
 <mapEntry key="DR_REDIS_PORT" value="6379"/>
 </mapAttribute>
+<listAttribute key="org.eclipse.debug.ui.favoriteGroups">
+<listEntry value="org.eclipse.debug.ui.launchGroup.debug"/>
+<listEntry value="org.eclipse.debug.ui.launchGroup.run"/>
+</listAttribute>
 <stringAttribute key="org.eclipse.jdt.launching.CLASSPATH_PROVIDER" value="org.eclipse.m2e.launchconfig.classpathProvider"/>
 <stringAttribute key="org.eclipse.jdt.launching.MAIN_TYPE" value="uk.gov.ea.datareturns.App"/>
 <stringAttribute key="org.eclipse.jdt.launching.PROGRAM_ARGUMENTS" value="server ${workspace_loc:/data-returns-data-exchange/external_resources/config/configuration_local.yml}"/>

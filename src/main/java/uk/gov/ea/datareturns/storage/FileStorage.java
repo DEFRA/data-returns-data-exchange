@@ -2,9 +2,6 @@ package uk.gov.ea.datareturns.storage;
 
 import static com.amazonaws.Protocol.HTTP;
 import static com.amazonaws.Protocol.HTTPS;
-import static uk.gov.ea.datareturns.helper.CommonHelper.isLocalEnvironment;
-import static uk.gov.ea.datareturns.helper.FileUtilsHelper.makeFullPath;
-import static uk.gov.ea.datareturns.helper.FileUtilsHelper.saveFile;
 
 import java.io.File;
 import java.io.IOException;
@@ -18,6 +15,7 @@ import redis.clients.jedis.Jedis;
 import uk.gov.ea.datareturns.exception.application.DRFileKeyMismatchException;
 import uk.gov.ea.datareturns.exception.system.DRFileDeleteException;
 import uk.gov.ea.datareturns.exception.system.DRExternalServiceException;
+import uk.gov.ea.datareturns.helper.CommonHelper;
 import uk.gov.ea.datareturns.helper.FileUtilsHelper;
 
 import com.amazonaws.AmazonClientException;
@@ -38,7 +36,6 @@ public class FileStorage
 
 	// TODO could all come from configuration file?
 	public final static String BUCKET = "data-returns";
-	public final static String FOLDER_DEV = "dev";
 	public final static String FOLDER_FAILURE = "failure";
 	public final static String FOLDER_SUCCESS = "success";
 	public final static String SEPARATOR = "/";
@@ -88,7 +85,7 @@ public class FileStorage
 		LOGGER.debug("File key '" + fileKey + "' generated for file '" + fileLocation + "'");
 
 		// Non-local environments use S3
-		if (!isLocalEnvironment(environment))
+		if (!CommonHelper.isLocalEnvironment(environment))
 		{
 			LOGGER.debug("In Non-local environment");
 
@@ -142,7 +139,7 @@ public class FileStorage
 		LOGGER.debug("Redis file key '" + fileKey + "' holds file location '" + fileLocation + "'");
 
 		// Non-local environments use S3
-		if (!isLocalEnvironment(environment))
+		if (!CommonHelper.isLocalEnvironment(environment))
 		{
 			LOGGER.debug("In Non-local environment");
 
@@ -159,9 +156,9 @@ public class FileStorage
 
 				LOGGER.debug("File '" + fileLocation + "' retrieved successfully");
 				
-				fileLocation = makeFullPath(saveFileLocation, fileLocation);
+				fileLocation = FileUtilsHelper.makeFullPath(saveFileLocation, fileLocation);
 				
-				saveFile(s3object.getObjectContent(), fileLocation);
+				FileUtilsHelper.saveFile(s3object.getObjectContent(), new File(fileLocation));
 			} catch (AmazonServiceException ase)
 			{
 				throw new DRExternalServiceException(ase, "AWS failed to process getObject() request");

@@ -5,6 +5,8 @@ logging:
     io.dropwizard: INFO
     org.glassfish: ERROR
     org.eclipse: ERROR
+    # Useful to log REST requests and responses 
+    org.glassfish.jersey.filter: DEBUG
   appenders:
   - type: console
   - type: file

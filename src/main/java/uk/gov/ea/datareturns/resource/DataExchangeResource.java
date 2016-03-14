@@ -3,25 +3,32 @@ package uk.gov.ea.datareturns.resource;
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 import static javax.ws.rs.core.MediaType.MULTIPART_FORM_DATA;
 import static uk.gov.ea.datareturns.helper.CommonHelper.isLocalEnvironment;
-import static uk.gov.ea.datareturns.helper.FileUtilsHelper.makeFullPath;
-import static uk.gov.ea.datareturns.helper.FileUtilsHelper.saveFile;
-import static uk.gov.ea.datareturns.helper.XMLUtilsHelper.deserializeFromXML;
-import static uk.gov.ea.datareturns.helper.XMLUtilsHelper.transformToString;
 import static uk.gov.ea.datareturns.type.AppStatusCodeType.APP_STATUS_FAILED_WITH_ERRORS;
 import static uk.gov.ea.datareturns.type.AppStatusCodeType.APP_STATUS_SUCCESS;
 
 import java.io.File;
+import java.io.IOException;
 import java.io.InputStream;
-import java.util.HashMap;
+import java.io.OutputStream;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.stream.Collectors;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Response;
+import javax.xml.bind.JAXBException;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.lang3.ArrayUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.mail.EmailAttachment;
 import org.apache.commons.mail.EmailException;
 import org.apache.commons.mail.MultiPartEmail;
@@ -39,54 +46,52 @@ import uk.gov.ea.datareturns.config.EmmaDatabaseSettings;
 import uk.gov.ea.datareturns.config.MiscSettings;
 import uk.gov.ea.datareturns.config.RedisSettings;
 import uk.gov.ea.datareturns.config.S3ProxySettings;
-import uk.gov.ea.datareturns.convert.ConvertCSVToXML;
-import uk.gov.ea.datareturns.convert.ConvertXMLToCSV;
 import uk.gov.ea.datareturns.dao.PermitDAO;
 import uk.gov.ea.datareturns.domain.dataexchange.EmmaDatabase;
+import uk.gov.ea.datareturns.domain.io.csv.CSVHeaderValidator;
+import uk.gov.ea.datareturns.domain.io.csv.CSVModel;
+import uk.gov.ea.datareturns.domain.io.csv.CSVReader;
+import uk.gov.ea.datareturns.domain.io.csv.CSVWriter;
+import uk.gov.ea.datareturns.domain.io.csv.exceptions.HeaderFieldMissingException;
+import uk.gov.ea.datareturns.domain.io.csv.exceptions.HeaderFieldUnrecognisedException;
+import uk.gov.ea.datareturns.domain.io.csv.exceptions.ValidationException;
+import uk.gov.ea.datareturns.domain.io.csv.settings.CSVReaderSettings;
+import uk.gov.ea.datareturns.domain.io.csv.settings.CSVWriterSettings;
+import uk.gov.ea.datareturns.domain.io.xml.JAXBUtils;
+import uk.gov.ea.datareturns.domain.model.DataReturnsXMLModel;
+import uk.gov.ea.datareturns.domain.model.MonitoringDataRecord;
+import uk.gov.ea.datareturns.domain.model.types.DataReturnsHeaders;
+import uk.gov.ea.datareturns.domain.model.validation.MonitoringDataRecordValidationProcessor;
 import uk.gov.ea.datareturns.domain.result.CompleteResult;
 import uk.gov.ea.datareturns.domain.result.DataExchangeResult;
-import uk.gov.ea.datareturns.domain.result.GeneralResult;
+import uk.gov.ea.datareturns.domain.result.ParseResult;
 import uk.gov.ea.datareturns.domain.result.UploadResult;
 import uk.gov.ea.datareturns.domain.result.ValidationResult;
+import uk.gov.ea.datareturns.exception.application.DRInvalidContentsException;
 import uk.gov.ea.datareturns.exception.application.DRInvalidPermitNoException;
+import uk.gov.ea.datareturns.exception.application.DRMandatoryFieldsMissingException;
 import uk.gov.ea.datareturns.exception.application.DRMultiplePermitsException;
 import uk.gov.ea.datareturns.exception.application.DRPermitNotFoundException;
+import uk.gov.ea.datareturns.exception.application.DRUnrecognisedFieldException;
 import uk.gov.ea.datareturns.exception.application.DRUnsupportedFileTypeException;
 import uk.gov.ea.datareturns.exception.system.DRNotificationException;
+import uk.gov.ea.datareturns.exception.system.DRSerializationException;
 import uk.gov.ea.datareturns.helper.DataExchangeHelper;
+import uk.gov.ea.datareturns.helper.FileUtilsHelper;
 import uk.gov.ea.datareturns.storage.FileStorage;
 import uk.gov.ea.datareturns.type.FileType;
-import uk.gov.ea.datareturns.validate.Validate;
-import uk.gov.ea.datareturns.validate.ValidateXML;
 
 // TODO move some methods to helper classes
 
 @Path("/data-exchange/")
-public class DataExchangeResource
-{
+public class DataExchangeResource {
 	private static final Logger LOGGER = LoggerFactory.getLogger(DataExchangeResource.class);
-
-	public final static String ENV_LOCAL = "local";
-
 	private DataExchangeConfiguration config;
 	private PermitDAO permitDAO;
 
 	private FileStorage fileStorage;
 
-	// TODO rename by regime/return type? 
-	private final String XSLT_UNIQUE_IDENTIFIERS = "get_unique_identifiers.xslt";
-	private final String XSLT_PERMIT_NOS = "get_unique_permit_nos.xslt";
-	private final String XSLT_CONVERT_TO_CSV = "convert_to_csv.xslt";
-
-	// TODO things that could/should be held in database?
-	private final String CORE_SCHEMA_FILE = "data-returns-core-schema.xsd";
-	private final String CORE_TRANSLATIONS_FILE = "data-returns-core-translations.xml";
-	private final String PERMIT_NO_FIELD_ID = "EA_ID";
-	private final String[] uniqueIdentifierIds = new String[]
-	{ "EA_ID", "Site_Name", "Rtn_Type" };
-
-	public DataExchangeResource(DataExchangeConfiguration config, PermitDAO permitDAO)
-	{
+	public DataExchangeResource(DataExchangeConfiguration config, PermitDAO permitDAO) {
 		this.config = config;
 		this.permitDAO = permitDAO;
 
@@ -96,27 +101,26 @@ public class DataExchangeResource
 		String redisHost = redisSettings.getHost();
 		int redisPort = redisSettings.getPort();
 
-		if (!isLocalEnvironment(environment))
-		{
+		if (!isLocalEnvironment(environment)) {
 			S3ProxySettings s3Settings = config.getS3Settings();
 			String s3Type = s3Settings.getType();
 			String s3Host = s3Settings.getHost();
 			int s3Port = s3Settings.getPort();
 
 			this.fileStorage = new FileStorage(environment, redisHost, redisPort, s3Type, s3Host, s3Port);
-		} else
-		{
+		} else {
 			this.fileStorage = new FileStorage(environment, redisHost, redisPort);
+		}
+		try {
+			JAXBUtils.registerContext(DataReturnsXMLModel.class);
+		} catch (JAXBException e) {
+			throw new RuntimeException("Unable to register model with JAXB", e);
 		}
 	}
 
 	/**
 	 * REST method to handle Returns file upload.
-	 *      1. Validate upload file
-	 * 		2. Save upload file
-	 * 		3. Convert upload file to XML
-	 * 		4. Apply Permit number validations
-	 * 		5. Apply File content validations
+	 * 
 	 * @param is
 	 * @param fileDetail
 	 * @return JSON object
@@ -126,57 +130,65 @@ public class DataExchangeResource
 	@Consumes(MULTIPART_FORM_DATA)
 	@Produces(APPLICATION_JSON)
 	@Timed
-	public Response uploadFile(@FormDataParam("fileUpload") InputStream is, @FormDataParam("fileUpload") FormDataContentDisposition fileDetail)
-	{
+	@SuppressWarnings("ucd")
+	public Response uploadFile(@FormDataParam("fileUpload") InputStream is,
+			@FormDataParam("fileUpload") FormDataContentDisposition fileDetail) {
 		LOGGER.debug("/data-exchange/upload request received");
 
-		MiscSettings settings = config.getMiscSettings();
-		String uploadedFile = makeFullPath(settings.getUploadedLocation(), fileDetail.getFileName());
+		final MiscSettings settings = config.getMiscSettings();
+		final File uploadedFile = new File(settings.getUploadedLocation(), fileDetail.getFileName());
 
 		// 1. Validate upload file
 		validateUploadFile(uploadedFile);
 
-		// 2. Save upload file
-		saveFile(is, uploadedFile);
-
-		// 3. Convert uploaded file to XML
-		ConvertCSVToXML converter = new ConvertCSVToXML(settings.getCsvSeparator(), uploadedFile, settings.getOutputLocation());
-		converter.convert();
-
-		String workingFile = converter.getConvertedFile();
-
+		// 2. Save upload file on server
+		FileUtilsHelper.saveFile(is, uploadedFile);
+		
+		// 3. Read the CSV data into a model
+		final CSVModel<MonitoringDataRecord> model = readCSVFile(uploadedFile);
+		
 		// 4. Apply Permit number validations
-		validatePermitNo(workingFile);
-
-		// 5. Apply File content validations
-		ValidationResult validateResult = validateFile(workingFile);
+		validatePermitNo(model);
+		
+		// Validate the model
+		final ValidationResult validationResult = MonitoringDataRecordValidationProcessor.validateModel(model);
 
 		// Woohoo! prepare success/failure response
+		final UploadResult uploadResult = new UploadResult(fileDetail.getFileName());
+		final DataExchangeResult result = new DataExchangeResult(uploadResult);
 
-		UploadResult uploadResult = new UploadResult(fileDetail.getFileName());
-		DataExchangeResult result = new DataExchangeResult(uploadResult);
-
-		if (validateResult.isValid())
-		{
+		if (validationResult.isValid()) {
 			LOGGER.debug("File '" + fileDetail.getFileName() + "' is VALID");
-
-			// TODO needs determining exactly what the front-end needs i.e. part 2 work
-			GeneralResult generalResult = getUniqueIdentifiers(workingFile);
-			result.setGeneralResult(generalResult);
-
-			uploadResult.setFileKey(fileStorage.saveValidFile(workingFile));
-
+			
+			// Process the data to do any modifications necessary before outputting to Emma.  For example - ensure all output dates in international format.
+			prepareOutputData(model.getRecords());
+			
+			// Write out a CSV file containing ALL headings 
+			final File validFileOutputDir = new File(settings.getOutputLocation());
+			final File outputFile = new File(validFileOutputDir, uploadedFile.getName());
+			writeCSVFile(model.getRecords(), outputFile);
+			
+			final ParseResult parseResult = new ParseResult();
+			// This should never be empty or it would have failed validation, but rather not have an ArrayIndexOutOfBoundsException anyway...
+			if (!model.getRecords().isEmpty()) {
+				MonitoringDataRecord record = model.getRecords().get(0);
+				parseResult.setPermitNumber(record.getPermitNumber());
+				parseResult.setSiteName(record.getSiteName());
+				parseResult.setReturnType(record.getReturnType());
+			}
+			result.setParseResult(parseResult);
+			
+			uploadResult.setFileKey(fileStorage.saveValidFile(outputFile.getAbsolutePath()));
 			result.setAppStatusCode(APP_STATUS_SUCCESS.getAppStatusCode());
-		} else
-		{
+
+		} else {
 			LOGGER.debug("File '" + fileDetail.getFileName() + "' is INVALID");
 
-			uploadResult.setFileKey(fileStorage.saveInvalidFile(workingFile));
-
-			result.setValidationResult(validateResult);
+			// Store the original, unchanged, file that was uploaded
+			uploadResult.setFileKey(fileStorage.saveInvalidFile(uploadedFile.getAbsolutePath()));
+			result.setValidationResult(validationResult);
 			result.setAppStatusCode(APP_STATUS_FAILED_WITH_ERRORS.getAppStatusCode());
 		}
-
 		return Response.ok(result).build();
 	}
 
@@ -186,25 +198,23 @@ public class DataExchangeResource
 	@Consumes(MULTIPART_FORM_DATA)
 	@Produces(APPLICATION_JSON)
 	@Timed
-	public Response completeUpload(@NotEmpty @FormDataParam("fileKey") String orgFileKey, @NotEmpty @FormDataParam("userEmail") String userEmail,
-			@NotEmpty @FormDataParam("orgFileName") String orgFileName, @NotEmpty @FormDataParam("permitNo") String permitNo)
-	{
+	public Response completeUpload(@NotEmpty @FormDataParam("fileKey") String orgFileKey,
+			@NotEmpty @FormDataParam("userEmail") String userEmail,
+			@NotEmpty @FormDataParam("orgFileName") String orgFileName,
+			@NotEmpty @FormDataParam("permitNo") String permitNo) {
 		LOGGER.debug("/data-exchange/complete request received");
 
 		MiscSettings settings = config.getMiscSettings();
 
 		String outputLocation = settings.getOutputLocation();
-		String orgFileLocation = fileStorage.retrieveValidFileByKey(orgFileKey, outputLocation);
-		String xslt = makeFullPath(settings.getXsltLocation(), XSLT_CONVERT_TO_CSV);
+		String fileLocation = fileStorage.retrieveValidFileByKey(orgFileKey, outputLocation);
 
-		ConvertXMLToCSV converter = new ConvertXMLToCSV(settings.getCsvSeparator(), orgFileLocation, outputLocation, xslt);
-		String newFileLocation = converter.convert();
-
-		sendNotifications(newFileLocation, permitNo);
+		sendNotifications(fileLocation, permitNo);
 
 		CompleteResult completeResult = new CompleteResult();
 
-		// TODO only really need to return app status code - leaving these in for now though
+		// TODO only really need to return app status code - leaving these in
+		// for now though
 		completeResult.setFileKey(orgFileKey);
 		completeResult.setUserEmail(userEmail);
 
@@ -217,112 +227,68 @@ public class DataExchangeResource
 
 	/**
 	 * Basic file validation
+	 * 
 	 * @param uploadedFile
 	 */
-	private static void validateUploadFile(String uploadedFile)
-	{
-		String fileType = FilenameUtils.getExtension(uploadedFile);
+	private static void validateUploadFile(File uploadedFile) {
+		String fileType = FilenameUtils.getExtension(uploadedFile.getName());
 
 		// Release 1 must be csv
-		if (!fileType.equalsIgnoreCase(FileType.CSV.getFileType()))
-		{
+		if (!FileType.CSV.getFileType().equalsIgnoreCase(fileType)) {
 			throw new DRUnsupportedFileTypeException("Unsupported file type '" + fileType + "'");
 		}
 	}
 
-	/**
-	 * Apply File content validations
-	 * @param workingFile
-	 * @return
-	 */
-	private ValidationResult validateFile(String workingFile)
-	{
-		MiscSettings settings = config.getMiscSettings();
-
-		// Validate XML file
-		String schemaFile = makeFullPath(settings.getSchemaLocation(), CORE_SCHEMA_FILE);
-		String xsltLocation = settings.getXsltLocation();
-		String translationsFile = makeFullPath(settings.getXmlLocation(), CORE_TRANSLATIONS_FILE);
-		Validate validate = new ValidateXML(schemaFile, workingFile, translationsFile, xsltLocation);
-
-		return validate.validate();
-	}
 
 	/**
 	 * Apply Permit number validations
-	 * @param workingFile
-	 * @return
+	 * 
 	 */
-	private GeneralResult validatePermitNo(String workingFile)
-	{
+	private void validatePermitNo(CSVModel<MonitoringDataRecord> model) {
 		LOGGER.debug("Performing Permit No validations");
-
-		Map<String, String> params = new HashMap<String, String>();
-		params.put("nodeName", PERMIT_NO_FIELD_ID);
-
-		String result = transformToString(workingFile, makeFullPath(config.getMiscSettings().getXsltLocation(), XSLT_PERMIT_NOS), params);
-
-		GeneralResult generalResult = deserializeFromXML(result, GeneralResult.class);
-
-		// Release 1 - single permit only
-		if (generalResult == null || generalResult.getResultCount() == 0) {
-			throw new DRPermitNotFoundException("No permits were found in file '" + FilenameUtils.getName(workingFile) + "'");
-		} else if (generalResult.getResultCount() > 1) {
-			throw new DRMultiplePermitsException("Multiple Permits found in file '" + FilenameUtils.getName(workingFile) + "'");
+		
+		// Apply permit validation
+		final Set<String> permitNumberSet = model.getRecords()
+				.stream()
+				.map(MonitoringDataRecord::getPermitNumber)
+				.collect(Collectors.toSet());
+		
+		if (permitNumberSet.size() == 0) {
+			throw new DRPermitNotFoundException("No permits were found in the uploaded file.");
+		} else if (permitNumberSet.size() > 1) {
+			throw new DRMultiplePermitsException("Multiple Permits found in the uploaded file.");
 		}
+		// We can safely assume that iterator().next() will not fail as we have already checked that there are exactly one permits in the set
+		String permitNo = permitNumberSet.iterator().next();
 
-		String permitNo = generalResult.getSingleResultValue();
-
-		// Validate the permit no format even though it's valid as exists in permit list but 
+		// Validate the permit no format even though it's valid as exists in permit list but
 		// need to make sure it'll work later when determining database name for email subject
-		// TODO will need more work after Beta Pilot
-		if (!DataExchangeHelper.isNumericPermitNo(permitNo) 
-				&& !DataExchangeHelper.isAlphaNumericPermitNo(permitNo))
-		{
+		if (!DataExchangeHelper.isNumericPermitNo(permitNo) && !DataExchangeHelper.isAlphaNumericPermitNo(permitNo)) {
 			throw new DRInvalidPermitNoException("Permit no '" + permitNo + "' is invalid");
 		}
 
-		if (permitDAO.findByPermitNumber(permitNo) == null)
-		{
+		if (permitDAO.findByPermitNumber(permitNo) == null) {
 			throw new DRPermitNotFoundException("Permit no '" + permitNo + "' not found");
 		}
 
 		LOGGER.debug("Permit is valid'");
-
-		return generalResult;
 	}
-
+	
 	/**
-	 * Extract values that identify a unique EA return type
-	 * @param fileLocation
-	 * @param ids
-	 * @return
-	 */
-	private GeneralResult getUniqueIdentifiers(String fileLocation)
-	{
-		Map<String, String> params = new HashMap<String, String>();
-		params.put("nodeNames", String.join(",", uniqueIdentifierIds));
-
-		String result = transformToString(fileLocation, makeFullPath(config.getMiscSettings().getXsltLocation(), XSLT_UNIQUE_IDENTIFIERS), params);
-
-		return deserializeFromXML(result, GeneralResult.class);
-	}
-
-	/**
-	 * Send notifications upload is complete - currently just email to MonitorPro with csv attachment
+	 * Send notifications upload is complete - currently just email to
+	 * MonitorPro with csv attachment
+	 * 
 	 * @param attachmentLocation
-	 * @param permitNo 
-	 * @param orgFileName 
+	 * @param permitNo
+	 * @param orgFileName
 	 */
-	// TODO move to own class hierarchy - also needs tests 
-	private void sendNotifications(String attachmentLocation, String permitNo)
-	{
+	// TODO move to own class hierarchy - also needs tests
+	private void sendNotifications(String attachmentLocation, String permitNo) {
 		LOGGER.debug("Sending Email with attachment '" + attachmentLocation + "'");
 
 		EmmaDatabaseSettings dbSettings = this.config.getEmmaDatabaseSettings();
-		
-		try
-		{
+
+		try {
 			final EmailSettings settings = this.config.getEmailsettings();
 			final MultiPartEmail email = new MultiPartEmail();
 			final EmmaDatabase type = DataExchangeHelper.getDatabaseTypeFromPermitNo(permitNo);
@@ -358,14 +324,136 @@ public class DataExchangeResource
 			LOGGER.debug("  attached file = " + attachment.getPath());
 
 			email.send();
-		} catch (EmailException e1)
-		{
+		} catch (EmailException e1) {
 			throw new DRNotificationException(e1, "Failed to send email to MonitorPro");
-		} catch (Exception e2)
-		{
+		} catch (Exception e2) {
 			throw new DRNotificationException(e2, "Failed to send email to MonitorPro");
 		}
 
 		LOGGER.debug("Email sent");
+	}
+	
+	/**
+	 * Parse the given file as a CSV and return a Java model with the result.
+	 * 
+	 * @param file
+	 * @return
+	 */
+	private final CSVModel<MonitoringDataRecord> readCSVFile(File csvFile) {
+		final MiscSettings settings = config.getMiscSettings();
+		final Character csvDelimiter = settings.getCSVSeparatorCharacter();
+		
+		// Create a validator for the CSV headings
+		final CSVHeaderValidator validator = new CSVHeaderValidator() {
+			@Override
+			public void validateHeaders(Map<String, Integer> headerMap) throws ValidationException {
+				// Get working sets for the list of all headers and the list of mandatory headers
+				final Set<String> allHeaders = DataReturnsHeaders.getAllHeadings();
+				final Set<String> mandatoryHeaders = DataReturnsHeaders.getMandatoryHeadings();
+				// Set of headers defined in the supplied model (from the CSV file)
+				final Set<String> csvHeaders = headerMap.keySet();
+				
+				// If we remove the CSV file's headers from the set of mandatory headers then the mandatory headers set should be empty
+				// if they have defined everything that they should have.
+				mandatoryHeaders.removeAll(csvHeaders);
+				if (!mandatoryHeaders.isEmpty()) {
+					throw new HeaderFieldMissingException("Missing fields: " + mandatoryHeaders.toString());
+				}
+				
+				// Create a temporary set (which we can modify) of the fields defined in the CSV file
+				final Set<String> tempCsvHeaderSet = new HashSet<>(csvHeaders);
+				// Remove the set of all known headers from the temporary CSV file header list.  If the resultant set is not empty, then 
+				// headers have been defined in the CSV file which are not allowed by the system.
+				tempCsvHeaderSet.removeAll(allHeaders);
+				if (!tempCsvHeaderSet.isEmpty()) {
+					throw new HeaderFieldUnrecognisedException("Unrecognised field(s) encountered: " + tempCsvHeaderSet.toString());
+				} 
+				
+			}
+		};
+		// Configure a CSV reader with our settings and validator - map the CSV to the MonitoringDataRecord class
+		final CSVReaderSettings csvReaderSettings= new CSVReaderSettings(csvDelimiter, validator);		
+		csvReaderSettings.setTrimWhitespace(true);
+		final CSVReader<MonitoringDataRecord> csvReader = new CSVReader<>(MonitoringDataRecord.class, csvReaderSettings);
+		
+		try {
+			return csvReader.parseCSV(csvFile);
+		} catch (HeaderFieldMissingException e) {
+			// CSV failed to parse due to a missing header field
+			throw new DRMandatoryFieldsMissingException(e.getMessage());
+		} catch (HeaderFieldUnrecognisedException e) {
+			// CSV failed to parse due to an unexpected header field
+			throw new DRUnrecognisedFieldException(e.getMessage());
+		} catch (ValidationException e) {
+			throw new DRInvalidContentsException("Unable to parse CSV file - unexpected validation exception.");
+		} catch (IOException e) {
+			throw new DRInvalidContentsException("Unable to parse CSV file: Cause: " + e.getMessage());
+		}
+	}
+	
+	/**
+	 * Prepare the list of {@link MonitoringDataRecord} entries for output
+	 * 
+	 * Formats data as required for output to the Emma datrabase
+	 * 
+	 * @param records the {@link List} of {@link MonitoringDataRecord} to prepared for output
+	 */
+	private static final void prepareOutputData(final List<MonitoringDataRecord> records) {
+		for (MonitoringDataRecord record : records) {
+			
+			// Date and time processing
+			String dateTime = record.getMonitoringDate();
+			if (dateTime != null) {
+				final Matcher dateMatcher = MonitoringDataRecord.DATE_TIME_PATTERN.matcher(dateTime);
+				if (dateMatcher.matches()) {
+					String internationalDate = dateMatcher.group("internationalDate");
+					String ukDate = dateMatcher.group("ukDate");
+					
+					// Default to international date if this was specified.
+					String outputDate = internationalDate;
+					// If date specified in UK format then we need to reverse this to produce an international date
+					if (ukDate != null) {
+						String[] dateParts = ukDate.split(MonitoringDataRecord.REGEX_DATE_SEPARATOR);
+						ArrayUtils.reverse(dateParts);
+						outputDate = StringUtils.join(dateParts, MonitoringDataRecord.DEFAULT_DATE_SEPARATOR);
+					}
+
+					String[] timeParts = { dateMatcher.group("hour"), dateMatcher.group("minute"), dateMatcher.group("second") };
+					
+					StringBuilder validDateString = new StringBuilder(outputDate);
+					if (timeParts[0] != null) {
+						validDateString.append("T");
+						validDateString.append(StringUtils.join(timeParts, MonitoringDataRecord.DEFAULT_TIME_SEPARATOR));
+					}
+					record.setMonitoringDate(validDateString.toString());
+				}
+			}
+			
+		}
+	}
+	
+	
+	/**
+	 * Write a list of {@link MonitoringDataRecord} entries to a {@link File}
+	 * 
+	 * @param records the {@link List} of {@link MonitoringDataRecord} to be written
+	 * @param outputFile the output {@link File} to be written to
+	 */
+	private final void writeCSVFile(final List<MonitoringDataRecord> records, final File outputFile) {
+		final MiscSettings settings = config.getMiscSettings();
+		final Character csvDelimiter = settings.getCSVSeparatorCharacter();
+		final Set<String> allHeadings = DataReturnsHeaders.getAllHeadings();
+		final CSVWriterSettings csvWriterSettings = new CSVWriterSettings(csvDelimiter, new ArrayList<>(allHeadings));
+		csvWriterSettings.setTrimWhitespace(true);
+		final CSVWriter<MonitoringDataRecord> writer = new CSVWriter<>(MonitoringDataRecord.class, csvWriterSettings);
+
+		try {
+			// Output to a file in outputdir/validated with the same name as the uploaded file.
+			try (final OutputStream fos = FileUtils.openOutputStream(outputFile)) {
+				writer.write(records, fos);
+			}
+		} catch (IOException e) {
+			throw new DRSerializationException(e, "Unable to write validated CSV file");
+		}
 	}
 }

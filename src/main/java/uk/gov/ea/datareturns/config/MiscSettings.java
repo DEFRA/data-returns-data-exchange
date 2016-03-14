@@ -1,5 +1,6 @@
 package uk.gov.ea.datareturns.config;
 
+import org.apache.commons.lang3.StringUtils;
 import org.hibernate.validator.constraints.NotEmpty;
 
 /**
@@ -99,6 +100,11 @@ public class MiscSettings
 	public String getCsvSeparator()
 	{
 		return csvSeparator;
+	}
+	
+	public Character getCSVSeparatorCharacter() {
+		// Use delimiter from configuration (need first character from string)
+		return StringUtils.isNotEmpty(getCsvSeparator()) ? getCsvSeparator().charAt(0) : null;
 	}
 
 	public void setCsvSeparator(String csvSeparator)

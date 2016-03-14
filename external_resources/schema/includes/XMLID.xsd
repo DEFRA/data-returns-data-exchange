@@ -5,7 +5,7 @@
     
     <!-- Include this file in other modules to ensure that the row id are validated --> 
     <xs:attributeGroup name="CommonAtts">
-        <xs:attribute name="xmlId" use="required" type="xs:integer"/>
+        <xs:attribute name="xmlId" use="optional" type="xs:integer"/>
     </xs:attributeGroup>
 
 </xs:schema>

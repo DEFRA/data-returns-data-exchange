@@ -24,8 +24,19 @@
 		<liquibase.maven.plugin.version>3.0.5</liquibase.maven.plugin.version>
 		<postgresql.version>9.4-1205-jdbc42</postgresql.version>
 		<p6spy.version>2.1.4</p6spy.version>
+		
+		<!-- Hibernate validation -->
+		<hibernate.validator.version>5.2.4.Final</hibernate.validator.version>
+
+		<!-- Logging framework -->
+		<jcl-over-slf4j.version>1.7.18</jcl-over-slf4j.version>
+
+		<!-- Apache commons libraries -->
 		<commons.email.version>1.4</commons.email.version>
 		<commons.io.version>2.4</commons.io.version>
+		<commons.csv.version>1.2</commons.csv.version>
+
+
 		<xerces.version>2.11.0</xerces.version>
 		<jackson-dataformat-xml.version>2.6.3</jackson-dataformat-xml.version>
 		<codehaus.woodstox.version>4.4.1</codehaus.woodstox.version>
@@ -90,6 +101,42 @@
 			<artifactId>metrics-core</artifactId>
 			<version>${dropwizard.metrics.version}</version>
 		</dependency>
+		
+		<!--  Hibernate validator -->
+		<dependency>
+			<groupId>org.hibernate</groupId>
+			<artifactId>hibernate-validator</artifactId>
+			<version>${hibernate.validator.version}</version>
+		</dependency>
+
+		
+		
+		
+		<!-- Logging -->
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>jcl-over-slf4j</artifactId>
+			<version>${jcl-over-slf4j.version}</version>
+		</dependency>
+
+		<!-- Apache commons -->
+		<dependency>
+			<groupId>org.apache.commons</groupId>
+			<artifactId>commons-csv</artifactId>
+			<version>${commons.csv.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.commons</groupId>
+			<artifactId>commons-email</artifactId>
+			<version>${commons.email.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>commons-io</groupId>
+			<artifactId>commons-io</artifactId>
+			<version>${commons.io.version}</version>
+		</dependency>
+
+
 		<dependency>
 			<groupId>uk.gov.nationalarchives</groupId>
 			<artifactId>csv-validator-java-api</artifactId>
@@ -109,16 +156,6 @@
 			<groupId>p6spy</groupId>
 			<artifactId>p6spy</artifactId>
 			<version>${p6spy.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.commons</groupId>
-			<artifactId>commons-email</artifactId>
-			<version>${commons.email.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>commons-io</groupId>
-			<artifactId>commons-io</artifactId>
-			<version>${commons.io.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>xerces</groupId>
@@ -286,7 +323,7 @@
 				<executions>
 					<!-- This command can be executed using mvn sql:execute@create-user -->
 					<!-- TODO: This cannot be done at this point as by default postgres 
-						does not have a superuser account availabnle to use over JDBC. It does however 
+						does not have a superuser account available to use over JDBC. It does however 
 						work if you are able to pass it a superuser and password to use that is not 
 						the data_returns_owner <execution> <id>create-user</id> <goals> <goal>execute</goal> 
 						</goals> <configuration> <url>jdbc:postgresql://localhost:5432/postgres</url> 

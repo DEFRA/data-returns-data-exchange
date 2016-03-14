@@ -1,2 +1,2 @@
-EA_ID,Site_Name,Rtn_Type,Mon_Date,Mon_Date_End,Mon_Period,Smpl_Ref,Smpl_By,Mon_Point,Parameter,Value,Txt_Value,Unit,Ref_Period,Meth_Stand,Comments,CiC,CAS,RD_Code
-AB1234Z1,ABC Limited,EPR/IED Landfill Gas infrastructure monitoring,2015-08-05,2015-08-05,Period 1,Sample Ref,Sampled by 1,Monitor point 1,"Temperature",123,Test Text,mg,Annual,Test method 1,Test comments,True,123,rd code
+EA_ID,Site_Name,Rtn_Type,Mon_Date,Mon_Frequency,Smpl_Ref,Smpl_By,Mon_Point,Parameter,Value,Txt_Value,Unit,Ref_Period,Meth_Stand,Comments,CiC,CAS,RD_Code
+AB1234Z1,ABC Limited,EPR/IED Landfill Gas infrastructure monitoring,2015-08-05,Period 1,Sample Ref,Sampled by 1,Monitor point 1,Temperature,123,Test Text,mg,Annual,Test method 1,Test comments,True,123,rd code

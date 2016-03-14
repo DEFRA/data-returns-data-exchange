@@ -13,14 +13,6 @@ public class EmmaDatabaseSettings {
 	
 	public EmmaDatabaseSettings() {
 	}
-	
-	public EmmaDatabaseSettings(String databaseLowerNumericName, String databaseUpperNumericName,
-			String databaseLowerAlphaNumericName, String databaseUpperAlphaNumericName) {
-		this.databaseLowerNumericName = databaseLowerNumericName;
-		this.databaseUpperNumericName = databaseUpperNumericName;
-		this.databaseLowerAlphaNumericName = databaseLowerAlphaNumericName;
-		this.databaseUpperAlphaNumericName = databaseUpperAlphaNumericName;
-	}
 
 	/**
 	 * @return the databaseLowerNumericName

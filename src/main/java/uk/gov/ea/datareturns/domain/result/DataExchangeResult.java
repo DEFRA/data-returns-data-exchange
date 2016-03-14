@@ -23,10 +23,10 @@ public class DataExchangeResult
 	@JsonInclude(Include.NON_NULL)
 	private ValidationResult validationResult;
 
-	@JacksonXmlProperty(localName = "GeneralResult")
-	@JsonProperty("generalResult")
+	@JacksonXmlProperty(localName = "ParseResult")
+	@JsonProperty("parseResult")
 	@JsonInclude(Include.NON_NULL)
-	private GeneralResult generalResult;
+	private ParseResult parseResult;
 
 	@JacksonXmlProperty(localName = "CompleteResult")
 	@JsonProperty("completeResult")
@@ -47,53 +47,73 @@ public class DataExchangeResult
 		this.completeResult = completeResult;
 	}
 
-	public int getAppStatusCode()
-	{
+	/**
+	 * @return the appStatusCode
+	 */
+	public int getAppStatusCode() {
 		return appStatusCode;
 	}
 
-	public void setAppStatusCode(int appStatusCode)
-	{
-		this.appStatusCode = appStatusCode;
-	}
-
-	public UploadResult getUploadResult()
-	{
+	/**
+	 * @return the uploadResult
+	 */
+	public UploadResult getUploadResult() {
 		return uploadResult;
 	}
 
-	public void setUploadResult(UploadResult uploadResult)
-	{
-		this.uploadResult = uploadResult;
-	}
-
-	public ValidationResult getValidationResult()
-	{
+	/**
+	 * @return the validationResult
+	 */
+	public ValidationResult getValidationResult() {
 		return validationResult;
 	}
 
-	public void setValidationResult(ValidationResult validationResult)
-	{
-		this.validationResult = validationResult;
+	/**
+	 * @return the parseResult
+	 */
+	public ParseResult getParseResult() {
+		return parseResult;
 	}
 
-	public GeneralResult getGeneralResult()
-	{
-		return generalResult;
-	}
-
-	public void setGeneralResult(GeneralResult generalResult)
-	{
-		this.generalResult = generalResult;
-	}
-
-	public CompleteResult getCompleteResult()
-	{
+	/**
+	 * @return the completeResult
+	 */
+	public CompleteResult getCompleteResult() {
 		return completeResult;
 	}
 
-	public void setCompleteResult(CompleteResult completeResult)
-	{
+	/**
+	 * @param appStatusCode the appStatusCode to set
+	 */
+	public void setAppStatusCode(int appStatusCode) {
+		this.appStatusCode = appStatusCode;
+	}
+
+	/**
+	 * @param uploadResult the uploadResult to set
+	 */
+	public void setUploadResult(UploadResult uploadResult) {
+		this.uploadResult = uploadResult;
+	}
+
+	/**
+	 * @param validationResult the validationResult to set
+	 */
+	public void setValidationResult(ValidationResult validationResult) {
+		this.validationResult = validationResult;
+	}
+
+	/**
+	 * @param parseResult the parseResult to set
+	 */
+	public void setParseResult(ParseResult parseResult) {
+		this.parseResult = parseResult;
+	}
+
+	/**
+	 * @param completeResult the completeResult to set
+	 */
+	public void setCompleteResult(CompleteResult completeResult) {
 		this.completeResult = completeResult;
 	}
 }

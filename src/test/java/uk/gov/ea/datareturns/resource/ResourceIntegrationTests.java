@@ -2,31 +2,20 @@ package uk.gov.ea.datareturns.resource;
 
 import static javax.ws.rs.core.Response.Status.OK;
 import static org.assertj.core.api.Assertions.assertThat;
-import static uk.gov.ea.datareturns.helper.FileUtilsHelper.createDirectory;
-import static uk.gov.ea.datareturns.helper.FileUtilsHelper.deleteDirectory;
 import static uk.gov.ea.datareturns.helper.FileUtilsHelper.makeFullPath;
-import static uk.gov.ea.datareturns.helper.XMLUtilsHelper.serializeToJSON;
-import static uk.gov.ea.datareturns.helper.XMLUtilsHelper.serializeToXML;
 import static uk.gov.ea.datareturns.type.AppStatusCodeType.APP_STATUS_FAILED_WITH_ERRORS;
 import static uk.gov.ea.datareturns.type.AppStatusCodeType.APP_STATUS_SUCCESS;
-import static uk.gov.ea.datareturns.type.ApplicationExceptionType.FILE_KEY_MISMATCH;
-import static uk.gov.ea.datareturns.type.ApplicationExceptionType.INVALID_CONTENTS;
-import static uk.gov.ea.datareturns.type.ApplicationExceptionType.INVALID_PERMIT_NO;
-import static uk.gov.ea.datareturns.type.ApplicationExceptionType.MULTIPLE_PERMITS;
-import static uk.gov.ea.datareturns.type.ApplicationExceptionType.NO_RETURNS;
-import static uk.gov.ea.datareturns.type.ApplicationExceptionType.PERMIT_NOT_FOUND;
-import static uk.gov.ea.datareturns.type.ApplicationExceptionType.UNSUPPORTED_FILE_TYPE;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.HashMap;
-import java.util.Map;
 
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+import org.apache.commons.io.FileUtils;
 import org.glassfish.jersey.client.ClientProperties;
 import org.glassfish.jersey.media.multipart.FormDataBodyPart;
 import org.glassfish.jersey.media.multipart.FormDataMultiPart;
@@ -39,7 +28,6 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.fasterxml.jackson.databind.SerializationFeature;
 import com.google.gson.Gson;
 
 import io.dropwizard.client.JerseyClientBuilder;
@@ -48,6 +36,7 @@ import io.dropwizard.testing.junit.DropwizardAppRule;
 import uk.gov.ea.datareturns.App;
 import uk.gov.ea.datareturns.config.DataExchangeConfiguration;
 import uk.gov.ea.datareturns.domain.result.DataExchangeResult;
+import uk.gov.ea.datareturns.type.ApplicationExceptionType;
 
 // TODO run local/non-all environments in single run
 
@@ -82,6 +71,8 @@ public class ResourceIntegrationTests
 	public final static String FILE_CSV_INVALID_VALUE_CHARS = "invalid-value-field-chars.csv";
 	public final static String FILE_CSV_REQUIRED_FIELDS_ONLY = "required-fields-only.csv";
 	public final static String FILE_CSV_REQUIRED_FIELDS_MISSING = "required-fields-missing.csv";
+	public final static String FILE_CSV_DATE_FORMAT = "date-format-test.csv";
+	public final static String FILE_CSV_UNRECOGNISED_FIELD_FOUND= "unrecognised-field-found.csv";
 
 	public final static String FILE_CONFIG = System.getProperty("configFile");
 
@@ -110,7 +101,7 @@ public class ResourceIntegrationTests
 	{
 		if (TRUE.equals(RULE.getConfiguration().getTestSettings().getCleanupAfterTestRun().toLowerCase()))
 		{
-			deleteDirectory(RULE.getConfiguration().getMiscSettings().getOutputLocation());
+			FileUtils.deleteDirectory(new File(RULE.getConfiguration().getMiscSettings().getOutputLocation()));
 		}
 	}
 
@@ -128,18 +119,18 @@ public class ResourceIntegrationTests
 		assertThat(resp.getStatus()).isEqualTo(OK.getStatusCode());
 
 		final DataExchangeResult result = getResultFromResponse(resp);
-		assertThat(result.getAppStatusCode()).isEqualTo(UNSUPPORTED_FILE_TYPE.getAppStatusCode());
+		assertThat(result.getAppStatusCode()).isEqualTo(ApplicationExceptionType.UNSUPPORTED_FILE_TYPE.getAppStatusCode());
 	}
 
 	@Test
 	public void testInvalidFileContents()
 	{
-		final Client client = createClient("test Invalid File Contents");
+		final Client client = createClient("test Binary File Contents");
 		final Response resp = performUploadStep(client, FILE_NON_CSV_CONTENTS, MEDIA_TYPE_CSV);
 		assertThat(resp.getStatus()).isEqualTo(OK.getStatusCode());
 
 		final DataExchangeResult result = getResultFromResponse(resp);
-		assertThat(result.getAppStatusCode()).isEqualTo(INVALID_CONTENTS.getAppStatusCode());
+		assertThat(result.getAppStatusCode()).isEqualTo(ApplicationExceptionType.MANDATORY_FIELDS_MISSING.getAppStatusCode());
 	}
 
 	/**
@@ -154,9 +145,34 @@ public class ResourceIntegrationTests
 
 		final DataExchangeResult result = getResultFromResponse(resp);
 		assertThat(result.getAppStatusCode()).isEqualTo(APP_STATUS_SUCCESS.getAppStatusCode());
+	}
+
+	/**
+	 * Tests that the backend will throw out CSV files which contain headings that we do not need
+	 */
+	@Test
+	public void testUnrecognisedFieldsFound()
+	{
+		final Client client = createClient("test Unrecognised Field Found");
+		final Response resp = performUploadStep(client, FILE_CSV_UNRECOGNISED_FIELD_FOUND, MEDIA_TYPE_CSV);
+		assertThat(resp.getStatus()).isEqualTo(OK.getStatusCode());
+
+		final DataExchangeResult result = getResultFromResponse(resp);
+		assertThat(result.getAppStatusCode()).isEqualTo(ApplicationExceptionType.UNRECOGNISED_FIELD_FOUND.getAppStatusCode());
+	}
+	
+	/**
+	 * Tests that the backend will load a csv file with all supported date formats.
+	 */
+	@Test
+	public void testDateFormats()
+	{
+		final Client client = createClient("test Date Formats");
+		final Response resp = performUploadStep(client, FILE_CSV_DATE_FORMAT, MEDIA_TYPE_CSV);
+		assertThat(resp.getStatus()).isEqualTo(OK.getStatusCode());
 		
-		// TODO Would like to improve this to check the number of schema validation errors returned but these objects are null.
-		//assertThat(result.getValidationResult().getSchemaErrors().getErrorCount()).isEqualTo(0);
+		final DataExchangeResult result = getResultFromResponse(resp);
+		assertThat(result.getAppStatusCode()).isEqualTo(APP_STATUS_SUCCESS.getAppStatusCode());
 	}
 
 	/**
@@ -170,8 +186,7 @@ public class ResourceIntegrationTests
 		assertThat(resp.getStatus()).isEqualTo(OK.getStatusCode());
 
 		final DataExchangeResult result = getResultFromResponse(resp);
-		assertThat(result.getAppStatusCode()).isEqualTo(APP_STATUS_FAILED_WITH_ERRORS.getAppStatusCode());
-		//assertThat(result.getValidationResult().getSchemaErrors().getErrorCount()).isEqualTo(0);
+		assertThat(result.getAppStatusCode()).isEqualTo(ApplicationExceptionType.MANDATORY_FIELDS_MISSING.getAppStatusCode());
 	}
 
 	
@@ -183,7 +198,7 @@ public class ResourceIntegrationTests
 		assertThat(resp.getStatus()).isEqualTo(OK.getStatusCode());
 
 		final DataExchangeResult result = getResultFromResponse(resp);
-		assertThat(result.getAppStatusCode()).isEqualTo(NO_RETURNS.getAppStatusCode());
+		assertThat(result.getAppStatusCode()).isEqualTo(ApplicationExceptionType.MANDATORY_FIELDS_MISSING.getAppStatusCode());
 	}
 
 	@Test
@@ -194,7 +209,7 @@ public class ResourceIntegrationTests
 		assertThat(resp.getStatus()).isEqualTo(OK.getStatusCode());
 
 		final DataExchangeResult result = getResultFromResponse(resp);
-		assertThat(result.getAppStatusCode()).isEqualTo(MULTIPLE_PERMITS.getAppStatusCode());
+		assertThat(result.getAppStatusCode()).isEqualTo(ApplicationExceptionType.MULTIPLE_PERMITS.getAppStatusCode());
 	}
 
 	@Test
@@ -205,7 +220,7 @@ public class ResourceIntegrationTests
 		assertThat(resp.getStatus()).isEqualTo(OK.getStatusCode());
 
 		final DataExchangeResult result = getResultFromResponse(resp);
-		assertThat(result.getAppStatusCode()).isEqualTo(INVALID_PERMIT_NO.getAppStatusCode());
+		assertThat(result.getAppStatusCode()).isEqualTo(ApplicationExceptionType.INVALID_PERMIT_NO.getAppStatusCode());
 	}
 
 	@Test
@@ -216,7 +231,7 @@ public class ResourceIntegrationTests
 		assertThat(resp.getStatus()).isEqualTo(OK.getStatusCode());
 
 		final DataExchangeResult result = getResultFromResponse(resp);
-		assertThat(result.getAppStatusCode()).isEqualTo(PERMIT_NOT_FOUND.getAppStatusCode());
+		assertThat(result.getAppStatusCode()).isEqualTo(ApplicationExceptionType.PERMIT_NOT_FOUND.getAppStatusCode());
 	}
 
 	@Test
@@ -233,7 +248,7 @@ public class ResourceIntegrationTests
 		assertThat(resp.getStatus()).isEqualTo(OK.getStatusCode());
 
 		result = getResultFromResponse(resp);
-		assertThat(result.getAppStatusCode()).isEqualTo(FILE_KEY_MISMATCH.getAppStatusCode());
+		assertThat(result.getAppStatusCode()).isEqualTo(ApplicationExceptionType.FILE_KEY_MISMATCH.getAppStatusCode());
 	}
 
 	///////////////////////////////////////////////////////////////////////////////////////////
@@ -269,8 +284,6 @@ public class ResourceIntegrationTests
 
 		final DataExchangeResult result = getResultFromResponse(resp);
 		assertThat(result.getAppStatusCode()).isEqualTo(APP_STATUS_FAILED_WITH_ERRORS.getAppStatusCode());
-
-		dumpResult(result);
 	}
 
 	@Test
@@ -336,8 +349,6 @@ public class ResourceIntegrationTests
 
 		final DataExchangeResult result = getResultFromResponse(resp);
 		assertThat(result.getAppStatusCode()).isEqualTo(APP_STATUS_SUCCESS.getAppStatusCode());
-
-		dumpResult(result);
 	}
 
 	///////////////////////////////////////////////////////////////////////////////////////////
@@ -451,8 +462,9 @@ public class ResourceIntegrationTests
 	 */
 	private static void createTestDirectory(String dir) throws IOException
 	{
-		deleteDirectory(dir);
-		createDirectory(dir);
+		File directory = new File(dir);
+		FileUtils.deleteDirectory(directory);
+		FileUtils.forceMkdir(directory);
 	}
 
 	/**
@@ -477,19 +489,4 @@ public class ResourceIntegrationTests
 		return String.format(URI, RULE.getLocalPort(), step);
 	}
 
-	/**
-	 * Debug method to output Result data in XML and JSON
-	 * @param result
-	 */
-	private static void dumpResult(DataExchangeResult result)
-	{
-		if (debugMode)
-		{
-			Map<SerializationFeature, Boolean> config = new HashMap<SerializationFeature, Boolean>();
-			config.put(SerializationFeature.INDENT_OUTPUT, true);
-
-			LOGGER.debug(serializeToXML(result, config));
-			LOGGER.debug(serializeToJSON(result, config));
-		}
-	}
 }
