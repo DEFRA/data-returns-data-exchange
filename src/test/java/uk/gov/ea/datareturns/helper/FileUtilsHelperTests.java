@@ -43,15 +43,6 @@ public class FileUtilsHelperTests
 	}
 
 	@Test
-	public void testMakeFullPath()
-	{
-		String expected = getTestFullCSVFilename();
-		String actual = FileUtilsHelper.makeFullPath(getTestFullDirectory(), getTestCSVFileName());
-
-		assertThat(expected).isEqualTo(actual);
-	}
-
-	@Test
 	public void testDeleteDirectory() throws IOException
 	{
 		String fullDir = getTestFullDirectory();

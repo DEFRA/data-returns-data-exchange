@@ -2,7 +2,6 @@ package uk.gov.ea.datareturns.resource;
 
 import static javax.ws.rs.core.Response.Status.OK;
 import static org.assertj.core.api.Assertions.assertThat;
-import static uk.gov.ea.datareturns.helper.FileUtilsHelper.makeFullPath;
 import static uk.gov.ea.datareturns.type.AppStatusCodeType.APP_STATUS_FAILED_WITH_ERRORS;
 import static uk.gov.ea.datareturns.type.AppStatusCodeType.APP_STATUS_SUCCESS;
 
@@ -119,7 +118,7 @@ public class ResourceIntegrationTests
 		assertThat(resp.getStatus()).isEqualTo(OK.getStatusCode());
 
 		final DataExchangeResult result = getResultFromResponse(resp);
-		assertThat(result.getAppStatusCode()).isEqualTo(ApplicationExceptionType.UNSUPPORTED_FILE_TYPE.getAppStatusCode());
+		assertThat(result.getAppStatusCode()).isEqualTo(ApplicationExceptionType.FILE_TYPE_UNSUPPORTED.getAppStatusCode());
 	}
 
 	@Test
@@ -130,7 +129,7 @@ public class ResourceIntegrationTests
 		assertThat(resp.getStatus()).isEqualTo(OK.getStatusCode());
 
 		final DataExchangeResult result = getResultFromResponse(resp);
-		assertThat(result.getAppStatusCode()).isEqualTo(ApplicationExceptionType.MANDATORY_FIELDS_MISSING.getAppStatusCode());
+		assertThat(result.getAppStatusCode()).isEqualTo(ApplicationExceptionType.HEADER_MANDATORY_FIELD_MISSING.getAppStatusCode());
 	}
 
 	/**
@@ -158,7 +157,7 @@ public class ResourceIntegrationTests
 		assertThat(resp.getStatus()).isEqualTo(OK.getStatusCode());
 
 		final DataExchangeResult result = getResultFromResponse(resp);
-		assertThat(result.getAppStatusCode()).isEqualTo(ApplicationExceptionType.UNRECOGNISED_FIELD_FOUND.getAppStatusCode());
+		assertThat(result.getAppStatusCode()).isEqualTo(ApplicationExceptionType.HEADER_UNRECOGNISED_FIELD_FOUND.getAppStatusCode());
 	}
 	
 	/**
@@ -186,19 +185,19 @@ public class ResourceIntegrationTests
 		assertThat(resp.getStatus()).isEqualTo(OK.getStatusCode());
 
 		final DataExchangeResult result = getResultFromResponse(resp);
-		assertThat(result.getAppStatusCode()).isEqualTo(ApplicationExceptionType.MANDATORY_FIELDS_MISSING.getAppStatusCode());
+		assertThat(result.getAppStatusCode()).isEqualTo(ApplicationExceptionType.HEADER_MANDATORY_FIELD_MISSING.getAppStatusCode());
 	}
 
 	
 	@Test
-	public void testNoReturns()
+	public void testEmptyFile()
 	{
-		final Client client = createClient("test No returns");
+		final Client client = createClient("test Empty File");
 		final Response resp = performUploadStep(client, FILE_CSV_EMPTY, MEDIA_TYPE_CSV);
 		assertThat(resp.getStatus()).isEqualTo(OK.getStatusCode());
 
 		final DataExchangeResult result = getResultFromResponse(resp);
-		assertThat(result.getAppStatusCode()).isEqualTo(ApplicationExceptionType.MANDATORY_FIELDS_MISSING.getAppStatusCode());
+		assertThat(result.getAppStatusCode()).isEqualTo(ApplicationExceptionType.FILE_EMPTY.getAppStatusCode());
 	}
 
 	@Test
@@ -209,7 +208,7 @@ public class ResourceIntegrationTests
 		assertThat(resp.getStatus()).isEqualTo(OK.getStatusCode());
 
 		final DataExchangeResult result = getResultFromResponse(resp);
-		assertThat(result.getAppStatusCode()).isEqualTo(ApplicationExceptionType.MULTIPLE_PERMITS.getAppStatusCode());
+		assertThat(result.getAppStatusCode()).isEqualTo(ApplicationExceptionType.PERMIT_NOT_UNIQUE.getAppStatusCode());
 	}
 
 	@Test
@@ -220,7 +219,7 @@ public class ResourceIntegrationTests
 		assertThat(resp.getStatus()).isEqualTo(OK.getStatusCode());
 
 		final DataExchangeResult result = getResultFromResponse(resp);
-		assertThat(result.getAppStatusCode()).isEqualTo(ApplicationExceptionType.INVALID_PERMIT_NO.getAppStatusCode());
+		assertThat(result.getAppStatusCode()).isEqualTo(ApplicationExceptionType.PERMIT_NOT_RECOGNISED.getAppStatusCode());
 	}
 
 	@Test
@@ -231,7 +230,7 @@ public class ResourceIntegrationTests
 		assertThat(resp.getStatus()).isEqualTo(OK.getStatusCode());
 
 		final DataExchangeResult result = getResultFromResponse(resp);
-		assertThat(result.getAppStatusCode()).isEqualTo(ApplicationExceptionType.PERMIT_NOT_FOUND.getAppStatusCode());
+		assertThat(result.getAppStatusCode()).isEqualTo(ApplicationExceptionType.PERMIT_NOT_RECOGNISED.getAppStatusCode());
 	}
 
 	@Test
@@ -248,7 +247,7 @@ public class ResourceIntegrationTests
 		assertThat(resp.getStatus()).isEqualTo(OK.getStatusCode());
 
 		result = getResultFromResponse(resp);
-		assertThat(result.getAppStatusCode()).isEqualTo(ApplicationExceptionType.FILE_KEY_MISMATCH.getAppStatusCode());
+		assertThat(result.getAppStatusCode()).isEqualTo(ApplicationExceptionType.SYSTEM_FAILURE.getAppStatusCode());
 	}
 
 	///////////////////////////////////////////////////////////////////////////////////////////
@@ -398,9 +397,11 @@ public class ResourceIntegrationTests
 	{
 		Response response = null;
 		final String testFilesLocation = RULE.getConfiguration().getTestSettings().getTestFilesLocation();
+		File testFile = new File(testFilesLocation, testFileName);
+		
 		try (
 			final FormDataMultiPart form = new FormDataMultiPart();
-			final InputStream data = this.getClass().getResourceAsStream(makeFullPath(testFilesLocation, testFileName));
+			final InputStream data = this.getClass().getResourceAsStream(testFile.getAbsolutePath());
 		) {
 			final String uri = createURIForStep(STEP_UPLOAD);
 			final StreamDataBodyPart fdp1 = new StreamDataBodyPart("fileUpload", data, testFileName, mediaType);

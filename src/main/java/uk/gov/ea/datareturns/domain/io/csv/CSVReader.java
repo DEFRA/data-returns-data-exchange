@@ -22,7 +22,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import uk.gov.ea.datareturns.domain.io.csv.annotations.CSVField;
-import uk.gov.ea.datareturns.domain.io.csv.annotations.CSVRecordNumber;
 import uk.gov.ea.datareturns.domain.io.csv.exceptions.ValidationException;
 import uk.gov.ea.datareturns.domain.io.csv.settings.CSVReaderSettings;
 
@@ -36,7 +35,6 @@ public class CSVReader<T> {
 	private static final Logger LOGGER = LoggerFactory.getLogger(CSVReader.class);
 	/** Default settings used by the reader */
 	private static final CSVReaderSettings DEFAULT_SETTINGS = new  CSVReaderSettings(',', null);
-	
 	/** Javabean class to serialize to */
 	private final Class<T> javaBeanClass;
 	/** CSV format settings */
@@ -66,8 +64,6 @@ public class CSVReader<T> {
 			return parseCSV(fos);
 		}
 	}
-	
-	
 
 	/**
 	 * Parse a CSV file into a Java model
@@ -77,12 +73,6 @@ public class CSVReader<T> {
 	 * @return a {@link CSVModel} containing the list of parsed records and CSV header information
 	 * @throws IOException if the specified file could not be read
 	 */
-	/**
-	 * @param csvStream
-	 * @param javaBeanClass
-	 * @return
-	 * @throws IOException
-	 */
 	public CSVModel<T> parseCSV(final InputStream csvStream) throws IOException, ValidationException {
 		final CSVModel<T> model = new CSVModel<>();
 		final List<T> records = new ArrayList<>();
@@ -90,11 +80,8 @@ public class CSVReader<T> {
 		try (final BOMInputStream bom = new BOMInputStream(csvStream);
 				final Reader reader = new InputStreamReader(bom, "UTF-8");
 				final CSVParser parser = new CSVParser(reader, this.settings.getCSVFormat());) {
-			
-
 			// Retrieve a map from the CSV field headers to the Java bean fields
 			Map<String, FieldMethodMapping> pojoMappings = getCSVMethodMapping(javaBeanClass);
-			final Method recordNumberSetter = getCSVRecordNumberField(javaBeanClass);
 			
 			final Map<String, Integer> headerMap = parser.getHeaderMap();
 			model.setHeaderMap(headerMap);
@@ -110,45 +97,50 @@ public class CSVReader<T> {
 			// Store a map of pojo field to csv header name on the model
 			pojoMappings.forEach((k, v) -> model.getPojoFieldToHeaderMap().put(v.getFieldName(), k)); 
 			
-			
 			// Iterate the records in the CSV file reading data into the supplied JavaBean class
 			try {
 				for (final CSVRecord csvRecord : parser) {
-					
-					try {
-						T record = javaBeanClass.newInstance();
-						
-						// Set the record number field (if specified)
-						if (recordNumberSetter != null) {
-							recordNumberSetter.invoke(record, csvRecord.getRecordNumber());
-						}
-						// Set all JavaBean fields mapped to a CSVField
-						for (final Map.Entry<String, FieldMethodMapping> entry : pojoMappings.entrySet()) {
-							String csvRecordHeader = entry.getKey();
-							Method beanSetter = entry.getValue().getMethod();
-							
-							String value = csvRecord.get(csvRecordHeader);
-							if (settings.isTrimWhitespace()) {
-								value = StringUtils.strip(value);
-							}
-							beanSetter.invoke(record, value);
-						}
-						records.add(record);
-					} catch (IllegalAccessException | InstantiationException | InvocationTargetException e) {
-						String errorMessage = String.format("Unable to populate values into class %s.  Please ensure this is a valid JavaBean type.", javaBeanClass.getName());
-						LOGGER.error(errorMessage);
-						// Throw this as a runtime exception as it indicates a programming error.
-						throw new RuntimeException(errorMessage, e);
-					}
+					records.add(mapToBean(csvRecord, pojoMappings));
 				}
 			} catch (final RuntimeException e) {
 				// The underlying apache commons CSV reader will throw a RuntimeException if a parse error occurs within the iterator
 				// interface.  We need to protect against this.
-				throw new IOException("Invalid data was encountered while attempting to parse the CSV file.");
+				throw new ValidationException("Invalid data was encountered while attempting to parse the CSV file.");
 			}
 			model.setRecords(records);
 		}
 		return model;
+	}
+	
+	/**
+	 * Maps the data provided in the {@link CSVRecord} to the fields of the JavaBean type based on the header->java field mappings
+	 * 
+	 * @param csvRecord the {@link CSVRecord} to map to a Java Object
+	 * @param pojoMappings the mappings which describe which fields in the {@link CSVRecord} are mapped to each JavaBean field
+	 * @return a JavaBean instance based on the type of {@link CSVReader}
+	 */
+	private T mapToBean(CSVRecord csvRecord, Map<String, FieldMethodMapping> pojoMappings) {
+		try {
+			T bean = javaBeanClass.newInstance();
+			
+			// Set all JavaBean fields mapped to a CSVField
+			for (final Map.Entry<String, FieldMethodMapping> entry : pojoMappings.entrySet()) {
+				String csvRecordHeader = entry.getKey();
+				Method beanSetter = entry.getValue().getMethod();
+				
+				String value = csvRecord.get(csvRecordHeader);
+				if (settings.isTrimWhitespace()) {
+					value = StringUtils.strip(value);
+				}
+				beanSetter.invoke(bean, value);
+			}
+			return bean;
+		} catch (IllegalAccessException | InstantiationException | InvocationTargetException e) {
+			String errorMessage = String.format("Unable to populate values into class %s.  Please ensure this is a valid JavaBean type.", javaBeanClass.getName());
+			LOGGER.error(errorMessage);
+			// Throw this as a runtime exception as it indicates a programming error.
+			throw new RuntimeException(errorMessage, e);
+		}
 	}
 	
 	/**
@@ -173,25 +165,6 @@ public class CSVReader<T> {
 	}
 	
 	/**
-	 * Use reflection to determine the check if the JavaBean object has a field defined for the record number
-	 * 
-	 * @param cls The JavaBean to scan for {@link CSVRecordNumber} annotations
-	 * @return the setter method relating to the field that the parser shall set the record number into
-	 */
-	private static Method getCSVRecordNumberField(Class<?> cls) {
-		for (Field f : cls.getDeclaredFields()) {
-			CSVRecordNumber annotation = f.getAnnotation(CSVRecordNumber.class);
-			if (annotation != null) {
-				if (!(long.class.equals(f.getType()) || Long.class.equals(f.getType()))) {
-					throw new RuntimeException("Field in " + cls.getName() + " annotated with CVSRecordNumber but is not a long or Long type");
-				}
-				return getSetterForField(cls, f); 
-			}
-		}
-		return null;
-	}
-	
-	/**
 	 * Retrieve the setter method for the given field based on standard JavaBean conventions
 	 * 
 	 * @param field the field to find the setter method for
@@ -212,6 +185,11 @@ public class CSVReader<T> {
 		return method;
 	}
 	
+	/**
+	 * Simple class to store a relation between a JavaBean field and the setter method for that field
+	 * 
+	 * @author Sam Gardner-Dell
+	 */
 	private static class FieldMethodMapping {
 		private final String fieldName;
 		private final Method method;

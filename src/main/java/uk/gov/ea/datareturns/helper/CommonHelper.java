@@ -1,7 +1,8 @@
 package uk.gov.ea.datareturns.helper;
 
 import static uk.gov.ea.datareturns.type.EnvironmentType.LOCAL;
-import uk.gov.ea.datareturns.exception.application.DREnvironmentException;
+
+import uk.gov.ea.datareturns.exception.system.DRSystemException;
 
 public abstract class CommonHelper {
 	/**
@@ -25,7 +26,7 @@ public abstract class CommonHelper {
 		String envVarVal = System.getenv(envVarName);
 
 		if (envVarVal == null) {
-			throw new DREnvironmentException("Environment variable '" + envVarName + "' not found");
+			throw new DRSystemException("Environment variable '" + envVarName + "' not found");
 		}
 
 		return envVarVal;

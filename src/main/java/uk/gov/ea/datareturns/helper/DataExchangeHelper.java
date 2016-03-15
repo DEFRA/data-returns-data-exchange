@@ -3,13 +3,11 @@ package uk.gov.ea.datareturns.helper;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import javax.xml.transform.Transformer;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import uk.gov.ea.datareturns.domain.dataexchange.EmmaDatabase;
-import uk.gov.ea.datareturns.exception.application.DRInvalidPermitNoException;
+import uk.gov.ea.datareturns.exception.application.DRPermitNotRecognisedException;
 
 public abstract class DataExchangeHelper {
 	@SuppressWarnings("unused")
@@ -75,7 +73,7 @@ public abstract class DataExchangeHelper {
 				return EmmaDatabase.UPPER_ALPHANUMERIC;
 			}
 		} else {
-			throw new DRInvalidPermitNoException("Permit no '" + permitNo + "' is invalid");
+			throw new DRPermitNotRecognisedException("Permit no '" + permitNo + "' is invalid");
 		}
 	}
 }
