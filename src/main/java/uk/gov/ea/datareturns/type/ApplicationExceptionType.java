@@ -11,7 +11,6 @@ public enum ApplicationExceptionType
 	COLUMN_NAME_NOT_FOUND(706, "Column name not found in schema error message"), 
 	INVALID_PERMIT_NO(707, "Invalid Permit number"), 
 	ENVIRONMENT(708, "Environment configuration failure"),
-	
 	MANDATORY_FIELDS_MISSING(709, "Mandatory headings missing."),
 	UNRECOGNISED_FIELD_FOUND(710, "Unrecognised field found.");
 	

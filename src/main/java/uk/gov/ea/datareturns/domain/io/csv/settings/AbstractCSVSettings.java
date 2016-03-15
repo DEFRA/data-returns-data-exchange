@@ -69,6 +69,7 @@ public class AbstractCSVSettings {
 		if (delimiter != null) {
 			format = format.withDelimiter(delimiter);
 		}
+		format = format.withIgnoreSurroundingSpaces(isTrimWhitespace());
 		return format;
 	}
 }

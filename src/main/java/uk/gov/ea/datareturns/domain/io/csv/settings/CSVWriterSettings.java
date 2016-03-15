@@ -16,7 +16,9 @@ import uk.gov.ea.datareturns.domain.io.csv.CSVWriter;
  */
 public class CSVWriterSettings extends AbstractCSVSettings {
 	private List<String> headers;
-
+	/** Should the writer output "null" into the CSV when a null bean value is encountered, default behaviour is to write an empty string */
+	private boolean writeNullValues = false;
+	
 	/**
 	 * @param delimiter
 	 */
@@ -38,7 +40,20 @@ public class CSVWriterSettings extends AbstractCSVSettings {
 	public void setHeaders(List<String> headers) {
 		this.headers = headers;
 	}
+	
+	/**
+	 * @return the writeNullValues
+	 */
+	public boolean isWriteNullValues() {
+		return writeNullValues;
+	}
 
+	/**
+	 * @param writeNullValues the writeNullValues to set
+	 */
+	public void setWriteNullValues(boolean writeNullValues) {
+		this.writeNullValues = writeNullValues;
+	}
 
 	/* (non-Javadoc)
 	 * @see uk.gov.ea.datareturns.domain.io.csv.settings.AbstractCSVSettings#getCSVFormat()

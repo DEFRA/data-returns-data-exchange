@@ -46,15 +46,6 @@ public class CSVReader<T> {
 	 * Set up a new {@link CSVReader} to map to the given JavaBean class.
 	 * 
 	 * @param javaBeanClass the JavaBean class that the reader should map to
-	 */
-	public CSVReader(Class<T> javaBeanClass) {
-		this(javaBeanClass, DEFAULT_SETTINGS);
-	}
-	
-	/**
-	 * Set up a new {@link CSVReader} to map to the given JavaBean class.
-	 * 
-	 * @param javaBeanClass the JavaBean class that the reader should map to
 	 * @param csvReaderSettings the settings to be used by this reader
 	 */
 	public CSVReader(Class<T> javaBeanClass, CSVReaderSettings csvReaderSettings) {

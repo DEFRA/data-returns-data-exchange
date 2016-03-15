@@ -16,8 +16,4 @@ public class HeaderFieldUnrecognisedException extends ValidationException {
 	public HeaderFieldUnrecognisedException(String message) {
 		super(message);
 	}
-	
-	public HeaderFieldUnrecognisedException(String message, Throwable cause) {
-		super(message, cause);
-	}
 }

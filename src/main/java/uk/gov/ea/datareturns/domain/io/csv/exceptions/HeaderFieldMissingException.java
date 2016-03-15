@@ -17,8 +17,4 @@ public class HeaderFieldMissingException extends ValidationException {
 	public HeaderFieldMissingException(String message) {
 		super(message);
 	}
-	
-	public HeaderFieldMissingException(String message, Throwable cause) {
-		super(message, cause);
-	}
 }

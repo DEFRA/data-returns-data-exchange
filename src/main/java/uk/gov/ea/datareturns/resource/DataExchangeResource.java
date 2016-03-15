@@ -23,7 +23,6 @@ import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Response;
-import javax.xml.bind.JAXBException;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
@@ -57,8 +56,6 @@ import uk.gov.ea.datareturns.domain.io.csv.exceptions.HeaderFieldUnrecognisedExc
 import uk.gov.ea.datareturns.domain.io.csv.exceptions.ValidationException;
 import uk.gov.ea.datareturns.domain.io.csv.settings.CSVReaderSettings;
 import uk.gov.ea.datareturns.domain.io.csv.settings.CSVWriterSettings;
-import uk.gov.ea.datareturns.domain.io.xml.JAXBUtils;
-import uk.gov.ea.datareturns.domain.model.DataReturnsXMLModel;
 import uk.gov.ea.datareturns.domain.model.MonitoringDataRecord;
 import uk.gov.ea.datareturns.domain.model.types.DataReturnsHeaders;
 import uk.gov.ea.datareturns.domain.model.validation.MonitoringDataRecordValidationProcessor;
@@ -110,11 +107,6 @@ public class DataExchangeResource {
 			this.fileStorage = new FileStorage(environment, redisHost, redisPort, s3Type, s3Host, s3Port);
 		} else {
 			this.fileStorage = new FileStorage(environment, redisHost, redisPort);
-		}
-		try {
-			JAXBUtils.registerContext(DataReturnsXMLModel.class);
-		} catch (JAXBException e) {
-			throw new RuntimeException("Unable to register model with JAXB", e);
 		}
 	}
 

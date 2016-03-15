@@ -12,7 +12,6 @@ import java.util.Map;
 import java.util.Objects;
 
 import org.apache.commons.csv.CSVPrinter;
-import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -48,6 +47,13 @@ public class CSVWriter<T> {
 	}
 	
 	
+	/**
+	 * Write the {@link List} of records (annotated with the {@link CSVField} annotation) to the specified {@link OutputStream} 
+	 * 
+	 * @param records the list of records to write
+	 * @param out the {@link OutputStream} to write to
+	 * @throws IOException if a problem occurs attempting to write to the given {@link OutputStream}
+	 */
 	public void write(List<T> records, OutputStream out) throws IOException {
 		try (
 			final PrintStream ps = new PrintStream(out);
@@ -70,12 +76,16 @@ public class CSVWriter<T> {
 					if (beanGetter != null) {
 						try {
 							value = beanGetter.invoke(record);
-							if (settings.isTrimWhitespace()) {
-								value = StringUtils.strip(Objects.toString(value));
-							}
 						} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
 							LOGGER.debug("Unable to invoke getter method " + beanGetter.getName() + " for bean " + record.getClass());
 						}
+					}
+
+					if (!settings.isWriteNullValues() && value == null) {
+						value = "";
+					}
+					if (settings.isTrimWhitespace()) {
+						value = StringUtils.strip(Objects.toString(value));
 					}
 					
 					// Attempt to read the value from the getter method, default to null.
