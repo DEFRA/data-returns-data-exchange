@@ -8,21 +8,10 @@ import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import uk.gov.ea.datareturns.exception.system.DRFileSaveException;
+import uk.gov.ea.datareturns.exception.system.DRSystemException;
 
 public abstract class FileUtilsHelper {
 	private static final Logger LOGGER = LoggerFactory.getLogger(FileUtilsHelper.class);
-
-	/**
-	 * Create full file path
-	 * 
-	 * @param dir
-	 * @param file
-	 * @return
-	 */
-	public static String makeFullPath(String dir, String file) {
-		return dir + File.separator + file;
-	}
 
 	/**
 	 * Persist file stream to file location provided, directory is automatically
@@ -37,7 +26,7 @@ public abstract class FileUtilsHelper {
 		try {
 			FileUtils.copyInputStreamToFile(is, file);
 		} catch (IOException e) {
-			throw new DRFileSaveException(e, "Unable to save file to '" + file.getAbsolutePath() + "'");
+			throw new DRSystemException(e, "Unable to save file to '" + file.getAbsolutePath() + "'");
 		}
 
 		LOGGER.debug("File '" + file.getAbsolutePath() + "' saved successfully");

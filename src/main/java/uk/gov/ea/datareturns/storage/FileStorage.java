@@ -11,13 +11,6 @@ import org.apache.commons.io.FilenameUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import redis.clients.jedis.Jedis;
-import uk.gov.ea.datareturns.exception.application.DRFileKeyMismatchException;
-import uk.gov.ea.datareturns.exception.system.DRFileDeleteException;
-import uk.gov.ea.datareturns.exception.system.DRExternalServiceException;
-import uk.gov.ea.datareturns.helper.CommonHelper;
-import uk.gov.ea.datareturns.helper.FileUtilsHelper;
-
 import com.amazonaws.AmazonClientException;
 import com.amazonaws.AmazonServiceException;
 import com.amazonaws.ClientConfiguration;
@@ -28,6 +21,13 @@ import com.amazonaws.services.s3.AmazonS3Client;
 import com.amazonaws.services.s3.model.GetObjectRequest;
 import com.amazonaws.services.s3.model.PutObjectRequest;
 import com.amazonaws.services.s3.model.S3Object;
+
+import redis.clients.jedis.Jedis;
+import uk.gov.ea.datareturns.exception.system.DRExternalServiceException;
+import uk.gov.ea.datareturns.exception.system.DRIOException;
+import uk.gov.ea.datareturns.exception.system.DRSystemException;
+import uk.gov.ea.datareturns.helper.CommonHelper;
+import uk.gov.ea.datareturns.helper.FileUtilsHelper;
 
 // TODO make generic instead of passing fixed env settings in
 public class FileStorage
@@ -112,7 +112,7 @@ public class FileStorage
 				throw new DRExternalServiceException(ace, "General AWS communication failure");
 			} catch (IOException e)
 			{
-				throw new DRFileDeleteException(e, "Unable to delete file to '" + fileLocation + "'");
+				throw new DRIOException(e, "Unable to delete file to '" + fileLocation + "'");
 			}
 		} else
 		{
@@ -133,12 +133,12 @@ public class FileStorage
 
 		if (fileLocation == null)
 		{
-			throw new DRFileKeyMismatchException("Unable to locate file using file key '" + fileKey + "'");
+			throw new DRSystemException("Unable to locate file using file key '" + fileKey + "'");
 		}
 
 		LOGGER.debug("Redis file key '" + fileKey + "' holds file location '" + fileLocation + "'");
 
-		// Non-local environments use S3
+		// Non-local environments use S3	
 		if (!CommonHelper.isLocalEnvironment(environment))
 		{
 			LOGGER.debug("In Non-local environment");
@@ -156,15 +156,15 @@ public class FileStorage
 
 				LOGGER.debug("File '" + fileLocation + "' retrieved successfully");
 				
-				fileLocation = FileUtilsHelper.makeFullPath(saveFileLocation, fileLocation);
-				
-				FileUtilsHelper.saveFile(s3object.getObjectContent(), new File(fileLocation));
+				File saveFile = new File(saveFileLocation, fileLocation); 
+				fileLocation = saveFile.getAbsolutePath();
+				FileUtilsHelper.saveFile(s3object.getObjectContent(), saveFile);
 			} catch (AmazonServiceException ase)
 			{
-				throw new DRExternalServiceException(ase, "AWS failed to process getObject() request");
+				throw new DRIOException(ase, "AWS failed to process getObject() request");
 			} catch (AmazonClientException | IOException e)
 			{
-				throw new DRExternalServiceException(e, "General AWS communication failure");
+				throw new DRIOException(e, "General AWS communication failure");
 			}
 		}
 

@@ -64,15 +64,15 @@ import uk.gov.ea.datareturns.domain.result.DataExchangeResult;
 import uk.gov.ea.datareturns.domain.result.ParseResult;
 import uk.gov.ea.datareturns.domain.result.UploadResult;
 import uk.gov.ea.datareturns.domain.result.ValidationResult;
-import uk.gov.ea.datareturns.exception.application.DRInvalidContentsException;
-import uk.gov.ea.datareturns.exception.application.DRInvalidPermitNoException;
-import uk.gov.ea.datareturns.exception.application.DRMandatoryFieldsMissingException;
-import uk.gov.ea.datareturns.exception.application.DRMultiplePermitsException;
-import uk.gov.ea.datareturns.exception.application.DRPermitNotFoundException;
-import uk.gov.ea.datareturns.exception.application.DRUnrecognisedFieldException;
-import uk.gov.ea.datareturns.exception.application.DRUnsupportedFileTypeException;
-import uk.gov.ea.datareturns.exception.system.DRNotificationException;
-import uk.gov.ea.datareturns.exception.system.DRSerializationException;
+import uk.gov.ea.datareturns.exception.application.DRFileEmptyException;
+import uk.gov.ea.datareturns.exception.application.DRFileTypeUnsupportedException;
+import uk.gov.ea.datareturns.exception.application.DRHeaderFieldUnrecognisedException;
+import uk.gov.ea.datareturns.exception.application.DRHeaderMandatoryFieldMissingException;
+import uk.gov.ea.datareturns.exception.application.DRPermitNotRecognisedException;
+import uk.gov.ea.datareturns.exception.application.DRPermitNotUniqueException;
+import uk.gov.ea.datareturns.exception.application.DRPermitNumberMissingException;
+import uk.gov.ea.datareturns.exception.system.DRIOException;
+import uk.gov.ea.datareturns.exception.system.DRSystemException;
 import uk.gov.ea.datareturns.helper.DataExchangeHelper;
 import uk.gov.ea.datareturns.helper.FileUtilsHelper;
 import uk.gov.ea.datareturns.storage.FileStorage;
@@ -130,12 +130,12 @@ public class DataExchangeResource {
 		final MiscSettings settings = config.getMiscSettings();
 		final File uploadedFile = new File(settings.getUploadedLocation(), fileDetail.getFileName());
 
-		// 1. Validate upload file
-		validateUploadFile(uploadedFile);
-
-		// 2. Save upload file on server
+		// 1. Save upload file on server
 		FileUtilsHelper.saveFile(is, uploadedFile);
 		
+		// 2. Validate upload file
+		validateUploadFile(uploadedFile);
+
 		// 3. Read the CSV data into a model
 		final CSVModel<MonitoringDataRecord> model = readCSVFile(uploadedFile);
 		
@@ -227,8 +227,13 @@ public class DataExchangeResource {
 
 		// Release 1 must be csv
 		if (!FileType.CSV.getFileType().equalsIgnoreCase(fileType)) {
-			throw new DRUnsupportedFileTypeException("Unsupported file type '" + fileType + "'");
+			throw new DRFileTypeUnsupportedException("Unsupported file type '" + fileType + "'");
 		}
+		
+		if (FileUtils.sizeOf(uploadedFile) == 0) {
+			throw new DRFileEmptyException("The uploaded file is empty");
+		}
+		
 	}
 
 
@@ -245,22 +250,23 @@ public class DataExchangeResource {
 				.map(MonitoringDataRecord::getPermitNumber)
 				.collect(Collectors.toSet());
 		
-		if (permitNumberSet.size() == 0) {
-			throw new DRPermitNotFoundException("No permits were found in the uploaded file.");
+		if (permitNumberSet.isEmpty()) {
+			throw new DRPermitNumberMissingException("No permits were found in the uploaded file.");
 		} else if (permitNumberSet.size() > 1) {
-			throw new DRMultiplePermitsException("Multiple Permits found in the uploaded file.");
+			throw new DRPermitNotUniqueException("Multiple Permits found in the uploaded file.");
 		}
 		// We can safely assume that iterator().next() will not fail as we have already checked that there are exactly one permits in the set
 		String permitNo = permitNumberSet.iterator().next();
 
 		// Validate the permit no format even though it's valid as exists in permit list but
 		// need to make sure it'll work later when determining database name for email subject
-		if (!DataExchangeHelper.isNumericPermitNo(permitNo) && !DataExchangeHelper.isAlphaNumericPermitNo(permitNo)) {
-			throw new DRInvalidPermitNoException("Permit no '" + permitNo + "' is invalid");
+		if (!DataExchangeHelper.isNumericPermitNo(permitNo) 
+				&& !DataExchangeHelper.isAlphaNumericPermitNo(permitNo)) {
+			throw new DRPermitNotRecognisedException("Permit no '" + permitNo + "' is invalid");
 		}
 
 		if (permitDAO.findByPermitNumber(permitNo) == null) {
-			throw new DRPermitNotFoundException("Permit no '" + permitNo + "' not found");
+			throw new DRPermitNotRecognisedException("Permit no '" + permitNo + "' not found");
 		}
 
 		LOGGER.debug("Permit is valid'");
@@ -317,9 +323,9 @@ public class DataExchangeResource {
 
 			email.send();
 		} catch (EmailException e1) {
-			throw new DRNotificationException(e1, "Failed to send email to MonitorPro");
+			throw new DRSystemException(e1, "Failed to send email to MonitorPro");
 		} catch (Exception e2) {
-			throw new DRNotificationException(e2, "Failed to send email to MonitorPro");
+			throw new DRSystemException(e2, "Failed to send email to MonitorPro");
 		}
 
 		LOGGER.debug("Email sent");
@@ -372,14 +378,14 @@ public class DataExchangeResource {
 			return csvReader.parseCSV(csvFile);
 		} catch (HeaderFieldMissingException e) {
 			// CSV failed to parse due to a missing header field
-			throw new DRMandatoryFieldsMissingException(e.getMessage());
+			throw new DRHeaderMandatoryFieldMissingException(e.getMessage());
 		} catch (HeaderFieldUnrecognisedException e) {
 			// CSV failed to parse due to an unexpected header field
-			throw new DRUnrecognisedFieldException(e.getMessage());
+			throw new DRHeaderFieldUnrecognisedException(e.getMessage());
 		} catch (ValidationException e) {
-			throw new DRInvalidContentsException("Unable to parse CSV file - unexpected validation exception.");
+			throw new DRFileTypeUnsupportedException("Unable to parse CSV file.  File content is not valid CSV data.");
 		} catch (IOException e) {
-			throw new DRInvalidContentsException("Unable to parse CSV file: Cause: " + e.getMessage());
+			throw new DRSystemException(e, "Failed to parse CSV file.");
 		}
 	}
 	
@@ -445,7 +451,7 @@ public class DataExchangeResource {
 				writer.write(records, fos);
 			}
 		} catch (IOException e) {
-			throw new DRSerializationException(e, "Unable to write validated CSV file");
+			throw new DRIOException(e, "Unable to write validated CSV file");
 		}
 	}
 }

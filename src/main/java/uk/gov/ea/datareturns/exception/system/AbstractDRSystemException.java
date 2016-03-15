@@ -18,7 +18,13 @@ public abstract class AbstractDRSystemException extends AbstractDRException
 	public AbstractDRSystemException(Throwable cause, Status code, int appStatusCode, String message)
 	{
 		super(cause, Response.status(code).entity(new ExceptionMessageContainer(appStatusCode, message)).type(MediaType.APPLICATION_JSON).build());
+		LOGGER.error("A system error has occurred: " + message, cause);
+	}
+	
 
-		LOGGER.error("A System error has occurred - ", cause);
+	public AbstractDRSystemException(Status code, int appStatusCode, String message)
+	{
+		super(Response.status(code).entity(new ExceptionMessageContainer(appStatusCode, message)).type(MediaType.APPLICATION_JSON).build());
+		LOGGER.error("A system error has occurred: " + message);
 	}
 }

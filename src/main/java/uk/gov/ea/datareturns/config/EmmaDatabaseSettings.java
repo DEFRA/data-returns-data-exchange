@@ -3,7 +3,7 @@ package uk.gov.ea.datareturns.config;
 import org.hibernate.validator.constraints.NotEmpty;
 
 import uk.gov.ea.datareturns.domain.dataexchange.EmmaDatabase;
-import uk.gov.ea.datareturns.exception.application.DREnvironmentException;
+import uk.gov.ea.datareturns.exception.system.DRSystemException;
 
 public class EmmaDatabaseSettings {
 	@NotEmpty private String databaseLowerNumericName;
@@ -86,7 +86,7 @@ public class EmmaDatabaseSettings {
 		} else if (EmmaDatabase.UPPER_ALPHANUMERIC.equals(db)) {
 			return databaseUpperAlphaNumericName;
 		} else {
-			throw new DREnvironmentException("Unable to determine EMMA database");
+			throw new DRSystemException("Unable to determine EMMA database");
 		}
 	}
 }
