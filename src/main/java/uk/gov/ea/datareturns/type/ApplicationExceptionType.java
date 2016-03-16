@@ -16,6 +16,10 @@ public enum ApplicationExceptionType
 	HEADER_MANDATORY_FIELD_MISSING(820, "Mandatory headings missing."),
 	// DR0840
 	HEADER_UNRECOGNISED_FIELD_FOUND(840, "Unrecognised field found."),
+	
+	// DR0900
+	VALIDATION_ERRORS(900, "One or more validation problems are present and must be corrected."),
+	
 	// DR3000
 	SYSTEM_FAILURE(3000, "A system failure occurred");
 	

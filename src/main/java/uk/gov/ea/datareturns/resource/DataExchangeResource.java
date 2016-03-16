@@ -75,6 +75,7 @@ import uk.gov.ea.datareturns.exception.system.DRSystemException;
 import uk.gov.ea.datareturns.helper.DataExchangeHelper;
 import uk.gov.ea.datareturns.helper.FileUtilsHelper;
 import uk.gov.ea.datareturns.storage.FileStorage;
+import uk.gov.ea.datareturns.type.ApplicationExceptionType;
 import uk.gov.ea.datareturns.type.FileType;
 
 // TODO move some methods to helper classes
@@ -182,7 +183,9 @@ public class DataExchangeResource {
 
 			// Store the original, unchanged, file that was uploaded
 			uploadResult.setFileKey(fileStorage.saveInvalidFile(uploadedFile.getAbsolutePath()));
-			result.setValidationResult(validationResult);			// Passed validation, return success status
+			result.setValidationResult(validationResult);
+			
+			result.setAppStatusCode(ApplicationExceptionType.VALIDATION_ERRORS.getAppStatusCode());
 			responseStatus = Status.BAD_REQUEST;
 		}
 		return Response.status(responseStatus).entity(result).build();
