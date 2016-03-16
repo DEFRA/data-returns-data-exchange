@@ -9,6 +9,6 @@ public class DRPermitNotUniqueException extends AbstractDRApplicationException {
 	private static final long serialVersionUID = 1L;
 
 	public DRPermitNotUniqueException(String message) {
-		super(Status.OK, ApplicationExceptionType.PERMIT_NOT_UNIQUE.getAppStatusCode(), message);
+		super(Status.BAD_REQUEST, ApplicationExceptionType.PERMIT_NOT_UNIQUE.getAppStatusCode(), message);
 	}
 }

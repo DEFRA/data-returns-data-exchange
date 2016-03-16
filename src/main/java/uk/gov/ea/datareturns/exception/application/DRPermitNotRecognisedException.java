@@ -9,6 +9,6 @@ public class DRPermitNotRecognisedException extends AbstractDRApplicationExcepti
 	private static final long serialVersionUID = 1L;
 
 	public DRPermitNotRecognisedException(String message) {
-		super(Status.OK, ApplicationExceptionType.PERMIT_NOT_RECOGNISED.getAppStatusCode(), message);
+		super(Status.BAD_REQUEST, ApplicationExceptionType.PERMIT_NOT_RECOGNISED.getAppStatusCode(), message);
 	}
 }

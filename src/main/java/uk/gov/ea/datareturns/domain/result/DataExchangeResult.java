@@ -11,6 +11,7 @@ import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
 public class DataExchangeResult
 {
 	@JacksonXmlProperty(localName = "AppStatusCode")
+	@JsonInclude(Include.NON_DEFAULT)
 	private int appStatusCode;
 
 	@JacksonXmlProperty(localName = "UploadResult")
@@ -35,15 +36,20 @@ public class DataExchangeResult
 
 	public DataExchangeResult()
 	{
+		// Set up a default value for the app status code.  The serializer will omit the appStatusCode
+		// unless it is set to a different value
+		this.appStatusCode = -1;
 	}
 
 	public DataExchangeResult(UploadResult uploadResult)
 	{
+		this();
 		this.uploadResult = uploadResult;
 	}
 
 	public DataExchangeResult(CompleteResult completeResult)
 	{
+		this();
 		this.completeResult = completeResult;
 	}
 

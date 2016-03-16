@@ -23,6 +23,7 @@ import com.amazonaws.services.s3.model.PutObjectRequest;
 import com.amazonaws.services.s3.model.S3Object;
 
 import redis.clients.jedis.Jedis;
+import uk.gov.ea.datareturns.exception.application.DRFileKeyMismatchException;
 import uk.gov.ea.datareturns.exception.system.DRExternalServiceException;
 import uk.gov.ea.datareturns.exception.system.DRIOException;
 import uk.gov.ea.datareturns.exception.system.DRSystemException;
@@ -133,7 +134,7 @@ public class FileStorage
 
 		if (fileLocation == null)
 		{
-			throw new DRSystemException("Unable to locate file using file key '" + fileKey + "'");
+			throw new DRFileKeyMismatchException("Unable to locate file using file key '" + fileKey + "'");
 		}
 
 		LOGGER.debug("Redis file key '" + fileKey + "' holds file location '" + fileLocation + "'");

@@ -3,8 +3,6 @@ package uk.gov.ea.datareturns.resource;
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 import static javax.ws.rs.core.MediaType.MULTIPART_FORM_DATA;
 import static uk.gov.ea.datareturns.helper.CommonHelper.isLocalEnvironment;
-import static uk.gov.ea.datareturns.type.AppStatusCodeType.APP_STATUS_FAILED_WITH_ERRORS;
-import static uk.gov.ea.datareturns.type.AppStatusCodeType.APP_STATUS_SUCCESS;
 
 import java.io.File;
 import java.io.IOException;
@@ -23,6 +21,7 @@ import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.Status;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
@@ -149,6 +148,10 @@ public class DataExchangeResource {
 		final UploadResult uploadResult = new UploadResult(fileDetail.getFileName());
 		final DataExchangeResult result = new DataExchangeResult(uploadResult);
 
+		
+		// Default response status
+		Status responseStatus = Status.OK;
+
 		if (validationResult.isValid()) {
 			LOGGER.debug("File '" + fileDetail.getFileName() + "' is VALID");
 			
@@ -171,17 +174,18 @@ public class DataExchangeResource {
 			result.setParseResult(parseResult);
 			
 			uploadResult.setFileKey(fileStorage.saveValidFile(outputFile.getAbsolutePath()));
-			result.setAppStatusCode(APP_STATUS_SUCCESS.getAppStatusCode());
-
+			
+			// Passed validation, return success status
+			responseStatus = Status.OK;
 		} else {
 			LOGGER.debug("File '" + fileDetail.getFileName() + "' is INVALID");
 
 			// Store the original, unchanged, file that was uploaded
 			uploadResult.setFileKey(fileStorage.saveInvalidFile(uploadedFile.getAbsolutePath()));
-			result.setValidationResult(validationResult);
-			result.setAppStatusCode(APP_STATUS_FAILED_WITH_ERRORS.getAppStatusCode());
+			result.setValidationResult(validationResult);			// Passed validation, return success status
+			responseStatus = Status.BAD_REQUEST;
 		}
-		return Response.ok(result).build();
+		return Response.status(responseStatus).entity(result).build();
 	}
 
 	// TODO validate entity would be better?
@@ -211,8 +215,6 @@ public class DataExchangeResource {
 		completeResult.setUserEmail(userEmail);
 
 		DataExchangeResult result = new DataExchangeResult(completeResult);
-
-		result.setAppStatusCode(APP_STATUS_SUCCESS.getAppStatusCode());
 
 		return Response.ok(result).build();
 	}

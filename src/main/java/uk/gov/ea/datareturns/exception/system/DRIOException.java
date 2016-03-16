@@ -20,7 +20,7 @@ public class DRIOException extends AbstractDRSystemException {
 	 * @param message
 	 */
 	public DRIOException(Throwable cause, String message) {
-		super(cause, Status.OK, ApplicationExceptionType.SYSTEM_FAILURE.getAppStatusCode(), message);
+		super(cause, Status.INTERNAL_SERVER_ERROR, ApplicationExceptionType.SYSTEM_FAILURE.getAppStatusCode(), message);
 	}
 
 }

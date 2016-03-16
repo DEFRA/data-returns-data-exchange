@@ -16,6 +16,6 @@ public class DRHeaderFieldUnrecognisedException extends AbstractDRApplicationExc
 	private static final long serialVersionUID = 1L;
 
 	public DRHeaderFieldUnrecognisedException(String message) {
-		super(Status.OK, ApplicationExceptionType.HEADER_UNRECOGNISED_FIELD_FOUND.getAppStatusCode(), message);
+		super(Status.BAD_REQUEST, ApplicationExceptionType.HEADER_UNRECOGNISED_FIELD_FOUND.getAppStatusCode(), message);
 	}
 }

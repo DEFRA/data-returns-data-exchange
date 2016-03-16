@@ -20,6 +20,6 @@ public class DRFileEmptyException extends AbstractDRApplicationException {
 	 * @param message
 	 */
 	public DRFileEmptyException(String message) {
-		super(Status.OK, ApplicationExceptionType.FILE_EMPTY.getAppStatusCode(), message);
+		super(Status.BAD_REQUEST, ApplicationExceptionType.FILE_EMPTY.getAppStatusCode(), message);
 	}
 }

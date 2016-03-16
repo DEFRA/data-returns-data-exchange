@@ -8,6 +8,6 @@ public class DRFileTypeUnsupportedException extends AbstractDRApplicationExcepti
 	private static final long serialVersionUID = 1L;
 
 	public DRFileTypeUnsupportedException(String message) {
-		super(Status.OK, ApplicationExceptionType.FILE_TYPE_UNSUPPORTED.getAppStatusCode(), message);
+		super(Status.BAD_REQUEST, ApplicationExceptionType.FILE_TYPE_UNSUPPORTED.getAppStatusCode(), message);
 	}
 }

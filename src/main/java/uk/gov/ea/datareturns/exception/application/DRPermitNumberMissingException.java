@@ -16,6 +16,6 @@ public class DRPermitNumberMissingException extends AbstractDRApplicationExcepti
 	private static final long serialVersionUID = 1L;
 
 	public DRPermitNumberMissingException(String message) {
-		super(Status.OK, ApplicationExceptionType.PERMIT_NUMBER_MISSING.getAppStatusCode(), message);
+		super(Status.BAD_REQUEST, ApplicationExceptionType.PERMIT_NUMBER_MISSING.getAppStatusCode(), message);
 	}
 }

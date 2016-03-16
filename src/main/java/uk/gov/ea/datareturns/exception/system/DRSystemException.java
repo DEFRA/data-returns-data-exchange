@@ -9,10 +9,10 @@ public class DRSystemException extends AbstractDRSystemException {
 	private static final long serialVersionUID = 1L;
 
 	public DRSystemException(Throwable cause, String message) {
-		super(cause, Status.OK, ApplicationExceptionType.SYSTEM_FAILURE.getAppStatusCode(), message);
+		super(cause, Status.INTERNAL_SERVER_ERROR, ApplicationExceptionType.SYSTEM_FAILURE.getAppStatusCode(), message);
 	}
 
 	public DRSystemException(String message) {
-		super(Status.OK, ApplicationExceptionType.SYSTEM_FAILURE.getAppStatusCode(), message);
+		super(Status.INTERNAL_SERVER_ERROR, ApplicationExceptionType.SYSTEM_FAILURE.getAppStatusCode(), message);
 	}
 }
