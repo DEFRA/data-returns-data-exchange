@@ -52,7 +52,6 @@ public class MonitoringDataRecord {
 	/** The return type (Rtn_Type) */
 	@CSVField(DataReturnsHeaders.RETURN_TYPE)
 	@XmlElement(name = DataReturnsHeaders.RETURN_TYPE)
-
 	@NotBlank(message = "{uk.gov.ea.datareturns.returnType.missing}")
 	@ControlledList(auditor = ReturnTypeListAuditor.class, message = "{uk.gov.ea.datareturns.returnType.invalid}")
 	private String returnType;
@@ -60,6 +59,7 @@ public class MonitoringDataRecord {
 	/** The monitoring date (Mon_Date) */
 	@CSVField(DataReturnsHeaders.MONITORING_DATE)
 	@XmlElement(name = DataReturnsHeaders.MONITORING_DATE)
+	@NotBlank(message = "{uk.gov.ea.datareturns.monitoringDate.missing}")
 	// Date can be yyyy-mm-dd or dd-mm-yyyy optionally followed by Thh:mm:ss (e.g. 2016-03-11T09:00:00)
 	@Pattern(
 			regexp = REGEX_DATE_TIME, 
@@ -100,7 +100,8 @@ public class MonitoringDataRecord {
 	/** Value (Value) */
 	@CSVField(DataReturnsHeaders.VALUE)
 	@XmlElement(name = DataReturnsHeaders.VALUE)
-	@Pattern(regexp = "([<>]?\\-?([0-9]?)*\\.?([0-9])*)", message = "{uk.gov.ea.datareturns.value.invalid}")
+	@NotBlank(message = "{uk.gov.ea.datareturns.value.missing}")
+	@Pattern(regexp = "([<>]?\\-?(\\d)*\\.?(\\d)+)", message = "{uk.gov.ea.datareturns.value.invalid}")
 	private String value;
 
 	/** Textual value (Txt_Value) */

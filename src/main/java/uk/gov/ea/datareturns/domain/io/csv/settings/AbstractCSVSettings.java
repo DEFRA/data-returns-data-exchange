@@ -25,6 +25,7 @@ public class AbstractCSVSettings {
 	 * 
 	 */
 	public AbstractCSVSettings(Character delimiter) {
+		this();
 		this.delimiter = delimiter;
 	}
 

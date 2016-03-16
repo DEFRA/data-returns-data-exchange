@@ -146,7 +146,8 @@ public class DataExchangeResource {
 		final ValidationResult validationResult = MonitoringDataRecordValidationProcessor.validateModel(model);
 
 		// Woohoo! prepare success/failure response
-		final UploadResult uploadResult = new UploadResult(fileDetail.getFileName());
+		final UploadResult uploadResult = new UploadResult();
+		uploadResult.setFileName(fileDetail.getFileName());
 		final DataExchangeResult result = new DataExchangeResult(uploadResult);
 
 		

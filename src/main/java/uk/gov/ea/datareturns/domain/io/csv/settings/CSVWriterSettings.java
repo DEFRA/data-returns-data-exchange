@@ -24,7 +24,7 @@ public class CSVWriterSettings extends AbstractCSVSettings {
 	 */
 	public CSVWriterSettings(Character delimiter, List<String> headers) {
 		super(delimiter);
-		this.headers = headers;
+		setHeaders(headers);
 	}
 
 	/**

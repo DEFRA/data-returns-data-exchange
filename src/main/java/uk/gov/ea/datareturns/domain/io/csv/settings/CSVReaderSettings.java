@@ -12,7 +12,7 @@ public class CSVReaderSettings extends AbstractCSVSettings {
 
 	public CSVReaderSettings(Character delimiter, CSVHeaderValidator headerValidator) {
 		super(delimiter);
-		this.headerValidator = headerValidator;
+		setHeaderValidator(headerValidator);
 	}
 
 	/**
