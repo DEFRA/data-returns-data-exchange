@@ -13,7 +13,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.regex.Matcher;
 import java.util.stream.Collectors;
 
 import javax.ws.rs.Consumes;
@@ -25,8 +24,6 @@ import javax.ws.rs.core.Response.Status;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
-import org.apache.commons.lang3.ArrayUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.mail.EmailAttachment;
 import org.apache.commons.mail.EmailException;
 import org.apache.commons.mail.MultiPartEmail;
@@ -56,7 +53,8 @@ import uk.gov.ea.datareturns.domain.io.csv.exceptions.ValidationException;
 import uk.gov.ea.datareturns.domain.io.csv.settings.CSVReaderSettings;
 import uk.gov.ea.datareturns.domain.io.csv.settings.CSVWriterSettings;
 import uk.gov.ea.datareturns.domain.model.MonitoringDataRecord;
-import uk.gov.ea.datareturns.domain.model.types.DataReturnsHeaders;
+import uk.gov.ea.datareturns.domain.model.rules.DataReturnsHeaders;
+import uk.gov.ea.datareturns.domain.model.rules.DateFormat;
 import uk.gov.ea.datareturns.domain.model.validation.MonitoringDataRecordValidationProcessor;
 import uk.gov.ea.datareturns.domain.result.CompleteResult;
 import uk.gov.ea.datareturns.domain.result.DataExchangeResult;
@@ -192,7 +190,15 @@ public class DataExchangeResource {
 		return Response.status(responseStatus).entity(result).build();
 	}
 
-	// TODO validate entity would be better?
+	/**
+	 * Complete an upload session
+	 * 
+	 * @param orgFileKey
+	 * @param userEmail
+	 * @param orgFileName
+	 * @param permitNo
+	 * @return
+	 */
 	@POST
 	@Path("/complete")
 	@Consumes(MULTIPART_FORM_DATA)
@@ -248,7 +254,7 @@ public class DataExchangeResource {
 	 * 
 	 */
 	private void validatePermitNo(CSVModel<MonitoringDataRecord> model) {
-		LOGGER.debug("Performing Permit No validations");
+		LOGGER.debug("Validating EA Unique Identifiers (EA_ID)");
 		
 		// Apply permit validation
 		final Set<String> permitNumberSet = model.getRecords()
@@ -256,10 +262,12 @@ public class DataExchangeResource {
 				.map(MonitoringDataRecord::getPermitNumber)
 				.collect(Collectors.toSet());
 		
-		if (permitNumberSet.isEmpty()) {
-			throw new DRPermitNumberMissingException("No permits were found in the uploaded file.");
+		if (permitNumberSet.isEmpty() 
+				|| permitNumberSet.contains(null) 
+				|| permitNumberSet.contains("")) {
+			throw new DRPermitNumberMissingException("One or more entries in the uploaded file have a missing EA unique identifier (EA_ID)");
 		} else if (permitNumberSet.size() > 1) {
-			throw new DRPermitNotUniqueException("Multiple Permits found in the uploaded file.");
+			throw new DRPermitNotUniqueException("One or more entries in the uploaded file contain different EA unique identifiers (EA_ID).  EA_ID should be the same for all rows.");
 		}
 		// We can safely assume that iterator().next() will not fail as we have already checked that there are exactly one permits in the set
 		String permitNo = permitNumberSet.iterator().next();
@@ -268,14 +276,13 @@ public class DataExchangeResource {
 		// need to make sure it'll work later when determining database name for email subject
 		if (!DataExchangeHelper.isNumericPermitNo(permitNo) 
 				&& !DataExchangeHelper.isAlphaNumericPermitNo(permitNo)) {
-			throw new DRPermitNotRecognisedException("Permit no '" + permitNo + "' is invalid");
+			throw new DRPermitNotRecognisedException("EA Unique Identifier (EA_ID) '" + permitNo + "' is invalid.");
 		}
 
 		if (permitDAO.findByPermitNumber(permitNo) == null) {
-			throw new DRPermitNotRecognisedException("Permit no '" + permitNo + "' not found");
+			throw new DRPermitNotRecognisedException("EA Unique Identifier (EA_ID) '" + permitNo + "' not recognised.");
 		}
-
-		LOGGER.debug("Permit is valid'");
+		LOGGER.debug("Validating EA Unique Identifiers Complete: No problems found.");
 	}
 	
 	/**
@@ -404,35 +411,17 @@ public class DataExchangeResource {
 	 */
 	private static final void prepareOutputData(final List<MonitoringDataRecord> records) {
 		for (MonitoringDataRecord record : records) {
-			
 			// Date and time processing
 			String dateTime = record.getMonitoringDate();
 			if (dateTime != null) {
-				final Matcher dateMatcher = MonitoringDataRecord.DATE_TIME_PATTERN.matcher(dateTime);
-				if (dateMatcher.matches()) {
-					String internationalDate = dateMatcher.group("internationalDate");
-					String ukDate = dateMatcher.group("ukDate");
-					
-					// Default to international date if this was specified.
-					String outputDate = internationalDate;
-					// If date specified in UK format then we need to reverse this to produce an international date
-					if (ukDate != null) {
-						String[] dateParts = ukDate.split(MonitoringDataRecord.REGEX_DATE_SEPARATOR);
-						ArrayUtils.reverse(dateParts);
-						outputDate = StringUtils.join(dateParts, MonitoringDataRecord.DEFAULT_DATE_SEPARATOR);
-					}
-
-					String[] timeParts = { dateMatcher.group("hour"), dateMatcher.group("minute"), dateMatcher.group("second") };
-					
-					StringBuilder validDateString = new StringBuilder(outputDate);
-					if (timeParts[0] != null) {
-						validDateString.append("T");
-						validDateString.append(StringUtils.join(timeParts, MonitoringDataRecord.DEFAULT_TIME_SEPARATOR));
-					}
-					record.setMonitoringDate(validDateString.toString());
+				String validDateTime = null;
+				if (dateTime.contains("T")) {
+					validDateTime = DateFormat.toStandardFormat(DateFormat.parseDateTime(dateTime));
+				} else {
+					validDateTime = DateFormat.toStandardFormat(DateFormat.parseDate(dateTime));
 				}
+				record.setMonitoringDate(validDateTime);
 			}
-			
 		}
 	}
 	

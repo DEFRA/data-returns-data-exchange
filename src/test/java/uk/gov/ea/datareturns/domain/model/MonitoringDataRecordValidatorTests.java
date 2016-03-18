@@ -3,6 +3,8 @@
  */
 package uk.gov.ea.datareturns.domain.model;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Set;
 
 import javax.validation.ConstraintViolation;
@@ -11,7 +13,6 @@ import javax.validation.Validator;
 import javax.validation.ValidatorFactory;
 
 import org.apache.commons.lang3.RandomStringUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -98,54 +99,89 @@ public class MonitoringDataRecordValidatorTests {
 		MonitoringDataRecord record = createValidRecord();
 		record.setMonitoringDate(null);
 		Set<ConstraintViolation<MonitoringDataRecord>> violations = validator.validate(record);
-		// We'll get 2 violations back - one for the field being blank, the second for the controlled list value check
-		Assert.assertEquals(1, violations.size());
+		Assert.assertFalse(violations.isEmpty());
 	}
 	@Test
 	public void testMonitoringDateEmpty() {
 		MonitoringDataRecord record = createValidRecord();
 		record.setMonitoringDate("");
 		Set<ConstraintViolation<MonitoringDataRecord>> violations = validator.validate(record);
-		// We'll get 2 violations back - one for the field being blank, the second for the controlled list value check
-		Assert.assertEquals(2, violations.size());
+		Assert.assertFalse(violations.isEmpty());
 	}
 	@Test
 	public void testMonitoringDateInvalidFormat() {
 		MonitoringDataRecord record = createValidRecord();
-		record.setMonitoringDate("2016/03/16");
+		String testDate = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy/MM/dd"));
+		record.setMonitoringDate(testDate);
 		Set<ConstraintViolation<MonitoringDataRecord>> violations = validator.validate(record);
-		Assert.assertEquals(1, violations.size());
+		Assert.assertFalse(violations.isEmpty());
 	}
 	@Test
 	public void testMonitoringDateInternationalFormat() {
 		MonitoringDataRecord record = createValidRecord();
-		record.setMonitoringDate("2016-03-16");
+		String testDate = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+		record.setMonitoringDate(testDate);
 		Set<ConstraintViolation<MonitoringDataRecord>> violations = validator.validate(record);
 		Assert.assertEquals(0, violations.size());
 	}
 	@Test
 	public void testMonitoringDateInternationalFormatWithTime() {
 		MonitoringDataRecord record = createValidRecord();
-		record.setMonitoringDate("2016-03-16T09:00:00");
+		String testDate = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss"));
+		record.setMonitoringDate(testDate);
 		Set<ConstraintViolation<MonitoringDataRecord>> violations = validator.validate(record);
 		Assert.assertEquals(0, violations.size());
 	}
 	@Test
 	public void testMonitoringDateUKFormat() {
 		MonitoringDataRecord record = createValidRecord();
-		record.setMonitoringDate("16-03-2016");
+		String testDate = LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd-MM-yyyy"));
+		record.setMonitoringDate(testDate);
 		Set<ConstraintViolation<MonitoringDataRecord>> violations = validator.validate(record);
 		Assert.assertEquals(0, violations.size());
 	}
 	@Test
 	public void testMonitoringDateUKWithTime() {
 		MonitoringDataRecord record = createValidRecord();
-		record.setMonitoringDate("16-03-2016T09:00:00");
+		String testDate = LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd-MM-yyyy'T'HH:mm:ss"));
+		record.setMonitoringDate(testDate);
 		Set<ConstraintViolation<MonitoringDataRecord>> violations = validator.validate(record);
 		Assert.assertEquals(0, violations.size());
 	}
 	
+	@Test
+	public void testMonitoringDateFutureDateOnly() {
+		MonitoringDataRecord record = createValidRecord();
+		LocalDateTime anHourFromNow = LocalDateTime.now().plusDays(1);
+		String testDate = anHourFromNow.format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+		record.setMonitoringDate(testDate);
+		Set<ConstraintViolation<MonitoringDataRecord>> violations = validator.validate(record);
+		Assert.assertEquals(1, violations.size());
+	}
 	
+	
+	@Test
+	public void testMonitoringDateFutureDateAndTime() {
+		MonitoringDataRecord record = createValidRecord();
+		LocalDateTime anHourFromNow = LocalDateTime.now().plusHours(1);
+		String testDate = anHourFromNow.format(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss"));
+		record.setMonitoringDate(testDate);
+		Set<ConstraintViolation<MonitoringDataRecord>> violations = validator.validate(record);
+		Assert.assertEquals(1, violations.size());
+	}
+	
+	
+// TODO: Future release - extend validation to check for dates too far in the past (should be configurable)
+//	
+//	@Test
+//	public void testOutDatedMonitoringDateInternationalFormatWithTime() {
+//		MonitoringDataRecord record = createValidRecord();
+//		LocalDateTime fiveYearsAgo = LocalDateTime.now().minusYears(5);
+//		String testDate = fiveYearsAgo.format(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss"));
+//		record.setMonitoringDate(testDate);
+//		Set<ConstraintViolation<MonitoringDataRecord>> violations = validator.validate(record);
+//		Assert.assertEquals(1, violations.size());
+//	}
 
 	/*=================================================================================================================
 	 *
@@ -157,11 +193,11 @@ public class MonitoringDataRecordValidatorTests {
 	@Test
 	public void testMonitoringFrequencyLength() {
 		MonitoringDataRecord record = createValidRecord();
-		record.setMonitoringFrequency(RandomStringUtils.random(30));
+		record.setMonitoringPeriod(RandomStringUtils.random(30));
 		Set<ConstraintViolation<MonitoringDataRecord>> violations = validator.validate(record);
 		Assert.assertEquals(0, violations.size());
 		
-		record.setMonitoringFrequency(RandomStringUtils.random(31));
+		record.setMonitoringPeriod(RandomStringUtils.random(31));
 		violations = validator.validate(record);
 		Assert.assertEquals(1, violations.size());
 	}
@@ -190,13 +226,23 @@ public class MonitoringDataRecordValidatorTests {
 	@Test
 	public void testMonitoringPointLength() {
 		MonitoringDataRecord record = createValidRecord();
-		record.setMonitoringPoint(RandomStringUtils.random(30));
+		record.setMonitoringPoint(RandomStringUtils.randomAlphanumeric(30));
 		Set<ConstraintViolation<MonitoringDataRecord>> violations = validator.validate(record);
 		Assert.assertEquals(0, violations.size());
 		
-		record.setMonitoringPoint(RandomStringUtils.random(31));
+		record.setMonitoringPoint(RandomStringUtils.randomAlphanumeric(31));
 		violations = validator.validate(record);
 		Assert.assertEquals(1, violations.size());
+	}
+	@Test
+	public void testMonitoringPointSpecialCharacters() {
+		MonitoringDataRecord record = createValidRecord();
+		String invalidCharacters = "!\"£$%^&*()-_=+[]{};:'@#~,<.>/?\\|`¬€";
+		for (char c : invalidCharacters.toCharArray()) {
+			record.setMonitoringPoint(String.valueOf(c));
+			Set<ConstraintViolation<MonitoringDataRecord>> violations = validator.validate(record);
+			Assert.assertEquals(1, violations.size());	
+		}
 	}
 
 	/*=================================================================================================================
@@ -208,13 +254,23 @@ public class MonitoringDataRecordValidatorTests {
 	@Test
 	public void testSampleReferenceLength() {
 		MonitoringDataRecord record = createValidRecord();
-		record.setSampleReference(RandomStringUtils.random(255));
+		record.setSampleReference(RandomStringUtils.randomAlphanumeric(255));
 		Set<ConstraintViolation<MonitoringDataRecord>> violations = validator.validate(record);
 		Assert.assertEquals(0, violations.size());
 		
-		record.setSampleReference(RandomStringUtils.random(256));
+		record.setSampleReference(RandomStringUtils.randomAlphanumeric(256));
 		violations = validator.validate(record);
 		Assert.assertEquals(1, violations.size());
+	}
+	@Test
+	public void testSampleReferenceSpecialCharacters() {
+		MonitoringDataRecord record = createValidRecord();
+		String invalidCharacters = "!\"£$%^&*()-_=+[]{};:'@#~,<.>/?\\|`¬€";
+		for (char c : invalidCharacters.toCharArray()) {
+			record.setSampleReference(String.valueOf(c));
+			Set<ConstraintViolation<MonitoringDataRecord>> violations = validator.validate(record);
+			Assert.assertEquals(1, violations.size());	
+		}
 	}
 
 	/*=================================================================================================================
@@ -593,7 +649,7 @@ public class MonitoringDataRecordValidatorTests {
 		record.setSiteName("Site Name");
 		record.setReturnType("EPR/IED Landfill Gas infrastructure monitoring");
 		record.setMonitoringDate("2016-03-09T11:18:59");
-		record.setMonitoringFrequency("Quarterly");
+		record.setMonitoringPeriod("Quarterly");
 		record.setMonitoringPoint("Borehole 1");
 		record.setSampleReference("Sample Reference");
 		record.setSampleBy("Sam Gardner-Dell");

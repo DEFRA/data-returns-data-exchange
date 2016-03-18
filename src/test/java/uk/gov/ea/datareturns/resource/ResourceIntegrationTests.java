@@ -51,7 +51,6 @@ public class ResourceIntegrationTests {
 	private static final Logger LOGGER = LoggerFactory.getLogger(ResourceIntegrationTests.class);
 
 	public final static MediaType MEDIA_TYPE_CSV = new MediaType("text", "csv");
-	public final static MediaType MEDIA_TYPE_XML = new MediaType("application", "xml");
 
 	public final static String FILE_UNSUPPORTED_TYPE = "binary.exe";
 	public final static String FILE_EMBEDDED_COMMAS = "embedded-commas.csv";
@@ -99,6 +98,7 @@ public class ResourceIntegrationTests {
 	public static void cleanup() throws IOException {
 		if (TRUE.equals(RULE.getConfiguration().getTestSettings().getCleanupAfterTestRun().toLowerCase())) {
 			FileUtils.cleanDirectory(new File(RULE.getConfiguration().getMiscSettings().getOutputLocation()));
+			FileUtils.cleanDirectory(new File(RULE.getConfiguration().getMiscSettings().getUploadedLocation()));
 		}
 	}
 

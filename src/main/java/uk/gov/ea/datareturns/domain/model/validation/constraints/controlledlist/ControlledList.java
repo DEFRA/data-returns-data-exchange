@@ -25,10 +25,8 @@ import javax.validation.Payload;
 public @interface ControlledList {
 	String message() default "{uk.gov.ea.datareturns.domain.model.validation.controlledlist.message}";
 
-	@SuppressWarnings("ucd")
 	Class<?>[] groups() default {};
 
-	@SuppressWarnings("ucd")
 	Class<? extends Payload>[] payload() default {};
 
 	Class<? extends ControlledListAuditor> auditor();

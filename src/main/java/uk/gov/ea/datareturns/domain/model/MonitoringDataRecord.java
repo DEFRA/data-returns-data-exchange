@@ -9,11 +9,12 @@ import org.hibernate.validator.constraints.Length;
 import org.hibernate.validator.constraints.NotBlank;
 
 import uk.gov.ea.datareturns.domain.io.csv.annotations.CSVField;
-import uk.gov.ea.datareturns.domain.model.types.DataReturnsHeaders;
+import uk.gov.ea.datareturns.domain.model.rules.DataReturnsHeaders;
 import uk.gov.ea.datareturns.domain.model.validation.auditors.ParameterListAuditor;
 import uk.gov.ea.datareturns.domain.model.validation.auditors.ReturnTypeListAuditor;
 import uk.gov.ea.datareturns.domain.model.validation.auditors.UnitListAuditor;
 import uk.gov.ea.datareturns.domain.model.validation.constraints.controlledlist.ControlledList;
+import uk.gov.ea.datareturns.domain.model.validation.constraints.field.ValidReturnsDate;
 
 /**
  * Represents an individual monitoring data record entry
@@ -26,15 +27,6 @@ import uk.gov.ea.datareturns.domain.model.validation.constraints.controlledlist.
 // field validation
 // @DependentField(primaryFieldGetter="getReturnType",
 public class MonitoringDataRecord {
-	public static final char DEFAULT_DATE_SEPARATOR = '-';
-	public static final char DEFAULT_TIME_SEPARATOR = ':';
-	public static final String REGEX_DATE_SEPARATOR = "[-]";
-	public static final String REGEX_TIME_SEPARATOR = "[:]";
-	public static final String REGEX_DATE = "(?:(?<internationalDate>\\d{4}-\\d{2}-\\d{2})|(?<ukDate>\\d{2}-\\d{2}-\\d{4}))";
-	public static final String REGEX_TIME = "(?:T(?<hour>\\d{2}):(?<minute>\\d{2}):(?<second>\\d{2}))?";
-	public static final String REGEX_DATE_TIME = REGEX_DATE + REGEX_TIME;
-	public static final java.util.regex.Pattern DATE_TIME_PATTERN = java.util.regex.Pattern.compile(REGEX_DATE_TIME);
-	
 	/** The Permit Number (EA_ID) */
 	@CSVField(DataReturnsHeaders.PERMIT_NUMBER)
 	@XmlElement(name = DataReturnsHeaders.PERMIT_NUMBER)
@@ -59,30 +51,28 @@ public class MonitoringDataRecord {
 	/** The monitoring date (Mon_Date) */
 	@CSVField(DataReturnsHeaders.MONITORING_DATE)
 	@XmlElement(name = DataReturnsHeaders.MONITORING_DATE)
-	@NotBlank(message = "{uk.gov.ea.datareturns.monitoringDate.missing}")
-	// Date can be yyyy-mm-dd or dd-mm-yyyy optionally followed by Thh:mm:ss (e.g. 2016-03-11T09:00:00)
-	@Pattern(
-			regexp = REGEX_DATE_TIME, 
-			message = "{uk.gov.ea.datareturns.monitoringDate.invalid}")
+	@ValidReturnsDate
 	private String monitoringDate;
 
-	/** The monitoring frequency (Mon_Frequency) */
-	@CSVField(DataReturnsHeaders.MONITORING_FREQUENCY)
-	@XmlElement(name = DataReturnsHeaders.MONITORING_FREQUENCY)
-	@Length(min = 0, max = 30, message = "{uk.gov.ea.datareturns.monitoringFrequency.length}")
-	private String monitoringFrequency;
+	/** The monitoring period  (Mon_Period) */
+	@CSVField(DataReturnsHeaders.MONITORING_PERIOD)
+	@XmlElement(name = DataReturnsHeaders.MONITORING_PERIOD)
+	@Length(min = 0, max = 30, message = "{uk.gov.ea.datareturns.monitoringPeriod.length}")
+	private String monitoringPeriod;
 
 	/** The monitoring point (Mon_Point) */
 	@CSVField(DataReturnsHeaders.MONITORING_POINT)
 	@XmlElement(name = DataReturnsHeaders.MONITORING_POINT)
 	@NotBlank(message = "{uk.gov.ea.datareturns.monitoringPoint.missing}")
 	@Length(min = 0, max = 30, message = "{uk.gov.ea.datareturns.monitoringPoint.length}")
+	@Pattern(regexp = "^[a-zA-Z0-9 ]*$", message = "{uk.gov.ea.datareturns.monitoringPoint.invalid}")
 	private String monitoringPoint;
 
 	/** Sample reference (Smpl_Ref) */
 	@CSVField(DataReturnsHeaders.SAMPLE_REFERENCE)
 	@XmlElement(name = DataReturnsHeaders.SAMPLE_REFERENCE)
 	@Length(min = 0, max = 255, message = "{uk.gov.ea.datareturns.sampleReference.length}")
+	@Pattern(regexp = "^[a-zA-Z0-9 ]*$", message = "{uk.gov.ea.datareturns.sampleReference.invalid}")
 	private String sampleReference;
 
 	/** Sampled by (Smpl_By) */
@@ -187,10 +177,10 @@ public class MonitoringDataRecord {
 	}
 
 	/**
-	 * @return the monitoringFrequency
+	 * @return the monitoringPeriod
 	 */
-	public String getMonitoringFrequency() {
-		return monitoringFrequency;
+	public String getMonitoringPeriod() {
+		return monitoringPeriod;
 	}
 
 	/**
@@ -317,11 +307,11 @@ public class MonitoringDataRecord {
 	}
 
 	/**
-	 * @param monitoringFrequency
-	 *            the monitoringFrequency to set
+	 * @param monitoringPeriod
+	 *            the monitoringPeriod to set
 	 */
-	public void setMonitoringFrequency(String monitoringFrequency) {
-		this.monitoringFrequency = monitoringFrequency;
+	public void setMonitoringPeriod(String monitoringPeriod) {
+		this.monitoringPeriod = monitoringPeriod;
 	}
 
 	/**
