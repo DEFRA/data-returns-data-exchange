@@ -5,12 +5,8 @@ import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import uk.gov.ea.datareturns.exception.AbstractDRException;
 import uk.gov.ea.datareturns.exception.ExceptionMessageContainer;
-import uk.gov.ea.datareturns.exception.system.AbstractDRSystemException;
 
 public abstract class AbstractDRApplicationException extends AbstractDRException {
 	private static final long serialVersionUID = 1L;

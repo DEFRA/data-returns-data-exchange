@@ -1,7 +1,5 @@
 package uk.gov.ea.datareturns.exception.application;
 
-import static javax.ws.rs.core.Response.Status.OK;
-
 import javax.ws.rs.core.Response.Status;
 
 import uk.gov.ea.datareturns.type.ApplicationExceptionType;

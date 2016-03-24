@@ -12,6 +12,8 @@
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<java.version>1.8</java.version>
+				
+		<!-- Library versions -->
 		<dropwizard.version>0.9.2</dropwizard.version>
 		<dropwizard.metrics.version>3.1.2</dropwizard.metrics.version>
 		<junit.version>4.12</junit.version>
@@ -21,7 +23,7 @@
 		<onejar.version>1.4.4</onejar.version>
 		<csv.validator.version>1.0</csv.validator.version>
 		<liquibase.version>3.4.2</liquibase.version>
-		<liquibase.maven.plugin.version>3.0.5</liquibase.maven.plugin.version>
+		<liquibase.maven.plugin.version>3.2.0</liquibase.maven.plugin.version>
 		<postgresql.version>9.4-1205-jdbc42</postgresql.version>
 		<p6spy.version>2.1.4</p6spy.version>
 		
@@ -36,14 +38,10 @@
 		<commons.io.version>2.4</commons.io.version>
 		<commons.csv.version>1.2</commons.csv.version>
 
-
-		<xerces.version>2.11.0</xerces.version>
 		<jackson-dataformat-xml.version>2.6.3</jackson-dataformat-xml.version>
 		<codehaus.woodstox.version>4.4.1</codehaus.woodstox.version>
 		<redis.client.version>2.8.0</redis.client.version>
-		<aws.java.sdk.version>1.10.49</aws.java.sdk.version>
-		<saxon.version>9.1.0.8</saxon.version>
-
+		<aws.java.sdk.version>1.10.62</aws.java.sdk.version>
 
 		<!-- Test -->
 		<mockito.version>1.10.19</mockito.version>
@@ -109,9 +107,6 @@
 			<version>${hibernate.validator.version}</version>
 		</dependency>
 
-		
-		
-		
 		<!-- Logging -->
 		<dependency>
 			<groupId>org.slf4j</groupId>
@@ -157,24 +152,7 @@
 			<artifactId>p6spy</artifactId>
 			<version>${p6spy.version}</version>
 		</dependency>
-		<dependency>
-			<groupId>xerces</groupId>
-			<artifactId>xercesImpl</artifactId>
-			<version>${xerces.version}</version>
-		</dependency>
 
-		<dependency>
-			<groupId>net.sourceforge.saxon</groupId>
-			<artifactId>saxon</artifactId>
-			<version>${saxon.version}</version>
-		</dependency>
-
-		<dependency>
-			<groupId>net.sourceforge.saxon</groupId>
-			<artifactId>saxon</artifactId>
-			<version>${saxon.version}</version>
-			<classifier>dom</classifier>
-		</dependency>
 		<dependency>
 			<groupId>com.fasterxml.jackson.dataformat</groupId>
 			<artifactId>jackson-dataformat-xml</artifactId>
@@ -190,11 +168,6 @@
 					<groupId>javax.xml.stream</groupId>
 				</exclusion>
 			</exclusions>
-		</dependency>
-		<dependency>
-			<groupId>redis.clients</groupId>
-			<artifactId>jedis</artifactId>
-			<version>${redis.client.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>com.amazonaws</groupId>
@@ -241,13 +214,20 @@
 		</dependency>
 	</dependencies>
 	<build>
+	
+        <filters>
+            <filter>src/main/resources/db/changelog/liquibase.properties</filter>
+        </filters>
 		<resources>
 			<resource>
-				<directory>src/main/java</directory>
-			</resource>
-			<resource>
-				<filtering>false</filtering>
 				<directory>src/main/resources</directory>
+				<filtering>true</filtering>
+			</resource>
+
+			<resource>
+				<filtering>true</filtering>
+				<directory>${basedir}/config-templates</directory>
+				<targetPath>${project.build.directory}/external_resources/config</targetPath>
 				<includes>
 					<include>**/*</include>
 				</includes>
@@ -308,40 +288,59 @@
 					<dependency>
 						<groupId>org.postgresql</groupId>
 						<artifactId>postgresql</artifactId>
-						<version>9.4.1208</version>
+						<version>${postgresql.version}</version>
 					</dependency>
 				</dependencies>
 
 				<!-- common configuration shared by all executions -->
 				<configuration>
-					<driver>org.postgresql.Driver</driver>
-					<url>jdbc:postgresql://localhost:5432/data_returns</url>
-					<username>data_returns_owner</username>
-					<password>data_returns_owner</password>
+					<driver>${db.driver}</driver>
+					<url>${db.url}</url>
+					<username>${db.username}</username>
+					<password>${db.password}</password>
+					<autocommit>true</autocommit>
+					<enableFiltering>true</enableFiltering>
 				</configuration>
 
 				<executions>
 					<!-- This command can be executed using mvn sql:execute@create-user -->
 					<!-- TODO: This cannot be done at this point as by default postgres 
 						does not have a superuser account available to use over JDBC. It does however 
-						work if you are able to pass it a superuser and password to use that is not 
-						the data_returns_owner <execution> <id>create-user</id> <goals> <goal>execute</goal> 
-						</goals> <configuration> <url>jdbc:postgresql://localhost:5432/postgres</url> 
-						<username>**** an existing superuser</username> <password>**** a password 
-						for an existing superuser</password> <autocommit>true</autocommit> <srcFiles> 
-						<srcFile>${basedir}/external_resources/db/sql/1-create-user.sql</srcFile> 
-						</srcFiles> <onError>continue</onError> </configuration> </execution> -->
-
-					<!-- This command can be executed using mvn sql:execute@prepare-database -->
+						work if you are able to pass it an existing superuser and password to use
 					<execution>
-						<id>prepare-database</id>
+						<id>create-user</id>
+						<goals>
+							<goal>execute</goal>
+						</goals>
 						<configuration>
-							<url>jdbc:postgresql://localhost:5432/postgres</url>
-							<username>data_returns_owner</username>
-							<password>data_returns_owner</password>
+							<username>**** an existing superuser</username>
+							<password>**** password of an existing superuser</password>
 							<autocommit>true</autocommit>
 							<srcFiles>
-								<srcFile>${basedir}/external_resources/db/sql/2-prepare-database.sql</srcFile>
+								<srcFile>${basedir}/src/main/resources/db/sql/1-create-user.sql</srcFile>
+							</srcFiles>
+							<onError>continue</onError>
+						</configuration>
+					</execution>
+					-->
+					<!-- This command can be executed using mvn sql:execute@drop-database -->
+					
+					<execution>
+						<id>drop-database</id>
+						<configuration>
+							<url>${db.mgt.url}</url>
+							<srcFiles>
+								<srcFile>${basedir}/src/main/resources/db/sql/2-drop-database.sql</srcFile>
+							</srcFiles>
+						</configuration>
+					</execution>
+					<!-- This command can be executed using mvn sql:execute@create-database -->
+					<execution>
+						<id>create-database</id>
+						<configuration>
+							<url>${db.mgt.url}</url>
+							<srcFiles>
+								<srcFile>${basedir}/src/main/resources/db/sql/3-create-database.sql</srcFile>
 							</srcFiles>
 						</configuration>
 					</execution>
@@ -349,12 +348,8 @@
 					<execution>
 						<id>create-schema</id>
 						<configuration>
-							<url>jdbc:postgresql://localhost:5432/data_returns</url>
-							<username>data_returns_owner</username>
-							<password>data_returns_owner</password>
-							<autocommit>true</autocommit>
 							<srcFiles>
-								<srcFile>${basedir}/external_resources/db/sql/3-create-schema.sql</srcFile>
+								<srcFile>${basedir}/src/main/resources/db/sql/4-create-schema.sql</srcFile>
 							</srcFiles>
 						</configuration>
 					</execution>
@@ -368,13 +363,13 @@
 				<version>${liquibase.maven.plugin.version}</version>
 				<configuration>
 					<promptOnNonLocalDatabase>false</promptOnNonLocalDatabase>
-					<defaultSchemaName>data_returns_schema</defaultSchemaName>
-					<changelogSchemaName>data_returns_schema</changelogSchemaName>
-					<driver>${driver}</driver>
-					<url>${url}</url>
-					<username>${username}</username>
-					<password>${password}</password>
-					<propertyFile>${liquibasePropertyFile}</propertyFile>
+					<defaultSchemaName>${db.schema}</defaultSchemaName>
+					<changelogSchemaName>${db.schema}</changelogSchemaName>
+					<driver>${db.driver}</driver>
+					<url>${db.url}</url>
+					<username>${db.username}</username>
+					<password>${db.password}</password>
+					<propertyFile>${project.build.outputDirectory}/db/changelog/liquibase.properties</propertyFile>
 				</configuration>
 				<executions>
 					<execution>

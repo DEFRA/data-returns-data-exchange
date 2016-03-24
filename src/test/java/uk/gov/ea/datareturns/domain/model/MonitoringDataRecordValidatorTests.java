@@ -384,20 +384,18 @@ public class MonitoringDataRecordValidatorTests {
 		Assert.assertEquals(0, violations.size());
 	}
 	@Test
-	public void testValueValidLessThanDecimalNoLeadingZero() {
+	public void testValueInvalidLessThanDecimalNoLeadingZero() {
 		MonitoringDataRecord record = createValidRecord();
 		record.setValue("<.1");
 		Set<ConstraintViolation<MonitoringDataRecord>> violations = validator.validate(record);
-		Assert.assertEquals(0, violations.size());
-		// TODO: NOT SURE IF THIS IS REALLY VALID?????
+		Assert.assertEquals(1, violations.size());
 	}
 	@Test
-	public void testValueValidGreaterThanDecimalNoLeadingZero() {
+	public void testValueInvalidGreaterThanDecimalNoLeadingZero() {
 		MonitoringDataRecord record = createValidRecord();
 		record.setValue(">.1");
 		Set<ConstraintViolation<MonitoringDataRecord>> violations = validator.validate(record);
-		Assert.assertEquals(0, violations.size());
-		// TODO: NOT SURE IF THIS IS REALLY VALID?????		
+		Assert.assertEquals(1, violations.size());
 	}	
 	@Test
 	public void testValueInvalidLessThanSignOnly() {

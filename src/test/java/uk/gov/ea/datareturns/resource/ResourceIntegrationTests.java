@@ -476,7 +476,7 @@ public class ResourceIntegrationTests {
 	 * Set debug state from configuration file
 	 */
 	private static void setDebugState() {
-		debugMode = TRUE.equals(RULE.getConfiguration().getMiscSettings().getDebugMode().toLowerCase()) ? true : false;
+		debugMode = RULE.getConfiguration().getMiscSettings().isDebugMode();
 		testTimeout = RULE.getConfiguration().getTestSettings().getTestTimeout();
 
 		LOGGER.debug("Debug Mode is '" + debugMode + "'");

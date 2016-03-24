@@ -7,118 +7,61 @@ import org.hibernate.validator.constraints.NotEmpty;
  * @author adrianharrison
  * Holds miscellaneous settings from configuration file
  */
-public class MiscSettings
-{
-	@NotEmpty
-	private String environment;
-
+public class MiscSettings {
 	@NotEmpty
 	private String uploadedLocation;
-
-	@NotEmpty
-	private String schemaLocation;
 
 	@NotEmpty
 	private String outputLocation;
 
 	@NotEmpty
-	private String xsltLocation;
-
-	@NotEmpty
-	private String xmlLocation;
-
-	@NotEmpty
 	private String csvSeparator;
 
-	@NotEmpty
-	private String debugMode;
+	private boolean debugMode;
 
-	public MiscSettings()
-	{
+	public MiscSettings() {
 	}
 
-	public String getEnvironment()
-	{
-		return environment;
+	public String getUploadedLocation() {
+		return this.uploadedLocation;
 	}
 
-	public void setEnvironment(String environment)
-	{
-		this.environment = environment;
-	}
-
-	public String getUploadedLocation()
-	{
-		return uploadedLocation;
-	}
-
-	public void setUploadedLocation(String uploadedLocation)
-	{
+	public void setUploadedLocation(final String uploadedLocation) {
 		this.uploadedLocation = uploadedLocation;
 	}
 
-	public String getSchemaLocation()
-	{
-		return schemaLocation;
+	public String getOutputLocation() {
+		return this.outputLocation;
 	}
 
-	public void setSchemaLocation(String schemaLocation)
-	{
-		this.schemaLocation = schemaLocation;
-	}
-
-	public String getOutputLocation()
-	{
-		return outputLocation;
-	}
-
-	public void setOutputLocation(String outputLocation)
-	{
+	public void setOutputLocation(final String outputLocation) {
 		this.outputLocation = outputLocation;
 	}
 
-	public String getXsltLocation()
-	{
-		return xsltLocation;
+	public String getCsvSeparator() {
+		return this.csvSeparator;
 	}
 
-	public void setXsltLocation(String xsltLocation)
-	{
-		this.xsltLocation = xsltLocation;
-	}
-
-	public String getXmlLocation()
-	{
-		return xmlLocation;
-	}
-
-	public void setXmlLocation(String xmlLocation)
-	{
-		this.xmlLocation = xmlLocation;
-	}
-
-	public String getCsvSeparator()
-	{
-		return csvSeparator;
-	}
-	
 	public Character getCSVSeparatorCharacter() {
 		// Use delimiter from configuration (need first character from string)
 		return StringUtils.isNotEmpty(getCsvSeparator()) ? getCsvSeparator().charAt(0) : null;
 	}
 
-	public void setCsvSeparator(String csvSeparator)
-	{
+	public void setCsvSeparator(final String csvSeparator) {
 		this.csvSeparator = csvSeparator;
 	}
 
-	public String getDebugMode()
-	{
+	/**
+	 * @return the debugMode
+	 */
+	public boolean isDebugMode() {
 		return debugMode;
 	}
 
-	public void setDebugMode(String debugMode)
-	{
+	/**
+	 * @param debugMode the debugMode to set
+	 */
+	public void setDebugMode(boolean debugMode) {
 		this.debugMode = debugMode;
 	}
 }

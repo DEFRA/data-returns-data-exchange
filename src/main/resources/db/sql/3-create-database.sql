@@ -1,0 +1,5 @@
+/*
+ * CREATE THE DATA_RETURNS DATABASE
+ */
+CREATE DATABASE ${db.name} OWNER ${db.username} ENCODING 'UTF8';
+GRANT ALL PRIVILEGES ON DATABASE ${db.name} TO ${db.username};

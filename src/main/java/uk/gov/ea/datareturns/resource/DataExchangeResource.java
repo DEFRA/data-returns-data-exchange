@@ -2,7 +2,6 @@ package uk.gov.ea.datareturns.resource;
 
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 import static javax.ws.rs.core.MediaType.MULTIPART_FORM_DATA;
-import static uk.gov.ea.datareturns.helper.CommonHelper.isLocalEnvironment;
 
 import java.io.File;
 import java.io.IOException;
@@ -10,9 +9,11 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.regex.Matcher;
 import java.util.stream.Collectors;
 
 import javax.ws.rs.Consumes;
@@ -24,6 +25,8 @@ import javax.ws.rs.core.Response.Status;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.lang3.ArrayUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.mail.EmailAttachment;
 import org.apache.commons.mail.EmailException;
 import org.apache.commons.mail.MultiPartEmail;
@@ -36,11 +39,8 @@ import org.slf4j.LoggerFactory;
 import com.codahale.metrics.annotation.Timed;
 
 import uk.gov.ea.datareturns.config.DataExchangeConfiguration;
-import uk.gov.ea.datareturns.config.EmailSettings;
-import uk.gov.ea.datareturns.config.EmmaDatabaseSettings;
 import uk.gov.ea.datareturns.config.MiscSettings;
-import uk.gov.ea.datareturns.config.RedisSettings;
-import uk.gov.ea.datareturns.config.S3ProxySettings;
+import uk.gov.ea.datareturns.config.email.MonitorProEmailSettings;
 import uk.gov.ea.datareturns.dao.PermitDAO;
 import uk.gov.ea.datareturns.domain.dataexchange.EmmaDatabase;
 import uk.gov.ea.datareturns.domain.io.csv.CSVHeaderValidator;
@@ -62,6 +62,7 @@ import uk.gov.ea.datareturns.domain.result.ParseResult;
 import uk.gov.ea.datareturns.domain.result.UploadResult;
 import uk.gov.ea.datareturns.domain.result.ValidationResult;
 import uk.gov.ea.datareturns.exception.application.DRFileEmptyException;
+import uk.gov.ea.datareturns.exception.application.DRFileKeyMismatchException;
 import uk.gov.ea.datareturns.exception.application.DRFileTypeUnsupportedException;
 import uk.gov.ea.datareturns.exception.application.DRHeaderFieldUnrecognisedException;
 import uk.gov.ea.datareturns.exception.application.DRHeaderMandatoryFieldMissingException;
@@ -71,8 +72,9 @@ import uk.gov.ea.datareturns.exception.application.DRPermitNumberMissingExceptio
 import uk.gov.ea.datareturns.exception.system.DRIOException;
 import uk.gov.ea.datareturns.exception.system.DRSystemException;
 import uk.gov.ea.datareturns.helper.DataExchangeHelper;
-import uk.gov.ea.datareturns.helper.FileUtilsHelper;
-import uk.gov.ea.datareturns.storage.FileStorage;
+import uk.gov.ea.datareturns.storage.StorageException;
+import uk.gov.ea.datareturns.storage.StorageProvider;
+import uk.gov.ea.datareturns.storage.StorageProvider.StoredFile;
 import uk.gov.ea.datareturns.type.ApplicationExceptionType;
 import uk.gov.ea.datareturns.type.FileType;
 
@@ -83,29 +85,12 @@ public class DataExchangeResource {
 	private static final Logger LOGGER = LoggerFactory.getLogger(DataExchangeResource.class);
 	private DataExchangeConfiguration config;
 	private PermitDAO permitDAO;
+	private StorageProvider storage;
 
-	private FileStorage fileStorage;
-
-	public DataExchangeResource(DataExchangeConfiguration config, PermitDAO permitDAO) {
+	public DataExchangeResource(DataExchangeConfiguration config, StorageProvider storage, PermitDAO permitDAO) {
 		this.config = config;
 		this.permitDAO = permitDAO;
-
-		RedisSettings redisSettings = config.getFileStorageSettings().getRedisSettings();
-
-		String environment = config.getMiscSettings().getEnvironment();
-		String redisHost = redisSettings.getHost();
-		int redisPort = redisSettings.getPort();
-
-		if (!isLocalEnvironment(environment)) {
-			S3ProxySettings s3Settings = config.getS3Settings();
-			String s3Type = s3Settings.getType();
-			String s3Host = s3Settings.getHost();
-			int s3Port = s3Settings.getPort();
-
-			this.fileStorage = new FileStorage(environment, redisHost, redisPort, s3Type, s3Host, s3Port);
-		} else {
-			this.fileStorage = new FileStorage(environment, redisHost, redisPort);
-		}
+		this.storage = storage;
 	}
 
 	/**
@@ -129,7 +114,11 @@ public class DataExchangeResource {
 		final File uploadedFile = new File(settings.getUploadedLocation(), fileDetail.getFileName());
 
 		// 1. Save upload file on server
-		FileUtilsHelper.saveFile(is, uploadedFile);
+		try {
+			FileUtils.copyInputStreamToFile(is, uploadedFile);
+		} catch (IOException e) {
+			throw new DRSystemException(e, "Unable to save the uploaded file to disk.");
+		}
 		
 		// 2. Validate upload file
 		validateUploadFile(uploadedFile);
@@ -160,8 +149,8 @@ public class DataExchangeResource {
 			
 			// Write out a CSV file containing ALL headings 
 			final File validFileOutputDir = new File(settings.getOutputLocation());
-			final File outputFile = new File(validFileOutputDir, uploadedFile.getName());
-			writeCSVFile(model.getRecords(), outputFile);
+			final File localTempFile = new File(validFileOutputDir, uploadedFile.getName());
+			writeCSVFile(model.getRecords(), localTempFile);
 			
 			final ParseResult parseResult = new ParseResult();
 			// This should never be empty or it would have failed validation, but rather not have an ArrayIndexOutOfBoundsException anyway...
@@ -172,9 +161,21 @@ public class DataExchangeResource {
 				parseResult.setReturnType(record.getReturnType());
 			}
 			result.setParseResult(parseResult);
+
+			// Persist the file to the configured storage provider (e.g. Amazon S3)
+			try {
+				String fileKey = storage.storeTemporaryData(localTempFile);
+				uploadResult.setFileKey(fileKey);
+				
+			} catch (StorageException e) {
+				throw new DRSystemException(e, "Unable to write to temporary persistence store");
+			}
 			
-			uploadResult.setFileKey(fileStorage.saveValidFile(outputFile.getAbsolutePath()));
-			
+			// Delete the local temporary file now that it has been persisted to the storage provider
+			if (!FileUtils.deleteQuietly(localTempFile)) {
+				localTempFile.deleteOnExit();
+			}
+
 			// Passed validation, return success status
 			responseStatus = Status.OK;
 		} else {
@@ -210,13 +211,27 @@ public class DataExchangeResource {
 			@NotEmpty @FormDataParam("permitNo") String permitNo) {
 		LOGGER.debug("/data-exchange/complete request received");
 
-		MiscSettings settings = config.getMiscSettings();
-
-		String outputLocation = settings.getOutputLocation();
-		String fileLocation = fileStorage.retrieveValidFileByKey(orgFileKey, outputLocation);
-
-		sendNotifications(fileLocation, permitNo);
-
+		StoredFile storedFile = null;
+		
+		try {
+			storedFile = storage.retrieveTemporaryData(orgFileKey);
+		} catch (StorageException e) {
+			throw new DRFileKeyMismatchException("Unable to retrieve a file with the provided key " + orgFileKey);
+		}
+		
+		try {
+			sendNotifications(storedFile.getFile(), permitNo);
+			
+			Map<String, String> metadata = new LinkedHashMap<>();
+			metadata.put("originator-email", userEmail);
+			metadata.put("original-filename", orgFileName);
+			
+			
+			storage.moveToAuditStore(orgFileKey, metadata);
+		} catch (StorageException e) {
+			throw new DRSystemException(e, e.getMessage());
+		}
+		
 		CompleteResult completeResult = new CompleteResult();
 
 		// TODO only really need to return app status code - leaving these in
@@ -262,10 +277,8 @@ public class DataExchangeResource {
 				.map(MonitoringDataRecord::getPermitNumber)
 				.collect(Collectors.toSet());
 		
-		if (permitNumberSet.isEmpty() 
-				|| permitNumberSet.contains(null) 
-				|| permitNumberSet.contains("")) {
-			throw new DRPermitNumberMissingException("One or more entries in the uploaded file have a missing EA unique identifier (EA_ID)");
+		if (permitNumberSet.isEmpty()) {
+			throw new DRPermitNumberMissingException("No permits were found in the uploaded file.");
 		} else if (permitNumberSet.size() > 1) {
 			throw new DRPermitNotUniqueException("One or more entries in the uploaded file contain different EA unique identifiers (EA_ID).  EA_ID should be the same for all rows.");
 		}
@@ -289,49 +302,47 @@ public class DataExchangeResource {
 	 * Send notifications upload is complete - currently just email to
 	 * MonitorPro with csv attachment
 	 * 
-	 * @param attachmentLocation
+	 * @param emailAttachment
 	 * @param permitNo
 	 * @param orgFileName
 	 */
 	// TODO move to own class hierarchy - also needs tests
-	private void sendNotifications(String attachmentLocation, String permitNo) {
-		LOGGER.debug("Sending Email with attachment '" + attachmentLocation + "'");
-
-		EmmaDatabaseSettings dbSettings = this.config.getEmmaDatabaseSettings();
+	private void sendNotifications(File emailAttachment, String permitNo) {
+		LOGGER.debug("Sending Email with attachment '" + emailAttachment.getAbsolutePath() + "'");
+		
+		MonitorProEmailSettings settings = this.config.getMonitorProEmailSettings();
 
 		try {
 			final EmailSettings settings = this.config.getEmailsettings();
 			final MultiPartEmail email = new MultiPartEmail();
 			final EmmaDatabase type = DataExchangeHelper.getDatabaseTypeFromPermitNo(permitNo);
-			String subject = dbSettings.getDatabaseName(type);
+			String subject = settings.getDatabaseName(type);
 
 			email.setHostName(settings.getHost());
 			email.setSmtpPort(settings.getPort());
 
 			email.setSubject(subject);
-			email.addTo(settings.getEmailTo());
-			email.setFrom(settings.getEmailFrom());
-			email.setMsg(settings.getBodyMessage());
-			email.setStartTLSEnabled(settings.isTls());
+			email.addTo(settings.getTo());
+			email.setFrom(settings.getFrom());
+			email.setMsg(settings.getBody());
+			email.setStartTLSEnabled(settings.isUseTLS());
 
 			EmailAttachment attachment = new EmailAttachment();
 			attachment.setDisposition(EmailAttachment.ATTACHMENT);
 			attachment.setDescription("Data Returns File Upload");
-			attachment.setName("Environment Agency");
-
-			File fileAttachment = new File(attachmentLocation);
-			attachment.setPath(fileAttachment.getAbsolutePath());
-
-			email.attach(fileAttachment);
+			attachment.setName("Environment Agency.csv");
+			attachment.setPath(emailAttachment.getAbsolutePath());
+			
+			email.attach(attachment);
 
 			LOGGER.debug("Email details - ");
 			LOGGER.debug("  host - " + settings.getHost());
 			LOGGER.debug("  port - " + settings.getPort());
 			LOGGER.debug("  subject - " + subject);
-			LOGGER.debug("  emailTo - " + settings.getEmailTo());
-			LOGGER.debug("  emailFrom - " + settings.getEmailFrom());
-			LOGGER.debug("  tls - " + settings.isTls());
-			LOGGER.debug("  bodyMessage - " + settings.getBodyMessage());
+			LOGGER.debug("  emailTo - " + settings.getTo());
+			LOGGER.debug("  emailFrom - " + settings.getFrom());
+			LOGGER.debug("  tls - " + settings.isUseTLS());
+			LOGGER.debug("  bodyMessage - " + settings.getBody());
 			LOGGER.debug("  attached file = " + attachment.getPath());
 
 			email.send();
@@ -411,17 +422,35 @@ public class DataExchangeResource {
 	 */
 	private static final void prepareOutputData(final List<MonitoringDataRecord> records) {
 		for (MonitoringDataRecord record : records) {
+			
 			// Date and time processing
 			String dateTime = record.getMonitoringDate();
 			if (dateTime != null) {
-				String validDateTime = null;
-				if (dateTime.contains("T")) {
-					validDateTime = DateFormat.toStandardFormat(DateFormat.parseDateTime(dateTime));
-				} else {
-					validDateTime = DateFormat.toStandardFormat(DateFormat.parseDate(dateTime));
+				final Matcher dateMatcher = MonitoringDataRecord.DATE_TIME_PATTERN.matcher(dateTime);
+				if (dateMatcher.matches()) {
+					String internationalDate = dateMatcher.group("internationalDate");
+					String ukDate = dateMatcher.group("ukDate");
+					
+					// Default to international date if this was specified.
+					String outputDate = internationalDate;
+					// If date specified in UK format then we need to reverse this to produce an international date
+					if (ukDate != null) {
+						String[] dateParts = ukDate.split(MonitoringDataRecord.REGEX_DATE_SEPARATOR);
+						ArrayUtils.reverse(dateParts);
+						outputDate = StringUtils.join(dateParts, MonitoringDataRecord.DEFAULT_DATE_SEPARATOR);
+					}
+
+					String[] timeParts = { dateMatcher.group("hour"), dateMatcher.group("minute"), dateMatcher.group("second") };
+					
+					StringBuilder validDateString = new StringBuilder(outputDate);
+					if (timeParts[0] != null) {
+						validDateString.append("T");
+						validDateString.append(StringUtils.join(timeParts, MonitoringDataRecord.DEFAULT_TIME_SEPARATOR));
+					}
+					record.setMonitoringDate(validDateString.toString());
 				}
-				record.setMonitoringDate(validDateTime);
 			}
+			
 		}
 	}
 	

@@ -91,7 +91,7 @@ public class MonitoringDataRecord {
 	@CSVField(DataReturnsHeaders.VALUE)
 	@XmlElement(name = DataReturnsHeaders.VALUE)
 	@NotBlank(message = "{uk.gov.ea.datareturns.value.missing}")
-	@Pattern(regexp = "([<>]?\\-?(\\d)*\\.?(\\d)+)", message = "{uk.gov.ea.datareturns.value.invalid}")
+	@Pattern(regexp = "([<>]?\\-?(\\d+\\.)?(\\d)+)", message = "{uk.gov.ea.datareturns.value.invalid}")
 	private String value;
 
 	/** Textual value (Txt_Value) */
