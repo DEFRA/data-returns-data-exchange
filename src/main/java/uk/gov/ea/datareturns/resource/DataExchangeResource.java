@@ -68,6 +68,7 @@ import uk.gov.ea.datareturns.exception.application.DRPermitNotUniqueException;
 import uk.gov.ea.datareturns.exception.application.DRPermitNumberMissingException;
 import uk.gov.ea.datareturns.exception.system.DRSystemException;
 import uk.gov.ea.datareturns.helper.DataExchangeHelper;
+import uk.gov.ea.datareturns.storage.StorageKeyMismatchException;
 import uk.gov.ea.datareturns.storage.StorageException;
 import uk.gov.ea.datareturns.storage.StorageProvider;
 import uk.gov.ea.datareturns.storage.StorageProvider.StoredFile;
@@ -204,11 +205,12 @@ public class DataExchangeResource {
 		LOGGER.debug("/data-exchange/complete request received");
 
 		StoredFile storedFile = null;
-		
 		try {
 			storedFile = storage.retrieveTemporaryData(orgFileKey);
-		} catch (StorageException e) {
+		} catch (StorageKeyMismatchException e) {
 			throw new DRFileKeyMismatchException("Unable to retrieve a file with the provided key " + orgFileKey);
+		} catch (StorageException e) {
+			throw new DRSystemException("Unable to retrieve a file with the provided key " + orgFileKey);
 		}
 		
 		try {

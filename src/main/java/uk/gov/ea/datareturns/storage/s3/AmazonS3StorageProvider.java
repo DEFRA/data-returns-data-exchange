@@ -35,6 +35,7 @@ import com.amazonaws.services.s3.model.S3Object;
 import com.amazonaws.services.s3.transfer.TransferManager;
 import com.amazonaws.services.s3.transfer.Upload;
 
+import uk.gov.ea.datareturns.storage.StorageKeyMismatchException;
 import uk.gov.ea.datareturns.storage.StorageException;
 import uk.gov.ea.datareturns.storage.StorageProvider;
 
@@ -272,7 +273,6 @@ public class AmazonS3StorageProvider implements StorageProvider {
 	 * @throws StorageException
 	 */
 	public StoredFile retrieve(final String bucketName, final String fileKey) throws StorageException {
-		StoredFile toReturn = null;
 		try (
 				final S3Object s3object = this.s3Client.getObject(new GetObjectRequest(bucketName, fileKey));
 				final InputStream in = s3object.getObjectContent();
@@ -280,15 +280,15 @@ public class AmazonS3StorageProvider implements StorageProvider {
 			final File tempFile = File.createTempFile("data-returns-", null);
 			FileUtils.copyInputStreamToFile(gzipStream, tempFile);
 
-			toReturn = new StoredFile(tempFile, s3object.getObjectMetadata().getUserMetadata());
+			return  new StoredFile(tempFile, s3object.getObjectMetadata().getUserMetadata());
 		} catch (final AmazonServiceException ase) {
 			final String message = String.format(FMT_SERVICE_EXCEPTION, ase.getStatusCode(), ase.getErrorCode(),
 					ase.getErrorType().toString());
 
-			// Don't throw a StorageException for the "NoSuchKey" error response, instead return null from this method
-			if (!ase.getErrorCode().equals("NoSuchKey")) {
-				throw new StorageException(message, ase);
+			if (ase.getErrorCode().equals("NoSuchKey")) {
+				throw new StorageKeyMismatchException(message, ase);
 			}
+			throw new StorageException(message, ase);
 		} catch (final AmazonClientException ace) {
 			final String message = "An error occurred that prevented the Amazon S3 service from being contacted.  Cause: "
 					+ ace.getMessage();
@@ -297,7 +297,6 @@ public class AmazonS3StorageProvider implements StorageProvider {
 			throw new StorageException("AmazonS3StorageProvider:: Unable to retrieve file from S3: " + e.getMessage(),
 					e);
 		}
-		return toReturn;
 	}
 
 	/**
