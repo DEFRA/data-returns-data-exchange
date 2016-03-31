@@ -13,7 +13,6 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.regex.Matcher;
 import java.util.stream.Collectors;
 
 import javax.ws.rs.Consumes;
@@ -25,8 +24,6 @@ import javax.ws.rs.core.Response.Status;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
-import org.apache.commons.lang3.ArrayUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.mail.EmailAttachment;
 import org.apache.commons.mail.EmailException;
 import org.apache.commons.mail.MultiPartEmail;
@@ -69,7 +66,6 @@ import uk.gov.ea.datareturns.exception.application.DRHeaderMandatoryFieldMissing
 import uk.gov.ea.datareturns.exception.application.DRPermitNotRecognisedException;
 import uk.gov.ea.datareturns.exception.application.DRPermitNotUniqueException;
 import uk.gov.ea.datareturns.exception.application.DRPermitNumberMissingException;
-import uk.gov.ea.datareturns.exception.system.DRIOException;
 import uk.gov.ea.datareturns.exception.system.DRSystemException;
 import uk.gov.ea.datareturns.helper.DataExchangeHelper;
 import uk.gov.ea.datareturns.storage.StorageException;
@@ -180,11 +176,7 @@ public class DataExchangeResource {
 			responseStatus = Status.OK;
 		} else {
 			LOGGER.debug("File '" + fileDetail.getFileName() + "' is INVALID");
-
-			// Store the original, unchanged, file that was uploaded
-			uploadResult.setFileKey(fileStorage.saveInvalidFile(uploadedFile.getAbsolutePath()));
 			result.setValidationResult(validationResult);
-			
 			result.setAppStatusCode(ApplicationExceptionType.VALIDATION_ERRORS.getAppStatusCode());
 			responseStatus = Status.BAD_REQUEST;
 		}
@@ -277,8 +269,10 @@ public class DataExchangeResource {
 				.map(MonitoringDataRecord::getPermitNumber)
 				.collect(Collectors.toSet());
 		
-		if (permitNumberSet.isEmpty()) {
-			throw new DRPermitNumberMissingException("No permits were found in the uploaded file.");
+		if (permitNumberSet.isEmpty() 
+				|| permitNumberSet.contains(null) 
+				|| permitNumberSet.contains("")) {
+			throw new DRPermitNumberMissingException("One or more entries in the uploaded file have a missing EA unique identifier (EA_ID)");
 		} else if (permitNumberSet.size() > 1) {
 			throw new DRPermitNotUniqueException("One or more entries in the uploaded file contain different EA unique identifiers (EA_ID).  EA_ID should be the same for all rows.");
 		}
@@ -313,7 +307,6 @@ public class DataExchangeResource {
 		MonitorProEmailSettings settings = this.config.getMonitorProEmailSettings();
 
 		try {
-			final EmailSettings settings = this.config.getEmailsettings();
 			final MultiPartEmail email = new MultiPartEmail();
 			final EmmaDatabase type = DataExchangeHelper.getDatabaseTypeFromPermitNo(permitNo);
 			String subject = settings.getDatabaseName(type);
@@ -422,35 +415,17 @@ public class DataExchangeResource {
 	 */
 	private static final void prepareOutputData(final List<MonitoringDataRecord> records) {
 		for (MonitoringDataRecord record : records) {
-			
 			// Date and time processing
 			String dateTime = record.getMonitoringDate();
 			if (dateTime != null) {
-				final Matcher dateMatcher = MonitoringDataRecord.DATE_TIME_PATTERN.matcher(dateTime);
-				if (dateMatcher.matches()) {
-					String internationalDate = dateMatcher.group("internationalDate");
-					String ukDate = dateMatcher.group("ukDate");
-					
-					// Default to international date if this was specified.
-					String outputDate = internationalDate;
-					// If date specified in UK format then we need to reverse this to produce an international date
-					if (ukDate != null) {
-						String[] dateParts = ukDate.split(MonitoringDataRecord.REGEX_DATE_SEPARATOR);
-						ArrayUtils.reverse(dateParts);
-						outputDate = StringUtils.join(dateParts, MonitoringDataRecord.DEFAULT_DATE_SEPARATOR);
-					}
-
-					String[] timeParts = { dateMatcher.group("hour"), dateMatcher.group("minute"), dateMatcher.group("second") };
-					
-					StringBuilder validDateString = new StringBuilder(outputDate);
-					if (timeParts[0] != null) {
-						validDateString.append("T");
-						validDateString.append(StringUtils.join(timeParts, MonitoringDataRecord.DEFAULT_TIME_SEPARATOR));
-					}
-					record.setMonitoringDate(validDateString.toString());
+				String validDateTime = null;
+				if (dateTime.contains("T")) {
+					validDateTime = DateFormat.toStandardFormat(DateFormat.parseDateTime(dateTime));
+				} else {
+					validDateTime = DateFormat.toStandardFormat(DateFormat.parseDate(dateTime));
 				}
+				record.setMonitoringDate(validDateTime);
 			}
-			
 		}
 	}
 	
@@ -475,7 +450,7 @@ public class DataExchangeResource {
 				writer.write(records, fos);
 			}
 		} catch (IOException e) {
-			throw new DRIOException(e, "Unable to write validated CSV file");
+			throw new DRSystemException(e, "Unable to write validated CSV file");
 		}
 	}
 }
