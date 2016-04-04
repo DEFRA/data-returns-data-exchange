@@ -15,10 +15,15 @@ public class StorageKeyMismatchException extends StorageException {
 
 	/**
 	 * @param message
+	 */
+	public StorageKeyMismatchException(String message) {
+		super(message);
+	}
+	/**
+	 * @param message
 	 * @param cause
 	 */
 	public StorageKeyMismatchException(String message, Throwable cause) {
 		super(message, cause);
 	}
-
 }

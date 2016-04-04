@@ -4,7 +4,6 @@
 package uk.gov.ea.datareturns.storage.local;
 
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -17,6 +16,7 @@ import java.util.zip.GZIPOutputStream;
 import org.apache.commons.io.FileUtils;
 
 import uk.gov.ea.datareturns.storage.StorageException;
+import uk.gov.ea.datareturns.storage.StorageKeyMismatchException;
 import uk.gov.ea.datareturns.storage.StorageProvider;
 
 /**
@@ -35,7 +35,7 @@ public class LocalStorageProvider implements StorageProvider {
 		this.temporaryDir = temporaryDir;
 		this.persistentDir = persistentDir;
 	}
-
+		
 	/* (non-Javadoc)
 	 * @see uk.gov.ea.datareturns.storage.StorageProvider#storeTemporaryData(java.io.File)
 	 */
@@ -44,7 +44,7 @@ public class LocalStorageProvider implements StorageProvider {
 		final String fileKey = StorageProvider.generateFileKey(file);
 		final File tempFile = new File(temporaryDir, fileKey);
 
-		try (OutputStream fos = new FileOutputStream(tempFile);
+		try (OutputStream fos = FileUtils.openOutputStream(tempFile);
 				GZIPOutputStream gos = new GZIPOutputStream(fos)) {
 			FileUtils.copyFile(file, gos);
 		} catch (IOException e) {
@@ -60,6 +60,10 @@ public class LocalStorageProvider implements StorageProvider {
 	public StoredFile retrieveTemporaryData(String fileKey) throws StorageException {
 		File compressedTempFile = new File(temporaryDir, fileKey);
 		File tempFile = null;
+		
+		if (!compressedTempFile.exists()) {
+			throw new StorageKeyMismatchException("The file for the specified key cannot be found.");
+		}
 		
 		try (
 				final InputStream in = FileUtils.openInputStream(compressedTempFile);
