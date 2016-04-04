@@ -3,6 +3,7 @@ package uk.gov.ea.datareturns.domain.result;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonUnwrapped;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
 
 /**
@@ -19,10 +20,10 @@ public class DataExchangeResult
 	@JsonInclude(Include.NON_NULL)
 	private UploadResult uploadResult;
 
-	@JacksonXmlProperty(localName = "ValidationResult")
-	@JsonProperty("validationResult")
+	@JsonProperty("validationErrors")
+	@JsonUnwrapped
 	@JsonInclude(Include.NON_NULL)
-	private ValidationResult validationResult;
+	private ValidationErrors validationErrors;
 
 	@JacksonXmlProperty(localName = "ParseResult")
 	@JsonProperty("parseResult")
@@ -61,38 +62,17 @@ public class DataExchangeResult
 	}
 
 	/**
-	 * @return the uploadResult
-	 */
-	public UploadResult getUploadResult() {
-		return uploadResult;
-	}
-
-	/**
-	 * @return the validationResult
-	 */
-	public ValidationResult getValidationResult() {
-		return validationResult;
-	}
-
-	/**
-	 * @return the parseResult
-	 */
-	public ParseResult getParseResult() {
-		return parseResult;
-	}
-
-	/**
-	 * @return the completeResult
-	 */
-	public CompleteResult getCompleteResult() {
-		return completeResult;
-	}
-
-	/**
 	 * @param appStatusCode the appStatusCode to set
 	 */
 	public void setAppStatusCode(int appStatusCode) {
 		this.appStatusCode = appStatusCode;
+	}
+
+	/**
+	 * @return the uploadResult
+	 */
+	public UploadResult getUploadResult() {
+		return uploadResult;
 	}
 
 	/**
@@ -103,10 +83,24 @@ public class DataExchangeResult
 	}
 
 	/**
-	 * @param validationResult the validationResult to set
+	 * @return the validationErrors
 	 */
-	public void setValidationResult(ValidationResult validationResult) {
-		this.validationResult = validationResult;
+	public ValidationErrors getValidationErrors() {
+		return validationErrors;
+	}
+
+	/**
+	 * @param validationErrors the validationErrors to set
+	 */
+	public void setValidationErrors(ValidationErrors validationErrors) {
+		this.validationErrors = validationErrors;
+	}
+
+	/**
+	 * @return the parseResult
+	 */
+	public ParseResult getParseResult() {
+		return parseResult;
 	}
 
 	/**
@@ -114,6 +108,13 @@ public class DataExchangeResult
 	 */
 	public void setParseResult(ParseResult parseResult) {
 		this.parseResult = parseResult;
+	}
+
+	/**
+	 * @return the completeResult
+	 */
+	public CompleteResult getCompleteResult() {
+		return completeResult;
 	}
 
 	/**

@@ -30,116 +30,117 @@ public class MonitoringDataRecord {
 	/** The Permit Number (EA_ID) */
 	@CSVField(DataReturnsHeaders.PERMIT_NUMBER)
 	@XmlElement(name = DataReturnsHeaders.PERMIT_NUMBER)
-	@NotBlank(message = "{uk.gov.ea.datareturns.permitNumber.missing}")
-	@Pattern(regexp = "(^[A-Za-z][A-Za-z].*|^[0-9]{5,6}$)", message = "{uk.gov.ea.datareturns.permitNumber.invalid}")
+	@NotBlank(message = "{DR0800-MISSING}")
+	@Pattern(regexp = "(^[A-Za-z][A-Za-z].*|^[0-9]{5,6}$)", message = "{DR0810-INVALID}")
+	// TODO: ADD PERMIT NUMBER VALIDATION VIA A CONTROLLED LIST LOOKUP
 	private String permitNumber;
 
 	/** The site name (Site_Name) */
 	@CSVField(DataReturnsHeaders.SITE_NAME)
 	@XmlElement(name = DataReturnsHeaders.SITE_NAME)
-	@Pattern(regexp = "([0-9a-zA-Z ])*")
-	@Length(min = 0, max = 255)
+	@Pattern(regexp = "([0-9a-zA-Z ])*", message="{DR9010-INVALID}")
+	@Length(min = 0, max = 255, message="{DR9010-LENGTH}")
 	private String siteName;
 
 	/** The return type (Rtn_Type) */
 	@CSVField(DataReturnsHeaders.RETURN_TYPE)
 	@XmlElement(name = DataReturnsHeaders.RETURN_TYPE)
-	@NotBlank(message = "{uk.gov.ea.datareturns.returnType.missing}")
-	@ControlledList(auditor = ReturnTypeListAuditor.class, message = "{uk.gov.ea.datareturns.returnType.invalid}")
+	@NotBlank(message = "{DR0920-MISSING}")
+	@ControlledList(auditor = ReturnTypeListAuditor.class, message = "{DR0920-INVALID}")
 	private String returnType;
 
 	/** The monitoring date (Mon_Date) */
 	@CSVField(DataReturnsHeaders.MONITORING_DATE)
 	@XmlElement(name = DataReturnsHeaders.MONITORING_DATE)
-	@ValidReturnsDate
+	@ValidReturnsDate // see ValidReturnsDate annotation class for validation messages
 	private String monitoringDate;
 
 	/** The monitoring period  (Mon_Period) */
 	@CSVField(DataReturnsHeaders.MONITORING_PERIOD)
 	@XmlElement(name = DataReturnsHeaders.MONITORING_PERIOD)
-	@Length(min = 0, max = 30, message = "{uk.gov.ea.datareturns.monitoringPeriod.length}")
+	@Length(min = 0, max = 30, message = "{DR1030-LENGTH}")
 	private String monitoringPeriod;
 
 	/** The monitoring point (Mon_Point) */
 	@CSVField(DataReturnsHeaders.MONITORING_POINT)
 	@XmlElement(name = DataReturnsHeaders.MONITORING_POINT)
-	@NotBlank(message = "{uk.gov.ea.datareturns.monitoringPoint.missing}")
-	@Length(min = 0, max = 30, message = "{uk.gov.ea.datareturns.monitoringPoint.length}")
-	@Pattern(regexp = "^[a-zA-Z0-9 ]*$", message = "{uk.gov.ea.datareturns.monitoringPoint.invalid}")
+	@NotBlank(message = "{DR1020-MISSING}")
+	@Length(min = 0, max = 30, message = "{DR1020-LENGTH")
+	@Pattern(regexp = "^[a-zA-Z0-9 ]*$", message = "{DR1020-INVALID}")
 	private String monitoringPoint;
 
 	/** Sample reference (Smpl_Ref) */
 	@CSVField(DataReturnsHeaders.SAMPLE_REFERENCE)
 	@XmlElement(name = DataReturnsHeaders.SAMPLE_REFERENCE)
-	@Length(min = 0, max = 255, message = "{uk.gov.ea.datareturns.sampleReference.length}")
-	@Pattern(regexp = "^[a-zA-Z0-9 ]*$", message = "{uk.gov.ea.datareturns.sampleReference.invalid}")
+	@Length(min = 0, max = 255, message = "{DR9060-LENGTH}")
+	@Pattern(regexp = "^[a-zA-Z0-9 ]*$", message = "{DR9060-INVALID}")
 	private String sampleReference;
 
 	/** Sampled by (Smpl_By) */
 	@CSVField(DataReturnsHeaders.SAMPLE_BY)
 	@XmlElement(name = DataReturnsHeaders.SAMPLE_BY)
-	@Length(min = 0, max = 255, message = "{uk.gov.ea.datareturns.sampleBy.length}")
+	@Length(min = 0, max = 255, message = "{DR9070-LENGTH}")
 	private String sampleBy;
 
 	/** Parameter value (Parameter) */
 	@CSVField(DataReturnsHeaders.PARAMETER)
 	@XmlElement(name = DataReturnsHeaders.PARAMETER)
-	@ControlledList(auditor=ParameterListAuditor.class, message = "{uk.gov.ea.datareturns.parameter.invalid}")
+	@ControlledList(auditor=ParameterListAuditor.class, message = "{DR0960-INVALID}")
 	private String parameter;
 
 	/** Value (Value) */
 	@CSVField(DataReturnsHeaders.VALUE)
 	@XmlElement(name = DataReturnsHeaders.VALUE)
-	@NotBlank(message = "{uk.gov.ea.datareturns.value.missing}")
-	@Pattern(regexp = "([<>]?\\-?(\\d+\\.)?(\\d)+)", message = "{uk.gov.ea.datareturns.value.invalid}")
+	@NotBlank(message = "{DR0980-MISSING}")
+	@Pattern(regexp = "([<>]?\\-?(\\d+\\.)?(\\d)+)", message = "{DR0980-INVALID}")
 	private String value;
 
 	/** Textual value (Txt_Value) */
 	@CSVField(DataReturnsHeaders.TEXT_VALUE)
 	@XmlElement(name = DataReturnsHeaders.TEXT_VALUE)
-	@Length(min = 0, max = 255, message = "{uk.gov.ea.datareturns.textValue.length}")
+	@Length(min = 0, max = 255, message = "{DR1040-LENGTH}")
 	private String textValue;
 
 	/** Unit of measurement (Unit) */
 	@CSVField(DataReturnsHeaders.UNIT)
 	@XmlElement(name = DataReturnsHeaders.UNIT)
-	@ControlledList(auditor=UnitListAuditor.class, message = "{uk.gov.ea.datareturns.unit.invalid}")
+	@ControlledList(auditor=UnitListAuditor.class, message = "{DR1000-INVALID}")
 	private String unit;
 
 	/** Reference period */
 	@CSVField(DataReturnsHeaders.REFERENCE_PERIOD)
 	@XmlElement(name = DataReturnsHeaders.REFERENCE_PERIOD)
-	@Length(min = 0, max = 255, message = "{uk.gov.ea.datareturns.referencePeriod.length}")
+	@Length(min = 0, max = 255, message = "{DR1050-LENGTH}")
 	private String referencePeriod;
 
 	/** Method or standard used (Meth_Stand) */
 	@CSVField(DataReturnsHeaders.METHOD_STANDARD)
 	@XmlElement(name = DataReturnsHeaders.METHOD_STANDARD)
-	@Length(min = 0, max = 30, message = "{uk.gov.ea.datareturns.methStand.length}")
+	@Length(min = 0, max = 30, message = "{DR1060-LENGTH}")
 	private String methStand;
 
 	/** Record comments (Comments) */
 	@CSVField(DataReturnsHeaders.COMMENTS)
 	@XmlElement(name = DataReturnsHeaders.COMMENTS)
-	@Length(min = 0, max = 255, message = "{uk.gov.ea.datareturns.comments.length}")
+	@Length(min = 0, max = 255, message = "{DR9140-LENGTH}")
 	private String comments;
 
 	/** Commercial in confidence data (CiC) */
 	@CSVField(DataReturnsHeaders.COMMERCIAL_IN_CONFIDENCE)
 	@XmlElement(name = DataReturnsHeaders.COMMERCIAL_IN_CONFIDENCE)
-	@Length(min = 0, max = 255, message = "{uk.gov.ea.datareturns.cic.length}")
+	@Length(min = 0, max = 255, message = "{DR9150-LENGTH}")
 	private String cic;
 
 	/** Chemical Abstracts Service value (CAS) */
 	@CSVField(DataReturnsHeaders.CHEMICAL_ABSTRACTS_SERVICE)
 	@XmlElement(name = DataReturnsHeaders.CHEMICAL_ABSTRACTS_SERVICE)
-	@Length(min = 0, max = 255, message = "{uk.gov.ea.datareturns.cas.length}")
+	@Length(min = 0, max = 255, message = "{DR9160-LENGTH}")
 	private String cas;
 
 	/** Recovery and disposal code (RD_Code) */
 	@CSVField(DataReturnsHeaders.RECOVERY_AND_DISPOSAL_CODE)
 	@XmlElement(name = DataReturnsHeaders.RECOVERY_AND_DISPOSAL_CODE)
-	@Length(min = 0, max = 255, message = "{uk.gov.ea.datareturns.rdCode.length}")
+	@Length(min = 0, max = 255, message = "{DR9170-LENGTH}")
 	private String rdCode;
 
 	/**

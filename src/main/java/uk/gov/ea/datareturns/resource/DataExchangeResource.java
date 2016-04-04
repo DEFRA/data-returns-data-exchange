@@ -57,7 +57,7 @@ import uk.gov.ea.datareturns.domain.result.CompleteResult;
 import uk.gov.ea.datareturns.domain.result.DataExchangeResult;
 import uk.gov.ea.datareturns.domain.result.ParseResult;
 import uk.gov.ea.datareturns.domain.result.UploadResult;
-import uk.gov.ea.datareturns.domain.result.ValidationResult;
+import uk.gov.ea.datareturns.domain.result.ValidationErrors;
 import uk.gov.ea.datareturns.exception.application.DRFileEmptyException;
 import uk.gov.ea.datareturns.exception.application.DRFileKeyMismatchException;
 import uk.gov.ea.datareturns.exception.application.DRFileTypeUnsupportedException;
@@ -68,8 +68,8 @@ import uk.gov.ea.datareturns.exception.application.DRPermitNotUniqueException;
 import uk.gov.ea.datareturns.exception.application.DRPermitNumberMissingException;
 import uk.gov.ea.datareturns.exception.system.DRSystemException;
 import uk.gov.ea.datareturns.helper.DataExchangeHelper;
-import uk.gov.ea.datareturns.storage.StorageKeyMismatchException;
 import uk.gov.ea.datareturns.storage.StorageException;
+import uk.gov.ea.datareturns.storage.StorageKeyMismatchException;
 import uk.gov.ea.datareturns.storage.StorageProvider;
 import uk.gov.ea.datareturns.storage.StorageProvider.StoredFile;
 import uk.gov.ea.datareturns.type.ApplicationExceptionType;
@@ -127,7 +127,7 @@ public class DataExchangeResource {
 		validatePermitNo(model);
 		
 		// Validate the model
-		final ValidationResult validationResult = MonitoringDataRecordValidationProcessor.validateModel(model);
+		final ValidationErrors validationErrors = MonitoringDataRecordValidationProcessor.validateModel(model);
 
 		// Woohoo! prepare success/failure response
 		final UploadResult uploadResult = new UploadResult();
@@ -138,7 +138,7 @@ public class DataExchangeResource {
 		// Default response status
 		Status responseStatus = Status.OK;
 
-		if (validationResult.isValid()) {
+		if (validationErrors.isValid()) {
 			LOGGER.debug("File '" + fileDetail.getFileName() + "' is VALID");
 			
 			// Process the data to do any modifications necessary before outputting to Emma.  For example - ensure all output dates in international format.
@@ -177,7 +177,7 @@ public class DataExchangeResource {
 			responseStatus = Status.OK;
 		} else {
 			LOGGER.debug("File '" + fileDetail.getFileName() + "' is INVALID");
-			result.setValidationResult(validationResult);
+			result.setValidationErrors(validationErrors);
 			result.setAppStatusCode(ApplicationExceptionType.VALIDATION_ERRORS.getAppStatusCode());
 			responseStatus = Status.BAD_REQUEST;
 		}
