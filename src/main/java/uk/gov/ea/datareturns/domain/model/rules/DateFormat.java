@@ -17,9 +17,20 @@ public final class DateFormat {
 	public static final String STANDARD_DATE_TIME_FORMAT = "yyyy-MM-dd'T'HH:mm:ss";
 	
 	/** Date-only formats recognised by the Data Returns project */
-	public static final String[] DATE_FORMATS  = { STANDARD_DATE_FORMAT, "dd-MM-yyyy" };
+	public static final String[] DATE_FORMATS  = { 
+			STANDARD_DATE_FORMAT, 
+			"dd-MM-yyyy", 
+			"dd/MM/yyyy"
+	};
 	/** Date-time Formats recognised by the Data Returns project */
-	public static final String[] DATE_TIME_FORMATS  = { STANDARD_DATE_TIME_FORMAT, "dd-MM-yyyy'T'HH:mm:ss" };
+	public static final String[] DATE_TIME_FORMATS  = { 
+			STANDARD_DATE_TIME_FORMAT,
+			"yyyy-MM-dd HH:mm:ss",
+			"dd-MM-yyyy'T'HH:mm:ss",
+			"dd-MM-yyyy HH:mm:ss",
+			"dd/MM/yyyy'T'HH:mm:ss",
+			"dd/MM/yyyy HH:mm:ss",
+	};
 	
 	// Private utlity class constructor
 	private DateFormat() {}

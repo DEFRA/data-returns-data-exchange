@@ -133,6 +133,14 @@ public class MonitoringDataRecordValidatorTests {
 		Assert.assertEquals(0, violations.size());
 	}
 	@Test
+	public void testMonitoringDateInternationalFormatWithTimeSpaceSeparator() {
+		MonitoringDataRecord record = createValidRecord();
+		String testDate = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+		record.setMonitoringDate(testDate);
+		Set<ConstraintViolation<MonitoringDataRecord>> violations = validator.validate(record);
+		Assert.assertEquals(0, violations.size());
+	}
+	@Test
 	public void testMonitoringDateUKFormat() {
 		MonitoringDataRecord record = createValidRecord();
 		String testDate = LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd-MM-yyyy"));
@@ -144,6 +152,38 @@ public class MonitoringDataRecordValidatorTests {
 	public void testMonitoringDateUKWithTime() {
 		MonitoringDataRecord record = createValidRecord();
 		String testDate = LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd-MM-yyyy'T'HH:mm:ss"));
+		record.setMonitoringDate(testDate);
+		Set<ConstraintViolation<MonitoringDataRecord>> violations = validator.validate(record);
+		Assert.assertEquals(0, violations.size());
+	}
+	@Test
+	public void testMonitoringDateUKWithTimeSpaceSeparator() {
+		MonitoringDataRecord record = createValidRecord();
+		String testDate = LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss"));
+		record.setMonitoringDate(testDate);
+		Set<ConstraintViolation<MonitoringDataRecord>> violations = validator.validate(record);
+		Assert.assertEquals(0, violations.size());
+	}
+	@Test
+	public void testMonitoringDateUKFormatWithSlashes() {
+		MonitoringDataRecord record = createValidRecord();
+		String testDate = LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd/MM/yyyy"));
+		record.setMonitoringDate(testDate);
+		Set<ConstraintViolation<MonitoringDataRecord>> violations = validator.validate(record);
+		Assert.assertEquals(0, violations.size());
+	}
+	@Test
+	public void testMonitoringDateUKWithTimeWithSlashes() {
+		MonitoringDataRecord record = createValidRecord();
+		String testDate = LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd/MM/yyyy'T'HH:mm:ss"));
+		record.setMonitoringDate(testDate);
+		Set<ConstraintViolation<MonitoringDataRecord>> violations = validator.validate(record);
+		Assert.assertEquals(0, violations.size());
+	}
+	@Test
+	public void testMonitoringDateUKWithTimeWithSlashesSpaceSeparator() {
+		MonitoringDataRecord record = createValidRecord();
+		String testDate = LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss"));
 		record.setMonitoringDate(testDate);
 		Set<ConstraintViolation<MonitoringDataRecord>> violations = validator.validate(record);
 		Assert.assertEquals(0, violations.size());

@@ -33,7 +33,15 @@ public class ReturnsDateValidator implements ConstraintValidator<ValidReturnsDat
 		boolean isValid = false;
 		if (value instanceof String) {
 			String dateValue = String.valueOf(value);
-			isValid = dateValue.contains("T") ? isValidDateTime(dateValue) : isValidDate(dateValue);   
+			
+			// If the date value is longer than the standard date-only format then try and parse as a date-time first.
+			if (dateValue.length() > DateFormat.STANDARD_DATE_FORMAT.length()) {
+				isValid = isValidDateTime(dateValue);
+			}
+			// If date/time validation failed, try validating as a date-only value
+			if (!isValid) {
+				isValid = isValidDate(dateValue);
+			}
 		}
 		return isValid;
 	}
