@@ -20,14 +20,14 @@ import org.hibernate.validator.constraints.NotBlank;
  * @author Sam Gardner-Dell
  */
 
-@NotBlank(message = "{DR9020-MISSING}")
+@NotBlank(message = "{DR9020-Missing}")
 // Date can be yyyy-mm-dd or dd-mm-yyyy optionally followed by Thh:mm:ss (e.g. 2016-03-11T09:00:00)
 @Target({ElementType.FIELD})
 @Retention(RetentionPolicy.RUNTIME)
 @Constraint(validatedBy = ReturnsDateValidator.class)
 @Documented
 public @interface ValidReturnsDate {
-	String message() default "{DR9020-INVALID}";
+	String message() default "{DR9020-Incorrect}";
 
 	Class<?>[] groups() default {};
 

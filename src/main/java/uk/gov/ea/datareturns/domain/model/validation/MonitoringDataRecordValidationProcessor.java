@@ -1,5 +1,5 @@
 /**
- * 
+ *
  */
 package uk.gov.ea.datareturns.domain.model.validation;
 
@@ -16,6 +16,7 @@ import org.apache.commons.lang3.StringUtils;
 
 import uk.gov.ea.datareturns.domain.io.csv.CSVModel;
 import uk.gov.ea.datareturns.domain.model.MonitoringDataRecord;
+import uk.gov.ea.datareturns.domain.model.rules.FieldDefinition;
 import uk.gov.ea.datareturns.domain.result.ValidationError;
 import uk.gov.ea.datareturns.domain.result.ValidationErrors;
 
@@ -25,40 +26,41 @@ import uk.gov.ea.datareturns.domain.result.ValidationErrors;
  */
 public abstract class MonitoringDataRecordValidationProcessor {
 	private static final Pattern ERROR_KEY_PATTERN = Pattern.compile("^\\{DR(?<errorCode>\\d{4})-(?<errorType>\\w+)\\}$");
-	
-	private static final ValidatorFactory VALIDATOR_FACTORY = Validation.buildDefaultValidatorFactory();
-	private static final Validator VALIDATOR = VALIDATOR_FACTORY.getValidator();	
 
-	
-	public static final ValidationErrors validateModel(CSVModel<MonitoringDataRecord> model) {
+	private static final ValidatorFactory VALIDATOR_FACTORY = Validation.buildDefaultValidatorFactory();
+	private static final Validator VALIDATOR = VALIDATOR_FACTORY.getValidator();
+
+	public static final ValidationErrors validateModel(final CSVModel<MonitoringDataRecord> model) {
 		final ValidationErrors validationErrors = new ValidationErrors();
-		
+
 		for (int i = 0; i < model.getRecords().size(); i++) {
 			final MonitoringDataRecord record = model.getRecords().get(i);
 			final Set<ConstraintViolation<MonitoringDataRecord>> violations = VALIDATOR.validate(record);
-			
-			for (ConstraintViolation<MonitoringDataRecord> violation : violations) {
+
+			for (final ConstraintViolation<MonitoringDataRecord> violation : violations) {
 				final ValidationError error = new ValidationError();
-				error.setFieldName(model.getPojoFieldToHeaderMap().get(violation.getPropertyPath().toString()));
-				
-				String errorValue = violation.getInvalidValue().toString();
-				if (StringUtils.isEmpty(errorValue)) errorValue = null;
-				
+				final String returnsFieldName = model.getPojoFieldToHeaderMap().get(violation.getPropertyPath().toString());
+				final String errorValue = StringUtils.defaultIfEmpty(violation.getInvalidValue().toString(), null);
+				final FieldDefinition definition = FieldDefinition.valueOf(returnsFieldName);
+
+				error.setFieldName(returnsFieldName);
+				error.setDefinition(definition.getDescription());
+				error.setHelpReference(definition.getHelpReference());
 				error.setErrorValue(errorValue);
 				error.setLineNumber(i + 2);
 				error.setErrorMessage(violation.getMessage());
-				Matcher errorKeyMatcher = ERROR_KEY_PATTERN.matcher(violation.getMessageTemplate());
-				
+				final Matcher errorKeyMatcher = ERROR_KEY_PATTERN.matcher(violation.getMessageTemplate());
+
 				int errorCode = 0;
-				String errorType = "UNKNOWN";
-				
+				String errorType = "Unknown";
+
 				if (errorKeyMatcher.matches()) {
 					errorCode = Integer.parseInt(errorKeyMatcher.group("errorCode"));
 					errorType = errorKeyMatcher.group("errorType");
 				}
 				error.setErrorCode(errorCode);
 				error.setErrorType(errorType);
-				
+
 				validationErrors.addError(error);
 			}
 		}

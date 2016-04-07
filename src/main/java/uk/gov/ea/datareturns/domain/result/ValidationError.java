@@ -6,6 +6,12 @@ public class ValidationError {
 	@JsonProperty("fieldName")
 	private String fieldName;
 
+	@JsonProperty("definition")
+	private String definition;
+
+	@JsonProperty("helpReference")
+	private String helpReference;
+	
 	@JsonProperty("lineNumber")
 	private long lineNumber;
 
@@ -21,11 +27,8 @@ public class ValidationError {
 	@JsonProperty("errorMessage")
 	private String errorMessage;
 
-	
 	public ValidationError() {
-		
 	}
-
 
 	/**
 	 * @return the fieldName
@@ -34,7 +37,6 @@ public class ValidationError {
 		return fieldName;
 	}
 
-
 	/**
 	 * @param fieldName the fieldName to set
 	 */
@@ -42,6 +44,33 @@ public class ValidationError {
 		this.fieldName = fieldName;
 	}
 
+	/**
+	 * @return the definition
+	 */
+	public String getDefinition() {
+		return definition;
+	}
+
+	/**
+	 * @param definition the definition to set
+	 */
+	public void setDefinition(String definition) {
+		this.definition = definition;
+	}
+
+	/**
+	 * @return the helpReference
+	 */
+	public String getHelpReference() {
+		return helpReference;
+	}
+
+	/**
+	 * @param helpReference the helpReference to set
+	 */
+	public void setHelpReference(String helpReference) {
+		this.helpReference = helpReference;
+	}
 
 	/**
 	 * @return the lineNumber
@@ -50,14 +79,12 @@ public class ValidationError {
 		return lineNumber;
 	}
 
-
 	/**
 	 * @param lineNumber the lineNumber to set
 	 */
 	public void setLineNumber(long lineNumber) {
 		this.lineNumber = lineNumber;
 	}
-
 
 	/**
 	 * @return the errorType
@@ -66,14 +93,12 @@ public class ValidationError {
 		return errorType;
 	}
 
-
 	/**
 	 * @param errorType the errorType to set
 	 */
 	public void setErrorType(String errorType) {
 		this.errorType = errorType;
 	}
-
 
 	/**
 	 * @return the errorCode
@@ -82,14 +107,12 @@ public class ValidationError {
 		return errorCode;
 	}
 
-
 	/**
 	 * @param errorCode the errorCode to set
 	 */
 	public void setErrorCode(int errorCode) {
 		this.errorCode = errorCode;
 	}
-
 
 	/**
 	 * @return the errorValue
@@ -98,14 +121,12 @@ public class ValidationError {
 		return errorValue;
 	}
 
-
 	/**
 	 * @param errorValue the errorValue to set
 	 */
 	public void setErrorValue(String errorValue) {
 		this.errorValue = errorValue;
 	}
-
 
 	/**
 	 * @return the errorMessage
@@ -114,13 +135,10 @@ public class ValidationError {
 		return errorMessage;
 	}
 
-
 	/**
 	 * @param errorMessage the errorMessage to set
 	 */
 	public void setErrorMessage(String errorMessage) {
 		this.errorMessage = errorMessage;
 	}
-	
-	
 }
