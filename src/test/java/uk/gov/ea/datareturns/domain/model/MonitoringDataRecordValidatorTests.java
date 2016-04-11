@@ -22,6 +22,12 @@ import org.junit.Test;
  * 
  * @author Sam Gardner-Dell
  */
+
+// TODO: Move this back to being a unit test rather than an integration test and find a way to mock out the controlled list validation
+// It looks like you cannot mock a class that is created via reflection as per ControlledListValidator.initialise
+// I also tried creating a proxy class inside one of the auditors but that failed too!
+// @RunWith(PowerMockRunner.class)
+// @PrepareForTest({MonitoringDataRecord.class, ReturnTypeListAuditorProxy.class})
 public class MonitoringDataRecordValidatorTests {
 
 	private static Validator validator;
@@ -32,13 +38,13 @@ public class MonitoringDataRecordValidatorTests {
 		validator = factory.getValidator();
 	}
 
+	
 	@Test
 	public void testValidRecord() {
 		MonitoringDataRecord record = createValidRecord();
 		Set<ConstraintViolation<MonitoringDataRecord>> violations = validator.validate(record);
 		Assert.assertEquals(0, violations.size());
 	}
-
 
 	/*=================================================================================================================
 	 *
@@ -52,8 +58,8 @@ public class MonitoringDataRecordValidatorTests {
 		MonitoringDataRecord record = createValidRecord();
 		record.setPermitNumber("");
 		Set<ConstraintViolation<MonitoringDataRecord>> violations = validator.validate(record);
-		// We'll get 2 violations back - one for the field being blank, the second for the controlled list value check
-		Assert.assertEquals(2, violations.size());
+		// We'll get 3 violations back - one for the field being blank, one for the pattern check and one for the controlled list value check
+		Assert.assertEquals(3, violations.size());
 	}
 	
 	@Test
@@ -61,8 +67,8 @@ public class MonitoringDataRecordValidatorTests {
 		MonitoringDataRecord record = createValidRecord();
 		record.setPermitNumber("");
 		Set<ConstraintViolation<MonitoringDataRecord>> violations = validator.validate(record);
-		// We'll get 2 violations back - one for the field being blank, the second for the controlled list value check
-		Assert.assertEquals(2, violations.size());
+		// We'll get 3 violations back - one for the field being blank, one for the pattern check and one for the controlled list value check
+		Assert.assertEquals(3, violations.size());
 	}
 
 	/*=================================================================================================================
@@ -671,10 +677,6 @@ public class MonitoringDataRecordValidatorTests {
 	}	
 	
 	
-	
-	
-	
-	
 	/**
 	 * Creates a {@link MonitoringDataRecord} instance with all values setup
 	 * with a valid entry.
@@ -682,8 +684,22 @@ public class MonitoringDataRecordValidatorTests {
 	 * @return a new {@link MonitoringDataRecord} which should pass validation
 	 */
 	private static MonitoringDataRecord createValidRecord() {
+//		TODO: Find a way to mock the auditor classes
+//		ReturnTypeListAuditor rtAuditor = PowerMockito.mock(ReturnTypeListAuditor.class);
+//		PowerMockito.doReturn(true).when(rtAuditor).isValid(Mockito.any());
+//		PowerMockito.when(rtAuditor.isValid(Mockito.eq())).thenReturn(true);
+//		
+//		try {
+//
+//			System.out.println("ReturnTypeListAuditor mocked");
+//			PowerMockito.whenNew(ReturnTypeListAuditorProxy.class).withNoArguments().thenThrow(new RuntimeException("WHAT IS GOING ON?"));
+//			PowerMockito.whenNew(ReturnTypeListAuditor.class).withAnyArguments().thenReturn(rtAuditor);
+//		} catch (Exception e1) {
+//			e1.printStackTrace();
+//		}
+
 		MonitoringDataRecord record = new MonitoringDataRecord();
-		record.setPermitNumber("AA1234");
+		record.setPermitNumber("AB3002SQ");
 		record.setSiteName("Site Name");
 		record.setReturnType("EPR/IED Landfill Gas infrastructure monitoring");
 		record.setMonitoringDate("2016-03-09T11:18:59");

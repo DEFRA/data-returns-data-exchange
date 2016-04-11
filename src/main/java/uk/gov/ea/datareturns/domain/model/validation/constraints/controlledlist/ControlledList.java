@@ -1,5 +1,5 @@
 /**
- * 
+ *
  */
 package uk.gov.ea.datareturns.domain.model.validation.constraints.controlledlist;
 
@@ -15,10 +15,10 @@ import javax.validation.Payload;
 /**
  * Annotation to enable hibernate validator based validation of values that
  * should be constrained to a controlled list of values.
- * 
+ *
  * @author Sam Gardner-Dell
  */
-@Target({ElementType.FIELD})
+@Target({ ElementType.FIELD })
 @Retention(RetentionPolicy.RUNTIME)
 @Constraint(validatedBy = ControlledListValidator.class)
 @Documented

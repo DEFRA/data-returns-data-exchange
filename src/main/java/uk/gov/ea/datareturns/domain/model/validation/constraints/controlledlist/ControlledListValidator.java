@@ -1,5 +1,5 @@
 /**
- * 
+ *
  */
 package uk.gov.ea.datareturns.domain.model.validation.constraints.controlledlist;
 
@@ -8,7 +8,7 @@ import javax.validation.ConstraintValidatorContext;
 
 /**
  * Allows validation against a controlled list of values
- * 
+ *
  * @author Sam Gardner-Dell
  */
 public class ControlledListValidator implements ConstraintValidator<ControlledList, Object> {
@@ -16,7 +16,7 @@ public class ControlledListValidator implements ConstraintValidator<ControlledLi
 	private ControlledListAuditor provider;
 
 	@Override
-	public void initialize(ControlledList constraintAnnotation) {
+	public void initialize(final ControlledList constraintAnnotation) {
 		try {
 			final Class<? extends ControlledListAuditor> providerType = constraintAnnotation.auditor();
 			this.provider = providerType.newInstance();
@@ -26,7 +26,7 @@ public class ControlledListValidator implements ConstraintValidator<ControlledLi
 	}
 
 	@Override
-	public boolean isValid(Object value, ConstraintValidatorContext context) {
+	public boolean isValid(final Object value, final ConstraintValidatorContext context) {
 		boolean valid = false;
 		// Assume item is valid if there is no list to validate against.
 		if (this.provider != null) {

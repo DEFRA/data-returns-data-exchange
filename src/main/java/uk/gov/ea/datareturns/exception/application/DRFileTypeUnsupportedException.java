@@ -7,7 +7,7 @@ import uk.gov.ea.datareturns.type.ApplicationExceptionType;
 public class DRFileTypeUnsupportedException extends AbstractDRApplicationException {
 	private static final long serialVersionUID = 1L;
 
-	public DRFileTypeUnsupportedException(String message) {
+	public DRFileTypeUnsupportedException(final String message) {
 		super(Status.BAD_REQUEST, ApplicationExceptionType.FILE_TYPE_UNSUPPORTED.getAppStatusCode(), message);
 	}
 }

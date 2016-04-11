@@ -7,7 +7,6 @@ import com.amazonaws.Protocol;
 import com.amazonaws.auth.AWSCredentials;
 import com.amazonaws.auth.AWSCredentialsProvider;
 import com.amazonaws.auth.BasicAWSCredentials;
-import com.amazonaws.auth.EnvironmentVariableCredentialsProvider;
 import com.amazonaws.internal.StaticCredentialsProvider;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
@@ -15,52 +14,51 @@ import uk.gov.ea.datareturns.storage.s3.AmazonS3Settings;
 
 /**
  * Settings for the Amazon S3 storage integration
- * 
+ *
  * @author Sam Gardner-Dell
  */
 public class S3StorageSettings implements AmazonS3Settings {
 	@JsonProperty("awsAccessKey")
 	private String awsAccessKey;
-	
+
 	@JsonProperty("awsSecretKey")
 	private String awsSecretKey;
-	
+
 	@JsonProperty("temporaryBucket")
 	private String temporaryBucket;
-	
+
 	@JsonProperty("persistentBucket")
 	private String persistentBucket;
-	
+
 	@JsonProperty("endpoint")
 	private String endpoint;
-	
+
 	@JsonProperty("protocol")
 	private String protocol;
-	
+
 	@JsonProperty("proxyHost")
 	private String proxyHost;
-	
+
 	@JsonProperty("proxyPort")
 	private int proxyPort;
-	
+
 	@JsonProperty("pathStyleAccess")
 	private boolean pathStyleAccess = false;
-	
+
 	public S3StorageSettings() {
 	}
 
-	
 	/**
 	 * @return the awsAccessKey
 	 */
 	public String getAwsAccessKey() {
-		return awsAccessKey;
+		return this.awsAccessKey;
 	}
 
 	/**
 	 * @param awsAccessKey the awsAccessKey to set
 	 */
-	public void setAwsAccessKey(String awsAccessKey) {
+	public void setAwsAccessKey(final String awsAccessKey) {
 		this.awsAccessKey = awsAccessKey;
 	}
 
@@ -68,13 +66,13 @@ public class S3StorageSettings implements AmazonS3Settings {
 	 * @return the awsSecretKey
 	 */
 	public String getAwsSecretKey() {
-		return awsSecretKey;
+		return this.awsSecretKey;
 	}
 
 	/**
 	 * @param awsSecretKey the awsSecretKey to set
 	 */
-	public void setAwsSecretKey(String awsSecretKey) {
+	public void setAwsSecretKey(final String awsSecretKey) {
 		this.awsSecretKey = awsSecretKey;
 	}
 
@@ -83,13 +81,13 @@ public class S3StorageSettings implements AmazonS3Settings {
 	 */
 	@Override
 	public String getTemporaryBucket() {
-		return temporaryBucket;
+		return this.temporaryBucket;
 	}
 
 	/**
 	 * @param temporaryBucket the temporaryBucket to set
 	 */
-	public void setTemporaryBucket(String temporaryBucket) {
+	public void setTemporaryBucket(final String temporaryBucket) {
 		this.temporaryBucket = temporaryBucket;
 	}
 
@@ -98,13 +96,13 @@ public class S3StorageSettings implements AmazonS3Settings {
 	 */
 	@Override
 	public String getPersistentBucket() {
-		return persistentBucket;
+		return this.persistentBucket;
 	}
 
 	/**
 	 * @param persistentBucket the persistentBucket to set
 	 */
-	public void setPersistentBucket(String persistentBucket) {
+	public void setPersistentBucket(final String persistentBucket) {
 		this.persistentBucket = persistentBucket;
 	}
 
@@ -113,13 +111,13 @@ public class S3StorageSettings implements AmazonS3Settings {
 	 */
 	@Override
 	public String getEndpoint() {
-		return endpoint;
+		return this.endpoint;
 	}
 
 	/**
 	 * @param endpoint the endpoint to set
 	 */
-	public void setEndpoint(String endpoint) {
+	public void setEndpoint(final String endpoint) {
 		this.endpoint = StringUtils.isNotBlank(endpoint) ? endpoint : null;
 	}
 
@@ -127,13 +125,13 @@ public class S3StorageSettings implements AmazonS3Settings {
 	 * @return
 	 */
 	public String getProtocol() {
-		return protocol;
+		return this.protocol;
 	}
 
 	/**
 	 * @param protocol the protocol to set
 	 */
-	public void setProtocol(String protocol) {
+	public void setProtocol(final String protocol) {
 		this.protocol = StringUtils.isNotBlank(protocol) ? protocol : null;
 	}
 
@@ -141,13 +139,13 @@ public class S3StorageSettings implements AmazonS3Settings {
 	 * @return the proxyHost
 	 */
 	public String getProxyHost() {
-		return proxyHost;
+		return this.proxyHost;
 	}
 
 	/**
 	 * @param proxyHost the proxyHost to set
 	 */
-	public void setProxyHost(String proxyHost) {
+	public void setProxyHost(final String proxyHost) {
 		this.proxyHost = StringUtils.isNotBlank(proxyHost) ? proxyHost : null;
 	}
 
@@ -155,27 +153,28 @@ public class S3StorageSettings implements AmazonS3Settings {
 	 * @return the proxyPort
 	 */
 	public int getProxyPort() {
-		return proxyPort;
+		return this.proxyPort;
 	}
 
 	/**
 	 * @param proxyPort the proxyPort to set
 	 */
-	public void setProxyPort(int proxyPort) {
+	public void setProxyPort(final int proxyPort) {
 		this.proxyPort = proxyPort;
 	}
 
 	/**
 	 * @return the pathStyleAccess
 	 */
+	@Override
 	public boolean isPathStyleAccess() {
-		return pathStyleAccess;
+		return this.pathStyleAccess;
 	}
 
 	/**
 	 * @param pathStyleAccess the pathStyleAccess to set
 	 */
-	public void setPathStyleAccess(boolean pathStyleAccess) {
+	public void setPathStyleAccess(final boolean pathStyleAccess) {
 		this.pathStyleAccess = pathStyleAccess;
 	}
 
@@ -185,7 +184,7 @@ public class S3StorageSettings implements AmazonS3Settings {
 	@Override
 	public AWSCredentialsProvider getCredentialProvider() {
 		final AWSCredentials credentials = new BasicAWSCredentials(this.awsAccessKey, this.awsSecretKey);
-		return new StaticCredentialsProvider(credentials); 
+		return new StaticCredentialsProvider(credentials);
 	}
 
 	/* (non-Javadoc)
@@ -194,13 +193,13 @@ public class S3StorageSettings implements AmazonS3Settings {
 	@Override
 	public ClientConfiguration getClientConfiguration() {
 		final ClientConfiguration s3Config = new ClientConfiguration();
-		if (protocol != null) {
-			s3Config.setProtocol("http".equalsIgnoreCase(protocol) ? Protocol.HTTP : Protocol.HTTPS);
+		if (this.protocol != null) {
+			s3Config.setProtocol("http".equalsIgnoreCase(this.protocol) ? Protocol.HTTP : Protocol.HTTPS);
 		}
-		if (proxyHost != null) {
-			s3Config.setProxyHost(proxyHost);
+		if (this.proxyHost != null) {
+			s3Config.setProxyHost(this.proxyHost);
 		}
-		s3Config.setProxyPort(proxyPort);
+		s3Config.setProxyPort(this.proxyPort);
 		return s3Config;
 	}
 }

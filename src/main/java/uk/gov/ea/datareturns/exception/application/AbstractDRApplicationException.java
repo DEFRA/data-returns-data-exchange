@@ -11,7 +11,7 @@ import uk.gov.ea.datareturns.exception.ExceptionMessageContainer;
 public abstract class AbstractDRApplicationException extends AbstractDRException {
 	private static final long serialVersionUID = 1L;
 
-	public AbstractDRApplicationException(Status code, int appStatusCode, String message) {
+	public AbstractDRApplicationException(final Status code, final int appStatusCode, final String message) {
 		super(Response.status(code).entity(new ExceptionMessageContainer(appStatusCode, message)).type(APPLICATION_JSON)
 				.build());
 	}

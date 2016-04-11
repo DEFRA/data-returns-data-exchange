@@ -38,6 +38,7 @@ database:
   user: ${db.username}
   password: ${db.password}
   driverClass: ${db.driver}
+  dialect: ${db.dialect}
 # Monitor Pro Email Configuration
 monitorProEmail:
   host: ${monpro.email.host}

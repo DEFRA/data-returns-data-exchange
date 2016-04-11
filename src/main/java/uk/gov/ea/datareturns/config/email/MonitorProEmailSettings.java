@@ -1,14 +1,14 @@
 /**
- * 
+ *
  */
 package uk.gov.ea.datareturns.config.email;
 
-import uk.gov.ea.datareturns.domain.dataexchange.EmmaDatabase;
+import uk.gov.ea.datareturns.domain.model.rules.EmmaDatabase;
 import uk.gov.ea.datareturns.exception.system.DRSystemException;
 
 /**
  * Configuration values for email messages to Monitor Pro
- * 
+ *
  * @author Sam Gardner-Dell
  */
 public class MonitorProEmailSettings {
@@ -24,7 +24,7 @@ public class MonitorProEmailSettings {
 	private boolean useTLS;
 
 	/**
-	 * 
+	 *
 	 */
 	public MonitorProEmailSettings() {
 	}
@@ -33,13 +33,13 @@ public class MonitorProEmailSettings {
 	 * @return the host
 	 */
 	public String getHost() {
-		return host;
+		return this.host;
 	}
 
 	/**
 	 * @param host the host to set
 	 */
-	public void setHost(String host) {
+	public void setHost(final String host) {
 		this.host = host;
 	}
 
@@ -47,13 +47,13 @@ public class MonitorProEmailSettings {
 	 * @return the port
 	 */
 	public int getPort() {
-		return port;
+		return this.port;
 	}
 
 	/**
 	 * @param port the port to set
 	 */
-	public void setPort(int port) {
+	public void setPort(final int port) {
 		this.port = port;
 	}
 
@@ -61,13 +61,13 @@ public class MonitorProEmailSettings {
 	 * @return the from
 	 */
 	public String getFrom() {
-		return from;
+		return this.from;
 	}
 
 	/**
 	 * @param from the from to set
 	 */
-	public void setFrom(String from) {
+	public void setFrom(final String from) {
 		this.from = from;
 	}
 
@@ -75,13 +75,13 @@ public class MonitorProEmailSettings {
 	 * @return the to
 	 */
 	public String getTo() {
-		return to;
+		return this.to;
 	}
 
 	/**
 	 * @param to the to to set
 	 */
-	public void setTo(String to) {
+	public void setTo(final String to) {
 		this.to = to;
 	}
 
@@ -89,13 +89,13 @@ public class MonitorProEmailSettings {
 	 * @return the subjectLowerNumericUniqueId
 	 */
 	public String getSubjectLowerNumericUniqueId() {
-		return subjectLowerNumericUniqueId;
+		return this.subjectLowerNumericUniqueId;
 	}
 
 	/**
 	 * @param subjectLowerNumericUniqueId the subjectLowerNumericUniqueId to set
 	 */
-	public void setSubjectLowerNumericUniqueId(String subjectLowerNumericUniqueId) {
+	public void setSubjectLowerNumericUniqueId(final String subjectLowerNumericUniqueId) {
 		this.subjectLowerNumericUniqueId = subjectLowerNumericUniqueId;
 	}
 
@@ -103,13 +103,13 @@ public class MonitorProEmailSettings {
 	 * @return the subjectUpperNumericUniqueId
 	 */
 	public String getSubjectUpperNumericUniqueId() {
-		return subjectUpperNumericUniqueId;
+		return this.subjectUpperNumericUniqueId;
 	}
 
 	/**
 	 * @param subjectUpperNumericUniqueId the subjectUpperNumericUniqueId to set
 	 */
-	public void setSubjectUpperNumericUniqueId(String subjectUpperNumericUniqueId) {
+	public void setSubjectUpperNumericUniqueId(final String subjectUpperNumericUniqueId) {
 		this.subjectUpperNumericUniqueId = subjectUpperNumericUniqueId;
 	}
 
@@ -117,13 +117,13 @@ public class MonitorProEmailSettings {
 	 * @return the subjectLowerAlphaNumericUniqueId
 	 */
 	public String getSubjectLowerAlphaNumericUniqueId() {
-		return subjectLowerAlphaNumericUniqueId;
+		return this.subjectLowerAlphaNumericUniqueId;
 	}
 
 	/**
 	 * @param subjectLowerAlphaNumericUniqueId the subjectLowerAlphaNumericUniqueId to set
 	 */
-	public void setSubjectLowerAlphaNumericUniqueId(String subjectLowerAlphaNumericUniqueId) {
+	public void setSubjectLowerAlphaNumericUniqueId(final String subjectLowerAlphaNumericUniqueId) {
 		this.subjectLowerAlphaNumericUniqueId = subjectLowerAlphaNumericUniqueId;
 	}
 
@@ -131,13 +131,13 @@ public class MonitorProEmailSettings {
 	 * @return the subjectUpperAlphaNumericUniqueId
 	 */
 	public String getSubjectUpperAlphaNumericUniqueId() {
-		return subjectUpperAlphaNumericUniqueId;
+		return this.subjectUpperAlphaNumericUniqueId;
 	}
 
 	/**
 	 * @param subjectUpperAlphaNumericUniqueId the subjectUpperAlphaNumericUniqueId to set
 	 */
-	public void setSubjectUpperAlphaNumericUniqueId(String subjectUpperAlphaNumericUniqueId) {
+	public void setSubjectUpperAlphaNumericUniqueId(final String subjectUpperAlphaNumericUniqueId) {
 		this.subjectUpperAlphaNumericUniqueId = subjectUpperAlphaNumericUniqueId;
 	}
 
@@ -145,13 +145,13 @@ public class MonitorProEmailSettings {
 	 * @return the body
 	 */
 	public String getBody() {
-		return body;
+		return this.body;
 	}
 
 	/**
 	 * @param body the body to set
 	 */
-	public void setBody(String body) {
+	public void setBody(final String body) {
 		this.body = body;
 	}
 
@@ -159,32 +159,31 @@ public class MonitorProEmailSettings {
 	 * @return the useTLS
 	 */
 	public boolean isUseTLS() {
-		return useTLS;
+		return this.useTLS;
 	}
 
 	/**
 	 * @param useTLS the useTLS to set
 	 */
-	public void setUseTLS(boolean useTLS) {
+	public void setUseTLS(final boolean useTLS) {
 		this.useTLS = useTLS;
 	}
-	
-	
+
 	/**
 	 * Retrieve the appropriate configuration value base on the {@link EmmaDatabase} enumeration instance passed
-	 * 
+	 *
 	 * @param db the type of Emma database that should be used (internal enum)
 	 * @return the text value configured for the type of database being used.
 	 */
-	public final String getDatabaseName(EmmaDatabase db) {
+	public final String getDatabaseName(final EmmaDatabase db) {
 		if (EmmaDatabase.LOWER_NUMERIC.equals(db)) {
-			return subjectLowerNumericUniqueId;
+			return this.subjectLowerNumericUniqueId;
 		} else if (EmmaDatabase.UPPER_NUMERIC.equals(db)) {
-			return subjectUpperNumericUniqueId;
+			return this.subjectUpperNumericUniqueId;
 		} else if (EmmaDatabase.LOWER_ALPHANUMERIC.equals(db)) {
-			return subjectLowerAlphaNumericUniqueId;
+			return this.subjectLowerAlphaNumericUniqueId;
 		} else if (EmmaDatabase.UPPER_ALPHANUMERIC.equals(db)) {
-			return subjectUpperAlphaNumericUniqueId;
+			return this.subjectUpperAlphaNumericUniqueId;
 		} else {
 			throw new DRSystemException("Unable to determine EMMA database");
 		}

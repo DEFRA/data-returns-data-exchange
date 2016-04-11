@@ -8,11 +8,15 @@ public class DRSystemException extends AbstractDRSystemException {
 	/** Appease the gods of serialization */
 	private static final long serialVersionUID = 1L;
 
-	public DRSystemException(Throwable cause, String message) {
+	public DRSystemException(final Throwable cause, final String message) {
 		super(cause, Status.INTERNAL_SERVER_ERROR, ApplicationExceptionType.SYSTEM_FAILURE.getAppStatusCode(), message);
 	}
 
-	public DRSystemException(String message) {
+	public DRSystemException(final String message) {
 		super(Status.INTERNAL_SERVER_ERROR, ApplicationExceptionType.SYSTEM_FAILURE.getAppStatusCode(), message);
+	}
+	
+	public DRSystemException(final Throwable cause) {
+		this(cause, cause.getMessage());
 	}
 }

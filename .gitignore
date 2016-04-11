@@ -20,3 +20,4 @@ api_local.sh
 build_me.sh
 env_vars.sh
 external_resources/schema/includes/xsd_issues.txt
+/.apt_generated/

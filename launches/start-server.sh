@@ -6,7 +6,7 @@ clear
 echo -e "Starting the Data Returns backend using configuration $config_file\n\n"
 cd $base_dir
 
-mvn -DconfigFile=$config_file package
+mvn -DconfigFile=$config_file resources:resources liquibase:dropAll liquibase:update package
 
 # Get return code from maven
 rc=$?;

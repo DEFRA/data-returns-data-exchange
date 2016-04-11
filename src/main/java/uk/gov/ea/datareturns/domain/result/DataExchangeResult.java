@@ -9,8 +9,7 @@ import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
 /**
  * Simple POJO containing the result of any data exchange action
  */
-public class DataExchangeResult
-{
+public class DataExchangeResult {
 	@JacksonXmlProperty(localName = "AppStatusCode")
 	@JsonInclude(Include.NON_DEFAULT)
 	private int appStatusCode;
@@ -35,21 +34,18 @@ public class DataExchangeResult
 	@JsonInclude(Include.NON_NULL)
 	private CompleteResult completeResult;
 
-	public DataExchangeResult()
-	{
+	public DataExchangeResult() {
 		// Set up a default value for the app status code.  The serializer will omit the appStatusCode
 		// unless it is set to a different value
 		this.appStatusCode = -1;
 	}
 
-	public DataExchangeResult(UploadResult uploadResult)
-	{
+	public DataExchangeResult(final UploadResult uploadResult) {
 		this();
 		this.uploadResult = uploadResult;
 	}
 
-	public DataExchangeResult(CompleteResult completeResult)
-	{
+	public DataExchangeResult(final CompleteResult completeResult) {
 		this();
 		this.completeResult = completeResult;
 	}
@@ -58,13 +54,13 @@ public class DataExchangeResult
 	 * @return the appStatusCode
 	 */
 	public int getAppStatusCode() {
-		return appStatusCode;
+		return this.appStatusCode;
 	}
 
 	/**
 	 * @param appStatusCode the appStatusCode to set
 	 */
-	public void setAppStatusCode(int appStatusCode) {
+	public void setAppStatusCode(final int appStatusCode) {
 		this.appStatusCode = appStatusCode;
 	}
 
@@ -72,13 +68,13 @@ public class DataExchangeResult
 	 * @return the uploadResult
 	 */
 	public UploadResult getUploadResult() {
-		return uploadResult;
+		return this.uploadResult;
 	}
 
 	/**
 	 * @param uploadResult the uploadResult to set
 	 */
-	public void setUploadResult(UploadResult uploadResult) {
+	public void setUploadResult(final UploadResult uploadResult) {
 		this.uploadResult = uploadResult;
 	}
 
@@ -86,13 +82,13 @@ public class DataExchangeResult
 	 * @return the validationErrors
 	 */
 	public ValidationErrors getValidationErrors() {
-		return validationErrors;
+		return this.validationErrors;
 	}
 
 	/**
 	 * @param validationErrors the validationErrors to set
 	 */
-	public void setValidationErrors(ValidationErrors validationErrors) {
+	public void setValidationErrors(final ValidationErrors validationErrors) {
 		this.validationErrors = validationErrors;
 	}
 
@@ -100,13 +96,13 @@ public class DataExchangeResult
 	 * @return the parseResult
 	 */
 	public ParseResult getParseResult() {
-		return parseResult;
+		return this.parseResult;
 	}
 
 	/**
 	 * @param parseResult the parseResult to set
 	 */
-	public void setParseResult(ParseResult parseResult) {
+	public void setParseResult(final ParseResult parseResult) {
 		this.parseResult = parseResult;
 	}
 
@@ -114,13 +110,13 @@ public class DataExchangeResult
 	 * @return the completeResult
 	 */
 	public CompleteResult getCompleteResult() {
-		return completeResult;
+		return this.completeResult;
 	}
 
 	/**
 	 * @param completeResult the completeResult to set
 	 */
-	public void setCompleteResult(CompleteResult completeResult) {
+	public void setCompleteResult(final CompleteResult completeResult) {
 		this.completeResult = completeResult;
 	}
 }

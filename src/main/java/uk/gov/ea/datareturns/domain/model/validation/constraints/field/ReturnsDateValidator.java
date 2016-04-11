@@ -1,5 +1,5 @@
 /**
- * 
+ *
  */
 package uk.gov.ea.datareturns.domain.model.validation.constraints.field;
 
@@ -13,7 +13,7 @@ import uk.gov.ea.datareturns.domain.model.rules.DateFormat;
 
 /**
  * Validates Monitoring Date values
- * 
+ *
  * @author Sam Gardner-Dell
  */
 public class ReturnsDateValidator implements ConstraintValidator<ValidReturnsDate, Object> {
@@ -21,7 +21,7 @@ public class ReturnsDateValidator implements ConstraintValidator<ValidReturnsDat
 	 * @see javax.validation.ConstraintValidator#initialize(java.lang.annotation.Annotation)
 	 */
 	@Override
-	public void initialize(ValidReturnsDate constraintAnnotation) {
+	public void initialize(final ValidReturnsDate constraintAnnotation) {
 
 	}
 
@@ -29,11 +29,11 @@ public class ReturnsDateValidator implements ConstraintValidator<ValidReturnsDat
 	 * @see javax.validation.ConstraintValidator#isValid(java.lang.Object, javax.validation.ConstraintValidatorContext)
 	 */
 	@Override
-	public boolean isValid(Object value, ConstraintValidatorContext context) {
+	public boolean isValid(final Object value, final ConstraintValidatorContext context) {
 		boolean isValid = false;
 		if (value instanceof String) {
-			String dateValue = String.valueOf(value);
-			
+			final String dateValue = String.valueOf(value);
+
 			// If the date value is longer than the standard date-only format then try and parse as a date-time first.
 			if (dateValue.length() > DateFormat.STANDARD_DATE_FORMAT.length()) {
 				isValid = isValidDateTime(dateValue);
@@ -45,35 +45,35 @@ public class ReturnsDateValidator implements ConstraintValidator<ValidReturnsDat
 		}
 		return isValid;
 	}
-	
-	private static boolean isValidDate(String value) {
+
+	private static boolean isValidDate(final String value) {
 		boolean isValid = false;
-		
-		LocalDate parsedDate = DateFormat.parseDate(value);
+
+		final LocalDate parsedDate = DateFormat.parseDate(value);
 		if (parsedDate != null) {
-			LocalDate now = LocalDate.now();
-			
+			final LocalDate now = LocalDate.now();
+
 			// TODO: Future release - extend validation to check for dates too far in the past (should be configurable)
-//			LocalDate earliestAllowedValue = LocalDate.now().minusMonths(18);
-//			isValid = parsedDate.isAfter(earliestAllowedValue)
-//					&& (parsedDate.isEqual(now) || parsedDate.isBefore(now));
+			//			LocalDate earliestAllowedValue = LocalDate.now().minusMonths(18);
+			//			isValid = parsedDate.isAfter(earliestAllowedValue)
+			//					&& (parsedDate.isEqual(now) || parsedDate.isBefore(now));
 			isValid = parsedDate.isEqual(now) || parsedDate.isBefore(now);
-			
+
 		}
 		return isValid;
 	}
-	
-	private static boolean isValidDateTime(String value) {
+
+	private static boolean isValidDateTime(final String value) {
 		boolean isValid = false;
-		
-		LocalDateTime parsedDate = DateFormat.parseDateTime(value);
+
+		final LocalDateTime parsedDate = DateFormat.parseDateTime(value);
 		if (parsedDate != null) {
-			LocalDateTime now = LocalDateTime.now();
-			
+			final LocalDateTime now = LocalDateTime.now();
+
 			// TODO: Future release - extend validation to check for dates too far in the past (should be configurable)
-//			LocalDateTime earliestAllowedValue = LocalDateTime.now().minusMonths(18);
-//			isValid = parsedDate.isAfter(earliestAllowedValue)
-//					&& (parsedDate.isEqual(now) || parsedDate.isBefore(now));
+			//			LocalDateTime earliestAllowedValue = LocalDateTime.now().minusMonths(18);
+			//			isValid = parsedDate.isAfter(earliestAllowedValue)
+			//					&& (parsedDate.isEqual(now) || parsedDate.isBefore(now));
 			isValid = parsedDate.isEqual(now) || parsedDate.isBefore(now);
 		}
 		return isValid;

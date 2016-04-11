@@ -8,12 +8,12 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class ValidationErrors {
 	@JsonProperty("validationErrors")
-	private List<ValidationError> errors = new ArrayList<>();
-	
-	public void addError(ValidationError error) {
+	private final List<ValidationError> errors = new ArrayList<>();
+
+	public void addError(final ValidationError error) {
 		this.errors.add(error);
 	}
-	
+
 	@JsonIgnore
 	public boolean isValid() {
 		return this.errors.isEmpty();

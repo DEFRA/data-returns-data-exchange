@@ -6,8 +6,7 @@ import java.util.regex.Pattern;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import uk.gov.ea.datareturns.domain.dataexchange.EmmaDatabase;
-import uk.gov.ea.datareturns.exception.application.DRPermitNotRecognisedException;
+import uk.gov.ea.datareturns.domain.model.rules.EmmaDatabase;
 
 public abstract class DataExchangeHelper {
 	@SuppressWarnings("unused")
@@ -26,38 +25,37 @@ public abstract class DataExchangeHelper {
 
 	/**
 	 * Number between 5-6 digits long
-	 * 
+	 *
 	 * @param permitNo
 	 * @return
 	 */
-	public static boolean isNumericPermitNo(String permitNo) {
-		Matcher m = numPermitNoPattern.matcher(permitNo);
-		boolean ret = m.find();
+	public static boolean isNumericPermitNo(final String permitNo) {
+		final Matcher m = numPermitNoPattern.matcher(permitNo);
+		final boolean ret = m.find();
 
 		return ret;
 	}
 
-	// TODO limited validation for Beta Pilot - needs fully implementing later
 	/**
 	 * Must start with at least 2 letters.
-	 * 
+	 *
 	 * @param permitNo
 	 * @return
 	 */
-	public static boolean isAlphaNumericPermitNo(String permitNo) {
-		Matcher m = alphaNnumPermitNoPattern.matcher(permitNo);
-		boolean ret = m.find();
+	public static boolean isAlphaNumericPermitNo(final String permitNo) {
+		final Matcher m = alphaNnumPermitNoPattern.matcher(permitNo);
+		final boolean ret = m.find();
 
 		return ret;
 	}
 
 	/**
 	 * Determines database name from the permit no.
-	 * 
+	 *
 	 * @param permitNo
 	 * @return
 	 */
-	public static EmmaDatabase getDatabaseTypeFromPermitNo(String permitNo) {
+	public static EmmaDatabase getDatabaseTypeFromPermitNo(final String permitNo) {
 		if (isNumericPermitNo(permitNo)) {
 			if (Integer.parseInt(permitNo) <= DATABASE_LOWER_NUMERIC_BOUNDARY) {
 				return EmmaDatabase.LOWER_NUMERIC;
@@ -65,15 +63,14 @@ public abstract class DataExchangeHelper {
 				return EmmaDatabase.UPPER_NUMERIC;
 			}
 		} else if (isAlphaNumericPermitNo(permitNo)) {
-			char startLetter = permitNo.toUpperCase().charAt(0);
+			final char startLetter = permitNo.toUpperCase().charAt(0);
 
 			if (startLetter <= DATABASE_UPPER_ALPHA_NUMERIC_BOUNDARY) {
 				return EmmaDatabase.LOWER_ALPHANUMERIC;
 			} else {
 				return EmmaDatabase.UPPER_ALPHANUMERIC;
 			}
-		} else {
-			throw new DRPermitNotRecognisedException("Permit no '" + permitNo + "' is invalid");
 		}
+		return null;
 	}
 }

@@ -11,7 +11,7 @@ public class ValidationError {
 
 	@JsonProperty("helpReference")
 	private String helpReference;
-	
+
 	@JsonProperty("lineNumber")
 	private long lineNumber;
 
@@ -34,13 +34,13 @@ public class ValidationError {
 	 * @return the fieldName
 	 */
 	public String getFieldName() {
-		return fieldName;
+		return this.fieldName;
 	}
 
 	/**
 	 * @param fieldName the fieldName to set
 	 */
-	public void setFieldName(String fieldName) {
+	public void setFieldName(final String fieldName) {
 		this.fieldName = fieldName;
 	}
 
@@ -48,13 +48,13 @@ public class ValidationError {
 	 * @return the definition
 	 */
 	public String getDefinition() {
-		return definition;
+		return this.definition;
 	}
 
 	/**
 	 * @param definition the definition to set
 	 */
-	public void setDefinition(String definition) {
+	public void setDefinition(final String definition) {
 		this.definition = definition;
 	}
 
@@ -62,13 +62,13 @@ public class ValidationError {
 	 * @return the helpReference
 	 */
 	public String getHelpReference() {
-		return helpReference;
+		return this.helpReference;
 	}
 
 	/**
 	 * @param helpReference the helpReference to set
 	 */
-	public void setHelpReference(String helpReference) {
+	public void setHelpReference(final String helpReference) {
 		this.helpReference = helpReference;
 	}
 
@@ -76,13 +76,13 @@ public class ValidationError {
 	 * @return the lineNumber
 	 */
 	public long getLineNumber() {
-		return lineNumber;
+		return this.lineNumber;
 	}
 
 	/**
 	 * @param lineNumber the lineNumber to set
 	 */
-	public void setLineNumber(long lineNumber) {
+	public void setLineNumber(final long lineNumber) {
 		this.lineNumber = lineNumber;
 	}
 
@@ -90,13 +90,13 @@ public class ValidationError {
 	 * @return the errorType
 	 */
 	public String getErrorType() {
-		return errorType;
+		return this.errorType;
 	}
 
 	/**
 	 * @param errorType the errorType to set
 	 */
-	public void setErrorType(String errorType) {
+	public void setErrorType(final String errorType) {
 		this.errorType = errorType;
 	}
 
@@ -104,13 +104,13 @@ public class ValidationError {
 	 * @return the errorCode
 	 */
 	public int getErrorCode() {
-		return errorCode;
+		return this.errorCode;
 	}
 
 	/**
 	 * @param errorCode the errorCode to set
 	 */
-	public void setErrorCode(int errorCode) {
+	public void setErrorCode(final int errorCode) {
 		this.errorCode = errorCode;
 	}
 
@@ -118,13 +118,13 @@ public class ValidationError {
 	 * @return the errorValue
 	 */
 	public String getErrorValue() {
-		return errorValue;
+		return this.errorValue;
 	}
 
 	/**
 	 * @param errorValue the errorValue to set
 	 */
-	public void setErrorValue(String errorValue) {
+	public void setErrorValue(final String errorValue) {
 		this.errorValue = errorValue;
 	}
 
@@ -132,13 +132,13 @@ public class ValidationError {
 	 * @return the errorMessage
 	 */
 	public String getErrorMessage() {
-		return errorMessage;
+		return this.errorMessage;
 	}
 
 	/**
 	 * @param errorMessage the errorMessage to set
 	 */
-	public void setErrorMessage(String errorMessage) {
+	public void setErrorMessage(final String errorMessage) {
 		this.errorMessage = errorMessage;
 	}
 }

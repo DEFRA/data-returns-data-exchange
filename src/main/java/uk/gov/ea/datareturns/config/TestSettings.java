@@ -6,8 +6,7 @@ import org.hibernate.validator.constraints.NotEmpty;
  * @author adrianharrison
  * Holds test settings from configuration file
  */
-public class TestSettings
-{
+public class TestSettings {
 	@NotEmpty
 	private String testFilesLocation;
 
@@ -17,37 +16,30 @@ public class TestSettings
 	@NotEmpty
 	private String cleanupAfterTestRun;
 
-	public TestSettings()
-	{
+	public TestSettings() {
 	}
 
-	public String getTestFilesLocation()
-	{
-		return testFilesLocation;
+	public String getTestFilesLocation() {
+		return this.testFilesLocation;
 	}
 
-	public void setTestFilesLocation(String testFilesLocation)
-	{
+	public void setTestFilesLocation(final String testFilesLocation) {
 		this.testFilesLocation = testFilesLocation;
 	}
 
-	public String getTestTimeout()
-	{
-		return testTimeout;
+	public String getTestTimeout() {
+		return this.testTimeout;
 	}
 
-	public void setTestTimeout(String testTimeout)
-	{
+	public void setTestTimeout(final String testTimeout) {
 		this.testTimeout = testTimeout;
 	}
 
-	public String getCleanupAfterTestRun()
-	{
-		return cleanupAfterTestRun;
+	public String getCleanupAfterTestRun() {
+		return this.cleanupAfterTestRun;
 	}
 
-	public void setCleanupAfterTestRun(String cleanupAfterTestRun)
-	{
+	public void setCleanupAfterTestRun(final String cleanupAfterTestRun) {
 		this.cleanupAfterTestRun = cleanupAfterTestRun;
 	}
 }

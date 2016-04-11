@@ -6,8 +6,7 @@ import static uk.gov.ea.datareturns.helper.DataExchangeHelper.isNumericPermitNo;
 
 import org.junit.Test;
 
-import uk.gov.ea.datareturns.domain.dataexchange.EmmaDatabase;
-import uk.gov.ea.datareturns.exception.application.DRPermitNotRecognisedException;
+import uk.gov.ea.datareturns.domain.model.rules.EmmaDatabase;
 
 public class DataExchangeHelperTests
 {
@@ -83,12 +82,6 @@ public class DataExchangeHelperTests
 	@Test
 	public void testUndeterminableDBName()
 	{
-		try
-		{
-			DataExchangeHelper.getDatabaseTypeFromPermitNo(";a123");
-		} catch (Exception e)
-		{
-			assertThat(e).isInstanceOf(DRPermitNotRecognisedException.class);
-		}
+		assertThat(DataExchangeHelper.getDatabaseTypeFromPermitNo(";a123") == null);
 	}
 }

@@ -5,7 +5,7 @@ import java.util.Set;
 
 /**
  * Defines the set of header fields used by the Data Returns project
- * 
+ *
  * @author Sam Gardner-Dell
  */
 public class DataReturnsHeaders {
@@ -42,10 +42,10 @@ public class DataReturnsHeaders {
 	/** Commercial in confidence data (CiC) */
 	public static final String COMMERCIAL_IN_CONFIDENCE = "CiC";
 	/** Chemical Abstracts Service value (CAS) */
-	public static final String CHEMICAL_ABSTRACTS_SERVICE = "CAS";	
+	public static final String CHEMICAL_ABSTRACTS_SERVICE = "CAS";
 	/** Recovery and disposal code (RD_Code) */
 	public static final String RECOVERY_AND_DISPOSAL_CODE = "RD_Code";
-	
+
 	/**
 	 * The set of all headings allowed in the input data
 	 */
@@ -70,8 +70,7 @@ public class DataReturnsHeaders {
 		ALL_VALID_HEADINGS.add(CHEMICAL_ABSTRACTS_SERVICE);
 		ALL_VALID_HEADINGS.add(RECOVERY_AND_DISPOSAL_CODE);
 	}
-	
-	
+
 	/**
 	 * The set of headings that MUST be defined in the input data
 	 */
@@ -91,7 +90,7 @@ public class DataReturnsHeaders {
 	public static final Set<String> getAllHeadings() {
 		return new LinkedHashSet<>(ALL_VALID_HEADINGS);
 	}
-	
+
 	/**
 	 * @return the set of headings that MUST be defined in the input data
 	 */

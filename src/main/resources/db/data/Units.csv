@@ -1,0 +1,162 @@
+name,measure_type,description
+ug,Mass,Microgram
+mg,Mass,Milligram
+g,Mass,Gram
+kg,Mass,Kilogram
+t,Mass,Tonne
+mol,Mass,"mole, an amount of a substance"
+mm,Length,Millimetre
+cm,Length,Centimetre
+m,Length,Metre
+km,Length,Kilometre
+mm2,Area,Square millimetre
+cm2,Area,Square centimetre
+m2,Area,Square metre
+km2,Area,Square kilometre
+Ha,Area,Hectare
+mm3,Volume,Cubic millimetre
+cm3,Volume,Cubic centimetre
+m3,Volume,Cubic metre
+ul,Volume,Microlitre
+ml,Volume,Millilitre
+l,Volume,Litre
+s,Time,Second
+min,Time,Minute
+hr,Time,Hour
+day,Time,Day
+wk,Time,Week
+mth,Time,Month
+qrt,Time,Quarter
+yr,Time,Year
+J,Energy and Power,Joule
+kJ,Energy and Power,Kilojoule
+MJ,Energy and Power,Megajoule
+TJ,Energy and Power,Terrajoule
+W,Energy and Power,Watt
+kW,Energy and Power,Kilowatt
+MW,Energy and Power,Megawatt
+GW,Energy and Power,Gigawatt
+TW,Energy and Power,Terrawatt
+mV,Electricity,Millivolt
+V,Electricity,Volt
+kV,Electricity,Kilovolt
+MV,Electricity,Megavolt
+mA,Electricity,Milliamp
+A,Electricity,Amp
+kA,Electricity,Kiloamp
+Hz,Electromagnetic Radiation,Hertz
+kHz,Electromagnetic Radiation,Kilohertz
+MHz,Electromagnetic Radiation,Megahertz
+Bq,Radioactive Decay,Becquerels
+ºC,Temperature,degrees Celsius
+DegC,Temperature,degrees Celsius
+Pa,Pressure,"Pascal, unit of pressure"
+mBar,Pressure,Millibar
+Bar,Pressure,Bar
+pH,Miscellaneous,Acidity measure
+%,Miscellaneous,"Percentage, a number expressed as a fraction of 100"
+Hazen,Miscellaneous,Hazen
+ppm,Miscellaneous,Parts per million
+ppb,Miscellaneous,Parts per billion
+95%ile,Miscellaneous,95 Percentile
+FTU,Miscellaneous,Formazin Turbidity Unit
+ug/kg,Concentration (Mass/Mass),Microgram per Kilogram
+mg/kg,Concentration (Mass/Mass),Milligram per Kilogram
+g/t,Concentration (Mass/Mass),Gram per Tonne
+ug/l,Concentration (Mass/Volume),Microgram per Litre
+mg/l,Concentration (Mass/Volume),Milligram per Litre
+g/l,Concentration (Mass/Volume),Gram per Litre
+kg/l,Concentration (Mass/Volume),Kilogram per Litre
+ug/m3,Concentration (Mass/Volume),Microgram per Cubic metre
+mg/m3,Concentration (Mass/Volume),Milligram per Cubic metre
+g/m3,Concentration (Mass/Volume),Gram per Cubic metre
+kg/m3,Concentration (Mass/Volume),Kilogram per Cubic metre
+ug/m2,Concentration (Mass/Area),Microgram per Square metre
+mg/m2,Concentration (Mass/Area),Milligram per Square metre
+g/m2,Concentration (Mass/Area),Gram per Square metre
+kg/m2,Concentration (Mass/Area),Kilogram per Square metre
+% v/v,Concentration (Volume/Volume),Percentage volume for volume
+ug/s,Flow (Mass/Time),Microgram per Second
+mg/s,Flow (Mass/Time),Milligram per Second
+g/s,Flow (Mass/Time),Gram per Second
+kg/s,Flow (Mass/Time),Kilogram per Second
+mg/min,Flow (Mass/Time),Milligram per Minute
+g/min,Flow (Mass/Time),Gram per Minute
+kg/min,Flow (Mass/Time),Kilogram per Minute
+t/min,Flow (Mass/Time),Tonne per Minute
+ug/hr,Flow (Mass/Time),Microgram per Hour
+mg/hr,Flow (Mass/Time),Milligram per Hour
+g/hr,Flow (Mass/Time),Gram per Hour
+kg/hr,Flow (Mass/Time),Kilogram per Hour
+t/hr,Flow (Mass/Time),Tonne per Hour
+ug/day,Flow (Mass/Time),Microgram per Day
+mg/day,Flow (Mass/Time),Milligram per Day
+g/day,Flow (Mass/Time),Gram per Day
+kg/day,Flow (Mass/Time),Kilogram per Day
+t/day,Flow (Mass/Time),Tonne per Day
+ug/wk,Flow (Mass/Time),Microgram per Week
+mg/wk,Flow (Mass/Time),Milligram per Week
+g/wk,Flow (Mass/Time),Gram per Week
+kg/wk,Flow (Mass/Time),Kilogram per Week
+t/wk,Flow (Mass/Time),Tonne per Week
+kg/yr,Flow (Mass/Time),Kilogram per Year
+t/yr,Flow (Mass/Time),Tonne per Year
+mm3/s,Flow (Volume/Time),Cubic millimetre per Second
+cm3/s,Flow (Volume/Time),Cubic centimetre per Second
+m3/s,Flow (Volume/Time),Cubic metre per Second
+ul/s,Flow (Volume/Time),Microlitre per Second
+ml/s,Flow (Volume/Time),Millilitre per Second
+l/s,Flow (Volume/Time),Litre per Second
+mm3/min,Flow (Volume/Time),Cubic millimetre per Minute
+cm3/min,Flow (Volume/Time),Cubic centimetre per Minute
+m3/min,Flow (Volume/Time),Cubic metre per Minute
+ul/min,Flow (Volume/Time),Microlitre per Minute
+ml/min,Flow (Volume/Time),Millilitre per Minute
+l/min,Flow (Volume/Time),Litre per Minute
+cm3/hr,Flow (Volume/Time),Cubic centimetre per Hour
+m3/hr,Flow (Volume/Time),Cubic metre per Hour
+ul/hr,Flow (Volume/Time),Microlitre per Hour
+ml/hr,Flow (Volume/Time),Millilitre per Hour
+l/hr,Flow (Volume/Time),Litre per Hour
+mm3/day,Flow (Volume/Time),Cubic millimetre per Day
+cm3/day,Flow (Volume/Time),Cubic centimetre per Day
+m3/day,Flow (Volume/Time),Cubic metre per Day
+ul/day,Flow (Volume/Time),Microlitre per Day
+ml/day,Flow (Volume/Time),Millilitre per Day
+l/day,Flow (Volume/Time),Litre per Day
+mm3/wk,Flow (Volume/Time),Cubic millimetre per Week
+cm3/wk,Flow (Volume/Time),Cubic centimetre per Week
+m3/wk,Flow (Volume/Time),Cubic metre per Week
+ul/wk,Flow (Volume/Time),Microlitre per Week
+ml/wk,Flow (Volume/Time),Millilitre per Week
+l/wk,Flow (Volume/Time),Litre per Week
+m3/yr,Flow (Volume/Time),Cubic metre per Year
+l/yr,Flow (Volume/Time),Litre per Year
+cm/s,Speed (Length/Time),Centimetre per Second
+m/s,Speed (Length/Time),Metre per Second
+cm/min,Speed (Length/Time),Centimetre per Minute
+m/min,Speed (Length/Time),Metre per Minute
+cm/hr,Speed (Length/Time),Centimetre per Hour
+m/hr,Speed (Length/Time),Metre per Hour
+km/hr,Speed (Length/Time),Kilometre per Hour
+cm/day,Speed (Length/Time),Centimetre per Day
+m/day,Speed (Length/Time),Metre per Day
+km/day,Speed (Length/Time),Kilometre per Day
+cm/wk,Speed (Length/Time),Centimetre per Week
+m/wk,Speed (Length/Time),Metre per Week
+km/wk,Speed (Length/Time),Kilometre per Week
+cm/mth,Speed (Length/Time),Centimetre per Month
+m/mth,Speed (Length/Time),Metre per Month
+cm/yr,Speed (Length/Time),Centimetre per Year
+m/yr,Speed (Length/Time),Metre per Year
+km/yr,Speed (Length/Time),Kilometre per Year
+Bq/cm2,Radioactivity,Becquerels per Square centimetre
+Bq/m2,Radioactivity,Becquerels per Square metre
+Bq/cm3,Radioactivity,Becquerels per Cubic centimetre
+Bq/m3,Radioactivity,Becquerels per Cubic metre
+Bq/g,Radioactivity,Becquerels per Gram
+Bq/kg,Radioactivity,Becquerels per Kilogram
+Bq/l,Radioactivity,Becquerels per Litre
+kWh,Electrical Flow,Kilowatt Hour
+MWh,Electrical Flow,Megawatt Hour
+GWh,Electrical Flow,Gigawatt Hour

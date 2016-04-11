@@ -25,8 +25,6 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.gson.Gson;
-
 import io.dropwizard.client.JerseyClientBuilder;
 import io.dropwizard.client.JerseyClientConfiguration;
 import io.dropwizard.testing.junit.DropwizardAppRule;
@@ -207,11 +205,13 @@ public class ResourceIntegrationTests {
 	@Test
 	public void testMutiplePermits() {
 		final Client client = createClient("test Multiple Permits");
-		final Response resp = performUploadStep(client, FILE_CSV_MUTLIPLE_PERMITS, MEDIA_TYPE_CSV);
-		assertThat(resp.getStatus()).isEqualTo(Status.BAD_REQUEST.getStatusCode());
-
-		final DataExchangeResult result = getResultFromResponse(resp);
-		assertThat(result.getAppStatusCode()).isEqualTo(ApplicationExceptionType.PERMIT_NOT_UNIQUE.getAppStatusCode());
+		Response resp = performUploadStep(client, FILE_CSV_MUTLIPLE_PERMITS, MEDIA_TYPE_CSV);
+		assertThat(resp.getStatus()).isEqualTo(Status.OK.getStatusCode());
+		DataExchangeResult result = getResultFromResponse(resp);
+		String key = result.getUploadResult().getFileKey();
+		assertThat(key != null);
+		
+		// TODO: Test second stage using key retrieved from the first stage
 	}
 
 	@Test
@@ -222,7 +222,7 @@ public class ResourceIntegrationTests {
 
 		final DataExchangeResult result = getResultFromResponse(resp);
 		assertThat(result.getAppStatusCode())
-				.isEqualTo(ApplicationExceptionType.PERMIT_NOT_RECOGNISED.getAppStatusCode());
+				.isEqualTo(ApplicationExceptionType.VALIDATION_ERRORS.getAppStatusCode());
 	}
 
 	@Test
@@ -232,8 +232,7 @@ public class ResourceIntegrationTests {
 		assertThat(resp.getStatus()).isEqualTo(Status.BAD_REQUEST.getStatusCode());
 
 		final DataExchangeResult result = getResultFromResponse(resp);
-		assertThat(result.getAppStatusCode())
-				.isEqualTo(ApplicationExceptionType.PERMIT_NOT_RECOGNISED.getAppStatusCode());
+		assertThat(result.getAppStatusCode()).isEqualTo(ApplicationExceptionType.VALIDATION_ERRORS.getAppStatusCode());
 	}
 
 	@Test
@@ -355,13 +354,6 @@ public class ResourceIntegrationTests {
 	///////////////////////////////////////////////////////////////////////////////////////////
 
 	// TODO missing integration tests
-	// TODO missing column
-	// TODO columns out of sequence
-	// TODO extra columns
-	// TODO extra data
-	// TODO missing xsd file
-	// TODO missing translation file
-	// TODO missing xslt files
 	// TODO large/average file uploads
 	// TODO email failure
 	// TODO email success (not sure if possible from here?)
@@ -369,7 +361,6 @@ public class ResourceIntegrationTests {
 	// email and full e2e
 	// TODO + many more
 
-	// TODO CSV converter library (Csv2xml.java) needs forking,
 	// including/completing tests etc... also!
 
 	/**
@@ -414,8 +405,7 @@ public class ResourceIntegrationTests {
 					.post(Entity.entity(form, form.getMediaType()), Response.class);
 
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			LOGGER.error("Failed to perform upload step", e);
 		}
 		return response;
 	}
@@ -436,8 +426,6 @@ public class ResourceIntegrationTests {
 			form.bodyPart(fdp2);
 			final FormDataBodyPart fdp3 = new FormDataBodyPart("orgFileName", "any_file_name.csv");
 			form.bodyPart(fdp3);
-			final FormDataBodyPart fdp4 = new FormDataBodyPart("permitNo", "12345");
-			form.bodyPart(fdp4);
 
 			final String uri = createURIForStep(STEP_COMPLETE);
 			response = client.register(MultiPartFeature.class).target(uri).request()
@@ -455,9 +443,7 @@ public class ResourceIntegrationTests {
 	 * @return
 	 */
 	private static DataExchangeResult getResultFromResponse(Response resp) {
-		final Gson gson = new Gson();
-
-		return gson.fromJson(resp.readEntity(String.class), DataExchangeResult.class);
+		return resp.readEntity(DataExchangeResult.class);
 	}
 
 	/**

@@ -16,19 +16,23 @@ public class UploadResult {
 	public UploadResult() {
 	}
 
-	public String getFileName() {
-		return fileName;
+	public UploadResult(final String filename) {
+		this.fileName = filename;
 	}
 
-	public void setFileName(String fileName) {
+	public String getFileName() {
+		return this.fileName;
+	}
+
+	public void setFileName(final String fileName) {
 		this.fileName = fileName;
 	}
 
 	public String getFileKey() {
-		return fileKey;
+		return this.fileKey;
 	}
 
-	public void setFileKey(String fileKey) {
+	public void setFileKey(final String fileKey) {
 		this.fileKey = fileKey;
 	}
 }

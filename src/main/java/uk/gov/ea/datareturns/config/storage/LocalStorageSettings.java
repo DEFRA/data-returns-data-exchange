@@ -22,13 +22,13 @@ public class LocalStorageSettings {
 	 * @return the temporaryFolder
 	 */
 	public String getTemporaryFolder() {
-		return temporaryFolder;
+		return this.temporaryFolder;
 	}
 
 	/**
 	 * @param temporaryFolder the temporaryFolder to set
 	 */
-	public void setTemporaryFolder(String temporaryFolder) {
+	public void setTemporaryFolder(final String temporaryFolder) {
 		this.temporaryFolder = temporaryFolder;
 	}
 
@@ -36,13 +36,13 @@ public class LocalStorageSettings {
 	 * @return the persistentFolder
 	 */
 	public String getPersistentFolder() {
-		return persistentFolder;
+		return this.persistentFolder;
 	}
 
 	/**
 	 * @param persistentFolder the persistentFolder to set
 	 */
-	public void setPersistentFolder(String persistentFolder) {
+	public void setPersistentFolder(final String persistentFolder) {
 		this.persistentFolder = persistentFolder;
 	}
 
@@ -50,13 +50,13 @@ public class LocalStorageSettings {
 	 * @return the cleanOnStartup
 	 */
 	public boolean isCleanOnStartup() {
-		return cleanOnStartup;
+		return this.cleanOnStartup;
 	}
 
 	/**
 	 * @param cleanOnStartup the cleanOnStartup to set
 	 */
-	public void setCleanOnStartup(boolean cleanOnStartup) {
+	public void setCleanOnStartup(final boolean cleanOnStartup) {
 		this.cleanOnStartup = cleanOnStartup;
 	}
 }

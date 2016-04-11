@@ -11,10 +11,10 @@ import javax.validation.Payload;
 
 /**
  * Annotation to enable hibernate validator based validation of interdependent values within a class
- * 
+ *
  * @author Sam Gardner-Dell
  */
-@Target({ElementType.TYPE})
+@Target({ ElementType.TYPE })
 @Retention(RetentionPolicy.RUNTIME)
 @Constraint(validatedBy = DependentFieldValidator.class)
 @Documented
@@ -26,8 +26,8 @@ public @interface DependentField {
 	Class<? extends Payload>[] payload() default {};
 
 	String primaryFieldGetter();
-	
+
 	String dependentFieldGetter();
 
-//	Class<? extends ControlledListAuditor> value();
+	//	Class<? extends ControlledListAuditor> value();
 }

@@ -8,17 +8,18 @@ import javax.xml.bind.annotation.XmlElement;
 import org.hibernate.validator.constraints.Length;
 import org.hibernate.validator.constraints.NotBlank;
 
-import uk.gov.ea.datareturns.domain.io.csv.annotations.CSVField;
+import uk.gov.ea.datareturns.domain.io.csv.generic.annotations.CSVField;
 import uk.gov.ea.datareturns.domain.model.rules.DataReturnsHeaders;
 import uk.gov.ea.datareturns.domain.model.validation.auditors.ParameterListAuditor;
 import uk.gov.ea.datareturns.domain.model.validation.auditors.ReturnTypeListAuditor;
+import uk.gov.ea.datareturns.domain.model.validation.auditors.UniqueIdentifierAuditor;
 import uk.gov.ea.datareturns.domain.model.validation.auditors.UnitListAuditor;
 import uk.gov.ea.datareturns.domain.model.validation.constraints.controlledlist.ControlledList;
 import uk.gov.ea.datareturns.domain.model.validation.constraints.field.ValidReturnsDate;
 
 /**
  * Represents an individual monitoring data record entry
- * 
+ *
  * @author Sam Gardner-Dell
  */
 @XmlAccessorType(XmlAccessType.FIELD)
@@ -32,14 +33,14 @@ public class MonitoringDataRecord {
 	@XmlElement(name = DataReturnsHeaders.PERMIT_NUMBER)
 	@NotBlank(message = "{DR9000-Missing}")
 	@Pattern(regexp = "(^[A-Za-z][A-Za-z].*|^[0-9]{5,6}$)", message = "{DR9000-Incorrect}")
-	// TODO: ADD PERMIT NUMBER VALIDATION VIA A CONTROLLED LIST LOOKUP
+	@ControlledList(auditor = UniqueIdentifierAuditor.class, message = "{DR9000-Incorrect}")
 	private String permitNumber;
-	
+
 	/** The site name (Site_Name) */
 	@CSVField(DataReturnsHeaders.SITE_NAME)
 	@XmlElement(name = DataReturnsHeaders.SITE_NAME)
-	@Pattern(regexp = "([0-9a-zA-Z ])*", message="{DR9110-Incorrect}")
-	@Length(min = 0, max = 255, message="{DR9110-Length}")
+	@Pattern(regexp = "([0-9a-zA-Z ])*", message = "{DR9110-Incorrect}")
+	@Length(min = 0, max = 255, message = "{DR9110-Length}")
 	private String siteName;
 
 	/** The return type (Rtn_Type) */
@@ -48,7 +49,7 @@ public class MonitoringDataRecord {
 	@NotBlank(message = "{DR9010-Missing}")
 	@ControlledList(auditor = ReturnTypeListAuditor.class, message = "{DR9010-Incorrect}")
 	private String returnType;
-	
+
 	/** The monitoring date (Mon_Date) */
 	@CSVField(DataReturnsHeaders.MONITORING_DATE)
 	@XmlElement(name = DataReturnsHeaders.MONITORING_DATE)
@@ -81,13 +82,13 @@ public class MonitoringDataRecord {
 	@XmlElement(name = DataReturnsHeaders.SAMPLE_BY)
 	@Length(min = 0, max = 255, message = "{DR9130-Length}")
 	private String sampleBy;
-	
+
 	/** Parameter value (Parameter) */
 	@CSVField(DataReturnsHeaders.PARAMETER)
 	@XmlElement(name = DataReturnsHeaders.PARAMETER)
-	@ControlledList(auditor=ParameterListAuditor.class, message = "{DR9030-Incorrect}")
+	@ControlledList(auditor = ParameterListAuditor.class, message = "{DR9030-Incorrect}")
 	private String parameter;
-	
+
 	/** Value (Value) */
 	@CSVField(DataReturnsHeaders.VALUE)
 	@XmlElement(name = DataReturnsHeaders.VALUE)
@@ -104,7 +105,7 @@ public class MonitoringDataRecord {
 	/** Unit of measurement (Unit) */
 	@CSVField(DataReturnsHeaders.UNIT)
 	@XmlElement(name = DataReturnsHeaders.UNIT)
-	@ControlledList(auditor=UnitListAuditor.class, message = "{DR9050-Incorrect}")
+	@ControlledList(auditor = UnitListAuditor.class, message = "{DR9050-Incorrect}")
 	private String unit;
 
 	/** Reference period */
@@ -118,7 +119,7 @@ public class MonitoringDataRecord {
 	@XmlElement(name = DataReturnsHeaders.METHOD_STANDARD)
 	@Length(min = 0, max = 30, message = "{DR9100-Length}")
 	private String methStand;
-	
+
 	/** Record comments (Comments) */
 	@CSVField(DataReturnsHeaders.COMMENTS)
 	@XmlElement(name = DataReturnsHeaders.COMMENTS)
@@ -153,133 +154,133 @@ public class MonitoringDataRecord {
 	 * @return the permitNumber
 	 */
 	public String getPermitNumber() {
-		return permitNumber;
+		return this.permitNumber;
 	}
 
 	/**
 	 * @return the siteName
 	 */
 	public String getSiteName() {
-		return siteName;
+		return this.siteName;
 	}
 
 	/**
 	 * @return the returnType
 	 */
 	public String getReturnType() {
-		return returnType;
+		return this.returnType;
 	}
 
 	/**
 	 * @return the monitoringDate
 	 */
 	public String getMonitoringDate() {
-		return monitoringDate;
+		return this.monitoringDate;
 	}
 
 	/**
 	 * @return the monitoringPeriod
 	 */
 	public String getMonitoringPeriod() {
-		return monitoringPeriod;
+		return this.monitoringPeriod;
 	}
 
 	/**
 	 * @return the monitoringPoint
 	 */
 	public String getMonitoringPoint() {
-		return monitoringPoint;
+		return this.monitoringPoint;
 	}
 
 	/**
 	 * @return the sampleReference
 	 */
 	public String getSampleReference() {
-		return sampleReference;
+		return this.sampleReference;
 	}
 
 	/**
 	 * @return the sampleBy
 	 */
 	public String getSampleBy() {
-		return sampleBy;
+		return this.sampleBy;
 	}
 
 	/**
 	 * @return the parameter
 	 */
 	public String getParameter() {
-		return parameter;
+		return this.parameter;
 	}
 
 	/**
 	 * @return the value
 	 */
 	public String getValue() {
-		return value;
+		return this.value;
 	}
 
 	/**
 	 * @return the textValue
 	 */
 	public String getTextValue() {
-		return textValue;
+		return this.textValue;
 	}
 
 	/**
 	 * @return the unit
 	 */
 	public String getUnit() {
-		return unit;
+		return this.unit;
 	}
 
 	/**
 	 * @return the referencePeriod
 	 */
 	public String getReferencePeriod() {
-		return referencePeriod;
+		return this.referencePeriod;
 	}
 
 	/**
 	 * @return the methStand
 	 */
 	public String getMethStand() {
-		return methStand;
+		return this.methStand;
 	}
 
 	/**
 	 * @return the comments
 	 */
 	public String getComments() {
-		return comments;
+		return this.comments;
 	}
 
 	/**
 	 * @return the cic
 	 */
 	public String getCic() {
-		return cic;
+		return this.cic;
 	}
 
 	/**
 	 * @return the cas
 	 */
 	public String getCas() {
-		return cas;
+		return this.cas;
 	}
 
 	/**
 	 * @return the rdCode
 	 */
 	public String getRdCode() {
-		return rdCode;
+		return this.rdCode;
 	}
 
 	/**
 	 * @param permitNumber
 	 *            the permitNumber to set
 	 */
-	public void setPermitNumber(String permitNumber) {
+	public void setPermitNumber(final String permitNumber) {
 		this.permitNumber = permitNumber;
 	}
 
@@ -287,7 +288,7 @@ public class MonitoringDataRecord {
 	 * @param siteName
 	 *            the siteName to set
 	 */
-	public void setSiteName(String siteName) {
+	public void setSiteName(final String siteName) {
 		this.siteName = siteName;
 	}
 
@@ -295,7 +296,7 @@ public class MonitoringDataRecord {
 	 * @param returnType
 	 *            the returnType to set
 	 */
-	public void setReturnType(String returnType) {
+	public void setReturnType(final String returnType) {
 		this.returnType = returnType;
 	}
 
@@ -303,7 +304,7 @@ public class MonitoringDataRecord {
 	 * @param monitoringDate
 	 *            the monitoringDate to set
 	 */
-	public void setMonitoringDate(String monitoringDate) {
+	public void setMonitoringDate(final String monitoringDate) {
 		this.monitoringDate = monitoringDate;
 	}
 
@@ -311,7 +312,7 @@ public class MonitoringDataRecord {
 	 * @param monitoringPeriod
 	 *            the monitoringPeriod to set
 	 */
-	public void setMonitoringPeriod(String monitoringPeriod) {
+	public void setMonitoringPeriod(final String monitoringPeriod) {
 		this.monitoringPeriod = monitoringPeriod;
 	}
 
@@ -319,7 +320,7 @@ public class MonitoringDataRecord {
 	 * @param monitoringPoint
 	 *            the monitoringPoint to set
 	 */
-	public void setMonitoringPoint(String monitoringPoint) {
+	public void setMonitoringPoint(final String monitoringPoint) {
 		this.monitoringPoint = monitoringPoint;
 	}
 
@@ -327,7 +328,7 @@ public class MonitoringDataRecord {
 	 * @param sampleReference
 	 *            the sampleReference to set
 	 */
-	public void setSampleReference(String sampleReference) {
+	public void setSampleReference(final String sampleReference) {
 		this.sampleReference = sampleReference;
 	}
 
@@ -335,7 +336,7 @@ public class MonitoringDataRecord {
 	 * @param sampleBy
 	 *            the sampleBy to set
 	 */
-	public void setSampleBy(String sampleBy) {
+	public void setSampleBy(final String sampleBy) {
 		this.sampleBy = sampleBy;
 	}
 
@@ -343,7 +344,7 @@ public class MonitoringDataRecord {
 	 * @param parameter
 	 *            the parameter to set
 	 */
-	public void setParameter(String parameter) {
+	public void setParameter(final String parameter) {
 		this.parameter = parameter;
 	}
 
@@ -351,7 +352,7 @@ public class MonitoringDataRecord {
 	 * @param value
 	 *            the value to set
 	 */
-	public void setValue(String value) {
+	public void setValue(final String value) {
 		this.value = value;
 	}
 
@@ -359,7 +360,7 @@ public class MonitoringDataRecord {
 	 * @param textValue
 	 *            the textValue to set
 	 */
-	public void setTextValue(String textValue) {
+	public void setTextValue(final String textValue) {
 		this.textValue = textValue;
 	}
 
@@ -367,7 +368,7 @@ public class MonitoringDataRecord {
 	 * @param unit
 	 *            the unit to set
 	 */
-	public void setUnit(String unit) {
+	public void setUnit(final String unit) {
 		this.unit = unit;
 	}
 
@@ -375,7 +376,7 @@ public class MonitoringDataRecord {
 	 * @param referencePeriod
 	 *            the referencePeriod to set
 	 */
-	public void setReferencePeriod(String referencePeriod) {
+	public void setReferencePeriod(final String referencePeriod) {
 		this.referencePeriod = referencePeriod;
 	}
 
@@ -383,7 +384,7 @@ public class MonitoringDataRecord {
 	 * @param methStand
 	 *            the methStand to set
 	 */
-	public void setMethStand(String methStand) {
+	public void setMethStand(final String methStand) {
 		this.methStand = methStand;
 	}
 
@@ -391,7 +392,7 @@ public class MonitoringDataRecord {
 	 * @param comments
 	 *            the comments to set
 	 */
-	public void setComments(String comments) {
+	public void setComments(final String comments) {
 		this.comments = comments;
 	}
 
@@ -399,7 +400,7 @@ public class MonitoringDataRecord {
 	 * @param cic
 	 *            the cic to set
 	 */
-	public void setCic(String cic) {
+	public void setCic(final String cic) {
 		this.cic = cic;
 	}
 
@@ -407,7 +408,7 @@ public class MonitoringDataRecord {
 	 * @param cas
 	 *            the cas to set
 	 */
-	public void setCas(String cas) {
+	public void setCas(final String cas) {
 		this.cas = cas;
 	}
 
@@ -415,7 +416,7 @@ public class MonitoringDataRecord {
 	 * @param rdCode
 	 *            the rdCode to set
 	 */
-	public void setRdCode(String rdCode) {
+	public void setRdCode(final String rdCode) {
 		this.rdCode = rdCode;
 	}
 }

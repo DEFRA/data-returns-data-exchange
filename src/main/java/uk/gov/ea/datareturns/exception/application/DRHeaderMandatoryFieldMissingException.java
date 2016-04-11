@@ -8,7 +8,7 @@ public class DRHeaderMandatoryFieldMissingException extends AbstractDRApplicatio
 	/** Appease the gods of serialization */
 	private static final long serialVersionUID = 1L;
 
-	public DRHeaderMandatoryFieldMissingException(String message) {
+	public DRHeaderMandatoryFieldMissingException(final String message) {
 		super(Status.BAD_REQUEST, ApplicationExceptionType.HEADER_MANDATORY_FIELD_MISSING.getAppStatusCode(), message);
 	}
 }

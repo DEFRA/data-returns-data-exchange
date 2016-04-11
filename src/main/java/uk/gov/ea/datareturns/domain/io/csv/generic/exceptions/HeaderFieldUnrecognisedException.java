@@ -1,0 +1,19 @@
+/**
+ *
+ */
+package uk.gov.ea.datareturns.domain.io.csv.generic.exceptions;
+
+/**
+ * @author Sam Gardner-Dell
+ */
+public class HeaderFieldUnrecognisedException extends ValidationException {
+	/** Appease the gods of serialization */
+	private static final long serialVersionUID = 1L;
+
+	/**
+	 * @param message
+	 */
+	public HeaderFieldUnrecognisedException(final String message) {
+		super(message);
+	}
+}

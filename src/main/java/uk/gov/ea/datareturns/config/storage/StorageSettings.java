@@ -1,15 +1,16 @@
 /**
- * 
+ *
  */
 package uk.gov.ea.datareturns.config.storage;
 
 import javax.validation.Valid;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
  * Top-level storage settings element (storage)
- * 
+ *
  * @author Sam Gardner-Dell
  */
 public class StorageSettings {
@@ -22,7 +23,7 @@ public class StorageSettings {
 	private S3StorageSettings s3Config;
 
 	/**
-	 * 
+	 *
 	 */
 	public StorageSettings() {
 	}
@@ -31,13 +32,13 @@ public class StorageSettings {
 	 * @return the localConfig
 	 */
 	public LocalStorageSettings getLocalConfig() {
-		return localConfig;
+		return this.localConfig;
 	}
 
 	/**
 	 * @param localConfig the localConfig to set
 	 */
-	public void setLocalConfig(LocalStorageSettings localConfig) {
+	public void setLocalConfig(final LocalStorageSettings localConfig) {
 		this.localConfig = localConfig;
 	}
 
@@ -45,21 +46,22 @@ public class StorageSettings {
 	 * @return the s3Config
 	 */
 	public S3StorageSettings getS3Config() {
-		return s3Config;
+		return this.s3Config;
 	}
 
 	/**
 	 * @param s3Config the s3Config to set
 	 */
-	public void setS3Config(S3StorageSettings s3Config) {
+	public void setS3Config(final S3StorageSettings s3Config) {
 		this.s3Config = s3Config;
 	}
-	
+
 	/**
 	 * Determine the storage type that has been configured
-	 * 
+	 *
 	 * @return
 	 */
+	@JsonIgnore
 	public StorageType getStorageType() {
 		StorageType type = null;
 		if (this.localConfig != null) {
@@ -69,10 +71,10 @@ public class StorageSettings {
 		}
 		return type;
 	}
-	
+
 	/**
 	 * Simple enumeration of available storage types
-	 * 
+	 *
 	 * @author Sam Gardner-Dell
 	 */
 	public enum StorageType {

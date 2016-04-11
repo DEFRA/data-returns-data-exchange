@@ -1,7 +1,7 @@
 package uk.gov.ea.datareturns.exception.application;
+
 import javax.ws.rs.core.Response.Status;
 
-import uk.gov.ea.datareturns.exception.application.AbstractDRApplicationException;
 import uk.gov.ea.datareturns.type.ApplicationExceptionType;
 
 public class DRFileKeyMismatchException extends AbstractDRApplicationException {
@@ -11,7 +11,7 @@ public class DRFileKeyMismatchException extends AbstractDRApplicationException {
 	/**
 	 * @param message
 	 */
-	public DRFileKeyMismatchException(String message) {
+	public DRFileKeyMismatchException(final String message) {
 		super(Status.NOT_FOUND, ApplicationExceptionType.SYSTEM_FAILURE.getAppStatusCode(), message);
 	}
 }
