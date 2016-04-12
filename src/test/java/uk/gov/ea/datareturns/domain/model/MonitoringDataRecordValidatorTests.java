@@ -231,20 +231,24 @@ public class MonitoringDataRecordValidatorTests {
 
 	/*=================================================================================================================
 	 *
-	 * MONITORING FREQUENCY
+	 * MONITORING PERIOD
 	 * 
 	 *=================================================================================================================
 	 */
 	
 	@Test
-	public void testMonitoringFrequencyLength() {
+	public void testMonitoringPeriodNull() {
 		MonitoringDataRecord record = createValidRecord();
-		record.setMonitoringPeriod(RandomStringUtils.random(30));
+		record.setMonitoringPeriod(null);
 		Set<ConstraintViolation<MonitoringDataRecord>> violations = validator.validate(record);
 		Assert.assertEquals(0, violations.size());
-		
-		record.setMonitoringPeriod(RandomStringUtils.random(31));
-		violations = validator.validate(record);
+	}
+	
+	@Test
+	public void testMonitoringPeriodLength() {
+		MonitoringDataRecord record = createValidRecord();
+		record.setMonitoringPeriod(RandomStringUtils.random(20));
+		Set<ConstraintViolation<MonitoringDataRecord>> violations = validator.validate(record);
 		Assert.assertEquals(1, violations.size());
 	}
 	
@@ -564,11 +568,11 @@ public class MonitoringDataRecordValidatorTests {
 		Assert.assertEquals(0, violations.size());
 	}
 	@Test
-	public void testMethStandLength() {
+	public void testMethStandInvalid() {
 		MonitoringDataRecord record = createValidRecord();
 		record.setMethStand(RandomStringUtils.random(31));
 		Set<ConstraintViolation<MonitoringDataRecord>> violations = validator.validate(record);
-		Assert.assertEquals(2, violations.size());
+		Assert.assertEquals(1, violations.size());
 	}	
 	/*=================================================================================================================
 	 *
@@ -699,7 +703,7 @@ public class MonitoringDataRecordValidatorTests {
 		record.setSiteName("Site Name");
 		record.setReturnType("EPR/IED Landfill Gas infrastructure monitoring");
 		record.setMonitoringDate("2016-03-09T11:18:59");
-		record.setMonitoringPeriod("Quarterly");
+		record.setMonitoringPeriod("During all downwind monitoring");
 		record.setMonitoringPoint("Borehole 1");
 		record.setSampleReference("Sample Reference");
 		record.setSampleBy("Sam Gardner-Dell");

@@ -4,6 +4,7 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 
@@ -13,7 +14,10 @@ import javax.persistence.Table;
  */
 @Entity
 @Table(name = "monitoring_periods")
-@NamedQuery(name = "MonitoringPeriod.findAll", query = "SELECT m FROM MonitoringPeriod m")
+@NamedQueries({
+	@NamedQuery(name = "MonitoringPeriod.findAll", query = "SELECT m FROM MonitoringPeriod m"),
+	@NamedQuery(name = "MonitoringPeriod.findByName", query = "SELECT m FROM MonitoringPeriod m WHERE m.name = :name")
+})
 public class MonitoringPeriod {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)

@@ -7,11 +7,11 @@ import javax.xml.bind.annotation.XmlElement;
 
 import org.hibernate.validator.constraints.Length;
 import org.hibernate.validator.constraints.NotBlank;
-import org.hibernate.validator.constraints.NotEmpty;
 
 import uk.gov.ea.datareturns.domain.io.csv.generic.annotations.CSVField;
 import uk.gov.ea.datareturns.domain.model.rules.DataReturnsHeaders;
 import uk.gov.ea.datareturns.domain.model.validation.auditors.MethodOrStandardAuditor;
+import uk.gov.ea.datareturns.domain.model.validation.auditors.MonitoringPeriodAuditor;
 import uk.gov.ea.datareturns.domain.model.validation.auditors.ParameterListAuditor;
 import uk.gov.ea.datareturns.domain.model.validation.auditors.ReturnTypeListAuditor;
 import uk.gov.ea.datareturns.domain.model.validation.auditors.UniqueIdentifierAuditor;
@@ -61,7 +61,7 @@ public class MonitoringDataRecord {
 	/** The monitoring period  (Mon_Period) */
 	@CSVField(DataReturnsHeaders.MONITORING_PERIOD)
 	@XmlElement(name = DataReturnsHeaders.MONITORING_PERIOD)
-	@Length(min = 0, max = 30, message = "{DR9070-Length}")
+	@ControlledList(auditor = MonitoringPeriodAuditor.class, message = "{DR9070-Incorrect}", required = false)
 	private String monitoringPeriod;
 
 	/** The monitoring point (Mon_Point) */
@@ -121,7 +121,6 @@ public class MonitoringDataRecord {
 	/** Method or standard used (Meth_Stand) */
 	@CSVField(DataReturnsHeaders.METHOD_STANDARD)
 	@XmlElement(name = DataReturnsHeaders.METHOD_STANDARD)
-	@Length(min = 0, max = 30, message = "{DR9100-Length}")
 	@ControlledList(auditor = MethodOrStandardAuditor.class, message = "{DR9100-Incorrect}", required = false)
 	private String methStand;
 

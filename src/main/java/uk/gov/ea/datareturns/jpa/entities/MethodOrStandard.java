@@ -20,7 +20,6 @@ import javax.persistence.Table;
 	@NamedQuery(name = "MethodOrStandard.findAll", query = "SELECT m FROM MethodOrStandard m"),
 	@NamedQuery(name = "MethodOrStandard.findByName", query = "SELECT m FROM MethodOrStandard m WHERE m.name = :name")
 })
-
 public class MethodOrStandard implements Serializable {
 	private static final long serialVersionUID = 1L;
 
