@@ -65,7 +65,7 @@ public class AbstractCSVSettings {
 	 * @return a CSVFormat with the appropriate settings.
 	 */
 	public CSVFormat getCSVFormat() {
-		CSVFormat format = CSVFormat.EXCEL.withHeader();
+		CSVFormat format = CSVFormat.RFC4180.withHeader();
 		if (this.delimiter != null) {
 			format = format.withDelimiter(this.delimiter);
 		}

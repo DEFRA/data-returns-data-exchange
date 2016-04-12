@@ -3,6 +3,8 @@ package uk.gov.ea.datareturns.type;
 public enum ApplicationExceptionType {
 	// DR0400
 	FILE_TYPE_UNSUPPORTED(400, "Unsupported File Type"),
+	// DR0450
+	INCONSISTENT_CSV_RECORD(450, "Inconsistent CSV record"),
 	// DR0500
 	FILE_EMPTY(500, "Empty file"),
 	// DR0820

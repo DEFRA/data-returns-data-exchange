@@ -22,6 +22,7 @@ import uk.gov.ea.datareturns.domain.io.csv.generic.CSVReader;
 import uk.gov.ea.datareturns.domain.io.csv.generic.CSVWriter;
 import uk.gov.ea.datareturns.domain.io.csv.generic.exceptions.HeaderFieldMissingException;
 import uk.gov.ea.datareturns.domain.io.csv.generic.exceptions.HeaderFieldUnrecognisedException;
+import uk.gov.ea.datareturns.domain.io.csv.generic.exceptions.InconsistentRowException;
 import uk.gov.ea.datareturns.domain.io.csv.generic.exceptions.ValidationException;
 import uk.gov.ea.datareturns.domain.io.csv.generic.settings.CSVReaderSettings;
 import uk.gov.ea.datareturns.domain.io.csv.generic.settings.CSVWriterSettings;
@@ -30,6 +31,7 @@ import uk.gov.ea.datareturns.domain.model.rules.DataReturnsHeaders;
 import uk.gov.ea.datareturns.exception.application.DRFileTypeUnsupportedException;
 import uk.gov.ea.datareturns.exception.application.DRHeaderFieldUnrecognisedException;
 import uk.gov.ea.datareturns.exception.application.DRHeaderMandatoryFieldMissingException;
+import uk.gov.ea.datareturns.exception.application.DRInconsistentCSVException;
 import uk.gov.ea.datareturns.exception.system.DRSystemException;
 
 /**
@@ -67,6 +69,10 @@ public class DataReturnsCSVProcessor {
 				final Set<String> mandatoryHeaders = DataReturnsHeaders.getMandatoryHeadings();
 				// Set of headers defined in the supplied model (from the CSV file)
 				final Set<String> csvHeaders = headerMap.keySet();
+				
+				if (csvHeaders.contains(null) || csvHeaders.contains("")) {
+					throw new InconsistentRowException("One or more rows contain additional fields not defined in the headers.");
+				}
 
 				// If we remove the CSV file's headers from the set of mandatory headers then the mandatory headers set should be empty
 				// if they have defined everything that they should have.
@@ -98,6 +104,9 @@ public class DataReturnsCSVProcessor {
 		} catch (final HeaderFieldUnrecognisedException e) {
 			// CSV failed to parse due to an unexpected header field
 			throw new DRHeaderFieldUnrecognisedException(e.getMessage());
+		} catch (final InconsistentRowException e) {
+			// Row encountered with an inconsistent number of fields with respect to the header definitions.
+			throw new DRInconsistentCSVException(e.getMessage());
 		} catch (final ValidationException e) {
 			throw new DRFileTypeUnsupportedException("Unable to parse CSV file.  File content is not valid CSV data.");
 		} catch (final IOException e) {

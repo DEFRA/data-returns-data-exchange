@@ -69,6 +69,7 @@ public class ResourceIntegrationTests {
 	public final static String FILE_CSV_REQUIRED_FIELDS_MISSING = "required-fields-missing.csv";
 	public final static String FILE_CSV_DATE_FORMAT = "date-format-test.csv";
 	public final static String FILE_CSV_UNRECOGNISED_FIELD_FOUND = "unrecognised-field-found.csv";
+	public final static String FILE_CSV_INCONSISTENT_ROWS = "inconsistent-rows.csv";
 
 	public final static String FILE_CONFIG = System.getProperty("configFile");
 
@@ -166,6 +167,19 @@ public class ResourceIntegrationTests {
 				.isEqualTo(ApplicationExceptionType.HEADER_UNRECOGNISED_FIELD_FOUND.getAppStatusCode());
 	}
 
+	/**
+	 * Tests that the backend will throw out CSV files which contain rows with inconsistent number of fields with respect to headers
+	 */
+	@Test
+	public void testInconsistentRows() {
+		final Client client = createClient("test Inconsistent CSV Rows");
+		final Response resp = performUploadStep(client, FILE_CSV_INCONSISTENT_ROWS, MEDIA_TYPE_CSV);
+		assertThat(resp.getStatus()).isEqualTo(Status.BAD_REQUEST.getStatusCode());
+
+		final DataExchangeResult result = getResultFromResponse(resp);
+		assertThat(result.getAppStatusCode())
+				.isEqualTo(ApplicationExceptionType.INCONSISTENT_CSV_RECORD.getAppStatusCode());
+	}
 	/**
 	 * Tests that the backend will load a csv file with all supported date
 	 * formats.
