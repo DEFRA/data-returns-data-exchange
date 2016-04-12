@@ -7,9 +7,11 @@ import javax.xml.bind.annotation.XmlElement;
 
 import org.hibernate.validator.constraints.Length;
 import org.hibernate.validator.constraints.NotBlank;
+import org.hibernate.validator.constraints.NotEmpty;
 
 import uk.gov.ea.datareturns.domain.io.csv.generic.annotations.CSVField;
 import uk.gov.ea.datareturns.domain.model.rules.DataReturnsHeaders;
+import uk.gov.ea.datareturns.domain.model.validation.auditors.MethodOrStandardAuditor;
 import uk.gov.ea.datareturns.domain.model.validation.auditors.ParameterListAuditor;
 import uk.gov.ea.datareturns.domain.model.validation.auditors.ReturnTypeListAuditor;
 import uk.gov.ea.datareturns.domain.model.validation.auditors.UniqueIdentifierAuditor;
@@ -86,6 +88,7 @@ public class MonitoringDataRecord {
 	/** Parameter value (Parameter) */
 	@CSVField(DataReturnsHeaders.PARAMETER)
 	@XmlElement(name = DataReturnsHeaders.PARAMETER)
+	@NotBlank(message = "{DR9030-Missing}")
 	@ControlledList(auditor = ParameterListAuditor.class, message = "{DR9030-Incorrect}")
 	private String parameter;
 
@@ -105,6 +108,7 @@ public class MonitoringDataRecord {
 	/** Unit of measurement (Unit) */
 	@CSVField(DataReturnsHeaders.UNIT)
 	@XmlElement(name = DataReturnsHeaders.UNIT)
+	@NotBlank(message = "{DR9050-Missing}")
 	@ControlledList(auditor = UnitListAuditor.class, message = "{DR9050-Incorrect}")
 	private String unit;
 
@@ -118,6 +122,7 @@ public class MonitoringDataRecord {
 	@CSVField(DataReturnsHeaders.METHOD_STANDARD)
 	@XmlElement(name = DataReturnsHeaders.METHOD_STANDARD)
 	@Length(min = 0, max = 30, message = "{DR9100-Length}")
+	@ControlledList(auditor = MethodOrStandardAuditor.class, message = "{DR9100-Incorrect}", required = false)
 	private String methStand;
 
 	/** Record comments (Comments) */

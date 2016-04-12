@@ -3,6 +3,8 @@
  */
 package uk.gov.ea.datareturns.domain.model.validation.auditors;
 
+import java.util.Objects;
+
 import uk.gov.ea.datareturns.domain.model.validation.constraints.controlledlist.ControlledListAuditor;
 import uk.gov.ea.datareturns.jpa.dao.UnitDao;
 
@@ -22,6 +24,6 @@ public class UnitListAuditor implements ControlledListAuditor {
 	 */
 	@Override
 	public boolean isValid(final Object value) {
-		return UnitDao.getInstance().forName(String.valueOf(value)) != null;
+		return UnitDao.getInstance().forName(Objects.toString(value, "")) != null;
 	}
 }

@@ -9,6 +9,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Properties;
 
 import org.apache.commons.io.FileUtils;
@@ -79,7 +80,7 @@ public class LocalStorageProvider implements StorageProvider {
 				props.load(is);
 				// Store the properties data in the metadata map
 				props.forEach((k, v) -> {
-					metadata.put(String.valueOf(k), String.valueOf(v));
+					metadata.put(Objects.toString(k), Objects.toString(v));
 				});
 			} catch (final IOException e) {
 				throw new StorageException("Unable to read metadata properties", e);

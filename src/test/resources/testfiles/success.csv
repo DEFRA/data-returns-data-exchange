@@ -1,2 +1,2 @@
 EA_ID,Site_Name,Rtn_Type,Mon_Date,Mon_Period,Smpl_Ref,Smpl_By,Mon_Point,Parameter,Value,Txt_Value,Unit,Ref_Period,Meth_Stand,Comments,CiC,CAS,RD_Code
-AB3002SQ,ABC Limited,EPR/IED Landfill Gas infrastructure monitoring,2015-08-05,Period 1,Sample Ref,Sampled by 1,Monitor point 1,"16-(Thienylmethylene)Androstane-3,17-Diol SVOCS",123,Test Text,ºC,Annual,Test method 1,Test comments,True,123,rd code
+AB3002SQ,ABC Limited,EPR/IED Landfill Gas infrastructure monitoring,2015-08-05,Period 1,Sample Ref,Sampled by 1,Monitor point 1,"16-(Thienylmethylene)Androstane-3,17-Diol SVOCS",123,Test Text,ºC,Annual,BS EN 14792,Test comments,True,123,rd code

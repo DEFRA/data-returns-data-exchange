@@ -350,14 +350,14 @@ public class MonitoringDataRecordValidatorTests {
 		MonitoringDataRecord record = createValidRecord();
 		record.setParameter(null);
 		Set<ConstraintViolation<MonitoringDataRecord>> violations = validator.validate(record);
-		Assert.assertEquals(1, violations.size());
+		Assert.assertEquals(2, violations.size());
 	}
 	@Test
 	public void testParameterEmpty() {
 		MonitoringDataRecord record = createValidRecord();
 		record.setParameter("");
 		Set<ConstraintViolation<MonitoringDataRecord>> violations = validator.validate(record);
-		Assert.assertEquals(1, violations.size());
+		Assert.assertEquals(2, violations.size());
 	}
 	@Test
 	public void testParameterInvalid() {
@@ -504,14 +504,14 @@ public class MonitoringDataRecordValidatorTests {
 		MonitoringDataRecord record = createValidRecord();
 		record.setUnit(null);
 		Set<ConstraintViolation<MonitoringDataRecord>> violations = validator.validate(record);
-		Assert.assertEquals(1, violations.size());
+		Assert.assertEquals(2, violations.size());
 	}
 	@Test
 	public void testUnitEmpty() {
 		MonitoringDataRecord record = createValidRecord();
 		record.setUnit(" ");
 		Set<ConstraintViolation<MonitoringDataRecord>> violations = validator.validate(record);
-		Assert.assertEquals(1, violations.size());
+		Assert.assertEquals(2, violations.size());
 	}
 	@Test
 	public void testUnitValid() {
@@ -566,13 +566,9 @@ public class MonitoringDataRecordValidatorTests {
 	@Test
 	public void testMethStandLength() {
 		MonitoringDataRecord record = createValidRecord();
-		record.setMethStand(RandomStringUtils.random(30));
-		Set<ConstraintViolation<MonitoringDataRecord>> violations = validator.validate(record);
-		Assert.assertEquals(0, violations.size());
-		
 		record.setMethStand(RandomStringUtils.random(31));
-		violations = validator.validate(record);
-		Assert.assertEquals(1, violations.size());
+		Set<ConstraintViolation<MonitoringDataRecord>> violations = validator.validate(record);
+		Assert.assertEquals(2, violations.size());
 	}	
 	/*=================================================================================================================
 	 *
@@ -713,7 +709,7 @@ public class MonitoringDataRecordValidatorTests {
 		record.setUnit("m3/s");
 		record.setReferencePeriod(
 				"Bi-annual periodic measurement average value over sample period of between 6 and 8 hours.");
-		record.setMethStand("Method or standard");
+		record.setMethStand("BS ISO 15713");
 		record.setComments("Free text comments entered in this field.");
 		record.setCic("True");
 		record.setCas("100-74-3");

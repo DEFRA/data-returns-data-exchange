@@ -5,6 +5,7 @@ package uk.gov.ea.datareturns.domain.model.validation.constraints.field;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.Objects;
 
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
@@ -32,7 +33,7 @@ public class ReturnsDateValidator implements ConstraintValidator<ValidReturnsDat
 	public boolean isValid(final Object value, final ConstraintValidatorContext context) {
 		boolean isValid = false;
 		if (value instanceof String) {
-			final String dateValue = String.valueOf(value);
+			final String dateValue = Objects.toString(value, "");
 
 			// If the date value is longer than the standard date-only format then try and parse as a date-time first.
 			if (dateValue.length() > DateFormat.STANDARD_DATE_FORMAT.length()) {

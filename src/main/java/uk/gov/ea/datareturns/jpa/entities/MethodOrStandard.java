@@ -6,6 +6,7 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 
@@ -15,7 +16,11 @@ import javax.persistence.Table;
  */
 @Entity
 @Table(name = "methods_or_standards")
-@NamedQuery(name = "MethodOrStandard.findAll", query = "SELECT m FROM MethodOrStandard m")
+@NamedQueries({
+	@NamedQuery(name = "MethodOrStandard.findAll", query = "SELECT m FROM MethodOrStandard m"),
+	@NamedQuery(name = "MethodOrStandard.findByName", query = "SELECT m FROM MethodOrStandard m WHERE m.name = :name")
+})
+
 public class MethodOrStandard implements Serializable {
 	private static final long serialVersionUID = 1L;
 
