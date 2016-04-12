@@ -9,10 +9,8 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.UUID;
 
 import javax.ws.rs.Consumes;
@@ -24,7 +22,6 @@ import javax.ws.rs.core.Response.Status;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.glassfish.jersey.media.multipart.FormDataContentDisposition;
 import org.glassfish.jersey.media.multipart.FormDataParam;
 import org.hibernate.validator.constraints.NotEmpty;
@@ -90,6 +87,14 @@ public class DataExchangeResource {
 		final File uploadedFile = new File(settings.getUploadedLocation(), fileDetail.getFileName());
 		final DataReturnsCSVProcessor csvProcessor = new DataReturnsCSVProcessor(this.config);
 
+		
+		// TODO: I am concerned about this.  Have seen some weird results from the integration tests and this is all that could cause it...
+		// TODO: Think we should just change the way we handle the uploads - use a work folder.
+		// TODO: I don't think we're deleting uploaded files in all cases - this needs to be investigated!
+		if (uploadedFile.exists()) {
+			LOGGER.warn("Uploaded file by the given name already exists!");
+		}
+		
 		// 1. Save upload file on server
 		try {
 			FileUtils.copyInputStreamToFile(is, uploadedFile);

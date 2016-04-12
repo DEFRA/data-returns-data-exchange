@@ -13,6 +13,7 @@ import uk.gov.ea.datareturns.domain.model.rules.DataReturnsHeaders;
 import uk.gov.ea.datareturns.domain.model.validation.auditors.MethodOrStandardAuditor;
 import uk.gov.ea.datareturns.domain.model.validation.auditors.MonitoringPeriodAuditor;
 import uk.gov.ea.datareturns.domain.model.validation.auditors.ParameterListAuditor;
+import uk.gov.ea.datareturns.domain.model.validation.auditors.ReferencePeriodAuditor;
 import uk.gov.ea.datareturns.domain.model.validation.auditors.ReturnTypeListAuditor;
 import uk.gov.ea.datareturns.domain.model.validation.auditors.UniqueIdentifierAuditor;
 import uk.gov.ea.datareturns.domain.model.validation.auditors.UnitListAuditor;
@@ -115,7 +116,7 @@ public class MonitoringDataRecord {
 	/** Reference period */
 	@CSVField(DataReturnsHeaders.REFERENCE_PERIOD)
 	@XmlElement(name = DataReturnsHeaders.REFERENCE_PERIOD)
-	@Length(min = 0, max = 255, message = "{DR9090-Length}")
+	@ControlledList(auditor = ReferencePeriodAuditor.class, message = "{DR9090-Incorrect}", required = false)
 	private String referencePeriod;
 
 	/** Method or standard used (Meth_Stand) */

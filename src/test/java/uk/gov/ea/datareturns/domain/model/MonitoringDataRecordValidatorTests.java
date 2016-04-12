@@ -542,14 +542,10 @@ public class MonitoringDataRecordValidatorTests {
 		Assert.assertEquals(0, violations.size());
 	}
 	@Test
-	public void testReferencePeriodLength() {
+	public void testReferencePeriodInvalid() {
 		MonitoringDataRecord record = createValidRecord();
-		record.setReferencePeriod(RandomStringUtils.random(255));
+		record.setReferencePeriod(RandomStringUtils.random(30));
 		Set<ConstraintViolation<MonitoringDataRecord>> violations = validator.validate(record);
-		Assert.assertEquals(0, violations.size());
-		
-		record.setReferencePeriod(RandomStringUtils.random(256));
-		violations = validator.validate(record);
 		Assert.assertEquals(1, violations.size());
 	}	
 	
@@ -711,8 +707,7 @@ public class MonitoringDataRecordValidatorTests {
 		record.setValue("<0.0006");
 		record.setTextValue("Some text value");
 		record.setUnit("m3/s");
-		record.setReferencePeriod(
-				"Bi-annual periodic measurement average value over sample period of between 6 and 8 hours.");
+		record.setReferencePeriod("Biannual periodic measurement average value over sample period of between 6 and 8 hours");
 		record.setMethStand("BS ISO 15713");
 		record.setComments("Free text comments entered in this field.");
 		record.setCic("True");
