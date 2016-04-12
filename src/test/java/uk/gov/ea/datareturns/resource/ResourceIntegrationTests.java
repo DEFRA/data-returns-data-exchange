@@ -207,9 +207,9 @@ public class ResourceIntegrationTests {
 		final Client client = createClient("test Multiple Permits");
 		Response resp = performUploadStep(client, FILE_CSV_MUTLIPLE_PERMITS, MEDIA_TYPE_CSV);
 		assertThat(resp.getStatus()).isEqualTo(Status.OK.getStatusCode());
-		DataExchangeResult result = getResultFromResponse(resp);
-		String key = result.getUploadResult().getFileKey();
-		assertThat(key != null);
+//		DataExchangeResult result = getResultFromResponse(resp);
+//		String key = result.getUploadResult().getFileKey();
+//		assertThat(key != null);
 		
 		// TODO: Test second stage using key retrieved from the first stage
 	}
