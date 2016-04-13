@@ -70,10 +70,6 @@ public class DataReturnsCSVProcessor {
 				// Set of headers defined in the supplied model (from the CSV file)
 				final Set<String> csvHeaders = headerMap.keySet();
 				
-				if (csvHeaders.contains(null) || csvHeaders.contains("")) {
-					throw new InconsistentRowException("One or more rows contain additional fields not defined in the headers.");
-				}
-
 				// If we remove the CSV file's headers from the set of mandatory headers then the mandatory headers set should be empty
 				// if they have defined everything that they should have.
 				mandatoryHeaders.removeAll(csvHeaders);

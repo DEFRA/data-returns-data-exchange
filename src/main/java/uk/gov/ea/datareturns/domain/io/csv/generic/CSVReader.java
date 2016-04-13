@@ -22,6 +22,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import uk.gov.ea.datareturns.domain.io.csv.generic.annotations.CSVField;
+import uk.gov.ea.datareturns.domain.io.csv.generic.exceptions.InconsistentRowException;
 import uk.gov.ea.datareturns.domain.io.csv.generic.exceptions.ValidationException;
 import uk.gov.ea.datareturns.domain.io.csv.generic.settings.CSVReaderSettings;
 
@@ -100,6 +101,11 @@ public class CSVReader<T> {
 			// Iterate the records in the CSV file reading data into the supplied JavaBean class
 			try {
 				for (final CSVRecord csvRecord : parser) {
+					if (!csvRecord.isConsistent()) {
+						throw new InconsistentRowException(
+								String.format("Record %d contains additional fields not defined in the header.",
+										csvRecord.getRecordNumber()));
+					}
 					records.add(mapToBean(csvRecord, pojoMappings));
 				}
 			} catch (final RuntimeException e) {
