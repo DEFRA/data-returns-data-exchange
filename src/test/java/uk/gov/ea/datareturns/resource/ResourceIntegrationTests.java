@@ -138,7 +138,7 @@ public class ResourceIntegrationTests {
 
 		final DataExchangeResult result = getResultFromResponse(resp);
 		assertThat(result.getAppStatusCode())
-				.isEqualTo(ApplicationExceptionType.FILE_TYPE_UNSUPPORTED.getAppStatusCode());
+				.isEqualTo(ApplicationExceptionType.INCONSISTENT_CSV_RECORD.getAppStatusCode());
 	}
 
 	/**

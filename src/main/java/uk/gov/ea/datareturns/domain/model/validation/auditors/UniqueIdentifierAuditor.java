@@ -9,6 +9,7 @@ import uk.gov.ea.datareturns.domain.model.validation.constraints.controlledlist.
 import uk.gov.ea.datareturns.jpa.dao.UniqueIdentifierDao;
 
 /**
+ * Controlled list value for unique identifiers
  *
  * @author Sam Gardner-Dell
  */

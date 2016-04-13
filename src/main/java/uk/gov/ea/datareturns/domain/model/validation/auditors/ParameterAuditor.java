@@ -6,17 +6,18 @@ package uk.gov.ea.datareturns.domain.model.validation.auditors;
 import java.util.Objects;
 
 import uk.gov.ea.datareturns.domain.model.validation.constraints.controlledlist.ControlledListAuditor;
-import uk.gov.ea.datareturns.jpa.dao.UnitDao;
+import uk.gov.ea.datareturns.jpa.dao.ParameterDao;
 
 /**
- * @author sam
+ * Controlled list auditor for parameters
  *
+ * @author Sam Gardner-Dell
  */
-public class UnitListAuditor implements ControlledListAuditor {
+public class ParameterAuditor implements ControlledListAuditor {
 	/**
 	 *
 	 */
-	public UnitListAuditor() {
+	public ParameterAuditor() {
 	}
 
 	/* (non-Javadoc)
@@ -24,6 +25,7 @@ public class UnitListAuditor implements ControlledListAuditor {
 	 */
 	@Override
 	public boolean isValid(final Object value) {
-		return UnitDao.getInstance().forName(Objects.toString(value, "")) != null;
+		return ParameterDao.getInstance().forName(Objects.toString(value, "")) != null;
 	}
+
 }

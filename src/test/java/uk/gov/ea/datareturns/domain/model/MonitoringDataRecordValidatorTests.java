@@ -485,17 +485,12 @@ public class MonitoringDataRecordValidatorTests {
 		Assert.assertEquals(0, violations.size());
 	}
 	@Test
-	public void testTextValueLength() {
+	public void testTextValueInvalid() {
 		MonitoringDataRecord record = createValidRecord();
-		record.setTextValue(RandomStringUtils.random(255));
+		record.setTextValue(RandomStringUtils.random(30));
 		Set<ConstraintViolation<MonitoringDataRecord>> violations = validator.validate(record);
-		Assert.assertEquals(0, violations.size());
-		
-		record.setTextValue(RandomStringUtils.random(256));
-		violations = validator.validate(record);
 		Assert.assertEquals(1, violations.size());
-	}	
-	
+	}
 
 	/*=================================================================================================================
 	 *
@@ -681,15 +676,15 @@ public class MonitoringDataRecordValidatorTests {
 	 */
 	private static MonitoringDataRecord createValidRecord() {
 //		TODO: Find a way to mock the auditor classes
-//		ReturnTypeListAuditor rtAuditor = PowerMockito.mock(ReturnTypeListAuditor.class);
+//		ReturnTypeAuditor rtAuditor = PowerMockito.mock(ReturnTypeAuditor.class);
 //		PowerMockito.doReturn(true).when(rtAuditor).isValid(Mockito.any());
 //		PowerMockito.when(rtAuditor.isValid(Mockito.eq())).thenReturn(true);
 //		
 //		try {
 //
-//			System.out.println("ReturnTypeListAuditor mocked");
+//			System.out.println("ReturnTypeAuditor mocked");
 //			PowerMockito.whenNew(ReturnTypeListAuditorProxy.class).withNoArguments().thenThrow(new RuntimeException("WHAT IS GOING ON?"));
-//			PowerMockito.whenNew(ReturnTypeListAuditor.class).withAnyArguments().thenReturn(rtAuditor);
+//			PowerMockito.whenNew(ReturnTypeAuditor.class).withAnyArguments().thenReturn(rtAuditor);
 //		} catch (Exception e1) {
 //			e1.printStackTrace();
 //		}
@@ -705,7 +700,7 @@ public class MonitoringDataRecordValidatorTests {
 		record.setSampleBy("Sam Gardner-Dell");
 		record.setParameter("1,1,1,2-Tetrachloroethane");
 		record.setValue("<0.0006");
-		record.setTextValue("Some text value");
+		record.setTextValue("Extreme weather");
 		record.setUnit("m3/s");
 		record.setReferencePeriod("Biannual periodic measurement average value over sample period of between 6 and 8 hours");
 		record.setMethStand("BS ISO 15713");

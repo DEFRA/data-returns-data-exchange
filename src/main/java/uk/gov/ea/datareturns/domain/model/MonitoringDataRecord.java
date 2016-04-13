@@ -12,11 +12,12 @@ import uk.gov.ea.datareturns.domain.io.csv.generic.annotations.CSVField;
 import uk.gov.ea.datareturns.domain.model.rules.DataReturnsHeaders;
 import uk.gov.ea.datareturns.domain.model.validation.auditors.MethodOrStandardAuditor;
 import uk.gov.ea.datareturns.domain.model.validation.auditors.MonitoringPeriodAuditor;
-import uk.gov.ea.datareturns.domain.model.validation.auditors.ParameterListAuditor;
+import uk.gov.ea.datareturns.domain.model.validation.auditors.ParameterAuditor;
+import uk.gov.ea.datareturns.domain.model.validation.auditors.QualifierAuditor;
 import uk.gov.ea.datareturns.domain.model.validation.auditors.ReferencePeriodAuditor;
-import uk.gov.ea.datareturns.domain.model.validation.auditors.ReturnTypeListAuditor;
+import uk.gov.ea.datareturns.domain.model.validation.auditors.ReturnTypeAuditor;
 import uk.gov.ea.datareturns.domain.model.validation.auditors.UniqueIdentifierAuditor;
-import uk.gov.ea.datareturns.domain.model.validation.auditors.UnitListAuditor;
+import uk.gov.ea.datareturns.domain.model.validation.auditors.UnitAuditor;
 import uk.gov.ea.datareturns.domain.model.validation.constraints.controlledlist.ControlledList;
 import uk.gov.ea.datareturns.domain.model.validation.constraints.field.ValidReturnsDate;
 
@@ -50,7 +51,7 @@ public class MonitoringDataRecord {
 	@CSVField(DataReturnsHeaders.RETURN_TYPE)
 	@XmlElement(name = DataReturnsHeaders.RETURN_TYPE)
 	@NotBlank(message = "{DR9010-Missing}")
-	@ControlledList(auditor = ReturnTypeListAuditor.class, message = "{DR9010-Incorrect}")
+	@ControlledList(auditor = ReturnTypeAuditor.class, message = "{DR9010-Incorrect}")
 	private String returnType;
 
 	/** The monitoring date (Mon_Date) */
@@ -90,7 +91,7 @@ public class MonitoringDataRecord {
 	@CSVField(DataReturnsHeaders.PARAMETER)
 	@XmlElement(name = DataReturnsHeaders.PARAMETER)
 	@NotBlank(message = "{DR9030-Missing}")
-	@ControlledList(auditor = ParameterListAuditor.class, message = "{DR9030-Incorrect}")
+	@ControlledList(auditor = ParameterAuditor.class, message = "{DR9030-Incorrect}")
 	private String parameter;
 
 	/** Value (Value) */
@@ -103,14 +104,14 @@ public class MonitoringDataRecord {
 	/** Textual value (Txt_Value) */
 	@CSVField(DataReturnsHeaders.TEXT_VALUE)
 	@XmlElement(name = DataReturnsHeaders.TEXT_VALUE)
-	@Length(min = 0, max = 255, message = "{DR9080-Length}")
+	@ControlledList(auditor = QualifierAuditor.class, message = "{DR9080-Incorrect}", required = false)
 	private String textValue;
 
 	/** Unit of measurement (Unit) */
 	@CSVField(DataReturnsHeaders.UNIT)
 	@XmlElement(name = DataReturnsHeaders.UNIT)
 	@NotBlank(message = "{DR9050-Missing}")
-	@ControlledList(auditor = UnitListAuditor.class, message = "{DR9050-Incorrect}")
+	@ControlledList(auditor = UnitAuditor.class, message = "{DR9050-Incorrect}")
 	private String unit;
 
 	/** Reference period */

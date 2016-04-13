@@ -1,5 +1,5 @@
-EA_ID,Rtn_Type,Mon_Point,Mon_Date,Parameter,Value,Unit,
-AP3192NT,EPR/IED Air (point source) emissions return,Borehole 1,2015-02-15,"1,3-Dichloropropene",<1.12345,ug,
-AP3192NT,EPR/IED Landfill Gas infrastructure monitoring,Borehole 10,2015-02-16,"1,1,1,2-Tetrachloroethane",0,cm3,
+EA_ID,Rtn_Type,Mon_Point,Mon_Date,Parameter,Value,Unit
+AP3192NT,EPR/IED Air (point source) emissions return,Borehole 1,2015-02-15,"1,3-Dichloropropene",<1.12345,ug
+AP3192NT,EPR/IED Landfill Gas infrastructure monitoring,Borehole 10,2015-02-16,"1,1,1,2-Tetrachloroethane",0,cm3
 AP3192NT,EPR/IED Air (ambient) monitoring return,Chimney 4,2015-02-17,"1,3-Butadiene",0.000001,km2,extra data on this row
-AP3192NT,EPR/IED Landfill Annual monitoring report,Borehole 1,2015-02-17,1-Chloro-4-nitrobenzene,20.0123,kg/l,
+AP3192NT,EPR/IED Landfill Annual monitoring report,Borehole 1,2015-02-17,1-Chloro-4-nitrobenzene,20.0123,kg/l
