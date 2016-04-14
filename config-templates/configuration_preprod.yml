@@ -1,10 +1,22 @@
 logging:
+
   level: ERROR
   loggers:
     uk.gov.ea.datareturns: ERROR
     io.dropwizard: ERROR
-    org.glassfish: ERROR
     org.eclipse: ERROR
+    
+    # Hibernate
+    org.hibernate: ERROR
+    
+    # Amazon S3 API
+    com.amazonaws: ERROR
+    org.apache.http.wire: ERROR
+    
+    # Glassfish
+    org.glassfish: ERROR
+    # Useful to log REST requests and responses (set to DEBUG)
+    org.glassfish.jersey.filter: ERROR
   appenders:
   - type: console
   - type: file
