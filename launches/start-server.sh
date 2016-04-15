@@ -15,7 +15,7 @@ if [[ $rc != 0 ]]; then
 	exit $rc;
 fi
 
-server_cmd="java -jar $base_dir/target/data-returns-data-exchange-1.0-SNAPSHOT.one-jar.jar server $config_file"
+server_cmd="java -jar $base_dir/target/data-returns-data-exchange-1.0-SNAPSHOT.jar server $config_file"
 clear
 echo -e "Maven build successful, starting server: $server_cmd"
 $server_cmd;

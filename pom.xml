@@ -20,7 +20,7 @@
 		<maven.compiler.version>3.2</maven.compiler.version>
 		<maven.surefire.plugin.version>2.18.1</maven.surefire.plugin.version>
 		<maven.jar.plugin.version>2.6</maven.jar.plugin.version>
-		<onejar.version>1.4.4</onejar.version>
+		<maven.shade.plugin.version>2.3</maven.shade.plugin.version>
 		<csv.validator.version>1.0</csv.validator.version>
 		<liquibase.version>3.4.2</liquibase.version>
 		<liquibase.maven.plugin.version>3.2.0</liquibase.maven.plugin.version>
@@ -98,7 +98,7 @@
 			<groupId>org.hibernate</groupId>
 			<artifactId>hibernate-java8</artifactId>
 			<version>${hibernate.orm.version}</version>
-		</dependency>		
+		</dependency>
 		<dependency>
 			<groupId>org.hibernate</groupId>
 			<artifactId>hibernate-c3p0</artifactId>
@@ -220,10 +220,10 @@
 		</dependency>
 	</dependencies>
 	<build>
-	
-        <filters>
-            <filter>src/main/resources/db/changelog/liquibase.properties</filter>
-        </filters>
+
+		<filters>
+			<filter>src/main/resources/db/changelog/liquibase.properties</filter>
+		</filters>
 		<resources>
 			<resource>
 				<directory>src/main/resources</directory>
@@ -268,21 +268,57 @@
 					<archive>
 						<manifest>
 							<mainClass>uk.gov.ea.datareturns.App</mainClass>
+              				<addDefaultImplementationEntries>true</addDefaultImplementationEntries>
 						</manifest>
 					</archive>
 				</configuration>
 			</plugin>
+			
 			<plugin>
-				<groupId>org.dstovall</groupId>
-				<artifactId>onejar-maven-plugin</artifactId>
-				<version>${onejar.version}</version>
+				<artifactId>maven-shade-plugin</artifactId>
+				<version>${maven.shade.plugin.version}</version>
 				<executions>
 					<execution>
+						<phase>package</phase>
 						<goals>
-							<goal>one-jar</goal>
+							<goal>shade</goal>
 						</goals>
+						<configuration>
+							<transformers>
+								<transformer implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer" />
+								<transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
+									<mainClass>uk.gov.ea.datareturns.App</mainClass>
+								</transformer>
+							</transformers>
+							<keepDependenciesWithProvidedScope>true</keepDependenciesWithProvidedScope>
+							<createDependencyReducedPom>true</createDependencyReducedPom>
+							<filters>
+								<filter>
+									<artifact>*:*</artifact>
+									<excludes>
+										<exclude>META-INF/*.SF</exclude>
+										<exclude>META-INF/*.DSA</exclude>
+										<exclude>META-INF/*.RSA</exclude>
+									</excludes>
+								</filter>
+							</filters>
+						</configuration>
 					</execution>
 				</executions>
+				<configuration>
+					<keepDependenciesWithProvidedScope>true</keepDependenciesWithProvidedScope>
+					<createDependencyReducedPom>true</createDependencyReducedPom>
+					<filters>
+						<filter>
+							<artifact>*:*</artifact>
+							<excludes>
+								<exclude>META-INF/*.SF</exclude>
+								<exclude>META-INF/*.DSA</exclude>
+								<exclude>META-INF/*.RSA</exclude>
+							</excludes>
+						</filter>
+					</filters>
+				</configuration>
 			</plugin>
 
 			<plugin>
@@ -330,7 +366,7 @@
 					</execution>
 					-->
 					<!-- This command can be executed using mvn sql:execute@drop-database -->
-					
+
 					<execution>
 						<id>drop-database</id>
 						<configuration>
