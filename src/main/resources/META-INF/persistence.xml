@@ -25,14 +25,17 @@
 				see http://www.mchange.com/projects/c3p0
 			-->
 		    <property name="c3p0.minPoolSize" value="3"/>
-		    <property name="c3p0.maxPoolSize" value="15"/>
+		    <property name="c3p0.maxPoolSize" value="20"/>
 		    <!-- Seconds a Connection can remain pooled but unused before being discarded - zero means they never expire -->
 		    <property name="c3p0.maxIdleTime" value="0"/>
-		    <!-- The size of c3p0's global PreparedStatement cache.  TODO Investigate the effect of enabling this. -->
-		    <property name="c3p0.maxStatements" value="0"/>
-		    <property name="c3p0.maxStatementsPerConnection" value="0"/>
+<!-- 		    <property name="c3p0.maxStatements" value="0"/> -->
+		    <property name="c3p0.maxStatementsPerConnection" value="10"/>
 		    <!-- Disable c3p0 connection testing as we use a JDBC4 compatible driver which can handle this itself -->
 		    <property name="c3p0.idleConnectionTestPeriod" value="0"/>
+		    
+		    <property name="hibernate.cache.use_second_level_cache" value="true"/>
+		    <property name="hibernate.cache.use_query_cache" value="true"/>
+		    <property name="hibernate.cache.region.factory_class" value="org.hibernate.cache.ehcache.EhCacheRegionFactory"/>
 		</properties>
     </persistence-unit>
 </persistence>

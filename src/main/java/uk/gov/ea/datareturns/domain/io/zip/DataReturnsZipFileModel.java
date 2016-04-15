@@ -10,6 +10,7 @@ import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Enumeration;
+import java.util.zip.Deflater;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 import java.util.zip.ZipOutputStream;
@@ -83,7 +84,7 @@ public class DataReturnsZipFileModel {
 		try (OutputStream fos = FileUtils.openOutputStream(zipFile);
 				ZipOutputStream zos = new ZipOutputStream(fos);) {
 			zos.setMethod(ZipOutputStream.DEFLATED);
-			zos.setLevel(6);
+			zos.setLevel(Deflater.BEST_COMPRESSION);
 
 			ZipEntry entry = new ZipEntry(DIR_INPUT + this.inputFile.getName());
 			zos.putNextEntry(entry);

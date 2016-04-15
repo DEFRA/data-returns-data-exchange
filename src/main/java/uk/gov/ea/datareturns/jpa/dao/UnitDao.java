@@ -1,6 +1,8 @@
 package uk.gov.ea.datareturns.jpa.dao;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
@@ -12,6 +14,26 @@ public class UnitDao extends AbstractJpaDao {
 
 	public static UnitDao getInstance() {
 		return INSTANCE;
+	}
+
+	
+	/**
+	 * Determine if a specific name exists in the units controlled list
+	 * 
+	 * @param name the name to test
+	 * @return true if the name exists, false otherwise.
+	 */
+	public boolean nameExists(final String name) {
+		return findNames().contains(name);
+	}
+	
+	/**
+	 * Retrieve a full set of unit names
+	 * 
+	 * @return a {@link Set} of unit names
+	 */
+	public Set<String> findNames() {
+		return new HashSet<String>(stringColumnQuery("Unit.findAllNames"));
 	}
 
 	/**

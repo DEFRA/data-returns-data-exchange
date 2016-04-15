@@ -31,7 +31,7 @@ import uk.gov.ea.datareturns.domain.io.csv.generic.settings.CSVReaderSettings;
  *
  * @author Sam Gardner-Dell
  */
-public class CSVReader<T> {
+public class CSVReader<T extends AbstractCSVRecord> {
 	/** Class logger */
 	private static final Logger LOGGER = LoggerFactory.getLogger(CSVReader.class);
 	/** Default settings used by the reader */
@@ -99,6 +99,9 @@ public class CSVReader<T> {
 			pojoMappings.forEach((k, v) -> model.getPojoFieldToHeaderMap().put(v.getFieldName(), k));
 
 			// Iterate the records in the CSV file reading data into the supplied JavaBean class
+			
+			// Line number starts at 2 (human readable - line 1 is the header)
+			int lineNumber = 2;
 			try {
 				for (final CSVRecord csvRecord : parser) {
 					if (!csvRecord.isConsistent()) {
@@ -106,7 +109,9 @@ public class CSVReader<T> {
 								String.format("Record %d contains additional fields not defined in the header.",
 										csvRecord.getRecordNumber()));
 					}
-					records.add(mapToBean(csvRecord, pojoMappings));
+					T record = mapToBean(csvRecord, pojoMappings);
+					record.setLineNumber(lineNumber++);
+					records.add(record);
 				}
 			} catch (final RuntimeException e) {
 				// The underlying apache commons CSV reader will throw a RuntimeException if a parse error occurs within the iterator

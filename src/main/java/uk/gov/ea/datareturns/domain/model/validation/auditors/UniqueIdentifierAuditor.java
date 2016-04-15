@@ -25,6 +25,6 @@ public class UniqueIdentifierAuditor implements ControlledListAuditor {
 	 */
 	@Override
 	public boolean isValid(final Object value) {
-		return UniqueIdentifierDao.getInstance().forIdentifier(Objects.toString(value, "")) != null;
+		return UniqueIdentifierDao.getInstance().identfierExists(Objects.toString(value, ""));
 	}
 }

@@ -1,5 +1,6 @@
 package uk.gov.ea.datareturns.domain.io.csv.generic;
 
+import java.io.BufferedOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintStream;
@@ -54,8 +55,8 @@ public class CSVWriter<T> {
 	 * @throws IOException if a problem occurs attempting to write to the given {@link OutputStream}
 	 */
 	public void write(final List<T> records, final OutputStream out) throws IOException {
-		try (
-				final PrintStream ps = new PrintStream(out);
+		try (	final BufferedOutputStream bos = new BufferedOutputStream(out);
+				final PrintStream ps = new PrintStream(bos);
 				final CSVPrinter printer = this.settings.getCSVFormat().print(ps);) {
 			// Retrieve a map from the CSV field headers to the Java bean fields
 			final Map<String, Method> pojoMappings = getCSVMethodMapping(this.javaBeanClass);
@@ -75,7 +76,7 @@ public class CSVWriter<T> {
 						try {
 							value = beanGetter.invoke(record);
 						} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
-							LOGGER.debug("Unable to invoke getter method " + beanGetter.getName() + " for bean " + record.getClass());
+							LOGGER.error("Unable to invoke getter method " + beanGetter.getName() + " for bean " + record.getClass());
 						}
 					}
 

@@ -16,12 +16,12 @@ import javax.persistence.Table;
 @Entity
 @Table(name = "units")
 @NamedQueries({
-		@NamedQuery(name = "Unit.findAll", query = "SELECT u FROM Unit u"),
-		@NamedQuery(name = "Unit.findByName", query = "SELECT u FROM Unit u WHERE u.name = :name")
+	@NamedQuery(name = "Unit.findAll", query = "SELECT u FROM Unit u"),
+	@NamedQuery(name = "Unit.findAllNames", query = "SELECT u.name FROM Unit u"),
+	@NamedQuery(name = "Unit.findByName", query = "SELECT u FROM Unit u WHERE u.name = :name")
 })
 
 public class Unit {
-
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;

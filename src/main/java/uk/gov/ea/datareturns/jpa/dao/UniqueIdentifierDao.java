@@ -1,6 +1,8 @@
 package uk.gov.ea.datareturns.jpa.dao;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
@@ -13,6 +15,27 @@ public class UniqueIdentifierDao extends AbstractJpaDao {
 	public static UniqueIdentifierDao getInstance() {
 		return INSTANCE;
 	}
+
+	/**
+	 * Check if a specific identifier exists in the controlled list.
+	 * 
+	 * @param identifier the identifier to check
+	 * @return true if the identifier exists, false otherwise.
+	 */
+	public boolean identfierExists(String identifier) {
+		return findIdentifiers().contains(identifier);
+	}
+	
+
+	/**
+	 * Get a set of identifiers from the database
+	 *
+	 * @return a {@link UniqueIdentifier} for the given identifier or null if not found.
+	 */
+	public Set<String> findIdentifiers() {
+		return new HashSet<String>(stringColumnQuery("UniqueIdentifier.findAllIdentifiers"));
+	}
+	
 
 	/**
 	 * Get a {@link UniqueIdentifier} instance for the given identifier

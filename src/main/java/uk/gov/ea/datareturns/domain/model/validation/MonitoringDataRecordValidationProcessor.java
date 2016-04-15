@@ -4,6 +4,7 @@
 package uk.gov.ea.datareturns.domain.model.validation;
 
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicLong;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -33,11 +34,10 @@ public abstract class MonitoringDataRecordValidationProcessor {
 	public static final ValidationErrors validateModel(final CSVModel<MonitoringDataRecord> model) {
 		final ValidationErrors validationErrors = new ValidationErrors();
 
-		for (int i = 0; i < model.getRecords().size(); i++) {
-			final MonitoringDataRecord record = model.getRecords().get(i);
+		model.getRecords().parallelStream().forEach((record) -> {
 			final Set<ConstraintViolation<MonitoringDataRecord>> violations = VALIDATOR.validate(record);
-
 			for (final ConstraintViolation<MonitoringDataRecord> violation : violations) {
+				
 				final ValidationError error = new ValidationError();
 				final String returnsFieldName = model.getPojoFieldToHeaderMap().get(violation.getPropertyPath().toString());
 				final String errorValue = StringUtils.defaultIfEmpty(violation.getInvalidValue().toString(), null);
@@ -47,7 +47,7 @@ public abstract class MonitoringDataRecordValidationProcessor {
 				error.setDefinition(definition.getDescription());
 				error.setHelpReference(definition.getHelpReference());
 				error.setErrorValue(errorValue);
-				error.setLineNumber(i + 2);
+				error.setLineNumber(record.getLineNumber());
 				error.setErrorMessage(violation.getMessage());
 				final Matcher errorKeyMatcher = ERROR_KEY_PATTERN.matcher(violation.getMessageTemplate());
 
@@ -63,7 +63,7 @@ public abstract class MonitoringDataRecordValidationProcessor {
 
 				validationErrors.addError(error);
 			}
-		}
+		});
 		return validationErrors;
 	}
 }

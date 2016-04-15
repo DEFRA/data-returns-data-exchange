@@ -114,7 +114,7 @@ public final class DateFormat {
 	public static String toStandardFormat(final String value) {
 		String returnVal = null;
 		if (value != null) {
-			if (value.contains("T")) {
+			if (value.length() > STANDARD_DATE_FORMAT.length()) {
 				returnVal = DateFormat.toStandardFormat(DateFormat.parseDateTime(value));
 			} else {
 				returnVal = DateFormat.toStandardFormat(DateFormat.parseDate(value));
@@ -122,5 +122,4 @@ public final class DateFormat {
 		}
 		return returnVal;
 	}
-
 }

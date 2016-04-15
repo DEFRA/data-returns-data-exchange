@@ -19,6 +19,6 @@ public class MethodOrStandardAuditor implements ControlledListAuditor {
 	 */
 	@Override
 	public boolean isValid(final Object value) {
-		return MethodOrStandardDao.getInstance().forName(Objects.toString(value, "")) != null;
+		return MethodOrStandardDao.getInstance().nameExists(Objects.toString(value, ""));
 	}
 }

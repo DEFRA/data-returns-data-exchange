@@ -8,6 +8,7 @@ import javax.xml.bind.annotation.XmlElement;
 import org.hibernate.validator.constraints.Length;
 import org.hibernate.validator.constraints.NotBlank;
 
+import uk.gov.ea.datareturns.domain.io.csv.generic.AbstractCSVRecord;
 import uk.gov.ea.datareturns.domain.io.csv.generic.annotations.CSVField;
 import uk.gov.ea.datareturns.domain.model.rules.DataReturnsHeaders;
 import uk.gov.ea.datareturns.domain.model.validation.auditors.MethodOrStandardAuditor;
@@ -31,7 +32,7 @@ import uk.gov.ea.datareturns.domain.model.validation.constraints.field.ValidRetu
 // TODO: For a future release - finish setting up a mechanism for dependent
 // field validation
 // @DependentField(primaryFieldGetter="getReturnType",
-public class MonitoringDataRecord {
+public class MonitoringDataRecord extends AbstractCSVRecord {
 	/** The Permit Number (EA_ID) */
 	@CSVField(DataReturnsHeaders.PERMIT_NUMBER)
 	@XmlElement(name = DataReturnsHeaders.PERMIT_NUMBER)
@@ -154,6 +155,7 @@ public class MonitoringDataRecord {
 	 * Default constructor
 	 */
 	public MonitoringDataRecord() {
+		super();
 	}
 
 	/**

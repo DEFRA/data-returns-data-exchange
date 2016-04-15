@@ -1,6 +1,8 @@
 package uk.gov.ea.datareturns.jpa.dao;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
@@ -13,7 +15,26 @@ public class ReferencePeriodDao extends AbstractJpaDao {
 	public static ReferencePeriodDao getInstance() {
 		return INSTANCE;
 	}
+	
+	/**
+	 * Determine if a reference period with the given name exists
+	 * 
+	 * @param name the reference period name to check
+	 * @return true if the name exists, false otherwise
+	 */
+	public boolean nameExists(final String name) {
+		return findNames().contains(name);
+	}
 
+	/**
+	 * Retrieve a full set of reference period names
+	 * 
+	 * @return a {@link Set} of reference period names
+	 */
+	public Set<String> findNames() {
+		return new HashSet<String>(stringColumnQuery("ReferencePeriod.findAllNames"));
+	}
+	
 	/**
 	 * Get a {@link ReferencePeriod} instance for the given name
 	 *

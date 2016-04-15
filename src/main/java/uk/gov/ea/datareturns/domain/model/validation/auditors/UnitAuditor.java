@@ -25,6 +25,6 @@ public class UnitAuditor implements ControlledListAuditor {
 	 */
 	@Override
 	public boolean isValid(final Object value) {
-		return UnitDao.getInstance().forName(Objects.toString(value, "")) != null;
+		return UnitDao.getInstance().nameExists(Objects.toString(value, ""));
 	}
 }

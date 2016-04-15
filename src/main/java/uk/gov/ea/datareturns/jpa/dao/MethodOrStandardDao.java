@@ -1,6 +1,8 @@
 package uk.gov.ea.datareturns.jpa.dao;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
@@ -14,6 +16,26 @@ public class MethodOrStandardDao extends AbstractJpaDao {
 		return INSTANCE;
 	}
 
+	
+	/**
+	 * Determine if a method or standard with the given name exists
+	 * 
+	 * @param name the method or standard name to check
+	 * @return true if the name exists, false otherwise
+	 */
+	public boolean nameExists(final String name) {
+		return findNames().contains(name);
+	}
+
+	/**
+	 * Retrieve a full set of method or standard names
+	 * 
+	 * @return a {@link Set} of method or standard names
+	 */
+	public Set<String> findNames() {
+		return new HashSet<String>(stringColumnQuery("MethodOrStandard.findAllNames"));
+	}
+	
 	/**
 	 * Get a {@link MethodOrStandard} instance for the given name
 	 *

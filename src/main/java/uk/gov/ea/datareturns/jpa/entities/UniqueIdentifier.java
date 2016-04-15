@@ -13,8 +13,9 @@ import javax.persistence.Table;
 @Entity
 @Table(name = "unique_identifiers")
 @NamedQueries({
-		@NamedQuery(name = "UniqueIdentifier.findAll", query = "SELECT u FROM UniqueIdentifier u"),
-		@NamedQuery(name = "UniqueIdentifier.findByIdentifier", query = "SELECT u FROM UniqueIdentifier u WHERE u.identifier = :identifier")
+	@NamedQuery(name = "UniqueIdentifier.findAll", query = "SELECT u FROM UniqueIdentifier u"),
+	@NamedQuery(name = "UniqueIdentifier.findAllIdentifiers", query = "SELECT u.identifier FROM UniqueIdentifier u"),
+	@NamedQuery(name = "UniqueIdentifier.findByIdentifier", query = "SELECT u FROM UniqueIdentifier u WHERE u.identifier = :identifier")
 })
 public class UniqueIdentifier {
 

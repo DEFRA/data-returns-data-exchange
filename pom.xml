@@ -105,11 +105,11 @@
 			<version>${hibernate.orm.version}</version>
 		</dependency>
 <!-- 		TODO: Configure second level cache -->
-<!-- 		<dependency> -->
-<!-- 			<groupId>org.hibernate</groupId> -->
-<!-- 			<artifactId>hibernate-ehcache</artifactId> -->
-<!-- 			<version>${hibernate.orm.version}</version> -->
-<!-- 		</dependency>		 -->
+		<dependency>
+			<groupId>org.hibernate</groupId>
+			<artifactId>hibernate-ehcache</artifactId>
+			<version>${hibernate.orm.version}</version>
+		</dependency>		
 		
 		<!--  Hibernate validator -->
 		<dependency>

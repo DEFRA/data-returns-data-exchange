@@ -19,6 +19,6 @@ public class ReferencePeriodAuditor implements ControlledListAuditor {
 	 */
 	@Override
 	public boolean isValid(final Object value) {
-		return ReferencePeriodDao.getInstance().forName(Objects.toString(value, "")) != null;
+		return ReferencePeriodDao.getInstance().nameExists(Objects.toString(value, ""));
 	}
 }

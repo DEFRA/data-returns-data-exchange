@@ -19,6 +19,6 @@ public class ReturnTypeAuditor implements ControlledListAuditor {
 	 */
 	@Override
 	public boolean isValid(final Object value) {
-		return ReturnTypeDao.getInstance().forName(Objects.toString(value, "")) != null;
+		return ReturnTypeDao.getInstance().nameExists(Objects.toString(value, ""));
 	}
 }

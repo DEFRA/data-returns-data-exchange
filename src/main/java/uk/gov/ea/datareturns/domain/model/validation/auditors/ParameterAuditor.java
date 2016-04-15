@@ -25,7 +25,8 @@ public class ParameterAuditor implements ControlledListAuditor {
 	 */
 	@Override
 	public boolean isValid(final Object value) {
-		return ParameterDao.getInstance().forName(Objects.toString(value, "")) != null;
+//		return ParameterDao.getInstance().forName(Objects.toString(value, "")) != null;
+		return ParameterDao.getInstance().nameExists(Objects.toString(value, ""));
 	}
 
 }

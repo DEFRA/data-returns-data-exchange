@@ -19,6 +19,6 @@ public class MonitoringPeriodAuditor implements ControlledListAuditor {
 	 */
 	@Override
 	public boolean isValid(final Object value) {
-		return MonitoringPeriodDao.getInstance().forName(Objects.toString(value, "")) != null;
+		return MonitoringPeriodDao.getInstance().nameExists(Objects.toString(value, ""));
 	}
 }

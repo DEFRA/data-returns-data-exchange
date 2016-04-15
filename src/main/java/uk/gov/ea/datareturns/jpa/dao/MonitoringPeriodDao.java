@@ -1,6 +1,8 @@
 package uk.gov.ea.datareturns.jpa.dao;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
@@ -13,7 +15,26 @@ public class MonitoringPeriodDao extends AbstractJpaDao {
 	public static MonitoringPeriodDao getInstance() {
 		return INSTANCE;
 	}
+	
+	/**
+	 * Determine if a monitoring period with the given name exists
+	 * 
+	 * @param name the monitoring period name to check
+	 * @return true if the name exists, false otherwise
+	 */
+	public boolean nameExists(final String name) {
+		return findNames().contains(name);
+	}
 
+	/**
+	 * Retrieve a full set of monitoring period names
+	 * 
+	 * @return a {@link Set} of monitoring period names
+	 */
+	public Set<String> findNames() {
+		return new HashSet<String>(stringColumnQuery("MonitoringPeriod.findAllNames"));
+	}
+	
 	/**
 	 * Get a {@link MonitoringPeriod} instance for the given name
 	 *
