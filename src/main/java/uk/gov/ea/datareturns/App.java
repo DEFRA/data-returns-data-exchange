@@ -22,6 +22,8 @@ import io.dropwizard.setup.Environment;
 import uk.gov.ea.datareturns.config.DataExchangeConfiguration;
 import uk.gov.ea.datareturns.config.storage.LocalStorageSettings;
 import uk.gov.ea.datareturns.config.storage.StorageSettings;
+import uk.gov.ea.datareturns.health.DatabaseHealthCheck;
+import uk.gov.ea.datareturns.health.StorageHealthCheck;
 import uk.gov.ea.datareturns.jpa.dao.AbstractJpaDao;
 import uk.gov.ea.datareturns.resource.DataExchangeResource;
 import uk.gov.ea.datareturns.storage.StorageProvider;
@@ -56,6 +58,17 @@ public class App extends Application<DataExchangeConfiguration> {
 		if (config.getMiscSettings().isDebugMode()) {
 			environment.jersey().register(new LoggingFilter(java.util.logging.Logger.getLogger(LoggingFilter.class.getName()), true));
 		}
+
+		// Initialize the health checks
+		initializeHealthChecks(environment, config, storageProvider);
+	}
+
+	private void initializeHealthChecks(Environment environment, DataExchangeConfiguration config, StorageProvider storageProvider) {
+		final DatabaseHealthCheck databaseHealthCheck = new DatabaseHealthCheck(config);
+		environment.healthChecks().register("Database Health Check", databaseHealthCheck);
+
+		final StorageHealthCheck storageHealthCheck = new StorageHealthCheck(storageProvider);
+		environment.healthChecks().register("Storage Health Check", storageHealthCheck);
 	}
 
 	private static void initialiseJPA(final DataExchangeConfiguration config) {

@@ -56,7 +56,7 @@ public abstract class AbstractJpaDao {
 	 *
 	 * @return
 	 */
-	protected EntityManager createEntityManager() {
+	public EntityManager createEntityManager() {
 		return entityManagerFactory.createEntityManager();
 	}
 
