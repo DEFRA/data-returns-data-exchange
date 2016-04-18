@@ -325,7 +325,7 @@
 						<configuration>
 							<url>${db.mgt.url}</url>
 							<srcFiles>
-								<srcFile>${basedir}/src/main/resources/db/sql/2-drop-database.sql</srcFile>
+								<srcFile>${project.build.outputDirectory}/db/sql/2-drop-database.sql</srcFile>
 							</srcFiles>
 						</configuration>
 					</execution>
@@ -335,7 +335,7 @@
 						<configuration>
 							<url>${db.mgt.url}</url>
 							<srcFiles>
-								<srcFile>${basedir}/src/main/resources/db/sql/3-create-database.sql</srcFile>
+								<srcFile>${project.build.outputDirectory}/db/sql/3-create-database.sql</srcFile>
 							</srcFiles>
 						</configuration>
 					</execution>
@@ -344,7 +344,7 @@
 						<id>create-schema</id>
 						<configuration>
 							<srcFiles>
-								<srcFile>${basedir}/src/main/resources/db/sql/4-create-schema.sql</srcFile>
+								<srcFile>${project.build.outputDirectory}/db/sql/4-create-schema.sql</srcFile>
 							</srcFiles>
 						</configuration>
 					</execution>
