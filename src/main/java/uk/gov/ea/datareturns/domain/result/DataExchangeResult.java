@@ -4,17 +4,14 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonUnwrapped;
-import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
 
 /**
  * Simple POJO containing the result of any data exchange action
  */
 public class DataExchangeResult {
-	@JacksonXmlProperty(localName = "AppStatusCode")
 	@JsonInclude(Include.NON_DEFAULT)
 	private int appStatusCode;
 
-	@JacksonXmlProperty(localName = "UploadResult")
 	@JsonProperty("uploadResult")
 	@JsonInclude(Include.NON_NULL)
 	private UploadResult uploadResult;
@@ -24,12 +21,10 @@ public class DataExchangeResult {
 	@JsonInclude(Include.NON_NULL)
 	private ValidationErrors validationErrors;
 
-	@JacksonXmlProperty(localName = "ParseResult")
 	@JsonProperty("parseResult")
 	@JsonInclude(Include.NON_NULL)
 	private ParseResult parseResult;
 
-	@JacksonXmlProperty(localName = "CompleteResult")
 	@JsonProperty("completeResult")
 	@JsonInclude(Include.NON_NULL)
 	private CompleteResult completeResult;

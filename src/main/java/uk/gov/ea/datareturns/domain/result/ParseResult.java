@@ -6,18 +6,14 @@ import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
 
-import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
-
 import uk.gov.ea.datareturns.domain.model.MonitoringDataRecord;
 
 /**
  * Simple class to return the result of a successful parse to the client
  */
 public class ParseResult {
-	@JacksonXmlProperty(localName = "PermitNumber")
 	private String permitNumber;
 
-	@JacksonXmlProperty(localName = "SiteName")
 	private String siteName;
 
 	public ParseResult(List<MonitoringDataRecord> records) {
@@ -26,7 +22,9 @@ public class ParseResult {
 
 		for (final MonitoringDataRecord record : records) {
 			permitNumbers.add(record.getPermitNumber());
-			siteNames.add(record.getSiteName());
+			if (StringUtils.isNotEmpty(record.getSiteName())) {
+				siteNames.add(record.getSiteName());
+			}
 		}
 
 		setPermitNumber(StringUtils.join(permitNumbers, ", "));

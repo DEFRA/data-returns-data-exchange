@@ -1,13 +1,10 @@
 package uk.gov.ea.datareturns.domain.result;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
 
 public class CompleteResult {
-	@JacksonXmlProperty(localName = "FileKey")
 	private String fileKey;
 
-	@JacksonXmlProperty(localName = "UserEmail")
 	private String userEmail;
 
 	public CompleteResult() {

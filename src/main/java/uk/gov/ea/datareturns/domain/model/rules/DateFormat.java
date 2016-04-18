@@ -29,7 +29,7 @@ public final class DateFormat {
 			"dd-MM-yyyy'T'HH:mm:ss",
 			"dd-MM-yyyy HH:mm:ss",
 			"dd/MM/yyyy'T'HH:mm:ss",
-			"dd/MM/yyyy HH:mm:ss",
+			"dd/MM/yyyy HH:mm:ss"
 	};
 
 	// Private utlity class constructor

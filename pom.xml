@@ -17,36 +17,28 @@
 		<dropwizard.version>0.9.2</dropwizard.version>
 		<dropwizard.metrics.version>3.1.2</dropwizard.metrics.version>
 		<junit.version>4.12</junit.version>
-		<maven.compiler.version>3.2</maven.compiler.version>
-		<maven.surefire.plugin.version>2.18.1</maven.surefire.plugin.version>
+		<maven.compiler.version>3.5.1</maven.compiler.version>
+		<maven.surefire.plugin.version>2.19.1</maven.surefire.plugin.version>
 		<maven.jar.plugin.version>2.6</maven.jar.plugin.version>
-		<maven.shade.plugin.version>2.3</maven.shade.plugin.version>
-		<csv.validator.version>1.0</csv.validator.version>
+		<maven.shade.plugin.version>2.4.3</maven.shade.plugin.version>
 		<liquibase.version>3.4.2</liquibase.version>
-		<liquibase.maven.plugin.version>3.2.0</liquibase.maven.plugin.version>
-		<postgresql.version>9.4-1205-jdbc42</postgresql.version>
+		<postgresql.version>9.4.1208</postgresql.version>
 		
 		<!-- Hibernate validation -->
 		<hibernate.orm.version>5.1.0.Final</hibernate.orm.version>
 		<hibernate.validator.version>5.2.4.Final</hibernate.validator.version>
-
-		<!-- Logging framework -->
-		<jcl-over-slf4j.version>1.7.18</jcl-over-slf4j.version>
 
 		<!-- Apache commons libraries -->
 		<commons.email.version>1.4</commons.email.version>
 		<commons.io.version>2.4</commons.io.version>
 		<commons.csv.version>1.2</commons.csv.version>
 
-		<jackson-dataformat-xml.version>2.6.3</jackson-dataformat-xml.version>
-		<codehaus.woodstox.version>4.4.1</codehaus.woodstox.version>
-		<redis.client.version>2.8.0</redis.client.version>
 		<aws.java.sdk.version>1.10.62</aws.java.sdk.version>
 
 		<!-- Test -->
 		<mockito.version>1.10.19</mockito.version>
 		<powermock-api.version>1.6.4</powermock-api.version>
-		<assertj.version>3.2.0</assertj.version>
+		<grizzly2.version>2.22.2</grizzly2.version>
 		<run.test.suite>**/AllTests.class</run.test.suite>
 	</properties>
 
@@ -54,21 +46,6 @@
 		<dependency>
 			<groupId>io.dropwizard</groupId>
 			<artifactId>dropwizard-core</artifactId>
-			<version>${dropwizard.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>io.dropwizard</groupId>
-			<artifactId>dropwizard-client</artifactId>
-			<version>${dropwizard.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>io.dropwizard</groupId>
-			<artifactId>dropwizard-views-mustache</artifactId>
-			<version>${dropwizard.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>io.dropwizard</groupId>
-			<artifactId>dropwizard-assets</artifactId>
 			<version>${dropwizard.version}</version>
 		</dependency>
 		<dependency>
@@ -104,7 +81,6 @@
 			<artifactId>hibernate-c3p0</artifactId>
 			<version>${hibernate.orm.version}</version>
 		</dependency>
-<!-- 		TODO: Configure second level cache -->
 		<dependency>
 			<groupId>org.hibernate</groupId>
 			<artifactId>hibernate-ehcache</artifactId>
@@ -116,13 +92,6 @@
 			<groupId>org.hibernate</groupId>
 			<artifactId>hibernate-validator</artifactId>
 			<version>${hibernate.validator.version}</version>
-		</dependency>
-
-		<!-- Logging -->
-		<dependency>
-			<groupId>org.slf4j</groupId>
-			<artifactId>jcl-over-slf4j</artifactId>
-			<version>${jcl-over-slf4j.version}</version>
 		</dependency>
 
 		<!-- Apache commons -->
@@ -153,22 +122,6 @@
 			<version>${postgresql.version}</version>
 		</dependency>
 
-		<dependency>
-			<groupId>com.fasterxml.jackson.dataformat</groupId>
-			<artifactId>jackson-dataformat-xml</artifactId>
-			<version>${jackson-dataformat-xml.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>org.codehaus.woodstox</groupId>
-			<artifactId>woodstox-core-asl</artifactId>
-			<version>${codehaus.woodstox.version}</version>
-			<exclusions>
-				<exclusion>
-					<artifactId>stax-api</artifactId>
-					<groupId>javax.xml.stream</groupId>
-				</exclusion>
-			</exclusions>
-		</dependency>
 		<dependency>
 			<groupId>com.amazonaws</groupId>
 			<artifactId>aws-java-sdk-s3</artifactId>
@@ -201,9 +154,9 @@
 			<scope>test</scope>
 		</dependency>
 		<dependency>
-			<groupId>org.assertj</groupId>
-			<artifactId>assertj-core</artifactId>
-			<version>${assertj.version}</version>
+			<groupId>io.dropwizard</groupId>
+			<artifactId>dropwizard-client</artifactId>
+			<version>${dropwizard.version}</version>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
@@ -215,7 +168,7 @@
 		<dependency>
 			<groupId>org.glassfish.jersey.test-framework.providers</groupId>
 			<artifactId>jersey-test-framework-provider-grizzly2</artifactId>
-			<version>2.22.1</version>
+			<version>${grizzly2.version}</version>
 			<scope>test</scope>
 		</dependency>
 	</dependencies>
@@ -402,7 +355,7 @@
 			<plugin>
 				<groupId>org.liquibase</groupId>
 				<artifactId>liquibase-maven-plugin</artifactId>
-				<version>${liquibase.maven.plugin.version}</version>
+				<version>${liquibase.version}</version>
 				<configuration>
 					<promptOnNonLocalDatabase>false</promptOnNonLocalDatabase>
 					<defaultSchemaName>${db.schema}</defaultSchemaName>
@@ -423,10 +376,4 @@
 			</plugin>
 		</plugins>
 	</build>
-	<pluginRepositories>
-		<pluginRepository>
-			<id>onejar-maven-plugin.googlecode.com</id>
-			<url>http://onejar-maven-plugin.googlecode.com/svn/mavenrepo</url>
-		</pluginRepository>
-	</pluginRepositories>
 </project>

@@ -3,7 +3,6 @@ package uk.gov.ea.datareturns.domain.model;
 import javax.validation.constraints.Pattern;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlElement;
 
 import org.hibernate.validator.constraints.Length;
 import org.hibernate.validator.constraints.NotBlank;
@@ -35,7 +34,6 @@ import uk.gov.ea.datareturns.domain.model.validation.constraints.field.ValidRetu
 public class MonitoringDataRecord extends AbstractCSVRecord {
 	/** The Permit Number (EA_ID) */
 	@CSVField(DataReturnsHeaders.PERMIT_NUMBER)
-	@XmlElement(name = DataReturnsHeaders.PERMIT_NUMBER)
 	@NotBlank(message = "{DR9000-Missing}")
 	@Pattern(regexp = "(^[A-Za-z][A-Za-z].*|^[0-9]{5,6}$)", message = "{DR9000-Incorrect}")
 	@ControlledList(auditor = UniqueIdentifierAuditor.class, message = "{DR9000-Incorrect}")
@@ -43,33 +41,28 @@ public class MonitoringDataRecord extends AbstractCSVRecord {
 
 	/** The site name (Site_Name) */
 	@CSVField(DataReturnsHeaders.SITE_NAME)
-	@XmlElement(name = DataReturnsHeaders.SITE_NAME)
 	@Pattern(regexp = "([0-9a-zA-Z ])*", message = "{DR9110-Incorrect}")
 	@Length(min = 0, max = 255, message = "{DR9110-Length}")
 	private String siteName;
 
 	/** The return type (Rtn_Type) */
 	@CSVField(DataReturnsHeaders.RETURN_TYPE)
-	@XmlElement(name = DataReturnsHeaders.RETURN_TYPE)
 	@NotBlank(message = "{DR9010-Missing}")
 	@ControlledList(auditor = ReturnTypeAuditor.class, message = "{DR9010-Incorrect}")
 	private String returnType;
 
 	/** The monitoring date (Mon_Date) */
 	@CSVField(DataReturnsHeaders.MONITORING_DATE)
-	@XmlElement(name = DataReturnsHeaders.MONITORING_DATE)
 	@ValidReturnsDate // see ValidReturnsDate annotation class for validation messages
 	private String monitoringDate;
 
 	/** The monitoring period  (Mon_Period) */
 	@CSVField(DataReturnsHeaders.MONITORING_PERIOD)
-	@XmlElement(name = DataReturnsHeaders.MONITORING_PERIOD)
 	@ControlledList(auditor = MonitoringPeriodAuditor.class, message = "{DR9070-Incorrect}", required = false)
 	private String monitoringPeriod;
 
 	/** The monitoring point (Mon_Point) */
 	@CSVField(DataReturnsHeaders.MONITORING_POINT)
-	@XmlElement(name = DataReturnsHeaders.MONITORING_POINT)
 	@NotBlank(message = "{DR9060-Missing}")
 	@Length(min = 0, max = 30, message = "{DR9060-Length")
 	@Pattern(regexp = "^[a-zA-Z0-9 ]*$", message = "{DR9060-Incorrect}")
@@ -77,77 +70,65 @@ public class MonitoringDataRecord extends AbstractCSVRecord {
 
 	/** Sample reference (Smpl_Ref) */
 	@CSVField(DataReturnsHeaders.SAMPLE_REFERENCE)
-	@XmlElement(name = DataReturnsHeaders.SAMPLE_REFERENCE)
 	@Length(min = 0, max = 255, message = "{DR9120-Length}")
 	@Pattern(regexp = "^[a-zA-Z0-9 ]*$", message = "{DR9120-Incorrect}")
 	private String sampleReference;
 
 	/** Sampled by (Smpl_By) */
 	@CSVField(DataReturnsHeaders.SAMPLE_BY)
-	@XmlElement(name = DataReturnsHeaders.SAMPLE_BY)
 	@Length(min = 0, max = 255, message = "{DR9130-Length}")
 	private String sampleBy;
 
 	/** Parameter value (Parameter) */
 	@CSVField(DataReturnsHeaders.PARAMETER)
-	@XmlElement(name = DataReturnsHeaders.PARAMETER)
 	@NotBlank(message = "{DR9030-Missing}")
 	@ControlledList(auditor = ParameterAuditor.class, message = "{DR9030-Incorrect}")
 	private String parameter;
 
 	/** Value (Value) */
 	@CSVField(DataReturnsHeaders.VALUE)
-	@XmlElement(name = DataReturnsHeaders.VALUE)
 	@NotBlank(message = "{DR9040-Missing}")
 	@Pattern(regexp = "([<>]?\\-?(\\d+\\.)?(\\d)+)", message = "{DR9040-Incorrect}")
 	private String value;
 
 	/** Textual value (Txt_Value) */
 	@CSVField(DataReturnsHeaders.TEXT_VALUE)
-	@XmlElement(name = DataReturnsHeaders.TEXT_VALUE)
 	@ControlledList(auditor = QualifierAuditor.class, message = "{DR9080-Incorrect}", required = false)
 	private String textValue;
 
 	/** Unit of measurement (Unit) */
 	@CSVField(DataReturnsHeaders.UNIT)
-	@XmlElement(name = DataReturnsHeaders.UNIT)
 	@NotBlank(message = "{DR9050-Missing}")
 	@ControlledList(auditor = UnitAuditor.class, message = "{DR9050-Incorrect}")
 	private String unit;
 
 	/** Reference period */
 	@CSVField(DataReturnsHeaders.REFERENCE_PERIOD)
-	@XmlElement(name = DataReturnsHeaders.REFERENCE_PERIOD)
 	@ControlledList(auditor = ReferencePeriodAuditor.class, message = "{DR9090-Incorrect}", required = false)
 	private String referencePeriod;
 
 	/** Method or standard used (Meth_Stand) */
 	@CSVField(DataReturnsHeaders.METHOD_STANDARD)
-	@XmlElement(name = DataReturnsHeaders.METHOD_STANDARD)
 	@ControlledList(auditor = MethodOrStandardAuditor.class, message = "{DR9100-Incorrect}", required = false)
 	private String methStand;
 
 	/** Record comments (Comments) */
 	@CSVField(DataReturnsHeaders.COMMENTS)
-	@XmlElement(name = DataReturnsHeaders.COMMENTS)
 	@Length(min = 0, max = 255, message = "{DR9140-Length}")
 	private String comments;
 
 	/** Commercial in confidence data (CiC) */
 	@CSVField(DataReturnsHeaders.COMMERCIAL_IN_CONFIDENCE)
-	@XmlElement(name = DataReturnsHeaders.COMMERCIAL_IN_CONFIDENCE)
 	@Length(min = 0, max = 255, message = "{DR9150-Length}")
 	private String cic;
 
 	/** Chemical Abstracts Service value (CAS) */
 	@CSVField(DataReturnsHeaders.CHEMICAL_ABSTRACTS_SERVICE)
-	@XmlElement(name = DataReturnsHeaders.CHEMICAL_ABSTRACTS_SERVICE)
 	@Length(min = 0, max = 255, message = "{DR9160-Length}")
 	private String cas;
 
 	/** Recovery and disposal code (RD_Code) */
 	@CSVField(DataReturnsHeaders.RECOVERY_AND_DISPOSAL_CODE)
-	@XmlElement(name = DataReturnsHeaders.RECOVERY_AND_DISPOSAL_CODE)
 	@Length(min = 0, max = 255, message = "{DR9170-Length}")
 	private String rdCode;
 

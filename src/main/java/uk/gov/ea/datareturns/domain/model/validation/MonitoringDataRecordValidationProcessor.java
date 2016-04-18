@@ -4,7 +4,6 @@
 package uk.gov.ea.datareturns.domain.model.validation;
 
 import java.util.Set;
-import java.util.concurrent.atomic.AtomicLong;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
