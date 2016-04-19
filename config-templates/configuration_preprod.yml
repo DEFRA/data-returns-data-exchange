@@ -3,7 +3,9 @@ logging:
   level: ERROR
   loggers:
     uk.gov.ea.datareturns: ERROR
-    io.dropwizard: ERROR
+    io.dropwizard: INFO
+    io.dropwizard.jersey: ERROR
+    io.dropwizard.setup: ERROR
     org.eclipse: ERROR
     
     # Hibernate

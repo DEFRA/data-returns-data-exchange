@@ -3,6 +3,8 @@ logging:
   loggers:
     uk.gov.ea.datareturns: DEBUG
     io.dropwizard: INFO
+    io.dropwizard.jersey: ERROR
+    io.dropwizard.setup: ERROR
     org.eclipse: ERROR
     
     # Hibernate
