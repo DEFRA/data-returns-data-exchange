@@ -64,7 +64,7 @@ public class MonitoringDataRecord extends AbstractCSVRecord {
 	/** The monitoring point (Mon_Point) */
 	@CSVField(DataReturnsHeaders.MONITORING_POINT)
 	@NotBlank(message = "{DR9060-Missing}")
-	@Length(min = 0, max = 30, message = "{DR9060-Length")
+	@Length(min = 0, max = 30, message = "{DR9060-Length}")
 	@Pattern(regexp = "^[a-zA-Z0-9 ]*$", message = "{DR9060-Incorrect}")
 	private String monitoringPoint;
 
