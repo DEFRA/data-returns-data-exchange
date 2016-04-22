@@ -60,11 +60,11 @@ monitorProEmail:
 #  subjectLowerNumericUniqueId: EA_LP_10000_TO_69000_LIST
 #  subjectUpperNumericUniqueId: EA_LP_70000_ABOVE_LIST
 #  subjectLowerAlphaNumericUniqueId: EA_LP_AA_TO_GZ_LIST
-#  subjectUpperAlphaNumericUniqueId: EA_LP_HA_TO_ZZ_LIST  
-  subjectLowerNumericUniqueId: EA_TEST_ENVIRONMENT
-  subjectUpperNumericUniqueId: EA_TEST_ENVIRONMENT
-  subjectLowerAlphaNumericUniqueId: EA_TEST_ENVIRONMENT
-  subjectUpperAlphaNumericUniqueId: EA_TEST_ENVIRONMENT
+#  subjectUpperAlphaNumericUniqueId: EA_LP_HA_TO_ZZ_LIST
+  subjectLowerNumericUniqueId: MP_LFP_10_69_TEST
+  subjectUpperNumericUniqueId: MP_LFP_70_ABOVE_TEST
+  subjectLowerAlphaNumericUniqueId: MP_LFP_AA_GZ_TEST
+  subjectUpperAlphaNumericUniqueId: MP_LFP_HA_ZZ_TEST
   body: ${monpro.email.body}
   useTLS: ${monpro.email.tls}
 # Storage Provider Configuration  
