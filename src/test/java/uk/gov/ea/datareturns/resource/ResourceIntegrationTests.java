@@ -126,8 +126,9 @@ public class ResourceIntegrationTests {
 		assertThat(resp.getStatus()).isEqualTo(Status.BAD_REQUEST.getStatusCode());
 
 		final DataExchangeResult result = getResultFromResponse(resp);
-		assertThat(result.getAppStatusCode())
-				.isEqualTo(ApplicationExceptionType.HEADER_MANDATORY_FIELD_MISSING.getAppStatusCode());
+		int sc = result.getAppStatusCode();
+		assertThat(sc == ApplicationExceptionType.INCONSISTENT_CSV_RECORD.getAppStatusCode()
+				|| sc == ApplicationExceptionType.HEADER_MANDATORY_FIELD_MISSING.getAppStatusCode());
 	}
 
 	@Test
@@ -138,7 +139,7 @@ public class ResourceIntegrationTests {
 
 		final DataExchangeResult result = getResultFromResponse(resp);
 		assertThat(result.getAppStatusCode())
-				.isEqualTo(ApplicationExceptionType.INCONSISTENT_CSV_RECORD.getAppStatusCode());
+				.isEqualTo(ApplicationExceptionType.FILE_TYPE_UNSUPPORTED.getAppStatusCode());
 	}
 
 	/**
@@ -419,7 +420,7 @@ public class ResourceIntegrationTests {
 					.post(Entity.entity(form, form.getMediaType()), Response.class);
 
 		} catch (IOException e) {
-			LOGGER.error("Failed to perform upload step", e);
+			throw new RuntimeException("Error performing upload", e);
 		}
 		return response;
 	}
@@ -445,7 +446,7 @@ public class ResourceIntegrationTests {
 			response = client.register(MultiPartFeature.class).target(uri).request()
 					.post(Entity.entity(form, form.getMediaType()), Response.class);
 		} catch (IOException e) {
-			e.printStackTrace();
+			throw new RuntimeException("Error performing complete", e);
 		}
 		return response;
 	}

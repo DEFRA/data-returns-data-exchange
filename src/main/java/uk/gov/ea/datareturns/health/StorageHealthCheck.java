@@ -1,12 +1,8 @@
 package uk.gov.ea.datareturns.health;
 
 import com.codahale.metrics.health.HealthCheck;
-import org.apache.commons.lang3.RandomUtils;
-import uk.gov.ea.datareturns.storage.StorageProvider;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.FileOutputStream;
+import uk.gov.ea.datareturns.storage.StorageProvider;
 
 /**
  * Created by graham on 18/04/16.

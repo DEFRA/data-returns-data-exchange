@@ -1,6 +1,5 @@
 package uk.gov.ea.datareturns.jpa.dao;
 
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -32,7 +31,7 @@ public class ReturnTypeDao extends AbstractJpaDao {
 	 * @return a {@link Set} of return type names
 	 */
 	public Set<String> findNames() {
-		return new HashSet<String>(stringColumnQuery("ReturnType.findAllNames"));
+		return cachedColumnQuery("ReturnType.findAllNames");
 	}
 	
 	/**

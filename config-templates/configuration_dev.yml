@@ -37,7 +37,6 @@ server:
 misc:
   uploadedLocation: ./external_resources/uploaded
   outputLocation: ./external_resources/output
-  csvSeparator: ","
   debugMode: false
 test:
   testFilesLocation: /testfiles
@@ -61,10 +60,10 @@ monitorProEmail:
 #  subjectUpperNumericUniqueId: EA_LP_70000_ABOVE_LIST
 #  subjectLowerAlphaNumericUniqueId: EA_LP_AA_TO_GZ_LIST
 #  subjectUpperAlphaNumericUniqueId: EA_LP_HA_TO_ZZ_LIST
-  subjectLowerNumericUniqueId: MP_LFP_10_69_TEST
-  subjectUpperNumericUniqueId: MP_LFP_70_ABOVE_TEST
-  subjectLowerAlphaNumericUniqueId: MP_LFP_AA_GZ_TEST
-  subjectUpperAlphaNumericUniqueId: MP_LFP_HA_ZZ_TEST
+  subjectLowerNumericUniqueId: EALFP1069_TEST_LIST
+  subjectUpperNumericUniqueId: EALFP70AB_TEST_LIST
+  subjectLowerAlphaNumericUniqueId: EALFPAAGZ_TEST_LIST
+  subjectUpperAlphaNumericUniqueId: EALFPHAZZ_TEST_LIST
   body: ${monpro.email.body}
   useTLS: ${monpro.email.tls}
 # Storage Provider Configuration  

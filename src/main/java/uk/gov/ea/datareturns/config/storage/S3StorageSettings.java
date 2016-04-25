@@ -194,7 +194,7 @@ public class S3StorageSettings implements AmazonS3Settings {
 	public ClientConfiguration getClientConfiguration() {
 		final ClientConfiguration s3Config = new ClientConfiguration();
 		if (this.protocol != null) {
-			s3Config.setProtocol("http".equalsIgnoreCase(this.protocol) ? Protocol.HTTP : Protocol.HTTPS);
+			s3Config.setProtocol("https".equalsIgnoreCase(this.protocol) ? Protocol.HTTPS : Protocol.HTTP);
 		}
 		if (this.proxyHost != null) {
 			s3Config.setProxyHost(this.proxyHost);

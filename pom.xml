@@ -32,7 +32,7 @@
 		<!-- Apache commons libraries -->
 		<commons.email.version>1.4</commons.email.version>
 		<commons.io.version>2.4</commons.io.version>
-		<commons.csv.version>1.2</commons.csv.version>
+		<univocity.parsers.version>2.0.2</univocity.parsers.version>
 
 		<aws.java.sdk.version>1.10.62</aws.java.sdk.version>
 
@@ -94,13 +94,15 @@
 			<artifactId>hibernate-validator</artifactId>
 			<version>${hibernate.validator.version}</version>
 		</dependency>
+		
+		<!-- CSV Parsing -->
+		<dependency>
+			<groupId>com.univocity</groupId>
+			<artifactId>univocity-parsers</artifactId>
+			<version>${univocity.parsers.version}</version>
+		</dependency>
 
 		<!-- Apache commons -->
-		<dependency>
-			<groupId>org.apache.commons</groupId>
-			<artifactId>commons-csv</artifactId>
-			<version>${commons.csv.version}</version>
-		</dependency>
 		<dependency>
 			<groupId>org.apache.commons</groupId>
 			<artifactId>commons-email</artifactId>

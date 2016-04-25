@@ -24,10 +24,10 @@ public @interface DependentField {
 	Class<?>[] groups() default {};
 
 	Class<? extends Payload>[] payload() default {};
-
+	
 	String primaryFieldGetter();
 
 	String dependentFieldGetter();
 
-	//	Class<? extends ControlledListAuditor> value();
+	Class<? extends DependentFieldAuditor> auditor();
 }

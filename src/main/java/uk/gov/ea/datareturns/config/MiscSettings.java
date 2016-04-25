@@ -1,9 +1,6 @@
 package uk.gov.ea.datareturns.config;
 
-import org.apache.commons.lang3.StringUtils;
 import org.hibernate.validator.constraints.NotEmpty;
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
 
 /**
  * @author adrianharrison
@@ -15,9 +12,6 @@ public class MiscSettings {
 
 	@NotEmpty
 	private String outputLocation;
-
-	@NotEmpty
-	private String csvSeparator;
 
 	private boolean debugMode;
 
@@ -38,20 +32,6 @@ public class MiscSettings {
 
 	public void setOutputLocation(final String outputLocation) {
 		this.outputLocation = outputLocation;
-	}
-
-	public String getCsvSeparator() {
-		return this.csvSeparator;
-	}
-
-	@JsonIgnore
-	public Character getCSVSeparatorCharacter() {
-		// Use delimiter from configuration (need first character from string)
-		return StringUtils.isNotEmpty(getCsvSeparator()) ? getCsvSeparator().charAt(0) : null;
-	}
-
-	public void setCsvSeparator(final String csvSeparator) {
-		this.csvSeparator = csvSeparator;
 	}
 
 	/**

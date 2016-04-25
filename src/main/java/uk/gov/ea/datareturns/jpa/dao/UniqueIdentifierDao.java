@@ -1,6 +1,5 @@
 package uk.gov.ea.datareturns.jpa.dao;
 
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -11,7 +10,7 @@ import uk.gov.ea.datareturns.jpa.entities.UniqueIdentifier;
 
 public class UniqueIdentifierDao extends AbstractJpaDao {
 	private static final UniqueIdentifierDao INSTANCE = new UniqueIdentifierDao();
-
+	
 	public static UniqueIdentifierDao getInstance() {
 		return INSTANCE;
 	}
@@ -33,7 +32,7 @@ public class UniqueIdentifierDao extends AbstractJpaDao {
 	 * @return a {@link UniqueIdentifier} for the given identifier or null if not found.
 	 */
 	public Set<String> findIdentifiers() {
-		return new HashSet<String>(stringColumnQuery("UniqueIdentifier.findAllIdentifiers"));
+		return cachedColumnQuery("UniqueIdentifier.findAllIdentifiers");
 	}
 	
 

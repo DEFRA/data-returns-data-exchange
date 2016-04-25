@@ -9,6 +9,8 @@ import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
 
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Allows validation against a controlled list of values
@@ -16,6 +18,8 @@ import org.apache.commons.lang3.StringUtils;
  * @author Sam Gardner-Dell
  */
 public class ControlledListValidator implements ConstraintValidator<ControlledList, Object> {
+	private static final Logger LOGGER = LoggerFactory.getLogger(ControlledListValidator.class);	
+	
 	/** ControlledListProvider instance to provide the list of values we must validate against */
 	private ControlledListAuditor provider;
 	private boolean required = true;
@@ -27,7 +31,7 @@ public class ControlledListValidator implements ConstraintValidator<ControlledLi
 			this.provider = providerType.newInstance();
 			this.required = constraintAnnotation.required();
 		} catch (InstantiationException | IllegalAccessException e) {
-			e.printStackTrace();
+			LOGGER.error("Failed to set up controlled list validator", e);
 		}
 	}
 

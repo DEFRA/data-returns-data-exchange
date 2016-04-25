@@ -12,15 +12,13 @@ import java.lang.annotation.Target;
 import javax.validation.Constraint;
 import javax.validation.Payload;
 
-import org.hibernate.validator.constraints.NotBlank;
-
 /**
  * Annotation to enable hibernate validator based validation of monitoring dates
  *
  * @author Sam Gardner-Dell
  */
 
-@NotBlank(message = "{DR9020-Missing}")
+//@NotBlank(message = "{DR9020-Missing}")
 // Date can be yyyy-mm-dd or dd-mm-yyyy optionally followed by Thh:mm:ss (e.g. 2016-03-11T09:00:00)
 @Target({ ElementType.FIELD })
 @Retention(RetentionPolicy.RUNTIME)

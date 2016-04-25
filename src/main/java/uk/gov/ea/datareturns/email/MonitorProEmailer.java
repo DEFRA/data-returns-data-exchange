@@ -16,7 +16,6 @@ import uk.gov.ea.datareturns.domain.io.csv.generic.CSVModel;
 import uk.gov.ea.datareturns.domain.model.MonitoringDataRecord;
 import uk.gov.ea.datareturns.domain.model.rules.EmmaDatabase;
 import uk.gov.ea.datareturns.exception.system.DRSystemException;
-import uk.gov.ea.datareturns.helper.DataExchangeHelper;
 
 /**
  * Handles emails to monitor pro
@@ -42,7 +41,7 @@ public class MonitorProEmailer {
 		final MonitorProEmailSettings settings = this.config.getMonitorProEmailSettings();
 
 		// 3. Read the CSV data into a model
-		final CSVModel<MonitoringDataRecord> csvInput = new DataReturnsCSVProcessor(this.config).readCSVFile(returnsCSVFile);
+		final CSVModel<MonitoringDataRecord> csvInput = new DataReturnsCSVProcessor().read(returnsCSVFile);
 
 		if (csvInput.getRecords().size() < 1) {
 			// No data to send - this should never happen but we need to protected against an ArrayIndexOutOfBounds exception
@@ -52,7 +51,7 @@ public class MonitorProEmailer {
 
 		try {
 			final MultiPartEmail email = new MultiPartEmail();
-			final EmmaDatabase type = DataExchangeHelper.getDatabaseTypeFromPermitNo(permitNumber);
+			final EmmaDatabase type = EmmaDatabase.forUniqueId(permitNumber);
 			final String subject = settings.getDatabaseName(type);
 
 			email.setHostName(settings.getHost());

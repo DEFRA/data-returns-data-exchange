@@ -92,32 +92,4 @@ public class DateFormatTests {
 		LocalDateTime parsed = DateFormat.parseDateTime(testDate);
 		Assert.assertNull(parsed);
 	}
-	
-	@Test
-	public void testToStandardDateFormat() {
-		String testDate = "31/01/2016";
-		LocalDate parsed = DateFormat.parseDate(testDate);
-		String standardFormat = DateFormat.toStandardFormat(parsed);
-		Assert.assertEquals(standardFormat, "2016-01-31");
-	}
-
-	@Test
-	public void testToStandardDateFormatNull() {
-		LocalDate value = null;
-		Assert.assertNull(DateFormat.toStandardFormat(value));
-	}
-	
-	@Test
-	public void testToStandardDateTimeFormat() {
-		String testDate = "31/01/2016T09:01:02";
-		LocalDateTime parsed = DateFormat.parseDateTime(testDate);
-		String standardFormat = DateFormat.toStandardFormat(parsed);
-		Assert.assertEquals(standardFormat, "2016-01-31T09:01:02");
-	}
-
-	@Test
-	public void testToStandardDateTimeFormatNull() {
-		LocalDateTime value = null;
-		Assert.assertNull(DateFormat.toStandardFormat(value));
-	}
 }

@@ -9,7 +9,6 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Properties;
 
 import org.apache.commons.io.FileUtils;
@@ -67,26 +66,9 @@ public class LocalStorageProvider implements StorageProvider {
 			tempFile = File.createTempFile("data-returns-", null);
 			FileUtils.copyInputStreamToFile(in, tempFile);
 		} catch (final IOException e) {
-			throw new StorageException("Unable to decompress temp file.", e);
+			throw new StorageException("Unable to read temp file.", e);
 		}
-
-		final File tempPropertiesFile = new File(this.temporaryDir, fileKey + ".properties");
-		final Map<String, String> metadata = new LinkedHashMap<>();
-
-		if (tempPropertiesFile.exists()) {
-			final Properties props = new Properties();
-			try (InputStream is = FileUtils.openInputStream(tempPropertiesFile)) {
-				// Load the properties file
-				props.load(is);
-				// Store the properties data in the metadata map
-				props.forEach((k, v) -> {
-					metadata.put(Objects.toString(k), Objects.toString(v));
-				});
-			} catch (final IOException e) {
-				throw new StorageException("Unable to read metadata properties", e);
-			}
-		}
-		return new StoredFile(tempFile, metadata);
+		return new StoredFile(tempFile, new LinkedHashMap<>());
 	}
 
 	/* (non-Javadoc)
@@ -100,7 +82,9 @@ public class LocalStorageProvider implements StorageProvider {
 		final File persistentPropertiesFile = new File(this.persistentDir, fileKey + ".properties");
 
 		final Properties props = new Properties();
-		props.putAll(metadata);
+		if (metadata != null) {
+			props.putAll(metadata);
+		}
 
 		try (OutputStream pout = FileUtils.openOutputStream(persistentPropertiesFile)) {
 			// Write out the metadata as as properties file

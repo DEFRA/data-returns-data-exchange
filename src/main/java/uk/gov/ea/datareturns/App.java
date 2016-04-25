@@ -63,12 +63,14 @@ public class App extends Application<DataExchangeConfiguration> {
 		initializeHealthChecks(environment, config, storageProvider);
 	}
 
-	private void initializeHealthChecks(Environment environment, DataExchangeConfiguration config, StorageProvider storageProvider) {
+	private static void initializeHealthChecks(Environment environment, DataExchangeConfiguration config, StorageProvider storageProvider) {
 		final DatabaseHealthCheck databaseHealthCheck = new DatabaseHealthCheck(config);
 		environment.healthChecks().register("Database Health Check", databaseHealthCheck);
 
 		final StorageHealthCheck storageHealthCheck = new StorageHealthCheck(storageProvider);
 		environment.healthChecks().register("Storage Health Check", storageHealthCheck);
+		
+		environment.healthChecks().runHealthChecks();
 	}
 
 	private static void initialiseJPA(final DataExchangeConfiguration config) {
@@ -106,7 +108,6 @@ public class App extends Application<DataExchangeConfiguration> {
 						LOGGER.error("Unable to clear local storage directories", e);
 					}
 				}
-
 				provider = new LocalStorageProvider(tempDir, persistDir);
 				break;
 			case S3:

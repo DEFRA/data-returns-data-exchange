@@ -36,7 +36,6 @@ import uk.gov.ea.datareturns.domain.io.csv.DataReturnsCSVProcessor;
 import uk.gov.ea.datareturns.domain.io.csv.generic.CSVModel;
 import uk.gov.ea.datareturns.domain.io.zip.DataReturnsZipFileModel;
 import uk.gov.ea.datareturns.domain.model.MonitoringDataRecord;
-import uk.gov.ea.datareturns.domain.model.rules.DateFormat;
 import uk.gov.ea.datareturns.domain.model.validation.MonitoringDataRecordValidationProcessor;
 import uk.gov.ea.datareturns.domain.result.CompleteResult;
 import uk.gov.ea.datareturns.domain.result.DataExchangeResult;
@@ -85,7 +84,7 @@ public class DataExchangeResource {
 			@FormDataParam("fileUpload") final FormDataContentDisposition fileDetail) {
 		final MiscSettings settings = this.config.getMiscSettings();
 		final File uploadedFile = new File(settings.getUploadedLocation(), fileDetail.getFileName());
-		final DataReturnsCSVProcessor csvProcessor = new DataReturnsCSVProcessor(this.config);
+		final DataReturnsCSVProcessor csvProcessor = new DataReturnsCSVProcessor();
 
 		
 		// TODO: I am concerned about this.  Have seen some weird results from the integration tests and this is all that could cause it...
@@ -102,12 +101,14 @@ public class DataExchangeResource {
 			throw new DRSystemException(e, "Unable to save the uploaded file to disk.");
 		}
 
+		
 		// 2. Do some basic checks on the upload file
 		checkUploadFile(uploadedFile);
 
 		// 3. Read the CSV data into a model
-		final CSVModel<MonitoringDataRecord> csvInput = csvProcessor.readCSVFile(uploadedFile);
+		final CSVModel<MonitoringDataRecord> csvInput = csvProcessor.read(uploadedFile);
 
+		
 		// Validate the model
 		final ValidationErrors validationErrors = MonitoringDataRecordValidationProcessor.validateModel(csvInput);
 
@@ -131,7 +132,7 @@ public class DataExchangeResource {
 			permitToRecordMap.forEach((permitNumber, recordList) -> {
 				try {
 					final File permitDataFile = File.createTempFile("output-" + permitNumber + "-", ".csv", workFolder);
-					csvProcessor.writeCSVFile(recordList, permitDataFile);
+					csvProcessor.write(recordList, permitDataFile);
 					outputFiles.add(permitDataFile);
 				} catch (final IOException e) {
 					throw new DRSystemException(e, "Unable to write output data to temporary file store");
@@ -247,8 +248,6 @@ public class DataExchangeResource {
 	}
 
 	/**
-	 * Formats data as required for output to the Emma database (currently only Date entry formatting)
-	 *
 	 * Prepare a Map of permit numbers (key) to a {@link List} of {@link MonitoringDataRecord}s (value) belonging to that permit
 	 *
 	 * @param records the {@link List} of {@link MonitoringDataRecord} to prepared for output
@@ -258,12 +257,6 @@ public class DataExchangeResource {
 		final Map<String, List<MonitoringDataRecord>> recordMap = new HashMap<>();
 
 		for (final MonitoringDataRecord record : records) {
-			/*
-			 * Prepare records for output
-			 */
-			// Date and time processing
-			record.setMonitoringDate(DateFormat.toStandardFormat(record.getMonitoringDate()));
-
 			/*
 			 * Build the output map
 			 */

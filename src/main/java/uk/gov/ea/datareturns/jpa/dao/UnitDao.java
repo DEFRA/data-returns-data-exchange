@@ -1,6 +1,5 @@
 package uk.gov.ea.datareturns.jpa.dao;
 
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -33,7 +32,7 @@ public class UnitDao extends AbstractJpaDao {
 	 * @return a {@link Set} of unit names
 	 */
 	public Set<String> findNames() {
-		return new HashSet<String>(stringColumnQuery("Unit.findAllNames"));
+		return cachedColumnQuery("Unit.findAllNames");
 	}
 
 	/**

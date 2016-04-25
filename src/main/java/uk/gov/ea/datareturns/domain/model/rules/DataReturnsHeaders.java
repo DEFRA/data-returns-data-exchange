@@ -91,6 +91,12 @@ public class DataReturnsHeaders {
 	public static final Set<String> getAllHeadings() {
 		return new LinkedHashSet<>(ALL_VALID_HEADINGS);
 	}
+	/**
+	 * @return the set of all headings allowed in the input data
+	 */
+	public static final String[] getAllHeadingsArray() {
+		return ALL_VALID_HEADINGS.toArray(new String[ALL_VALID_HEADINGS.size()]);
+	}
 
 	/**
 	 * @return the set of headings that MUST be defined in the input data

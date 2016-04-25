@@ -1,0 +1,66 @@
+/**
+ * 
+ */
+package uk.gov.ea.datareturns.unittests;
+
+import java.io.File;
+import java.io.IOException;
+import java.net.URISyntaxException;
+import java.net.URL;
+import java.nio.file.Files;
+
+import org.apache.commons.io.FileUtils;
+import org.junit.AfterClass;
+import org.junit.Assert;
+import org.junit.BeforeClass;
+import org.junit.Test;
+
+import uk.gov.ea.datareturns.storage.StorageException;
+import uk.gov.ea.datareturns.storage.StorageProvider.StoredFile;
+import uk.gov.ea.datareturns.storage.local.LocalStorageProvider;
+
+/**
+ * @author sam
+ *
+ */
+public class LocalStorageProviderTests {
+	private static File tempDir;
+	private static File auditDir;
+	
+	private static File testFile;
+	
+	@BeforeClass
+	public static void beforeClass() throws IOException, URISyntaxException {
+		tempDir = Files.createTempDirectory("testTempLocalStore").toFile();
+		auditDir = Files.createTempDirectory("testAuditLocalStore").toFile();
+		
+		URL testFileURL = LocalStorageProviderTests.class.getResource("/testfiles/success.csv");
+		testFile = new File(testFileURL.toURI());
+		
+		
+		FileUtils.forceMkdir(tempDir);
+		FileUtils.forceMkdir(auditDir);
+	}
+	
+	@AfterClass
+	public static void afterClass() throws IOException {
+		FileUtils.forceDelete(tempDir);
+		FileUtils.forceDelete(auditDir);
+	}
+	
+	@Test
+	public void testFullCycle() throws StorageException, IOException {
+		LocalStorageProvider provider = new LocalStorageProvider(tempDir, auditDir);
+		String key = provider.storeTemporaryData(testFile);
+		File tempFile = new File(tempDir, key);
+		Assert.assertTrue(tempFile.exists());
+		
+		StoredFile storedFile = provider.retrieveTemporaryData(key);
+		Assert.assertTrue(storedFile.getFile().exists());
+		Assert.assertTrue(FileUtils.contentEquals(tempFile, storedFile.getFile()));
+		
+		String auditKey = provider.moveToAuditStore(key, null);
+		Assert.assertFalse(tempFile.exists());
+		Assert.assertTrue(new File(auditDir, auditKey).exists());
+	}
+}

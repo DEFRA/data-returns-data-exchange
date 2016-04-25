@@ -1,6 +1,5 @@
 package uk.gov.ea.datareturns.jpa.dao;
 
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -33,7 +32,7 @@ public class MethodOrStandardDao extends AbstractJpaDao {
 	 * @return a {@link Set} of method or standard names
 	 */
 	public Set<String> findNames() {
-		return new HashSet<String>(stringColumnQuery("MethodOrStandard.findAllNames"));
+		return cachedColumnQuery("MethodOrStandard.findAllNames");
 	}
 	
 	/**

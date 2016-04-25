@@ -19,13 +19,4 @@ public class StorageKeyMismatchException extends StorageException {
 	public StorageKeyMismatchException(final String message) {
 		super(message);
 	}
-
-	/**
-	 * @param message
-	 * @param cause
-	 */
-	public StorageKeyMismatchException(final String message, final Throwable cause) {
-		super(message, cause);
-	}
-
 }

@@ -3,6 +3,7 @@
  */
 package uk.gov.ea.datareturns.domain.model.validation;
 
+import java.util.Objects;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -11,8 +12,6 @@ import javax.validation.ConstraintViolation;
 import javax.validation.Validation;
 import javax.validation.Validator;
 import javax.validation.ValidatorFactory;
-
-import org.apache.commons.lang3.StringUtils;
 
 import uk.gov.ea.datareturns.domain.io.csv.generic.CSVModel;
 import uk.gov.ea.datareturns.domain.model.MonitoringDataRecord;
@@ -29,17 +28,17 @@ public abstract class MonitoringDataRecordValidationProcessor {
 
 	private static final ValidatorFactory VALIDATOR_FACTORY = Validation.buildDefaultValidatorFactory();
 	private static final Validator VALIDATOR = VALIDATOR_FACTORY.getValidator();
+	
 
 	public static final ValidationErrors validateModel(final CSVModel<MonitoringDataRecord> model) {
 		final ValidationErrors validationErrors = new ValidationErrors();
-
-		model.getRecords().parallelStream().forEach((record) -> {
+		
+		for (MonitoringDataRecord record : model.getRecords()) {
 			final Set<ConstraintViolation<MonitoringDataRecord>> violations = VALIDATOR.validate(record);
 			for (final ConstraintViolation<MonitoringDataRecord> violation : violations) {
-				
 				final ValidationError error = new ValidationError();
 				final String returnsFieldName = model.getPojoFieldToHeaderMap().get(violation.getPropertyPath().toString());
-				final String errorValue = StringUtils.defaultIfEmpty(violation.getInvalidValue().toString(), null);
+				final String errorValue = Objects.toString(violation.getInvalidValue());
 				final FieldDefinition definition = FieldDefinition.valueOf(returnsFieldName);
 
 				error.setFieldName(returnsFieldName);
@@ -62,7 +61,7 @@ public abstract class MonitoringDataRecordValidationProcessor {
 
 				validationErrors.addError(error);
 			}
-		});
+		}
 		return validationErrors;
 	}
 }

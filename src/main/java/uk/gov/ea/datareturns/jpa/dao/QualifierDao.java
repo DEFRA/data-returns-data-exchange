@@ -1,6 +1,5 @@
 package uk.gov.ea.datareturns.jpa.dao;
 
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -33,7 +32,7 @@ public class QualifierDao extends AbstractJpaDao {
 	 * @return a {@link Set} of qualifier names
 	 */
 	public Set<String> findNames() {
-		return new HashSet<String>(stringColumnQuery("Qualifier.findAllNames"));
+		return cachedColumnQuery("Qualifier.findAllNames");
 	}
 
 	/**
