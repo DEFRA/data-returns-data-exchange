@@ -16,10 +16,8 @@ import java.util.Set;
 import com.univocity.parsers.annotations.Parsed;
 import com.univocity.parsers.common.ParsingContext;
 import com.univocity.parsers.common.TextParsingException;
-import com.univocity.parsers.common.fields.FieldSet;
 import com.univocity.parsers.common.processor.BeanListProcessor;
 import com.univocity.parsers.common.processor.BeanWriterProcessor;
-import com.univocity.parsers.conversions.Conversion;
 import com.univocity.parsers.conversions.Conversions;
 import com.univocity.parsers.csv.CsvParser;
 import com.univocity.parsers.csv.CsvParserSettings;
@@ -75,7 +73,7 @@ public class DataReturnsCSVProcessor {
 			 */
 			@Override
 			public void beanProcessed(MonitoringDataRecord bean, ParsingContext context) {
-				bean.setLineNumber(context.currentRecord());
+				bean.setLineNumber(context.currentRecord() + 1);
 				super.beanProcessed(bean, context);
 			}
 	    };

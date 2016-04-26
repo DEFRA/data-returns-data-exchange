@@ -18,7 +18,6 @@ import javax.validation.Payload;
  * @author Sam Gardner-Dell
  */
 
-//@NotBlank(message = "{DR9020-Missing}")
 // Date can be yyyy-mm-dd or dd-mm-yyyy optionally followed by Thh:mm:ss (e.g. 2016-03-11T09:00:00)
 @Target({ ElementType.FIELD })
 @Retention(RetentionPolicy.RUNTIME)
@@ -26,6 +25,8 @@ import javax.validation.Payload;
 @Documented
 public @interface ValidReturnsDate {
 	String message() default "{DR9020-Incorrect}";
+	
+	String missingMessage() default "{DR9020-Missing}";
 
 	Class<?>[] groups() default {};
 
