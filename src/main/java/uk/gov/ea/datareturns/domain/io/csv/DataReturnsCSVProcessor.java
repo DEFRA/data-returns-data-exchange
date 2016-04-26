@@ -16,8 +16,11 @@ import java.util.Set;
 import com.univocity.parsers.annotations.Parsed;
 import com.univocity.parsers.common.ParsingContext;
 import com.univocity.parsers.common.TextParsingException;
+import com.univocity.parsers.common.fields.FieldSet;
 import com.univocity.parsers.common.processor.BeanListProcessor;
 import com.univocity.parsers.common.processor.BeanWriterProcessor;
+import com.univocity.parsers.conversions.Conversion;
+import com.univocity.parsers.conversions.Conversions;
 import com.univocity.parsers.csv.CsvParser;
 import com.univocity.parsers.csv.CsvParserSettings;
 import com.univocity.parsers.csv.CsvWriter;
@@ -76,6 +79,9 @@ public class DataReturnsCSVProcessor {
 				super.beanProcessed(bean, context);
 			}
 	    };
+	    // Trim the content when converting into the bean
+	    rowProcessor.convertAll(Conversions.trim());
+	    
 	    CsvParserSettings parserSettings = new CsvParserSettings();
 	    parserSettings.setHeaderExtractionEnabled(true);
 	    parserSettings.setLineSeparatorDetectionEnabled(true);

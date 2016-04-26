@@ -38,7 +38,7 @@ public abstract class MonitoringDataRecordValidationProcessor {
 			for (final ConstraintViolation<MonitoringDataRecord> violation : violations) {
 				final ValidationError error = new ValidationError();
 				final String returnsFieldName = model.getPojoFieldToHeaderMap().get(violation.getPropertyPath().toString());
-				final String errorValue = Objects.toString(violation.getInvalidValue());
+				final String errorValue = Objects.toString(violation.getInvalidValue(), null);
 				final FieldDefinition definition = FieldDefinition.valueOf(returnsFieldName);
 
 				error.setFieldName(returnsFieldName);
