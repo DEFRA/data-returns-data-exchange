@@ -78,7 +78,7 @@ public class DataExchangeResource {
 	@Path("/upload")
 	@Consumes(MULTIPART_FORM_DATA)
 	@Produces(APPLICATION_JSON)
-	@Timed
+	@Timed(name="data-returns.upload-requests", absolute=true)
 	public Response uploadFile(
 			@FormDataParam("fileUpload") final InputStream is,
 			@FormDataParam("fileUpload") final FormDataContentDisposition fileDetail) {
@@ -86,7 +86,6 @@ public class DataExchangeResource {
 		final File uploadedFile = new File(settings.getUploadedLocation(), fileDetail.getFileName());
 		final DataReturnsCSVProcessor csvProcessor = new DataReturnsCSVProcessor();
 
-		
 		// TODO: I am concerned about this.  Have seen some weird results from the integration tests and this is all that could cause it...
 		// TODO: Think we should just change the way we handle the uploads - use a work folder.
 		// TODO: I don't think we're deleting uploaded files in all cases - this needs to be investigated!
@@ -188,7 +187,7 @@ public class DataExchangeResource {
 	@Path("/complete")
 	@Consumes(MULTIPART_FORM_DATA)
 	@Produces(APPLICATION_JSON)
-	@Timed
+	@Timed(name="data-returns.completion-requests", absolute=true)
 	public Response completeUpload(
 			@NotEmpty @FormDataParam("fileKey")	final String orgFileKey,
 			@NotEmpty @FormDataParam("userEmail") final String userEmail,
