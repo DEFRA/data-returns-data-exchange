@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE xml>
+<configuration>
+	<include resource="org/springframework/boot/logging/logback/defaults.xml" />
+	<conversionRule conversionWord="loglvl" converterClass="uk.gov.ea.datareturns.LogHighlightingConverter" />
+	
+	<appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+		<encoder>
+			<charset>UTF-8</charset>
+			<pattern>%white(%d{HH:mm:ss.SSS}) %loglvl(%-5level %40.40logger{35}): %boldWhite(%msg) %n</pattern>
+		</encoder>
+	</appender>
+
+<!-- 	<appender name="HTML" class="ch.qos.logback.core.rolling.RollingFileAppender"> -->
+<!-- 		<file>log/datareturns.html</file> -->
+<!-- 		<rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy"> -->
+<!-- 			<fileNamePattern>log/datareturns.%d{yyyy-MM-dd}.%i.html</fileNamePattern> -->
+<!-- 			<maxFileSize>15MB</maxFileSize> -->
+<!-- 			<maxHistory>30</maxHistory> -->
+<!-- 			<totalSizeCap>1GB</totalSizeCap> -->
+<!-- 		</rollingPolicy> -->
+<!-- 		<encoder class="ch.qos.logback.core.encoder.LayoutWrappingEncoder"> -->
+<!-- 			<charset>UTF-8</charset> -->
+<!-- 			<layout class="ch.qos.logback.classic.html.HTMLLayout"> -->
+<!-- 				<pattern>%d{HH:mm:ss.SSS}%thread%level%logger%line%msg</pattern> -->
+<!-- 			</layout> -->
+<!-- 		</encoder> -->
+<!-- 	</appender> -->
+
+
+	<appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+		<file>log/datareturns.log</file>
+		<rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+			<fileNamePattern>log/datareturns.%d{yyyy-MM-dd}.%i.log</fileNamePattern>
+			<maxFileSize>15MB</maxFileSize>
+			<maxHistory>30</maxHistory>
+			<totalSizeCap>1GB</totalSizeCap>
+		</rollingPolicy>
+		
+        <encoder>
+			<pattern>%d{HH:mm:ss.SSS} %loglvl(%-5level %40.40logger{35}): %boldWhite(%msg) %n</pattern>
+        </encoder>
+	</appender>
+	
+	<root level="INFO">
+		<appender-ref ref="STDOUT" />
+<!-- 		<appender-ref ref="HTML" /> -->
+		<appender-ref ref="FILE" />
+	</root>
+</configuration>

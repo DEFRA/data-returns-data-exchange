@@ -1,13 +1,11 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <launchConfiguration type="org.eclipse.m2e.Maven2LaunchConfigurationType">
 <booleanAttribute key="M2_DEBUG_OUTPUT" value="false"/>
-<stringAttribute key="M2_GOALS" value="sql:execute@drop-database sql:execute@create-database sql:execute@create-schema liquibase:update"/>
+<stringAttribute key="M2_GOALS" value="sql:execute@drop-database sql:execute@create-database sql:execute@create-schema"/>
 <booleanAttribute key="M2_NON_RECURSIVE" value="false"/>
 <booleanAttribute key="M2_OFFLINE" value="false"/>
 <stringAttribute key="M2_PROFILES" value=""/>
-<listAttribute key="M2_PROPERTIES">
-<listEntry value="configFile=target/external_resources/config/configuration_local.yml"/>
-</listAttribute>
+<listAttribute key="M2_PROPERTIES"/>
 <stringAttribute key="M2_RUNTIME" value="EMBEDDED"/>
 <booleanAttribute key="M2_SKIP_TESTS" value="false"/>
 <intAttribute key="M2_THREADS" value="1"/>

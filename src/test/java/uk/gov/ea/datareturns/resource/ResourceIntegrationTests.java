@@ -13,27 +13,27 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
 import org.apache.commons.io.FileUtils;
+import org.glassfish.jersey.client.ClientConfig;
 import org.glassfish.jersey.client.ClientProperties;
+import org.glassfish.jersey.client.JerseyClientBuilder;
 import org.glassfish.jersey.media.multipart.FormDataBodyPart;
 import org.glassfish.jersey.media.multipart.FormDataMultiPart;
 import org.glassfish.jersey.media.multipart.MultiPartFeature;
 import org.glassfish.jersey.media.multipart.file.StreamDataBodyPart;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
-import org.junit.ClassRule;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.SpringApplicationConfiguration;
+import org.springframework.boot.test.WebIntegrationTest;
+import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import io.dropwizard.client.JerseyClientBuilder;
-import io.dropwizard.client.JerseyClientConfiguration;
-import io.dropwizard.testing.junit.DropwizardAppRule;
 import uk.gov.ea.datareturns.App;
-import uk.gov.ea.datareturns.config.DataExchangeConfiguration;
+import uk.gov.ea.datareturns.config.TestSettings;
 import uk.gov.ea.datareturns.domain.result.DataExchangeResult;
 import uk.gov.ea.datareturns.type.ApplicationExceptionType;
-
-// TODO run local/non-all environments in single run
 
 /**
  * Integration test class for the DataExchangeResource REST service. Uses
@@ -45,8 +45,14 @@ import uk.gov.ea.datareturns.type.ApplicationExceptionType;
  * Application - returns a standard HTML error code + an application specific
  * status code to help identify what went wrong.
  */
+@RunWith(SpringJUnit4ClassRunner.class)
+@WebIntegrationTest({"server.port=9120", "management.port=0"})
+@SpringApplicationConfiguration(App.class)
+@DirtiesContext
 public class ResourceIntegrationTests {
 	private static final Logger LOGGER = LoggerFactory.getLogger(ResourceIntegrationTests.class);
+
+	public static final int SERVER_PORT = 9120;
 
 	public final static MediaType MEDIA_TYPE_CSV = new MediaType("text", "csv");
 
@@ -71,8 +77,6 @@ public class ResourceIntegrationTests {
 	public final static String FILE_CSV_UNRECOGNISED_FIELD_FOUND = "unrecognised-field-found.csv";
 	public final static String FILE_CSV_INCONSISTENT_ROWS = "inconsistent-rows.csv";
 
-	public final static String FILE_CONFIG = System.getProperty("configFile");
-
 	public final static String TRUE = "true";
 
 	public final static String URI = "http://localhost:%d/data-exchange/%s";
@@ -80,26 +84,21 @@ public class ResourceIntegrationTests {
 	public final static String STEP_UPLOAD = "upload";
 	public final static String STEP_COMPLETE = "complete";
 
-	private static Boolean debugMode;
-	private static String testTimeout;
-
-	@ClassRule
-	public static final DropwizardAppRule<DataExchangeConfiguration> RULE = new DropwizardAppRule<DataExchangeConfiguration>(
-			App.class, FILE_CONFIG);
-
-	@BeforeClass
-	public static void setUp() throws IOException {
-		setDebugState();
-		createTestDirectory(RULE.getConfiguration().getMiscSettings().getOutputLocation());
-	}
-
-	@AfterClass
-	public static void cleanup() throws IOException {
-		if (TRUE.equals(RULE.getConfiguration().getTestSettings().getCleanupAfterTestRun().toLowerCase())) {
-			FileUtils.cleanDirectory(new File(RULE.getConfiguration().getMiscSettings().getOutputLocation()));
-			FileUtils.cleanDirectory(new File(RULE.getConfiguration().getMiscSettings().getUploadedLocation()));
-		}
-	}
+	@Autowired
+	private TestSettings testSettings;
+//
+//	@BeforeClass
+//	public static void setUp() throws IOException {
+//		createTestDirectory(miscSettings.getOutputLocation());
+//	}
+//
+//	@AfterClass
+//	public static void cleanup() throws IOException {
+//		if (TRUE.equals(testSettings.getCleanupAfterTestRun().toLowerCase())) {
+//			FileUtils.cleanDirectory(new File(miscSettings.getOutputLocation()));
+//			FileUtils.cleanDirectory(new File(miscSettings.getUploadedLocation()));
+//		}
+//	}
 
 	///////////////////////////////////////////////////////////////////////////////////////////
 	///////////////////////////////////////////////////////////////////////////////////////////
@@ -256,12 +255,26 @@ public class ResourceIntegrationTests {
 		Response resp = performUploadStep(client, FILE_CSV_SUCCESS, MEDIA_TYPE_CSV);
 		assertThat(resp.getStatus()).isEqualTo(Status.OK.getStatusCode());
 
-		resp = performCompleteStep(client, "anything");
+		resp = performCompleteStep(client, "anything", "anything");
 		assertThat(resp.getStatus()).isEqualTo(Status.NOT_FOUND.getStatusCode());
 
 		DataExchangeResult result = getResultFromResponse(resp);
 		assertThat(result.getAppStatusCode()).isEqualTo(ApplicationExceptionType.SYSTEM_FAILURE.getAppStatusCode());
 	}
+	
+
+	@Test
+	public void testFileKeyMatch() {
+//		TODO: Dependency injection of NO-OP Emailer 
+//		Client client = createClient("test File Key match");
+//		Response resp = performUploadStep(client, FILE_CSV_SUCCESS, MEDIA_TYPE_CSV);
+//		assertThat(resp.getStatus()).isEqualTo(Status.OK.getStatusCode());
+//		DataExchangeResult result = getResultFromResponse(resp);
+//		
+//		resp = performCompleteStep(client, result.getUploadResult().getFileKey(), result.getUploadResult().getFileName());
+//		assertThat(resp.getStatus()).isEqualTo(Status.OK.getStatusCode());
+	}
+
 
 	///////////////////////////////////////////////////////////////////////////////////////////
 	/////////////////////// End Application Exception handling tests
@@ -288,8 +301,6 @@ public class ResourceIntegrationTests {
 	///////////////////////////// Start Content Validation tests
 	/////////////////////////////////////////////////////////////////////////////////////////// ////////////////////////////
 	///////////////////////////////////////////////////////////////////////////////////////////
-
-	// TODO expand to test individual validation errors
 
 	@Test
 	public void testValidationErrors() {
@@ -368,16 +379,6 @@ public class ResourceIntegrationTests {
 	/////////////////////////////////////////////////////////////////////////////////////////// ////////////////////////////////
 	///////////////////////////////////////////////////////////////////////////////////////////
 
-	// TODO missing integration tests
-	// TODO large/average file uploads
-	// TODO email failure
-	// TODO email success (not sure if possible from here?)
-	// TODO currently only tests as far as key mismatch, need somehow to test
-	// email and full e2e
-	// TODO + many more
-
-	// including/completing tests etc... also!
-
 	/**
 	 * Create's a Jersey Client object ready for POST request used in Upload
 	 * step
@@ -386,12 +387,13 @@ public class ResourceIntegrationTests {
 	 * @return
 	 */
 	private static Client createClient(String testName) {
-		final JerseyClientConfiguration configuration = new JerseyClientConfiguration();
-		configuration.setChunkedEncodingEnabled(false);
+		LOGGER.info("Creating client for test " + testName);
+		ClientConfig clientConfig = new ClientConfig();
+//		final JerseyClientConfiguration configuration = new JerseyClientConfiguration();
+//		configuration.setChunkedEncodingEnabled(false);
 
-		final Client client = new JerseyClientBuilder(RULE.getEnvironment()).using(configuration).build(testName)
-				.register(MultiPartFeature.class);
-		client.property(ClientProperties.READ_TIMEOUT, testTimeout);
+		final Client client = new JerseyClientBuilder().withConfig(clientConfig).build().register(MultiPartFeature.class);
+		client.property(ClientProperties.READ_TIMEOUT, (5 * 60 * 1000));
 
 		return client;
 	}
@@ -406,17 +408,17 @@ public class ResourceIntegrationTests {
 	 */
 	private Response performUploadStep(Client client, String testFileName, MediaType mediaType) {
 		Response response = null;
-		final String testFilesLocation = RULE.getConfiguration().getTestSettings().getTestFilesLocation();
+		final String testFilesLocation = testSettings.getTestFilesLocation();
 		File testFile = new File(testFilesLocation, testFileName);
 
 		try (final FormDataMultiPart form = new FormDataMultiPart();
-				final InputStream data = this.getClass().getResourceAsStream(testFile.getAbsolutePath());) {
+				final InputStream data = ResourceIntegrationTests.class.getResourceAsStream(testFile.getAbsolutePath());) {
 			final String uri = createURIForStep(STEP_UPLOAD);
 			final StreamDataBodyPart fdp1 = new StreamDataBodyPart("fileUpload", data, testFileName, mediaType);
 
 			form.bodyPart(fdp1);
 
-			response = client.register(MultiPartFeature.class).target(uri).request()
+			response = client.target(uri).request(MediaType.APPLICATION_JSON_TYPE)
 					.post(Entity.entity(form, form.getMediaType()), Response.class);
 
 		} catch (IOException e) {
@@ -432,18 +434,18 @@ public class ResourceIntegrationTests {
 	 * @param fileKey
 	 * @return
 	 */
-	private static Response performCompleteStep(Client client, String fileKey) {
+	private static Response performCompleteStep(Client client, String fileKey, String fileName) {
 		Response response = null;
 		try (final FormDataMultiPart form = new FormDataMultiPart()) {
 			final FormDataBodyPart fdp1 = new FormDataBodyPart("fileKey", fileKey);
 			form.bodyPart(fdp1);
 			final FormDataBodyPart fdp2 = new FormDataBodyPart("userEmail", "abc@abc.com");
 			form.bodyPart(fdp2);
-			final FormDataBodyPart fdp3 = new FormDataBodyPart("orgFileName", "any_file_name.csv");
+			final FormDataBodyPart fdp3 = new FormDataBodyPart("orgFileName", fileName);
 			form.bodyPart(fdp3);
 
 			final String uri = createURIForStep(STEP_COMPLETE);
-			response = client.register(MultiPartFeature.class).target(uri).request()
+			response = client.target(uri).request(MediaType.APPLICATION_JSON_TYPE)
 					.post(Entity.entity(form, form.getMediaType()), Response.class);
 		} catch (IOException e) {
 			throw new RuntimeException("Error performing complete", e);
@@ -474,24 +476,13 @@ public class ResourceIntegrationTests {
 	}
 
 	/**
-	 * Set debug state from configuration file
-	 */
-	private static void setDebugState() {
-		debugMode = RULE.getConfiguration().getMiscSettings().isDebugMode();
-		testTimeout = RULE.getConfiguration().getTestSettings().getTestTimeout();
-
-		LOGGER.debug("Debug Mode is '" + debugMode + "'");
-		LOGGER.debug("Test Timeout is '" + Integer.parseInt(testTimeout) / 1000 + "' seconds");
-	}
-
-	/**
 	 * Create URI
 	 * 
 	 * @param step
 	 * @return
 	 */
 	private static String createURIForStep(String step) {
-		return String.format(URI, RULE.getLocalPort(), step);
+		return String.format(URI, SERVER_PORT, step);
 	}
 
 }

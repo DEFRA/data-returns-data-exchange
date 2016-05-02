@@ -6,13 +6,17 @@ import java.util.Set;
 import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
 
+import org.springframework.stereotype.Repository;
+
 import uk.gov.ea.datareturns.jpa.entities.MethodOrStandard;
 
+@Repository
 public class MethodOrStandardDao extends AbstractJpaDao {
-	private static final MethodOrStandardDao INSTANCE = new MethodOrStandardDao();
-
-	public static MethodOrStandardDao getInstance() {
-		return INSTANCE;
+	/**
+	 * 
+	 */
+	public MethodOrStandardDao() {
+		super();
 	}
 
 	

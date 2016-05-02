@@ -1,0 +1,211 @@
+###############################################################################
+#
+# Data Reurns Back Office Service Configuration Settings
+#
+# This file is split into different sections, the first provides defaults
+# for all environments.  Subsequent sections provide profile-specific
+# configurations which may be enabled to override the default values.
+#
+###############################################################################
+spring:
+  application:
+    name: Data Returns Back Office Service
+    admin:
+      enabled: true
+  datasource:
+    url: ${db.url}
+    username: ${db.username}
+    password: ${db.password}
+    driverClassName: ${db.driver}
+  jpa:
+    database-platform: ${db.dialect}
+    show-sql: false
+
+# Configuration for the web server
+server:
+  display-name: ${spring.application.name}
+  address: 0.0.0.0
+  port: 9020
+  compression:
+    enabled: true
+
+# Configuration for the management server and its endpoints
+management:
+  port: 9021
+endpoints:
+  shutdown:
+    enabled: true
+    sensitive: false
+  info:
+    enabled: false
+
+# Liquibase database migration configuration values
+liquibase:
+  changeLog: classpath:/db/changelog/db.changelog-master.xml
+  dropFirst: false
+  enabled: true
+
+# Default logging levels (provide minimal level of logging here)
+logging:
+  level: 
+    root: WARN
+    jndi: WARN
+    uk.gov.ea.datareturns: INFO
+    org.eclipse.jetty: WARN
+    org.apache.http: WARN
+    org.springframework: WARN
+    org.springframework.boot: WARN
+    javax.xml.bind: WARN
+    
+    # Database
+    org.hibernate: WARN
+    net.sf.ehcache: WARN
+    liquibase: INFO
+    
+    # Amazon S3 API
+    com.amazonaws: WARN
+    org.apache.http.wire: WARN
+    # Glassfish
+    org.glassfish: WARN
+    # Useful to log REST requests and responses (set to INFO for headers or DEBUG for full request/response logging)
+    org.glassfish.jersey.filter.LoggingFilter: WARN
+
+misc:
+  uploadedLocation: ./work/uploaded
+  outputLocation: ./work/output
+  debugMode: true
+
+test:
+  testFilesLocation: /testfiles
+  testTimeout: 1000000
+  cleanupAfterTestRun: true
+
+# Monitor Pro Email Configuration
+monitorProEmail:
+  host: ${monpro.email.host}
+  port: ${monpro.email.port}
+  from: ${monpro.email.from}
+  to: ${monpro.email.to}
+  subjectLowerNumericUniqueId: EALFP1069_TEST_LIST
+  subjectUpperNumericUniqueId: EALFP70AB_TEST_LIST
+  subjectLowerAlphaNumericUniqueId: EALFPAAGZ_TEST_LIST
+  subjectUpperAlphaNumericUniqueId: EALFPHAZZ_TEST_LIST
+  body: ${monpro.email.body}
+  useTLS: ${monpro.email.tls}
+# Use local storage when not running in a cluster  
+storage:
+  type: local
+  local:
+    temporaryFolder: ./work/storage/temp
+    persistentFolder: ./work/storage/persisted
+    cleanOnStartup: true
+
+
+---
+###############################################################################
+#
+# Profile: debug
+#
+###############################################################################
+spring:
+  profiles: debug
+  
+# Spring boot debug flag 
+debug: false
+
+# Configure loggers for debug - should configure DEBUG by default and use WARN/INFO on stuff that is not useful to reduce unwanted spam
+logging:
+  level: 
+    root: DEBUG
+    jndi: INFO
+    uk.gov.ea.datareturns: DEBUG
+    org.eclipse.jetty: INFO
+    org.eclipse.jetty.server.Server: DEBUG
+    org.eclipse.jetty.server.session: INFO
+    org.eclipse.jetty.servlet.ServletHandler: DEBUG
+    org.apache.http: INFO
+    org.jvnet.mimepull: INFO
+    
+    org.springframework: INFO
+    org.springframework.beans.factory: INFO
+    org.springframework.boot: INFO
+    org.springframework.jndi: INFO
+    org.springframework.core: INFO
+    org.springframework.context.annotation: INFO
+    
+    # Set to DEBUG to enable the auto-configuration report at startup
+    org.springframework.boot.autoconfigure.logging: DEBUG
+    
+    # Database
+    org.hibernate: INFO
+    net.sf.ehcache: INFO
+    liquibase: INFO
+    
+    # Amazon S3 API
+    com.amazonaws: INFO
+    org.apache.http.wire: INFO
+    # Glassfish
+    org.glassfish: INFO
+    # Useful to log REST requests and responses (set to INFO for headers or DEBUG for full request/response logging)
+    org.glassfish.jersey.filter.LoggingFilter: INFO
+
+
+---
+###############################################################################
+#
+# Profile: cluster
+#
+###############################################################################
+spring:
+  profiles: cluster
+# Use amazon S3 for storage when running in a cluster
+storage:
+  type: s3
+  s3:
+    awsAccessKey: ${s3.aws.accessKey}
+    awsSecretKey: ${s3.aws.secretKey}
+    temporaryBucket: ${s3.temporaryBucket}
+    persistentBucket: ${s3.persistentBucket}
+    endpoint: ${s3.endpoint}
+    protocol: ${s3.protocol}
+    proxyHost: ${s3.proxyHost}
+    proxyPort: ${s3.proxyPort}
+    pathStyleAccess: ${s3.pathStyleAccess}
+
+---
+###############################################################################
+#
+# Profile: dev_cluster, test_cluster
+#
+###############################################################################
+spring:
+  profiles: dev_cluster, test_cluster
+  profiles.include: debug, cluster
+
+
+---
+###############################################################################
+#
+# Profile: pre_prod
+#
+###############################################################################
+spring:
+  profiles: pre_prod
+  profiles.include: cluster
+
+---
+###############################################################################
+#
+# Profile: production
+#
+###############################################################################
+spring:
+  profiles: production
+  profiles.include: cluster
+  
+# Live monitor pro settings
+monitorProEmail:
+  subjectLowerNumericUniqueId: EA_LP_10000_TO_69000_LIST
+  subjectUpperNumericUniqueId: EA_LP_70000_ABOVE_LIST
+  subjectLowerAlphaNumericUniqueId: EA_LP_AA_TO_GZ_LIST
+  subjectUpperAlphaNumericUniqueId: EA_LP_HA_TO_ZZ_LIST

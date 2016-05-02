@@ -3,6 +3,9 @@
  */
 package uk.gov.ea.datareturns.config.email;
 
+import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.context.annotation.Configuration;
+
 import uk.gov.ea.datareturns.domain.model.rules.EmmaDatabase;
 import uk.gov.ea.datareturns.exception.system.DRSystemException;
 
@@ -11,7 +14,9 @@ import uk.gov.ea.datareturns.exception.system.DRSystemException;
  *
  * @author Sam Gardner-Dell
  */
-public class MonitorProEmailSettings {
+@Configuration
+@ConfigurationProperties(prefix = "monitorProEmail")
+public class MonitorProEmailConfiguration {
 	private String host;
 	private int port;
 	private String from;
@@ -26,7 +31,7 @@ public class MonitorProEmailSettings {
 	/**
 	 *
 	 */
-	public MonitorProEmailSettings() {
+	public MonitorProEmailConfiguration() {
 	}
 
 	/**

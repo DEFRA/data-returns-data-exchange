@@ -21,8 +21,7 @@ import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 
-import uk.gov.ea.datareturns.config.DataExchangeConfiguration;
-import uk.gov.ea.datareturns.config.email.MonitorProEmailSettings;
+import uk.gov.ea.datareturns.config.email.MonitorProEmailConfiguration;
 import uk.gov.ea.datareturns.email.MonitorProEmailer;
 import uk.gov.ea.datareturns.exception.application.DRHeaderMandatoryFieldMissingException;
 import uk.gov.ea.datareturns.exception.system.DRSystemException;
@@ -49,6 +48,8 @@ public class MonitorProEmailerTests {
 	private static final String EMAIL_HOST = "unittest.localhost";
 	private static final int EMAIL_PORT = 1234;
 	
+	private MonitorProEmailConfiguration emailSettings;
+	
 	@BeforeClass
 	public static void beforeClass() throws Exception {
 		testSuccessFile = getTestFile("/testfiles/email-unittest.csv");
@@ -57,7 +58,6 @@ public class MonitorProEmailerTests {
 		mockedClient = PowerMockito.mock(MultiPartEmail.class);
 		PowerMockito.whenNew(MultiPartEmail.class).withNoArguments().thenReturn(mockedClient);
 		PowerMockito.doReturn("testReturnValue").when(mockedClient).send();
-		
 	}
 	
 	@Before
@@ -65,11 +65,24 @@ public class MonitorProEmailerTests {
 		mockedClient = PowerMockito.mock(MultiPartEmail.class);
 		PowerMockito.whenNew(MultiPartEmail.class).withNoArguments().thenReturn(mockedClient);
 		PowerMockito.doReturn("testReturnValue").when(mockedClient).send();
+		
+		emailSettings = new MonitorProEmailConfiguration();
+		emailSettings.setFrom(EMAIL_FROM);
+		emailSettings.setTo(EMAIL_TO);
+		emailSettings.setBody(EMAIL_BODY_TEMPLATE);
+		emailSettings.setHost(EMAIL_HOST);
+		emailSettings.setPort(EMAIL_PORT);
+		emailSettings.setUseTLS(false);
+		
+		emailSettings.setSubjectLowerNumericUniqueId("LOWER_NUMERIC");
+		emailSettings.setSubjectUpperNumericUniqueId("UPPER_NUMERIC");
+		emailSettings.setSubjectLowerAlphaNumericUniqueId("LOWER_ALPHANUMERIC");
+		emailSettings.setSubjectUpperAlphaNumericUniqueId("UPPER_ALPHANUMERIC");
 	}
 
 	@Test
 	public void testSuccessCase() throws Exception {
-		MonitorProEmailer emailer = new MonitorProEmailer(createConfiguration());
+		MonitorProEmailer emailer = new MonitorProEmailer(emailSettings);
 		emailer.sendNotifications(testSuccessFile);
 		
 		// Expectations
@@ -92,41 +105,21 @@ public class MonitorProEmailerTests {
 	
 	@Test(expected=DRHeaderMandatoryFieldMissingException.class)
 	public void testEmptyFile() throws Exception {
-		MonitorProEmailer emailer = new MonitorProEmailer(createConfiguration());
+		MonitorProEmailer emailer = new MonitorProEmailer(emailSettings);
 		emailer.sendNotifications(testEmptyFile);
 	}
 	
 	@Test(expected=DRSystemException.class)
 	public void testHeaderOnlyFile() throws Exception {
-		MonitorProEmailer emailer = new MonitorProEmailer(createConfiguration());
+		MonitorProEmailer emailer = new MonitorProEmailer(emailSettings);
 		emailer.sendNotifications(testHeaderOnlyFile);
 	}
 	
 	@Test(expected=DRSystemException.class)
 	public void testEmailException() throws Exception {
 		PowerMockito.doThrow(new EmailException()).when(mockedClient).send();
-		MonitorProEmailer emailer = new MonitorProEmailer(createConfiguration());
+		MonitorProEmailer emailer = new MonitorProEmailer(emailSettings);
 		emailer.sendNotifications(testSuccessFile);
-	}
-	
-	private static DataExchangeConfiguration createConfiguration() {
-		MonitorProEmailSettings emailSettings = new MonitorProEmailSettings();
-		emailSettings.setFrom(EMAIL_FROM);
-		emailSettings.setTo(EMAIL_TO);
-		emailSettings.setBody(EMAIL_BODY_TEMPLATE);
-		emailSettings.setHost(EMAIL_HOST);
-		emailSettings.setPort(EMAIL_PORT);
-		emailSettings.setUseTLS(false);
-		
-		emailSettings.setSubjectLowerNumericUniqueId("LOWER_NUMERIC");
-		emailSettings.setSubjectUpperNumericUniqueId("UPPER_NUMERIC");
-		emailSettings.setSubjectLowerAlphaNumericUniqueId("LOWER_ALPHANUMERIC");
-		emailSettings.setSubjectUpperAlphaNumericUniqueId("UPPER_ALPHANUMERIC");
-		
-		DataExchangeConfiguration config = new DataExchangeConfiguration();
-		config.setMonitorProEmailSettings(emailSettings);
-		
-		return config;
 	}
 	
 	private static File getTestFile(String location) throws URISyntaxException {

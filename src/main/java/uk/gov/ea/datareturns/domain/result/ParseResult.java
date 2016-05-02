@@ -15,6 +15,10 @@ public class ParseResult {
 	private String permitNumber;
 
 	private String siteName;
+	
+	public ParseResult() {
+		
+	}
 
 	public ParseResult(List<MonitoringDataRecord> records) {
 		final Set<String> permitNumbers = new LinkedHashSet<>();

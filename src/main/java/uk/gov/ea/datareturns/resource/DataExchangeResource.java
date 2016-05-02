@@ -13,6 +13,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+import javax.inject.Inject;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
@@ -27,10 +28,11 @@ import org.glassfish.jersey.media.multipart.FormDataParam;
 import org.hibernate.validator.constraints.NotEmpty;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.config.ConfigurableBeanFactory;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
 
-import com.codahale.metrics.annotation.Timed;
-
-import uk.gov.ea.datareturns.config.DataExchangeConfiguration;
+import uk.gov.ea.datareturns.StopWatch;
 import uk.gov.ea.datareturns.config.MiscSettings;
 import uk.gov.ea.datareturns.domain.io.csv.DataReturnsCSVProcessor;
 import uk.gov.ea.datareturns.domain.io.csv.generic.CSVModel;
@@ -57,14 +59,20 @@ import uk.gov.ea.datareturns.type.FileType;
 // TODO move some methods to helper classes
 
 @Path("/data-exchange/")
+@Component
+@Scope(ConfigurableBeanFactory.SCOPE_SINGLETON)
 public class DataExchangeResource {
 	private static final Logger LOGGER = LoggerFactory.getLogger(DataExchangeResource.class);
-	private final DataExchangeConfiguration config;
-	private final StorageProvider storage;
+	
+	@Inject private MiscSettings miscSettings;
+	
+	@Inject private StorageProvider storage;
 
-	public DataExchangeResource(final DataExchangeConfiguration config, final StorageProvider storage) {
-		this.config = config;
-		this.storage = storage;
+	@Inject private MonitoringDataRecordValidationProcessor validator;
+	
+	@Inject private MonitorProEmailer emailer;
+	
+	public DataExchangeResource() {
 	}
 
 	/**
@@ -78,17 +86,16 @@ public class DataExchangeResource {
 	@Path("/upload")
 	@Consumes(MULTIPART_FORM_DATA)
 	@Produces(APPLICATION_JSON)
-	@Timed(name="data-returns.upload-requests", absolute=true)
 	public Response uploadFile(
 			@FormDataParam("fileUpload") final InputStream is,
 			@FormDataParam("fileUpload") final FormDataContentDisposition fileDetail) {
-		final MiscSettings settings = this.config.getMiscSettings();
-		final File uploadedFile = new File(settings.getUploadedLocation(), fileDetail.getFileName());
+		
+		StopWatch stopwatch = new StopWatch("data-exchange upload timer");
+		stopwatch.startTask("Preparing File");
+		
+		final File uploadedFile = new File(miscSettings.getUploadedLocation(), fileDetail.getFileName());
 		final DataReturnsCSVProcessor csvProcessor = new DataReturnsCSVProcessor();
-
-		// TODO: I am concerned about this.  Have seen some weird results from the integration tests and this is all that could cause it...
-		// TODO: Think we should just change the way we handle the uploads - use a work folder.
-		// TODO: I don't think we're deleting uploaded files in all cases - this needs to be investigated!
+		
 		if (uploadedFile.exists()) {
 			LOGGER.warn("Uploaded file by the given name already exists!");
 		}
@@ -99,17 +106,18 @@ public class DataExchangeResource {
 		} catch (final IOException e) {
 			throw new DRSystemException(e, "Unable to save the uploaded file to disk.");
 		}
-
 		
 		// 2. Do some basic checks on the upload file
 		checkUploadFile(uploadedFile);
 
+		stopwatch.startTask("Parsing file into model");
+		
 		// 3. Read the CSV data into a model
 		final CSVModel<MonitoringDataRecord> csvInput = csvProcessor.read(uploadedFile);
 
-		
+		stopwatch.startTask("Validating model");
 		// Validate the model
-		final ValidationErrors validationErrors = MonitoringDataRecordValidationProcessor.validateModel(csvInput);
+		final ValidationErrors validationErrors = validator.validateModel(csvInput);
 
 		// Woohoo! prepare success/failure response
 		final DataExchangeResult result = new DataExchangeResult(new UploadResult(fileDetail.getFileName()));
@@ -125,6 +133,7 @@ public class DataExchangeResource {
 			 * This involves breaking the data up into separate lists my permit number and creating an individual output file for each
 			 * permit.
 			 */
+			stopwatch.startTask("Preparing Output");
 			final List<File> outputFiles = new ArrayList<>();
 			final Map<String, List<MonitoringDataRecord>> permitToRecordMap = prepareOutputData(csvInput.getRecords());
 			final File workFolder = createWorkFolder();
@@ -138,6 +147,7 @@ public class DataExchangeResource {
 				}
 			});
 
+			stopwatch.startTask("Zipping Output");
 			// Persist the file to the configured storage provider (e.g. Amazon S3)
 			try {
 				final DataReturnsZipFileModel zipModel = new DataReturnsZipFileModel();
@@ -171,6 +181,11 @@ public class DataExchangeResource {
 			result.setAppStatusCode(ApplicationExceptionType.VALIDATION_ERRORS.getAppStatusCode());
 			responseStatus = Status.BAD_REQUEST;
 		}
+		
+		stopwatch.stop();
+		if (LOGGER.isDebugEnabled()) {
+			LOGGER.debug(stopwatch.prettyPrint());
+		}
 		return Response.status(responseStatus).entity(result).build();
 	}
 
@@ -187,7 +202,6 @@ public class DataExchangeResource {
 	@Path("/complete")
 	@Consumes(MULTIPART_FORM_DATA)
 	@Produces(APPLICATION_JSON)
-	@Timed(name="data-returns.completion-requests", absolute=true)
 	public Response completeUpload(
 			@NotEmpty @FormDataParam("fileKey")	final String orgFileKey,
 			@NotEmpty @FormDataParam("userEmail") final String userEmail,
@@ -207,8 +221,7 @@ public class DataExchangeResource {
 
 		try {
 			final DataReturnsZipFileModel zipModel = DataReturnsZipFileModel.fromZipFile(workFolder, storedFile.getFile());
-			final MonitorProEmailer emailer = new MonitorProEmailer(this.config);
-			
+
 			for (final File outputFile : zipModel.getOutputFiles()) {
 				emailer.sendNotifications(outputFile);
 			}
@@ -274,12 +287,11 @@ public class DataExchangeResource {
 	 * 
 	 * @return a {@link File} pointing to a working folder
 	 */
-	private final File createWorkFolder() {
-		final MiscSettings settings = this.config.getMiscSettings();
+	private File createWorkFolder() {
 		File workFolder = null;
 
 		while (workFolder == null || workFolder.exists()) {
-			workFolder = new File(settings.getOutputLocation(), UUID.randomUUID().toString());
+			workFolder = new File(miscSettings.getOutputLocation(), UUID.randomUUID().toString());
 		}
 
 		try {

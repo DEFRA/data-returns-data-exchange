@@ -5,8 +5,14 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Map;
 
+import javax.inject.Inject;
+
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.stereotype.Component;
 
 import com.amazonaws.AmazonClientException;
 import com.amazonaws.AmazonServiceException;
@@ -34,14 +40,17 @@ import uk.gov.ea.datareturns.storage.StorageProvider;
  *
  * @author Sam Gardner-Dell
  */
+@Component
+@ConditionalOnProperty(name="storage.type", havingValue="s3")
 public class AmazonS3StorageProvider implements StorageProvider {
+	private static final Logger LOGGER = LoggerFactory.getLogger(AmazonS3StorageProvider.class);
 	/** Message format for amazon service exception */
 	private final static String FMT_SERVICE_EXCEPTION = "Amazon S3 service rejected an upload attempt. (HTTP Status: %d, AWS Error Code: %s, AWS Error Type: %s)";
 
 	/** Amazon S3 client */
 	private final AmazonS3 s3Client;
 	private final TransferManager transferManager;
-	private final AmazonS3Settings settings;
+	private final AmazonS3Configuration settings;
 
 	/**
 	 * Create a new Amazon storage provider.
@@ -51,7 +60,9 @@ public class AmazonS3StorageProvider implements StorageProvider {
 	 *
 	 * @param settings
 	 */
-	public AmazonS3StorageProvider(final AmazonS3Settings settings) {
+	@Inject
+	public AmazonS3StorageProvider(final AmazonS3Configuration settings) {
+		LOGGER.info("Initialising AWS S3 Storage Provider");
 		this.settings = settings;
 		this.s3Client = new AmazonS3Client(this.settings.getCredentialProvider(), this.settings.getClientConfiguration());
 		this.s3Client.setS3ClientOptions(new S3ClientOptions().withPathStyleAccess(this.settings.isPathStyleAccess()));
@@ -270,6 +281,19 @@ public class AmazonS3StorageProvider implements StorageProvider {
 			throw new StorageException(message, ace);
 		} catch (final IOException e) {
 			throw new StorageException("AmazonS3StorageProvider:: Unable to retrieve file from S3: " + e.getMessage(), e);
+		}
+	}
+
+	/* (non-Javadoc)
+	 * @see uk.gov.ea.datareturns.storage.StorageProvider#healthy()
+	 */
+	@Override
+	public boolean healthy() throws StorageException {
+		try {
+			return s3Client.doesBucketExist(this.settings.getTemporaryBucket()) 
+					&& s3Client.doesBucketExist(this.settings.getPersistentBucket());
+		} catch (AmazonServiceException e) {
+			throw new StorageException("Health check failed with exception", e);
 		}
 	}
 }

@@ -9,8 +9,8 @@ import uk.gov.ea.datareturns.resource.ResourceIntegrationTests;
 
 @RunWith(Suite.class)
 @SuiteClasses({ 
-	ResourceIntegrationTests.class,
-	MonitoringDataRecordValidatorTests.class
+	MonitoringDataRecordValidatorTests.class,
+	ResourceIntegrationTests.class
 })
 public class AllIntegrationTests {
 

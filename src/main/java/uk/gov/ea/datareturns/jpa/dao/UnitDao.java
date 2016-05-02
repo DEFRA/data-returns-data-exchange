@@ -6,13 +6,17 @@ import java.util.Set;
 import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
 
+import org.springframework.stereotype.Repository;
+
 import uk.gov.ea.datareturns.jpa.entities.Unit;
 
+@Repository
 public class UnitDao extends AbstractJpaDao {
-	private static final UnitDao INSTANCE = new UnitDao();
-
-	public static UnitDao getInstance() {
-		return INSTANCE;
+	/**
+	 * 
+	 */
+	public UnitDao() {
+		super();
 	}
 
 	

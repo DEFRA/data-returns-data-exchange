@@ -6,13 +6,17 @@ import java.util.Set;
 import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
 
+import org.springframework.stereotype.Repository;
+
 import uk.gov.ea.datareturns.jpa.entities.Qualifier;
 
+@Repository
 public class QualifierDao extends AbstractJpaDao {
-	private static final QualifierDao INSTANCE = new QualifierDao();
-
-	public static QualifierDao getInstance() {
-		return INSTANCE;
+	/**
+	 * 
+	 */
+	public QualifierDao() {
+		super();
 	}
 	
 	

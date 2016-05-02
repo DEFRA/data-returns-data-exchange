@@ -11,31 +11,32 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import javax.inject.Inject;
 import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
-import javax.persistence.Persistence;
 import javax.persistence.TypedQuery;
 
 import org.hibernate.annotations.QueryHints;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Repository;
 
 /**
  * @author Sam Gardner-Dell
  *
  */
+@Repository
 public abstract class AbstractJpaDao {
-	/** Static reference to EntityManagerFactory */
-	private static EntityManagerFactory entityManagerFactory;
+	protected static final Logger LOGGER = LoggerFactory.getLogger(AbstractJpaDao.class);
+	@Inject
+	private EntityManager entityManager;
 
 	// Cached lists
-	Map<String, Set<String>> cachedStringSets = Collections.synchronizedMap(new HashMap<>());
+	private static final Map<String, Set<String>> CACHED_STRING_SETS = Collections.synchronizedMap(new HashMap<>());
 	
 	/**
 	 *
 	 */
 	public AbstractJpaDao() {
-		if (entityManagerFactory == null) {
-			throw new RuntimeException("JPA Entity Manager not configured, check database configuration settings");
-		}
 	}
 	
 	
@@ -46,33 +47,30 @@ public abstract class AbstractJpaDao {
 	 * @return a {@link List} of Strings containing the results
 	 */
 	protected <T extends Collection<String>> T stringColumnQuery(String namedQuery, T target) {
-		final EntityManager em = createEntityManager();
 		try {
-			final TypedQuery<String> query = em.createNamedQuery(namedQuery, String.class);
+			final TypedQuery<String> query = entityManager.createNamedQuery(namedQuery, String.class);
 			query.setHint(QueryHints.CACHEABLE, "true");
 			target.addAll(query.getResultList());
 			return target;
 		} finally {
-			em.close();
+			entityManager.close();
 		}
 	}
 	
 	
 	protected Set<String> cachedColumnQuery(String namedQuery) {
-		Set<String> cachedSet = cachedStringSets.get(namedQuery);
+		Set<String> cachedSet = CACHED_STRING_SETS.get(namedQuery);
 		if (cachedSet == null) {
-			synchronized (cachedStringSets) {
-				cachedSet = cachedStringSets.get(namedQuery);
+			synchronized (CACHED_STRING_SETS) {
+				cachedSet = CACHED_STRING_SETS.get(namedQuery);
 				if (cachedSet == null) {
 					cachedSet = stringColumnQuery(namedQuery, new HashSet<>());
 				}
-				cachedStringSets.put(namedQuery, cachedSet);
+				CACHED_STRING_SETS.put(namedQuery, cachedSet);
 			}
 		}
 		return Collections.unmodifiableSet(cachedSet);
 	}
-	
-	
 
 	/**
 	 * Create an {@link EntityManager}
@@ -82,10 +80,6 @@ public abstract class AbstractJpaDao {
 	 * @return
 	 */
 	public EntityManager createEntityManager() {
-		return entityManagerFactory.createEntityManager();
-	}
-
-	public static void configure(final Map<String, String> persistenceProps) {
-		entityManagerFactory = Persistence.createEntityManagerFactory("org.gov.ea.datareturns.jpa", persistenceProps);
+		return entityManager;
 	}
 }

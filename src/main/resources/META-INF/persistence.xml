@@ -33,9 +33,11 @@
 		    <!-- Disable c3p0 connection testing as we use a JDBC4 compatible driver which can handle this itself -->
 		    <property name="c3p0.idleConnectionTestPeriod" value="0"/>
 		    
-		    <property name="hibernate.cache.use_second_level_cache" value="true"/>
-		    <property name="hibernate.cache.use_query_cache" value="true"/>
-		    <property name="hibernate.cache.region.factory_class" value="org.hibernate.cache.ehcache.EhCacheRegionFactory"/>
+			<!-- Second level cache - disabled at this point as we use an in application cache - see also pom.xml-->
+		    <property name="hibernate.cache.use_second_level_cache" value="false"/>
+<!-- 		    <property name="hibernate.cache.use_second_level_cache" value="true"/> -->
+<!-- 		    <property name="hibernate.cache.use_query_cache" value="true"/> -->
+<!-- 		    <property name="hibernate.cache.region.factory_class" value="org.hibernate.cache.ehcache.EhCacheRegionFactory"/> -->
 		</properties>
     </persistence-unit>
 </persistence>

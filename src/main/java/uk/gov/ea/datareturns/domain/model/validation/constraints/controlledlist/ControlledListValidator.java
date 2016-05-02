@@ -5,12 +5,14 @@ package uk.gov.ea.datareturns.domain.model.validation.constraints.controlledlist
 
 import java.util.Objects;
 
+import javax.inject.Inject;
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
 
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.context.ApplicationContext;
 
 /**
  * Allows validation against a controlled list of values
@@ -24,14 +26,17 @@ public class ControlledListValidator implements ConstraintValidator<ControlledLi
 	private ControlledListAuditor provider;
 	private boolean required = true;
 
+	@Inject
+	private ApplicationContext applicationContext;
+	
 	@Override
 	public void initialize(final ControlledList constraintAnnotation) {
 		try {
 			final Class<? extends ControlledListAuditor> providerType = constraintAnnotation.auditor();
-			this.provider = providerType.newInstance();
+			this.provider = applicationContext.getBean(providerType);
 			this.required = constraintAnnotation.required();
-		} catch (InstantiationException | IllegalAccessException e) {
-			LOGGER.error("Failed to set up controlled list validator", e);
+		} catch (Throwable t) {
+			LOGGER.error(t.getMessage(), t);
 		}
 	}
 
@@ -44,7 +49,12 @@ public class ControlledListValidator implements ConstraintValidator<ControlledLi
 		} else {
 			// Assume item is valid if there is no list to validate against.
 			if (this.provider != null) {
-				valid = this.provider.isValid(value);
+				try {
+					valid = this.provider.isValid(value);
+				} catch (Throwable t) {
+					LOGGER.error("Unable to perform Controlled List Validation", t);
+					throw t;
+				}
 			}
 		}
 		return valid;

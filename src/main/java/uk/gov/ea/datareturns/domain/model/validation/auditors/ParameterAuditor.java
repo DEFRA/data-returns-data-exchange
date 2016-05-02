@@ -5,6 +5,10 @@ package uk.gov.ea.datareturns.domain.model.validation.auditors;
 
 import java.util.Objects;
 
+import javax.inject.Inject;
+
+import org.springframework.stereotype.Component;
+
 import uk.gov.ea.datareturns.domain.model.validation.constraints.controlledlist.ControlledListAuditor;
 import uk.gov.ea.datareturns.jpa.dao.ParameterDao;
 
@@ -13,7 +17,11 @@ import uk.gov.ea.datareturns.jpa.dao.ParameterDao;
  *
  * @author Sam Gardner-Dell
  */
+@Component
 public class ParameterAuditor implements ControlledListAuditor {
+	@Inject
+	private ParameterDao dao;
+	
 	/**
 	 *
 	 */
@@ -25,8 +33,7 @@ public class ParameterAuditor implements ControlledListAuditor {
 	 */
 	@Override
 	public boolean isValid(final Object value) {
-//		return ParameterDao.getInstance().forName(Objects.toString(value, "")) != null;
-		return ParameterDao.getInstance().nameExists(Objects.toString(value, ""));
+		return dao.nameExists(Objects.toString(value, ""));
 	}
 
 }

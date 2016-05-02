@@ -8,38 +8,34 @@ import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.util.Set;
 
+import javax.inject.Inject;
 import javax.validation.ConstraintViolation;
-import javax.validation.Validation;
 import javax.validation.Validator;
-import javax.validation.ValidatorFactory;
 
 import org.apache.commons.lang3.RandomStringUtils;
 import org.junit.Assert;
-import org.junit.BeforeClass;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.springframework.boot.test.ConfigFileApplicationContextInitializer;
+import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+
+import uk.gov.ea.datareturns.App;
 
 /**
  * Tests the validation constraints the MonitoringDataRecord class
  * 
  * @author Sam Gardner-Dell
  */
-
-// TODO: Move this back to being a unit test rather than an integration test and find a way to mock out the controlled list validation
-// It looks like you cannot mock a class that is created via reflection as per ControlledListValidator.initialise
-// I also tried creating a proxy class inside one of the auditors but that failed too!
-// @RunWith(PowerMockRunner.class)
-// @PrepareForTest({MonitoringDataRecord.class, ReturnTypeListAuditorProxy.class})
+@RunWith(SpringJUnit4ClassRunner.class)
+@ContextConfiguration(classes = App.class, initializers = ConfigFileApplicationContextInitializer.class)
+@DirtiesContext
 public class MonitoringDataRecordValidatorTests {
 
-	private static Validator validator;
+    @Inject
+    private Validator validator;
 
-	@BeforeClass
-	public static void setUp() {
-		ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
-		validator = factory.getValidator();
-	}
-
-	
 	@Test
 	public void testValidRecord() {
 		MonitoringDataRecord record = createValidRecord();
@@ -675,20 +671,6 @@ public class MonitoringDataRecordValidatorTests {
 	 * @return a new {@link MonitoringDataRecord} which should pass validation
 	 */
 	private static MonitoringDataRecord createValidRecord() {
-//		TODO: Find a way to mock the auditor classes
-//		ReturnTypeAuditor rtAuditor = PowerMockito.mock(ReturnTypeAuditor.class);
-//		PowerMockito.doReturn(true).when(rtAuditor).isValid(Mockito.any());
-//		PowerMockito.when(rtAuditor.isValid(Mockito.eq())).thenReturn(true);
-//		
-//		try {
-//
-//			System.out.println("ReturnTypeAuditor mocked");
-//			PowerMockito.whenNew(ReturnTypeListAuditorProxy.class).withNoArguments().thenThrow(new RuntimeException("WHAT IS GOING ON?"));
-//			PowerMockito.whenNew(ReturnTypeAuditor.class).withAnyArguments().thenReturn(rtAuditor);
-//		} catch (Exception e1) {
-//			e1.printStackTrace();
-//		}
-
 		MonitoringDataRecord record = new MonitoringDataRecord();
 		record.setPermitNumber("AB3002SQ");
 		record.setSiteName("Site Name");

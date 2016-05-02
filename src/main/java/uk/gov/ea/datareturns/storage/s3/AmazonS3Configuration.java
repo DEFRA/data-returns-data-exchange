@@ -11,7 +11,7 @@ import com.amazonaws.auth.AWSCredentialsProvider;
  *
  * @author Sam Gardner-Dell
  */
-public interface AmazonS3Settings {
+public interface AmazonS3Configuration {
 	/**
 	 * Provides authentication credentials for Amazon S3
 	 * @return an {@link AWSCredentialsProvider} instance

@@ -6,13 +6,17 @@ import java.util.Set;
 import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
 
+import org.springframework.stereotype.Repository;
+
 import uk.gov.ea.datareturns.jpa.entities.Parameter;
 
+@Repository
 public class ParameterDao extends AbstractJpaDao {
-	private static final ParameterDao INSTANCE = new ParameterDao();
-
-	public static ParameterDao getInstance() {
-		return INSTANCE;
+	/**
+	 * 
+	 */
+	public ParameterDao() {
+		super();
 	}
 	
 	/**

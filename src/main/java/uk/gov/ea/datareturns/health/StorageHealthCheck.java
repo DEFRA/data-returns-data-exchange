@@ -1,47 +1,49 @@
 package uk.gov.ea.datareturns.health;
 
-import com.codahale.metrics.health.HealthCheck;
+import javax.inject.Inject;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.boot.actuate.health.Health;
+import org.springframework.boot.actuate.health.HealthIndicator;
+import org.springframework.stereotype.Component;
+
+import uk.gov.ea.datareturns.storage.StorageException;
 import uk.gov.ea.datareturns.storage.StorageProvider;
 
 /**
- * Created by graham on 18/04/16.
+ * Checks the health of the configured Storage Provider
+ * 
+ * @author Sam Gardner-Dell
  */
-public class StorageHealthCheck extends HealthCheck {
+@Component
+public class StorageHealthCheck implements HealthIndicator {
+	private static final Logger LOGGER = LoggerFactory.getLogger(StorageHealthCheck.class);
 
+	@Inject
     private StorageProvider storageProvider;
 
+    public StorageHealthCheck() {
+    }
+    
     public StorageHealthCheck(StorageProvider storageProvider) {
         this.storageProvider = storageProvider;
     }
 
-    @Override
-    protected Result check() throws Exception {
-//        File tempFile = null;
-//        FileOutputStream fs = null;
-//        byte[] randomBytes;
-//
-//        // Create a 1Kb temporary file in on the server to be written to storage
-//        try {
-//            // Neither this method nor any of its variants will return the same abstract pathname
-//            // again in the current invocation of the virtual machine.
-//            tempFile = File.createTempFile("healthcheck_", null);
-//            tempFile.setWritable(true);
-//            fs = new FileOutputStream(tempFile);
-//            randomBytes = RandomUtils.nextBytes(1024);
-//            fs.write(randomBytes);
-//            fs.close();
-//        } catch (IOException e) {
-//            return Result.unhealthy("Cannot write temporary file on server: " + e.getLocalizedMessage());
-//        }
-//
-//        // Try writing and retrieving from s3 (or local) storage
-//
-//
-//        if (tempFile.exists()) {
-//            tempFile.delete();
-//        }
-//
-        return Result.healthy();
-    }
+	@Override
+	public Health health() {
+		LOGGER.info("Running storage health check");
+		Health health = null;
+		
+		try {
+			if (storageProvider.healthy()) {
+				health = Health.up().build();
+			} else {
+				health = Health.down().build();
+			}
+		} catch (StorageException e) {
+			health = Health.down(e).build();
+		}
+		return health;
+	}
 }

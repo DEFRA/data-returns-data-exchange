@@ -1,6 +1,8 @@
 package uk.gov.ea.datareturns.config.storage;
 
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.stereotype.Component;
 
 import com.amazonaws.ClientConfiguration;
 import com.amazonaws.Protocol;
@@ -10,14 +12,16 @@ import com.amazonaws.auth.BasicAWSCredentials;
 import com.amazonaws.internal.StaticCredentialsProvider;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-import uk.gov.ea.datareturns.storage.s3.AmazonS3Settings;
+import uk.gov.ea.datareturns.storage.s3.AmazonS3Configuration;
 
 /**
  * Settings for the Amazon S3 storage integration
  *
  * @author Sam Gardner-Dell
  */
-public class S3StorageSettings implements AmazonS3Settings {
+@Component
+@ConfigurationProperties(prefix="storage.s3")
+public class S3StorageConfiguration implements AmazonS3Configuration {
 	@JsonProperty("awsAccessKey")
 	private String awsAccessKey;
 
@@ -45,7 +49,7 @@ public class S3StorageSettings implements AmazonS3Settings {
 	@JsonProperty("pathStyleAccess")
 	private boolean pathStyleAccess = false;
 
-	public S3StorageSettings() {
+	public S3StorageConfiguration() {
 	}
 
 	/**
@@ -77,7 +81,7 @@ public class S3StorageSettings implements AmazonS3Settings {
 	}
 
 	/* (non-Javadoc)
-	 * @see uk.gov.ea.datareturns.storage.s3.AmazonS3Settings#getTemporaryBucket()
+	 * @see uk.gov.ea.datareturns.storage.s3.AmazonS3Configuration#getTemporaryBucket()
 	 */
 	@Override
 	public String getTemporaryBucket() {
@@ -92,7 +96,7 @@ public class S3StorageSettings implements AmazonS3Settings {
 	}
 
 	/* (non-Javadoc)
-	 * @see uk.gov.ea.datareturns.storage.s3.AmazonS3Settings#getPersistentBucket()
+	 * @see uk.gov.ea.datareturns.storage.s3.AmazonS3Configuration#getPersistentBucket()
 	 */
 	@Override
 	public String getPersistentBucket() {
@@ -107,7 +111,7 @@ public class S3StorageSettings implements AmazonS3Settings {
 	}
 
 	/* (non-Javadoc)
-	 * @see uk.gov.ea.datareturns.storage.s3.AmazonS3Settings#getEndpoint()
+	 * @see uk.gov.ea.datareturns.storage.s3.AmazonS3Configuration#getEndpoint()
 	 */
 	@Override
 	public String getEndpoint() {
@@ -179,7 +183,7 @@ public class S3StorageSettings implements AmazonS3Settings {
 	}
 
 	/* (non-Javadoc)
-	 * @see uk.gov.ea.datareturns.storage.s3.AmazonS3Settings#getCredentialProvider()
+	 * @see uk.gov.ea.datareturns.storage.s3.AmazonS3Configuration#getCredentialProvider()
 	 */
 	@Override
 	public AWSCredentialsProvider getCredentialProvider() {
@@ -188,7 +192,7 @@ public class S3StorageSettings implements AmazonS3Settings {
 	}
 
 	/* (non-Javadoc)
-	 * @see uk.gov.ea.datareturns.storage.s3.AmazonS3Settings#getClientConfiguration()
+	 * @see uk.gov.ea.datareturns.storage.s3.AmazonS3Configuration#getClientConfiguration()
 	 */
 	@Override
 	public ClientConfiguration getClientConfiguration() {

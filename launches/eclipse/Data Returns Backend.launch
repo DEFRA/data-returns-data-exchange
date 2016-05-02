@@ -12,7 +12,7 @@
 </listAttribute>
 <stringAttribute key="org.eclipse.jdt.launching.CLASSPATH_PROVIDER" value="org.eclipse.m2e.launchconfig.classpathProvider"/>
 <stringAttribute key="org.eclipse.jdt.launching.MAIN_TYPE" value="uk.gov.ea.datareturns.App"/>
-<stringAttribute key="org.eclipse.jdt.launching.PROGRAM_ARGUMENTS" value="server ${workspace_loc:/data-returns-data-exchange/target/external_resources/config/configuration_local.yml}"/>
 <stringAttribute key="org.eclipse.jdt.launching.PROJECT_ATTR" value="data-returns-data-exchange"/>
 <stringAttribute key="org.eclipse.jdt.launching.SOURCE_PATH_PROVIDER" value="org.eclipse.m2e.launchconfig.sourcepathProvider"/>
+<stringAttribute key="org.eclipse.jdt.launching.WORKING_DIRECTORY" value="${workspace_loc:data-returns-data-exchange/target}"/>
 </launchConfiguration>

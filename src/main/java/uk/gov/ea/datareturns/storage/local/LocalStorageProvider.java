@@ -11,8 +11,17 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Properties;
 
-import org.apache.commons.io.FileUtils;
+import javax.inject.Inject;
 
+import org.apache.commons.io.FileUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.config.ConfigurableBeanFactory;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
+
+import uk.gov.ea.datareturns.config.storage.LocalStorageConfiguration;
 import uk.gov.ea.datareturns.storage.StorageException;
 import uk.gov.ea.datareturns.storage.StorageKeyMismatchException;
 import uk.gov.ea.datareturns.storage.StorageProvider;
@@ -22,16 +31,31 @@ import uk.gov.ea.datareturns.storage.StorageProvider;
  *
  * @author Sam Gardner-Dell
  */
+@Component
+@ConditionalOnProperty(name="storage.type", havingValue="local")
+@Scope(ConfigurableBeanFactory.SCOPE_SINGLETON)
 public class LocalStorageProvider implements StorageProvider {
+	private static final Logger LOGGER = LoggerFactory.getLogger(LocalStorageProvider.class);
 	private final File temporaryDir;
 	private final File persistentDir;
 
-	/**
-	 *
-	 */
-	public LocalStorageProvider(final File temporaryDir, final File persistentDir) {
-		this.temporaryDir = temporaryDir;
-		this.persistentDir = persistentDir;
+	@Inject
+	public LocalStorageProvider(LocalStorageConfiguration settings) {
+		LOGGER.info("Initialising Local Storage Provider");
+		
+		this.temporaryDir = settings.getTemporaryFolder();
+		this.persistentDir = settings.getPersistentFolder();
+		
+		if (settings.isCleanOnStartup()) {
+			try {
+				for (final File dir : new File[] { this.temporaryDir, this.persistentDir }) {
+					FileUtils.forceMkdir(dir);
+					FileUtils.cleanDirectory(dir);
+				}
+			} catch (final IOException e) {
+				LOGGER.warn("Error preparing local stroage area", e);
+			}
+		}
 	}
 
 	/* (non-Javadoc)
@@ -95,5 +119,10 @@ public class LocalStorageProvider implements StorageProvider {
 			throw new StorageException("Unable to move temporary data to persistent store", e);
 		}
 		return fileKey;
+	}
+
+	@Override
+	public boolean healthy() throws StorageException {
+		return this.temporaryDir.canWrite() && this.persistentDir.canWrite();
 	}
 }

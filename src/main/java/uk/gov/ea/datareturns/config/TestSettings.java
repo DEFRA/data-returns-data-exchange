@@ -1,11 +1,15 @@
 package uk.gov.ea.datareturns.config;
 
 import org.hibernate.validator.constraints.NotEmpty;
+import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.context.annotation.Configuration;
 
 /**
  * @author adrianharrison
  * Holds test settings from configuration file
  */
+@Configuration
+@ConfigurationProperties(prefix="test")
 public class TestSettings {
 	@NotEmpty
 	private String testFilesLocation;

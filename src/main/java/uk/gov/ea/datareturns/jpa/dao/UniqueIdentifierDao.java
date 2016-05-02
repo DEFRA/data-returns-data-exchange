@@ -6,13 +6,17 @@ import java.util.Set;
 import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
 
+import org.springframework.stereotype.Repository;
+
 import uk.gov.ea.datareturns.jpa.entities.UniqueIdentifier;
 
+@Repository
 public class UniqueIdentifierDao extends AbstractJpaDao {
-	private static final UniqueIdentifierDao INSTANCE = new UniqueIdentifierDao();
-	
-	public static UniqueIdentifierDao getInstance() {
-		return INSTANCE;
+	/**
+	 * 
+	 */
+	public UniqueIdentifierDao() {
+		super();
 	}
 
 	/**
@@ -34,7 +38,6 @@ public class UniqueIdentifierDao extends AbstractJpaDao {
 	public Set<String> findIdentifiers() {
 		return cachedColumnQuery("UniqueIdentifier.findAllIdentifiers");
 	}
-	
 
 	/**
 	 * Get a {@link UniqueIdentifier} instance for the given identifier

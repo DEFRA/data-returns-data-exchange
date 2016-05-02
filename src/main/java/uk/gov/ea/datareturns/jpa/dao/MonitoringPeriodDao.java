@@ -6,13 +6,17 @@ import java.util.Set;
 import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
 
+import org.springframework.stereotype.Repository;
+
 import uk.gov.ea.datareturns.jpa.entities.MonitoringPeriod;
 
+@Repository
 public class MonitoringPeriodDao extends AbstractJpaDao {
-	private static final MonitoringPeriodDao INSTANCE = new MonitoringPeriodDao();
-
-	public static MonitoringPeriodDao getInstance() {
-		return INSTANCE;
+	/**
+	 * 
+	 */
+	public MonitoringPeriodDao() {
+		super();
 	}
 	
 	/**

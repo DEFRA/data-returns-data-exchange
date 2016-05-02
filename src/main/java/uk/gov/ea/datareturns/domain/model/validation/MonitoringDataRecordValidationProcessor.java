@@ -8,10 +8,11 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import javax.inject.Inject;
 import javax.validation.ConstraintViolation;
-import javax.validation.Validation;
 import javax.validation.Validator;
-import javax.validation.ValidatorFactory;
+
+import org.springframework.stereotype.Component;
 
 import uk.gov.ea.datareturns.domain.io.csv.generic.CSVModel;
 import uk.gov.ea.datareturns.domain.model.MonitoringDataRecord;
@@ -23,18 +24,22 @@ import uk.gov.ea.datareturns.domain.result.ValidationErrors;
  * @author sam
  *
  */
-public abstract class MonitoringDataRecordValidationProcessor {
+@Component
+public class MonitoringDataRecordValidationProcessor {
 	private static final Pattern ERROR_KEY_PATTERN = Pattern.compile("^\\{DR(?<errorCode>\\d{4})-(?<errorType>\\w+)\\}$");
 
-	private static final ValidatorFactory VALIDATOR_FACTORY = Validation.buildDefaultValidatorFactory();
-	private static final Validator VALIDATOR = VALIDATOR_FACTORY.getValidator();
-	
+    @Inject
+    private Validator validator;
+    
+    public MonitoringDataRecordValidationProcessor() {
+    	
+    }
 
-	public static final ValidationErrors validateModel(final CSVModel<MonitoringDataRecord> model) {
+	public final ValidationErrors validateModel(final CSVModel<MonitoringDataRecord> model) {
 		final ValidationErrors validationErrors = new ValidationErrors();
 		
 		for (MonitoringDataRecord record : model.getRecords()) {
-			final Set<ConstraintViolation<MonitoringDataRecord>> violations = VALIDATOR.validate(record);
+			final Set<ConstraintViolation<MonitoringDataRecord>> violations = validator.validate(record);
 			for (final ConstraintViolation<MonitoringDataRecord> violation : violations) {
 				final ValidationError error = new ValidationError();
 				final String returnsFieldName = model.getPojoFieldToHeaderMap().get(violation.getPropertyPath().toString());

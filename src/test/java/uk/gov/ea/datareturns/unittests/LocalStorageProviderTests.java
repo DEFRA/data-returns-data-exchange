@@ -15,6 +15,7 @@ import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import uk.gov.ea.datareturns.config.storage.LocalStorageConfiguration;
 import uk.gov.ea.datareturns.storage.StorageException;
 import uk.gov.ea.datareturns.storage.StorageProvider.StoredFile;
 import uk.gov.ea.datareturns.storage.local.LocalStorageProvider;
@@ -50,7 +51,11 @@ public class LocalStorageProviderTests {
 	
 	@Test
 	public void testFullCycle() throws StorageException, IOException {
-		LocalStorageProvider provider = new LocalStorageProvider(tempDir, auditDir);
+		LocalStorageConfiguration settings = new LocalStorageConfiguration();
+		settings.setTemporaryFolder(tempDir);
+		settings.setPersistentFolder(auditDir);
+		
+		LocalStorageProvider provider = new LocalStorageProvider(settings);
 		String key = provider.storeTemporaryData(testFile);
 		File tempFile = new File(tempDir, key);
 		Assert.assertTrue(tempFile.exists());

@@ -1,13 +1,8 @@
 package uk.gov.ea.datareturns.domain.result;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonInclude.Include;
-
 public class UploadResult {
-	@JsonInclude(Include.NON_NULL)
 	private String fileName;
 
-	@JsonInclude(Include.NON_NULL)
 	private String fileKey;
 
 	public UploadResult() {

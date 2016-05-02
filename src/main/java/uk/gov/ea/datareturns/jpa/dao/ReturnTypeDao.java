@@ -6,13 +6,17 @@ import java.util.Set;
 import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
 
+import org.springframework.stereotype.Repository;
+
 import uk.gov.ea.datareturns.jpa.entities.ReturnType;
 
+@Repository
 public class ReturnTypeDao extends AbstractJpaDao {
-	private static final ReturnTypeDao INSTANCE = new ReturnTypeDao();
-
-	public static ReturnTypeDao getInstance() {
-		return INSTANCE;
+	/**
+	 * 
+	 */
+	public ReturnTypeDao() {
+		super();
 	}
 	
 	/**

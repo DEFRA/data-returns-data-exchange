@@ -1,11 +1,15 @@
 package uk.gov.ea.datareturns.config;
 
 import org.hibernate.validator.constraints.NotEmpty;
+import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.context.annotation.Configuration;
 
 /**
  * @author adrianharrison
  * Holds miscellaneous settings from configuration file
  */
+@Configuration
+@ConfigurationProperties(prefix="misc")
 public class MiscSettings {
 	@NotEmpty
 	private String uploadedLocation;
