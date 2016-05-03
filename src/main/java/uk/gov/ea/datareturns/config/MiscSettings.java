@@ -9,7 +9,7 @@ import org.springframework.context.annotation.Configuration;
  * Holds miscellaneous settings from configuration file
  */
 @Configuration
-@ConfigurationProperties(prefix="misc")
+@ConfigurationProperties(prefix = "misc")
 public class MiscSettings {
 	@NotEmpty
 	private String uploadedLocation;

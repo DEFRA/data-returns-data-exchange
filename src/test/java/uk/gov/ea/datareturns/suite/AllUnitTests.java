@@ -12,12 +12,11 @@ import uk.gov.ea.datareturns.unittests.MonitorProEmailerTests;
 
 @RunWith(Suite.class)
 @SuiteClasses({
-	EmmaDatabaseTests.class, 
-	FileTypeTests.class,
-	DateFormatTests.class,
-	LocalStorageProviderTests.class,
-	MonitorProEmailerTests.class
+		EmmaDatabaseTests.class,
+		FileTypeTests.class,
+		DateFormatTests.class,
+		LocalStorageProviderTests.class,
+		MonitorProEmailerTests.class
 })
-public class AllUnitTests
-{
+public class AllUnitTests {
 }

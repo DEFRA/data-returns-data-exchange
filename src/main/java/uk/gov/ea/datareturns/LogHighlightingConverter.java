@@ -1,5 +1,5 @@
 /**
- * 
+ *
  */
 package uk.gov.ea.datareturns;
 
@@ -19,18 +19,23 @@ public class LogHighlightingConverter extends ForegroundCompositeConverterBase<I
 	 * @see ch.qos.logback.core.pattern.color.ForegroundCompositeConverterBase#getForegroundColorCode(java.lang.Object)
 	 */
 	@Override
-	protected String getForegroundColorCode(ILoggingEvent event) {
-	    Level level = event.getLevel();
-	    switch (level.toInt()) {
-	      case Level.ERROR_INT: return toAnsi(AnsiStyle.BOLD, AnsiColor.BRIGHT_RED);
-	      case Level.WARN_INT: return toAnsi(AnsiStyle.NORMAL, AnsiColor.BRIGHT_YELLOW);
-	      case Level.INFO_INT: return toAnsi(AnsiStyle.BOLD, AnsiColor.CYAN);
-	      case Level.DEBUG_INT: return toAnsi(AnsiStyle.NORMAL, AnsiColor.CYAN); 
-	      default: return toAnsi(AnsiStyle.NORMAL, AnsiColor.DEFAULT);
-	    }
+	protected String getForegroundColorCode(final ILoggingEvent event) {
+		final Level level = event.getLevel();
+		switch (level.toInt()) {
+			case Level.ERROR_INT:
+				return toAnsi(AnsiStyle.BOLD, AnsiColor.BRIGHT_RED);
+			case Level.WARN_INT:
+				return toAnsi(AnsiStyle.NORMAL, AnsiColor.BRIGHT_YELLOW);
+			case Level.INFO_INT:
+				return toAnsi(AnsiStyle.BOLD, AnsiColor.CYAN);
+			case Level.DEBUG_INT:
+				return toAnsi(AnsiStyle.NORMAL, AnsiColor.CYAN);
+			default:
+				return toAnsi(AnsiStyle.NORMAL, AnsiColor.DEFAULT);
+		}
 	}
 
-	private static String toAnsi(AnsiStyle style, AnsiColor color) {
+	private static String toAnsi(final AnsiStyle style, final AnsiColor color) {
 		return style.toString() + ";" + color.toString();
 	}
 }

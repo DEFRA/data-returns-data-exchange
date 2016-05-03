@@ -8,9 +8,9 @@ import uk.gov.ea.datareturns.domain.model.MonitoringDataRecordValidatorTests;
 import uk.gov.ea.datareturns.resource.ResourceIntegrationTests;
 
 @RunWith(Suite.class)
-@SuiteClasses({ 
-	MonitoringDataRecordValidatorTests.class,
-	ResourceIntegrationTests.class
+@SuiteClasses({
+		MonitoringDataRecordValidatorTests.class,
+		ResourceIntegrationTests.class
 })
 public class AllIntegrationTests {
 

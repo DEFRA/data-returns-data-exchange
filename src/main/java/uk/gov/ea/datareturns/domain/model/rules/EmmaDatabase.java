@@ -13,16 +13,16 @@ public enum EmmaDatabase {
 	UPPER_ALPHANUMERIC;
 
 	public static int NUMERIC_BOUNDARY = 70000;
+
 	public static char ALPHA_NUMERIC_BOUNDARY = 'H';
 
-	
-	public static EmmaDatabase forUniqueId(String uniqueId) {
+	public static EmmaDatabase forUniqueId(final String uniqueId) {
 		EmmaDatabase db = null;
 		if (StringUtils.isNotEmpty(uniqueId)) {
 			try {
-				int numericPermit = Integer.parseInt(uniqueId);
+				final int numericPermit = Integer.parseInt(uniqueId);
 				db = numericPermit < NUMERIC_BOUNDARY ? LOWER_NUMERIC : UPPER_NUMERIC;
-			} catch (NumberFormatException e) {
+			} catch (final NumberFormatException e) {
 				final char startLetter = uniqueId.toUpperCase().charAt(0);
 				db = startLetter < ALPHA_NUMERIC_BOUNDARY ? LOWER_ALPHANUMERIC : UPPER_ALPHANUMERIC;
 			}

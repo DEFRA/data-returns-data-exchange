@@ -9,19 +9,18 @@ import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 
 @SpringBootApplication
 public class App {
-    /**
-     * 
-     * @param args
-     * @throws Exception
-     */
-    public static void main(String[] args) throws Exception {
-    	SpringApplication.run(App.class, args);
-    }
+	/**
+	 *
+	 * @param args
+	 * @throws Exception
+	 */
+	public static void main(final String[] args) throws Exception {
+		SpringApplication.run(App.class, args);
+	}
 
-    
-    @Bean
+	@Bean
 	@Scope(ConfigurableBeanFactory.SCOPE_SINGLETON)
-    public LocalValidatorFactoryBean validator() {
-    	return new LocalValidatorFactoryBean();
-    }
+	public LocalValidatorFactoryBean validator() {
+		return new LocalValidatorFactoryBean();
+	}
 }

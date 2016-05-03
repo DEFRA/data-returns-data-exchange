@@ -6,10 +6,12 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
 
 @Component
-@ConfigurationProperties(prefix="storage.local")
+@ConfigurationProperties(prefix = "storage.local")
 public class LocalStorageConfiguration {
 	private File temporaryFolder;
+
 	private File persistentFolder;
+
 	private boolean cleanOnStartup = true;
 
 	/**

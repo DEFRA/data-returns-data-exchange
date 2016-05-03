@@ -2,6 +2,7 @@ package uk.gov.ea.datareturns.exception;
 
 public final class ExceptionMessageContainer {
 	private final int appStatusCode;
+
 	private final String message;
 
 	public ExceptionMessageContainer(final int appStatusCode, final String message) {

@@ -1,5 +1,5 @@
 /**
- * 
+ *
  */
 package uk.gov.ea.datareturns.unittests;
 
@@ -26,45 +26,45 @@ import uk.gov.ea.datareturns.storage.local.LocalStorageProvider;
  */
 public class LocalStorageProviderTests {
 	private static File tempDir;
+
 	private static File auditDir;
-	
+
 	private static File testFile;
-	
+
 	@BeforeClass
 	public static void beforeClass() throws IOException, URISyntaxException {
 		tempDir = Files.createTempDirectory("testTempLocalStore").toFile();
 		auditDir = Files.createTempDirectory("testAuditLocalStore").toFile();
-		
-		URL testFileURL = LocalStorageProviderTests.class.getResource("/testfiles/success.csv");
+
+		final URL testFileURL = LocalStorageProviderTests.class.getResource("/testfiles/success.csv");
 		testFile = new File(testFileURL.toURI());
-		
-		
+
 		FileUtils.forceMkdir(tempDir);
 		FileUtils.forceMkdir(auditDir);
 	}
-	
+
 	@AfterClass
 	public static void afterClass() throws IOException {
 		FileUtils.forceDelete(tempDir);
 		FileUtils.forceDelete(auditDir);
 	}
-	
+
 	@Test
 	public void testFullCycle() throws StorageException, IOException {
-		LocalStorageConfiguration settings = new LocalStorageConfiguration();
+		final LocalStorageConfiguration settings = new LocalStorageConfiguration();
 		settings.setTemporaryFolder(tempDir);
 		settings.setPersistentFolder(auditDir);
-		
-		LocalStorageProvider provider = new LocalStorageProvider(settings);
-		String key = provider.storeTemporaryData(testFile);
-		File tempFile = new File(tempDir, key);
+
+		final LocalStorageProvider provider = new LocalStorageProvider(settings);
+		final String key = provider.storeTemporaryData(testFile);
+		final File tempFile = new File(tempDir, key);
 		Assert.assertTrue(tempFile.exists());
-		
-		StoredFile storedFile = provider.retrieveTemporaryData(key);
+
+		final StoredFile storedFile = provider.retrieveTemporaryData(key);
 		Assert.assertTrue(storedFile.getFile().exists());
 		Assert.assertTrue(FileUtils.contentEquals(tempFile, storedFile.getFile()));
-		
-		String auditKey = provider.moveToAuditStore(key, null);
+
+		final String auditKey = provider.moveToAuditStore(key, null);
 		Assert.assertFalse(tempFile.exists());
 		Assert.assertTrue(new File(auditDir, auditKey).exists());
 	}

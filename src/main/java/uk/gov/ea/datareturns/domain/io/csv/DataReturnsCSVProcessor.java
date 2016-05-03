@@ -40,7 +40,7 @@ import uk.gov.ea.datareturns.exception.system.DRSystemException;
  * @author Sam Gardner-Dell
  */
 public class DataReturnsCSVProcessor {
-	
+
 	private static final Map<String, String> fieldMap = new HashMap<>();
 	static {
 		for (final Field f : MonitoringDataRecord.class.getDeclaredFields()) {
@@ -51,15 +51,16 @@ public class DataReturnsCSVProcessor {
 			}
 		}
 	}
-	
+
 	public DataReturnsCSVProcessor() {
-		
+
 	}
-	
+
 	public CSVModel<MonitoringDataRecord> read(final File csvFile) {
-	    BeanListProcessor<MonitoringDataRecord> rowProcessor = new BeanListProcessor<MonitoringDataRecord>(MonitoringDataRecord.class) {
+		final BeanListProcessor<MonitoringDataRecord> rowProcessor = new BeanListProcessor<MonitoringDataRecord>(
+				MonitoringDataRecord.class) {
 			@Override
-			public MonitoringDataRecord createBean(String[] row, ParsingContext context) {
+			public MonitoringDataRecord createBean(final String[] row, final ParsingContext context) {
 				if (row.length > context.headers().length) {
 					throw new InconsistentRowException(
 							String.format("Record %d contains additional fields not defined in the header.",
@@ -72,24 +73,24 @@ public class DataReturnsCSVProcessor {
 			 * @see com.univocity.parsers.common.processor.BeanListProcessor#beanProcessed(java.lang.Object, com.univocity.parsers.common.ParsingContext)
 			 */
 			@Override
-			public void beanProcessed(MonitoringDataRecord bean, ParsingContext context) {
+			public void beanProcessed(final MonitoringDataRecord bean, final ParsingContext context) {
 				bean.setLineNumber(context.currentRecord() + 1);
 				super.beanProcessed(bean, context);
 			}
-	    };
-	    // Trim the content when converting into the bean
-	    rowProcessor.convertAll(Conversions.trim());
-	    
-	    CsvParserSettings parserSettings = new CsvParserSettings();
-	    parserSettings.setHeaderExtractionEnabled(true);
-	    parserSettings.setLineSeparatorDetectionEnabled(true);
-	    parserSettings.trimValues(true);
-	    parserSettings.setRowProcessor(rowProcessor);
+		};
+		// Trim the content when converting into the bean
+		rowProcessor.convertAll(Conversions.trim());
 
-	    // creates a parser instance with the given settings
-	    CsvParser parser = new CsvParser(parserSettings);
+		final CsvParserSettings parserSettings = new CsvParserSettings();
+		parserSettings.setHeaderExtractionEnabled(true);
+		parserSettings.setLineSeparatorDetectionEnabled(true);
+		parserSettings.trimValues(true);
+		parserSettings.setRowProcessor(rowProcessor);
+
+		// creates a parser instance with the given settings
+		final CsvParser parser = new CsvParser(parserSettings);
 		try {
-	    	parser.parse(csvFile);
+			parser.parse(csvFile);
 		} catch (final InconsistentRowException e) {
 			// Row encountered with an inconsistent number of fields with respect to the header definitions.
 			throw new DRInconsistentCSVException(e.getMessage());
@@ -98,9 +99,9 @@ public class DataReturnsCSVProcessor {
 		} catch (final Throwable e) {
 			throw new DRSystemException(e, "Failed to parse CSV file.");
 		}
-    	
-	    String[] headers = rowProcessor.getHeaders();
-		
+
+		final String[] headers = rowProcessor.getHeaders();
+
 		// Get working sets for the list of all headers and the list of mandatory headers
 		final Set<String> allHeaders = DataReturnsHeaders.getAllHeadings();
 		final Set<String> mandatoryHeaders = DataReturnsHeaders.getMandatoryHeadings();
@@ -109,8 +110,7 @@ public class DataReturnsCSVProcessor {
 		if (headers != null) {
 			csvHeaders.addAll(Arrays.asList(headers));
 		}
-		
-		
+
 		// If we remove the CSV file's headers from the set of mandatory headers then the mandatory headers set should be empty
 		// if they have defined everything that they should have.
 		mandatoryHeaders.removeAll(csvHeaders);
@@ -126,23 +126,24 @@ public class DataReturnsCSVProcessor {
 		if (!tempCsvHeaderSet.isEmpty()) {
 			throw new DRHeaderFieldUnrecognisedException("Unrecognised field(s) encountered: " + tempCsvHeaderSet.toString());
 		}
-		
-	    List<MonitoringDataRecord> records = rowProcessor.getBeans();
-	    CSVModel<MonitoringDataRecord> model = new CSVModel<>();
-	    model.setPojoFieldToHeaderMap(fieldMap);
-	    model.setRecords(records);
-	    return model;
+
+		final List<MonitoringDataRecord> records = rowProcessor.getBeans();
+		final CSVModel<MonitoringDataRecord> model = new CSVModel<>();
+		model.setPojoFieldToHeaderMap(fieldMap);
+		model.setRecords(records);
+		return model;
 	}
-	
-	public void write(List<MonitoringDataRecord> records, File csvFile) {
-		CsvWriterSettings settings = new CsvWriterSettings();
+
+	public void write(final List<MonitoringDataRecord> records, final File csvFile) {
+		final CsvWriterSettings settings = new CsvWriterSettings();
 		settings.setHeaders(DataReturnsHeaders.getAllHeadingsArray());
 
-	    BeanWriterProcessor<MonitoringDataRecord> processor = new BeanWriterProcessor<MonitoringDataRecord>(MonitoringDataRecord.class);
-	    settings.setRowWriterProcessor(processor);
-	    CsvWriter writer = new CsvWriter(csvFile, settings);
-	    // Write the record headers of this file
-	    writer.writeHeaders();
-	    writer.processRecordsAndClose(records);
+		final BeanWriterProcessor<MonitoringDataRecord> processor = new BeanWriterProcessor<MonitoringDataRecord>(
+				MonitoringDataRecord.class);
+		settings.setRowWriterProcessor(processor);
+		final CsvWriter writer = new CsvWriter(csvFile, settings);
+		// Write the record headers of this file
+		writer.writeHeaders();
+		writer.processRecordsAndClose(records);
 	}
 }

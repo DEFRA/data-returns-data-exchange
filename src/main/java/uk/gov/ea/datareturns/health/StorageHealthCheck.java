@@ -13,7 +13,7 @@ import uk.gov.ea.datareturns.storage.StorageProvider;
 
 /**
  * Checks the health of the configured Storage Provider
- * 
+ *
  * @author Sam Gardner-Dell
  */
 @Component
@@ -21,27 +21,27 @@ public class StorageHealthCheck implements HealthIndicator {
 	private static final Logger LOGGER = LoggerFactory.getLogger(StorageHealthCheck.class);
 
 	@Inject
-    private StorageProvider storageProvider;
+	private StorageProvider storageProvider;
 
-    public StorageHealthCheck() {
-    }
-    
-    public StorageHealthCheck(StorageProvider storageProvider) {
-        this.storageProvider = storageProvider;
-    }
+	public StorageHealthCheck() {
+	}
+
+	public StorageHealthCheck(final StorageProvider storageProvider) {
+		this.storageProvider = storageProvider;
+	}
 
 	@Override
 	public Health health() {
 		LOGGER.info("Running storage health check");
 		Health health = null;
-		
+
 		try {
-			if (storageProvider.healthy()) {
+			if (this.storageProvider.healthy()) {
 				health = Health.up().build();
 			} else {
 				health = Health.down().build();
 			}
-		} catch (StorageException e) {
+		} catch (final StorageException e) {
 			health = Health.down(e).build();
 		}
 		return health;

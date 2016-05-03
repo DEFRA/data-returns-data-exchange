@@ -20,7 +20,7 @@ import uk.gov.ea.datareturns.storage.s3.AmazonS3Configuration;
  * @author Sam Gardner-Dell
  */
 @Component
-@ConfigurationProperties(prefix="storage.s3")
+@ConfigurationProperties(prefix = "storage.s3")
 public class S3StorageConfiguration implements AmazonS3Configuration {
 	@JsonProperty("awsAccessKey")
 	private String awsAccessKey;

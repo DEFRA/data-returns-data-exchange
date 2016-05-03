@@ -17,6 +17,7 @@ public enum ApplicationExceptionType {
 	SYSTEM_FAILURE(3000, "A system failure occurred");
 
 	private int appStatusCode;
+
 	private String reason;
 
 	ApplicationExceptionType(final int appStatusCode, final String reason) {

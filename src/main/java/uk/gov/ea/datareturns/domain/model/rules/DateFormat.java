@@ -13,6 +13,7 @@ import java.time.format.DateTimeParseException;
 public final class DateFormat {
 	/** The standard DEP date format - always used for output */
 	public static final String STANDARD_DATE_FORMAT = "yyyy-MM-dd";
+
 	/** The standard DEP date-time format - always used for output */
 	public static final String STANDARD_DATE_TIME_FORMAT = "yyyy-MM-dd'T'HH:mm:ss";
 
@@ -22,6 +23,7 @@ public final class DateFormat {
 			"dd-MM-yyyy",
 			"dd/MM/yyyy"
 	};
+
 	/** Date-time Formats recognised by the Data Returns project */
 	public static final String[] DATE_TIME_FORMATS = {
 			STANDARD_DATE_TIME_FORMAT,

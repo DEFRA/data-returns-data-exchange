@@ -12,6 +12,7 @@ import uk.gov.ea.datareturns.exception.ExceptionMessageContainer;
 
 public abstract class AbstractDRSystemException extends AbstractDRException {
 	private static final Logger LOGGER = LoggerFactory.getLogger(AbstractDRSystemException.class);
+
 	private static final long serialVersionUID = 1L;
 
 	public AbstractDRSystemException(final Throwable cause, final Status code, final int appStatusCode, final String message) {

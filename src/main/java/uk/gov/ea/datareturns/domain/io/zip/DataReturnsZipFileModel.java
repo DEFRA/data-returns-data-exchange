@@ -25,6 +25,7 @@ import org.apache.commons.io.FileUtils;
 public class DataReturnsZipFileModel {
 	/** The directory within the zip file where the input file is stored (this is the original file that was uploaded by the user */
 	private static final String DIR_INPUT = "/input/";
+
 	/** The directory within the zip file where the output files are stored (one output file is stored per permit number encountered */
 	private static final String DIR_OUTPUT = "/output/";
 

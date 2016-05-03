@@ -14,14 +14,14 @@ import uk.gov.ea.datareturns.jpa.dao.UnitDao;
 
 /**
  * Controlled list auditor for unit values
- * 
+ *
  * @author Sam Gardner-Dell
  */
 @Component
 public class UnitAuditor implements ControlledListAuditor {
 	@Inject
 	private UnitDao dao;
-	
+
 	/**
 	 *
 	 */
@@ -33,6 +33,6 @@ public class UnitAuditor implements ControlledListAuditor {
 	 */
 	@Override
 	public boolean isValid(final Object value) {
-		return dao.nameExists(Objects.toString(value, ""));
+		return this.dao.nameExists(Objects.toString(value, ""));
 	}
 }

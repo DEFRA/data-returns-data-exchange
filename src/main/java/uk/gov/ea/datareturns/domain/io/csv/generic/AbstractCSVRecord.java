@@ -10,13 +10,13 @@ public abstract class AbstractCSVRecord {
 	 * @return the lineNumber
 	 */
 	public long getLineNumber() {
-		return lineNumber;
+		return this.lineNumber;
 	}
 
 	/**
 	 * @param lineNumber the lineNumber to set
 	 */
-	public void setLineNumber(long lineNumber) {
+	public void setLineNumber(final long lineNumber) {
 		this.lineNumber = lineNumber;
 	}
 }

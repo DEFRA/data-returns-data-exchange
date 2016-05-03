@@ -45,14 +45,14 @@ public interface StorageProvider {
 	 */
 	String moveToAuditStore(String fileKey, Map<String, String> metadata) throws StorageException;
 
-	
 	/**
 	 * Check if the storage provider is healthy
-	 * 
+	 *
 	 * @return true if the provider is healthy, false otherwise
 	 * @throws StorageException if an error occurred when checking for health
 	 */
 	boolean healthy() throws StorageException;
+
 	/**
 	 * Generate a file key to identify this file on S3.
 	 *
@@ -70,6 +70,7 @@ public interface StorageProvider {
 
 	public static class StoredFile {
 		private final File file;
+
 		private final Map<String, String> metadata;
 
 		public StoredFile(final File file, final Map<String, String> metadata) {

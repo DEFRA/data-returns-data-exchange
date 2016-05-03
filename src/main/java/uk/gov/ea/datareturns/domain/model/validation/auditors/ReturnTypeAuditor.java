@@ -21,19 +21,19 @@ import uk.gov.ea.datareturns.jpa.dao.ReturnTypeDao;
 public class ReturnTypeAuditor implements ControlledListAuditor {
 	@Inject
 	private ReturnTypeDao dao;
-	
+
 	/**
-	 * 
+	 *
 	 */
 	public ReturnTypeAuditor() {
-		
+
 	}
-	
+
 	/* (non-Javadoc)
 	 * @see uk.gov.ea.datareturns.domain.model.validation.constraints.ControlledListAuditor#isValid(java.lang.Object)
 	 */
 	@Override
 	public boolean isValid(final Object value) {
-		return dao.nameExists(Objects.toString(value, ""));
+		return this.dao.nameExists(Objects.toString(value, ""));
 	}
 }

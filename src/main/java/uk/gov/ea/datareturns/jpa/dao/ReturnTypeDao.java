@@ -13,15 +13,15 @@ import uk.gov.ea.datareturns.jpa.entities.ReturnType;
 @Repository
 public class ReturnTypeDao extends AbstractJpaDao {
 	/**
-	 * 
+	 *
 	 */
 	public ReturnTypeDao() {
 		super();
 	}
-	
+
 	/**
 	 * Determine if a Return Type with the given name exists
-	 * 
+	 *
 	 * @param name the return type name to check
 	 * @return true if the name exists, false otherwise
 	 */
@@ -31,13 +31,13 @@ public class ReturnTypeDao extends AbstractJpaDao {
 
 	/**
 	 * Retrieve a full set of return type names
-	 * 
+	 *
 	 * @return a {@link Set} of return type names
 	 */
 	public Set<String> findNames() {
 		return cachedColumnQuery("ReturnType.findAllNames");
 	}
-	
+
 	/**
 	 * Get a {@link ReturnType} instance for the given name
 	 *

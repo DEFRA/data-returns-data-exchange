@@ -21,7 +21,7 @@ import uk.gov.ea.datareturns.jpa.dao.UniqueIdentifierDao;
 public class UniqueIdentifierAuditor implements ControlledListAuditor {
 	@Inject
 	private UniqueIdentifierDao dao;
-	
+
 	/**
 	 *
 	 */
@@ -33,6 +33,6 @@ public class UniqueIdentifierAuditor implements ControlledListAuditor {
 	 */
 	@Override
 	public boolean isValid(final Object value) {
-		return dao.identfierExists(Objects.toString(value, ""));
+		return this.dao.identfierExists(Objects.toString(value, ""));
 	}
 }

@@ -21,12 +21,12 @@ import uk.gov.ea.datareturns.jpa.dao.MethodOrStandardDao;
 public class MethodOrStandardAuditor implements ControlledListAuditor {
 	@Inject
 	private MethodOrStandardDao dao;
-	
+
 	/* (non-Javadoc)
 	 * @see uk.gov.ea.datareturns.domain.model.validation.constraints.ControlledListAuditor#isValid(java.lang.Object)
 	 */
 	@Override
 	public boolean isValid(final Object value) {
-		return dao.nameExists(Objects.toString(value, ""));
+		return this.dao.nameExists(Objects.toString(value, ""));
 	}
 }

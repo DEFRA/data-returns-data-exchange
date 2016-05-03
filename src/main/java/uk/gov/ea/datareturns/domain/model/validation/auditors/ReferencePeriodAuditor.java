@@ -21,12 +21,12 @@ import uk.gov.ea.datareturns.jpa.dao.ReferencePeriodDao;
 public class ReferencePeriodAuditor implements ControlledListAuditor {
 	@Inject
 	private ReferencePeriodDao dao;
-	
+
 	/* (non-Javadoc)
 	 * @see uk.gov.ea.datareturns.domain.model.validation.constraints.ControlledListAuditor#isValid(java.lang.Object)
 	 */
 	@Override
 	public boolean isValid(final Object value) {
-		return dao.nameExists(Objects.toString(value, ""));
+		return this.dao.nameExists(Objects.toString(value, ""));
 	}
 }

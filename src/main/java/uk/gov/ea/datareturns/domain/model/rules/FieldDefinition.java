@@ -1,11 +1,11 @@
 /**
- * 
+ *
  */
 package uk.gov.ea.datareturns.domain.model.rules;
 
 /**
  * TODO: Move this stuff into the database
- * 
+ *
  * @author Sam Gardner-Dell
  */
 public enum FieldDefinition {
@@ -27,11 +27,12 @@ public enum FieldDefinition {
 	CiC("Commercial in confidence", null),
 	CAS("Chemical Abstracts Service number", null),
 	RD_Code("Recovery or disposal code", null);
-	
+
 	private final String description;
+
 	private final String helpReference;
-	
-	private FieldDefinition(String description, String helpReference) {
+
+	private FieldDefinition(final String description, final String helpReference) {
 		this.description = description;
 		this.helpReference = helpReference;
 	}
@@ -40,13 +41,13 @@ public enum FieldDefinition {
 	 * @return the description
 	 */
 	public String getDescription() {
-		return description;
+		return this.description;
 	}
 
 	/**
 	 * @return the helpReference
 	 */
 	public String getHelpReference() {
-		return helpReference;
+		return this.helpReference;
 	}
 }

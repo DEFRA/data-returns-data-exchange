@@ -15,9 +15,9 @@ import javax.persistence.Table;
 @Entity
 @Table(name = "monitoring_periods")
 @NamedQueries({
-	@NamedQuery(name = "MonitoringPeriod.findAll", query = "SELECT m FROM MonitoringPeriod m"),
-	@NamedQuery(name = "MonitoringPeriod.findAllNames", query = "SELECT m.name FROM MonitoringPeriod m"),
-	@NamedQuery(name = "MonitoringPeriod.findByName", query = "SELECT m FROM MonitoringPeriod m WHERE m.name = :name")
+		@NamedQuery(name = "MonitoringPeriod.findAll", query = "SELECT m FROM MonitoringPeriod m"),
+		@NamedQuery(name = "MonitoringPeriod.findAllNames", query = "SELECT m.name FROM MonitoringPeriod m"),
+		@NamedQuery(name = "MonitoringPeriod.findByName", query = "SELECT m FROM MonitoringPeriod m WHERE m.name = :name")
 })
 public class MonitoringPeriod {
 	@Id

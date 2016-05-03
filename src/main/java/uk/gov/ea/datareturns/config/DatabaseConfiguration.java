@@ -26,10 +26,10 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 @Configuration
 @EnableTransactionManagement
 public class DatabaseConfiguration {
-	
+
 	/**
 	 * Creates the primary application datasource from the spring.datasource section of the configuration
-	 * 
+	 *
 	 * @return the application's primary {@link DataSource}
 	 */
 	@Bean
@@ -42,13 +42,13 @@ public class DatabaseConfiguration {
 	@Bean
 	@ConditionalOnMissingBean
 	public LocalContainerEntityManagerFactoryBean entityManagerFactory() {
-		LocalContainerEntityManagerFactoryBean entityManagerFactory = new LocalContainerEntityManagerFactoryBean();
+		final LocalContainerEntityManagerFactoryBean entityManagerFactory = new LocalContainerEntityManagerFactoryBean();
 		entityManagerFactory.setDataSource(primaryDataSource());
 		entityManagerFactory.setPersistenceUnitName("org.gov.ea.datareturns.jpa");
-//		entityManagerFactory.setPackagesToScan("uk.gov.ea.datareturns.jpa.entities");
+		//		entityManagerFactory.setPackagesToScan("uk.gov.ea.datareturns.jpa.entities");
 
 		// Vendor adapter
-		HibernateJpaVendorAdapter vendorAdapter = new HibernateJpaVendorAdapter();
+		final HibernateJpaVendorAdapter vendorAdapter = new HibernateJpaVendorAdapter();
 		entityManagerFactory.setJpaVendorAdapter(vendorAdapter);
 
 		// Additional hibernate properties
@@ -62,17 +62,17 @@ public class DatabaseConfiguration {
 	 */
 	@Bean
 	public JpaTransactionManager transactionManager() {
-		JpaTransactionManager transactionManager = new JpaTransactionManager();
+		final JpaTransactionManager transactionManager = new JpaTransactionManager();
 		transactionManager.setEntityManagerFactory(entityManagerFactory().getObject());
 		return transactionManager;
 	}
 
 	/**
-	 * 
-	 * PersistenceExceptionTranslationPostProcessor is a bean post processor which adds an advisor to any bean annotated 
-	 * with Repository so that any platform-specific exceptions are caught and then rethrown as one Spring's unchecked data 
+	 *
+	 * PersistenceExceptionTranslationPostProcessor is a bean post processor which adds an advisor to any bean annotated
+	 * with Repository so that any platform-specific exceptions are caught and then rethrown as one Spring's unchecked data
 	 * access exceptions (i.e. a subclass of DataAccessException).
-	 * 
+	 *
 	 * @return
 	 */
 	@Bean

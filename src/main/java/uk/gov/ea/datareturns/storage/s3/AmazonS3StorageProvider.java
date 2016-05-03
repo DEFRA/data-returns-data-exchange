@@ -41,15 +41,18 @@ import uk.gov.ea.datareturns.storage.StorageProvider;
  * @author Sam Gardner-Dell
  */
 @Component
-@ConditionalOnProperty(name="storage.type", havingValue="s3")
+@ConditionalOnProperty(name = "storage.type", havingValue = "s3")
 public class AmazonS3StorageProvider implements StorageProvider {
 	private static final Logger LOGGER = LoggerFactory.getLogger(AmazonS3StorageProvider.class);
+
 	/** Message format for amazon service exception */
 	private final static String FMT_SERVICE_EXCEPTION = "Amazon S3 service rejected an upload attempt. (HTTP Status: %d, AWS Error Code: %s, AWS Error Type: %s)";
 
 	/** Amazon S3 client */
 	private final AmazonS3 s3Client;
+
 	private final TransferManager transferManager;
+
 	private final AmazonS3Configuration settings;
 
 	/**
@@ -139,7 +142,7 @@ public class AmazonS3StorageProvider implements StorageProvider {
 			final String message = "An error occurred that prevented the Amazon S3 service from being contacted.  Cause: "
 					+ ace.getMessage();
 			throw new StorageException(message, ace);
-		} catch (IOException e) {
+		} catch (final IOException e) {
 			throw new StorageException("Unable to read file", e);
 		}
 		return fileKey;
@@ -181,7 +184,7 @@ public class AmazonS3StorageProvider implements StorageProvider {
 		} catch (final InterruptedException e) {
 			final String message = "Upload to S3 thread interrupted";
 			throw new StorageException(message, e);
-		} catch (IOException e) {
+		} catch (final IOException e) {
 			throw new StorageException("Unable to read file", e);
 		}
 		return fileKey;
@@ -290,9 +293,9 @@ public class AmazonS3StorageProvider implements StorageProvider {
 	@Override
 	public boolean healthy() throws StorageException {
 		try {
-			return s3Client.doesBucketExist(this.settings.getTemporaryBucket()) 
-					&& s3Client.doesBucketExist(this.settings.getPersistentBucket());
-		} catch (AmazonServiceException e) {
+			return this.s3Client.doesBucketExist(this.settings.getTemporaryBucket())
+					&& this.s3Client.doesBucketExist(this.settings.getPersistentBucket());
+		} catch (final AmazonServiceException e) {
 			throw new StorageException("Health check failed with exception", e);
 		}
 	}

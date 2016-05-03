@@ -10,10 +10,10 @@ import uk.gov.ea.datareturns.domain.model.validation.constraints.dependencies.De
 public class CommentDefinedForNoValueAuditor implements DependentFieldAuditor {
 
 	@Override
-	public boolean isValid(Object primaryFieldValue, Object dependentFieldValue) {
-		String primaryField = Objects.toString(primaryFieldValue, null);
-		String otherField = Objects.toString(dependentFieldValue, null);
-		
+	public boolean isValid(final Object primaryFieldValue, final Object dependentFieldValue) {
+		final String primaryField = Objects.toString(primaryFieldValue, null);
+		final String otherField = Objects.toString(dependentFieldValue, null);
+
 		if ("NA".equals(primaryField)) {
 			return !StringUtils.isBlank(otherField);
 		}

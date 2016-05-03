@@ -9,7 +9,7 @@ import org.springframework.context.annotation.Configuration;
  * Holds test settings from configuration file
  */
 @Configuration
-@ConfigurationProperties(prefix="test")
+@ConfigurationProperties(prefix = "test")
 public class TestSettings {
 	@NotEmpty
 	private String testFilesLocation;

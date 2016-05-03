@@ -13,15 +13,15 @@ import uk.gov.ea.datareturns.jpa.entities.Parameter;
 @Repository
 public class ParameterDao extends AbstractJpaDao {
 	/**
-	 * 
+	 *
 	 */
 	public ParameterDao() {
 		super();
 	}
-	
+
 	/**
 	 * Determine if a parameter with the given name exists
-	 * 
+	 *
 	 * @param name the parameter name to check
 	 * @return true if the name exists, false otherwise
 	 */
@@ -31,7 +31,7 @@ public class ParameterDao extends AbstractJpaDao {
 
 	/**
 	 * Retrieve a full set of parameter names
-	 * 
+	 *
 	 * @return a {@link Set} of parameter names
 	 */
 	public Set<String> findNames() {

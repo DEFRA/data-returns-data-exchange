@@ -4,6 +4,7 @@ public enum FileType {
 	CSV("csv", "Comma Separated Values"), XML("xml", "Extensible Markup Language");
 
 	private String fileType;
+
 	private String description;
 
 	FileType(final String fileType, final String reason) {

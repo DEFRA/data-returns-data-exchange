@@ -18,7 +18,7 @@ import uk.gov.ea.datareturns.domain.model.ReturnsDate;
  */
 public class ReturnsDateValidator implements ConstraintValidator<ValidReturnsDate, Object> {
 	private String missingTemplate;
-	
+
 	/* (non-Javadoc)
 	 * @see javax.validation.ConstraintValidator#initialize(java.lang.annotation.Annotation)
 	 */
@@ -34,17 +34,17 @@ public class ReturnsDateValidator implements ConstraintValidator<ValidReturnsDat
 	public boolean isValid(final Object value, final ConstraintValidatorContext context) {
 		boolean isValid = false;
 		if (value instanceof ReturnsDate) {
-			ReturnsDate returnsDate = (ReturnsDate) value;
+			final ReturnsDate returnsDate = (ReturnsDate) value;
 			isValid = returnsDate.isParsed();
-			
+
 			if (isValid) {
-				Instant instant = returnsDate.getInstant();
+				final Instant instant = returnsDate.getInstant();
 				final Instant now = Instant.now(Clock.systemUTC());
 				isValid = instant.equals(now) || instant.isBefore(now);
-				
+
 				// TODO: Future release - extend validation to check for dates too far in the past (should be configurable)
-//				final Instant earliestAllowed = now.minus(18, ChronoUnit.MONTHS);
-//				isValid = (instant.equals(now) || instant.isBefore(now)) && instant.isAfter(earliestAllowed);
+				//				final Instant earliestAllowed = now.minus(18, ChronoUnit.MONTHS);
+				//				isValid = (instant.equals(now) || instant.isBefore(now)) && instant.isAfter(earliestAllowed);
 			} else {
 				context.buildConstraintViolationWithTemplate(this.missingTemplate).addConstraintViolation();
 			}

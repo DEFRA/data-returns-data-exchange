@@ -25,7 +25,7 @@ public class MetricsConfiguration extends MetricsConfigurerAdapter implements Je
 	private InstrumentedHandler metricsHandler;
 
 	@Override
-	public void configureReporters(MetricRegistry metricRegistry) {
+	public void configureReporters(final MetricRegistry metricRegistry) {
 		//    	Console reporter
 		//        registerReporter(ConsoleReporter.forRegistry(metricRegistry).build()).start(1, TimeUnit.MINUTES);
 
@@ -33,7 +33,7 @@ public class MetricsConfiguration extends MetricsConfigurerAdapter implements Je
 		//		GraphiteReporter graphiteReporter = GraphiteReporter.forRegistry(metricRegistry).build(graphite);
 		//		registerReporter(graphiteReporter);
 		//		graphiteReporter.start(10, TimeUnit.SECONDS);
-//
+		//
 		metricRegistry.register("jvm.attribute", new JvmAttributeGaugeSet());
 		metricRegistry.register("jvm.classloader", new ClassLoadingGaugeSet());
 		metricRegistry.register("jvm.filedescriptor", new FileDescriptorRatioGauge());
@@ -49,7 +49,7 @@ public class MetricsConfiguration extends MetricsConfigurerAdapter implements Je
 	public EmbeddedServletContainerCustomizer customizer() {
 		return new EmbeddedServletContainerCustomizer() {
 			@Override
-			public void customize(ConfigurableEmbeddedServletContainer container) {
+			public void customize(final ConfigurableEmbeddedServletContainer container) {
 				if (container instanceof JettyEmbeddedServletContainerFactory) {
 					((JettyEmbeddedServletContainerFactory) container).addServerCustomizers(MetricsConfiguration.this);
 				}
@@ -58,8 +58,8 @@ public class MetricsConfiguration extends MetricsConfigurerAdapter implements Je
 	}
 
 	@Override
-	public void customize(Server server) {
-		metricsHandler.setHandler(server.getHandler());
-		server.setHandler(metricsHandler);
+	public void customize(final Server server) {
+		this.metricsHandler.setHandler(server.getHandler());
+		server.setHandler(this.metricsHandler);
 	}
 }

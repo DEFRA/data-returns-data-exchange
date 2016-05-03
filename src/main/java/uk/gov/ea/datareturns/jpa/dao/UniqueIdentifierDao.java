@@ -13,7 +13,7 @@ import uk.gov.ea.datareturns.jpa.entities.UniqueIdentifier;
 @Repository
 public class UniqueIdentifierDao extends AbstractJpaDao {
 	/**
-	 * 
+	 *
 	 */
 	public UniqueIdentifierDao() {
 		super();
@@ -21,14 +21,13 @@ public class UniqueIdentifierDao extends AbstractJpaDao {
 
 	/**
 	 * Check if a specific identifier exists in the controlled list.
-	 * 
+	 *
 	 * @param identifier the identifier to check
 	 * @return true if the identifier exists, false otherwise.
 	 */
-	public boolean identfierExists(String identifier) {
+	public boolean identfierExists(final String identifier) {
 		return findIdentifiers().contains(identifier);
 	}
-	
 
 	/**
 	 * Get a set of identifiers from the database

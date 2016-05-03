@@ -1,5 +1,5 @@
 /**
- * 
+ *
  */
 package uk.gov.ea.datareturns.domain.io.csv.generic.exceptions;
 
@@ -7,7 +7,7 @@ import com.univocity.parsers.common.DataProcessingException;
 
 /**
  * Thrown by the reader if a row is encountered with an inconsistent number of fields with respect to the header.
- * 
+ *
  * @author Sam Gardner-Dell
  */
 public class InconsistentRowException extends DataProcessingException {
@@ -17,7 +17,7 @@ public class InconsistentRowException extends DataProcessingException {
 	/**
 	 * @param message
 	 */
-	public InconsistentRowException(String message) {
+	public InconsistentRowException(final String message) {
 		super(message);
 	}
 }

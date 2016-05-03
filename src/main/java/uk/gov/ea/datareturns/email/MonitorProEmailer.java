@@ -22,21 +22,21 @@ import uk.gov.ea.datareturns.exception.system.DRSystemException;
 /**
  * Handles emails to monitor pro
  *
- * 
+ *
  * TODO: Refactor/rethink this - code moved in from DataExchangeResource (as is)
- * 
+ *
  */
 @Component
 public class MonitorProEmailer {
 	private static final Logger LOGGER = LoggerFactory.getLogger(MonitorProEmailer.class);
 
-	private MonitorProEmailConfiguration settings;
-	
+	private final MonitorProEmailConfiguration settings;
+
 	@Inject
-	public MonitorProEmailer(MonitorProEmailConfiguration settings) {
+	public MonitorProEmailer(final MonitorProEmailConfiguration settings) {
 		this.settings = settings;
 	}
-	
+
 	// TODO move to own class hierarchy - also needs tests
 	public void sendNotifications(final File returnsCSVFile) {
 		LOGGER.debug("Sending Email with attachment '" + returnsCSVFile.getAbsolutePath() + "'");
@@ -53,18 +53,18 @@ public class MonitorProEmailer {
 		try {
 			final MultiPartEmail email = new MultiPartEmail();
 			final EmmaDatabase type = EmmaDatabase.forUniqueId(permitNumber);
-			final String subject = settings.getDatabaseName(type);
+			final String subject = this.settings.getDatabaseName(type);
 
-			email.setHostName(settings.getHost());
-			email.setSmtpPort(settings.getPort());
+			email.setHostName(this.settings.getHost());
+			email.setSmtpPort(this.settings.getPort());
 
 			email.setSubject(subject);
-			email.addTo(settings.getTo());
-			email.setFrom(settings.getFrom());
+			email.addTo(this.settings.getTo());
+			email.setFrom(this.settings.getFrom());
 
-			final String messageBody = StringUtils.replace(settings.getBody(), "{{EA_ID}}", permitNumber);
+			final String messageBody = StringUtils.replace(this.settings.getBody(), "{{EA_ID}}", permitNumber);
 			email.setMsg(messageBody);
-			email.setStartTLSEnabled(settings.isUseTLS());
+			email.setStartTLSEnabled(this.settings.isUseTLS());
 
 			final EmailAttachment attachment = new EmailAttachment();
 			attachment.setDisposition(EmailAttachment.ATTACHMENT);

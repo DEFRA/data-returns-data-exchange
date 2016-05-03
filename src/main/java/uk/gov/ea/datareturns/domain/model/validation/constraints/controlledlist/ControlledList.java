@@ -30,6 +30,6 @@ public @interface ControlledList {
 	Class<? extends Payload>[] payload() default {};
 
 	Class<? extends ControlledListAuditor> auditor();
-	
+
 	boolean required() default true;
 }

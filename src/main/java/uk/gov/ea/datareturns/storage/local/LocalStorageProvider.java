@@ -32,20 +32,22 @@ import uk.gov.ea.datareturns.storage.StorageProvider;
  * @author Sam Gardner-Dell
  */
 @Component
-@ConditionalOnProperty(name="storage.type", havingValue="local")
+@ConditionalOnProperty(name = "storage.type", havingValue = "local")
 @Scope(ConfigurableBeanFactory.SCOPE_SINGLETON)
 public class LocalStorageProvider implements StorageProvider {
 	private static final Logger LOGGER = LoggerFactory.getLogger(LocalStorageProvider.class);
+
 	private final File temporaryDir;
+
 	private final File persistentDir;
 
 	@Inject
-	public LocalStorageProvider(LocalStorageConfiguration settings) {
+	public LocalStorageProvider(final LocalStorageConfiguration settings) {
 		LOGGER.info("Initialising Local Storage Provider");
-		
+
 		this.temporaryDir = settings.getTemporaryFolder();
 		this.persistentDir = settings.getPersistentFolder();
-		
+
 		if (settings.isCleanOnStartup()) {
 			try {
 				for (final File dir : new File[] { this.temporaryDir, this.persistentDir }) {

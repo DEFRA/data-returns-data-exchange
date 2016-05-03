@@ -15,9 +15,9 @@ import javax.persistence.Table;
 @Entity
 @Table(name = "return_types")
 @NamedQueries({
-	@NamedQuery(name = "ReturnType.findAll", query = "SELECT r FROM ReturnType r"),
-	@NamedQuery(name = "ReturnType.findAllNames", query = "SELECT r.name FROM ReturnType r"),
-	@NamedQuery(name = "ReturnType.findByName", query = "SELECT r FROM ReturnType r WHERE r.name = :name")
+		@NamedQuery(name = "ReturnType.findAll", query = "SELECT r FROM ReturnType r"),
+		@NamedQuery(name = "ReturnType.findAllNames", query = "SELECT r.name FROM ReturnType r"),
+		@NamedQuery(name = "ReturnType.findByName", query = "SELECT r FROM ReturnType r WHERE r.name = :name")
 })
 public class ReturnType {
 

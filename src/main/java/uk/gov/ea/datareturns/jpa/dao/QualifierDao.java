@@ -13,16 +13,15 @@ import uk.gov.ea.datareturns.jpa.entities.Qualifier;
 @Repository
 public class QualifierDao extends AbstractJpaDao {
 	/**
-	 * 
+	 *
 	 */
 	public QualifierDao() {
 		super();
 	}
-	
-	
+
 	/**
 	 * Determine if a qualifier with the given name exists
-	 * 
+	 *
 	 * @param name the qualifier name to check
 	 * @return true if the name exists, false otherwise
 	 */
@@ -32,7 +31,7 @@ public class QualifierDao extends AbstractJpaDao {
 
 	/**
 	 * Retrieve a full set of qualifier names
-	 * 
+	 *
 	 * @return a {@link Set} of qualifier names
 	 */
 	public Set<String> findNames() {

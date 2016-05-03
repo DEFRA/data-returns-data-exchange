@@ -1,5 +1,5 @@
 /**
- * 
+ *
  */
 package uk.gov.ea.datareturns.domain.model.rules.conversion;
 
@@ -11,19 +11,20 @@ import uk.gov.ea.datareturns.domain.model.ReturnsDate;
  * @author sam
  *
  */
-public class ReturnsDateConverter implements Conversion<String, ReturnsDate>{
+public class ReturnsDateConverter implements Conversion<String, ReturnsDate> {
 	/**
 	 * Required for univocity parser to construct instances
 	 */
-	public ReturnsDateConverter(String ... args) {}
+	public ReturnsDateConverter(final String... args) {
+	}
 
 	@Override
-	public ReturnsDate execute(String input) {
+	public ReturnsDate execute(final String input) {
 		return ReturnsDate.from(input);
 	}
 
 	@Override
-	public String revert(ReturnsDate input) {
+	public String revert(final ReturnsDate input) {
 		return input.toStandardisedFormat();
 	}
 }

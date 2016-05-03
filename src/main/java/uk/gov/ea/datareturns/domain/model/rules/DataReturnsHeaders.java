@@ -11,38 +11,55 @@ import java.util.Set;
 public class DataReturnsHeaders {
 	/** The Permit Number (EA_ID) */
 	public static final String PERMIT_NUMBER = "EA_ID";
+
 	/** The site name (Site_Name) */
 	public static final String SITE_NAME = "Site_Name";
+
 	/** The return type (Rtn_Type) */
 	public static final String RETURN_TYPE = "Rtn_Type";
+
 	/** The monitoring date (Mon_Date) */
 	public static final String MONITORING_DATE = "Mon_Date";
+
 	/** The monitoring period (Mon_Period) */
 	public static final String MONITORING_PERIOD = "Mon_Period";
+
 	/** The monitoring point (Mon_Point) */
 	public static final String MONITORING_POINT = "Mon_Point";
+
 	/** Sample reference (Smpl_Ref) */
 	public static final String SAMPLE_REFERENCE = "Smpl_Ref";
+
 	/** Sampled by (Smpl_By) */
 	public static final String SAMPLE_BY = "Smpl_By";
+
 	/** Parameter value (Parameter) */
 	public static final String PARAMETER = "Parameter";
+
 	/** Value (Value) */
 	public static final String VALUE = "Value";
+
 	/** Textual value (Txt_Value) */
 	public static final String TEXT_VALUE = "Txt_Value";
+
 	/** Unit of measurement (Unit) */
 	public static final String UNIT = "Unit";
+
 	/** Reference period */
 	public static final String REFERENCE_PERIOD = "Ref_Period";
+
 	/** Method or standard used (Meth_Stand) */
 	public static final String METHOD_STANDARD = "Meth_Stand";
+
 	/** Record comments (Comments) */
 	public static final String COMMENTS = "Comments";
+
 	/** Commercial in confidence data (CiC) */
 	public static final String COMMERCIAL_IN_CONFIDENCE = "CiC";
+
 	/** Chemical Abstracts Service value (CAS) */
 	public static final String CHEMICAL_ABSTRACTS_SERVICE = "CAS";
+
 	/** Recovery and disposal code (RD_Code) */
 	public static final String RECOVERY_AND_DISPOSAL_CODE = "RD_Code";
 
@@ -91,6 +108,7 @@ public class DataReturnsHeaders {
 	public static final Set<String> getAllHeadings() {
 		return new LinkedHashSet<>(ALL_VALID_HEADINGS);
 	}
+
 	/**
 	 * @return the set of all headings allowed in the input data
 	 */

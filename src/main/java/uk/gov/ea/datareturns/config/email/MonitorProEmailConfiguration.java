@@ -18,14 +18,23 @@ import uk.gov.ea.datareturns.exception.system.DRSystemException;
 @ConfigurationProperties(prefix = "monitorProEmail")
 public class MonitorProEmailConfiguration {
 	private String host;
+
 	private int port;
+
 	private String from;
+
 	private String to;
+
 	private String subjectLowerNumericUniqueId;
+
 	private String subjectUpperNumericUniqueId;
+
 	private String subjectLowerAlphaNumericUniqueId;
+
 	private String subjectUpperAlphaNumericUniqueId;
+
 	private String body;
+
 	private boolean useTLS;
 
 	/**

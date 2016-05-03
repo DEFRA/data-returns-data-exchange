@@ -11,85 +11,86 @@ import uk.gov.ea.datareturns.domain.model.rules.DateFormat;
 
 /**
  * Tests the {@link DateFormat} rules meet the application specification
- * 
+ *
  * @author Sam Gardner-Dell
  */
 public class DateFormatTests {
 	@Test
 	public void testISODate() {
-		LocalDate now = LocalDate.now();
-		String testDate = now.format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
-		LocalDate parsed = DateFormat.parseDate(testDate);
+		final LocalDate now = LocalDate.now();
+		final String testDate = now.format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+		final LocalDate parsed = DateFormat.parseDate(testDate);
 		Assert.assertNotNull(parsed);
 	}
-	
+
 	@Test
 	public void testUKDashedDate() {
-		LocalDate now = LocalDate.now();
-		String testDate = now.format(DateTimeFormatter.ofPattern("dd-MM-yyyy"));
-		LocalDate parsed = DateFormat.parseDate(testDate);
+		final LocalDate now = LocalDate.now();
+		final String testDate = now.format(DateTimeFormatter.ofPattern("dd-MM-yyyy"));
+		final LocalDate parsed = DateFormat.parseDate(testDate);
 		Assert.assertNotNull(parsed);
 	}
+
 	@Test
 	public void testUKSlashedDate() {
-		LocalDate now = LocalDate.now();
-		String testDate = now.format(DateTimeFormatter.ofPattern("dd/MM/yyyy"));
-		LocalDate parsed = DateFormat.parseDate(testDate);
+		final LocalDate now = LocalDate.now();
+		final String testDate = now.format(DateTimeFormatter.ofPattern("dd/MM/yyyy"));
+		final LocalDate parsed = DateFormat.parseDate(testDate);
 		Assert.assertNotNull(parsed);
 	}
-	
+
 	@Test
 	public void testISODateTimeTSeparator() {
-		LocalDateTime now = LocalDateTime.now();
-		String testDate = now.format(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss"));
-		LocalDateTime parsed = DateFormat.parseDateTime(testDate);
+		final LocalDateTime now = LocalDateTime.now();
+		final String testDate = now.format(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss"));
+		final LocalDateTime parsed = DateFormat.parseDateTime(testDate);
 		Assert.assertNotNull(parsed);
 	}
-	
+
 	@Test
 	public void testISODateTimeSpaceSeparator() {
-		LocalDateTime now = LocalDateTime.now();
-		String testDate = now.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
-		LocalDateTime parsed = DateFormat.parseDateTime(testDate);
+		final LocalDateTime now = LocalDateTime.now();
+		final String testDate = now.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+		final LocalDateTime parsed = DateFormat.parseDateTime(testDate);
 		Assert.assertNotNull(parsed);
 	}
 
 	@Test
 	public void testUKSlashedDateTimeTSeparator() {
-		LocalDateTime now = LocalDateTime.now();
-		String testDate = now.format(DateTimeFormatter.ofPattern("dd/MM/yyyy'T'HH:mm:ss"));
-		LocalDateTime parsed = DateFormat.parseDateTime(testDate);
+		final LocalDateTime now = LocalDateTime.now();
+		final String testDate = now.format(DateTimeFormatter.ofPattern("dd/MM/yyyy'T'HH:mm:ss"));
+		final LocalDateTime parsed = DateFormat.parseDateTime(testDate);
 		Assert.assertNotNull(parsed);
 	}
-	
+
 	@Test
 	public void testUKSlashedDateTimeSpaceSeparator() {
-		LocalDateTime now = LocalDateTime.now();
-		String testDate = now.format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss"));
-		LocalDateTime parsed = DateFormat.parseDateTime(testDate);
+		final LocalDateTime now = LocalDateTime.now();
+		final String testDate = now.format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss"));
+		final LocalDateTime parsed = DateFormat.parseDateTime(testDate);
 		Assert.assertNotNull(parsed);
 	}
 
 	@Test
 	public void testUKDashedDateTimeTSeparator() {
-		LocalDateTime now = LocalDateTime.now();
-		String testDate = now.format(DateTimeFormatter.ofPattern("dd-MM-yyyy'T'HH:mm:ss"));
-		LocalDateTime parsed = DateFormat.parseDateTime(testDate);
+		final LocalDateTime now = LocalDateTime.now();
+		final String testDate = now.format(DateTimeFormatter.ofPattern("dd-MM-yyyy'T'HH:mm:ss"));
+		final LocalDateTime parsed = DateFormat.parseDateTime(testDate);
 		Assert.assertNotNull(parsed);
 	}
-	
+
 	@Test
 	public void testUKDashedDateTimeSpaceSeparator() {
-		LocalDateTime now = LocalDateTime.now();
-		String testDate = now.format(DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss"));
-		LocalDateTime parsed = DateFormat.parseDateTime(testDate);
+		final LocalDateTime now = LocalDateTime.now();
+		final String testDate = now.format(DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss"));
+		final LocalDateTime parsed = DateFormat.parseDateTime(testDate);
 		Assert.assertNotNull(parsed);
 	}
-	
+
 	@Test
 	public void testAmericanDateFails() {
-		String testDate = "12-31-2016 00:00:00";
-		LocalDateTime parsed = DateFormat.parseDateTime(testDate);
+		final String testDate = "12-31-2016 00:00:00";
+		final LocalDateTime parsed = DateFormat.parseDateTime(testDate);
 		Assert.assertNull(parsed);
 	}
 }

@@ -15,7 +15,7 @@ public class DRSystemException extends AbstractDRSystemException {
 	public DRSystemException(final String message) {
 		super(Status.INTERNAL_SERVER_ERROR, ApplicationExceptionType.SYSTEM_FAILURE.getAppStatusCode(), message);
 	}
-	
+
 	public DRSystemException(final Throwable cause) {
 		this(cause, cause.getMessage());
 	}

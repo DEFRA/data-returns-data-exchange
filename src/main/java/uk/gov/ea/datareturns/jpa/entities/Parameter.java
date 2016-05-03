@@ -15,9 +15,9 @@ import javax.persistence.Table;
 @Entity
 @Table(name = "parameters")
 @NamedQueries({
-	@NamedQuery(name = "Parameter.findAll", query = "SELECT p FROM Parameter p"),
-	@NamedQuery(name = "Parameter.findAllNames", query = "SELECT p.name FROM Parameter p"),
-	@NamedQuery(name = "Parameter.findByName", query = "SELECT p FROM Parameter p WHERE p.name = :name")
+		@NamedQuery(name = "Parameter.findAll", query = "SELECT p FROM Parameter p"),
+		@NamedQuery(name = "Parameter.findAllNames", query = "SELECT p.name FROM Parameter p"),
+		@NamedQuery(name = "Parameter.findByName", query = "SELECT p FROM Parameter p WHERE p.name = :name")
 })
 public class Parameter {
 

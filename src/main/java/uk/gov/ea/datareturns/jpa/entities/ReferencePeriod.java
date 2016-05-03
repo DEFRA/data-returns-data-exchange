@@ -15,9 +15,9 @@ import javax.persistence.Table;
 @Entity
 @Table(name = "reference_periods")
 @NamedQueries({
-	@NamedQuery(name = "ReferencePeriod.findAll", query = "SELECT r FROM ReferencePeriod r"),
-	@NamedQuery(name = "ReferencePeriod.findAllNames", query = "SELECT r.name FROM ReferencePeriod r"),
-	@NamedQuery(name = "ReferencePeriod.findByName", query = "SELECT r FROM ReferencePeriod r WHERE r.name = :name")
+		@NamedQuery(name = "ReferencePeriod.findAll", query = "SELECT r FROM ReferencePeriod r"),
+		@NamedQuery(name = "ReferencePeriod.findAllNames", query = "SELECT r.name FROM ReferencePeriod r"),
+		@NamedQuery(name = "ReferencePeriod.findByName", query = "SELECT r FROM ReferencePeriod r WHERE r.name = :name")
 })
 public class ReferencePeriod {
 	@Id

@@ -20,22 +20,23 @@ import org.springframework.context.ApplicationContext;
  * @author Sam Gardner-Dell
  */
 public class ControlledListValidator implements ConstraintValidator<ControlledList, Object> {
-	private static final Logger LOGGER = LoggerFactory.getLogger(ControlledListValidator.class);	
-	
+	private static final Logger LOGGER = LoggerFactory.getLogger(ControlledListValidator.class);
+
 	/** ControlledListProvider instance to provide the list of values we must validate against */
 	private ControlledListAuditor provider;
+
 	private boolean required = true;
 
 	@Inject
 	private ApplicationContext applicationContext;
-	
+
 	@Override
 	public void initialize(final ControlledList constraintAnnotation) {
 		try {
 			final Class<? extends ControlledListAuditor> providerType = constraintAnnotation.auditor();
-			this.provider = applicationContext.getBean(providerType);
+			this.provider = this.applicationContext.getBean(providerType);
 			this.required = constraintAnnotation.required();
-		} catch (Throwable t) {
+		} catch (final Throwable t) {
 			LOGGER.error(t.getMessage(), t);
 		}
 	}
@@ -51,7 +52,7 @@ public class ControlledListValidator implements ConstraintValidator<ControlledLi
 			if (this.provider != null) {
 				try {
 					valid = this.provider.isValid(value);
-				} catch (Throwable t) {
+				} catch (final Throwable t) {
 					LOGGER.error("Unable to perform Controlled List Validation", t);
 					throw t;
 				}

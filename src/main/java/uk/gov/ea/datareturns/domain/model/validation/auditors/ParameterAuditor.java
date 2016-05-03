@@ -21,7 +21,7 @@ import uk.gov.ea.datareturns.jpa.dao.ParameterDao;
 public class ParameterAuditor implements ControlledListAuditor {
 	@Inject
 	private ParameterDao dao;
-	
+
 	/**
 	 *
 	 */
@@ -33,7 +33,7 @@ public class ParameterAuditor implements ControlledListAuditor {
 	 */
 	@Override
 	public boolean isValid(final Object value) {
-		return dao.nameExists(Objects.toString(value, ""));
+		return this.dao.nameExists(Objects.toString(value, ""));
 	}
 
 }

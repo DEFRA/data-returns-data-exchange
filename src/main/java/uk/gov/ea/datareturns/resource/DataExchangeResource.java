@@ -63,15 +63,19 @@ import uk.gov.ea.datareturns.type.FileType;
 @Scope(ConfigurableBeanFactory.SCOPE_SINGLETON)
 public class DataExchangeResource {
 	private static final Logger LOGGER = LoggerFactory.getLogger(DataExchangeResource.class);
-	
-	@Inject private MiscSettings miscSettings;
-	
-	@Inject private StorageProvider storage;
 
-	@Inject private MonitoringDataRecordValidationProcessor validator;
-	
-	@Inject private MonitorProEmailer emailer;
-	
+	@Inject
+	private MiscSettings miscSettings;
+
+	@Inject
+	private StorageProvider storage;
+
+	@Inject
+	private MonitoringDataRecordValidationProcessor validator;
+
+	@Inject
+	private MonitorProEmailer emailer;
+
 	public DataExchangeResource() {
 	}
 
@@ -89,35 +93,38 @@ public class DataExchangeResource {
 	public Response uploadFile(
 			@FormDataParam("fileUpload") final InputStream is,
 			@FormDataParam("fileUpload") final FormDataContentDisposition fileDetail) {
-		
-		StopWatch stopwatch = new StopWatch("data-exchange upload timer");
+		LOGGER.debug("/data-exchange/upload request received");
+
+		final StopWatch stopwatch = new StopWatch("data-exchange upload timer");
 		stopwatch.startTask("Preparing File");
-		
-		final File uploadedFile = new File(miscSettings.getUploadedLocation(), fileDetail.getFileName());
+
+		// FIXME: Storing a file on the server using the name given by the client is a daft idea.  Generate a file automatically
+		// and pull filename from fileDetail where necessary.
+		final File uploadedFile = new File(this.miscSettings.getUploadedLocation(), fileDetail.getFileName());
 		final DataReturnsCSVProcessor csvProcessor = new DataReturnsCSVProcessor();
-		
+
 		if (uploadedFile.exists()) {
 			LOGGER.warn("Uploaded file by the given name already exists!");
 		}
-		
+
 		// 1. Save upload file on server
 		try {
 			FileUtils.copyInputStreamToFile(is, uploadedFile);
 		} catch (final IOException e) {
 			throw new DRSystemException(e, "Unable to save the uploaded file to disk.");
 		}
-		
+
 		// 2. Do some basic checks on the upload file
 		checkUploadFile(uploadedFile);
 
 		stopwatch.startTask("Parsing file into model");
-		
+
 		// 3. Read the CSV data into a model
 		final CSVModel<MonitoringDataRecord> csvInput = csvProcessor.read(uploadedFile);
 
 		stopwatch.startTask("Validating model");
 		// Validate the model
-		final ValidationErrors validationErrors = validator.validateModel(csvInput);
+		final ValidationErrors validationErrors = this.validator.validateModel(csvInput);
 
 		// Woohoo! prepare success/failure response
 		final DataExchangeResult result = new DataExchangeResult(new UploadResult(fileDetail.getFileName()));
@@ -133,7 +140,7 @@ public class DataExchangeResource {
 			 * This involves breaking the data up into separate lists my permit number and creating an individual output file for each
 			 * permit.
 			 */
-			stopwatch.startTask("Preparing Output");
+			stopwatch.startTask("Preparing output files");
 			final List<File> outputFiles = new ArrayList<>();
 			final Map<String, List<MonitoringDataRecord>> permitToRecordMap = prepareOutputData(csvInput.getRecords());
 			final File workFolder = createWorkFolder();
@@ -147,19 +154,22 @@ public class DataExchangeResource {
 				}
 			});
 
-			stopwatch.startTask("Zipping Output");
 			// Persist the file to the configured storage provider (e.g. Amazon S3)
 			try {
+				stopwatch.startTask("Zipping output files");
 				final DataReturnsZipFileModel zipModel = new DataReturnsZipFileModel();
 				zipModel.setInputFile(uploadedFile);
 				zipModel.setOutputFiles(outputFiles);
 				final File zipFile = zipModel.toZipFile(workFolder);
+
+				stopwatch.startTask("Persisting output files to temporary storage");
 				final String fileKey = this.storage.storeTemporaryData(zipFile);
 				result.getUploadResult().setFileKey(fileKey);
 			} catch (final IOException | StorageException e) {
 				throw new DRSystemException(e);
 			}
 
+			stopwatch.startTask("Clearing up");
 			// Delete the local temporary files now that they have been persisted to the storage provider
 			final List<File> filesToDelete = new ArrayList<>();
 			filesToDelete.add(uploadedFile);
@@ -181,7 +191,7 @@ public class DataExchangeResource {
 			result.setAppStatusCode(ApplicationExceptionType.VALIDATION_ERRORS.getAppStatusCode());
 			responseStatus = Status.BAD_REQUEST;
 		}
-		
+
 		stopwatch.stop();
 		if (LOGGER.isDebugEnabled()) {
 			LOGGER.debug(stopwatch.prettyPrint());
@@ -203,10 +213,13 @@ public class DataExchangeResource {
 	@Consumes(MULTIPART_FORM_DATA)
 	@Produces(APPLICATION_JSON)
 	public Response completeUpload(
-			@NotEmpty @FormDataParam("fileKey")	final String orgFileKey,
+			@NotEmpty @FormDataParam("fileKey") final String orgFileKey,
 			@NotEmpty @FormDataParam("userEmail") final String userEmail,
 			@NotEmpty @FormDataParam("orgFileName") final String orgFileName) {
 		LOGGER.debug("/data-exchange/complete request received");
+
+		final StopWatch stopwatch = new StopWatch("data-exchange complete timer");
+		stopwatch.startTask("Retrieving file from temporary storage");
 
 		StoredFile storedFile = null;
 		try {
@@ -218,14 +231,16 @@ public class DataExchangeResource {
 		}
 
 		final File workFolder = createWorkFolder();
-
 		try {
+			stopwatch.startTask("Extracting data files");
 			final DataReturnsZipFileModel zipModel = DataReturnsZipFileModel.fromZipFile(workFolder, storedFile.getFile());
 
+			stopwatch.startTask("Sending data to monitor pro");
 			for (final File outputFile : zipModel.getOutputFiles()) {
-				emailer.sendNotifications(outputFile);
+				this.emailer.sendNotifications(outputFile);
 			}
 
+			stopwatch.startTask("Moving data to audit store");
 			final Map<String, String> metadata = new LinkedHashMap<>();
 			metadata.put("originator-email", userEmail);
 			metadata.put("original-filename", orgFileName);
@@ -235,6 +250,11 @@ public class DataExchangeResource {
 			throw new DRSystemException(e, "Unable to process returns files identified by " + orgFileKey);
 		} catch (final StorageException e) {
 			throw new DRSystemException(e, e.getMessage());
+		}
+
+		stopwatch.stop();
+		if (LOGGER.isDebugEnabled()) {
+			LOGGER.debug(stopwatch.prettyPrint());
 		}
 
 		final DataExchangeResult result = new DataExchangeResult(new CompleteResult(orgFileKey, userEmail));
@@ -284,14 +304,14 @@ public class DataExchangeResource {
 
 	/**
 	 * Create a work folder for the session
-	 * 
+	 *
 	 * @return a {@link File} pointing to a working folder
 	 */
 	private File createWorkFolder() {
 		File workFolder = null;
 
 		while (workFolder == null || workFolder.exists()) {
-			workFolder = new File(miscSettings.getOutputLocation(), UUID.randomUUID().toString());
+			workFolder = new File(this.miscSettings.getOutputLocation(), UUID.randomUUID().toString());
 		}
 
 		try {

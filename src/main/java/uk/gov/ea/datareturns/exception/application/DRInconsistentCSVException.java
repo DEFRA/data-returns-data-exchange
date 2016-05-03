@@ -9,7 +9,7 @@ import uk.gov.ea.datareturns.type.ApplicationExceptionType;
 
 /**
  * Thrown if a row read from a CSV file has an inconsistent number of fields with respect to the header definitions
- * 
+ *
  * @author Sam Gardner-Dell
  */
 public class DRInconsistentCSVException extends AbstractDRApplicationException {
