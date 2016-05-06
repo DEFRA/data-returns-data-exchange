@@ -1,106 +1,67 @@
 package uk.gov.ea.datareturns.domain.result;
 
-import java.util.ArrayList;
+import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
-import java.util.TreeMap;
-import java.util.TreeSet;
 
-import org.apache.commons.collections4.ComparatorUtils;
+import org.apache.commons.lang3.StringUtils;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonUnwrapped;
-
-import uk.gov.ea.datareturns.domain.model.EaId;
 import uk.gov.ea.datareturns.domain.model.MonitoringDataRecord;
 
 /**
  * Simple class to return the result of a successful parse to the client
  */
 public class ParseResult {
-	@JsonProperty
-	private List<IdentifierMappings> mappings;
+	private String permitNumber;
+
+	private String siteName;
 
 	public ParseResult() {
+
 	}
 
 	public ParseResult(final List<MonitoringDataRecord> records) {
-		// Mapping of Site_Name to details about a particular EA_ID
-		final Map<String, IdentifierMappings> siteIdentifierMap = new TreeMap<>(ComparatorUtils.nullLowComparator(null));
-		// Mapping of EA_ID to details
-		final Map<EaId, IdentifierDetails> eaIdInfoMap = new TreeMap<>();
+		final Set<String> permitNumbers = new LinkedHashSet<>();
+		final Set<String> siteNames = new LinkedHashSet<>();
 
 		for (final MonitoringDataRecord record : records) {
-			final EaId eaId = record.getEaId();
-			final String siteName = record.getSiteName();
-
-			IdentifierMappings sitePermitMapping = siteIdentifierMap.get(siteName);
-			if (sitePermitMapping == null) {
-				sitePermitMapping = new IdentifierMappings(siteName);
-				siteIdentifierMap.put(siteName, sitePermitMapping);
+			permitNumbers.add(record.getPermitNumber());
+			if (StringUtils.isNotEmpty(record.getSiteName())) {
+				siteNames.add(record.getSiteName());
 			}
-
-			IdentifierDetails idInfo = eaIdInfoMap.get(eaId);
-			if (idInfo == null) {
-				idInfo = new IdentifierDetails(eaId, 0);
-				eaIdInfoMap.put(eaId, idInfo);
-			}
-			idInfo.incrementCount();
-
-			sitePermitMapping.addIdentifier(idInfo);
-			this.mappings = new ArrayList<IdentifierMappings>(siteIdentifierMap.values());
 		}
+
+		setPermitNumber(StringUtils.join(permitNumbers, ", "));
+		setSiteName(StringUtils.join(siteNames, ", "));
 	}
 
 	/**
-	 * @return the mappings
+	 * @return the permitNumber
 	 */
-	public List<IdentifierMappings> getMappings() {
-		return this.mappings;
+	public String getPermitNumber() {
+		return this.permitNumber;
 	}
 
-	public static class IdentifierMappings {
-		@JsonProperty
-		private String site;
-
-		@JsonProperty
-		private final Set<IdentifierDetails> identifiers = new TreeSet<>(ComparatorUtils.naturalComparator());
-
-		public IdentifierMappings() {
-		}
-
-		public IdentifierMappings(final String site) {
-			this.site = site;
-		}
-
-		public boolean addIdentifier(final IdentifierDetails identifierDetails) {
-			return this.identifiers.add(identifierDetails);
-		}
+	/**
+	 * @return the siteName
+	 */
+	public String getSiteName() {
+		return this.siteName;
 	}
 
-	public static class IdentifierDetails implements Comparable<IdentifierDetails> {
-		@JsonUnwrapped
-		private EaId eaId;
+	/**
+	 * @param permitNumber
+	 *            the permitNumber to set
+	 */
+	public void setPermitNumber(final String permitNumber) {
+		this.permitNumber = permitNumber;
+	}
 
-		@JsonProperty
-		private long count = 0;
-
-		public IdentifierDetails() {
-		}
-
-		public IdentifierDetails(final EaId eaId, final long count) {
-			this.eaId = eaId;
-			this.count = count;
-		}
-
-		public void incrementCount() {
-			++this.count;
-		}
-
-		@Override
-		public int compareTo(final IdentifierDetails o) {
-			return this.eaId.compareTo(o.eaId);
-		}
+	/**
+	 * @param siteName
+	 *            the siteName to set
+	 */
+	public void setSiteName(final String siteName) {
+		this.siteName = siteName;
 	}
 }

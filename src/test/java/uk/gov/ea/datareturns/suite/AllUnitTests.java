@@ -6,13 +6,13 @@ import org.junit.runners.Suite.SuiteClasses;
 
 import uk.gov.ea.datareturns.type.FileTypeTests;
 import uk.gov.ea.datareturns.unittests.DateFormatTests;
-import uk.gov.ea.datareturns.unittests.EaIdTypeTests;
+import uk.gov.ea.datareturns.unittests.EmmaDatabaseTests;
 import uk.gov.ea.datareturns.unittests.LocalStorageProviderTests;
 import uk.gov.ea.datareturns.unittests.MonitorProEmailerTests;
 
 @RunWith(Suite.class)
 @SuiteClasses({
-		EaIdTypeTests.class,
+		EmmaDatabaseTests.class,
 		FileTypeTests.class,
 		DateFormatTests.class,
 		LocalStorageProviderTests.class,

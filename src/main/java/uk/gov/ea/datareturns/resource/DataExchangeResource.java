@@ -37,7 +37,6 @@ import uk.gov.ea.datareturns.config.MiscSettings;
 import uk.gov.ea.datareturns.domain.io.csv.DataReturnsCSVProcessor;
 import uk.gov.ea.datareturns.domain.io.csv.generic.CSVModel;
 import uk.gov.ea.datareturns.domain.io.zip.DataReturnsZipFileModel;
-import uk.gov.ea.datareturns.domain.model.EaId;
 import uk.gov.ea.datareturns.domain.model.MonitoringDataRecord;
 import uk.gov.ea.datareturns.domain.model.validation.MonitoringDataRecordValidationProcessor;
 import uk.gov.ea.datareturns.domain.result.CompleteResult;
@@ -143,11 +142,11 @@ public class DataExchangeResource {
 			 */
 			stopwatch.startTask("Preparing output files");
 			final List<File> outputFiles = new ArrayList<>();
-			final Map<EaId, List<MonitoringDataRecord>> permitToRecordMap = prepareOutputData(csvInput.getRecords());
+			final Map<String, List<MonitoringDataRecord>> permitToRecordMap = prepareOutputData(csvInput.getRecords());
 			final File workFolder = createWorkFolder();
-			permitToRecordMap.forEach((eaId, recordList) -> {
+			permitToRecordMap.forEach((permitNumber, recordList) -> {
 				try {
-					final File permitDataFile = File.createTempFile("output-" + eaId.getIdentifier() + "-", ".csv", workFolder);
+					final File permitDataFile = File.createTempFile("output-" + permitNumber + "-", ".csv", workFolder);
 					csvProcessor.write(recordList, permitDataFile);
 					outputFiles.add(permitDataFile);
 				} catch (final IOException e) {
@@ -284,21 +283,21 @@ public class DataExchangeResource {
 	 * Prepare a Map of permit numbers (key) to a {@link List} of {@link MonitoringDataRecord}s (value) belonging to that permit
 	 *
 	 * @param records the {@link List} of {@link MonitoringDataRecord} to prepared for output
-	 * @return a {@link Map} of {@link EaId}s to a {@link List} of {@link MonitoringDataRecord}s
+	 * @return a {@link Map} of permit numbers to a {@link List} of {@link MonitoringDataRecord}s
 	 */
-	private static final Map<EaId, List<MonitoringDataRecord>> prepareOutputData(final List<MonitoringDataRecord> records) {
-		final Map<EaId, List<MonitoringDataRecord>> recordMap = new HashMap<>();
+	private static final Map<String, List<MonitoringDataRecord>> prepareOutputData(final List<MonitoringDataRecord> records) {
+		final Map<String, List<MonitoringDataRecord>> recordMap = new HashMap<>();
 
 		for (final MonitoringDataRecord record : records) {
 			/*
 			 * Build the output map
 			 */
-			List<MonitoringDataRecord> recordsForPermit = recordMap.get(record.getEaId());
+			List<MonitoringDataRecord> recordsForPermit = recordMap.get(record.getPermitNumber());
 			if (recordsForPermit == null) {
 				recordsForPermit = new ArrayList<>();
 			}
 			recordsForPermit.add(record);
-			recordMap.put(record.getEaId(), recordsForPermit);
+			recordMap.put(record.getPermitNumber(), recordsForPermit);
 		}
 		return recordMap;
 	}
