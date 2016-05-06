@@ -10,6 +10,7 @@ import java.util.regex.Pattern;
 
 import javax.inject.Inject;
 import javax.validation.ConstraintViolation;
+import javax.validation.Path.Node;
 import javax.validation.Validator;
 
 import org.springframework.stereotype.Component;
@@ -42,11 +43,11 @@ public class MonitoringDataRecordValidationProcessor {
 			final Set<ConstraintViolation<MonitoringDataRecord>> violations = this.validator.validate(record);
 			for (final ConstraintViolation<MonitoringDataRecord> violation : violations) {
 				final ValidationError error = new ValidationError();
-				final String returnsFieldName = model.getPojoFieldToHeaderMap().get(violation.getPropertyPath().toString());
+				final String fieldName = getFieldNameForViolation(model, violation);
 				final String errorValue = Objects.toString(violation.getInvalidValue(), null);
-				final FieldDefinition definition = FieldDefinition.valueOf(returnsFieldName);
+				final FieldDefinition definition = FieldDefinition.valueOf(fieldName);
 
-				error.setFieldName(returnsFieldName);
+				error.setFieldName(fieldName);
 				error.setDefinition(definition.getDescription());
 				error.setHelpReference(definition.getHelpReference());
 				error.setErrorValue(errorValue);
@@ -68,5 +69,14 @@ public class MonitoringDataRecordValidationProcessor {
 			}
 		}
 		return validationErrors;
+	}
+
+	private static String getFieldNameForViolation(final CSVModel<MonitoringDataRecord> model,
+			final ConstraintViolation<MonitoringDataRecord> violation) {
+		// At the moment the mappings are all done at the top level so we're only interested in the first node on the path, may need to adapt
+		// this in future.
+		final Node firstNodeInPath = violation.getPropertyPath().iterator().next();
+		final String mapping = model.getPojoFieldToHeaderMap().get(firstNodeInPath.toString());
+		return mapping;
 	}
 }

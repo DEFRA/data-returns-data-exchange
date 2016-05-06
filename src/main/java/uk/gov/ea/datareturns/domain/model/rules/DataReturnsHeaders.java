@@ -9,8 +9,8 @@ import java.util.Set;
  * @author Sam Gardner-Dell
  */
 public class DataReturnsHeaders {
-	/** The Permit Number (EA_ID) */
-	public static final String PERMIT_NUMBER = "EA_ID";
+	/** The EA Unique Identifier (EA_ID) */
+	public static final String EA_IDENTIFIER = "EA_ID";
 
 	/** The site name (Site_Name) */
 	public static final String SITE_NAME = "Site_Name";
@@ -68,7 +68,7 @@ public class DataReturnsHeaders {
 	 */
 	private static final Set<String> ALL_VALID_HEADINGS = new LinkedHashSet<>();
 	static {
-		ALL_VALID_HEADINGS.add(PERMIT_NUMBER);
+		ALL_VALID_HEADINGS.add(EA_IDENTIFIER);
 		ALL_VALID_HEADINGS.add(SITE_NAME);
 		ALL_VALID_HEADINGS.add(RETURN_TYPE);
 		ALL_VALID_HEADINGS.add(MONITORING_DATE);
@@ -93,7 +93,7 @@ public class DataReturnsHeaders {
 	 */
 	private static final Set<String> MANDATORY_HEADINGS = new LinkedHashSet<>();
 	static {
-		MANDATORY_HEADINGS.add(PERMIT_NUMBER);
+		MANDATORY_HEADINGS.add(EA_IDENTIFIER);
 		MANDATORY_HEADINGS.add(RETURN_TYPE);
 		MANDATORY_HEADINGS.add(MONITORING_DATE);
 		MANDATORY_HEADINGS.add(MONITORING_POINT);

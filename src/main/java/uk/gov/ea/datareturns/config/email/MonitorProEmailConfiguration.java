@@ -6,7 +6,7 @@ package uk.gov.ea.datareturns.config.email;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
 
-import uk.gov.ea.datareturns.domain.model.rules.EmmaDatabase;
+import uk.gov.ea.datareturns.domain.model.rules.EaIdType;
 import uk.gov.ea.datareturns.exception.system.DRSystemException;
 
 /**
@@ -184,19 +184,19 @@ public class MonitorProEmailConfiguration {
 	}
 
 	/**
-	 * Retrieve the appropriate configuration value base on the {@link EmmaDatabase} enumeration instance passed
+	 * Retrieve the appropriate configuration value base on the {@link EaIdType} enumeration instance passed
 	 *
 	 * @param db the type of Emma database that should be used (internal enum)
 	 * @return the text value configured for the type of database being used.
 	 */
-	public final String getDatabaseName(final EmmaDatabase db) {
-		if (EmmaDatabase.LOWER_NUMERIC.equals(db)) {
+	public final String getDatabaseName(final EaIdType db) {
+		if (EaIdType.LOWER_NUMERIC.equals(db)) {
 			return this.subjectLowerNumericUniqueId;
-		} else if (EmmaDatabase.UPPER_NUMERIC.equals(db)) {
+		} else if (EaIdType.UPPER_NUMERIC.equals(db)) {
 			return this.subjectUpperNumericUniqueId;
-		} else if (EmmaDatabase.LOWER_ALPHANUMERIC.equals(db)) {
+		} else if (EaIdType.LOWER_ALPHANUMERIC.equals(db)) {
 			return this.subjectLowerAlphaNumericUniqueId;
-		} else if (EmmaDatabase.UPPER_ALPHANUMERIC.equals(db)) {
+		} else if (EaIdType.UPPER_ALPHANUMERIC.equals(db)) {
 			return this.subjectUpperAlphaNumericUniqueId;
 		} else {
 			throw new DRSystemException("Unable to determine EMMA database");

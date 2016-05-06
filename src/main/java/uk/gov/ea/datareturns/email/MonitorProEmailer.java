@@ -15,8 +15,8 @@ import org.springframework.stereotype.Component;
 import uk.gov.ea.datareturns.config.email.MonitorProEmailConfiguration;
 import uk.gov.ea.datareturns.domain.io.csv.DataReturnsCSVProcessor;
 import uk.gov.ea.datareturns.domain.io.csv.generic.CSVModel;
+import uk.gov.ea.datareturns.domain.model.EaId;
 import uk.gov.ea.datareturns.domain.model.MonitoringDataRecord;
-import uk.gov.ea.datareturns.domain.model.rules.EmmaDatabase;
 import uk.gov.ea.datareturns.exception.system.DRSystemException;
 
 /**
@@ -48,12 +48,11 @@ public class MonitorProEmailer {
 			// No data to send - this should never happen but we need to protected against an ArrayIndexOutOfBounds exception
 			throw new DRSystemException("There was no data to send to Emma");
 		}
-		final String permitNumber = csvInput.getRecords().get(0).getPermitNumber();
+		final EaId eaId = csvInput.getRecords().get(0).getEaId();
 
 		try {
 			final MultiPartEmail email = new MultiPartEmail();
-			final EmmaDatabase type = EmmaDatabase.forUniqueId(permitNumber);
-			final String subject = this.settings.getDatabaseName(type);
+			final String subject = this.settings.getDatabaseName(eaId.getType());
 
 			email.setHostName(this.settings.getHost());
 			email.setSmtpPort(this.settings.getPort());
@@ -62,7 +61,7 @@ public class MonitorProEmailer {
 			email.addTo(this.settings.getTo());
 			email.setFrom(this.settings.getFrom());
 
-			final String messageBody = StringUtils.replace(this.settings.getBody(), "{{EA_ID}}", permitNumber);
+			final String messageBody = StringUtils.replace(this.settings.getBody(), "{{EA_ID}}", eaId.getIdentifier());
 			email.setMsg(messageBody);
 			email.setStartTLSEnabled(this.settings.isUseTLS());
 
