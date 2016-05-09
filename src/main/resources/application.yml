@@ -203,9 +203,9 @@ spring:
   profiles: production
   profiles.include: cluster
   
-# Live monitor pro settings
-monitorProEmail:
-  subjectLowerNumericUniqueId: EA_LP_10000_TO_69000_LIST
-  subjectUpperNumericUniqueId: EA_LP_70000_ABOVE_LIST
-  subjectLowerAlphaNumericUniqueId: EA_LP_AA_TO_GZ_LIST
-  subjectUpperAlphaNumericUniqueId: EA_LP_HA_TO_ZZ_LIST
+# Live monitor pro settings - disabled until we're ready!
+#monitorProEmail:
+#  subjectLowerNumericUniqueId: EA_LP_10000_TO_69000_LIST
+#  subjectUpperNumericUniqueId: EA_LP_70000_ABOVE_LIST
+#  subjectLowerAlphaNumericUniqueId: EA_LP_AA_TO_GZ_LIST
+#  subjectUpperAlphaNumericUniqueId: EA_LP_HA_TO_ZZ_LIST
