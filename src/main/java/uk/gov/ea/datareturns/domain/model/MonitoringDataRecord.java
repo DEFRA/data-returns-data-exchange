@@ -11,10 +11,11 @@ import com.univocity.parsers.annotations.Parsed;
 import uk.gov.ea.datareturns.domain.io.csv.generic.AbstractCSVRecord;
 import uk.gov.ea.datareturns.domain.model.rules.DataReturnsHeaders;
 import uk.gov.ea.datareturns.domain.model.rules.conversion.ReturnsDateConverter;
+import uk.gov.ea.datareturns.domain.model.rules.conversion.TxtValueConverter;
 import uk.gov.ea.datareturns.domain.model.validation.auditors.MethodOrStandardAuditor;
 import uk.gov.ea.datareturns.domain.model.validation.auditors.MonitoringPeriodAuditor;
 import uk.gov.ea.datareturns.domain.model.validation.auditors.ParameterAuditor;
-import uk.gov.ea.datareturns.domain.model.validation.auditors.QualifierAuditor;
+import uk.gov.ea.datareturns.domain.model.validation.auditors.TxtValueAuditor;
 import uk.gov.ea.datareturns.domain.model.validation.auditors.ReferencePeriodAuditor;
 import uk.gov.ea.datareturns.domain.model.validation.auditors.ReturnTypeAuditor;
 import uk.gov.ea.datareturns.domain.model.validation.auditors.UniqueIdentifierAuditor;
@@ -96,7 +97,8 @@ public class MonitoringDataRecord extends AbstractCSVRecord {
 
 	/** Textual value (Txt_Value) */
 	@Parsed(field = DataReturnsHeaders.TEXT_VALUE)
-	@ControlledList(auditor = QualifierAuditor.class, message = "{DR9080-Incorrect}", required = false)
+	@Convert(conversionClass=TxtValueConverter.class)
+	@ControlledList(auditor = TxtValueAuditor.class, message = "{DR9080-Incorrect}", required = false)
 	private String textValue;
 
 	/** Unit of measurement (Unit) */

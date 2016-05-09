@@ -9,16 +9,17 @@ import javax.inject.Inject;
 
 import org.springframework.stereotype.Component;
 
+import uk.gov.ea.datareturns.domain.model.rules.BooleanValue;
 import uk.gov.ea.datareturns.domain.model.validation.constraints.controlledlist.ControlledListAuditor;
 import uk.gov.ea.datareturns.jpa.dao.QualifierDao;
 
 /**
- * Controlled list auditor for qualifiers
+ * Controlled list auditor for the Txt_Value field.  Allows boolean values and qualifiers from the controlled list.
  *
  * @author Sam Gardner-Dell
  */
 @Component
-public class QualifierAuditor implements ControlledListAuditor {
+public class TxtValueAuditor implements ControlledListAuditor {
 	@Inject
 	private QualifierDao dao;
 
@@ -27,6 +28,6 @@ public class QualifierAuditor implements ControlledListAuditor {
 	 */
 	@Override
 	public boolean isValid(final Object value) {
-		return this.dao.nameExists(Objects.toString(value, ""));
+		return BooleanValue.from(value) != null || this.dao.nameExists(Objects.toString(value, ""));
 	}
 }
