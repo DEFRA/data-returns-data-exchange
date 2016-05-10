@@ -53,16 +53,16 @@ public class MonitoringDataRecordValidatorTests {
 	@Test
 	public void testPermitNumberNull() {
 		final MonitoringDataRecord record = createValidRecord();
-		record.setPermitNumber("");
+		record.setEaId(new EaId(null));
 		final Set<ConstraintViolation<MonitoringDataRecord>> violations = this.validator.validate(record);
-		// We'll get 3 violations back - one for the field being blank, one for the pattern check and one for the controlled list value check
-		Assert.assertEquals(3, violations.size());
+		// We'll get 2 violations back - one for the field being blank and one for the controlled list value check
+		Assert.assertEquals(2, violations.size());
 	}
 
 	@Test
 	public void testPermitNumberEmpty() {
 		final MonitoringDataRecord record = createValidRecord();
-		record.setPermitNumber("");
+		record.setEaId(new EaId(""));
 		final Set<ConstraintViolation<MonitoringDataRecord>> violations = this.validator.validate(record);
 		// We'll get 3 violations back - one for the field being blank, one for the pattern check and one for the controlled list value check
 		Assert.assertEquals(3, violations.size());
@@ -710,7 +710,7 @@ public class MonitoringDataRecordValidatorTests {
 	 */
 	private static MonitoringDataRecord createValidRecord() {
 		final MonitoringDataRecord record = new MonitoringDataRecord();
-		record.setPermitNumber("AB3002SQ");
+		record.setEaId(new EaId("AB3002SQ"));
 		record.setSiteName("Site Name");
 		record.setReturnType("EPR/IED Landfill Gas infrastructure monitoring");
 		record.setMonitoringDate(ReturnsDate.from("2016-03-09T11:18:59"));

@@ -1,5 +1,6 @@
 package uk.gov.ea.datareturns.domain.model;
 
+import javax.validation.Valid;
 import javax.validation.constraints.Pattern;
 
 import org.hibernate.validator.constraints.Length;
@@ -10,6 +11,7 @@ import com.univocity.parsers.annotations.Parsed;
 
 import uk.gov.ea.datareturns.domain.io.csv.generic.AbstractCSVRecord;
 import uk.gov.ea.datareturns.domain.model.rules.DataReturnsHeaders;
+import uk.gov.ea.datareturns.domain.model.rules.conversion.EaIdConverter;
 import uk.gov.ea.datareturns.domain.model.rules.conversion.ReturnsDateConverter;
 import uk.gov.ea.datareturns.domain.model.rules.conversion.TxtValueConverter;
 import uk.gov.ea.datareturns.domain.model.validation.auditors.MethodOrStandardAuditor;
@@ -18,7 +20,6 @@ import uk.gov.ea.datareturns.domain.model.validation.auditors.ParameterAuditor;
 import uk.gov.ea.datareturns.domain.model.validation.auditors.TxtValueAuditor;
 import uk.gov.ea.datareturns.domain.model.validation.auditors.ReferencePeriodAuditor;
 import uk.gov.ea.datareturns.domain.model.validation.auditors.ReturnTypeAuditor;
-import uk.gov.ea.datareturns.domain.model.validation.auditors.UniqueIdentifierAuditor;
 import uk.gov.ea.datareturns.domain.model.validation.auditors.UnitAuditor;
 import uk.gov.ea.datareturns.domain.model.validation.constraints.controlledlist.ControlledList;
 import uk.gov.ea.datareturns.domain.model.validation.constraints.field.ValidReturnsDate;
@@ -35,12 +36,11 @@ import uk.gov.ea.datareturns.domain.model.validation.constraints.field.ValidRetu
 //				message="{DR9999-Dependency}",
 //				groups=DependentField.class)
 public class MonitoringDataRecord extends AbstractCSVRecord {
-	/** The Permit Number (EA_ID) */
-	@Parsed(field = DataReturnsHeaders.PERMIT_NUMBER)
-	@NotBlank(message = "{DR9000-Missing}")
-	@Pattern(regexp = "(^[A-Za-z][A-Za-z].*|^[0-9]{5,6}$)", message = "{DR9000-Incorrect}")
-	@ControlledList(auditor = UniqueIdentifierAuditor.class, message = "{DR9000-Incorrect}")
-	private String permitNumber;
+	/** The EA Unique Identifier (EA_ID) */
+	@Parsed(field = DataReturnsHeaders.EA_IDENTIFIER)
+	@Convert(conversionClass = EaIdConverter.class)
+	@Valid
+	private EaId eaId;
 
 	/** The site name (Site_Name) */
 	@Parsed(field = DataReturnsHeaders.SITE_NAME)
@@ -145,17 +145,17 @@ public class MonitoringDataRecord extends AbstractCSVRecord {
 	}
 
 	/**
-	 * @return the permitNumber
+	 * @return the eaId
 	 */
-	public String getPermitNumber() {
-		return this.permitNumber;
+	public EaId getEaId() {
+		return this.eaId;
 	}
 
 	/**
-	 * @param permitNumber the permitNumber to set
+	 * @param eaId the eaId to set
 	 */
-	public void setPermitNumber(final String permitNumber) {
-		this.permitNumber = permitNumber;
+	public void setEaId(final EaId eaId) {
+		this.eaId = eaId;
 	}
 
 	/**

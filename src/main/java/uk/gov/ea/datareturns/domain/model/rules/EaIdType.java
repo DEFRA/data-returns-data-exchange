@@ -2,7 +2,7 @@ package uk.gov.ea.datareturns.domain.model.rules;
 
 import org.apache.commons.lang3.StringUtils;
 
-public enum EmmaDatabase {
+public enum EaIdType {
 	/** Database used for permit numbers using lowercase numeric identifier */
 	LOWER_NUMERIC,
 	/** Database used for permit numbers using upppercase numeric identifier */
@@ -16,8 +16,8 @@ public enum EmmaDatabase {
 
 	public static char ALPHA_NUMERIC_BOUNDARY = 'H';
 
-	public static EmmaDatabase forUniqueId(final String uniqueId) {
-		EmmaDatabase db = null;
+	public static EaIdType forUniqueId(final String uniqueId) {
+		EaIdType db = null;
 		if (StringUtils.isNotEmpty(uniqueId)) {
 			try {
 				final int numericPermit = Integer.parseInt(uniqueId);
