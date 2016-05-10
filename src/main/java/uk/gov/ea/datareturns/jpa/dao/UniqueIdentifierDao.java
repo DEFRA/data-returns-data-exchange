@@ -4,8 +4,6 @@ import java.util.Set;
 
 import org.springframework.stereotype.Repository;
 
-import uk.gov.ea.datareturns.jpa.entities.UniqueIdentifier;
-
 @Repository
 public class UniqueIdentifierDao extends AbstractJpaDao {
 	/**

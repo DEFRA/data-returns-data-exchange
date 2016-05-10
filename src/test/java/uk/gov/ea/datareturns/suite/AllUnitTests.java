@@ -11,6 +11,7 @@ import uk.gov.ea.datareturns.unittests.DateFormatTests;
 import uk.gov.ea.datareturns.unittests.EaIdTypeTests;
 import uk.gov.ea.datareturns.unittests.LocalStorageProviderTests;
 import uk.gov.ea.datareturns.unittests.MonitorProEmailerTests;
+import uk.gov.ea.datareturns.unittests.S3StorageConfigurationTests;
 import uk.gov.ea.datareturns.unittests.StorageHealthCheckTests;
 
 @RunWith(Suite.class)
@@ -21,6 +22,7 @@ import uk.gov.ea.datareturns.unittests.StorageHealthCheckTests;
 		EaIdTypeTests.class,
 		LocalStorageProviderTests.class,
 		MonitorProEmailerTests.class,
+		S3StorageConfigurationTests.class,
 		StorageHealthCheckTests.class,
 		FileTypeTests.class
 })

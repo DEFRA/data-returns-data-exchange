@@ -1,0 +1,12 @@
+storage:
+  type: s3
+  s3:
+    awsAccessKey: AWS_ACCESS_KEY
+    awsSecretKey: AWS_SECRET_KEY
+    temporaryBucket: AWS_TEMPORARY_BUCKET
+    persistentBucket: AWS_PERSISTENT_BUCKET
+    endpoint: AWSENDPOINT
+    protocol: http
+    proxyHost: AWS_PROXY_HOST
+    proxyPort: 1234
+    pathStyleAccess: false
