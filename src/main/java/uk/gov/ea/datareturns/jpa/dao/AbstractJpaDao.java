@@ -70,15 +70,4 @@ public abstract class AbstractJpaDao {
 		}
 		return Collections.unmodifiableSet(cachedSet);
 	}
-
-	/**
-	 * Create an {@link EntityManager}
-	 *
-	 * Note, {@link EntityManager} instances should be closed after use!
-	 *
-	 * @return
-	 */
-	public EntityManager createEntityManager() {
-		return this.entityManager;
-	}
 }

@@ -35,8 +35,7 @@ public final class DateFormat {
 	};
 
 	// Private utlity class constructor
-	private DateFormat() {
-	}
+	private DateFormat() {}
 
 	/**
 	 * Attempts to parse the given string as a date-only value

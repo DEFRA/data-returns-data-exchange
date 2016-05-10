@@ -60,7 +60,7 @@ public class ReturnsDate {
 	public String toStandardisedFormat() {
 		String fmt = "";
 		if (this.instant != null) {
-			if (this.timeSpecified) {
+			if (isTimeSpecified()) {
 				fmt = DateTimeFormatter.ofPattern(DateFormat.STANDARD_DATE_TIME_FORMAT)
 						.format(LocalDateTime.ofInstant(this.instant, ZoneOffset.UTC));
 			} else {

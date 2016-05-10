@@ -8,6 +8,7 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import uk.gov.ea.datareturns.domain.model.rules.DateFormat;
+import uk.gov.ea.datareturns.util.TestUtils;
 
 /**
  * Tests the {@link DateFormat} rules meet the application specification
@@ -15,6 +16,12 @@ import uk.gov.ea.datareturns.domain.model.rules.DateFormat;
  * @author Sam Gardner-Dell
  */
 public class DateFormatTests {
+
+	@Test
+	public void testBooleanValueUtilityClassDefinition() throws ReflectiveOperationException {
+		TestUtils.assertUtilityClassWellDefined(DateFormat.class);
+	}
+
 	@Test
 	public void testISODate() {
 		final LocalDate now = LocalDate.now();

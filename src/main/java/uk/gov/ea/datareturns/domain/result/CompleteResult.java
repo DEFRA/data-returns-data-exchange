@@ -1,7 +1,5 @@
 package uk.gov.ea.datareturns.domain.result;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-
 public class CompleteResult {
 	private String fileKey;
 
@@ -30,10 +28,5 @@ public class CompleteResult {
 
 	public void setUserEmail(final String userEmail) {
 		this.userEmail = userEmail;
-	}
-
-	@JsonIgnore
-	public boolean isSendUserEmail() {
-		return !"".equals(this.userEmail.trim());
 	}
 }

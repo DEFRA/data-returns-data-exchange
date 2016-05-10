@@ -9,7 +9,7 @@ import java.util.Objects;
  * 
  * @author Sam Gardner-Dell
  */
-public class BooleanValue {
+public final class BooleanValue {
 	private static final Map<String, Boolean> mapping = new HashMap<>();
 	static {
 		// All values should be lowercase as we use case-insensitive matching

@@ -1,5 +1,6 @@
 package uk.gov.ea.datareturns.domain.model.rules;
 
+import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
@@ -87,7 +88,9 @@ public class DataReturnsHeaders {
 		ALL_VALID_HEADINGS.add(CHEMICAL_ABSTRACTS_SERVICE);
 		ALL_VALID_HEADINGS.add(RECOVERY_AND_DISPOSAL_CODE);
 	}
-
+	/** Store an array of all headings */
+	private static final String[] ALL_HEADINGS_ARR = ALL_VALID_HEADINGS.toArray(new String[ALL_VALID_HEADINGS.size()]);
+	
 	/**
 	 * The set of headings that MUST be defined in the input data
 	 */
@@ -106,20 +109,20 @@ public class DataReturnsHeaders {
 	 * @return the set of all headings allowed in the input data
 	 */
 	public static final Set<String> getAllHeadings() {
-		return new LinkedHashSet<>(ALL_VALID_HEADINGS);
+		return Collections.unmodifiableSet(ALL_VALID_HEADINGS);
 	}
 
 	/**
 	 * @return the set of all headings allowed in the input data
 	 */
 	public static final String[] getAllHeadingsArray() {
-		return ALL_VALID_HEADINGS.toArray(new String[ALL_VALID_HEADINGS.size()]);
+		return ALL_HEADINGS_ARR;
 	}
 
 	/**
 	 * @return the set of headings that MUST be defined in the input data
 	 */
 	public static final Set<String> getMandatoryHeadings() {
-		return new LinkedHashSet<>(MANDATORY_HEADINGS);
+		return Collections.unmodifiableSet(MANDATORY_HEADINGS);
 	}
 }

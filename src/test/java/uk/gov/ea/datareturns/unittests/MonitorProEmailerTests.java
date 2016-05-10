@@ -6,23 +6,20 @@ package uk.gov.ea.datareturns.unittests;
 import java.io.File;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.util.Objects;
 
-import org.apache.commons.mail.EmailAttachment;
+import javax.mail.internet.MimeMultipart;
+
 import org.apache.commons.mail.EmailException;
 import org.apache.commons.mail.MultiPartEmail;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.ArgumentCaptor;
-import org.mockito.Mockito;
-import org.powermock.api.mockito.PowerMockito;
-import org.powermock.core.classloader.annotations.PrepareForTest;
-import org.powermock.modules.junit4.PowerMockRunner;
 
 import uk.gov.ea.datareturns.config.email.MonitorProEmailConfiguration;
 import uk.gov.ea.datareturns.email.MonitorProEmailer;
+import uk.gov.ea.datareturns.email.MonitorProEmailer.EmailTransportHandler;
 import uk.gov.ea.datareturns.exception.application.DRHeaderMandatoryFieldMissingException;
 import uk.gov.ea.datareturns.exception.system.DRSystemException;
 
@@ -32,16 +29,12 @@ import uk.gov.ea.datareturns.exception.system.DRSystemException;
  * @author Sam Gardner-Dell
  *
  */
-@RunWith(PowerMockRunner.class)
-@PrepareForTest({ MonitorProEmailer.class })
 public class MonitorProEmailerTests {
 	private static File testSuccessFile;
 
 	private static File testEmptyFile;
 
 	private static File testHeaderOnlyFile;
-
-	private static MultiPartEmail mockedClient;
 
 	private static final String EMAIL_FROM = "data-returns-test-source@environment-agency.gov.uk";
 
@@ -62,17 +55,10 @@ public class MonitorProEmailerTests {
 		testSuccessFile = getTestFile("/testfiles/email-unittest.csv");
 		testEmptyFile = getTestFile("/testfiles/empty.csv");
 		testHeaderOnlyFile = getTestFile("/testfiles/header-row-only.csv");
-		mockedClient = PowerMockito.mock(MultiPartEmail.class);
-		PowerMockito.whenNew(MultiPartEmail.class).withNoArguments().thenReturn(mockedClient);
-		PowerMockito.doReturn("testReturnValue").when(mockedClient).send();
 	}
 
 	@Before
 	public void beforeTest() throws Exception {
-		mockedClient = PowerMockito.mock(MultiPartEmail.class);
-		PowerMockito.whenNew(MultiPartEmail.class).withNoArguments().thenReturn(mockedClient);
-		PowerMockito.doReturn("testReturnValue").when(mockedClient).send();
-
 		this.emailSettings = new MonitorProEmailConfiguration();
 		this.emailSettings.setFrom(EMAIL_FROM);
 		this.emailSettings.setTo(EMAIL_TO);
@@ -90,24 +76,28 @@ public class MonitorProEmailerTests {
 	@Test
 	public void testSuccessCase() throws Exception {
 		final MonitorProEmailer emailer = new MonitorProEmailer(this.emailSettings);
-		emailer.sendNotifications(testSuccessFile);
+		emailer.sendNotifications(testSuccessFile, new EmailTransportHandler() {
+			@Override
+			public String send(MultiPartEmail email) throws EmailException {
+				email.buildMimeMessage();
+				
+				
+				Assert.assertEquals(email.getHostName(), EMAIL_HOST);
+				Assert.assertEquals(Integer.parseInt(email.getSmtpPort()), EMAIL_PORT);
+				Assert.assertEquals(email.isStartTLSEnabled(), false);
+				Assert.assertEquals(email.getFromAddress().getAddress(), EMAIL_FROM);
+				Assert.assertEquals(email.getToAddresses().get(0).getAddress(), EMAIL_TO);
+				Assert.assertEquals(email.getSubject(), "LOWER_ALPHANUMERIC");
 
-		// Expectations
-		Mockito.verify(mockedClient).setHostName(EMAIL_HOST);
-		Mockito.verify(mockedClient).setSmtpPort(EMAIL_PORT);
-		Mockito.verify(mockedClient).setStartTLSEnabled(false);
-
-		Mockito.verify(mockedClient).setFrom(EMAIL_FROM);
-		Mockito.verify(mockedClient).addTo(EMAIL_TO);
-		Mockito.verify(mockedClient).setSubject("LOWER_ALPHANUMERIC");
-		Mockito.verify(mockedClient).setMsg(EMAIL_BODY_RESULT);
-
-		final ArgumentCaptor<EmailAttachment> attachmentCaptor = ArgumentCaptor.forClass(EmailAttachment.class);
-		Mockito.verify(mockedClient).attach(attachmentCaptor.capture());
-
-		final EmailAttachment attach = attachmentCaptor.getValue();
-		Assert.assertEquals("Environment Agency.csv", attach.getName());
-		Assert.assertEquals(testSuccessFile.getAbsolutePath(), attach.getPath());
+				try  {
+					Object msgBody = ((MimeMultipart)email.getMimeMessage().getContent()).getBodyPart(0).getDataHandler().getContent();
+					Assert.assertTrue(EMAIL_BODY_RESULT.equals(Objects.toString(msgBody)));
+				} catch (Exception e) {
+					throw new RuntimeException(e);
+				}
+				return "test";
+			}
+		});
 	}
 
 	@Test(expected = DRHeaderMandatoryFieldMissingException.class)
@@ -124,9 +114,13 @@ public class MonitorProEmailerTests {
 
 	@Test(expected = DRSystemException.class)
 	public void testEmailException() throws Exception {
-		PowerMockito.doThrow(new EmailException()).when(mockedClient).send();
 		final MonitorProEmailer emailer = new MonitorProEmailer(this.emailSettings);
-		emailer.sendNotifications(testSuccessFile);
+		emailer.sendNotifications(testSuccessFile, new EmailTransportHandler() {
+			@Override
+			public String send(MultiPartEmail email) throws EmailException {
+				throw new EmailException("He's dead Jim");
+			}
+		});
 	}
 
 	private static File getTestFile(final String location) throws URISyntaxException {

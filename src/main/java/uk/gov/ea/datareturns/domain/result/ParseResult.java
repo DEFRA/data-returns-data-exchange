@@ -17,7 +17,6 @@ public class ParseResult {
 	private String siteName;
 
 	public ParseResult() {
-
 	}
 
 	public ParseResult(final List<MonitoringDataRecord> records) {

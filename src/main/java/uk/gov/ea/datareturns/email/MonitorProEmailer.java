@@ -37,8 +37,11 @@ public class MonitorProEmailer {
 		this.settings = settings;
 	}
 
-	// TODO move to own class hierarchy - also needs tests
 	public void sendNotifications(final File returnsCSVFile) {
+		sendNotifications(returnsCSVFile, new DefaultTransportHandler());
+	}
+	
+	public void sendNotifications(final File returnsCSVFile, EmailTransportHandler handler) {
 		LOGGER.debug("Sending Email with attachment '" + returnsCSVFile.getAbsolutePath() + "'");
 
 		// 3. Read the CSV data into a model
@@ -74,7 +77,8 @@ public class MonitorProEmailer {
 			email.attach(attachment);
 
 			email.setDebug(LOGGER.isDebugEnabled());
-			email.send();
+			
+			handler.send(email);
 		} catch (final EmailException e1) {
 			throw new DRSystemException(e1, "Failed to send email to MonitorPro");
 		} catch (final Throwable e2) {
@@ -82,5 +86,17 @@ public class MonitorProEmailer {
 		}
 
 		LOGGER.debug("Email sent");
+	}
+	
+	public interface EmailTransportHandler {
+		String send(final MultiPartEmail email) throws EmailException;
+	}
+	
+	private static class DefaultTransportHandler implements EmailTransportHandler {
+		@Override
+		public String send(MultiPartEmail email) throws EmailException {
+			return email.send();
+		}
+		
 	}
 }

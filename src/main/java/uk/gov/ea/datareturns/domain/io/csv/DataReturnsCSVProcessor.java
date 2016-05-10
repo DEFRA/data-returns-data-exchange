@@ -104,7 +104,7 @@ public class DataReturnsCSVProcessor {
 
 		// Get working sets for the list of all headers and the list of mandatory headers
 		final Set<String> allHeaders = DataReturnsHeaders.getAllHeadings();
-		final Set<String> mandatoryHeaders = DataReturnsHeaders.getMandatoryHeadings();
+		final Set<String> mandatoryHeaders = new HashSet<>(DataReturnsHeaders.getMandatoryHeadings());
 		// Set of headers defined in the supplied model (from the CSV file)
 		final Set<String> csvHeaders = new LinkedHashSet<>();
 		if (headers != null) {

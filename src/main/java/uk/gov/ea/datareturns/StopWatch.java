@@ -10,13 +10,6 @@ package uk.gov.ea.datareturns;
  *
  */
 public class StopWatch extends org.springframework.util.StopWatch {
-
-	/**
-	 *
-	 */
-	public StopWatch() {
-	}
-
 	/**
 	 * @param id
 	 */
