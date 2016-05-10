@@ -20,9 +20,9 @@ import uk.gov.ea.datareturns.unittests.StorageHealthCheckTests;
 		DateFormatTests.class,
 		EaIdTypeTests.class,
 		LocalStorageProviderTests.class,
-		MonitorProEmailerTests.class
+		MonitorProEmailerTests.class,
 		StorageHealthCheckTests.class,
-		FileTypeTests.class,
+		FileTypeTests.class
 })
 public class AllUnitTests {
 }
