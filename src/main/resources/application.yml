@@ -21,6 +21,11 @@ spring:
     database-platform: ${db.dialect}
     show-sql: false
 
+# Congiguration for authorization hashing
+crypt:
+  secretKey: failYRand0mizedk3Y
+  hashAlgorithm: HmacSHA256
+
 # Configuration for the web server
 server:
   display-name: ${spring.application.name}

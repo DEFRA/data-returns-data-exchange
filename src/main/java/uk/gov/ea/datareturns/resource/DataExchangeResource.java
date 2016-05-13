@@ -90,6 +90,7 @@ public class DataExchangeResource {
 	@Path("/upload")
 	@Consumes(MULTIPART_FORM_DATA)
 	@Produces(APPLICATION_JSON)
+	@FilenameAuthorization
 	public Response uploadFile(
 			@FormDataParam("fileUpload") final InputStream is,
 			@FormDataParam("fileUpload") final FormDataContentDisposition fileDetail) throws Exception {

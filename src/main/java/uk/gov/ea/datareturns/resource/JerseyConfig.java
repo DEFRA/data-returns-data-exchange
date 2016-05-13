@@ -19,6 +19,7 @@ public class JerseyConfig extends ResourceConfig {
 		register(context.getBean(DataExchangeResource.class));
 
 		register(new MultiPartFeature());
+		register(new AuthorizationFilterFileUpload());
 
 		// Configure the logging filter based on log configuration
 		final Logger loggingFilterLogger = LoggerFactory.getLogger(LoggingFilter.class);
