@@ -11,7 +11,7 @@ import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.core.pattern.color.ForegroundCompositeConverterBase;
 
 /**
- * @author sam
+ * @author Sam Gardner-Dell
  *
  */
 public class LogHighlightingConverter extends ForegroundCompositeConverterBase<ILoggingEvent> {

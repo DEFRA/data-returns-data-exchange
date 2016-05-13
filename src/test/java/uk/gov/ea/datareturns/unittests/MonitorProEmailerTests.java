@@ -18,10 +18,9 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import uk.gov.ea.datareturns.config.email.MonitorProEmailConfiguration;
-import uk.gov.ea.datareturns.email.MonitorProEmailer;
-import uk.gov.ea.datareturns.email.MonitorProEmailer.EmailTransportHandler;
-import uk.gov.ea.datareturns.exception.application.DRHeaderMandatoryFieldMissingException;
-import uk.gov.ea.datareturns.exception.system.DRSystemException;
+import uk.gov.ea.datareturns.email.MonitorProTransportException;
+import uk.gov.ea.datareturns.email.MonitorProTransportHandler;
+import uk.gov.ea.datareturns.email.MonitorProTransportHandler.EmailTransportHandler;
 
 /**
  * Unit tests for the monitorpro email functionality
@@ -75,7 +74,7 @@ public class MonitorProEmailerTests {
 
 	@Test
 	public void testSuccessCase() throws Exception {
-		final MonitorProEmailer emailer = new MonitorProEmailer(this.emailSettings);
+		final MonitorProTransportHandler emailer = new MonitorProTransportHandler(this.emailSettings);
 		emailer.sendNotifications(testSuccessFile, new EmailTransportHandler() {
 			@Override
 			public String send(MultiPartEmail email) throws EmailException {
@@ -100,21 +99,21 @@ public class MonitorProEmailerTests {
 		});
 	}
 
-	@Test(expected = DRHeaderMandatoryFieldMissingException.class)
+	@Test(expected = MonitorProTransportException.class)
 	public void testEmptyFile() throws Exception {
-		final MonitorProEmailer emailer = new MonitorProEmailer(this.emailSettings);
+		final MonitorProTransportHandler emailer = new MonitorProTransportHandler(this.emailSettings);
 		emailer.sendNotifications(testEmptyFile);
 	}
 
-	@Test(expected = DRSystemException.class)
+	@Test(expected = MonitorProTransportException.class)
 	public void testHeaderOnlyFile() throws Exception {
-		final MonitorProEmailer emailer = new MonitorProEmailer(this.emailSettings);
+		final MonitorProTransportHandler emailer = new MonitorProTransportHandler(this.emailSettings);
 		emailer.sendNotifications(testHeaderOnlyFile);
 	}
 
-	@Test(expected = DRSystemException.class)
+	@Test(expected = MonitorProTransportException.class)
 	public void testEmailException() throws Exception {
-		final MonitorProEmailer emailer = new MonitorProEmailer(this.emailSettings);
+		final MonitorProTransportHandler emailer = new MonitorProTransportHandler(this.emailSettings);
 		emailer.sendNotifications(testSuccessFile, new EmailTransportHandler() {
 			@Override
 			public String send(MultiPartEmail email) throws EmailException {

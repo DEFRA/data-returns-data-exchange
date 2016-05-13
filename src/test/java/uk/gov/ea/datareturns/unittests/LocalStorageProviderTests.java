@@ -21,7 +21,7 @@ import uk.gov.ea.datareturns.storage.StorageProvider.StoredFile;
 import uk.gov.ea.datareturns.storage.local.LocalStorageProvider;
 
 /**
- * @author sam
+ * @author Sam Gardner-Dell
  *
  */
 public class LocalStorageProviderTests {

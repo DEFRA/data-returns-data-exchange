@@ -17,9 +17,9 @@ import uk.gov.ea.datareturns.domain.model.rules.conversion.TxtValueConverter;
 import uk.gov.ea.datareturns.domain.model.validation.auditors.MethodOrStandardAuditor;
 import uk.gov.ea.datareturns.domain.model.validation.auditors.MonitoringPeriodAuditor;
 import uk.gov.ea.datareturns.domain.model.validation.auditors.ParameterAuditor;
-import uk.gov.ea.datareturns.domain.model.validation.auditors.TxtValueAuditor;
 import uk.gov.ea.datareturns.domain.model.validation.auditors.ReferencePeriodAuditor;
 import uk.gov.ea.datareturns.domain.model.validation.auditors.ReturnTypeAuditor;
+import uk.gov.ea.datareturns.domain.model.validation.auditors.TxtValueAuditor;
 import uk.gov.ea.datareturns.domain.model.validation.auditors.UnitAuditor;
 import uk.gov.ea.datareturns.domain.model.validation.constraints.controlledlist.ControlledList;
 import uk.gov.ea.datareturns.domain.model.validation.constraints.field.ValidReturnsDate;
@@ -97,7 +97,7 @@ public class MonitoringDataRecord extends AbstractCSVRecord {
 
 	/** Textual value (Txt_Value) */
 	@Parsed(field = DataReturnsHeaders.TEXT_VALUE)
-	@Convert(conversionClass=TxtValueConverter.class)
+	@Convert(conversionClass = TxtValueConverter.class)
 	@ControlledList(auditor = TxtValueAuditor.class, message = "{DR9080-Incorrect}", required = false)
 	private String textValue;
 

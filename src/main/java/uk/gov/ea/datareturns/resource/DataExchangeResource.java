@@ -6,12 +6,12 @@ import static javax.ws.rs.core.MediaType.MULTIPART_FORM_DATA;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 
 import javax.inject.Inject;
 import javax.ws.rs.Consumes;
@@ -45,13 +45,10 @@ import uk.gov.ea.datareturns.domain.result.DataExchangeResult;
 import uk.gov.ea.datareturns.domain.result.ParseResult;
 import uk.gov.ea.datareturns.domain.result.UploadResult;
 import uk.gov.ea.datareturns.domain.result.ValidationErrors;
-import uk.gov.ea.datareturns.email.MonitorProEmailer;
-import uk.gov.ea.datareturns.exception.application.DRFileEmptyException;
-import uk.gov.ea.datareturns.exception.application.DRFileKeyMismatchException;
-import uk.gov.ea.datareturns.exception.application.DRFileTypeUnsupportedException;
-import uk.gov.ea.datareturns.exception.system.DRSystemException;
-import uk.gov.ea.datareturns.storage.StorageException;
-import uk.gov.ea.datareturns.storage.StorageKeyMismatchException;
+import uk.gov.ea.datareturns.email.MonitorProTransportHandler;
+import uk.gov.ea.datareturns.exception.application.AbstractValidationException;
+import uk.gov.ea.datareturns.exception.application.FileEmptyException;
+import uk.gov.ea.datareturns.exception.application.FileTypeUnsupportedException;
 import uk.gov.ea.datareturns.storage.StorageProvider;
 import uk.gov.ea.datareturns.storage.StorageProvider.StoredFile;
 import uk.gov.ea.datareturns.type.ApplicationExceptionType;
@@ -75,7 +72,7 @@ public class DataExchangeResource {
 	private MonitoringDataRecordValidationProcessor validator;
 
 	@Inject
-	private MonitorProEmailer emailer;
+	private MonitorProTransportHandler monitorProHandler;
 
 	public DataExchangeResource() {
 	}
@@ -86,6 +83,7 @@ public class DataExchangeResource {
 	 * @param is
 	 * @param fileDetail
 	 * @return JSON object
+	 * @throws Exception
 	 */
 	@POST
 	@Path("/upload")
@@ -93,30 +91,23 @@ public class DataExchangeResource {
 	@Produces(APPLICATION_JSON)
 	public Response uploadFile(
 			@FormDataParam("fileUpload") final InputStream is,
-			@FormDataParam("fileUpload") final FormDataContentDisposition fileDetail) {
+			@FormDataParam("fileUpload") final FormDataContentDisposition fileDetail) throws Exception {
 		LOGGER.debug("/data-exchange/upload request received");
 
 		final StopWatch stopwatch = new StopWatch("data-exchange upload timer");
 		stopwatch.startTask("Preparing File");
 
-		// FIXME: Storing a file on the server using the name given by the client is a daft idea.  Generate a file automatically
-		// and pull filename from fileDetail where necessary.
-		final File uploadedFile = new File(this.miscSettings.getUploadedLocation(), fileDetail.getFileName());
+		final File workFolder = createWorkFolder();
+		final String clientFilename = getClientFilename(fileDetail);
+		final File uploadedFile = File.createTempFile("dr-upload", ".csv", workFolder);
+
 		final DataReturnsCSVProcessor csvProcessor = new DataReturnsCSVProcessor();
 
-		if (uploadedFile.exists()) {
-			LOGGER.warn("Uploaded file by the given name already exists!");
-		}
-
 		// 1. Save upload file on server
-		try {
-			FileUtils.copyInputStreamToFile(is, uploadedFile);
-		} catch (final IOException e) {
-			throw new DRSystemException(e, "Unable to save the uploaded file to disk.");
-		}
+		FileUtils.copyInputStreamToFile(is, uploadedFile);
 
 		// 2. Do some basic checks on the upload file
-		checkUploadFile(uploadedFile);
+		checkUploadFile(clientFilename, uploadedFile);
 
 		stopwatch.startTask("Parsing file into model");
 
@@ -144,42 +135,22 @@ public class DataExchangeResource {
 			stopwatch.startTask("Preparing output files");
 			final List<File> outputFiles = new ArrayList<>();
 			final Map<EaId, List<MonitoringDataRecord>> permitToRecordMap = prepareOutputData(csvInput.getRecords());
-			final File workFolder = createWorkFolder();
-			permitToRecordMap.forEach((eaId, recordList) -> {
-				try {
-					final File permitDataFile = File.createTempFile("output-" + eaId.getIdentifier() + "-", ".csv", workFolder);
-					csvProcessor.write(recordList, permitDataFile);
-					outputFiles.add(permitDataFile);
-				} catch (final IOException e) {
-					throw new DRSystemException(e, "Unable to write output data to temporary file store");
-				}
-			});
-
-			// Persist the file to the configured storage provider (e.g. Amazon S3)
-			try {
-				stopwatch.startTask("Zipping output files");
-				final DataReturnsZipFileModel zipModel = new DataReturnsZipFileModel();
-				zipModel.setInputFile(uploadedFile);
-				zipModel.setOutputFiles(outputFiles);
-				final File zipFile = zipModel.toZipFile(workFolder);
-
-				stopwatch.startTask("Persisting output files to temporary storage");
-				final String fileKey = this.storage.storeTemporaryData(zipFile);
-				result.getUploadResult().setFileKey(fileKey);
-			} catch (final IOException | StorageException e) {
-				throw new DRSystemException(e);
+			for (final Map.Entry<EaId, List<MonitoringDataRecord>> entry : permitToRecordMap.entrySet()) {
+				final File permitDataFile = File.createTempFile("output-" + entry.getKey().getIdentifier() + "-", ".csv", workFolder);
+				csvProcessor.write(entry.getValue(), permitDataFile);
+				outputFiles.add(permitDataFile);
 			}
 
-			stopwatch.startTask("Clearing up");
-			// Delete the local temporary files now that they have been persisted to the storage provider
-			final List<File> filesToDelete = new ArrayList<>();
-			filesToDelete.add(uploadedFile);
-			filesToDelete.add(workFolder);
-			filesToDelete.forEach((file) -> {
-				if (!FileUtils.deleteQuietly(file)) {
-					file.deleteOnExit();
-				}
-			});
+			// Persist the file to the configured storage provider (e.g. Amazon S3)
+			stopwatch.startTask("Zipping output files");
+			final DataReturnsZipFileModel zipModel = new DataReturnsZipFileModel();
+			zipModel.setInputFile(uploadedFile);
+			zipModel.setOutputFiles(outputFiles);
+			final File zipFile = zipModel.toZipFile(workFolder);
+
+			stopwatch.startTask("Persisting output files to temporary storage");
+			final String fileKey = this.storage.storeTemporaryData(zipFile);
+			result.getUploadResult().setFileKey(fileKey);
 
 			// Construct a parse result to return to the client
 			result.setParseResult(new ParseResult(csvInput.getRecords()));
@@ -192,6 +163,9 @@ public class DataExchangeResource {
 			result.setAppStatusCode(ApplicationExceptionType.VALIDATION_ERRORS.getAppStatusCode());
 			responseStatus = Status.BAD_REQUEST;
 		}
+
+		stopwatch.startTask("Clearing up");
+		FileUtils.deleteQuietly(workFolder);
 
 		stopwatch.stop();
 		if (LOGGER.isDebugEnabled()) {
@@ -207,7 +181,8 @@ public class DataExchangeResource {
 	 * @param userEmail
 	 * @param orgFileName
 	 * @param permitNo
-	 * @return
+	 * @return {@link Response} object
+	 * @throws Exception
 	 */
 	@POST
 	@Path("/complete")
@@ -216,42 +191,29 @@ public class DataExchangeResource {
 	public Response completeUpload(
 			@NotEmpty @FormDataParam("fileKey") final String orgFileKey,
 			@NotEmpty @FormDataParam("userEmail") final String userEmail,
-			@NotEmpty @FormDataParam("orgFileName") final String orgFileName) {
+			@NotEmpty @FormDataParam("orgFileName") final String orgFileName) throws Exception {
 		LOGGER.debug("/data-exchange/complete request received");
 
 		final StopWatch stopwatch = new StopWatch("data-exchange complete timer");
 		stopwatch.startTask("Retrieving file from temporary storage");
 
-		StoredFile storedFile = null;
-		try {
-			storedFile = this.storage.retrieveTemporaryData(orgFileKey);
-		} catch (final StorageKeyMismatchException e) {
-			throw new DRFileKeyMismatchException("Unable to retrieve a file with the provided key " + orgFileKey);
-		} catch (final StorageException e) {
-			throw new DRSystemException(e, "Unable to retrieve a file with the provided key " + orgFileKey);
-		}
+		final StoredFile storedFile = this.storage.retrieveTemporaryData(orgFileKey);
 
 		final File workFolder = createWorkFolder();
-		try {
-			stopwatch.startTask("Extracting data files");
-			final DataReturnsZipFileModel zipModel = DataReturnsZipFileModel.fromZipFile(workFolder, storedFile.getFile());
+		stopwatch.startTask("Extracting data files");
+		final DataReturnsZipFileModel zipModel = DataReturnsZipFileModel.fromZipFile(workFolder, storedFile.getFile());
 
-			stopwatch.startTask("Sending data to monitor pro");
-			for (final File outputFile : zipModel.getOutputFiles()) {
-				this.emailer.sendNotifications(outputFile);
-			}
-
-			stopwatch.startTask("Moving data to audit store");
-			final Map<String, String> metadata = new LinkedHashMap<>();
-			metadata.put("originator-email", userEmail);
-			metadata.put("original-filename", orgFileName);
-
-			this.storage.moveToAuditStore(orgFileKey, metadata);
-		} catch (final IOException e) {
-			throw new DRSystemException(e, "Unable to process returns files identified by " + orgFileKey);
-		} catch (final StorageException e) {
-			throw new DRSystemException(e, e.getMessage());
+		stopwatch.startTask("Sending data to monitor pro");
+		for (final File outputFile : zipModel.getOutputFiles()) {
+			this.monitorProHandler.sendNotifications(outputFile);
 		}
+
+		stopwatch.startTask("Moving data to audit store");
+		final Map<String, String> metadata = new LinkedHashMap<>();
+		metadata.put("originator-email", userEmail);
+		metadata.put("original-filename", orgFileName);
+
+		this.storage.moveToAuditStore(orgFileKey, metadata);
 
 		stopwatch.stop();
 		if (LOGGER.isDebugEnabled()) {
@@ -265,18 +227,19 @@ public class DataExchangeResource {
 	/**
 	 * Basic file validation
 	 *
+	 * @param clientFilename
 	 * @param uploadedFile
 	 */
-	private static void checkUploadFile(final File uploadedFile) {
-		final String fileType = FilenameUtils.getExtension(uploadedFile.getName());
+	private static void checkUploadFile(final String clientFilename, final File uploadedFile) throws AbstractValidationException {
+		final String fileType = FilenameUtils.getExtension(clientFilename);
 
 		// Release 1 must be csv
 		if (!FileType.CSV.getFileType().equalsIgnoreCase(fileType)) {
-			throw new DRFileTypeUnsupportedException("Unsupported file type '" + fileType + "'");
+			throw new FileTypeUnsupportedException("Unsupported file type '" + fileType + "'");
 		}
 
 		if (FileUtils.sizeOf(uploadedFile) == 0) {
-			throw new DRFileEmptyException("The uploaded file is empty");
+			throw new FileEmptyException("The uploaded file is empty");
 		}
 	}
 
@@ -308,18 +271,26 @@ public class DataExchangeResource {
 	 *
 	 * @return a {@link File} pointing to a working folder
 	 */
-	private File createWorkFolder() {
-		File workFolder = null;
+	private File createWorkFolder() throws IOException {
+		final java.nio.file.Path outputPath = new File(this.miscSettings.getOutputLocation()).toPath();
+		return Files.createTempDirectory(outputPath, "dr-wrk").toFile();
+	}
 
-		while (workFolder == null || workFolder.exists()) {
-			workFolder = new File(this.miscSettings.getOutputLocation(), UUID.randomUUID().toString());
+	/**
+	 * Retrieve the name of the file uploaded by the client.
+	 *
+	 * This method does sanitisation of the filename provided by the client including stripping any path information that may have been
+	 * included (in an attempt to compromise the system)
+	 *
+	 * @param fileDetail the {@link FormDataContentDisposition} included with the request
+	 * @return the filename reported by the client or "undefined.csv" if this data is not available.
+	 */
+	private static String getClientFilename(final FormDataContentDisposition fileDetail) {
+		String filename = "undefined.csv";
+		if (fileDetail != null && fileDetail.getFileName() != null) {
+			final File file = new File(fileDetail.getFileName());
+			filename = file.getName();
 		}
-
-		try {
-			FileUtils.forceMkdir(workFolder);
-		} catch (final IOException e) {
-			throw new DRSystemException(e, "Unable to create working folder");
-		}
-		return workFolder;
+		return filename;
 	}
 }

@@ -7,7 +7,6 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
 
 import uk.gov.ea.datareturns.domain.model.rules.EaIdType;
-import uk.gov.ea.datareturns.exception.system.DRSystemException;
 
 /**
  * Configuration values for email messages to Monitor Pro
@@ -199,7 +198,7 @@ public class MonitorProEmailConfiguration {
 		} else if (EaIdType.UPPER_ALPHANUMERIC.equals(db)) {
 			return this.subjectUpperAlphaNumericUniqueId;
 		} else {
-			throw new DRSystemException("Unable to determine EMMA database");
+			throw new AssertionError("Unable to determine EMMA database");
 		}
 	}
 }

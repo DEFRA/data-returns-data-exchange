@@ -12,7 +12,7 @@ import org.junit.Assert;
 /**
  * Unit test utlities
  * 
- * @author sam
+ * @author Sam Gardner-Dell
  *
  */
 public final class TestUtils {

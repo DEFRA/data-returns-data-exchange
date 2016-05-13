@@ -14,6 +14,8 @@ import org.springframework.stereotype.Component;
 public class JerseyConfig extends ResourceConfig {
 	@Inject
 	public JerseyConfig(final ApplicationContext context) {
+		packages("uk.gov.ea.datareturns.resource");
+
 		register(context.getBean(DataExchangeResource.class));
 
 		register(new MultiPartFeature());

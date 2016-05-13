@@ -17,7 +17,7 @@ import uk.gov.ea.datareturns.domain.io.csv.DataReturnsCSVProcessor;
 import uk.gov.ea.datareturns.domain.io.csv.generic.CSVModel;
 import uk.gov.ea.datareturns.domain.model.EaId;
 import uk.gov.ea.datareturns.domain.model.MonitoringDataRecord;
-import uk.gov.ea.datareturns.exception.system.DRSystemException;
+import uk.gov.ea.datareturns.exception.application.AbstractValidationException;
 
 /**
  * Handles emails to monitor pro
@@ -27,32 +27,40 @@ import uk.gov.ea.datareturns.exception.system.DRSystemException;
  *
  */
 @Component
-public class MonitorProEmailer {
-	private static final Logger LOGGER = LoggerFactory.getLogger(MonitorProEmailer.class);
+public class MonitorProTransportHandler {
+	private static final Logger LOGGER = LoggerFactory.getLogger(MonitorProTransportHandler.class);
 
 	private final MonitorProEmailConfiguration settings;
 
 	@Inject
-	public MonitorProEmailer(final MonitorProEmailConfiguration settings) {
+	public MonitorProTransportHandler(final MonitorProEmailConfiguration settings) {
 		this.settings = settings;
 	}
 
-	public void sendNotifications(final File returnsCSVFile) {
+	public void sendNotifications(final File returnsCSVFile) throws MonitorProTransportException {
 		sendNotifications(returnsCSVFile, new DefaultTransportHandler());
 	}
-	
-	public void sendNotifications(final File returnsCSVFile, EmailTransportHandler handler) {
+
+	public void sendNotifications(final File returnsCSVFile, final EmailTransportHandler handler) throws MonitorProTransportException {
 		LOGGER.debug("Sending Email with attachment '" + returnsCSVFile.getAbsolutePath() + "'");
 
 		// 3. Read the CSV data into a model
-		final CSVModel<MonitoringDataRecord> csvInput = new DataReturnsCSVProcessor().read(returnsCSVFile);
+		CSVModel<MonitoringDataRecord> csvInput = null;
+
+		try {
+			csvInput = new DataReturnsCSVProcessor().read(returnsCSVFile);
+		} catch (final AbstractValidationException e) {
+			// This should never happen at this point (or something went very wrong and a previous point in the process)
+			// If we encounter this here it represents a system error, not a validation error
+			throw new MonitorProTransportException("Failed to read output CSV file when sending content to datastore.");
+		}
 
 		if (csvInput.getRecords().size() < 1) {
-			// No data to send - this should never happen but we need to protected against an ArrayIndexOutOfBounds exception
-			throw new DRSystemException("There was no data to send to Emma");
+			// No data to send - this should never happen but we need to protect against an ArrayIndexOutOfBounds exception
+			throw new MonitorProTransportException("Encountered empty output CSV file when sending content to datastore.");
 		}
-		final EaId eaId = csvInput.getRecords().get(0).getEaId();
 
+		final EaId eaId = csvInput.getRecords().get(0).getEaId();
 		try {
 			final MultiPartEmail email = new MultiPartEmail();
 			final String subject = this.settings.getDatabaseName(eaId.getType());
@@ -76,26 +84,22 @@ public class MonitorProEmailer {
 			email.attach(attachment);
 
 			email.setDebug(LOGGER.isDebugEnabled());
-			
-			handler.send(email);
-		} catch (final EmailException e1) {
-			throw new DRSystemException(e1, "Failed to send email to MonitorPro");
-		} catch (final Throwable e2) {
-			throw new DRSystemException(e2, "Failed to send email to MonitorPro");
-		}
 
-		LOGGER.debug("Email sent");
+			handler.send(email);
+		} catch (final EmailException e) {
+			throw new MonitorProTransportException("Failed to send email to MonitorPro", e);
+		}
 	}
-	
+
 	public interface EmailTransportHandler {
 		String send(final MultiPartEmail email) throws EmailException;
 	}
-	
+
 	private static class DefaultTransportHandler implements EmailTransportHandler {
 		@Override
-		public String send(MultiPartEmail email) throws EmailException {
+		public String send(final MultiPartEmail email) throws EmailException {
 			return email.send();
 		}
-		
+
 	}
 }

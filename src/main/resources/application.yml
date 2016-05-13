@@ -55,6 +55,8 @@ logging:
     org.apache.http: WARN
     org.springframework: WARN
     org.springframework.boot: WARN
+    org.springframework.boot.context.embedded.jetty.JettyEmbeddedServletContainer: INFO
+    
     javax.xml.bind: WARN
     
     # Database

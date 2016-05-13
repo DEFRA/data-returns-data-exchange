@@ -18,7 +18,7 @@ import org.junit.Test;
 import uk.gov.ea.datareturns.domain.io.zip.DataReturnsZipFileModel;
 
 /**
- * @author sam
+ * @author Sam Gardner-Dell
  *
  */
 public class DataReturnsZipFileModelTests {

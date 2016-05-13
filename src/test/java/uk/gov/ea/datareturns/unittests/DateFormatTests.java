@@ -18,7 +18,7 @@ import uk.gov.ea.datareturns.util.TestUtils;
 public class DateFormatTests {
 
 	@Test
-	public void testBooleanValueUtilityClassDefinition() throws ReflectiveOperationException {
+	public void testUtilityClassDefinition() throws ReflectiveOperationException {
 		TestUtils.assertUtilityClassWellDefined(DateFormat.class);
 	}
 

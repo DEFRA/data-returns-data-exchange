@@ -6,14 +6,6 @@ import java.util.Map;
 
 public class CSVModel<T extends Object> {
 	/**
-	 * The header map that iterates in column order.
-	 * <p>
-	 * The map keys are column names. The map values are 0-based indices.
-	 * </p>
-	 */
-	private Map<String, Integer> headerMap = new LinkedHashMap<>();
-
-	/**
 	 * Provides a mapping between the Java Object field and the header name to which it is mapped
 	 */
 	private Map<String, String> pojoFieldToHeaderMap = new LinkedHashMap<>();
@@ -28,20 +20,6 @@ public class CSVModel<T extends Object> {
 	 */
 	public CSVModel() {
 
-	}
-
-	/**
-	 * @return the headerMap
-	 */
-	public Map<String, Integer> getHeaderMap() {
-		return this.headerMap;
-	}
-
-	/**
-	 * @param headerMap the headerMap to set
-	 */
-	public void setHeaderMap(final Map<String, Integer> headerMap) {
-		this.headerMap = headerMap;
 	}
 
 	/**

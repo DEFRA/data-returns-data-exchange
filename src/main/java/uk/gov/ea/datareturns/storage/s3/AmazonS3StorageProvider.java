@@ -46,7 +46,7 @@ public class AmazonS3StorageProvider implements StorageProvider {
 	/** Amazon S3 client */
 	private final AmazonS3 s3Client;
 
-//	private final TransferManager transferManager;
+	//	private final TransferManager transferManager;
 
 	private final AmazonS3Configuration settings;
 
@@ -67,7 +67,7 @@ public class AmazonS3StorageProvider implements StorageProvider {
 		if (StringUtils.isNotBlank(this.settings.getEndpoint())) {
 			this.s3Client.setEndpoint(this.settings.getEndpoint());
 		}
-//		this.transferManager = new TransferManager(this.s3Client);
+		//		this.transferManager = new TransferManager(this.s3Client);
 	}
 
 	/* (non-Javadoc)
@@ -100,7 +100,7 @@ public class AmazonS3StorageProvider implements StorageProvider {
 	 * @param bucketName
 	 * @param file
 	 * @param userMetadata
-	 * @return
+	 * @return the key which should be used for future references to the file stored
 	 * @throws StorageException
 	 */
 	public String store(final String bucketName, final File file, final Map<String, String> userMetadata) throws StorageException {
@@ -131,75 +131,75 @@ public class AmazonS3StorageProvider implements StorageProvider {
 		return fileKey;
 	}
 
-//	/**
-//	 * Uses multi-part file uploads to S3 - useful with large files (>=100MB) as it uploads chunks of data
-//	 * in parallel.  If a chunk fails then only that chunk has to be re-uploaded rathen than having to try
-//	 * the entire upload again.  DO NOT use for small files as this is horridly inefficient.
-//	 *
-//	 * @param file
-//	 * @param userMetadata
-//	 * @return
-//	 * @throws StorageException
-//	 */
-//	public String storeMultipart(final String bucketName, final File file, final Map<String, String> userMetadata) throws StorageException {
-//		final String fileKey = StorageProvider.generateFileKey(file);
-//
-//		try (InputStream is = FileUtils.openInputStream(file)) {
-//			final ObjectMetadata metadata = new ObjectMetadata();
-//			if (userMetadata != null) {
-//				metadata.setUserMetadata(userMetadata);
-//			}
-//			metadata.setContentLength(file.length());
-//			final PutObjectRequest request = new PutObjectRequest(bucketName, fileKey, is, metadata);
-//
-//			final Upload upload = this.transferManager.upload(request);
-//			upload.waitForCompletion();
-//			// Make the request to s3.
-//			this.s3Client.putObject(request);
-//		} catch (final AmazonServiceException ase) {
-//			final String message = String.format(FMT_SERVICE_EXCEPTION, ase.getStatusCode(), ase.getErrorCode(),
-//					ase.getErrorType().toString());
-//			throw new StorageException(message, ase);
-//		} catch (final AmazonClientException ace) {
-//			final String message = "An error occurred that prevented the Amazon S3 service from being contacted.  Cause: "
-//					+ ace.getMessage();
-//			throw new StorageException(message, ace);
-//		} catch (final InterruptedException e) {
-//			final String message = "Upload to S3 thread interrupted";
-//			throw new StorageException(message, e);
-//		} catch (final IOException e) {
-//			throw new StorageException("Unable to read file", e);
-//		}
-//		return fileKey;
-//	}
+	//	/**
+	//	 * Uses multi-part file uploads to S3 - useful with large files (>=100MB) as it uploads chunks of data
+	//	 * in parallel.  If a chunk fails then only that chunk has to be re-uploaded rathen than having to try
+	//	 * the entire upload again.  DO NOT use for small files as this is horridly inefficient.
+	//	 *
+	//	 * @param file
+	//	 * @param userMetadata
+	//	 * @return
+	//	 * @throws StorageException
+	//	 */
+	//	public String storeMultipart(final String bucketName, final File file, final Map<String, String> userMetadata) throws StorageException {
+	//		final String fileKey = StorageProvider.generateFileKey(file);
+	//
+	//		try (InputStream is = FileUtils.openInputStream(file)) {
+	//			final ObjectMetadata metadata = new ObjectMetadata();
+	//			if (userMetadata != null) {
+	//				metadata.setUserMetadata(userMetadata);
+	//			}
+	//			metadata.setContentLength(file.length());
+	//			final PutObjectRequest request = new PutObjectRequest(bucketName, fileKey, is, metadata);
+	//
+	//			final Upload upload = this.transferManager.upload(request);
+	//			upload.waitForCompletion();
+	//			// Make the request to s3.
+	//			this.s3Client.putObject(request);
+	//		} catch (final AmazonServiceException ase) {
+	//			final String message = String.format(FMT_SERVICE_EXCEPTION, ase.getStatusCode(), ase.getErrorCode(),
+	//					ase.getErrorType().toString());
+	//			throw new StorageException(message, ase);
+	//		} catch (final AmazonClientException ace) {
+	//			final String message = "An error occurred that prevented the Amazon S3 service from being contacted.  Cause: "
+	//					+ ace.getMessage();
+	//			throw new StorageException(message, ace);
+	//		} catch (final InterruptedException e) {
+	//			final String message = "Upload to S3 thread interrupted";
+	//			throw new StorageException(message, e);
+	//		} catch (final IOException e) {
+	//			throw new StorageException("Unable to read file", e);
+	//		}
+	//		return fileKey;
+	//	}
 
-//	/**
-//	 * Update the metadata stored against the given bucket and file key
-//	 *
-//	 * @param bucketName the bucket name of the bucket containing the desired file key
-//	 * @param fileKey the key of the file whose metadata should be updated
-//	 * @param userMetadata the new user metadata to store along with the file.
-//	 * @throws StorageException if the metadata could not be updated (e.g. due to a connection issue)
-//	 */
-//	public void updateMetadata(final String bucketName, final String fileKey, final Map<String, String> userMetadata)
-//			throws StorageException {
-//		try {
-//			final ObjectMetadata metadata = new ObjectMetadata();
-//			metadata.setUserMetadata(userMetadata);
-//			final CopyObjectRequest request = new CopyObjectRequest(bucketName, fileKey, bucketName, fileKey)
-//					.withNewObjectMetadata(metadata);
-//			// Make the request to s3.
-//			this.s3Client.copyObject(request);
-//		} catch (final AmazonServiceException ase) {
-//			final String message = String.format(FMT_SERVICE_EXCEPTION, ase.getStatusCode(), ase.getErrorCode(),
-//					ase.getErrorType().toString());
-//			throw new StorageException(message, ase);
-//		} catch (final AmazonClientException ace) {
-//			final String message = "An error occurred that prevented the Amazon S3 service from being contacted.  Cause: "
-//					+ ace.getMessage();
-//			throw new StorageException(message, ace);
-//		}
-//	}
+	//	/**
+	//	 * Update the metadata stored against the given bucket and file key
+	//	 *
+	//	 * @param bucketName the bucket name of the bucket containing the desired file key
+	//	 * @param fileKey the key of the file whose metadata should be updated
+	//	 * @param userMetadata the new user metadata to store along with the file.
+	//	 * @throws StorageException if the metadata could not be updated (e.g. due to a connection issue)
+	//	 */
+	//	public void updateMetadata(final String bucketName, final String fileKey, final Map<String, String> userMetadata)
+	//			throws StorageException {
+	//		try {
+	//			final ObjectMetadata metadata = new ObjectMetadata();
+	//			metadata.setUserMetadata(userMetadata);
+	//			final CopyObjectRequest request = new CopyObjectRequest(bucketName, fileKey, bucketName, fileKey)
+	//					.withNewObjectMetadata(metadata);
+	//			// Make the request to s3.
+	//			this.s3Client.copyObject(request);
+	//		} catch (final AmazonServiceException ase) {
+	//			final String message = String.format(FMT_SERVICE_EXCEPTION, ase.getStatusCode(), ase.getErrorCode(),
+	//					ase.getErrorType().toString());
+	//			throw new StorageException(message, ase);
+	//		} catch (final AmazonClientException ace) {
+	//			final String message = "An error occurred that prevented the Amazon S3 service from being contacted.  Cause: "
+	//					+ ace.getMessage();
+	//			throw new StorageException(message, ace);
+	//		}
+	//	}
 
 	/**
 	 * Move the specified file from the source to the destination, optionally including updated user metadata in the

@@ -59,6 +59,8 @@ public class DatabaseConfiguration {
 
 	/**
 	 * Declare the transaction manager.
+	 *
+	 * @return the {@link JpaTransactionManager}
 	 */
 	@Bean
 	public JpaTransactionManager transactionManager() {
@@ -73,7 +75,7 @@ public class DatabaseConfiguration {
 	 * with Repository so that any platform-specific exceptions are caught and then rethrown as one Spring's unchecked data
 	 * access exceptions (i.e. a subclass of DataAccessException).
 	 *
-	 * @return
+	 * @return the {@link PersistenceExceptionTranslationPostProcessor}
 	 */
 	@Bean
 	public PersistenceExceptionTranslationPostProcessor exceptionTranslation() {

@@ -126,7 +126,7 @@ public class S3StorageConfiguration implements AmazonS3Configuration {
 	}
 
 	/**
-	 * @return
+	 * @return the protocol
 	 */
 	public String getProtocol() {
 		return this.protocol;

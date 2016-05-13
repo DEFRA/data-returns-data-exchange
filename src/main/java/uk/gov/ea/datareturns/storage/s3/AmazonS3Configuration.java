@@ -29,6 +29,7 @@ public interface AmazonS3Configuration {
 	 * Configure the Amazon S3 Endpoint URL.  If this returns null then the default Amazon service endpoint
 	 * will be used.  This is useful to set the endpoint to a particular region or for testing using a
 	 * local S3 emulator.
+	 * @return the configured endpoint, or null if the Amazon S3 service should be used
 	 */
 	String getEndpoint();
 

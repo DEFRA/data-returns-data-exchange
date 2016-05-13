@@ -14,7 +14,7 @@ import uk.gov.ea.datareturns.domain.model.rules.DateFormat;
 /**
  *
  *
- * @author sam
+ * @author Sam Gardner-Dell
  *
  */
 public class ReturnsDate {

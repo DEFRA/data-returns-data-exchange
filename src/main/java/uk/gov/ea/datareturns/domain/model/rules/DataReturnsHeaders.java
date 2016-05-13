@@ -9,7 +9,7 @@ import java.util.Set;
  *
  * @author Sam Gardner-Dell
  */
-public class DataReturnsHeaders {
+public final class DataReturnsHeaders {
 	/** The EA Unique Identifier (EA_ID) */
 	public static final String EA_IDENTIFIER = "EA_ID";
 
@@ -88,9 +88,10 @@ public class DataReturnsHeaders {
 		ALL_VALID_HEADINGS.add(CHEMICAL_ABSTRACTS_SERVICE);
 		ALL_VALID_HEADINGS.add(RECOVERY_AND_DISPOSAL_CODE);
 	}
+
 	/** Store an array of all headings */
 	private static final String[] ALL_HEADINGS_ARR = ALL_VALID_HEADINGS.toArray(new String[ALL_VALID_HEADINGS.size()]);
-	
+
 	/**
 	 * The set of headings that MUST be defined in the input data
 	 */
@@ -103,6 +104,10 @@ public class DataReturnsHeaders {
 		MANDATORY_HEADINGS.add(PARAMETER);
 		MANDATORY_HEADINGS.add(VALUE);
 		MANDATORY_HEADINGS.add(UNIT);
+	}
+
+	// Utility class hidden constructor
+	private DataReturnsHeaders() {
 	}
 
 	/**

@@ -6,13 +6,13 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 
+import javax.inject.Inject;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
-import org.apache.commons.io.FileUtils;
 import org.glassfish.jersey.client.ClientConfig;
 import org.glassfish.jersey.client.ClientProperties;
 import org.glassfish.jersey.client.JerseyClientBuilder;
@@ -24,7 +24,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.boot.test.WebIntegrationTest;
 import org.springframework.test.annotation.DirtiesContext;
@@ -104,28 +103,8 @@ public class ResourceIntegrationTests {
 
 	public final static String STEP_COMPLETE = "complete";
 
-	@Autowired
+	@Inject
 	private TestSettings testSettings;
-	//
-	//	@BeforeClass
-	//	public static void setUp() throws IOException {
-	//		createTestDirectory(miscSettings.getOutputLocation());
-	//	}
-	//
-	//	@AfterClass
-	//	public static void cleanup() throws IOException {
-	//		if (TRUE.equals(testSettings.getCleanupAfterTestRun().toLowerCase())) {
-	//			FileUtils.cleanDirectory(new File(miscSettings.getOutputLocation()));
-	//			FileUtils.cleanDirectory(new File(miscSettings.getUploadedLocation()));
-	//		}
-	//	}
-
-	///////////////////////////////////////////////////////////////////////////////////////////
-	///////////////////////////////////////////////////////////////////////////////////////////
-	///////////////////////////////////////////////////////////////////////////////////////////
-	//////////////////////// Start Application Exception handling tests
-	/////////////////////////////////////////////////////////////////////////////////////////// ///////////////////////
-	///////////////////////////////////////////////////////////////////////////////////////////
 
 	@Test
 	public void testUnsupportedFileType() {
@@ -146,7 +125,7 @@ public class ResourceIntegrationTests {
 
 		final DataExchangeResult result = getResultFromResponse(resp);
 		final int sc = result.getAppStatusCode();
-		assertThat(sc == ApplicationExceptionType.INCONSISTENT_CSV_RECORD.getAppStatusCode()
+		assertThat(sc == ApplicationExceptionType.FILE_STRUCTURE_EXCEPTION.getAppStatusCode()
 				|| sc == ApplicationExceptionType.HEADER_MANDATORY_FIELD_MISSING.getAppStatusCode());
 	}
 
@@ -198,7 +177,7 @@ public class ResourceIntegrationTests {
 
 		final DataExchangeResult result = getResultFromResponse(resp);
 		assertThat(result.getAppStatusCode())
-				.isEqualTo(ApplicationExceptionType.INCONSISTENT_CSV_RECORD.getAppStatusCode());
+				.isEqualTo(ApplicationExceptionType.FILE_STRUCTURE_EXCEPTION.getAppStatusCode());
 	}
 
 	/**
@@ -483,18 +462,6 @@ public class ResourceIntegrationTests {
 	}
 
 	/**
-	 * Creates a directory for testing use
-	 *
-	 * @param dir
-	 * @throws IOException
-	 */
-	private static void createTestDirectory(final String dir) throws IOException {
-		final File directory = new File(dir);
-		FileUtils.deleteDirectory(directory);
-		FileUtils.forceMkdir(directory);
-	}
-
-	/**
 	 * Create URI
 	 *
 	 * @param step
@@ -503,5 +470,4 @@ public class ResourceIntegrationTests {
 	private static String createURIForStep(final String step) {
 		return String.format(URI, SERVER_PORT, step);
 	}
-
 }

@@ -13,7 +13,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * @author sam
+ * @author Sam Gardner-Dell
  *
  */
 public class DependentFieldValidator implements ConstraintValidator<DependentField, Object> {

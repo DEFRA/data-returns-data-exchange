@@ -15,7 +15,6 @@ import java.util.Set;
 
 import com.univocity.parsers.annotations.Parsed;
 import com.univocity.parsers.common.ParsingContext;
-import com.univocity.parsers.common.TextParsingException;
 import com.univocity.parsers.common.processor.BeanListProcessor;
 import com.univocity.parsers.common.processor.BeanWriterProcessor;
 import com.univocity.parsers.conversions.Conversions;
@@ -28,11 +27,11 @@ import uk.gov.ea.datareturns.domain.io.csv.generic.CSVModel;
 import uk.gov.ea.datareturns.domain.io.csv.generic.exceptions.InconsistentRowException;
 import uk.gov.ea.datareturns.domain.model.MonitoringDataRecord;
 import uk.gov.ea.datareturns.domain.model.rules.DataReturnsHeaders;
-import uk.gov.ea.datareturns.exception.application.DRFileTypeUnsupportedException;
-import uk.gov.ea.datareturns.exception.application.DRHeaderFieldUnrecognisedException;
-import uk.gov.ea.datareturns.exception.application.DRHeaderMandatoryFieldMissingException;
-import uk.gov.ea.datareturns.exception.application.DRInconsistentCSVException;
-import uk.gov.ea.datareturns.exception.system.DRSystemException;
+import uk.gov.ea.datareturns.exception.application.AbstractValidationException;
+import uk.gov.ea.datareturns.exception.application.FileStructureException;
+import uk.gov.ea.datareturns.exception.application.FileTypeUnsupportedException;
+import uk.gov.ea.datareturns.exception.application.MandatoryFieldMissingException;
+import uk.gov.ea.datareturns.exception.application.UnrecognisedFieldException;
 
 /**
  * Data Returns CSV reader/writer for DEP compliant CSV files.
@@ -56,7 +55,8 @@ public class DataReturnsCSVProcessor {
 
 	}
 
-	public CSVModel<MonitoringDataRecord> read(final File csvFile) {
+	public CSVModel<MonitoringDataRecord> read(final File csvFile) throws AbstractValidationException {
+
 		final BeanListProcessor<MonitoringDataRecord> rowProcessor = new BeanListProcessor<MonitoringDataRecord>(
 				MonitoringDataRecord.class) {
 			@Override
@@ -93,11 +93,9 @@ public class DataReturnsCSVProcessor {
 			parser.parse(csvFile);
 		} catch (final InconsistentRowException e) {
 			// Row encountered with an inconsistent number of fields with respect to the header definitions.
-			throw new DRInconsistentCSVException(e.getMessage());
-		} catch (final TextParsingException e) {
-			throw new DRFileTypeUnsupportedException("Unable to parse CSV file.  File content is not valid CSV data.");
+			throw new FileStructureException(e.getMessage());
 		} catch (final Throwable e) {
-			throw new DRSystemException(e, "Failed to parse CSV file.");
+			throw new FileTypeUnsupportedException("Unable to parse CSV file.  File content is not valid CSV data.");
 		}
 
 		final String[] headers = rowProcessor.getHeaders();
@@ -115,7 +113,7 @@ public class DataReturnsCSVProcessor {
 		// if they have defined everything that they should have.
 		mandatoryHeaders.removeAll(csvHeaders);
 		if (!mandatoryHeaders.isEmpty()) {
-			throw new DRHeaderMandatoryFieldMissingException("Missing fields: " + mandatoryHeaders.toString());
+			throw new MandatoryFieldMissingException("Missing fields: " + mandatoryHeaders.toString());
 		}
 
 		// Create a temporary set (which we can modify) of the fields defined in the CSV file
@@ -124,7 +122,7 @@ public class DataReturnsCSVProcessor {
 		// headers have been defined in the CSV file which are not allowed by the system.
 		tempCsvHeaderSet.removeAll(allHeaders);
 		if (!tempCsvHeaderSet.isEmpty()) {
-			throw new DRHeaderFieldUnrecognisedException("Unrecognised field(s) encountered: " + tempCsvHeaderSet.toString());
+			throw new UnrecognisedFieldException("Unrecognised field(s) encountered: " + tempCsvHeaderSet.toString());
 		}
 
 		final List<MonitoringDataRecord> records = rowProcessor.getBeans();

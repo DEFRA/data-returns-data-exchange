@@ -22,7 +22,7 @@ import uk.gov.ea.datareturns.domain.result.ValidationError;
 import uk.gov.ea.datareturns.domain.result.ValidationErrors;
 
 /**
- * @author sam
+ * @author Sam Gardner-Dell
  *
  */
 @Component

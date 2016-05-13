@@ -40,6 +40,12 @@
 		<!-- Univocity CSV parser -->
 		<univocity.parsers.version>2.0.2</univocity.parsers.version>
 
+		<metrics-spring.version>3.1.3</metrics-spring.version>
+
+		<liquibase-slf4j.version>2.0.0</liquibase-slf4j.version>
+
+		<airbrake-logback.version>1.0.1</airbrake-logback.version>
+
 		<aws.java.sdk.version>1.10.62</aws.java.sdk.version>
 
 		<!-- Test -->
@@ -90,7 +96,7 @@
 		<dependency>
 			<groupId>com.ryantenney.metrics</groupId>
 			<artifactId>metrics-spring</artifactId>
-			<version>3.1.3</version>
+			<version>${metrics-spring.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>io.dropwizard.metrics</groupId>
@@ -175,7 +181,14 @@
 		<dependency>
 		    <groupId>com.mattbertolini</groupId>
 		    <artifactId>liquibase-slf4j</artifactId>
-		    <version>2.0.0</version>
+		    <version>${liquibase-slf4j.version}</version>
+		</dependency>
+		
+		<!-- Errbit error reporting -->
+		<dependency>
+			<groupId>net.anthavio</groupId>
+			<artifactId>airbrake-logback</artifactId>
+			<version>${airbrake-logback.version}</version>
 		</dependency>
 		
 
