@@ -7,6 +7,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
+import java.nio.file.LinkOption;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -277,7 +278,10 @@ public class DataExchangeResource {
 	 */
 	private File createWorkFolder() throws IOException {
 		final java.nio.file.Path outputPath = new File(this.miscSettings.getOutputLocation()).toPath();
-		return Files.createTempDirectory(outputPath, "dr-wrk").toFile();
+		if (!Files.exists(outputPath, LinkOption.NOFOLLOW_LINKS)) {
+			Files.createDirectories(outputPath);
+		}
+		return Files.createTempDirectory(outputPath, "dr").toFile();
 	}
 
 	/**
