@@ -55,8 +55,6 @@ import uk.gov.ea.datareturns.storage.StorageProvider.StoredFile;
 import uk.gov.ea.datareturns.type.ApplicationExceptionType;
 import uk.gov.ea.datareturns.type.FileType;
 
-// TODO move some methods to helper classes
-
 @Path("/data-exchange/")
 @Component
 @Scope(ConfigurableBeanFactory.SCOPE_SINGLETON)
@@ -279,7 +277,7 @@ public class DataExchangeResource {
 	 * @return a {@link File} pointing to a working folder
 	 */
 	private File createWorkFolder() throws IOException {
-		final java.nio.file.Path outputPath = new File(this.miscSettings.getOutputLocation()).toPath();
+		final java.nio.file.Path outputPath = new File(this.miscSettings.getOutputLocation()).toPath().normalize();
 		if (!Files.exists(outputPath, LinkOption.NOFOLLOW_LINKS)) {
 			Files.createDirectories(outputPath);
 		}

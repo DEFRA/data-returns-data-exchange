@@ -139,6 +139,7 @@ logging:
     org.springframework.jndi: INFO
     org.springframework.core: INFO
     org.springframework.context.annotation: INFO
+    org.springframework.boot.context.embedded.jetty.JettyEmbeddedServletContainer: INFO
     
     # Set to DEBUG to enable the auto-configuration report at startup
     org.springframework.boot.autoconfigure.logging: DEBUG

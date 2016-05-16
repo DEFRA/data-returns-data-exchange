@@ -55,7 +55,7 @@ public class LocalStorageProvider implements StorageProvider {
 					FileUtils.cleanDirectory(dir);
 				}
 			} catch (final IOException e) {
-				LOGGER.warn("Error preparing local stroage area", e);
+				LOGGER.warn("Error preparing local storage area", e);
 			}
 		}
 	}

@@ -31,7 +31,7 @@ public class UnhandledExceptionMapper implements ExceptionMapper<Throwable> {
 		LOGGER.error("He's Dead Jim", exception);
 		final Status status = Status.INTERNAL_SERVER_ERROR;
 		final ExceptionMessageContainer entity = new ExceptionMessageContainer(ApplicationExceptionType.SYSTEM_FAILURE,
-				exception.getMessage());
+				exception.toString());
 		return Response.status(status).entity(entity).type(MediaType.APPLICATION_JSON_TYPE).build();
 	}
 }
