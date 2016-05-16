@@ -215,6 +215,10 @@ public class DataExchangeResource {
 
 		this.storage.moveToAuditStore(orgFileKey, metadata);
 
+		// Delete the work folder
+		stopwatch.startTask("Clearing up");
+		FileUtils.deleteQuietly(workFolder);
+		
 		stopwatch.stop();
 		if (LOGGER.isDebugEnabled()) {
 			LOGGER.debug(stopwatch.prettyPrint());
