@@ -31,7 +31,7 @@ public class ApiKeys {
 
     @PostConstruct
     public void showApiKeys() {
-        System.out.println("ApiKeys()" + config);
+        LOGGER.info("Initializing ApiKeys service... ");
     }
 
     public boolean verifyAuthorizationHeader(String authorizationHeader, String dataToSign) {
@@ -40,7 +40,6 @@ public class ApiKeys {
             String today = date.format(DateTimeFormatter.BASIC_ISO_DATE);
             String dateKey = hmac(config.getSecretKey(), today);
             String signingKey = hmac(dateKey, dataToSign);
-
             return signingKey.equals(authorizationHeader);
         } catch (SignatureException e) {
             LOGGER.info("Unable to verify authorization");

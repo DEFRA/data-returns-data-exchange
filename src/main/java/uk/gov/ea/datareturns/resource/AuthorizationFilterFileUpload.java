@@ -1,5 +1,7 @@
 package uk.gov.ea.datareturns.resource;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import uk.gov.ea.datareturns.service.ApiKeys;
 
 import javax.inject.Inject;
@@ -14,6 +16,7 @@ import java.io.IOException;
  */
 @FilenameAuthorization
 public class AuthorizationFilterFileUpload  implements ContainerRequestFilter {
+    private static final Logger LOGGER = LoggerFactory.getLogger(AuthorizationFilterFileUpload.class);
 
     @Inject
     ApiKeys apiKeys;
@@ -29,6 +32,9 @@ public class AuthorizationFilterFileUpload  implements ContainerRequestFilter {
                 requestContext.getHeaderString("filename");
 
         if (!apiKeys.verifyAuthorizationHeader(authorizationHeader, filename)) {
+            LOGGER.info("Unable to verify request signature: request unauthorized: " +
+                    requestContext.getUriInfo().getRequestUri());
+
             requestContext.abortWith(Response
                     .status(Response.Status.UNAUTHORIZED)
                     .entity("Cannot access this resource")

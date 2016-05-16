@@ -190,6 +190,7 @@ public class DataExchangeResource {
 	@Path("/complete")
 	@Consumes(MULTIPART_FORM_DATA)
 	@Produces(APPLICATION_JSON)
+	@FilenameAuthorization
 	public Response completeUpload(
 			@NotEmpty @FormDataParam("fileKey") final String orgFileKey,
 			@NotEmpty @FormDataParam("userEmail") final String userEmail,
