@@ -1,18 +1,5 @@
 package uk.gov.ea.datareturns.resource;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-
-import javax.inject.Inject;
-import javax.ws.rs.client.Client;
-import javax.ws.rs.client.Entity;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.Response.Status;
-
 import org.glassfish.jersey.client.ClientConfig;
 import org.glassfish.jersey.client.ClientProperties;
 import org.glassfish.jersey.client.JerseyClientBuilder;
@@ -28,11 +15,24 @@ import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.boot.test.WebIntegrationTest;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-
 import uk.gov.ea.datareturns.App;
 import uk.gov.ea.datareturns.config.TestSettings;
 import uk.gov.ea.datareturns.domain.result.DataExchangeResult;
+import uk.gov.ea.datareturns.service.ApiKeys;
 import uk.gov.ea.datareturns.type.ApplicationExceptionType;
+
+import javax.inject.Inject;
+import javax.ws.rs.client.Client;
+import javax.ws.rs.client.Entity;
+import javax.ws.rs.core.HttpHeaders;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.Status;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Integration test class for the DataExchangeResource REST service. Uses
@@ -49,6 +49,10 @@ import uk.gov.ea.datareturns.type.ApplicationExceptionType;
 @SpringApplicationConfiguration(App.class)
 @DirtiesContext
 public class ResourceIntegrationTests {
+
+	@Inject
+	ApiKeys apiKeys;
+
 	private static final Logger LOGGER = LoggerFactory.getLogger(ResourceIntegrationTests.class);
 
 	public static final int SERVER_PORT = 9120;
@@ -417,6 +421,8 @@ public class ResourceIntegrationTests {
 			form.bodyPart(fdp1);
 
 			response = client.target(uri).request(MediaType.APPLICATION_JSON_TYPE)
+					.header(HttpHeaders.AUTHORIZATION, apiKeys.calculateAuthorizationHeader(testFileName))
+					.header("filename", testFileName)
 					.post(Entity.entity(form, form.getMediaType()), Response.class);
 
 		} catch (final IOException e) {
@@ -432,7 +438,7 @@ public class ResourceIntegrationTests {
 	 * @param fileKey
 	 * @return
 	 */
-	private static Response performCompleteStep(final Client client, final String fileKey, final String fileName) {
+	private Response performCompleteStep(final Client client, final String fileKey, final String fileName) {
 		Response response = null;
 		try (final FormDataMultiPart form = new FormDataMultiPart()) {
 			final FormDataBodyPart fdp1 = new FormDataBodyPart("fileKey", fileKey);
@@ -444,6 +450,8 @@ public class ResourceIntegrationTests {
 
 			final String uri = createURIForStep(STEP_COMPLETE);
 			response = client.target(uri).request(MediaType.APPLICATION_JSON_TYPE)
+					.header(HttpHeaders.AUTHORIZATION, apiKeys.calculateAuthorizationHeader(fileName))
+					.header("filename", fileName)
 					.post(Entity.entity(form, form.getMediaType()), Response.class);
 		} catch (final IOException e) {
 			throw new RuntimeException("Error performing complete", e);

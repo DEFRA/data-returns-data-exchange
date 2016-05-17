@@ -34,16 +34,26 @@ public class ApiKeys {
         LOGGER.info("Initializing ApiKeys service... ");
     }
 
-    public boolean verifyAuthorizationHeader(String authorizationHeader, String dataToSign) {
+    public boolean verifyAuthorizationHeader(String givenAuthorizationHeader, String dataToSign) {
+        String calculatedAuthorizationHeader = calculateAuthorizationHeader(dataToSign);
+
+        if (calculatedAuthorizationHeader == null || givenAuthorizationHeader == null) {
+            return false;
+        } else {
+            return calculatedAuthorizationHeader.equals(givenAuthorizationHeader);
+        }
+    }
+
+    public String calculateAuthorizationHeader(String dataToSign) {
         try {
             LocalDate date = LocalDate.now();
             String today = date.format(DateTimeFormatter.BASIC_ISO_DATE);
             String dateKey = hmac(config.getSecretKey(), today);
             String signingKey = hmac(dateKey, dataToSign);
-            return signingKey.equals(authorizationHeader);
+            return signingKey;
         } catch (SignatureException e) {
-            LOGGER.info("Unable to verify authorization");
-            return false;
+            LOGGER.info("Unable to calculate authorization header");
+            return null;
         }
     }
 
