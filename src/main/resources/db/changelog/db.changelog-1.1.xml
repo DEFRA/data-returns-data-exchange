@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+	xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd
+        http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
+        
+	<property name="uniqueIdentifiersFile" value="/db/data/UniqueIdentifiers.csv"/>
+	
+	<preConditions>
+		<dbms type="${db.type}"/>
+		<runningAs username="${db.username}"/>
+	</preConditions>
+
+
+	<!-- 
+	****************************************************************
+	Unique Identifiers
+	****************************************************************
+	-->
+	<changeSet id="load-data: unique_identifiers_update_2016_05_17" author="Sam Gardner-Dell">
+		<preConditions onFail="HALT">
+			<tableExists tableName="unique_identifiers"/>
+			<columnExists tableName="unique_identifiers" columnName="identifier"/>
+		</preConditions>
+<!-- 		<sql>DELETE FROM unique_identifiers</sql> -->
+		<delete tableName="unique_identifiers"></delete>
+		<loadData file="${uniqueIdentifiersFile}" tableName="unique_identifiers"/>
+	</changeSet>
+</databaseChangeLog>
