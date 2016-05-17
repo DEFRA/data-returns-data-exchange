@@ -710,7 +710,7 @@ public class MonitoringDataRecordValidatorTests {
 	 */
 	private static MonitoringDataRecord createValidRecord() {
 		final MonitoringDataRecord record = new MonitoringDataRecord();
-		record.setEaId(new EaId("AB3002SQ"));
+		record.setEaId(new EaId("DP3431PC"));
 		record.setSiteName("Site Name");
 		record.setReturnType("EPR/IED Landfill Gas infrastructure monitoring");
 		record.setMonitoringDate(ReturnsDate.from("2016-03-09T11:18:59"));

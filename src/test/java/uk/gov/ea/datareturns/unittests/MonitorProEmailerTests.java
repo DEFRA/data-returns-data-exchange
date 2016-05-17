@@ -41,7 +41,7 @@ public class MonitorProEmailerTests {
 
 	private static final String EMAIL_BODY_TEMPLATE = "Data Returns Import file received for EA Identifier {{EA_ID}}";
 
-	private static final String EMAIL_BODY_RESULT = "Data Returns Import file received for EA Identifier AB3002SQ";
+	private static final String EMAIL_BODY_RESULT = "Data Returns Import file received for EA Identifier EP3136GK";
 
 	private static final String EMAIL_HOST = "unittest.localhost";
 
