@@ -1,0 +1,49 @@
+# Configuration for the web server
+server:
+  display-name: ${spring.application.name}
+  address: 127.0.0.1
+  port: 9120
+  compression:
+    enabled: true
+
+# Configuration for the management server and its endpoints
+management:
+  port: -1
+
+logging:
+  level: 
+    root: INFO
+    jndi: INFO
+    uk.gov.ea.datareturns: DEBUG
+    org.eclipse.jetty: INFO
+    org.eclipse.jetty.server.Server: DEBUG
+    org.eclipse.jetty.server.session: INFO
+    org.eclipse.jetty.servlet.ServletHandler: DEBUG
+    org.apache.http: INFO
+    org.jvnet.mimepull: INFO
+    
+    org.springframework: INFO
+    org.springframework.beans.factory: INFO
+    org.springframework.boot: INFO
+    org.springframework.jndi: INFO
+    org.springframework.core: INFO
+    org.springframework.context.annotation: INFO
+    org.springframework.boot.context.embedded.jetty.JettyEmbeddedServletContainer: INFO
+    
+    # Set to DEBUG to enable the auto-configuration report at startup
+    org.springframework.boot.autoconfigure.logging: INFO
+    
+    # Database
+    org.hibernate: INFO
+    net.sf.ehcache: INFO
+    liquibase: INFO
+    
+    # Amazon S3 API
+    com.amazonaws: INFO
+    org.apache.http.wire: INFO
+    # Glassfish
+    org.glassfish: INFO
+    # Useful to log REST requests and responses (set to INFO for headers or DEBUG for full request/response logging)
+    org.glassfish.jersey.filter.LoggingFilter: INFO
+  
+  

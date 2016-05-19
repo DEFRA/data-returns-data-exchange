@@ -1,78 +1,87 @@
 package uk.gov.ea.datareturns.service;
 
-import org.apache.commons.codec.Charsets;
-import org.apache.commons.codec.binary.Hex;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Service;
-import uk.gov.ea.datareturns.config.CryptoConfiguration;
-
-import javax.annotation.PostConstruct;
-import javax.crypto.Mac;
-import javax.crypto.spec.SecretKeySpec;
-import javax.inject.Inject;
 import java.security.KeyException;
 import java.security.NoSuchAlgorithmException;
 import java.security.SignatureException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 
-import static org.apache.commons.codec.binary.Hex.encodeHexString;
+import javax.annotation.PostConstruct;
+import javax.crypto.Mac;
+import javax.crypto.spec.SecretKeySpec;
+import javax.inject.Inject;
+
+import org.apache.commons.codec.Charsets;
+import org.apache.commons.codec.binary.Hex;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Service;
+
+import uk.gov.ea.datareturns.config.CryptoConfiguration;
 
 /**
  * Created by graham on 13/05/16.
  */
 @Service
 public class ApiKeys {
-    private static final Logger LOGGER = LoggerFactory.getLogger(ApiKeys.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(ApiKeys.class);
 
-    @Inject
-    private CryptoConfiguration config;
+	private final CryptoConfiguration config;
 
-    @PostConstruct
-    public void showApiKeys() {
-        LOGGER.info("Initializing ApiKeys service... ");
-    }
+	@Inject
+	public ApiKeys(final CryptoConfiguration config) {
+		this.config = config;
+	}
 
-    public boolean verifyAuthorizationHeader(String givenAuthorizationHeader, String dataToSign) {
-        String calculatedAuthorizationHeader = calculateAuthorizationHeader(dataToSign);
+	@PostConstruct
+	public void showApiKeys() {
+		if (this.config.isEnabled()) {
+			LOGGER.info("Initializing ApiKeys service... ");
+		}
+	}
 
-        if (calculatedAuthorizationHeader == null || givenAuthorizationHeader == null) {
-            return false;
-        } else {
-            return calculatedAuthorizationHeader.equals(givenAuthorizationHeader);
-        }
-    }
+	public boolean verifyAuthorizationHeader(final String givenAuthorizationHeader, final String dataToSign) {
+		if (!this.config.isEnabled()) {
+			return true;
+		}
+		final String calculatedAuthorizationHeader = calculateAuthorizationHeader(dataToSign);
 
-    public String calculateAuthorizationHeader(String dataToSign) {
-        try {
-            LocalDate date = LocalDate.now();
-            String today = date.format(DateTimeFormatter.BASIC_ISO_DATE);
-            String dateKey = hmac(config.getSecretKey(), today);
-            String signingKey = hmac(dateKey, dataToSign);
-            return signingKey;
-        } catch (SignatureException e) {
-            LOGGER.info("Unable to calculate authorization header");
-            return null;
-        }
-    }
+		if (calculatedAuthorizationHeader == null || givenAuthorizationHeader == null) {
+			return false;
+		} else {
+			return calculatedAuthorizationHeader.equals(givenAuthorizationHeader);
+		}
+	}
 
-    private String hmac(String key, String data) throws SignatureException {
-        return hmac(data.getBytes(), key, config.getHashAlgorithm());
-    }
+	public String calculateAuthorizationHeader(final String dataToSign) {
+		try {
+			final LocalDate date = LocalDate.now();
+			final String today = date.format(DateTimeFormatter.BASIC_ISO_DATE);
+			final String dateKey = hmac(this.config.getSecretKey(), today);
+			final String signingKey = hmac(dateKey, dataToSign);
+			return signingKey;
+		} catch (final SignatureException e) {
+			LOGGER.info("Unable to calculate authorization header");
+			return null;
+		}
+	}
 
-    private String hmac(String data, String key, String alg) throws SignatureException {
-        return hmac(data.getBytes(Charsets.UTF_8), key, alg);
-    }
+	private String hmac(final String key, final String data) throws SignatureException {
+		return hmac(data.getBytes(), key, this.config.getHashAlgorithm());
+	}
 
-    private String hmac(byte[] data, String key, String alg) throws SignatureException {
-        try {
-            SecretKeySpec signingKey = new SecretKeySpec(key.getBytes(), alg);
-            Mac mac = Mac.getInstance(alg);
-            mac.init(signingKey);
-            return Hex.encodeHexString(mac.doFinal(data));
-        } catch (KeyException | NoSuchAlgorithmException e) {
-            throw new SignatureException(e);
-        }
-    }
+	private String hmac(final String data, final String key, final String alg) throws SignatureException {
+		return hmac(data.getBytes(Charsets.UTF_8), key, alg);
+	}
+
+	private String hmac(final byte[] data, final String key, final String alg) throws SignatureException {
+		try {
+			final SecretKeySpec signingKey = new SecretKeySpec(key.getBytes(), alg);
+			final Mac mac = Mac.getInstance(alg);
+			mac.init(signingKey);
+			return Hex.encodeHexString(mac.doFinal(data));
+		} catch (KeyException | NoSuchAlgorithmException e) {
+			throw new SignatureException(e);
+		}
+	}
 }

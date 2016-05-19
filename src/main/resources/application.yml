@@ -25,6 +25,7 @@ spring:
 crypt:
   secretKey: ${dr.apikey}
   hashAlgorithm: HmacSHA256
+  enabled: ${dr.apikey.enabled}
 
 # Configuration for the web server
 server:

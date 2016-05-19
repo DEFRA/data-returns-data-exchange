@@ -77,10 +77,9 @@ public class MonitorProEmailerTests {
 		final MonitorProTransportHandler emailer = new MonitorProTransportHandler(this.emailSettings);
 		emailer.sendNotifications(testSuccessFile, new EmailTransportHandler() {
 			@Override
-			public String send(MultiPartEmail email) throws EmailException {
+			public String send(final MultiPartEmail email) throws EmailException {
 				email.buildMimeMessage();
-				
-				
+
 				Assert.assertEquals(email.getHostName(), EMAIL_HOST);
 				Assert.assertEquals(Integer.parseInt(email.getSmtpPort()), EMAIL_PORT);
 				Assert.assertEquals(email.isStartTLSEnabled(), false);
@@ -88,10 +87,11 @@ public class MonitorProEmailerTests {
 				Assert.assertEquals(email.getToAddresses().get(0).getAddress(), EMAIL_TO);
 				Assert.assertEquals(email.getSubject(), "LOWER_ALPHANUMERIC");
 
-				try  {
-					Object msgBody = ((MimeMultipart)email.getMimeMessage().getContent()).getBodyPart(0).getDataHandler().getContent();
+				try {
+					final Object msgBody = ((MimeMultipart) email.getMimeMessage().getContent()).getBodyPart(0).getDataHandler()
+							.getContent();
 					Assert.assertTrue(EMAIL_BODY_RESULT.equals(Objects.toString(msgBody)));
-				} catch (Exception e) {
+				} catch (final Exception e) {
 					throw new RuntimeException(e);
 				}
 				return "test";
@@ -116,7 +116,7 @@ public class MonitorProEmailerTests {
 		final MonitorProTransportHandler emailer = new MonitorProTransportHandler(this.emailSettings);
 		emailer.sendNotifications(testSuccessFile, new EmailTransportHandler() {
 			@Override
-			public String send(MultiPartEmail email) throws EmailException {
+			public String send(final MultiPartEmail email) throws EmailException {
 				throw new EmailException("He's dead Jim");
 			}
 		});

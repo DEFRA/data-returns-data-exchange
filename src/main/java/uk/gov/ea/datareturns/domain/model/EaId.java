@@ -25,9 +25,16 @@ public class EaId implements Comparable<EaId> {
 	@Pattern(regexp = "(^[A-Za-z][A-Za-z].*|^[0-9]{5,6}$)", message = "{DR9000-Incorrect}")
 	@ControlledList(auditor = UniqueIdentifierAuditor.class, message = "{DR9000-Incorrect}")
 	@JsonProperty
-	private final String identifier;
+	private String identifier;
 
-	private final EaIdType type;
+	private EaIdType type;
+
+	/**
+	 * Default constructor (for serialization purposes only)
+	 */
+	public EaId() {
+
+	}
 
 	/**
 	 * Create a new {@link EaId} from the given identifier

@@ -1,5 +1,19 @@
 package uk.gov.ea.datareturns.resource;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+
+import javax.inject.Inject;
+import javax.ws.rs.client.Client;
+import javax.ws.rs.client.Entity;
+import javax.ws.rs.core.HttpHeaders;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.Status;
+
 import org.glassfish.jersey.client.ClientConfig;
 import org.glassfish.jersey.client.ClientProperties;
 import org.glassfish.jersey.client.JerseyClientBuilder;
@@ -14,25 +28,14 @@ import org.slf4j.LoggerFactory;
 import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.boot.test.WebIntegrationTest;
 import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+
 import uk.gov.ea.datareturns.App;
 import uk.gov.ea.datareturns.config.TestSettings;
 import uk.gov.ea.datareturns.domain.result.DataExchangeResult;
 import uk.gov.ea.datareturns.service.ApiKeys;
 import uk.gov.ea.datareturns.type.ApplicationExceptionType;
-
-import javax.inject.Inject;
-import javax.ws.rs.client.Client;
-import javax.ws.rs.client.Entity;
-import javax.ws.rs.core.HttpHeaders;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.Response.Status;
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-
-import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Integration test class for the DataExchangeResource REST service. Uses
@@ -45,7 +48,8 @@ import static org.assertj.core.api.Assertions.assertThat;
  * status code to help identify what went wrong.
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@WebIntegrationTest({ "server.port=9120", "management.port=0" })
+@WebIntegrationTest
+@ActiveProfiles("IntegrationTests")
 @SpringApplicationConfiguration(App.class)
 @DirtiesContext
 public class ResourceIntegrationTests {
@@ -129,8 +133,8 @@ public class ResourceIntegrationTests {
 
 		final DataExchangeResult result = getResultFromResponse(resp);
 		final int sc = result.getAppStatusCode();
-		assertThat(sc == ApplicationExceptionType.FILE_STRUCTURE_EXCEPTION.getAppStatusCode()
-				|| sc == ApplicationExceptionType.HEADER_MANDATORY_FIELD_MISSING.getAppStatusCode());
+		assertThat(sc).isIn(ApplicationExceptionType.FILE_STRUCTURE_EXCEPTION.getAppStatusCode(),
+				ApplicationExceptionType.HEADER_MANDATORY_FIELD_MISSING.getAppStatusCode());
 	}
 
 	@Test
@@ -193,6 +197,10 @@ public class ResourceIntegrationTests {
 		final Client client = createClient("test Date Formats");
 		final Response resp = performUploadStep(client, FILE_CSV_DATE_FORMAT, MEDIA_TYPE_CSV);
 		assertThat(resp.getStatus()).isEqualTo(Status.OK.getStatusCode());
+
+		final DataExchangeResult result = getResultFromResponse(resp);
+		final String key = result.getUploadResult().getFileKey();
+		assertThat(key).isNotNull();
 	}
 
 	/**
@@ -227,7 +235,7 @@ public class ResourceIntegrationTests {
 		assertThat(resp.getStatus()).isEqualTo(Status.OK.getStatusCode());
 		//		DataExchangeResult result = getResultFromResponse(resp);
 		//		String key = result.getUploadResult().getFileKey();
-		//		assertThat(key != null);
+		//		assertThat(key).isNotNull();
 
 		// TODO: Test second stage using key retrieved from the first stage
 	}
@@ -268,12 +276,12 @@ public class ResourceIntegrationTests {
 
 	@Test
 	public void testFileKeyMatch() {
-		//		TODO: Dependency injection of NO-OP Emailer 
+		//		TODO: Dependency injection of NO-OP Emailer
 		//		Client client = createClient("test File Key match");
 		//		Response resp = performUploadStep(client, FILE_CSV_SUCCESS, MEDIA_TYPE_CSV);
 		//		assertThat(resp.getStatus()).isEqualTo(Status.OK.getStatusCode());
 		//		DataExchangeResult result = getResultFromResponse(resp);
-		//		
+		//
 		//		resp = performCompleteStep(client, result.getUploadResult().getFileKey(), result.getUploadResult().getFileName());
 		//		assertThat(resp.getStatus()).isEqualTo(Status.OK.getStatusCode());
 	}
@@ -421,7 +429,7 @@ public class ResourceIntegrationTests {
 			form.bodyPart(fdp1);
 
 			response = client.target(uri).request(MediaType.APPLICATION_JSON_TYPE)
-					.header(HttpHeaders.AUTHORIZATION, apiKeys.calculateAuthorizationHeader(testFileName))
+					.header(HttpHeaders.AUTHORIZATION, this.apiKeys.calculateAuthorizationHeader(testFileName))
 					.header("filename", testFileName)
 					.post(Entity.entity(form, form.getMediaType()), Response.class);
 
@@ -450,7 +458,7 @@ public class ResourceIntegrationTests {
 
 			final String uri = createURIForStep(STEP_COMPLETE);
 			response = client.target(uri).request(MediaType.APPLICATION_JSON_TYPE)
-					.header(HttpHeaders.AUTHORIZATION, apiKeys.calculateAuthorizationHeader(fileName))
+					.header(HttpHeaders.AUTHORIZATION, this.apiKeys.calculateAuthorizationHeader(fileName))
 					.header("filename", fileName)
 					.post(Entity.entity(form, form.getMediaType()), Response.class);
 		} catch (final IOException e) {

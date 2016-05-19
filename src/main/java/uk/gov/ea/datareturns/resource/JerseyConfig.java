@@ -34,7 +34,7 @@ public class JerseyConfig extends ResourceConfig {
 			try {
 				LOGGER.info("Registering JAX-RS Exception Mapper: " + defintion.getBeanClassName());
 				register(Class.forName(defintion.getBeanClassName()));
-			} catch (ClassNotFoundException e) {
+			} catch (final ClassNotFoundException e) {
 				LOGGER.error("Failed to register exception mapper.", e);
 			}
 		}
@@ -44,7 +44,7 @@ public class JerseyConfig extends ResourceConfig {
 
 		// Register features
 		register(new MultiPartFeature());
-		register(new AuthorizationFilterFileUpload());
+		register(context.getBean(AuthorizationFilterFileUpload.class));
 
 		// Configure the logging filter based on log configuration
 		final Logger loggingFilterLogger = LoggerFactory.getLogger(LoggingFilter.class);

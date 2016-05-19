@@ -10,7 +10,7 @@ import uk.gov.ea.datareturns.domain.model.rules.BooleanValue;
 import uk.gov.ea.datareturns.util.TestUtils;
 
 public class BooleanValueTests {
-	
+
 	@Test
 	public void testBooleanValueUtilityClassDefinition() throws ReflectiveOperationException {
 		TestUtils.assertUtilityClassWellDefined(BooleanValue.class);
@@ -18,7 +18,7 @@ public class BooleanValueTests {
 
 	@Test
 	public void testTextValueBooleans() {
-		Map<String, Boolean> booleanTests = new HashMap<>();
+		final Map<String, Boolean> booleanTests = new HashMap<>();
 		booleanTests.put("true", Boolean.TRUE);
 		booleanTests.put("yes", Boolean.TRUE);
 		booleanTests.put("1", Boolean.TRUE);
@@ -30,8 +30,8 @@ public class BooleanValueTests {
 		booleanTests.put("fAlSe", Boolean.FALSE);
 		booleanTests.put("somethingelse", null);
 		booleanTests.put(null, null);
-		
-		for (Map.Entry<String, Boolean> entry : booleanTests.entrySet()) {
+
+		for (final Map.Entry<String, Boolean> entry : booleanTests.entrySet()) {
 			Assert.assertTrue(BooleanValue.from(entry.getKey()) == entry.getValue());
 		}
 	}

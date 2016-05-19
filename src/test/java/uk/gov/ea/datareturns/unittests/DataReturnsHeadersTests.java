@@ -21,13 +21,12 @@ public class DataReturnsHeadersTests {
 	public void testAllHeadingsUnmodifiable() {
 		DataReturnsHeaders.getAllHeadings().add("Test");
 	}
-	
+
 	@Test(expected = UnsupportedOperationException.class)
 	public void testMandatoryHeadingsUnmodifiable() {
 		DataReturnsHeaders.getMandatoryHeadings().add("Test");
 	}
-	
-	
+
 	@Test
 	public void testAllHeadingsIncludesMandatoryHeadings() {
 		DataReturnsHeaders.getAllHeadings().containsAll(DataReturnsHeaders.getMandatoryHeadings());

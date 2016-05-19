@@ -11,7 +11,7 @@ import org.junit.Assert;
 
 /**
  * Unit test utlities
- * 
+ *
  * @author Sam Gardner-Dell
  *
  */
@@ -20,7 +20,8 @@ public final class TestUtils {
 	/**
 	 *
 	 */
-	private TestUtils() {}
+	private TestUtils() {
+	}
 
 	/**
 	 * Verifies that a utility class is well defined.

@@ -3,12 +3,14 @@
  */
 package uk.gov.ea.datareturns.storage;
 
+import uk.gov.ea.datareturns.exception.application.ProcessingException;
+
 /**
  * General storage exception class
  *
  * @author Sam Gardner-Dell
  */
-public class StorageException extends Exception {
+public class StorageException extends ProcessingException {
 	/** Appease the gods of serialization */
 	private static final long serialVersionUID = 1L;
 

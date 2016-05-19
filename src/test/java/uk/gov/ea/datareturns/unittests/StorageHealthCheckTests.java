@@ -18,7 +18,7 @@ import uk.gov.ea.datareturns.storage.StorageProvider;
 /**
  * Tests the {@link StorageHealthCheck} implementation interacts with the {@link StorageProvider} interface
  * correctly.
- * 
+ *
  * @author Sam Gardner-Dell
  */
 public class StorageHealthCheckTests {
@@ -46,7 +46,7 @@ public class StorageHealthCheckTests {
 
 	/**
 	 * Simple no-operation {@link StorageProvider} implementation for testing the {@link StorageHealthCheck} only
-	 * 
+	 *
 	 * @author Sam Gardner-Dell
 	 */
 	private static class NoOpStorageProvider implements StorageProvider {

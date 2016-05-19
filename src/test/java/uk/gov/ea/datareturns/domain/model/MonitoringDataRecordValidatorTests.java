@@ -224,7 +224,7 @@ public class MonitoringDataRecordValidatorTests {
 	}
 
 	// TODO: Future release - extend validation to check for dates too far in the past (should be configurable)
-	//	
+	//
 	//	@Test
 	//	public void testOutDatedMonitoringDateInternationalFormatWithTime() {
 	//		MonitoringDataRecord record = createValidRecord();
@@ -511,13 +511,13 @@ public class MonitoringDataRecordValidatorTests {
 		final Set<ConstraintViolation<MonitoringDataRecord>> violations = this.validator.validate(record);
 		Assert.assertEquals(1, violations.size());
 	}
-	
+
 	@Test
 	public void testTextValueBooleans() {
 		final MonitoringDataRecord record = createValidRecord();
-		String[] allowedBooleans = { "true", "false", "yes", "no", "1", "0", "True", "False", "tRuE", "yEs", "fAlSe" };
-		
-		for (String bool : allowedBooleans) {
+		final String[] allowedBooleans = { "true", "false", "yes", "no", "1", "0", "True", "False", "tRuE", "yEs", "fAlSe" };
+
+		for (final String bool : allowedBooleans) {
 			record.setTextValue(bool);
 			final Set<ConstraintViolation<MonitoringDataRecord>> violations = this.validator.validate(record);
 			Assert.assertTrue("Boolean value " + bool + " failed validation ", violations.isEmpty());
