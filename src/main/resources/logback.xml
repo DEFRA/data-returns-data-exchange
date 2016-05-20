@@ -2,7 +2,7 @@
 <!DOCTYPE xml>
 <configuration>
 	<include resource="org/springframework/boot/logging/logback/defaults.xml" />
-	<conversionRule conversionWord="loglvl" converterClass="uk.gov.ea.datareturns.LogHighlightingConverter" />
+	<conversionRule conversionWord="loglvl" converterClass="uk.gov.ea.datareturns.util.LogHighlightingConverter" />
 	
 	<appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
 		<encoder>

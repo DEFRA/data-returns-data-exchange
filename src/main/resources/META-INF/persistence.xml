@@ -2,18 +2,18 @@
              xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
              xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/persistence http://xmlns.jcp.org/xml/ns/persistence/persistence_2_1.xsd"
              version="2.1">
-    <persistence-unit name="org.gov.ea.datareturns.jpa">
+    <persistence-unit name="uk.gov.ea.datareturns.domain.jpa">
     	<provider>org.hibernate.ejb.HibernatePersistence</provider>
 <!--     	<jta-data-source>java:/defaultDS</jta-data-source> -->
 		<!-- Annotated entity classes -->
-        <class>uk.gov.ea.datareturns.jpa.entities.UniqueIdentifier</class>
-        <class>uk.gov.ea.datareturns.jpa.entities.MethodOrStandard</class>
-        <class>uk.gov.ea.datareturns.jpa.entities.MonitoringPeriod</class>
-        <class>uk.gov.ea.datareturns.jpa.entities.Parameter</class>
-        <class>uk.gov.ea.datareturns.jpa.entities.Qualifier</class>
-        <class>uk.gov.ea.datareturns.jpa.entities.ReferencePeriod</class>
-        <class>uk.gov.ea.datareturns.jpa.entities.ReturnType</class>
-        <class>uk.gov.ea.datareturns.jpa.entities.Unit</class>
+        <class>uk.gov.ea.datareturns.domain.jpa.entities.UniqueIdentifier</class>
+        <class>uk.gov.ea.datareturns.domain.jpa.entities.MethodOrStandard</class>
+        <class>uk.gov.ea.datareturns.domain.jpa.entities.MonitoringPeriod</class>
+        <class>uk.gov.ea.datareturns.domain.jpa.entities.Parameter</class>
+        <class>uk.gov.ea.datareturns.domain.jpa.entities.Qualifier</class>
+        <class>uk.gov.ea.datareturns.domain.jpa.entities.ReferencePeriod</class>
+        <class>uk.gov.ea.datareturns.domain.jpa.entities.ReturnType</class>
+        <class>uk.gov.ea.datareturns.domain.jpa.entities.Unit</class>
 		<properties>
 			<!-- Default persistence properties (connection details will be injected from the application configuration) -->
  			<property name="hibernate.show_sql" value="false"/>

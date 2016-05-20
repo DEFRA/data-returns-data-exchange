@@ -12,7 +12,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import uk.gov.ea.datareturns.domain.model.rules.EaIdType;
-import uk.gov.ea.datareturns.domain.model.validation.auditors.UniqueIdentifierAuditor;
+import uk.gov.ea.datareturns.domain.model.validation.auditors.controlledlist.UniqueIdentifierAuditor;
 import uk.gov.ea.datareturns.domain.model.validation.constraints.controlledlist.ControlledList;
 
 /**

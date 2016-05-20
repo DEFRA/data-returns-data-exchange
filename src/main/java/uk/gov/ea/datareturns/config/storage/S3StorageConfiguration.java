@@ -12,7 +12,7 @@ import com.amazonaws.auth.BasicAWSCredentials;
 import com.amazonaws.internal.StaticCredentialsProvider;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-import uk.gov.ea.datareturns.storage.s3.AmazonS3Configuration;
+import uk.gov.ea.datareturns.domain.storage.s3.AmazonS3Configuration;
 
 /**
  * Settings for the Amazon S3 storage integration
@@ -81,7 +81,7 @@ public class S3StorageConfiguration implements AmazonS3Configuration {
 	}
 
 	/* (non-Javadoc)
-	 * @see uk.gov.ea.datareturns.storage.s3.AmazonS3Configuration#getTemporaryBucket()
+	 * @see uk.gov.ea.datareturns.domain.storage.s3.AmazonS3Configuration#getTemporaryBucket()
 	 */
 	@Override
 	public String getTemporaryBucket() {
@@ -96,7 +96,7 @@ public class S3StorageConfiguration implements AmazonS3Configuration {
 	}
 
 	/* (non-Javadoc)
-	 * @see uk.gov.ea.datareturns.storage.s3.AmazonS3Configuration#getPersistentBucket()
+	 * @see uk.gov.ea.datareturns.domain.storage.s3.AmazonS3Configuration#getPersistentBucket()
 	 */
 	@Override
 	public String getPersistentBucket() {
@@ -111,7 +111,7 @@ public class S3StorageConfiguration implements AmazonS3Configuration {
 	}
 
 	/* (non-Javadoc)
-	 * @see uk.gov.ea.datareturns.storage.s3.AmazonS3Configuration#getEndpoint()
+	 * @see uk.gov.ea.datareturns.domain.storage.s3.AmazonS3Configuration#getEndpoint()
 	 */
 	@Override
 	public String getEndpoint() {
@@ -183,7 +183,7 @@ public class S3StorageConfiguration implements AmazonS3Configuration {
 	}
 
 	/* (non-Javadoc)
-	 * @see uk.gov.ea.datareturns.storage.s3.AmazonS3Configuration#getCredentialProvider()
+	 * @see uk.gov.ea.datareturns.domain.storage.s3.AmazonS3Configuration#getCredentialProvider()
 	 */
 	@Override
 	public AWSCredentialsProvider getCredentialProvider() {
@@ -192,7 +192,7 @@ public class S3StorageConfiguration implements AmazonS3Configuration {
 	}
 
 	/* (non-Javadoc)
-	 * @see uk.gov.ea.datareturns.storage.s3.AmazonS3Configuration#getClientConfiguration()
+	 * @see uk.gov.ea.datareturns.domain.storage.s3.AmazonS3Configuration#getClientConfiguration()
 	 */
 	@Override
 	public ClientConfiguration getClientConfiguration() {

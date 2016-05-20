@@ -23,15 +23,15 @@ import com.univocity.parsers.csv.CsvParserSettings;
 import com.univocity.parsers.csv.CsvWriter;
 import com.univocity.parsers.csv.CsvWriterSettings;
 
+import uk.gov.ea.datareturns.domain.exceptions.AbstractValidationException;
+import uk.gov.ea.datareturns.domain.exceptions.FileStructureException;
+import uk.gov.ea.datareturns.domain.exceptions.FileTypeUnsupportedException;
+import uk.gov.ea.datareturns.domain.exceptions.MandatoryFieldMissingException;
+import uk.gov.ea.datareturns.domain.exceptions.UnrecognisedFieldException;
 import uk.gov.ea.datareturns.domain.io.csv.generic.CSVModel;
 import uk.gov.ea.datareturns.domain.io.csv.generic.exceptions.InconsistentRowException;
 import uk.gov.ea.datareturns.domain.model.MonitoringDataRecord;
 import uk.gov.ea.datareturns.domain.model.rules.DataReturnsHeaders;
-import uk.gov.ea.datareturns.exception.application.AbstractValidationException;
-import uk.gov.ea.datareturns.exception.application.FileStructureException;
-import uk.gov.ea.datareturns.exception.application.FileTypeUnsupportedException;
-import uk.gov.ea.datareturns.exception.application.MandatoryFieldMissingException;
-import uk.gov.ea.datareturns.exception.application.UnrecognisedFieldException;
 
 /**
  * Data Returns CSV reader/writer for DEP compliant CSV files.

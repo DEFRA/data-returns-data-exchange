@@ -44,8 +44,8 @@ public class DatabaseConfiguration {
 	public LocalContainerEntityManagerFactoryBean entityManagerFactory() {
 		final LocalContainerEntityManagerFactoryBean entityManagerFactory = new LocalContainerEntityManagerFactoryBean();
 		entityManagerFactory.setDataSource(primaryDataSource());
-		entityManagerFactory.setPersistenceUnitName("org.gov.ea.datareturns.jpa");
-		//		entityManagerFactory.setPackagesToScan("uk.gov.ea.datareturns.jpa.entities");
+		entityManagerFactory.setPersistenceUnitName("uk.gov.ea.datareturns.domain.jpa");
+		//		entityManagerFactory.setPackagesToScan("uk.gov.ea.datareturns.domain.jpa.entities");
 
 		// Vendor adapter
 		final HibernateJpaVendorAdapter vendorAdapter = new HibernateJpaVendorAdapter();
