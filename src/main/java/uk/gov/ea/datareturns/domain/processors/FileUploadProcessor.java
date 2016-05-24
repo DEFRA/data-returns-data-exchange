@@ -21,7 +21,7 @@ import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
-import uk.gov.ea.datareturns.config.MiscSettings;
+import uk.gov.ea.datareturns.config.ProcessorSettings;
 import uk.gov.ea.datareturns.domain.exceptions.AbstractValidationException;
 import uk.gov.ea.datareturns.domain.exceptions.ApplicationExceptionType;
 import uk.gov.ea.datareturns.domain.exceptions.FileEmptyException;
@@ -59,16 +59,16 @@ public class FileUploadProcessor extends AbstractReturnsProcessor<DataExchangeRe
 	private String clientFilename;
 
 	/**
-	 * @param miscSettings
+	 * @param processorSettings
 	 * @param storage
 	 * @param validator
 	 * @throws ProcessingException
 	 */
 	@Inject
-	public FileUploadProcessor(final MiscSettings miscSettings, final StorageProvider storage,
+	public FileUploadProcessor(final ProcessorSettings processorSettings, final StorageProvider storage,
 			final MonitoringDataRecordValidationProcessor validator)
 			throws ProcessingException {
-		super(miscSettings);
+		super(processorSettings);
 		this.storage = storage;
 		this.validator = validator;
 	}
@@ -135,7 +135,7 @@ public class FileUploadProcessor extends AbstractReturnsProcessor<DataExchangeRe
 				for (final Map.Entry<EaId, List<MonitoringDataRecord>> entry : permitToRecordMap.entrySet()) {
 					final File permitDataFile = File.createTempFile("output-" + entry.getKey().getIdentifier() + "-", ".csv",
 							this.workingFolder);
-					csvProcessor.write(entry.getValue(), permitDataFile);
+					csvProcessor.write(entry.getValue(), getProcessorSettings().getOutputMappingsMap(), permitDataFile);
 					outputFiles.add(permitDataFile);
 				}
 

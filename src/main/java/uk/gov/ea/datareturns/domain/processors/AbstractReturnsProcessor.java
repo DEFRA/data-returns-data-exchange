@@ -12,7 +12,7 @@ import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
-import uk.gov.ea.datareturns.config.MiscSettings;
+import uk.gov.ea.datareturns.config.ProcessorSettings;
 import uk.gov.ea.datareturns.domain.exceptions.ProcessingException;
 
 /**
@@ -22,18 +22,18 @@ import uk.gov.ea.datareturns.domain.exceptions.ProcessingException;
 @Component
 @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 public abstract class AbstractReturnsProcessor<R> {
-	private final MiscSettings miscSettings;
+	private final ProcessorSettings processorSettings;
 
 	protected final File workingFolder;
 
 	/**
 	 *
 	 *
-	 * @param miscSettings configuration settings.
+	 * @param processorSettings configuration settings.
 	 * @throws ProcessingException
 	 */
-	public AbstractReturnsProcessor(final MiscSettings miscSettings) throws ProcessingException {
-		this.miscSettings = miscSettings;
+	public AbstractReturnsProcessor(final ProcessorSettings processorSettings) throws ProcessingException {
+		this.processorSettings = processorSettings;
 		this.workingFolder = createWorkFolder();
 	}
 
@@ -70,7 +70,7 @@ public abstract class AbstractReturnsProcessor<R> {
 	 */
 	private File createWorkFolder() throws ProcessingException {
 		try {
-			final java.nio.file.Path outputPath = new File(this.miscSettings.getOutputLocation()).toPath().normalize();
+			final java.nio.file.Path outputPath = new File(this.processorSettings.getOutputLocation()).toPath().normalize();
 			if (!Files.exists(outputPath, LinkOption.NOFOLLOW_LINKS)) {
 				Files.createDirectories(outputPath);
 			}
@@ -78,5 +78,12 @@ public abstract class AbstractReturnsProcessor<R> {
 		} catch (final IOException e) {
 			throw new ProcessingException("Unable to create working folder", e);
 		}
+	}
+
+	/**
+	 * @return the processorSettings
+	 */
+	protected ProcessorSettings getProcessorSettings() {
+		return this.processorSettings;
 	}
 }

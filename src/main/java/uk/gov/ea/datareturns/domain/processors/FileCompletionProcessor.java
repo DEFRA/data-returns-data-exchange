@@ -16,7 +16,7 @@ import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
-import uk.gov.ea.datareturns.config.MiscSettings;
+import uk.gov.ea.datareturns.config.ProcessorSettings;
 import uk.gov.ea.datareturns.domain.exceptions.ProcessingException;
 import uk.gov.ea.datareturns.domain.io.zip.DataReturnsZipFileModel;
 import uk.gov.ea.datareturns.domain.monitorpro.MonitorProTransportHandler;
@@ -46,15 +46,15 @@ public class FileCompletionProcessor extends AbstractReturnsProcessor<DataExchan
 	private String originalFilename;
 
 	/**
-	 * @param miscSettings
+	 * @param processorSettings
 	 * @param storage
 	 * @param monitorProHandler
 	 * @throws ProcessingException
 	 */
 	@Inject
-	public FileCompletionProcessor(final MiscSettings miscSettings, final StorageProvider storage,
+	public FileCompletionProcessor(final ProcessorSettings processorSettings, final StorageProvider storage,
 			final MonitorProTransportHandler monitorProHandler) throws ProcessingException {
-		super(miscSettings);
+		super(processorSettings);
 		this.storage = storage;
 		this.monitorProHandler = monitorProHandler;
 	}

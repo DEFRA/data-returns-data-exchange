@@ -16,7 +16,6 @@ import java.util.Set;
 import com.univocity.parsers.annotations.Parsed;
 import com.univocity.parsers.common.ParsingContext;
 import com.univocity.parsers.common.processor.BeanListProcessor;
-import com.univocity.parsers.common.processor.BeanWriterProcessor;
 import com.univocity.parsers.conversions.Conversions;
 import com.univocity.parsers.csv.CsvParser;
 import com.univocity.parsers.csv.CsvParserSettings;
@@ -132,16 +131,24 @@ public class DataReturnsCSVProcessor {
 		return model;
 	}
 
-	public void write(final List<MonitoringDataRecord> records, final File csvFile) {
+	/**
+	 * @param records the data returns records to be written
+	 * @param outputMappings the mappings for the headings and data to be output (see {@link MappableBeanConversionProcessor})
+	 * @param csvFile a reference to the {@link File} to be written
+	 */
+	public void write(final List<MonitoringDataRecord> records, final Map<String, String> outputMappings, final File csvFile) {
 		final CsvWriterSettings settings = new CsvWriterSettings();
-		settings.setHeaders(DataReturnsHeaders.getAllHeadingsArray());
+		// Configure the standard set of headings here (as this covers the mapping from bean to csv field).  Actual headings
+		// are defined as part of the MappableBeanConversionProcessor.
+		settings.setHeaders(outputMappings.keySet().toArray(new String[outputMappings.size()]));
 
-		final BeanWriterProcessor<MonitoringDataRecord> processor = new BeanWriterProcessor<MonitoringDataRecord>(
-				MonitoringDataRecord.class);
+		final MappableBeanConversionProcessor<MonitoringDataRecord> processor = new MappableBeanConversionProcessor<MonitoringDataRecord>(
+				MonitoringDataRecord.class, outputMappings, DataReturnsHeaders.getAllHeadingsArray());
 		settings.setRowWriterProcessor(processor);
 		final CsvWriter writer = new CsvWriter(csvFile, settings);
 		// Write the record headers of this file
 		writer.writeHeaders();
 		writer.processRecordsAndClose(records);
+
 	}
 }

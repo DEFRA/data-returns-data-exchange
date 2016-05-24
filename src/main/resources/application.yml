@@ -78,10 +78,29 @@ logging:
     # Useful to log REST requests and responses (set to INFO for headers or DEBUG for full request/response logging)
     org.glassfish.jersey.filter.LoggingFilter: WARN
 
-misc:
-  uploadedLocation: ./work/uploaded
+processor:
   outputLocation: ./work/output
   debugMode: true
+  outputMappings:
+    - EA_ID={{EA_ID}}
+    - Site_Name={{Site_Name}}
+    - Rtn_Type={{Rtn_Type}}
+    - Mon_Date={{Mon_Date}}
+    - Mon_Period={{Mon_Period}}
+    - Mon_Point={{Mon_Point}}
+    - Smpl_Ref={{Smpl_Ref}}
+    - Smpl_By={{Smpl_By}}
+    - Variable={{Parameter}} ({{Unit}})
+    - Parameter={{Parameter}}
+    - Value={{Value}}
+    - Txt_Value={{Txt_Value}}
+    - Unit={{Unit}}
+    - Ref_Period={{Ref_Period}}
+    - Meth_Stand={{Meth_Stand}}
+    - Comments={{Comments}}
+    - CiC={{CiC}}
+    - CAS={{CAS}}
+    - RD_Code={{RD_Code}}
 
 test:
   testFilesLocation: /testfiles
