@@ -1,6 +1,7 @@
 package uk.gov.ea.datareturns.domain.monitorpro;
 
 import java.io.File;
+import java.util.List;
 
 import javax.inject.Inject;
 
@@ -12,12 +13,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
+import com.univocity.parsers.common.TextParsingException;
+
 import uk.gov.ea.datareturns.config.email.MonitorProEmailConfiguration;
-import uk.gov.ea.datareturns.domain.exceptions.AbstractValidationException;
-import uk.gov.ea.datareturns.domain.io.csv.DataReturnsCSVProcessor;
-import uk.gov.ea.datareturns.domain.io.csv.generic.CSVModel;
+import uk.gov.ea.datareturns.domain.io.csv.CSVColumnReader;
 import uk.gov.ea.datareturns.domain.model.EaId;
-import uk.gov.ea.datareturns.domain.model.MonitoringDataRecord;
+import uk.gov.ea.datareturns.domain.model.rules.DataReturnsHeaders;
 
 /**
  * Handles emails to monitor pro
@@ -44,23 +45,22 @@ public class MonitorProTransportHandler {
 	public void sendNotifications(final File returnsCSVFile, final EmailTransportHandler handler) throws MonitorProTransportException {
 		LOGGER.debug("Sending Email with attachment '" + returnsCSVFile.getAbsolutePath() + "'");
 
-		// 3. Read the CSV data into a model
-		CSVModel<MonitoringDataRecord> csvInput = null;
-
+		// Extract list of eaIds from the output file
+		List<String> eaIdList = null;
 		try {
-			csvInput = new DataReturnsCSVProcessor().read(returnsCSVFile);
-		} catch (final AbstractValidationException e) {
+			eaIdList = CSVColumnReader.readColumn(returnsCSVFile, DataReturnsHeaders.EA_IDENTIFIER);
+		} catch (final TextParsingException e) {
 			// This should never happen at this point (or something went very wrong and a previous point in the process)
 			// If we encounter this here it represents a system error, not a validation error
 			throw new MonitorProTransportException("Failed to read output CSV file when sending content to datastore.");
 		}
 
-		if (csvInput.getRecords().size() < 1) {
+		if (eaIdList.size() < 1) {
 			// No data to send - this should never happen but we need to protect against an ArrayIndexOutOfBounds exception
 			throw new MonitorProTransportException("Encountered empty output CSV file when sending content to datastore.");
 		}
 
-		final EaId eaId = csvInput.getRecords().get(0).getEaId();
+		final EaId eaId = new EaId(eaIdList.get(0));
 		try {
 			final MultiPartEmail email = new MultiPartEmail();
 			final String subject = this.settings.getDatabaseName(eaId.getType());

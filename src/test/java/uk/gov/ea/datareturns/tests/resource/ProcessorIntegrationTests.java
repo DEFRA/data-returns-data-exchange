@@ -19,12 +19,10 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import com.univocity.parsers.common.TextParsingException;
-import com.univocity.parsers.common.processor.ColumnProcessor;
-import com.univocity.parsers.csv.CsvParser;
-import com.univocity.parsers.csv.CsvParserSettings;
 
 import uk.gov.ea.datareturns.App;
 import uk.gov.ea.datareturns.domain.exceptions.ProcessingException;
+import uk.gov.ea.datareturns.domain.io.csv.CSVColumnReader;
 import uk.gov.ea.datareturns.domain.io.zip.DataReturnsZipFileModel;
 import uk.gov.ea.datareturns.domain.model.rules.DataReturnsHeaders;
 import uk.gov.ea.datareturns.domain.processors.FileUploadProcessor;
@@ -109,16 +107,8 @@ public class ProcessorIntegrationTests {
 	 * @param expectedValues the expected values to be found in the column (in document order)
 	 */
 	private static void verifyCSVValues(final File csvFile, final String columnName, final String[] expectedValues) {
-		final ColumnProcessor rowProcessor = new ColumnProcessor();
-		final CsvParserSettings parserSettings = new CsvParserSettings();
-		parserSettings.setHeaderExtractionEnabled(true);
-		parserSettings.setLineSeparatorDetectionEnabled(true);
-		parserSettings.setRowProcessor(rowProcessor);
-
-		final CsvParser parser = new CsvParser(parserSettings);
 		try {
-			parser.parse(csvFile);
-			final List<String> columnData = rowProcessor.getColumn(columnName);
+			final List<String> columnData = CSVColumnReader.readColumn(csvFile, columnName);
 			Assertions.assertThat(expectedValues.length).isEqualTo(columnData.size());
 
 			for (int i = 0; i < columnData.size(); i++) {
