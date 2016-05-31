@@ -79,7 +79,7 @@ public class MappableBeanConversionProcessor<T> extends BeanWriterProcessor<T> {
 
 			while (fieldMatcher.find()) {
 				final String fieldName = fieldMatcher.group("fieldname");
-				fieldMatcher.appendReplacement(sb, mappings.get(fieldName));
+				fieldMatcher.appendReplacement(sb, Matcher.quoteReplacement(mappings.get(fieldName)));
 			}
 			fieldMatcher.appendTail(sb);
 			mappedValues[i] = sb.toString();
