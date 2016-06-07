@@ -144,8 +144,9 @@ public class ResourceIntegrationTests {
 		assertThat(resp.getStatus()).isEqualTo(Status.BAD_REQUEST.getStatusCode());
 
 		final DataExchangeResult result = getResultFromResponse(resp);
-		assertThat(result.getAppStatusCode())
-				.isEqualTo(ApplicationExceptionType.FILE_TYPE_UNSUPPORTED.getAppStatusCode());
+		final int sc = result.getAppStatusCode();
+		assertThat(sc).isIn(ApplicationExceptionType.FILE_STRUCTURE_EXCEPTION.getAppStatusCode(),
+				ApplicationExceptionType.FILE_TYPE_UNSUPPORTED.getAppStatusCode());
 	}
 
 	/**
