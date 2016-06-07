@@ -18,6 +18,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import uk.gov.ea.datareturns.config.email.MonitorProEmailConfiguration;
+import uk.gov.ea.datareturns.domain.model.EaId;
 import uk.gov.ea.datareturns.domain.monitorpro.MonitorProTransportException;
 import uk.gov.ea.datareturns.domain.monitorpro.MonitorProTransportHandler;
 import uk.gov.ea.datareturns.domain.monitorpro.MonitorProTransportHandler.EmailTransportHandler;
@@ -75,7 +76,7 @@ public class MonitorProEmailerTests {
 	@Test
 	public void testSuccessCase() throws Exception {
 		final MonitorProTransportHandler emailer = new MonitorProTransportHandler(this.emailSettings);
-		emailer.sendNotifications(testSuccessFile, new EmailTransportHandler() {
+		emailer.sendNotifications(new EaId("EP3136GK"), testSuccessFile, new EmailTransportHandler() {
 			@Override
 			public String send(final MultiPartEmail email) throws EmailException {
 				email.buildMimeMessage();
@@ -102,19 +103,19 @@ public class MonitorProEmailerTests {
 	@Test(expected = MonitorProTransportException.class)
 	public void testEmptyFile() throws Exception {
 		final MonitorProTransportHandler emailer = new MonitorProTransportHandler(this.emailSettings);
-		emailer.sendNotifications(testEmptyFile);
+		emailer.sendNotifications(new EaId("EP3136GK"), testEmptyFile);
 	}
 
 	@Test(expected = MonitorProTransportException.class)
 	public void testHeaderOnlyFile() throws Exception {
 		final MonitorProTransportHandler emailer = new MonitorProTransportHandler(this.emailSettings);
-		emailer.sendNotifications(testHeaderOnlyFile);
+		emailer.sendNotifications(new EaId("EP3136GK"), testHeaderOnlyFile);
 	}
 
 	@Test(expected = MonitorProTransportException.class)
 	public void testEmailException() throws Exception {
 		final MonitorProTransportHandler emailer = new MonitorProTransportHandler(this.emailSettings);
-		emailer.sendNotifications(testSuccessFile, new EmailTransportHandler() {
+		emailer.sendNotifications(new EaId("EP3136GK"), testSuccessFile, new EmailTransportHandler() {
 			@Override
 			public String send(final MultiPartEmail email) throws EmailException {
 				throw new EmailException("He's dead Jim");

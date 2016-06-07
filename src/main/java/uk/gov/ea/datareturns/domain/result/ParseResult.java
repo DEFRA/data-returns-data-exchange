@@ -22,7 +22,7 @@ import uk.gov.ea.datareturns.domain.model.EaId;
  */
 public class ParseResult {
 	@JsonProperty
-	private List<SiteSummary> siteSummaries;
+	private List<SiteSummary> mappings;
 
 	/**
 	 * Default zero-arg constructor (for serialization support)
@@ -67,15 +67,15 @@ public class ParseResult {
 			// Add this EA_ID into the site mapping
 			siteSummary.addIdentifier(eaIdSummary);
 			// Convert the mapping to a list of values
-			this.siteSummaries = new ArrayList<>(siteSummariesMap.values());
+			this.mappings = new ArrayList<>(siteSummariesMap.values());
 		}
 	}
 
 	/**
-	 * @return the siteSummaries detailing the sites that were parsed and the unique identifiers for each site
+	 * @return the mappings detailing the sites that were parsed and the unique identifiers for each site
 	 */
-	public List<SiteSummary> getSiteSummaries() {
-		return this.siteSummaries;
+	public List<SiteSummary> getMappings() {
+		return this.mappings;
 	}
 
 	/**

@@ -3,16 +3,6 @@
  */
 package uk.gov.ea.datareturns.domain.processors;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import javax.inject.Inject;
-
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.slf4j.Logger;
@@ -20,13 +10,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
-
 import uk.gov.ea.datareturns.config.ProcessorSettings;
-import uk.gov.ea.datareturns.domain.exceptions.AbstractValidationException;
-import uk.gov.ea.datareturns.domain.exceptions.ApplicationExceptionType;
-import uk.gov.ea.datareturns.domain.exceptions.FileEmptyException;
-import uk.gov.ea.datareturns.domain.exceptions.FileTypeUnsupportedException;
-import uk.gov.ea.datareturns.domain.exceptions.ProcessingException;
+import uk.gov.ea.datareturns.domain.exceptions.*;
 import uk.gov.ea.datareturns.domain.io.csv.DataReturnsCSVProcessor;
 import uk.gov.ea.datareturns.domain.io.csv.generic.CSVModel;
 import uk.gov.ea.datareturns.domain.io.zip.DataReturnsZipFileModel;
@@ -40,6 +25,15 @@ import uk.gov.ea.datareturns.domain.result.UploadResult;
 import uk.gov.ea.datareturns.domain.result.ValidationErrors;
 import uk.gov.ea.datareturns.domain.storage.StorageProvider;
 import uk.gov.ea.datareturns.util.StopWatch;
+
+import javax.inject.Inject;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Processor for file uploads to the data-returns service.
@@ -140,12 +134,14 @@ public class FileUploadProcessor extends AbstractReturnsProcessor<DataExchangeRe
 				 */
 				stopwatch.startTask("Preparing output files");
 				final List<File> outputFiles = new ArrayList<>();
+				final Map<String, EaId> outputFileIdentifiers = new HashMap<>();
 				final Map<EaId, List<DataSample>> permitToRecordMap = prepareOutputData(csvInput.getRecords());
 				for (final Map.Entry<EaId, List<DataSample>> entry : permitToRecordMap.entrySet()) {
 					final File permitDataFile = File.createTempFile("output-" + entry.getKey().getIdentifier() + "-", ".csv",
 							this.workingFolder);
 					csvProcessor.write(entry.getValue(), getProcessorSettings().getOutputMappingsMap(), permitDataFile);
 					outputFiles.add(permitDataFile);
+					outputFileIdentifiers.put(permitDataFile.getName(), entry.getKey());
 				}
 
 				// Persist the file to the configured storage provider (e.g. Amazon S3)
@@ -153,6 +149,7 @@ public class FileUploadProcessor extends AbstractReturnsProcessor<DataExchangeRe
 				final DataReturnsZipFileModel zipModel = new DataReturnsZipFileModel();
 				zipModel.setInputFile(uploadedFile);
 				zipModel.setOutputFiles(outputFiles);
+				zipModel.setOutputFileIdentifiers(outputFileIdentifiers);
 				final File zipFile = zipModel.toZipFile(this.workingFolder);
 
 				stopwatch.startTask("Persisting output files to temporary storage");

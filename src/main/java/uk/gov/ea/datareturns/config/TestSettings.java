@@ -5,7 +5,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
 
 /**
- * Holds test settings from configuration file
+ * Holds test settings from configuration fileName
  * @author adrianharrison
  */
 @Configuration

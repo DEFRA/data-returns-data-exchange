@@ -46,39 +46,24 @@ public class MonitorProTransportHandler {
 	/**
 	 * Send a notification to MonitorPro for the given CSV file
 	 *
+	 * @param eaId the EA Unique Identifier that the data in the output file pertains to
 	 * @param returnsCSVFile the CSV file to send to MonitorPro
 	 * @throws MonitorProTransportException if a problem occurred when attempting to send the file to MonitorPro
 	 */
-	public void sendNotifications(final File returnsCSVFile) throws MonitorProTransportException {
-		sendNotifications(returnsCSVFile, new DefaultTransportHandler());
+	public void sendNotifications(final EaId eaId, final File returnsCSVFile) throws MonitorProTransportException {
+		sendNotifications(eaId, returnsCSVFile, new DefaultTransportHandler());
 	}
 
 	/**
 	 * Send a notification to MonitorPro for the given CSV file using the specified transport handler
 	 *
+	 * @param eaId the EA Unique Identifier that the data in the output file pertains to
 	 * @param returnsCSVFile the CSV file to send to MonitorPro
 	 * @param handler the transport handler to use to submit the file to MonitorPro
 	 * @throws MonitorProTransportException if a problem occurred when attempting to send the file to MonitorPro
 	 */
-	public void sendNotifications(final File returnsCSVFile, final EmailTransportHandler handler) throws MonitorProTransportException {
+	public void sendNotifications(final EaId eaId, final File returnsCSVFile, final EmailTransportHandler handler) throws MonitorProTransportException {
 		LOGGER.debug("Sending Email with attachment '" + returnsCSVFile.getAbsolutePath() + "'");
-
-		// Extract list of eaIds from the output file
-		List<String> eaIdList;
-		try {
-			eaIdList = CSVColumnReader.readColumn(returnsCSVFile, DataReturnsHeaders.EA_IDENTIFIER);
-		} catch (final TextParsingException e) {
-			// This should never happen at this point (or something went very wrong and a previous point in the process)
-			// If we encounter this here it represents a system error, not a validation error
-			throw new MonitorProTransportException("Failed to read output CSV file when sending content to datastore.");
-		}
-
-		if (eaIdList.size() < 1) {
-			// No data to send - this should never happen but we need to protect against an ArrayIndexOutOfBounds exception
-			throw new MonitorProTransportException("Encountered empty output CSV file when sending content to datastore.");
-		}
-
-		final EaId eaId = new EaId(eaIdList.get(0));
 		try {
 			final MultiPartEmail email = new MultiPartEmail();
 			final String subject = this.settings.getDatabaseName(eaId.getType());

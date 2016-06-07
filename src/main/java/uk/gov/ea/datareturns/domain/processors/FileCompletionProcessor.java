@@ -19,6 +19,7 @@ import org.springframework.stereotype.Component;
 import uk.gov.ea.datareturns.config.ProcessorSettings;
 import uk.gov.ea.datareturns.domain.exceptions.ProcessingException;
 import uk.gov.ea.datareturns.domain.io.zip.DataReturnsZipFileModel;
+import uk.gov.ea.datareturns.domain.model.EaId;
 import uk.gov.ea.datareturns.domain.monitorpro.MonitorProTransportHandler;
 import uk.gov.ea.datareturns.domain.result.CompleteResult;
 import uk.gov.ea.datareturns.domain.result.DataExchangeResult;
@@ -82,7 +83,8 @@ public class FileCompletionProcessor extends AbstractReturnsProcessor<DataExchan
 
 			stopwatch.startTask("Sending data to monitor pro");
 			for (final File outputFile : zipModel.getOutputFiles()) {
-				this.monitorProHandler.sendNotifications(outputFile);
+				final EaId eaId = zipModel.getOutputFileIdentifiers().get(outputFile.getName());
+				this.monitorProHandler.sendNotifications(eaId, outputFile);
 			}
 
 			stopwatch.startTask("Moving data to audit store");

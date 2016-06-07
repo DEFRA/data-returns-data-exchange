@@ -65,7 +65,7 @@ public class ProcessorSettings {
 	}
 
 	/**
-	 * Retrieve the headings/field mappings for the output CSV file in map form
+	 * Retrieve the headings/field mappings for the output CSV fileName in map form
 	 *
 	 * @return a {@link Map} containing the headings to be output (keys) to a set of tokens representing the input fields to be output
 	 * under those headings.  Values contain tokens such as {{EA_ID}} which are replaced with the values from the model.
