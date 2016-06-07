@@ -41,6 +41,11 @@ public class LocalStorageProvider implements StorageProvider {
 
 	private final File persistentDir;
 
+	/**
+	 * Create a new instance of the {@link LocalStorageProvider} component
+	 *
+	 * @param settings the {@link LocalStorageConfiguration} settings
+	 */
 	@Inject
 	public LocalStorageProvider(final LocalStorageConfiguration settings) {
 		LOGGER.info("Initialising Local Storage Provider");
@@ -82,12 +87,11 @@ public class LocalStorageProvider implements StorageProvider {
 	@Override
 	public StoredFile retrieveTemporaryData(final String fileKey) throws StorageException {
 		final File compressedTempFile = new File(this.temporaryDir, fileKey);
-		File tempFile = null;
-
 		if (!compressedTempFile.exists()) {
 			throw new StorageKeyMismatchException("The file for the specified key cannot be found.");
 		}
 
+		File tempFile;
 		try (final InputStream in = FileUtils.openInputStream(compressedTempFile)) {
 			tempFile = File.createTempFile("data-returns-", null);
 			FileUtils.copyInputStreamToFile(in, tempFile);

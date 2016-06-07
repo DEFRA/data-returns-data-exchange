@@ -7,6 +7,7 @@ import javax.ws.rs.NameBinding;
 
 /**
  * Created by graham on 13/05/16.
+ * @author Graham
  */
 @NameBinding
 @Retention(RetentionPolicy.RUNTIME)

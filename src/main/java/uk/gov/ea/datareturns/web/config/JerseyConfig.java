@@ -19,10 +19,20 @@ import org.springframework.stereotype.Component;
 import uk.gov.ea.datareturns.web.filters.AuthorizationFilterFileUpload;
 import uk.gov.ea.datareturns.web.resource.DataExchangeResource;
 
+/**
+ * Jersey configuration class
+ *
+ * @author Sam Gardner-Dell
+ */
 @Component
 public class JerseyConfig extends ResourceConfig {
 	private static final Logger LOGGER = LoggerFactory.getLogger(JerseyConfig.class);
 
+	/**
+	 * Configuration for the Jersey 2 RESTful services
+	 *
+	 * @param context the spring application context
+	 */
 	@Inject
 	public JerseyConfig(final ApplicationContext context) {
 		super();

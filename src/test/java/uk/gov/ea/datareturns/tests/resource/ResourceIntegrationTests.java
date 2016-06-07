@@ -422,7 +422,7 @@ public class ResourceIntegrationTests {
 		final File testFile = new File(testFilesLocation, testFileName);
 
 		try (final FormDataMultiPart form = new FormDataMultiPart();
-				final InputStream data = ResourceIntegrationTests.class.getResourceAsStream(testFile.getAbsolutePath());) {
+				final InputStream data = ResourceIntegrationTests.class.getResourceAsStream(testFile.getAbsolutePath())) {
 			final String uri = createURIForStep(STEP_UPLOAD);
 			final StreamDataBodyPart fdp1 = new StreamDataBodyPart("fileUpload", data, testFileName, mediaType);
 

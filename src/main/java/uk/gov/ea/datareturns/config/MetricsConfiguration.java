@@ -19,11 +19,21 @@ import com.codahale.metrics.jvm.ThreadStatesGaugeSet;
 import com.ryantenney.metrics.spring.config.annotation.EnableMetrics;
 import com.ryantenney.metrics.spring.config.annotation.MetricsConfigurerAdapter;
 
+/**
+ * Configuration for the metrics exposed over the administration port
+ *
+ * @author Sam Gardner-Dell
+ */
 @Configuration
 @EnableMetrics
 public class MetricsConfiguration extends MetricsConfigurerAdapter implements JettyServerCustomizer {
 	private InstrumentedHandler metricsHandler;
 
+	/**
+	 * Configure the available metrics reporters
+	 *
+	 * @param metricRegistry the metric registry upon which reporters are configured.
+	 */
 	@Override
 	public void configureReporters(final MetricRegistry metricRegistry) {
 		//    	Console reporter
@@ -45,6 +55,12 @@ public class MetricsConfiguration extends MetricsConfigurerAdapter implements Je
 		//    JmxReporter.forRegistry(metricRegistry()).build().start();
 	}
 
+	/**
+	 * Bean factory for the {@link EmbeddedServletContainerCustomizer} which allows us to customise the
+	 * servlet container
+	 *
+	 * @return the EmbeddedServletContainerCustomizer
+	 */
 	@Bean
 	public EmbeddedServletContainerCustomizer customizer() {
 		return new EmbeddedServletContainerCustomizer() {
@@ -57,6 +73,12 @@ public class MetricsConfiguration extends MetricsConfigurerAdapter implements Je
 		};
 	}
 
+	/**
+	 * Customisation hook for the Jetty server.
+	 * Allows us to hook up the metrics system to Jetty
+	 *
+	 * @param server the Jetty {@link Server} instance
+	 */
 	@Override
 	public void customize(final Server server) {
 		this.metricsHandler.setHandler(server.getHandler());

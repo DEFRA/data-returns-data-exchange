@@ -8,7 +8,7 @@ import com.univocity.parsers.conversions.Conversion;
 import uk.gov.ea.datareturns.domain.model.rules.BooleanValue;
 
 /**
- * Preprocesses Txt_Value values to ensure that the DEP allowed boolean values (see {@link BooleanValue}) are standardised
+ * Pre-processes Txt_Value values to ensure that the DEP allowed boolean values (see {@link BooleanValue}) are standardised
  * on the standard boolean String representations (true or false)
  *
  * @author Sam Gardner-Dell

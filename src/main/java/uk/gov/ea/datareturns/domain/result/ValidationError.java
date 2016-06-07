@@ -2,6 +2,11 @@ package uk.gov.ea.datareturns.domain.result;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+/**
+ * Represents an individual validation error (constraint violation) which occurred when validating the model
+ *
+ * @author Sam Gardner-Dell
+ */
 public class ValidationError {
 	@JsonProperty("fieldName")
 	private String fieldName;
@@ -27,6 +32,9 @@ public class ValidationError {
 	@JsonProperty("errorMessage")
 	private String errorMessage;
 
+	/**
+	 * Create a new ValidationError instance
+	 */
 	public ValidationError() {
 	}
 

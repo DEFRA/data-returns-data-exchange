@@ -4,6 +4,11 @@ import java.util.Set;
 
 import org.springframework.stereotype.Repository;
 
+/**
+ * DAO for monitoring periods
+ *
+ * @author Sam Gardner-Dell
+ */
 @Repository
 public class MonitoringPeriodDao extends AbstractJpaDao {
 	/**

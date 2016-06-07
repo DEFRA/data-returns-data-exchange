@@ -12,6 +12,7 @@ import javax.persistence.Table;
  * The persistent class for the reference_periods database table.
  *
  */
+@SuppressWarnings({ "JavaDoc", "unused" })
 @Entity
 @Table(name = "reference_periods")
 @NamedQueries({

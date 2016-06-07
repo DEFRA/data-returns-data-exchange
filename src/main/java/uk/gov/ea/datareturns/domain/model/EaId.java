@@ -39,7 +39,7 @@ public class EaId implements Comparable<EaId> {
 	/**
 	 * Create a new {@link EaId} from the given identifier
 	 *
-	 * @param identifier
+	 * @param identifier the String representation of the unique identifier.
 	 */
 	public EaId(final String identifier) {
 		this.identifier = identifier;
@@ -58,22 +58,6 @@ public class EaId implements Comparable<EaId> {
 	 */
 	public EaIdType getType() {
 		return this.type;
-	}
-
-	@Override
-	public int compareTo(final EaId o) {
-		if (isNumeric() && o.isNumeric()) {
-			// Numeric comparison
-			final Long thisId = NumberUtils.toLong(this.identifier);
-			final Long otherId = NumberUtils.toLong(o.identifier);
-			return thisId.compareTo(otherId);
-		} else if (isNumeric() && o.isAlphaNumeric()) {
-			return -1;
-		} else if (isAlphaNumeric() && o.isNumeric()) {
-			return 1;
-		}
-		// Default alpha comparison
-		return this.identifier.compareTo(o.identifier);
 	}
 
 	/**
@@ -97,43 +81,53 @@ public class EaId implements Comparable<EaId> {
 		return !isNumeric();
 	}
 
-	/* (non-Javadoc)
-	 * @see java.lang.Object#hashCode()
+	/**
+	 * Compare this {@link EaId} to the specified {@link EaId} to determine the natural sort order.
+	 *
+	 * Rules for sorting {@link EaId}s:
+	 * - Numeric Unique Identifiers appear before alphanumeric identifiers and are sorted by natural integer sort order
+	 * - Alphanumeric Unique identifiers appear next and are sorted using natural lexicographical sort order.
+	 *
+	 * @param o the {@link EaId} to compare to this instance
+	 * @return an {@link Integer} according to default Java compareTo rules.
+	 */
+	@Override
+	public int compareTo(final EaId o) {
+		if (isNumeric() && o.isNumeric()) {
+			// Numeric comparison
+			final Long thisId = NumberUtils.toLong(this.identifier);
+			final Long otherId = NumberUtils.toLong(o.identifier);
+			return thisId.compareTo(otherId);
+		} else if (isNumeric() && o.isAlphaNumeric()) {
+			return -1;
+		} else if (isAlphaNumeric() && o.isNumeric()) {
+			return 1;
+		}
+		// Default alpha comparison
+		return this.identifier.compareTo(o.identifier);
+	}
+
+	/**
+	 * Determine if two {@link EaId}s are equal.  This method checks the identifier value only.
+	 *
+	 * @param o the {@link EaId} to check equality against
+	 * @return true if the two identifiers are equal, false otherwise
+	 */
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (o == null || getClass() != o.getClass()) return false;
+		EaId eaId = (EaId) o;
+		return identifier != null ? identifier.equals(eaId.identifier) : eaId.identifier == null;
+	}
+
+	/**
+	 * Generate a hashcode based on the identifier value
+	 *
+	 * @return the generated hashcode
 	 */
 	@Override
 	public int hashCode() {
-		final int prime = 31;
-		int result = 1;
-		result = prime * result + ((this.identifier == null) ? 0 : this.identifier.hashCode());
-		result = prime * result + ((this.type == null) ? 0 : this.type.hashCode());
-		return result;
-	}
-
-	/* (non-Javadoc)
-	 * @see java.lang.Object#equals(java.lang.Object)
-	 */
-	@Override
-	public boolean equals(final Object obj) {
-		if (this == obj) {
-			return true;
-		}
-		if (obj == null) {
-			return false;
-		}
-		if (getClass() != obj.getClass()) {
-			return false;
-		}
-		final EaId other = (EaId) obj;
-		if (this.identifier == null) {
-			if (other.identifier != null) {
-				return false;
-			}
-		} else if (!this.identifier.equals(other.identifier)) {
-			return false;
-		}
-		if (this.type != other.type) {
-			return false;
-		}
-		return true;
+		return identifier != null ? identifier.hashCode() : 0;
 	}
 }

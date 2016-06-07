@@ -30,10 +30,10 @@ import uk.gov.ea.datareturns.domain.exceptions.ProcessingException;
 import uk.gov.ea.datareturns.domain.io.csv.DataReturnsCSVProcessor;
 import uk.gov.ea.datareturns.domain.io.csv.generic.CSVModel;
 import uk.gov.ea.datareturns.domain.io.zip.DataReturnsZipFileModel;
+import uk.gov.ea.datareturns.domain.model.DataSample;
 import uk.gov.ea.datareturns.domain.model.EaId;
-import uk.gov.ea.datareturns.domain.model.MonitoringDataRecord;
 import uk.gov.ea.datareturns.domain.model.rules.FileType;
-import uk.gov.ea.datareturns.domain.model.validation.MonitoringDataRecordValidationProcessor;
+import uk.gov.ea.datareturns.domain.model.validation.DataSampleValidator;
 import uk.gov.ea.datareturns.domain.result.DataExchangeResult;
 import uk.gov.ea.datareturns.domain.result.ParseResult;
 import uk.gov.ea.datareturns.domain.result.UploadResult;
@@ -42,8 +42,14 @@ import uk.gov.ea.datareturns.domain.storage.StorageProvider;
 import uk.gov.ea.datareturns.util.StopWatch;
 
 /**
- * @author Sam Gardner-Dell
+ * Processor for file uploads to the data-returns service.
+ * This processor reads the information supplied in the CSV input file into a Java model and performs validation
+ * using JSR303 bean validation via hibernate-validator API.
+ * Files with valid content are stored using the configured storage provider in a temporary area until a subsequent
+ * call to the service invokes the {@link FileCompletionProcessor} using the unique file key returned by this
+ * processor.
  *
+ * @author Sam Gardner-Dell
  */
 @Component
 @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
@@ -52,21 +58,24 @@ public class FileUploadProcessor extends AbstractReturnsProcessor<DataExchangeRe
 
 	private final StorageProvider storage;
 
-	private final MonitoringDataRecordValidationProcessor validator;
+	private final DataSampleValidator validator;
 
 	private InputStream inputStream;
 
 	private String clientFilename;
 
 	/**
-	 * @param processorSettings
-	 * @param storage
-	 * @param validator
-	 * @throws ProcessingException
+	 * Create a new {@link FileUploadProcessor}.
+	 *
+	 * @param processorSettings processor specific configuration settings
+	 * @param storage the storage provider.
+	 * @param validator the validator component to perform validation on the file content
+	 * @throws ProcessingException if a processing error occurs while attempting to process/validate the file submission
+	 *
 	 */
 	@Inject
 	public FileUploadProcessor(final ProcessorSettings processorSettings, final StorageProvider storage,
-			final MonitoringDataRecordValidationProcessor validator)
+			final DataSampleValidator validator)
 			throws ProcessingException {
 		super(processorSettings);
 		this.storage = storage;
@@ -112,7 +121,7 @@ public class FileUploadProcessor extends AbstractReturnsProcessor<DataExchangeRe
 			stopwatch.startTask("Parsing file into model");
 
 			// 3. Read the CSV data into a model
-			final CSVModel<MonitoringDataRecord> csvInput = csvProcessor.read(uploadedFile);
+			final CSVModel<DataSample> csvInput = csvProcessor.read(uploadedFile);
 
 			stopwatch.startTask("Validating model");
 			// Validate the model
@@ -131,8 +140,8 @@ public class FileUploadProcessor extends AbstractReturnsProcessor<DataExchangeRe
 				 */
 				stopwatch.startTask("Preparing output files");
 				final List<File> outputFiles = new ArrayList<>();
-				final Map<EaId, List<MonitoringDataRecord>> permitToRecordMap = prepareOutputData(csvInput.getRecords());
-				for (final Map.Entry<EaId, List<MonitoringDataRecord>> entry : permitToRecordMap.entrySet()) {
+				final Map<EaId, List<DataSample>> permitToRecordMap = prepareOutputData(csvInput.getRecords());
+				for (final Map.Entry<EaId, List<DataSample>> entry : permitToRecordMap.entrySet()) {
 					final File permitDataFile = File.createTempFile("output-" + entry.getKey().getIdentifier() + "-", ".csv",
 							this.workingFolder);
 					csvProcessor.write(entry.getValue(), getProcessorSettings().getOutputMappingsMap(), permitDataFile);
@@ -172,36 +181,38 @@ public class FileUploadProcessor extends AbstractReturnsProcessor<DataExchangeRe
 	/**
 	 * Basic file validation
 	 *
-	 * @param clientFilename
-	 * @param uploadedFile
+	 * @param clientFilename the filename of the file reported by the client
+	 * @param uploadedFile the file that was uploaded
+	 * @throws AbstractValidationException if basic validation fails
 	 */
 	private static void checkUploadFile(final String clientFilename, final File uploadedFile) throws AbstractValidationException {
 		final String fileType = FilenameUtils.getExtension(clientFilename);
 
-		// Release 1 must be csv
-		if (!FileType.CSV.getFileType().equalsIgnoreCase(fileType)) {
+		// Release 1 must be csv - do not agree with checking file extension (means nothing) but this is a requirement!
+		if (!FileType.CSV.getExtension().equalsIgnoreCase(fileType)) {
 			throw new FileTypeUnsupportedException("Unsupported file type '" + fileType + "'");
 		}
 
+		// Check for empty files
 		if (FileUtils.sizeOf(uploadedFile) == 0) {
 			throw new FileEmptyException("The uploaded file is empty");
 		}
 	}
 
 	/**
-	 * Prepare a Map of permit numbers (key) to a {@link List} of {@link MonitoringDataRecord}s (value) belonging to that permit
+	 * Prepare a Map of permit numbers (key) to a {@link List} of {@link DataSample}s (value) belonging to that permit
 	 *
-	 * @param records the {@link List} of {@link MonitoringDataRecord} to prepared for output
-	 * @return a {@link Map} of {@link EaId}s to a {@link List} of {@link MonitoringDataRecord}s
+	 * @param records the {@link List} of {@link DataSample} to prepared for output
+	 * @return a {@link Map} of {@link EaId}s to a {@link List} of {@link DataSample}s
 	 */
-	private static final Map<EaId, List<MonitoringDataRecord>> prepareOutputData(final List<MonitoringDataRecord> records) {
-		final Map<EaId, List<MonitoringDataRecord>> recordMap = new HashMap<>();
+	private static Map<EaId, List<DataSample>> prepareOutputData(final List<DataSample> records) {
+		final Map<EaId, List<DataSample>> recordMap = new HashMap<>();
 
-		for (final MonitoringDataRecord record : records) {
+		for (final DataSample record : records) {
 			/*
 			 * Build the output map
 			 */
-			List<MonitoringDataRecord> recordsForPermit = recordMap.get(record.getEaId());
+			List<DataSample> recordsForPermit = recordMap.get(record.getEaId());
 			if (recordsForPermit == null) {
 				recordsForPermit = new ArrayList<>();
 			}

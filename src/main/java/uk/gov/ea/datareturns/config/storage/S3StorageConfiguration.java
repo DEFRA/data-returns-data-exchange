@@ -49,6 +49,9 @@ public class S3StorageConfiguration implements AmazonS3Configuration {
 	@JsonProperty("pathStyleAccess")
 	private boolean pathStyleAccess = false;
 
+	/**
+	 * Create a new S3StorageConfiguration instance
+	 */
 	public S3StorageConfiguration() {
 	}
 

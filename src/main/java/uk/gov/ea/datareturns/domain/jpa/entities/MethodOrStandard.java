@@ -14,6 +14,7 @@ import javax.persistence.Table;
  * The persistent class for the methods_or_standards database table.
  *
  */
+@SuppressWarnings({ "JavaDoc", "unused" })
 @Entity
 @Table(name = "methods_or_standards")
 @NamedQueries({

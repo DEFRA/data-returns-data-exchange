@@ -25,7 +25,7 @@ import uk.gov.ea.datareturns.domain.model.validation.constraints.controlledlist.
 import uk.gov.ea.datareturns.domain.model.validation.constraints.field.ValidReturnsDate;
 
 /**
- * Represents an individual monitoring data record entry
+ * Represents an individual sample (data return) record entry
  *
  * @author Sam Gardner-Dell
  */
@@ -35,7 +35,10 @@ import uk.gov.ea.datareturns.domain.model.validation.constraints.field.ValidRetu
 //				auditor=CommentDefinedForNoValueAuditor.class,
 //				message="{DR9999-Dependency}",
 //				groups=DependentField.class)
-public class MonitoringDataRecord extends AbstractCSVRecord {
+public class DataSample extends AbstractCSVRecord {
+	/** Regular expression for fields which should only contain simple text (no special characters) */
+	private static final String REGEX_SIMPLE_TEXT = "^[a-zA-Z0-9 ]*$";
+
 	/** The EA Unique Identifier (EA_ID) */
 	@Parsed(field = DataReturnsHeaders.EA_IDENTIFIER)
 	@Convert(conversionClass = EaIdConverter.class)
@@ -44,8 +47,8 @@ public class MonitoringDataRecord extends AbstractCSVRecord {
 
 	/** The site name (Site_Name) */
 	@Parsed(field = DataReturnsHeaders.SITE_NAME)
-	@Pattern(regexp = "([0-9a-zA-Z ])*", message = "{DR9110-Incorrect}")
-	@Length(min = 0, max = 255, message = "{DR9110-Length}")
+	@Pattern(regexp = REGEX_SIMPLE_TEXT, message = "{DR9110-Incorrect}")
+	@Length(max = 255, message = "{DR9110-Length}")
 	private String siteName;
 
 	/** The return type (Rtn_Type) */
@@ -68,19 +71,19 @@ public class MonitoringDataRecord extends AbstractCSVRecord {
 	/** The monitoring point (Mon_Point) */
 	@Parsed(field = DataReturnsHeaders.MONITORING_POINT)
 	@NotBlank(message = "{DR9060-Missing}")
-	@Length(min = 0, max = 30, message = "{DR9060-Length}")
-	@Pattern(regexp = "^[a-zA-Z0-9 ]*$", message = "{DR9060-Incorrect}")
+	@Length(max = 30, message = "{DR9060-Length}")
+	@Pattern(regexp = REGEX_SIMPLE_TEXT, message = "{DR9060-Incorrect}")
 	private String monitoringPoint;
 
 	/** Sample reference (Smpl_Ref) */
 	@Parsed(field = DataReturnsHeaders.SAMPLE_REFERENCE)
-	@Length(min = 0, max = 255, message = "{DR9120-Length}")
-	@Pattern(regexp = "^[a-zA-Z0-9 ]*$", message = "{DR9120-Incorrect}")
+	@Length(max = 255, message = "{DR9120-Length}")
+	@Pattern(regexp = REGEX_SIMPLE_TEXT, message = "{DR9120-Incorrect}")
 	private String sampleReference;
 
 	/** Sampled by (Smpl_By) */
 	@Parsed(field = DataReturnsHeaders.SAMPLE_BY)
-	@Length(min = 0, max = 255, message = "{DR9130-Length}")
+	@Length(max = 255, message = "{DR9130-Length}")
 	private String sampleBy;
 
 	/** Parameter value (Parameter) */
@@ -119,28 +122,28 @@ public class MonitoringDataRecord extends AbstractCSVRecord {
 
 	/** Record comments (Comments) */
 	@Parsed(field = DataReturnsHeaders.COMMENTS)
-	@Length(min = 0, max = 255, message = "{DR9140-Length}")
+	@Length(max = 255, message = "{DR9140-Length}")
 	private String comments;
 
 	/** Commercial in confidence data (CiC) */
 	@Parsed(field = DataReturnsHeaders.COMMERCIAL_IN_CONFIDENCE)
-	@Length(min = 0, max = 255, message = "{DR9150-Length}")
+	@Length(max = 255, message = "{DR9150-Length}")
 	private String cic;
 
 	/** Chemical Abstracts Service value (CAS) */
 	@Parsed(field = DataReturnsHeaders.CHEMICAL_ABSTRACTS_SERVICE)
-	@Length(min = 0, max = 255, message = "{DR9160-Length}")
+	@Length(max = 255, message = "{DR9160-Length}")
 	private String cas;
 
 	/** Recovery and disposal code (RD_Code) */
 	@Parsed(field = DataReturnsHeaders.RECOVERY_AND_DISPOSAL_CODE)
-	@Length(min = 0, max = 255, message = "{DR9170-Length}")
+	@Length(max = 255, message = "{DR9170-Length}")
 	private String rdCode;
 
 	/**
 	 * Default constructor
 	 */
-	public MonitoringDataRecord() {
+	public DataSample() {
 		super();
 	}
 

@@ -4,6 +4,11 @@ import java.util.Set;
 
 import org.springframework.stereotype.Repository;
 
+/**
+ * DAO for monitoring methods and standards.
+ *
+ * @author Sam Gardner-Dell
+ */
 @Repository
 public class MethodOrStandardDao extends AbstractJpaDao {
 	/**

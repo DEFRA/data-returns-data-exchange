@@ -56,14 +56,20 @@ public class AmazonS3StorageProvider implements StorageProvider {
 	 * Note that it is recommended to only use one storage provider for a given S3 endpoint to take advantage of
 	 * connection pooling at other such goodness.
 	 *
-	 * @param settings
+	 * @param settings the Amazon S3 configuration settings
 	 */
 	@Inject
 	public AmazonS3StorageProvider(final AmazonS3Configuration settings) {
 		LOGGER.info("Initialising AWS S3 Storage Provider");
 		this.settings = settings;
 		this.s3Client = new AmazonS3Client(this.settings.getCredentialProvider(), this.settings.getClientConfiguration());
-		this.s3Client.setS3ClientOptions(new S3ClientOptions().withPathStyleAccess(this.settings.isPathStyleAccess()));
+
+		final S3ClientOptions clientOptions = S3ClientOptions
+				.builder()
+				.setPathStyleAccess(this.settings.isPathStyleAccess())
+				.build();
+
+		this.s3Client.setS3ClientOptions(clientOptions);
 		if (StringUtils.isNotBlank(this.settings.getEndpoint())) {
 			this.s3Client.setEndpoint(this.settings.getEndpoint());
 		}
@@ -97,11 +103,13 @@ public class AmazonS3StorageProvider implements StorageProvider {
 	}
 
 	/**
-	 * @param bucketName
-	 * @param file
-	 * @param userMetadata
+	 * Store a new file and associated metadata in the given bucket name
+	 *
+	 * @param bucketName the name of the bucket the file should be stored in
+	 * @param file the file that should be stored
+	 * @param userMetadata the metadata to be associated with the file
 	 * @return the key which should be used for future references to the file stored
-	 * @throws StorageException
+	 * @throws StorageException if an error occurred while attempting to store the file
 	 */
 	public String store(final String bucketName, final File file, final Map<String, String> userMetadata) throws StorageException {
 		final String fileKey = StorageProvider.generateFileKey(file);
@@ -133,7 +141,7 @@ public class AmazonS3StorageProvider implements StorageProvider {
 
 	//	/**
 	//	 * Uses multi-part file uploads to S3 - useful with large files (>=100MB) as it uploads chunks of data
-	//	 * in parallel.  If a chunk fails then only that chunk has to be re-uploaded rathen than having to try
+	//	 * in parallel.  If a chunk fails then only that chunk has to be re-uploaded rather than having to try
 	//	 * the entire upload again.  DO NOT use for small files as this is horridly inefficient.
 	//	 *
 	//	 * @param file
@@ -244,7 +252,7 @@ public class AmazonS3StorageProvider implements StorageProvider {
 	 * @param bucketName the name of the bucket containing the file to be retrieved
 	 * @param fileKey the key which identifies the file to be retrieved
 	 * @return a {@link StoredFile} object containing
-	 * @throws StorageException
+	 * @throws StorageException if a problem occurred attempting to retrieve the file
 	 */
 	public StoredFile retrieve(final String bucketName, final String fileKey) throws StorageException {
 		try (final S3Object s3object = this.s3Client.getObject(new GetObjectRequest(bucketName, fileKey));

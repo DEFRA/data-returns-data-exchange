@@ -20,6 +20,12 @@ import uk.gov.ea.datareturns.domain.storage.StorageKeyMismatchException;
  */
 @Provider
 public class StorageKeyMismatchExceptionMapper implements ExceptionMapper<StorageKeyMismatchException> {
+	/**
+	 * Handles {@link StorageKeyMismatchException}s which should always generated a HTTP 404 - Not Found response
+	 *
+	 * @param exception the {@link StorageKeyMismatchException} thrown by the {@link uk.gov.ea.datareturns.domain.storage.StorageProvider}
+	 * @return a {@link Response} to return to the client for the exception that was thrown
+	 */
 	@Override
 	public Response toResponse(final StorageKeyMismatchException exception) {
 		final Status status = Status.NOT_FOUND;

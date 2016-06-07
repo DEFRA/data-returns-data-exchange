@@ -1,30 +1,30 @@
 #!/bin/bash
 
 SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
-SERVICE_HOME=$SCRIPT_DIR
+SERVICE_HOME=${SCRIPT_DIR}
 JAVA_HOME=/usr/lib/jvm/java-8-oracle
-PATH=$JAVA_HOME/bin:$PATH
+PATH=${JAVA_HOME}/bin:$PATH
 SERVICE_JAR="$SERVICE_HOME/data-returns.jar"
 
-PIDFILE=$SERVICE_HOME/application.pid
-SPRING_ARGS_FILE=$SERVICE_HOME/application.args
+PIDFILE=${SERVICE_HOME}/application.pid
+SPRING_ARGS_FILE=${SERVICE_HOME}/application.args
 SPRING_ARGS=""
-if [ -f $SPRING_ARGS_FILE ]; then
+if [ -f ${SPRING_ARGS_FILE} ]; then
 	SPRING_ARGS=$(<"$SPRING_ARGS_FILE")
 fi
-JAVA_ARGS_FILE=$SERVICE_HOME/java.args
+JAVA_ARGS_FILE=${SERVICE_HOME}/java.args
 JAVA_ARGS=""
-if [ -f $JAVA_ARGS_FILE ]; then
+if [ -f ${JAVA_ARGS_FILE} ]; then
 	JAVA_ARGS=$(<"$JAVA_ARGS_FILE")
 fi
 
 
 
-cd $SERVICE_HOME
+cd ${SERVICE_HOME}
 
 
 function check_pidfile {
-	if [ -f $PIDFILE ]
+	if [ -f ${PIDFILE} ]
 	then
 		return 0
 	else
@@ -52,9 +52,9 @@ function check_running {
 }
 
 function start_service {
-	if [ -f $SERVICE_JAR ]; then
+	if [ -f ${SERVICE_JAR} ]; then
 		echo "Starting $SERVICE_JAR"
-		/usr/bin/java $JAVA_ARGS -jar $SERVICE_JAR $SPRING_ARGS  > /dev/null 2>&1 &
+		/usr/bin/java ${JAVA_ARGS} -jar ${SERVICE_JAR} ${SPRING_ARGS}  > /dev/null 2>&1 &
 		echo "Service started successfully using PID $!"
 	else	
 		echo "ERROR: Unable to find service JAR file at $SERVICE_JAR"
@@ -78,7 +78,7 @@ function stop_service {
 
 	PID=$(read_pid)
 
-    kill -SIGTERM $PID
+    kill -SIGTERM ${PID}
     echo -ne "Waiting for process $PID to stop"
     NOT_KILLED=1
     for i in {1..20}; do
@@ -91,10 +91,10 @@ function stop_service {
       fi
     done
     echo
-    if [ $NOT_KILLED = 1 ]
+    if [ ${NOT_KILLED} = 1 ]
     then
       echo "Cannot gracefully shutdown process $PID, terminating forcefully."
-      kill -SIGKILL $PID
+      kill -SIGKILL ${PID}
     fi
 }
 

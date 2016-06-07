@@ -27,8 +27,11 @@ import uk.gov.ea.datareturns.domain.storage.StorageProvider.StoredFile;
 import uk.gov.ea.datareturns.util.StopWatch;
 
 /**
- * @author Sam Gardner-Dell
+ * Processor for submitting previously validated files to MonitorPro.
+ * This processor retrieves previously uploaded and validated files (via the {@link FileUploadProcessor}) using the unique file key
+ * returned by that processor.
  *
+ * @author Sam Gardner-Dell
  */
 @Component
 @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
@@ -46,10 +49,14 @@ public class FileCompletionProcessor extends AbstractReturnsProcessor<DataExchan
 	private String originalFilename;
 
 	/**
-	 * @param processorSettings
-	 * @param storage
-	 * @param monitorProHandler
-	 * @throws ProcessingException
+	 * Create a new {@link FileCompletionProcessor}.
+	 *
+	 * The file completion processor handles the submission of previously validated files to MonitorPro
+	 *
+	 * @param processorSettings processor specific configuration settings
+	 * @param storage the storage provider.
+	 * @param monitorProHandler the MonitorPro transport handler
+	 * @throws ProcessingException if a processing error occurs while attempting to complete the file submission
 	 */
 	@Inject
 	public FileCompletionProcessor(final ProcessorSettings processorSettings, final StorageProvider storage,

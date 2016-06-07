@@ -4,7 +4,14 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-public class CSVModel<T extends Object> {
+/**
+ * Container for information parsed from a CSV file into a Java model
+ *
+ * @param <T> the object used to represent each row of information parsed
+ *
+ * @author Sam Gardner-Dell
+ */
+public class CSVModel<T> {
 	/**
 	 * Provides a mapping between the Java Object field and the header name to which it is mapped
 	 */

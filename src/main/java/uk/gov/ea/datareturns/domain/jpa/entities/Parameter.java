@@ -12,6 +12,7 @@ import javax.persistence.Table;
  * The persistent class for the parameters database table.
  *
  */
+@SuppressWarnings({ "JavaDoc", "unused" })
 @Entity
 @Table(name = "parameters")
 @NamedQueries({

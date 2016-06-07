@@ -2,20 +2,33 @@ package uk.gov.ea.datareturns.domain.model.rules;
 
 import org.apache.commons.lang3.StringUtils;
 
+/**
+ * Enumeration to represent the type of EA Unique Identifier.
+ * 
+ * @author Sam Gardner-Dell
+ */
 public enum EaIdType {
-	/** Database used for permit numbers using lowercase numeric identifier */
+	/** EA Unique Identifiers using lowercase numeric identifier */
 	LOWER_NUMERIC,
-	/** Database used for permit numbers using upppercase numeric identifier */
+	/** EA Unique Identifiers using uppercase numeric identifier */
 	UPPER_NUMERIC,
-	/** Database used for permit numbers using lowercase alphanumeric identifier */
+	/** EA Unique Identifiers using lowercase alphanumeric identifier */
 	LOWER_ALPHANUMERIC,
-	/** Database used for permit numbers using uppercase alphanumeric identifier */
+	/** EA Unique Identifiers using uppercase alphanumeric identifier */
 	UPPER_ALPHANUMERIC;
 
-	public static int NUMERIC_BOUNDARY = 70000;
+	/** The boundary for numeric EA Unique identifiers */
+	public static final char ALPHA_NUMERIC_BOUNDARY = 'H';
 
-	public static char ALPHA_NUMERIC_BOUNDARY = 'H';
+	/** The boundary for alphanumeric EA Unique identifiers */
+	public static final int NUMERIC_BOUNDARY = 70000;
 
+	/**
+	 * Retrieve the appropriate {@link EaIdType} for a given unique identifier
+	 *
+	 * @param uniqueId the String representation of a unique identifier to test
+	 * @return the appropriate {@link EaIdType} for the given identifier.
+	 */
 	public static EaIdType forUniqueId(final String uniqueId) {
 		EaIdType db = null;
 		if (StringUtils.isNotEmpty(uniqueId)) {

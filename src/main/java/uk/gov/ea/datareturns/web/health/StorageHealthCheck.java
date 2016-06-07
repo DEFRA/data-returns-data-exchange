@@ -12,29 +12,34 @@ import uk.gov.ea.datareturns.domain.storage.StorageException;
 import uk.gov.ea.datareturns.domain.storage.StorageProvider;
 
 /**
- * Checks the health of the configured Storage Provider
+ * Checks the health of the configured Storage Provider.
  *
  * @author Sam Gardner-Dell
  */
 @Component
 public class StorageHealthCheck implements HealthIndicator {
 	private static final Logger LOGGER = LoggerFactory.getLogger(StorageHealthCheck.class);
+	private final StorageProvider storageProvider;
 
+	/**
+	 * Create a new {@link StorageHealthCheck} for the specified {@link StorageProvider} instance
+	 *
+	 * @param storageProvider the {@link StorageProvider} to act on to determine health status
+	 */
 	@Inject
-	private StorageProvider storageProvider;
-
-	public StorageHealthCheck() {
-	}
-
 	public StorageHealthCheck(final StorageProvider storageProvider) {
 		this.storageProvider = storageProvider;
 	}
 
+	/**
+	 * Checks the storage system is healthy
+	 *
+	 * @return a {@link Health} object describing the current status of the system
+	 */
 	@Override
 	public Health health() {
 		LOGGER.info("Running storage health check");
-		Health health = null;
-
+		Health health;
 		try {
 			if (this.storageProvider.healthy()) {
 				health = Health.up().build();

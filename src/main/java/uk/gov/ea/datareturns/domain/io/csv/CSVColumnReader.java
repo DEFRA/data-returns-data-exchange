@@ -23,8 +23,16 @@ public final class CSVColumnReader {
 	private CSVColumnReader() {
 	}
 
+	/**
+	 * Read the values from a single column of a CSV file
+	 *
+	 * @param csvFile the CSV file from which to parse values
+	 * @param columnName the name (column heading) of the particular column to be read
+	 * @return a {@link List} of {@link String}s containing the data read from the specified column
+	 * @throws TextParsingException if an problem occurs reading data from the CSV file
+	 */
 	public static List<String> readColumn(final File csvFile, final String columnName) throws TextParsingException {
-		List<String> columnData = null;
+		List<String> columnData;
 
 		final ColumnProcessor rowProcessor = new ColumnProcessor();
 		final CsvParserSettings parserSettings = new CsvParserSettings();

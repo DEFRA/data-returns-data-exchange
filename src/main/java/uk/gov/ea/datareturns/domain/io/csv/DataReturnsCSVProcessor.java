@@ -29,7 +29,7 @@ import uk.gov.ea.datareturns.domain.exceptions.MandatoryFieldMissingException;
 import uk.gov.ea.datareturns.domain.exceptions.UnrecognisedFieldException;
 import uk.gov.ea.datareturns.domain.io.csv.generic.CSVModel;
 import uk.gov.ea.datareturns.domain.io.csv.generic.exceptions.InconsistentRowException;
-import uk.gov.ea.datareturns.domain.model.MonitoringDataRecord;
+import uk.gov.ea.datareturns.domain.model.DataSample;
 import uk.gov.ea.datareturns.domain.model.rules.DataReturnsHeaders;
 
 /**
@@ -41,7 +41,7 @@ public class DataReturnsCSVProcessor {
 
 	private static final Map<String, String> fieldMap = new HashMap<>();
 	static {
-		for (final Field f : MonitoringDataRecord.class.getDeclaredFields()) {
+		for (final Field f : DataSample.class.getDeclaredFields()) {
 			final Parsed annotation = f.getAnnotation(Parsed.class);
 			if (annotation != null) {
 				final String csvFieldName = annotation.field();
@@ -50,16 +50,26 @@ public class DataReturnsCSVProcessor {
 		}
 	}
 
+	/**
+	 * Default constructor
+	 */
 	public DataReturnsCSVProcessor() {
 
 	}
 
-	public CSVModel<MonitoringDataRecord> read(final File csvFile) throws AbstractValidationException {
+	/**
+	 * Read the content of the specified DEP compliant CSV file into the Java model
+	 *
+	 * @param csvFile the DEP compliant CSV file to parse
+	 * @return a {@link CSVModel} composed of {@link DataSample} objects to represent the samples/readings submitted
+	 * @throws AbstractValidationException if a validation error occurs when attempting to read the DEP compliant CSV
+	 */
+	public CSVModel<DataSample> read(final File csvFile) throws AbstractValidationException {
 
-		final BeanListProcessor<MonitoringDataRecord> rowProcessor = new BeanListProcessor<MonitoringDataRecord>(
-				MonitoringDataRecord.class) {
+		final BeanListProcessor<DataSample> rowProcessor = new BeanListProcessor<DataSample>(
+				DataSample.class) {
 			@Override
-			public MonitoringDataRecord createBean(final String[] row, final ParsingContext context) {
+			public DataSample createBean(final String[] row, final ParsingContext context) {
 				if (row.length > context.headers().length) {
 					throw new InconsistentRowException(
 							String.format("Record %d contains additional fields not defined in the header.",
@@ -72,7 +82,7 @@ public class DataReturnsCSVProcessor {
 			 * @see com.univocity.parsers.common.processor.BeanListProcessor#beanProcessed(java.lang.Object, com.univocity.parsers.common.ParsingContext)
 			 */
 			@Override
-			public void beanProcessed(final MonitoringDataRecord bean, final ParsingContext context) {
+			public void beanProcessed(final DataSample bean, final ParsingContext context) {
 				bean.setLineNumber(context.currentRecord() + 1);
 				super.beanProcessed(bean, context);
 			}
@@ -124,26 +134,28 @@ public class DataReturnsCSVProcessor {
 			throw new UnrecognisedFieldException("Unrecognised field(s) encountered: " + tempCsvHeaderSet.toString());
 		}
 
-		final List<MonitoringDataRecord> records = rowProcessor.getBeans();
-		final CSVModel<MonitoringDataRecord> model = new CSVModel<>();
+		final List<DataSample> records = rowProcessor.getBeans();
+		final CSVModel<DataSample> model = new CSVModel<>();
 		model.setPojoFieldToHeaderMap(fieldMap);
 		model.setRecords(records);
 		return model;
 	}
 
 	/**
+	 * Writes a CSV file based on the mappings specified in the configuration file.
+	 *
 	 * @param records the data returns records to be written
 	 * @param outputMappings the mappings for the headings and data to be output (see {@link MappableBeanConversionProcessor})
 	 * @param csvFile a reference to the {@link File} to be written
 	 */
-	public void write(final List<MonitoringDataRecord> records, final Map<String, String> outputMappings, final File csvFile) {
+	public void write(final List<DataSample> records, final Map<String, String> outputMappings, final File csvFile) {
 		final CsvWriterSettings settings = new CsvWriterSettings();
 		// Configure the standard set of headings here (as this covers the mapping from bean to csv field).  Actual headings
 		// are defined as part of the MappableBeanConversionProcessor.
 		settings.setHeaders(outputMappings.keySet().toArray(new String[outputMappings.size()]));
 
-		final MappableBeanConversionProcessor<MonitoringDataRecord> processor = new MappableBeanConversionProcessor<MonitoringDataRecord>(
-				MonitoringDataRecord.class, outputMappings, DataReturnsHeaders.getAllHeadingsArray());
+		final MappableBeanConversionProcessor<DataSample> processor = new MappableBeanConversionProcessor<>(
+				DataSample.class, outputMappings, DataReturnsHeaders.getAllHeadingsArray());
 		settings.setRowWriterProcessor(processor);
 		final CsvWriter writer = new CsvWriter(csvFile, settings);
 		// Write the record headers of this file

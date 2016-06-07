@@ -10,6 +10,7 @@ import javax.persistence.Table;
  * The persistent class for the unique_identifiers database table.
  *
  */
+@SuppressWarnings({ "JavaDoc", "unused" })
 @Entity
 @Table(name = "unique_identifiers")
 @NamedQueries({

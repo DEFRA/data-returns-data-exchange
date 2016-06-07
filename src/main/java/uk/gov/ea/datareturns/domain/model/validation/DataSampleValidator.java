@@ -16,7 +16,7 @@ import javax.validation.Validator;
 import org.springframework.stereotype.Component;
 
 import uk.gov.ea.datareturns.domain.io.csv.generic.CSVModel;
-import uk.gov.ea.datareturns.domain.model.MonitoringDataRecord;
+import uk.gov.ea.datareturns.domain.model.DataSample;
 import uk.gov.ea.datareturns.domain.model.rules.FieldDefinition;
 import uk.gov.ea.datareturns.domain.result.ValidationError;
 import uk.gov.ea.datareturns.domain.result.ValidationErrors;
@@ -26,22 +26,32 @@ import uk.gov.ea.datareturns.domain.result.ValidationErrors;
  *
  */
 @Component
-public class MonitoringDataRecordValidationProcessor {
+public class DataSampleValidator {
 	private static final Pattern ERROR_KEY_PATTERN = Pattern.compile("^\\{DR(?<errorCode>\\d{4})-(?<errorType>\\w+)\\}$");
 
 	@Inject
 	private Validator validator;
 
-	public MonitoringDataRecordValidationProcessor() {
+	/**
+	 * Create a new {@link DataSampleValidator}
+	 */
+	public DataSampleValidator() {
 
 	}
 
-	public final ValidationErrors validateModel(final CSVModel<MonitoringDataRecord> model) {
+	/**
+	 * Validate the specified model of {@link DataSample}s
+	 *
+	 * @param model the model to be validated
+	 * @return a {@link ValidationErrors} instance detailing any validation errors (if any) which were found with the model.
+	 * 		   Use {@link ValidationErrors#isValid()} to determine if any errors were found.
+	 */
+	public final ValidationErrors validateModel(final CSVModel<DataSample> model) {
 		final ValidationErrors validationErrors = new ValidationErrors();
 
-		for (final MonitoringDataRecord record : model.getRecords()) {
-			final Set<ConstraintViolation<MonitoringDataRecord>> violations = this.validator.validate(record);
-			for (final ConstraintViolation<MonitoringDataRecord> violation : violations) {
+		for (final DataSample record : model.getRecords()) {
+			final Set<ConstraintViolation<DataSample>> violations = this.validator.validate(record);
+			for (final ConstraintViolation<DataSample> violation : violations) {
 				final ValidationError error = new ValidationError();
 				final String fieldName = getFieldNameForViolation(model, violation);
 				final String errorValue = Objects.toString(violation.getInvalidValue(), null);
@@ -71,12 +81,18 @@ public class MonitoringDataRecordValidationProcessor {
 		return validationErrors;
 	}
 
-	private static String getFieldNameForViolation(final CSVModel<MonitoringDataRecord> model,
-			final ConstraintViolation<MonitoringDataRecord> violation) {
+	/**
+	 * For a given violation, determine the name of the CSV field which caused the error
+	 *
+	 * @param model the model being validated
+	 * @param violation the violation which occurred
+	 * @return the name of the CSV field which caused the problem.
+	 */
+	private static String getFieldNameForViolation(final CSVModel<DataSample> model,
+			final ConstraintViolation<DataSample> violation) {
 		// At the moment the mappings are all done at the top level so we're only interested in the first node on the path, may need to adapt
 		// this in future.
 		final Node firstNodeInPath = violation.getPropertyPath().iterator().next();
-		final String mapping = model.getPojoFieldToHeaderMap().get(firstNodeInPath.toString());
-		return mapping;
+		return model.getPojoFieldToHeaderMap().get(firstNodeInPath.toString());
 	}
 }

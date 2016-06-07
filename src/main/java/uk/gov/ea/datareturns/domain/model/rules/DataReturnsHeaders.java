@@ -106,28 +106,30 @@ public final class DataReturnsHeaders {
 		MANDATORY_HEADINGS.add(UNIT);
 	}
 
-	// Utility class hidden constructor
+	/**
+	 * Private utility constructor
+	 */
 	private DataReturnsHeaders() {
 	}
 
 	/**
 	 * @return the set of all headings allowed in the input data
 	 */
-	public static final Set<String> getAllHeadings() {
+	public static Set<String> getAllHeadings() {
 		return Collections.unmodifiableSet(ALL_VALID_HEADINGS);
 	}
 
 	/**
 	 * @return the set of all headings allowed in the input data
 	 */
-	public static final String[] getAllHeadingsArray() {
+	public static String[] getAllHeadingsArray() {
 		return ALL_HEADINGS_ARR;
 	}
 
 	/**
 	 * @return the set of headings that MUST be defined in the input data
 	 */
-	public static final Set<String> getMandatoryHeadings() {
+	public static Set<String> getMandatoryHeadings() {
 		return Collections.unmodifiableSet(MANDATORY_HEADINGS);
 	}
 }

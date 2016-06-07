@@ -4,6 +4,11 @@ import java.util.Set;
 
 import org.springframework.stereotype.Repository;
 
+/**
+ * DAO for qualifiers
+ *
+ * @author Sam Gardner-Dell
+ */
 @Repository
 public class QualifierDao extends AbstractJpaDao {
 	/**

@@ -34,7 +34,9 @@ public final class DateFormat {
 			"dd/MM/yyyy HH:mm:ss"
 	};
 
-	// Private utlity class constructor
+	/**
+	 * Private utility class constructor
+	 */
 	private DateFormat() {
 	}
 

@@ -60,7 +60,6 @@ public class DataReturnsZipFileModelTests {
 
 	private static File getTestFile(final String testFileName) throws URISyntaxException {
 		final URL url = DataReturnsZipFileModelTests.class.getResource("/testfiles/" + testFileName);
-		final File file = new File(url.toURI());
-		return file;
+		return new File(url.toURI());
 	}
 }

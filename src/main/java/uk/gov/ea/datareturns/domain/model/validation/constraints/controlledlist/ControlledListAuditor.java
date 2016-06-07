@@ -1,5 +1,10 @@
 package uk.gov.ea.datareturns.domain.model.validation.constraints.controlledlist;
 
+/**
+ * Interface for controlled list auditors
+ *
+ * @author Sam Gardner-Dell
+ */
 public interface ControlledListAuditor {
 
 	/**

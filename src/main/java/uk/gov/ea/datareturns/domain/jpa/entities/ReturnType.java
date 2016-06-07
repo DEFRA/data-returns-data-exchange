@@ -12,6 +12,7 @@ import javax.persistence.Table;
  * The persistent class for the return_types database table.
  *
  */
+@SuppressWarnings({ "JavaDoc", "unused" })
 @Entity
 @Table(name = "return_types")
 @NamedQueries({

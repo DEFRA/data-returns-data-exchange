@@ -22,6 +22,10 @@ public final class BooleanValue {
 		mapping.put("0", Boolean.FALSE);
 	}
 
+	/**
+	 * Private constructor.  To create instances of the {@link BooleanValue} class, see the static
+	 * {@link BooleanValue#from(Object)} method
+	 */
 	private BooleanValue() {
 	}
 

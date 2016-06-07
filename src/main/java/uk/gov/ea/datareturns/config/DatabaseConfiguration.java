@@ -39,6 +39,11 @@ public class DatabaseConfiguration {
 		return DataSourceBuilder.create().build();
 	}
 
+	/**
+	 * Bean factory for the JPA entity manager
+	 *
+	 * @return a {@link LocalContainerEntityManagerFactoryBean} configured for the application database
+	 */
 	@Bean
 	@ConditionalOnMissingBean
 	public LocalContainerEntityManagerFactoryBean entityManagerFactory() {

@@ -1,0 +1,9 @@
+{
+  "properties": [
+    {
+      "name": "storage.type",
+      "type": "java.lang.String",
+      "description": "Determine the storage provider implementation to use."
+    }
+  ]
+}

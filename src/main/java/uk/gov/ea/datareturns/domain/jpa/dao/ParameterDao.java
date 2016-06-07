@@ -4,6 +4,11 @@ import java.util.Set;
 
 import org.springframework.stereotype.Repository;
 
+/**
+ * DAO for parameters
+ *
+ * @author Sam Gardner-Dell
+ */
 @Repository
 public class ParameterDao extends AbstractJpaDao {
 	/**

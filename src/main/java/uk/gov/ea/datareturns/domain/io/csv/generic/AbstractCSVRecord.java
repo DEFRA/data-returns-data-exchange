@@ -1,9 +1,17 @@
 package uk.gov.ea.datareturns.domain.io.csv.generic;
 
+/**
+ * Superclass for records parsed from CSV files
+ *
+ * @author Sam Gardner-Dell
+ */
 public abstract class AbstractCSVRecord {
 	private long lineNumber;
 
-	public AbstractCSVRecord() {
+	/**
+	 * Create a new {@link AbstractCSVRecord}
+	 */
+	protected AbstractCSVRecord() {
 	}
 
 	/**

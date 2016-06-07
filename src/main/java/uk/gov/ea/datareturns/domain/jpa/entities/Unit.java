@@ -13,6 +13,7 @@ import javax.persistence.Table;
  * The persistent class for the units database table.
  *
  */
+@SuppressWarnings({ "JavaDoc", "unused" })
 @Entity
 @Table(name = "units")
 @NamedQueries({

@@ -6,6 +6,11 @@ import org.springframework.stereotype.Repository;
 
 import uk.gov.ea.datareturns.domain.jpa.entities.UniqueIdentifier;
 
+/**
+ * DAO for unique identifiers (EaId)
+ *
+ * @author Sam Gardner-Dell
+ */
 @Repository
 public class UniqueIdentifierDao extends AbstractJpaDao {
 	/**

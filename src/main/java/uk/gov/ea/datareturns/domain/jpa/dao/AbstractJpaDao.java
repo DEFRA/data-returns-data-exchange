@@ -21,12 +21,13 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Repository;
 
 /**
- * @author Sam Gardner-Dell
+ * Base class for JPA based DAO classes
  *
+ * @author Sam Gardner-Dell
  */
 @Repository
 public abstract class AbstractJpaDao {
-	protected static final Logger LOGGER = LoggerFactory.getLogger(AbstractJpaDao.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(AbstractJpaDao.class);
 
 	@Inject
 	private EntityManager entityManager;
@@ -44,6 +45,7 @@ public abstract class AbstractJpaDao {
 	 * Run a query that expects a List of Strings as a result
 	 *
 	 * @param namedQuery the named query to run (should result in a list of Strings being selected)
+	 * @param target the collection instance to populate with results
 	 * @return a {@link List} of Strings containing the results
 	 */
 	protected <T extends Collection<String>> T stringColumnQuery(final String namedQuery, final T target) {
@@ -57,6 +59,12 @@ public abstract class AbstractJpaDao {
 		}
 	}
 
+	/**
+	 * Run a query for data in a particular column
+	 *
+	 * @param namedQuery the named query to execute
+	 * @return a {@link Set} of Strings for the data retrieved from the query
+	 */
 	protected Set<String> cachedColumnQuery(final String namedQuery) {
 		Set<String> cachedSet = CACHED_STRING_SETS.get(namedQuery);
 		if (cachedSet == null) {

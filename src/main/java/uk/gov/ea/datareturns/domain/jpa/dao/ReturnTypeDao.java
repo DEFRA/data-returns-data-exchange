@@ -4,6 +4,11 @@ import java.util.Set;
 
 import org.springframework.stereotype.Repository;
 
+/**
+ * DAO for return types.
+ *
+ * @author Sam Gardner-Dell
+ */
 @Repository
 public class ReturnTypeDao extends AbstractJpaDao {
 	/**

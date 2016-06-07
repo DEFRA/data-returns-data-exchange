@@ -6,7 +6,9 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonUnwrapped;
 
 /**
- * Simple POJO containing the result of any data exchange action
+ * Top level response container for all requests to the {@link uk.gov.ea.datareturns.web.resource.DataExchangeResource}
+ *
+ * @author Sam Gardner-Dell
  */
 public class DataExchangeResult {
 	@JsonInclude(Include.NON_DEFAULT)
@@ -29,17 +31,30 @@ public class DataExchangeResult {
 	@JsonInclude(Include.NON_NULL)
 	private CompleteResult completeResult;
 
+	/**
+	 * Create a new DataExchangeResult
+	 */
 	public DataExchangeResult() {
 		// Set up a default value for the app status code.  The serializer will omit the appStatusCode
 		// unless it is set to a different value
 		this.appStatusCode = -1;
 	}
 
+	/**
+	 * Create a new DataExchangeResult for the specified {@link UploadResult}
+	 *
+	 * @param uploadResult the {@link UploadResult} to associate with
+	 */
 	public DataExchangeResult(final UploadResult uploadResult) {
 		this();
 		this.uploadResult = uploadResult;
 	}
 
+	/**
+	 * Create a new DataExchangeResult for the specified {@link CompleteResult}
+	 *
+	 * @param completeResult the {@link CompleteResult} to associate with
+	 */
 	public DataExchangeResult(final CompleteResult completeResult) {
 		this();
 		this.completeResult = completeResult;

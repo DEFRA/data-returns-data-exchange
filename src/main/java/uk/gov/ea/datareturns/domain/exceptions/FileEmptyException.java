@@ -13,12 +13,19 @@ public class FileEmptyException extends AbstractValidationException {
 	private static final long serialVersionUID = 1L;
 
 	/**
-	 * @param message
+	 * Create a new {@link FileEmptyException}
+	 *
+	 * @param message the detailed exception message
 	 */
 	public FileEmptyException(final String message) {
 		super(message);
 	}
 
+	/**
+	 * Retrieve the {@link ApplicationExceptionType} which relates to this Exception
+	 *
+	 * @return the appropriate ApplicationExceptionType for this exception
+	 */
 	@Override
 	public ApplicationExceptionType getType() {
 		return ApplicationExceptionType.FILE_EMPTY;

@@ -1,19 +1,5 @@
 package uk.gov.ea.datareturns.web.resource;
 
-import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
-import static javax.ws.rs.core.MediaType.MULTIPART_FORM_DATA;
-
-import java.io.File;
-import java.io.InputStream;
-
-import javax.inject.Inject;
-import javax.ws.rs.Consumes;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.Response.Status;
-
 import org.glassfish.jersey.media.multipart.FormDataContentDisposition;
 import org.glassfish.jersey.media.multipart.FormDataParam;
 import org.hibernate.validator.constraints.NotEmpty;
@@ -23,12 +9,29 @@ import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
-
 import uk.gov.ea.datareturns.domain.processors.FileCompletionProcessor;
 import uk.gov.ea.datareturns.domain.processors.FileUploadProcessor;
 import uk.gov.ea.datareturns.domain.result.DataExchangeResult;
 import uk.gov.ea.datareturns.web.filters.FilenameAuthorization;
 
+import javax.inject.Inject;
+import javax.ws.rs.Consumes;
+import javax.ws.rs.POST;
+import javax.ws.rs.Path;
+import javax.ws.rs.Produces;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.Status;
+import java.io.File;
+import java.io.InputStream;
+
+import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
+import static javax.ws.rs.core.MediaType.MULTIPART_FORM_DATA;
+
+/**
+ * The {@link DataExchangeResource} RESTful service to handle file uploads to the data returns backend service
+ *
+ * @author Sam Gardner-Dell
+ */
 @Path("/data-exchange/")
 @Component
 @Scope(ConfigurableBeanFactory.SCOPE_SINGLETON)
@@ -37,6 +40,11 @@ public class DataExchangeResource {
 
 	private final ApplicationContext context;
 
+	/**
+	 * Create a new {@link DataExchangeResource} RESTful service
+	 *
+	 * @param context the spring application context
+	 */
 	@Inject
 	public DataExchangeResource(final ApplicationContext context) {
 		this.context = context;
@@ -45,10 +53,10 @@ public class DataExchangeResource {
 	/**
 	 * REST method to handle Returns file upload.
 	 *
-	 * @param is
-	 * @param fileDetail
-	 * @return JSON object
-	 * @throws Exception
+	 * @param is the {@link InputStream} from which the upload is read
+	 * @param fileDetail details about the file being uploaded, filename etc
+	 * @return a {@link Response} object containing a JSON entity.  Responses with HTTP code 4XX indicate a validation error, 5XX a server error.
+	 * @throws Exception to be handled by the configured Jersey {@link javax.ws.rs.ext.ExceptionMapper}s
 	 */
 	@POST
 	@Path("/upload")
@@ -83,12 +91,11 @@ public class DataExchangeResource {
 	/**
 	 * Complete an upload session
 	 *
-	 * @param orgFileKey
-	 * @param userEmail
-	 * @param orgFileName
-	 * @param permitNo
-	 * @return {@link Response} object
-	 * @throws Exception
+	 * @param orgFileKey the file key returned by the {@link DataExchangeResource}.uploadFile method
+	 * @param userEmail the email address of the user submitting the file
+	 * @param orgFileName the original filename of the file that was uploaded.
+	 * @return a {@link Response} object containing a JSON entity.  Responses with HTTP code 4XX indicate a client error (e.g. 404 for invalid file key), 5XX a server error.
+	 * @throws Exception to be handled by the configured Jersey {@link javax.ws.rs.ext.ExceptionMapper}s
 	 */
 	@POST
 	@Path("/complete")

@@ -24,11 +24,27 @@ import javax.validation.Payload;
 @Constraint(validatedBy = ReturnsDateValidator.class)
 @Documented
 public @interface ValidReturnsDate {
+	/**
+	 * Default message template for violations
+	 * @return the message template to use for violations
+	 */
 	String message() default "{DR9020-Incorrect}";
 
+	/**
+	 * The message template to use for missing dates
+	 * @return the message template to use for violations
+	 */
 	String missingMessage() default "{DR9020-Missing}";
 
+	/**
+	 * Validation groups
+	 * @return the groups that this validator is associated with
+	 */
 	Class<?>[] groups() default {};
 
+	/**
+	 * Validation payload
+	 * @return the Payload
+	 */
 	Class<? extends Payload>[] payload() default {};
 }

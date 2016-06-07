@@ -11,8 +11,9 @@ import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.core.pattern.color.ForegroundCompositeConverterBase;
 
 /**
- * @author Sam Gardner-Dell
+ * Colours log statements according to their severity.
  *
+ * @author Sam Gardner-Dell
  */
 public class LogHighlightingConverter extends ForegroundCompositeConverterBase<ILoggingEvent> {
 	/* (non-Javadoc)
@@ -35,6 +36,13 @@ public class LogHighlightingConverter extends ForegroundCompositeConverterBase<I
 		}
 	}
 
+	/**
+	 * Generate the appropriate ANSI escape sequence for the given style and color
+	 *
+	 * @param style the style (bold, normal etc) - see {@link AnsiStyle}
+	 * @param color the colour - see {@link AnsiColor}
+	 * @return the ANSI code for the given style and colour
+	 */
 	private static String toAnsi(final AnsiStyle style, final AnsiColor color) {
 		return style.toString() + ";" + color.toString();
 	}

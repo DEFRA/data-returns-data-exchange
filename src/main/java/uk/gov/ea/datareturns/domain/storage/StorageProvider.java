@@ -13,6 +13,8 @@ import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.RandomUtils;
 
 /**
+ * Interface for all storage providers
+ *
  * @author Sam Gardner-Dell
  */
 public interface StorageProvider {
@@ -41,7 +43,7 @@ public interface StorageProvider {
 	 * @param fileKey the key identifier used to identify the file
 	 * @param metadata the new metadata to be stored against the file in the permanent store area.
 	 * @return the new key identifier for the file in the permanent store area.
-	 * @throws StorageException
+	 * @throws StorageException if an error occurred while attempting to move the file with the specified key
 	 */
 	String moveToAuditStore(String fileKey, Map<String, String> metadata) throws StorageException;
 
@@ -68,11 +70,22 @@ public interface StorageProvider {
 		return partitioning + "-" + datePart + "-" + uuid + "." + FilenameUtils.getExtension(file.getName());
 	}
 
-	public static class StoredFile {
+	/**
+	 * The {@link StoredFile} class is used to encapsulate all information stored by the {@link StorageProvider} for
+	 * a particular file key.
+	 */
+	class StoredFile {
+		/** The file that this {@link StoredFile} wraps */
 		private final File file;
-
+		/** Metadata associated with the stored file */
 		private final Map<String, String> metadata;
 
+		/**
+		 * Create a new {@link StoredFile}
+		 *
+		 * @param file the underlying stored file
+		 * @param metadata the metadata associated with the file
+		 */
 		public StoredFile(final File file, final Map<String, String> metadata) {
 			super();
 			this.file = file;

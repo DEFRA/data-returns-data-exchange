@@ -1,22 +1,32 @@
 package uk.gov.ea.datareturns.domain.model.rules;
 
+/**
+ * Enumeration of file types recognised by the data returns service
+ *
+ * @author Sam Gardner-Dell
+ */
 public enum FileType {
-	CSV("csv", "Comma Separated Values"), XML("xml", "Extensible Markup Language");
+	/** Comma separated values files */
+	CSV("csv"),
+	/** Extensible markup language files */
+	XML("xml");
 
-	private String fileType;
+	private final String extension;
 
-	private String description;
-
-	FileType(final String fileType, final String reason) {
-		this.fileType = fileType;
-		this.description = reason;
+	/**
+	 * Create a new FileType
+	 * @param extension the file extension
+	 */
+	FileType(final String extension) {
+		this.extension = extension;
 	}
 
-	public String getFileType() {
-		return this.fileType;
-	}
-
-	public String getReason() {
-		return this.description;
+	/**
+	 * Retrieve the file extension for the file type
+	 *
+	 * @return the file extension
+	 */
+	public String getExtension() {
+		return this.extension;
 	}
 }

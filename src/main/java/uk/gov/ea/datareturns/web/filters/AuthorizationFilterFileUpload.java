@@ -19,6 +19,7 @@ import uk.gov.ea.datareturns.web.security.ApiKeys;
 
 /**
  * Created by graham on 13/05/16.
+ * @author Graham
  */
 @FilenameAuthorization
 @Component
@@ -28,11 +29,22 @@ public class AuthorizationFilterFileUpload implements ContainerRequestFilter {
 
 	private final ApiKeys apiKeys;
 
+	/**
+	 * Create a new {@link AuthorizationFilterFileUpload}
+	 *
+	 * @param apiKeys the {@link ApiKeys} service
+	 */
 	@Inject
 	public AuthorizationFilterFileUpload(final ApiKeys apiKeys) {
 		this.apiKeys = apiKeys;
 	}
 
+	/**
+	 * Filter requests to check for a valid Authorization header.
+	 *
+	 * @param requestContext the request to check
+	 * @throws IOException if an unexpected error occurs processing the request.
+	 */
 	@Override
 	public void filter(final ContainerRequestContext requestContext) throws IOException {
 		final String authorizationHeader = requestContext.getHeaderString(HttpHeaders.AUTHORIZATION);

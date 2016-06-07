@@ -24,8 +24,15 @@ import uk.gov.ea.datareturns.domain.result.ExceptionMessageContainer;
 public class UnhandledExceptionMapper implements ExceptionMapper<Throwable> {
 	private static final Logger LOGGER = LoggerFactory.getLogger(UnhandledExceptionMapper.class);
 
-	/* (non-Javadoc)
-	 * @see javax.ws.rs.ext.ExceptionMapper#toResponse(java.lang.Throwable)
+	/**
+	 * Handle all types of exception thrown that are not handled by any other exception mapper.
+	 *
+	 * These are unexpected exceptions and represent a problem in the server configuration or a programming error.
+	 *
+	 * These exceptions should generated a HTTP 500 - Internal Server Error response
+	 *
+	 * @param exception the exception which occurred
+	 * @return a {@link Response} to return to the client for the exception that was thrown
 	 */
 	@Override
 	public Response toResponse(final Throwable exception) {

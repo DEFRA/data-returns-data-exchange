@@ -28,13 +28,24 @@ public class ProcessorSettings {
 	@JsonIgnore
 	private Map<String, String> outputMappingsMap = null;
 
+	/**
+	 * Create a new ProcessorSettings instance
+	 */
 	public ProcessorSettings() {
 	}
 
+	/**
+	 * @return the configured output location on the filesystem
+	 */
 	public String getOutputLocation() {
 		return this.outputLocation;
 	}
 
+	/**
+	 * Set the configured output location on the filesystem
+	 *
+	 * @param outputLocation the configured output location on the filesystem
+	 */
 	public void setOutputLocation(final String outputLocation) {
 		this.outputLocation = outputLocation;
 	}

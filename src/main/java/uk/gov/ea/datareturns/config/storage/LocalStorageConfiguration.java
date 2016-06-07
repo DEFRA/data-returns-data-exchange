@@ -5,6 +5,11 @@ import java.io.File;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
 
+/**
+ * Configuration settings for the {@link uk.gov.ea.datareturns.domain.storage.local.LocalStorageProvider}
+ *
+ * @author Sam Gardner-Dell
+ */
 @Component
 @ConfigurationProperties(prefix = "storage.local")
 public class LocalStorageConfiguration {

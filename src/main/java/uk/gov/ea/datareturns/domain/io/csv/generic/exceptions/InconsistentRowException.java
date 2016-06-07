@@ -15,7 +15,9 @@ public class InconsistentRowException extends DataProcessingException {
 	private static final long serialVersionUID = 1L;
 
 	/**
-	 * @param message
+	 * Create a new {@link InconsistentRowException}
+	 *
+	 * @param message the detailed exception message
 	 */
 	public InconsistentRowException(final String message) {
 		super(message);

@@ -3,7 +3,11 @@ package uk.gov.ea.datareturns.domain.jpa.dao;
 import java.util.Set;
 
 import org.springframework.stereotype.Repository;
-
+/**
+ * DAO for units of measure.
+ *
+ * @author Sam Gardner-Dell
+ */
 @Repository
 public class UnitDao extends AbstractJpaDao {
 	/**

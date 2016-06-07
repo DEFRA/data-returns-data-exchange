@@ -12,19 +12,37 @@
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
-		<version>1.3.3.RELEASE</version>
+		<version>1.3.5.RELEASE</version>
 	</parent>
+
+
+	<organization>
+		<name>Environment Agency</name>
+		<url>http://www.environment-agency.gov.uk</url>
+	</organization>
+
+	<developers>
+		<developer>
+			<id>sam</id>
+			<name>Sam Gardner-Dell</name>
+			<email>sam.gardner-dell at environment-agency.gov.uk</email>
+			<organization>Environment Agency</organization>
+			<organizationUrl>http://www.environment-agency.gov.uk</organizationUrl>
+			<roles>
+				<role>Project lead</role>
+			</roles>
+		</developer>
+	</developers>
+
+	<scm>
+		<url>https://github.com/EnvironmentAgency/data-returns-data-exchange</url>
+	</scm>
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<java.version>1.8</java.version>
-				
 		<!-- Library versions -->
-		
-		<!-- TODO: Remove when spring-boot-starter-parent support for logback is >1.1.7 
-		this allows us to use ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy -->
-		<logback.version>1.1.7</logback.version>
-		
+
 		<!-- Postgres version -->
 		<postgresql.version>9.4.1208</postgresql.version>
 		
@@ -39,6 +57,8 @@
 
 		<!-- Univocity CSV parser -->
 		<univocity.parsers.version>2.0.2</univocity.parsers.version>
+		<!-- TODO: Update univocity version - need to understand why this has an effect on one of the unit tests.  -->
+		<!--<univocity.parsers.version>2.1.1</univocity.parsers.version>-->
 
 		<metrics-spring.version>3.1.3</metrics-spring.version>
 
@@ -46,12 +66,10 @@
 
 		<airbrake-logback.version>1.0.1</airbrake-logback.version>
 
-		<aws.java.sdk.version>1.10.62</aws.java.sdk.version>
+		<aws.java.sdk.version>1.11.4</aws.java.sdk.version>
 
 		<!-- Test -->
-		<mockito.version>1.10.19</mockito.version>
-		<powermock-api.version>1.6.4</powermock-api.version>
-		<grizzly2.version>2.22.2</grizzly2.version>
+		<grizzly2.version>2.23</grizzly2.version>
 		<run.test.suite>**/AllTests.class</run.test.suite>
 	</properties>
 
@@ -88,7 +106,12 @@
 			<artifactId>spring-boot-starter-actuator</artifactId>
 		</dependency>
 		
-				
+		<!-- Spring boot annotation processor -->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-configuration-processor</artifactId>
+			<optional>true</optional>
+		</dependency>
 		<!-- Expose dropwizard metrics via management port -->
 		<dependency>
 			<groupId>com.ryantenney.metrics</groupId>
@@ -243,23 +266,6 @@
 			<scope>test</scope>
 		</dependency>
 		<dependency>
-			<groupId>org.mockito</groupId>
-			<artifactId>mockito-core</artifactId>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.powermock</groupId>
-			<artifactId>powermock-api-mockito</artifactId>
-			<version>${powermock-api.version}</version>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.powermock</groupId>
-			<artifactId>powermock-module-junit4</artifactId>
-			<version>${powermock-api.version}</version>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
 			<groupId>org.glassfish.jersey.test-framework.providers</groupId>
 			<artifactId>jersey-test-framework-provider-grizzly2</artifactId>
 			<version>${grizzly2.version}</version>
@@ -361,6 +367,16 @@
 				</configuration>
 
 				<executions>
+					<!-- This command can be executed using mvn sql:execute@drop-connections -->
+					<execution>
+						<id>drop-connections</id>
+						<configuration>
+							<url>${db.mgt.url}</url>
+							<srcFiles>
+								<srcFile>${project.build.outputDirectory}/db/sql/1-drop-connections.sql</srcFile>
+							</srcFiles>
+						</configuration>
+					</execution>
 					<!-- This command can be executed using mvn sql:execute@drop-database -->
 					<execution>
 						<id>drop-database</id>

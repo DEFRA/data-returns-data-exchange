@@ -13,22 +13,26 @@ public class ProcessingException extends Exception {
 	private static final long serialVersionUID = 1L;
 
 	/**
-	 * @param message
+	 * Create a new {@link ProcessingException} for the given message
+	 *
+	 * @param message the detailed exception message
 	 */
 	public ProcessingException(final String message) {
 		super(message);
 	}
 
 	/**
-	 * @param cause
+	 * Create a new {@link ProcessingException} for the given cause
+	 *
+	 * @param cause the underlying cause for the {@link ProcessingException}
 	 */
 	public ProcessingException(final Throwable cause) {
 		super(cause);
 	}
 
 	/**
-	 * @param message
-	 * @param cause
+	 * @param message the detailed exception message
+	 * @param cause the underlying cause for the {@link ProcessingException}
 	 */
 	public ProcessingException(final String message, final Throwable cause) {
 		super(message, cause);

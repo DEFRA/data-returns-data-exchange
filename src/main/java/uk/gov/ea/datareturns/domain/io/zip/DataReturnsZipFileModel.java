@@ -24,10 +24,10 @@ import org.apache.commons.io.FileUtils;
  */
 public class DataReturnsZipFileModel {
 	/** The directory within the zip file where the input file is stored (this is the original file that was uploaded by the user */
-	private static final String DIR_INPUT = "/input/";
+	private static final String DIR_INPUT = "input/";
 
 	/** The directory within the zip file where the output files are stored (one output file is stored per permit number encountered */
-	private static final String DIR_OUTPUT = "/output/";
+	private static final String DIR_OUTPUT = "output/";
 
 	private File inputFile;
 
@@ -69,7 +69,7 @@ public class DataReturnsZipFileModel {
 	}
 
 	/**
-	 * Add a new outputfile to the list of output files
+	 * Add a new output file to the list of output files
 	 *
 	 * @param outputFile the {@link File} to be added
 	 */
@@ -80,10 +80,17 @@ public class DataReturnsZipFileModel {
 		this.outputFiles.add(outputFile);
 	}
 
+	/**
+	 * Create a ZIP file containing the input and output files referenced by this model.
+	 *
+	 * @param workFolder the working folder to use on the filesystem
+	 * @return a reference to the zip file that was created
+	 * @throws IOException if a problem occurred attempting to write the zip file.
+	 */
 	public final File toZipFile(final File workFolder) throws IOException {
 		final File zipFile = new File(workFolder, this.inputFile.getName() + ".zip");
 		try (OutputStream fos = FileUtils.openOutputStream(zipFile);
-				ZipOutputStream zos = new ZipOutputStream(fos);) {
+				ZipOutputStream zos = new ZipOutputStream(fos)) {
 			zos.setMethod(ZipOutputStream.DEFLATED);
 			zos.setLevel(Deflater.BEST_COMPRESSION);
 
@@ -102,7 +109,15 @@ public class DataReturnsZipFileModel {
 		return zipFile;
 	}
 
-	public static final DataReturnsZipFileModel fromZipFile(final File workFolder, final File zipFileObj) throws IOException {
+	/**
+	 * Create a new {@link DataReturnsZipFileModel} from the specified zip file
+	 *
+	 * @param workFolder the work folder to use for extraction
+	 * @param zipFileObj the zip file to extract the model from
+	 * @return a new {@link DataReturnsZipFileModel} object
+	 * @throws IOException if a problem occurred attempting to read the zip file
+	 */
+	public static DataReturnsZipFileModel fromZipFile(final File workFolder, final File zipFileObj) throws IOException {
 		final DataReturnsZipFileModel zipFileModel = new DataReturnsZipFileModel();
 
 		try (ZipFile zipFile = new ZipFile(zipFileObj)) {
@@ -125,5 +140,4 @@ public class DataReturnsZipFileModel {
 		}
 		return zipFileModel;
 	}
-
 }
