@@ -3,6 +3,7 @@ package uk.gov.ea.datareturns.domain.jpa.dao;
 import java.util.Set;
 
 import org.springframework.stereotype.Repository;
+import uk.gov.ea.datareturns.domain.jpa.entities.ReturnType;
 
 /**
  * DAO for return types.
@@ -11,11 +12,9 @@ import org.springframework.stereotype.Repository;
  */
 @Repository
 public class ReturnTypeDao extends AbstractJpaDao {
-	/**
-	 *
-	 */
+
 	public ReturnTypeDao() {
-		super();
+		super(ReturnType.class);
 	}
 
 	/**

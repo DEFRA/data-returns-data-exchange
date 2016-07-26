@@ -22,7 +22,7 @@ import javax.persistence.Table;
 		@NamedQuery(name = "MethodOrStandard.findAllNames", query = "SELECT m.name FROM MethodOrStandard m"),
 		@NamedQuery(name = "MethodOrStandard.findByName", query = "SELECT m FROM MethodOrStandard m WHERE m.name = :name")
 })
-public class MethodOrStandard implements Serializable {
+public class MethodOrStandard implements Serializable, ControlledList {
 	private static final long serialVersionUID = 1L;
 
 	@Id

@@ -3,6 +3,7 @@ package uk.gov.ea.datareturns.domain.jpa.dao;
 import java.util.Set;
 
 import org.springframework.stereotype.Repository;
+import uk.gov.ea.datareturns.domain.jpa.entities.ReferencePeriod;
 
 /**
  * DAO for reference periods.
@@ -11,11 +12,9 @@ import org.springframework.stereotype.Repository;
  */
 @Repository
 public class ReferencePeriodDao extends AbstractJpaDao {
-	/**
-	 *
-	 */
+
 	public ReferencePeriodDao() {
-		super();
+		super(ReferencePeriod.class);
 	}
 
 	/**

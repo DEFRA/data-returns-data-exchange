@@ -22,7 +22,7 @@ import javax.persistence.Table;
 		@NamedQuery(name = "Unit.findByName", query = "SELECT u FROM Unit u WHERE u.name = :name")
 })
 
-public class Unit {
+public class Unit implements ControlledList {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;

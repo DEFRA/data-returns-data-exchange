@@ -3,6 +3,8 @@ package uk.gov.ea.datareturns.domain.jpa.dao;
 import java.util.Set;
 
 import org.springframework.stereotype.Repository;
+import uk.gov.ea.datareturns.domain.jpa.entities.Unit;
+
 /**
  * DAO for units of measure.
  *
@@ -10,11 +12,9 @@ import org.springframework.stereotype.Repository;
  */
 @Repository
 public class UnitDao extends AbstractJpaDao {
-	/**
-	 *
-	 */
+
 	public UnitDao() {
-		super();
+		super(Unit.class);
 	}
 
 	/**

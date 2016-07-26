@@ -13,11 +13,9 @@ import uk.gov.ea.datareturns.domain.jpa.entities.UniqueIdentifier;
  */
 @Repository
 public class UniqueIdentifierDao extends AbstractJpaDao {
-	/**
-	 *
-	 */
+
 	public UniqueIdentifierDao() {
-		super();
+		super(UniqueIdentifier.class);
 	}
 
 	/**

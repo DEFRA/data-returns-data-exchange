@@ -9,16 +9,17 @@ import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
+import uk.gov.ea.datareturns.domain.exceptions.ApplicationExceptionType;
+import uk.gov.ea.datareturns.domain.jpa.entities.ControlledListsList;
+import uk.gov.ea.datareturns.domain.processors.ControlledListProcessor;
 import uk.gov.ea.datareturns.domain.processors.FileCompletionProcessor;
 import uk.gov.ea.datareturns.domain.processors.FileUploadProcessor;
 import uk.gov.ea.datareturns.domain.result.DataExchangeResult;
+import uk.gov.ea.datareturns.domain.result.ExceptionMessageContainer;
 import uk.gov.ea.datareturns.web.filters.FilenameAuthorization;
 
 import javax.inject.Inject;
-import javax.ws.rs.Consumes;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
+import javax.ws.rs.*;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 import java.io.File;
@@ -39,6 +40,9 @@ public class DataExchangeResource {
 	private static final Logger LOGGER = LoggerFactory.getLogger(DataExchangeResource.class);
 
 	private final ApplicationContext context;
+
+	@Inject
+	ControlledListProcessor controlledListProcessor;
 
 	/**
 	 * Create a new {@link DataExchangeResource} RESTful service
@@ -116,4 +120,29 @@ public class DataExchangeResource {
 		final DataExchangeResult result = processor.process();
 		return Response.status(Status.OK).entity(result).build();
 	}
+
+	@GET
+	@Path("/controlled-list/{listname}/")
+	@Produces(APPLICATION_JSON)
+	public Response getControlledList(
+			@PathParam("listname") final String listName,
+			@QueryParam("searchterm") final String searchString) throws Exception
+    {
+
+        LOGGER.debug("Request for /data-exchange/controlled-list/" + listName + " Search term: " + searchString);
+
+        ControlledListsList controlledList = ControlledListsList.getByPath(listName);
+
+        // Check we have a registered controlled list type
+        if (controlledList == null) {
+            LOGGER.error("Request for unknown controlled list: " + listName);
+            return Response.status(Status.BAD_REQUEST).entity(new ExceptionMessageContainer(
+                    ApplicationExceptionType.UNKNOWN_LIST_TYPE, "Request for unknown controlled list: " + listName
+            )).build();
+        } else {
+            controlledListProcessor.getListData(controlledList);
+            return Response.status(Status.OK).entity(null).build();
+        }
+	}
+
 }

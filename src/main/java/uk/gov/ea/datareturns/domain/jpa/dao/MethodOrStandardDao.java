@@ -3,6 +3,7 @@ package uk.gov.ea.datareturns.domain.jpa.dao;
 import java.util.Set;
 
 import org.springframework.stereotype.Repository;
+import uk.gov.ea.datareturns.domain.jpa.entities.MethodOrStandard;
 
 /**
  * DAO for monitoring methods and standards.
@@ -11,11 +12,9 @@ import org.springframework.stereotype.Repository;
  */
 @Repository
 public class MethodOrStandardDao extends AbstractJpaDao {
-	/**
-	 *
-	 */
+
 	public MethodOrStandardDao() {
-		super();
+		super(MethodOrStandard.class);
 	}
 
 	/**

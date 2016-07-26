@@ -18,7 +18,7 @@ import javax.persistence.Table;
 		@NamedQuery(name = "UniqueIdentifier.findAllIdentifiers", query = "SELECT u.identifier FROM UniqueIdentifier u"),
 		@NamedQuery(name = "UniqueIdentifier.findByIdentifier", query = "SELECT u FROM UniqueIdentifier u WHERE u.identifier = :identifier")
 })
-public class UniqueIdentifier {
+public class UniqueIdentifier implements PersistedEntity {
 
 	@Id
 	private String identifier;

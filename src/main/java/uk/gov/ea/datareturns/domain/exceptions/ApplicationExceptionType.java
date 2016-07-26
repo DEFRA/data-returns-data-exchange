@@ -18,8 +18,11 @@ public enum ApplicationExceptionType {
 	HEADER_UNRECOGNISED_FIELD_FOUND(840, "Unrecognised field found"),
 	/** DR0900 - validation errors in file content */
 	VALIDATION_ERRORS(900, "One or more validation problems are present and must be corrected"),
+	/** DR1000 **/
+	UNKNOWN_LIST_TYPE(1000, "Unknown controlled list"),
 	/** DR3000 - unexpected system error */
 	SYSTEM_FAILURE(3000, "A system failure occurred");
+
 
 	private final int appStatusCode;
 

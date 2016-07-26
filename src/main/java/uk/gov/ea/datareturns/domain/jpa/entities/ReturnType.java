@@ -20,7 +20,7 @@ import javax.persistence.Table;
 		@NamedQuery(name = "ReturnType.findAllNames", query = "SELECT r.name FROM ReturnType r"),
 		@NamedQuery(name = "ReturnType.findByName", query = "SELECT r FROM ReturnType r WHERE r.name = :name")
 })
-public class ReturnType {
+public class ReturnType implements ControlledList {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)

@@ -20,7 +20,7 @@ import javax.persistence.Table;
 		@NamedQuery(name = "MonitoringPeriod.findAllNames", query = "SELECT m.name FROM MonitoringPeriod m"),
 		@NamedQuery(name = "MonitoringPeriod.findByName", query = "SELECT m FROM MonitoringPeriod m WHERE m.name = :name")
 })
-public class MonitoringPeriod {
+public class MonitoringPeriod implements ControlledList {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
