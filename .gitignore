@@ -6,3 +6,5 @@ nbactions.xml
 /.settings/
 .project
 .classpath
+/log/*.log
+/work/
