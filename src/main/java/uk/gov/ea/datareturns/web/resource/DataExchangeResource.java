@@ -11,6 +11,7 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import uk.gov.ea.datareturns.domain.exceptions.ApplicationExceptionType;
 import uk.gov.ea.datareturns.domain.jpa.entities.ControlledListsList;
+import uk.gov.ea.datareturns.domain.jpa.entities.PersistedEntity;
 import uk.gov.ea.datareturns.domain.processors.ControlledListProcessor;
 import uk.gov.ea.datareturns.domain.processors.FileCompletionProcessor;
 import uk.gov.ea.datareturns.domain.processors.FileUploadProcessor;
@@ -24,6 +25,7 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 import java.io.File;
 import java.io.InputStream;
+import java.util.List;
 
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 import static javax.ws.rs.core.MediaType.MULTIPART_FORM_DATA;
@@ -126,11 +128,10 @@ public class DataExchangeResource {
 	@Produces(APPLICATION_JSON)
 	public Response getControlledList(
 			@PathParam("listname") final String listName,
-			@QueryParam("searchterm") final String searchString) throws Exception
-    {
-
-        LOGGER.debug("Request for /data-exchange/controlled-list/" + listName + " Search term: " + searchString);
-
+			@QueryParam("field") final String field,
+			@QueryParam("contains") final String contains) throws Exception
+	{
+        LOGGER.debug("Request for /data-exchange/controlled-list/" + listName + " Field: " + field + " contains: " + contains);
         ControlledListsList controlledList = ControlledListsList.getByPath(listName);
 
         // Check we have a registered controlled list type
@@ -140,9 +141,8 @@ public class DataExchangeResource {
                     ApplicationExceptionType.UNKNOWN_LIST_TYPE, "Request for unknown controlled list: " + listName
             )).build();
         } else {
-            controlledListProcessor.getListData(controlledList);
-            return Response.status(Status.OK).entity(null).build();
+			List<? extends PersistedEntity> listData = controlledListProcessor.getListData(controlledList, field, contains);
+            return Response.status(Status.OK).entity(listData).build();
         }
 	}
-
 }

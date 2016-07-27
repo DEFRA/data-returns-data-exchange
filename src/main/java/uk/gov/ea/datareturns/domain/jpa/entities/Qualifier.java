@@ -15,11 +15,6 @@ import javax.persistence.Table;
 @SuppressWarnings({ "JavaDoc", "unused" })
 @Entity
 @Table(name = "qualifiers")
-@NamedQueries({
-		@NamedQuery(name = "Qualifier.findAll", query = "SELECT q FROM Qualifier q"),
-		@NamedQuery(name = "Qualifier.findAllNames", query = "SELECT q.name FROM Qualifier q"),
-		@NamedQuery(name = "Qualifier.findByName", query = "SELECT q FROM Qualifier q WHERE q.name = :name")
-})
 public class Qualifier implements PersistedEntity {
 
 	@Id
@@ -27,9 +22,6 @@ public class Qualifier implements PersistedEntity {
 	private Long id;
 
 	private String name;
-
-	public Qualifier() {
-	}
 
 	public Long getId() {
 		return this.id;

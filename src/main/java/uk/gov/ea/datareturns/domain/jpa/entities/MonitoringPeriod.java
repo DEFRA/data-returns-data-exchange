@@ -1,12 +1,6 @@
 package uk.gov.ea.datareturns.domain.jpa.entities;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.NamedQueries;
-import javax.persistence.NamedQuery;
-import javax.persistence.Table;
+import javax.persistence.*;
 
 /**
  * The persistent class for the monitoring_periods database table.
@@ -15,20 +9,12 @@ import javax.persistence.Table;
 @SuppressWarnings({ "JavaDoc", "unused" })
 @Entity
 @Table(name = "monitoring_periods")
-@NamedQueries({
-		@NamedQuery(name = "MonitoringPeriod.findAll", query = "SELECT m FROM MonitoringPeriod m"),
-		@NamedQuery(name = "MonitoringPeriod.findAllNames", query = "SELECT m.name FROM MonitoringPeriod m"),
-		@NamedQuery(name = "MonitoringPeriod.findByName", query = "SELECT m FROM MonitoringPeriod m WHERE m.name = :name")
-})
 public class MonitoringPeriod implements ControlledList {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 
 	private String name;
-
-	public MonitoringPeriod() {
-	}
 
 	public Long getId() {
 		return this.id;

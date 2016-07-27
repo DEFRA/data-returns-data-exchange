@@ -16,12 +16,6 @@ import javax.persistence.Table;
 @SuppressWarnings({ "JavaDoc", "unused" })
 @Entity
 @Table(name = "units")
-@NamedQueries({
-		@NamedQuery(name = "Unit.findAll", query = "SELECT u FROM Unit u"),
-		@NamedQuery(name = "Unit.findAllNames", query = "SELECT u.name FROM Unit u"),
-		@NamedQuery(name = "Unit.findByName", query = "SELECT u FROM Unit u WHERE u.name = :name")
-})
-
 public class Unit implements ControlledList {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -33,9 +27,6 @@ public class Unit implements ControlledList {
 	private String measureType;
 
 	private String name;
-
-	public Unit() {
-	}
 
 	public Long getId() {
 		return this.id;

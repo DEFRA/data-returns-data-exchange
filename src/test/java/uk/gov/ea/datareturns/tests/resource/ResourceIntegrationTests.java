@@ -1,19 +1,5 @@
 package uk.gov.ea.datareturns.tests.resource;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-
-import javax.inject.Inject;
-import javax.ws.rs.client.Client;
-import javax.ws.rs.client.Entity;
-import javax.ws.rs.core.HttpHeaders;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.Response.Status;
-
 import org.glassfish.jersey.client.ClientConfig;
 import org.glassfish.jersey.client.ClientProperties;
 import org.glassfish.jersey.client.JerseyClientBuilder;
@@ -30,12 +16,24 @@ import org.springframework.boot.test.WebIntegrationTest;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-
 import uk.gov.ea.datareturns.App;
 import uk.gov.ea.datareturns.config.TestSettings;
 import uk.gov.ea.datareturns.domain.exceptions.ApplicationExceptionType;
 import uk.gov.ea.datareturns.domain.result.DataExchangeResult;
 import uk.gov.ea.datareturns.web.security.ApiKeys;
+
+import javax.inject.Inject;
+import javax.ws.rs.client.Client;
+import javax.ws.rs.client.Entity;
+import javax.ws.rs.core.HttpHeaders;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.Status;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Integration test class for the DataExchangeResource REST service. Uses
@@ -297,13 +295,104 @@ public class ResourceIntegrationTests {
 		assertThat(response.getStatus()).isEqualTo(Status.BAD_REQUEST.getStatusCode());
 	}
 
-//	@Test
-//	public void testControlledListParameters() {
-//		Client client = createClient("test Controlled List Parameters");
-//		final String uri = createURIForStep(CONTROLLED_LISTS) + "/parameters";
-//		Response response = client.target(uri).request(MediaType.APPLICATION_JSON_TYPE).get();
-//
-//	}
+	@Test
+	public void testControlledListParameters() {
+		Client client = createClient("test Controlled List Parameters");
+		final String uri = createURIForStep(CONTROLLED_LISTS) + "/parameters";
+		Response response = client.target(uri).request(MediaType.APPLICATION_JSON_TYPE).get();
+		assertThat(response.getStatus()).isEqualTo(Status.OK.getStatusCode());
+	}
+
+	@Test
+	public void testControlledListUnits() {
+		Client client = createClient("test Controlled List Units");
+		final String uri = createURIForStep(CONTROLLED_LISTS) + "/units";
+		Response response = client.target(uri).request(MediaType.APPLICATION_JSON_TYPE).get();
+		assertThat(response.getStatus()).isEqualTo(Status.OK.getStatusCode());
+	}
+
+	@Test
+	public void testControlledListRefPeriod() {
+		Client client = createClient("test Controlled List Reference Period");
+		final String uri = createURIForStep(CONTROLLED_LISTS) + "/ref_period";
+		Response response = client.target(uri).request(MediaType.APPLICATION_JSON_TYPE).get();
+		assertThat(response.getStatus()).isEqualTo(Status.OK.getStatusCode());
+	}
+
+	@Test
+	public void testControlledListMonitoringPeriod() {
+		Client client = createClient("test Controlled List Monitoring Period");
+		final String uri = createURIForStep(CONTROLLED_LISTS) + "/mon_period";
+		Response response = client.target(uri).request(MediaType.APPLICATION_JSON_TYPE).get();
+		assertThat(response.getStatus()).isEqualTo(Status.OK.getStatusCode());
+	}
+
+	@Test
+	public void testControlledListMethodOrStandard() {
+		Client client = createClient("test Controlled List Method Or Standard");
+		final String uri = createURIForStep(CONTROLLED_LISTS) + "/method";
+		Response response = client.target(uri).request(MediaType.APPLICATION_JSON_TYPE).get();
+		assertThat(response.getStatus()).isEqualTo(Status.OK.getStatusCode());
+	}
+
+	@Test
+	public void testControlledListReturnType() {
+		Client client = createClient("test Controlled List Return Type");
+		final String uri = createURIForStep(CONTROLLED_LISTS) + "/rtn_type";
+		Response response = client.target(uri).request(MediaType.APPLICATION_JSON_TYPE).get();
+		assertThat(response.getStatus()).isEqualTo(Status.OK.getStatusCode());
+	}
+
+	/*
+	 * Run all the test again to test the caching
+	 */
+	@Test
+	public void testControlledListParameters2() {
+		Client client = createClient("test Controlled List Parameters2");
+		final String uri = createURIForStep(CONTROLLED_LISTS) + "/parameters";
+		Response response = client.target(uri).request(MediaType.APPLICATION_JSON_TYPE).get();
+		assertThat(response.getStatus()).isEqualTo(Status.OK.getStatusCode());
+	}
+
+	@Test
+	public void testControlledListUnits2() {
+		Client client = createClient("test Controlled List Units2");
+		final String uri = createURIForStep(CONTROLLED_LISTS) + "/units";
+		Response response = client.target(uri).request(MediaType.APPLICATION_JSON_TYPE).get();
+		assertThat(response.getStatus()).isEqualTo(Status.OK.getStatusCode());
+	}
+
+	@Test
+	public void testControlledListRefPeriod2() {
+		Client client = createClient("test Controlled List Reference Period2");
+		final String uri = createURIForStep(CONTROLLED_LISTS) + "/ref_period";
+		Response response = client.target(uri).request(MediaType.APPLICATION_JSON_TYPE).get();
+		assertThat(response.getStatus()).isEqualTo(Status.OK.getStatusCode());
+	}
+
+	@Test
+	public void testControlledListMonitoringPeriod2() {
+		Client client = createClient("test Controlled List Monitoring Period2");
+		final String uri = createURIForStep(CONTROLLED_LISTS) + "/mon_period";
+		Response response = client.target(uri).request(MediaType.APPLICATION_JSON_TYPE).get();
+		assertThat(response.getStatus()).isEqualTo(Status.OK.getStatusCode());
+	}
+
+	@Test
+	public void testControlledListMethodOrStandard2() {
+		Client client = createClient("test Controlled List Method Or Standard2");
+		final String uri = createURIForStep(CONTROLLED_LISTS) + "/method";
+		Response response = client.target(uri).request(MediaType.APPLICATION_JSON_TYPE).get();
+		assertThat(response.getStatus()).isEqualTo(Status.OK.getStatusCode());
+	}
+
+	@Test
+	public void testControlledListReturnType2() {
+		Client client = createClient("test Controlled List Return Type2");
+		final String uri = createURIForStep(CONTROLLED_LISTS) + "/rtn_type";
+		Response response = client.target(uri).request(MediaType.APPLICATION_JSON_TYPE).get();
+		assertThat(response.getStatus()).isEqualTo(Status.OK.getStatusCode());
+	}
 
 	///////////////////////////////////////////////////////////////////////////////////////////
 	/////////////////////// End Application Exception handling tests

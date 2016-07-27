@@ -1,12 +1,6 @@
 package uk.gov.ea.datareturns.domain.jpa.entities;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.NamedQueries;
-import javax.persistence.NamedQuery;
-import javax.persistence.Table;
+import javax.persistence.*;
 
 /**
  * The persistent class for the parameters database table.
@@ -15,11 +9,6 @@ import javax.persistence.Table;
 @SuppressWarnings({ "JavaDoc", "unused" })
 @Entity
 @Table(name = "parameters")
-@NamedQueries({
-		@NamedQuery(name = "Parameter.findAll", query = "SELECT p FROM Parameter p"),
-		@NamedQuery(name = "Parameter.findAllNames", query = "SELECT p.name FROM Parameter p"),
-		@NamedQuery(name = "Parameter.findByName", query = "SELECT p FROM Parameter p WHERE p.name = :name")
-})
 public class Parameter implements ControlledList {
 
 	@Id
@@ -29,9 +18,6 @@ public class Parameter implements ControlledList {
 	private String definition;
 
 	private String name;
-
-	public Parameter() {
-	}
 
 	public Long getId() {
 		return this.id;
