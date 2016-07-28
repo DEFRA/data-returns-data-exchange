@@ -29,7 +29,7 @@ import java.util.stream.Collectors;
 /**
  * Base class for JPA based DAO classes
  *
- * @author Sam Gardner-Dell, Graham Willis
+ * @author Graham Willis
  */
 @Repository
 public abstract class AbstractJpaDao<E extends PersistedEntity> {
@@ -56,7 +56,7 @@ public abstract class AbstractJpaDao<E extends PersistedEntity> {
      * @param id The entity identifier
      * @return E
      */
-    private E getById(final long id) {
+    public E getById(final long id) {
 		return entityManager.find(entityClass, id);
 	}
 
@@ -113,7 +113,7 @@ public abstract class AbstractJpaDao<E extends PersistedEntity> {
 
 	private void buildCacheIfNeeded() {
 		if (cacheByName == null) {
-			LOGGER.info("Build cache of: " + entityClass.getName());
+			LOGGER.info("Build cache of: " + entityClass.getSimpleName());
 			CriteriaBuilder cb = entityManager.getCriteriaBuilder();
 			CriteriaQuery<E> q = cb.createQuery(entityClass);
 			Root<E> c = q.from(entityClass);
@@ -144,16 +144,26 @@ public abstract class AbstractJpaDao<E extends PersistedEntity> {
 		return cacheByName.entrySet().stream().map(Map.Entry::getKey).collect(Collectors.toSet());
 	}
 
+	/**
+	 *
+	 * @param name case sensitive name search term
+	 * @return The entity E or null
+     */
+	public E getByName(String name) {
+		buildCacheIfNeeded();
+		return cacheByName.get(name);
+	}
+
     /**
      * Add a new entity of type <E>
      *
-     * @param entity The entity to add
-     */
+	 */
 	@Transactional
 	public void add(E entity) {
-		entityManager.persist(entity);
-		cacheByName.put(entity.getName(), entity);
-		LOGGER.info("ADDED: " + entity);
+        entityManager.persist(entity);
+		E e2 = getByName(entity.getName());
+        cacheByName.put(e2.getName(), e2);
+		LOGGER.info("Added: " + entityClass.getSimpleName() + "id: " + e2.getId() + e2.getName());
 	}
 
     /**
@@ -167,7 +177,20 @@ public abstract class AbstractJpaDao<E extends PersistedEntity> {
 		E entity = getById(id);
 		cacheByName.remove(entity.getName());
 		entityManager.remove(entity);
-		LOGGER.info("DELETE: " + entityClass.getSimpleName() + " ID: " + id);
+		LOGGER.info("Deleted: " + entityClass.getSimpleName() + " ID: " + id);
 	}
 
+	/**
+	 * Clear the cache by name
+	 */
+	public void clearCache() {
+		LOGGER.info("Clear cache: " + entityClass.getSimpleName());
+	}
+
+	/**
+	 * Get the class of the entity being operated on
+	 */
+	public Class<E> getEntityClass() {
+		return entityClass;
+	}
 }

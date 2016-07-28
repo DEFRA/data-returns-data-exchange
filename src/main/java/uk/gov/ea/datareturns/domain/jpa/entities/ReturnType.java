@@ -38,4 +38,23 @@ public class ReturnType implements ControlledList {
 	public void setName(final String name) {
 		this.name = name;
 	}
+
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (o == null || getClass() != o.getClass()) return false;
+
+		ReturnType that = (ReturnType) o;
+
+		if (!id.equals(that.id)) return false;
+		return name.equals(that.name);
+
+	}
+
+	@Override
+	public int hashCode() {
+		int result = id.hashCode();
+		result = 31 * result + name.hashCode();
+		return result;
+	}
 }

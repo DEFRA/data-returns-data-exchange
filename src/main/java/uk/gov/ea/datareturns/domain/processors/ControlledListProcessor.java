@@ -11,7 +11,6 @@ import uk.gov.ea.datareturns.domain.jpa.entities.ControlledListsList;
 import uk.gov.ea.datareturns.domain.jpa.entities.PersistedEntity;
 
 import java.util.List;
-import java.util.function.Predicate;
 
 /**
  * Created by graham on 26/07/16.
@@ -31,7 +30,7 @@ public class ControlledListProcessor implements ApplicationContextAware {
 
     private List<? extends PersistedEntity> getListData(ControlledListsList controlledList) {
         LOGGER.debug("Get list data: " + controlledList.name());
-        AbstractJpaDao dao = applicationContext.getBean(controlledList.getDao());
+        AbstractJpaDao<? extends PersistedEntity> dao = applicationContext.getBean(controlledList.getDao());
         return dao.list();
     }
 
@@ -40,8 +39,8 @@ public class ControlledListProcessor implements ApplicationContextAware {
             return getListData(controlledList);
         } else {
             LOGGER.debug("Get list data filtered by name contains: " + controlledList.name());
-            AbstractJpaDao dao = applicationContext.getBean(controlledList.getDao());
-            return dao.list((Predicate<? extends PersistedEntity>) e -> e.getName().toLowerCase().contains(searchTerm));
+            AbstractJpaDao<? extends PersistedEntity> dao = applicationContext.getBean(controlledList.getDao());
+            return dao.list(e -> e.getName().toLowerCase().contains(searchTerm));
         }
     }
 
@@ -50,7 +49,7 @@ public class ControlledListProcessor implements ApplicationContextAware {
             return getListData(controlledList);
         } else {
             LOGGER.debug("Get list data filtered by name contains: " + controlledList.name());
-            AbstractJpaDao dao = applicationContext.getBean(controlledList.getDao());
+            AbstractJpaDao<? extends PersistedEntity>  dao = applicationContext.getBean(controlledList.getDao());
             return dao.list(field, contains);
         }
     }

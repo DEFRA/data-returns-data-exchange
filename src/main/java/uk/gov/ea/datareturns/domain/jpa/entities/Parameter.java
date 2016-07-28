@@ -42,4 +42,25 @@ public class Parameter implements ControlledList {
 	public void setName(final String name) {
 		this.name = name;
 	}
+
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (o == null || getClass() != o.getClass()) return false;
+
+		Parameter parameter = (Parameter) o;
+
+		if (!id.equals(parameter.id)) return false;
+		if (!definition.equals(parameter.definition)) return false;
+		return name.equals(parameter.name);
+
+	}
+
+	@Override
+	public int hashCode() {
+		int result = id.hashCode();
+		result = 31 * result + definition.hashCode();
+		result = 31 * result + name.hashCode();
+		return result;
+	}
 }

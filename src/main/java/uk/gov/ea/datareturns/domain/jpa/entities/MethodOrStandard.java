@@ -10,8 +10,7 @@ import java.io.Serializable;
 @SuppressWarnings({ "JavaDoc", "unused" })
 @Entity
 @Table(name = "methods_or_standards")
-public class MethodOrStandard implements Serializable, ControlledList {
-	private static final long serialVersionUID = 1L;
+public class MethodOrStandard implements ControlledList {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -35,4 +34,22 @@ public class MethodOrStandard implements Serializable, ControlledList {
 		this.name = name;
 	}
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        MethodOrStandard that = (MethodOrStandard) o;
+
+        if (!id.equals(that.id)) return false;
+        return name.equals(that.name);
+
+    }
+
+    @Override
+    public int hashCode() {
+        int result = id.hashCode();
+        result = 31 * result + name.hashCode();
+        return result;
+    }
 }

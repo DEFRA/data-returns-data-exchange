@@ -60,4 +60,26 @@ public class Unit implements ControlledList {
 		this.name = name;
 	}
 
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (o == null || getClass() != o.getClass()) return false;
+
+		Unit unit = (Unit) o;
+
+		if (!id.equals(unit.id)) return false;
+		if (!description.equals(unit.description)) return false;
+		if (!measureType.equals(unit.measureType)) return false;
+		return name.equals(unit.name);
+
+	}
+
+	@Override
+	public int hashCode() {
+		int result = id.hashCode();
+		result = 31 * result + description.hashCode();
+		result = 31 * result + measureType.hashCode();
+		result = 31 * result + name.hashCode();
+		return result;
+	}
 }
