@@ -9,6 +9,7 @@ import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
+import uk.gov.ea.datareturns.domain.dto.ControlledListsDto;
 import uk.gov.ea.datareturns.domain.exceptions.ApplicationExceptionType;
 import uk.gov.ea.datareturns.domain.jpa.entities.ControlledListsList;
 import uk.gov.ea.datareturns.domain.jpa.entities.PersistedEntity;
@@ -145,4 +146,14 @@ public class DataExchangeResource {
             return Response.status(Status.OK).entity(listData).build();
         }
 	}
+
+	@GET
+	@Path("/controlled-list/")
+	@Produces(APPLICATION_JSON)
+	public Response listControlledLists() {
+		LOGGER.debug("Request for /data-exchange/controlled");
+		List<ControlledListsDto> listData = controlledListProcessor.getListData();
+		return Response.status(Status.OK).entity(listData).build();
+	}
+
 }

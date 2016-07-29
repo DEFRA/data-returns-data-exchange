@@ -47,4 +47,8 @@ public enum ControlledListsList {
     public String getDescription() {
         return description;
     }
+
+    public String getPath() {
+        return path;
+    }
 }

@@ -6,10 +6,13 @@ import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.stereotype.Component;
+import uk.gov.ea.datareturns.domain.dto.ControlledListsDto;
 import uk.gov.ea.datareturns.domain.jpa.dao.AbstractJpaDao;
 import uk.gov.ea.datareturns.domain.jpa.entities.ControlledListsList;
 import uk.gov.ea.datareturns.domain.jpa.entities.PersistedEntity;
 
+import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -52,5 +55,19 @@ public class ControlledListProcessor implements ApplicationContextAware {
             AbstractJpaDao<? extends PersistedEntity>  dao = applicationContext.getBean(controlledList.getDao());
             return dao.list(field, contains);
         }
+    }
+
+    /**
+     * return metadata about controlled lists
+     * @return
+     */
+    public List<ControlledListsDto> getListData() {
+        List<ControlledListsDto> result = new ArrayList<>();
+        //TODO Placeholder data for now
+        LocalDate lastUpdate = LocalDate.of(2016, 01, 13);
+        for(ControlledListsList list : ControlledListsList.values()) {
+            result.add(new ControlledListsDto(list.getDescription(), list.getPath(), lastUpdate));
+        }
+        return result;
     }
 }
