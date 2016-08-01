@@ -4,6 +4,7 @@ package uk.gov.ea.datareturns.domain.dto;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import java.time.LocalDate;
+import java.util.Map;
 
 /**
  * Created by graham on 29/07/16.
@@ -11,6 +12,7 @@ import java.time.LocalDate;
  */
 public class ControlledListsDto {
 
+    private final Map<String, String> displayHeaders;
     private String description;
 
     public String getPath() {
@@ -26,10 +28,11 @@ public class ControlledListsDto {
     @JsonIgnore
     private LocalDate lastUpdate;
 
-    public ControlledListsDto(String description, String path, LocalDate lastUpdate) {
+    public ControlledListsDto(String description, String path, Map<String, String> displayHeaders, LocalDate lastUpdate) {
         this.description = description;
         this.path = path;
         this.lastUpdate = lastUpdate;
+        this.displayHeaders = displayHeaders;
     }
 
     public String getDescription() {
@@ -48,5 +51,7 @@ public class ControlledListsDto {
         this.lastUpdate = lastUpdate;
     }
 
-
+    public Map<String, String> getDisplayHeaders() {
+        return displayHeaders;
+    }
 }
