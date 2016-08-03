@@ -27,6 +27,7 @@ import javax.ws.rs.core.Response.Status;
 import java.io.File;
 import java.io.InputStream;
 import java.util.List;
+import java.util.Map;
 
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 import static javax.ws.rs.core.MediaType.MULTIPART_FORM_DATA;
@@ -152,7 +153,7 @@ public class DataExchangeResource {
 	@Produces(APPLICATION_JSON)
 	public Response listControlledLists() {
 		LOGGER.debug("Request for /data-exchange/controlled");
-		List<ControlledListsDto> listData = controlledListProcessor.getListData();
+		Map<String, ControlledListsDto> listData = controlledListProcessor.getListData();
 		return Response.status(Status.OK).entity(listData).build();
 	}
 

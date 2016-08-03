@@ -26,6 +26,8 @@ import java.util.Set;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
+import static java.util.Comparator.comparing;
+
 /**
  * Base class for JPA based DAO classes
  *
@@ -67,7 +69,12 @@ public abstract class AbstractJpaDao<E extends PersistedEntity> {
      */
     public List<E> list() {
 		buildCacheIfNeeded();
-		return cacheByName.entrySet().stream().map(Map.Entry::getValue).collect(Collectors.toList());
+		return cacheByName
+				.entrySet()
+				.stream()
+				.map(Map.Entry::getValue)
+				.sorted(comparing(E::getId))
+				.collect(Collectors.toList());
 	}
 
     /**
@@ -78,7 +85,13 @@ public abstract class AbstractJpaDao<E extends PersistedEntity> {
      */
     public List<E> list(Predicate<E> predicate) {
 		buildCacheIfNeeded();
-		return cacheByName.entrySet().stream().map(Map.Entry::getValue).filter(predicate).collect(Collectors.toList());
+		return cacheByName
+				.entrySet()
+				.stream()
+				.map(Map.Entry::getValue)
+				.filter(predicate)
+				.sorted(comparing(E::getId))
+				.collect(Collectors.toList());
 	}
 
     /**
@@ -120,7 +133,9 @@ public abstract class AbstractJpaDao<E extends PersistedEntity> {
 			q.select(c);
 			TypedQuery<E> query = entityManager.createQuery(q);
 			List<E> results = query.getResultList();
-			cacheByName = results.stream().collect(Collectors.toMap(PersistedEntity::getName, k -> k));
+			cacheByName = results
+					.stream()
+					.collect(Collectors.toMap(PersistedEntity::getName, k -> k));
 		}
 	}
 
@@ -141,7 +156,11 @@ public abstract class AbstractJpaDao<E extends PersistedEntity> {
 	 */
     private Set<String> findNames() {
 		buildCacheIfNeeded();
-		return cacheByName.entrySet().stream().map(Map.Entry::getKey).collect(Collectors.toSet());
+		return cacheByName
+				.entrySet()
+				.stream()
+				.map(Map.Entry::getKey)
+				.collect(Collectors.toSet());
 	}
 
 	/**

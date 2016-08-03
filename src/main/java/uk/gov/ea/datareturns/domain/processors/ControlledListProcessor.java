@@ -12,8 +12,9 @@ import uk.gov.ea.datareturns.domain.jpa.entities.ControlledListsList;
 import uk.gov.ea.datareturns.domain.jpa.entities.PersistedEntity;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by graham on 26/07/16.
@@ -61,12 +62,12 @@ public class ControlledListProcessor implements ApplicationContextAware {
      * return metadata about controlled lists
      * @return
      */
-    public List<ControlledListsDto> getListData() {
-        List<ControlledListsDto> result = new ArrayList<>();
+    public Map<String, ControlledListsDto> getListData() {
+        Map<String, ControlledListsDto> result = new HashMap<>();
         //TODO Placeholder data for now
         LocalDate lastUpdate = LocalDate.of(2016, 01, 13);
         for(ControlledListsList list : ControlledListsList.values()) {
-            result.add(new ControlledListsDto(list.getDescription(), list.getPath(), list.getDisplayHeaders(), lastUpdate));
+            result.put(list.getPath(), new ControlledListsDto(list.getDescription(), list.getPath(), list.getDisplayHeaders(), lastUpdate));
         }
         return result;
     }
