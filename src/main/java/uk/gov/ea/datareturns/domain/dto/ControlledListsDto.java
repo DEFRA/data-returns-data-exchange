@@ -14,6 +14,7 @@ public class ControlledListsDto {
 
     private final Map<String, String> displayHeaders;
     private String description;
+    private String defaultSearch;
 
     public String getPath() {
         return path;
@@ -28,11 +29,12 @@ public class ControlledListsDto {
     @JsonIgnore
     private LocalDate lastUpdate;
 
-    public ControlledListsDto(String description, String path, Map<String, String> displayHeaders, LocalDate lastUpdate) {
+    public ControlledListsDto(String description, String path, Map<String, String> displayHeaders, LocalDate lastUpdate, String defaultSearch) {
         this.description = description;
         this.path = path;
         this.lastUpdate = lastUpdate;
         this.displayHeaders = displayHeaders;
+        this.defaultSearch =defaultSearch;
     }
 
     public String getDescription() {
@@ -54,4 +56,14 @@ public class ControlledListsDto {
     public Map<String, String> getDisplayHeaders() {
         return displayHeaders;
     }
+
+    public String getDefaultSearch() {
+        return defaultSearch;
+    }
+
+    public void setDefaultSearch(String defaultSearch) {
+        this.defaultSearch = defaultSearch;
+    }
+
+
 }

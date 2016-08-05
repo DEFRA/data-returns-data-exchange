@@ -108,7 +108,7 @@ public abstract class AbstractJpaDao<E extends PersistedEntity> {
                     final Method readMethod = pd.getReadMethod();
                     Predicate<E> builtPredicate = e -> {
                         try {
-                            return readMethod.invoke(e).toString().toLowerCase().contains(contains);
+                            return readMethod.invoke(e).toString().toLowerCase().replaceAll("\\s+","").contains(contains.toLowerCase().replaceAll("\\s+",""));
                         } catch (IllegalAccessException e1) {
                             return true;
                         } catch (InvocationTargetException e1) {

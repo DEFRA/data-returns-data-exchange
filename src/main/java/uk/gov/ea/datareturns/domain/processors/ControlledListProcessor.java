@@ -67,7 +67,7 @@ public class ControlledListProcessor implements ApplicationContextAware {
         //TODO Placeholder data for now
         LocalDate lastUpdate = LocalDate.of(2016, 01, 13);
         for(ControlledListsList list : ControlledListsList.values()) {
-            result.put(list.getPath(), new ControlledListsDto(list.getDescription(), list.getPath(), list.getDisplayHeaders(), lastUpdate));
+            result.put(list.getPath(), new ControlledListsDto(list.getDescription(), list.getPath(), list.getDisplayHeaders(), lastUpdate, list.getDefaultSearch()));
         }
         return result;
     }
