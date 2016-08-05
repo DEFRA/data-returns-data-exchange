@@ -68,8 +68,7 @@ public abstract class AbstractJpaDao<E extends PersistedEntity> {
      * @return List<E>
      */
     public List<E> list() {
-		buildCacheIfNeeded();
-		return cacheByName
+		return getCache()
 				.entrySet()
 				.stream()
 				.map(Map.Entry::getValue)
@@ -84,8 +83,7 @@ public abstract class AbstractJpaDao<E extends PersistedEntity> {
      * @return List<E>
      */
     public List<E> list(Predicate<E> predicate) {
-		buildCacheIfNeeded();
-		return cacheByName
+		return getCache()
 				.entrySet()
 				.stream()
 				.map(Map.Entry::getValue)
@@ -124,7 +122,10 @@ public abstract class AbstractJpaDao<E extends PersistedEntity> {
         return list();
     }
 
-	private void buildCacheIfNeeded() {
+	/*
+	 * Builds the cache if necessary and returns built cache
+	 */
+	private Map<String, E> getCache() {
 		if (cacheByName == null) {
 			LOGGER.info("Build cache of: " + entityClass.getSimpleName());
 			CriteriaBuilder cb = entityManager.getCriteriaBuilder();
@@ -137,6 +138,7 @@ public abstract class AbstractJpaDao<E extends PersistedEntity> {
 					.stream()
 					.collect(Collectors.toMap(PersistedEntity::getName, k -> k));
 		}
+		return this.cacheByName;
 	}
 
 	/**
@@ -155,8 +157,7 @@ public abstract class AbstractJpaDao<E extends PersistedEntity> {
 	 * @return a {@link Set} of method or standard names
 	 */
     private Set<String> findNames() {
-		buildCacheIfNeeded();
-		return cacheByName
+		return getCache()
 				.entrySet()
 				.stream()
 				.map(Map.Entry::getKey)
@@ -169,8 +170,7 @@ public abstract class AbstractJpaDao<E extends PersistedEntity> {
 	 * @return The entity E or null
      */
 	public E getByName(String name) {
-		buildCacheIfNeeded();
-		return cacheByName.get(name);
+		return getCache().get(name);
 	}
 
     /**
