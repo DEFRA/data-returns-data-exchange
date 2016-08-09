@@ -1,12 +1,6 @@
 package uk.gov.ea.datareturns.domain.jpa.entities;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.NamedQueries;
-import javax.persistence.NamedQuery;
-import javax.persistence.Table;
+import javax.persistence.*;
 
 /**
  * The persistent class for the reference_periods database table.
@@ -17,25 +11,43 @@ import javax.persistence.Table;
 @Table(name = "reference_periods")
 public class ReferencePeriod implements ControlledList {
 	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@SequenceGenerator(name = "seq", sequenceName = "reference_periods_seq")
+	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator="seq")
 	private Long id;
 
 	private String name;
+	private String description;
 
+	@Override
 	public Long getId() {
-		return this.id;
+		return id;
 	}
 
-	public void setId(final Long id) {
+	@Override
+	public void setId(Long id) {
 		this.id = id;
 	}
 
+	@Override
+	@Basic
+	@Column(name = "name", nullable = false, length = 200)
 	public String getName() {
-		return this.name;
+		return name;
 	}
 
-	public void setName(final String name) {
+	@Override
+	public void setName(String name) {
 		this.name = name;
+	}
+
+	@Basic
+	@Column(name = "name", length = 500)
+	public String getDescription() {
+		return description;
+	}
+
+	public void setDescription(String description) {
+		this.description = description;
 	}
 
 	@Override
@@ -45,15 +57,17 @@ public class ReferencePeriod implements ControlledList {
 
 		ReferencePeriod that = (ReferencePeriod) o;
 
-		if (!id.equals(that.id)) return false;
-		return name.equals(that.name);
+		if (id != null ? !id.equals(that.id) : that.id != null) return false;
+		if (name != null ? !name.equals(that.name) : that.name != null) return false;
+		return description != null ? description.equals(that.description) : that.description == null;
 
 	}
 
 	@Override
 	public int hashCode() {
-		int result = id.hashCode();
-		result = 31 * result + name.hashCode();
+		int result = id != null ? id.hashCode() : 0;
+		result = 31 * result + (name != null ? name.hashCode() : 0);
+		result = 31 * result + (description != null ? description.hashCode() : 0);
 		return result;
 	}
 }

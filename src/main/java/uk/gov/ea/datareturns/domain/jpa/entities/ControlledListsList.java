@@ -25,6 +25,7 @@ public enum ControlledListsList {
 
     REFERENCE_PERIOD("Reference period", ReferencePeriodDao.class, "ref_period", Collections.unmodifiableMap(new HashMap<String, String>() {{
         put("name", "Name");
+        put("description", "Description");
     }}), "name"),
 
     MONITORING_PERIOD("Monitoring period", MonitoringPeriodDao.class, "mon_period", Collections.unmodifiableMap(new HashMap<String, String>() {{
