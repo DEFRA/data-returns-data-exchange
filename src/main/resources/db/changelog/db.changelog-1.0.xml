@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-				   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd">
-
+	xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+	xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd
+        http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
+        
 	<property name="uniqueIdentifiersFile" value="/db/data/UniqueIdentifiers.csv"/>
 	<property name="returnTypesFile" value="/db/data/ReturnTypes.csv"/>
 	<property name="parametersFile" value="/db/data/Parameters.csv"/>
@@ -206,8 +208,11 @@
 			<dropIndex tableName="units" indexName="idx_units_name"/>
 		</rollback>
 	</changeSet>
-
-
+	
+	
+	
+	
+	
 	<!-- 
 	****************************************************************
 	Method Or Standard
@@ -296,13 +301,23 @@
 	Reference Periods
 	****************************************************************
 	-->
-	<changeSet id="create-table: reference_periods" author="Sam Gardner-Dell">
+	<changeSet id="create: sequence: reference_periods_seq" author="Graham Willis" >
+		<createSequence incrementBy="1"
+										minValue="0"
+										sequenceName="reference_periods_seq"
+										startValue="0"/>
+	</changeSet>
+
+	<changeSet id="create-table: reference_periods" author="Graham Willis">
 		<createTable tableName="reference_periods">
-			<column name="id" type="BIGINT" autoIncrement="true">
-				<constraints primaryKey="true"/>
+			<column name="id" type="bigint" defaultValueSequenceNext="reference_periods_seq">
+				<constraints primaryKey="true" nullable="false"/>
 			</column>
-			<column name="name" type="varchar(120)">
+			<column name="name" type="varchar(200)">
 				<constraints nullable="false" unique="true"/>
+			</column>
+			<column name="description" type="varchar(500)">
+				<constraints nullable="true" unique="false"/>
 			</column>
 		</createTable>
 		<rollback>
