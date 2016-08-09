@@ -93,6 +93,7 @@ public class ControlledListsTests {
         // Add and retrieve
         ReturnType returnType = new ReturnType();
         returnType.setName("Test");
+        returnType.setSector("Sector");
         returnTypeDao.add(returnType);
         ReturnType retrieveReturnType = (ReturnType) returnTypeDao.getByName("Test");
         Assert.assertNotNull(retrieveReturnType.getId());

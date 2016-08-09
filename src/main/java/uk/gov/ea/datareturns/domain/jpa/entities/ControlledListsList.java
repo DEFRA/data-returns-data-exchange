@@ -36,6 +36,7 @@ public enum ControlledListsList {
     }}), "name"),
 
     RETURN_TYPE("Return type", ReturnTypeDao.class, "rtn_type", Collections.unmodifiableMap(new HashMap<String, String>() {{
+        put("sector", "Sector");
         put("name", "Name");
     }}), "name");
 

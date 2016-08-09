@@ -3,15 +3,6 @@
  */
 package uk.gov.ea.datareturns.tests.domain.model;
 
-import java.time.LocalDateTime;
-import java.time.ZoneOffset;
-import java.time.format.DateTimeFormatter;
-import java.util.Set;
-
-import javax.inject.Inject;
-import javax.validation.ConstraintViolation;
-import javax.validation.Validator;
-
 import org.apache.commons.lang3.RandomStringUtils;
 import org.junit.Assert;
 import org.junit.Test;
@@ -20,11 +11,18 @@ import org.springframework.boot.test.ConfigFileApplicationContextInitializer;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-
 import uk.gov.ea.datareturns.App;
 import uk.gov.ea.datareturns.domain.model.DataSample;
 import uk.gov.ea.datareturns.domain.model.EaId;
 import uk.gov.ea.datareturns.domain.model.ReturnsDate;
+
+import javax.inject.Inject;
+import javax.validation.ConstraintViolation;
+import javax.validation.Validator;
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
+import java.time.format.DateTimeFormatter;
+import java.util.Set;
 
 /**
  * Tests the validation constraints the DataSample class
@@ -715,7 +713,7 @@ public class DataSampleValidatorTests {
 		final DataSample record = new DataSample();
 		record.setEaId(new EaId("DP3431PC"));
 		record.setSiteName("Site Name");
-		record.setReturnType("EPR/IED Landfill Gas infrastructure monitoring");
+		record.setReturnType("Landfill Annual monitoring report");
 		record.setMonitoringDate(ReturnsDate.from("2016-03-09T11:18:59"));
 		record.setMonitoringPeriod("During all downwind monitoring");
 		record.setMonitoringPoint("Borehole 1");

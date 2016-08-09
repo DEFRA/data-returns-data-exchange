@@ -1,14 +1,18 @@
-name
-EPR/IED Air (point source) emissions return
-EPR/IED Air (ambient) monitoring return
-EPR/IED Leachate level return
-EPR/IED Leachate quality return
-EPR/IED Surface Water emissions return
-EPR/IED Groundwater quality/level return
-EPR/IED Landfill Gas surface emissions
-EPR/IED Landfill Gas Perimeter
-EPR/IED Landfill Gas in Waste
-EPR/IED Landfill Gas infrastructure monitoring
-EPR/IED Sewer emissions return
-EPR/IED ETP or Tankering emissions return
-EPR/IED Landfill Annual monitoring report
+name, sector
+Landfill Leachate Monitoring,Landfill
+Emissions to Surface Water,Landfill
+Emissions to Groundwater,Landfill
+Methane Capped Surfaces,Landfill
+Landfill Gas Borehole,Landfill
+Landfill Gas Engine,Landfill
+Landfill Gas Flare,Landfill
+Emissions to Sewer,Landfill
+Ambient air quality,Landfill
+Air point source emissions return,
+Tankered Emissions,Landfill
+Landfill Annual monitoring report,Landfill
+IED Combustion CEMS,Combustion
+Combustion LCP (Unit) Annual Report,Combustion
+Combustion REM (Installation),Combustion
+Pollution Inventory Substance,PI
+Pollution Inventory Waste,PI

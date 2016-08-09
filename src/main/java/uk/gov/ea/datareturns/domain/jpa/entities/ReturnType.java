@@ -1,12 +1,6 @@
 package uk.gov.ea.datareturns.domain.jpa.entities;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.NamedQueries;
-import javax.persistence.NamedQuery;
-import javax.persistence.Table;
+import javax.persistence.*;
 
 /**
  * The persistent class for the return_types database table.
@@ -18,25 +12,35 @@ import javax.persistence.Table;
 public class ReturnType implements ControlledList {
 
 	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
+    @SequenceGenerator(name = "seq", sequenceName = "return_types_seq")
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator="seq")
 	private Long id;
-
 	private String name;
+	private String sector;
 
 	public Long getId() {
 		return this.id;
 	}
-
 	public void setId(final Long id) {
 		this.id = id;
 	}
 
+	@Basic
+	@Column(name = "name", nullable = false, length = 80)
 	public String getName() {
-		return this.name;
+		return name;
+	}
+	public void setName(String name) {
+		this.name = name;
 	}
 
-	public void setName(final String name) {
-		this.name = name;
+	@Basic
+	@Column(name = "sector", nullable = false, length = 20)
+	public String getSector() {
+		return sector;
+	}
+	public void setSector(String sector) {
+		this.sector = sector;
 	}
 
 	@Override
@@ -46,15 +50,19 @@ public class ReturnType implements ControlledList {
 
 		ReturnType that = (ReturnType) o;
 
-		if (!id.equals(that.id)) return false;
-		return name.equals(that.name);
+		if (id != that.id) return false;
+		if (name != null ? !name.equals(that.name) : that.name != null) return false;
+		if (sector != null ? !sector.equals(that.sector) : that.sector != null) return false;
 
+		return true;
 	}
 
 	@Override
 	public int hashCode() {
-		int result = id.hashCode();
-		result = 31 * result + name.hashCode();
+		int result = (int) (id ^ (id >>> 32));
+		result = 31 * result + (name != null ? name.hashCode() : 0);
+		result = 31 * result + (sector != null ? sector.hashCode() : 0);
 		return result;
 	}
+
 }

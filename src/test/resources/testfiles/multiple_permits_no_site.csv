@@ -1,7 +1,7 @@
 EA_ID,Rtn_Type,Mon_Date,Mon_Period,Smpl_Ref,Smpl_By,Mon_Point,Parameter,Value,Unit,Ref_Period,Meth_Stand,Comments
-EP3136GK,EPR/IED Landfill Gas infrastructure monitoring,2016-04-01,Period 1,Sample Ref,Sampled by 1,Monitor point 1,Temperature,123,mg,Annual,Test method 1,Test comments
-EP3136GK,EPR/IED Landfill Gas infrastructure monitoring,2016-04-01,Period 1,Sample Ref,Sampled by 1,Monitor point 1,Temperature,123,mg,Annual,Test method 1,Test comments
-EP3136GK,EPR/IED Landfill Gas infrastructure monitoring,2016-04-01,Period 1,Sample Ref,Sampled by 1,Monitor point 1,"16-(Thienylmethylene)Androstane-3,17-Diol SVOCS",123,mg,Annual,Test method 1,Test comments
-AP3192NT,EPR/IED Landfill Gas infrastructure monitoring,2016-04-01,Period 1,Sample Ref,Sampled by 1,Borehole 10,"1,1,1,2-Tetrachloroethane",123,mg,Annual,Test method 1,Test comments
-AP3192NT,EPR/IED Air (ambient) monitoring return,2016-04-01,Period 1,Sample Ref,Sampled by 1,Chimney 4,"1,3-Butadiene",123,mg,Annual,Test method 1,Test comments
-AP3192NT,EPR/IED Landfill Annual monitoring report,2016-04-01,Period 1,Sample Ref,Sampled by 1,Borehole 1,1-Chloro-4-nitrobenzene,123,mg,Annual,Test method 1,Test comments
+EP3136GK,Landfill Gas Borehole,2016-04-01,Period 1,Sample Ref,Sampled by 1,Monitor point 1,Temperature,123,mg,Annual,Test method 1,Test comments
+EP3136GK,Landfill Gas Borehole,2016-04-01,Period 1,Sample Ref,Sampled by 1,Monitor point 1,Temperature,123,mg,Annual,Test method 1,Test comments
+EP3136GK,Landfill Gas Borehole,2016-04-01,Period 1,Sample Ref,Sampled by 1,Monitor point 1,"16-(Thienylmethylene)Androstane-3,17-Diol SVOCS",123,mg,Annual,Test method 1,Test comments
+AP3192NT,Landfill Gas Borehole,2016-04-01,Period 1,Sample Ref,Sampled by 1,Borehole 10,"1,1,1,2-Tetrachloroethane",123,mg,Annual,Test method 1,Test comments
+AP3192NT,Ambient air quality,2016-04-01,Period 1,Sample Ref,Sampled by 1,Chimney 4,"1,3-Butadiene",123,mg,Annual,Test method 1,Test comments
+AP3192NT,Landfill Annual monitoring report,2016-04-01,Period 1,Sample Ref,Sampled by 1,Borehole 1,1-Chloro-4-nitrobenzene,123,mg,Annual,Test method 1,Test comments
