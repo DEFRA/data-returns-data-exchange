@@ -88,7 +88,7 @@ processor:
     - Site={{EA_ID}} - {{Site_Name}}
     - Rtn_Type={{Rtn_Type}}
     - Date={{Mon_Date}}
-    - Mon_Period={{Mon_Period}}
+    - Rtn_Period={{Rtn_Period}}
     - SamplePoint={{Mon_Point}}
     - Sample Ref={{Smpl_Ref}}
     - Source={{Smpl_By}}

@@ -15,7 +15,7 @@ import uk.gov.ea.datareturns.domain.model.rules.conversion.EaIdConverter;
 import uk.gov.ea.datareturns.domain.model.rules.conversion.ReturnsDateConverter;
 import uk.gov.ea.datareturns.domain.model.rules.conversion.TxtValueConverter;
 import uk.gov.ea.datareturns.domain.model.validation.auditors.controlledlist.MethodOrStandardAuditor;
-import uk.gov.ea.datareturns.domain.model.validation.auditors.controlledlist.MonitoringPeriodAuditor;
+import uk.gov.ea.datareturns.domain.model.validation.auditors.controlledlist.ReturnPeriodAuditor;
 import uk.gov.ea.datareturns.domain.model.validation.auditors.controlledlist.ParameterAuditor;
 import uk.gov.ea.datareturns.domain.model.validation.auditors.controlledlist.ReferencePeriodAuditor;
 import uk.gov.ea.datareturns.domain.model.validation.auditors.controlledlist.ReturnTypeAuditor;
@@ -63,10 +63,10 @@ public class DataSample extends AbstractCSVRecord {
 	@ValidReturnsDate // see ValidReturnsDate annotation class for validation messages
 	private ReturnsDate monitoringDate;
 
-	/** The monitoring period  (Mon_Period) */
-	@Parsed(field = DataReturnsHeaders.MONITORING_PERIOD)
-	@ControlledList(auditor = MonitoringPeriodAuditor.class, message = "{DR9070-Incorrect}", required = false)
-	private String monitoringPeriod;
+	/** The return period  (Rtn_Period) */
+	@Parsed(field = DataReturnsHeaders.RETURN_PERIOD)
+	@ControlledList(auditor = ReturnPeriodAuditor.class, message = "{DR9070-Incorrect}", required = false)
+	private String returnPeriod;
 
 	/** The monitoring point (Mon_Point) */
 	@Parsed(field = DataReturnsHeaders.MONITORING_POINT)
@@ -155,7 +155,7 @@ public class DataSample extends AbstractCSVRecord {
 	}
 
 	/**
-	 * @param eaId the eaId to set
+#	 * @param eaId the eaId to set
 	 */
 	public void setEaId(final EaId eaId) {
 		this.eaId = eaId;
@@ -204,17 +204,17 @@ public class DataSample extends AbstractCSVRecord {
 	}
 
 	/**
-	 * @return the monitoringPeriod
+	 * @return the returnPeriod
 	 */
-	public String getMonitoringPeriod() {
-		return this.monitoringPeriod;
+	public String getReturnPeriod() {
+		return this.returnPeriod;
 	}
 
 	/**
-	 * @param monitoringPeriod the monitoringPeriod to set
+	 * @param returnPeriod the returnPeriod to set
 	 */
-	public void setMonitoringPeriod(final String monitoringPeriod) {
-		this.monitoringPeriod = monitoringPeriod;
+	public void setReturnPeriod(final String returnPeriod) {
+		this.returnPeriod = returnPeriod;
 	}
 
 	/**

@@ -238,23 +238,23 @@ public class DataSampleValidatorTests {
 
 	/*=================================================================================================================
 	 *
-	 * MONITORING PERIOD
+	 * RETURN PERIOD
 	 *
 	 *=================================================================================================================
 	 */
 
 	@Test
-	public void testMonitoringPeriodNull() {
+	public void testReturnPeriodNull() {
 		final DataSample record = createValidRecord();
-		record.setMonitoringPeriod(null);
+		record.setReturnPeriod(null);
 		final Set<ConstraintViolation<DataSample>> violations = this.validator.validate(record);
 		Assert.assertEquals(0, violations.size());
 	}
 
 	@Test
-	public void testMonitoringPeriodLength() {
+	public void testReturnPeriodLength() {
 		final DataSample record = createValidRecord();
-		record.setMonitoringPeriod(RandomStringUtils.random(20));
+		record.setReturnPeriod(RandomStringUtils.random(20));
 		final Set<ConstraintViolation<DataSample>> violations = this.validator.validate(record);
 		Assert.assertEquals(1, violations.size());
 	}
@@ -715,7 +715,7 @@ public class DataSampleValidatorTests {
 		record.setSiteName("Site Name");
 		record.setReturnType("Landfill Annual monitoring report");
 		record.setMonitoringDate(ReturnsDate.from("2016-03-09T11:18:59"));
-		record.setMonitoringPeriod("During all downwind monitoring");
+		record.setReturnPeriod("Aug 2016");
 		record.setMonitoringPoint("Borehole 1");
 		record.setSampleReference("Sample Reference");
 		record.setSampleBy("Sam Gardner-Dell");

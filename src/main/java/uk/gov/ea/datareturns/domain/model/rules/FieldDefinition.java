@@ -17,8 +17,8 @@ public enum FieldDefinition {
 	Rtn_Type("Return type", "http://data-returns-help.herokuapp.com/help/detailed-guides/return-type"),
 	/** The monitoring date (Mon_Date) */
 	Mon_Date("Monitoring date", "http://data-returns-help.herokuapp.com/help/detailed-guides/regime-specific-rules"),
-	/** The monitoring period (Mon_Period) */
-	Mon_Period("Monitoring period", "http://data-returns-help.herokuapp.com/help/detailed-guides/monitoring-period"),
+	/** The return period (Rtn_Period) */
+	Rtn_Period("Return period", "http://data-returns-help.herokuapp.com/help/detailed-guides/monitoring-period"),
 	/** The monitoring point (Mon_Point) */
 	Mon_Point("Monitor point reference", "http://data-returns-help.herokuapp.com/help/detailed-guides/regime-specific-rules"),
 	/** Sample reference (Smpl_Ref) */

@@ -22,8 +22,8 @@ public final class DataReturnsHeaders {
 	/** The monitoring date (Mon_Date) */
 	public static final String MONITORING_DATE = "Mon_Date";
 
-	/** The monitoring period (Mon_Period) */
-	public static final String MONITORING_PERIOD = "Mon_Period";
+	/** The return period (Rtn_Period) */
+	public static final String RETURN_PERIOD = "Rtn_Period";
 
 	/** The monitoring point (Mon_Point) */
 	public static final String MONITORING_POINT = "Mon_Point";
@@ -73,7 +73,7 @@ public final class DataReturnsHeaders {
 		ALL_VALID_HEADINGS.add(SITE_NAME);
 		ALL_VALID_HEADINGS.add(RETURN_TYPE);
 		ALL_VALID_HEADINGS.add(MONITORING_DATE);
-		ALL_VALID_HEADINGS.add(MONITORING_PERIOD);
+		ALL_VALID_HEADINGS.add(RETURN_PERIOD);
 		ALL_VALID_HEADINGS.add(MONITORING_POINT);
 		ALL_VALID_HEADINGS.add(SAMPLE_REFERENCE);
 		ALL_VALID_HEADINGS.add(SAMPLE_BY);

@@ -8,7 +8,7 @@
 		<!-- Annotated entity classes -->
         <class>uk.gov.ea.datareturns.domain.jpa.entities.UniqueIdentifier</class>
         <class>uk.gov.ea.datareturns.domain.jpa.entities.MethodOrStandard</class>
-        <class>uk.gov.ea.datareturns.domain.jpa.entities.MonitoringPeriod</class>
+        <class>uk.gov.ea.datareturns.domain.jpa.entities.ReturnPeriod</class>
         <class>uk.gov.ea.datareturns.domain.jpa.entities.Parameter</class>
         <class>uk.gov.ea.datareturns.domain.jpa.entities.Qualifier</class>
         <class>uk.gov.ea.datareturns.domain.jpa.entities.ReferencePeriod</class>

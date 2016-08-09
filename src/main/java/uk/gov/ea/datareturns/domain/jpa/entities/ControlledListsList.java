@@ -27,8 +27,10 @@ public enum ControlledListsList {
         put("name", "Name");
     }}), "name"),
 
-    MONITORING_PERIOD("Monitoring period", MonitoringPeriodDao.class, "mon_period", Collections.unmodifiableMap(new HashMap<String, String>() {{
+    RETURN_PERIOD("Return period", ReturnPeriodDao.class, "rtn_period", Collections.unmodifiableMap(new HashMap<String, String>() {{
         put("name", "Name");
+        put("description", "Description");
+        put("example", "Example");
     }}), "name"),
 
     METHOD_OR_STANDARD("Monitoring standard or method", MethodOrStandardDao.class, "method", Collections.unmodifiableMap(new HashMap<String, String>() {{

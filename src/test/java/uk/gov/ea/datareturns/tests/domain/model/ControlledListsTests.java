@@ -23,9 +23,6 @@ public class ControlledListsTests {
     MethodOrStandardDao methodOrStandardDao;
 
     @Inject
-    MonitoringPeriodDao monitoringPeriodDao;
-
-    @Inject
     ParameterDao parameterDao;
 
     @Inject
@@ -53,22 +50,6 @@ public class ControlledListsTests {
         Assert.assertEquals(retrieveReturnType2.getId(), retrieveReturnType.getId());
         methodOrStandardDao.removeById(retrieveReturnType2.getId());
         MethodOrStandard retrieveReturnType3 = (MethodOrStandard) methodOrStandardDao.getById(retrieveReturnType.getId());
-        Assert.assertNull(retrieveReturnType3);
-    }
-
-    @Test
-    public void testMonitoringPeriod() {
-        // Add and retrieve
-        MonitoringPeriod monitoringPeriod = new MonitoringPeriod();
-        monitoringPeriod.setName("Test");
-        monitoringPeriodDao.add(monitoringPeriod);
-        MonitoringPeriod retrieveReturnType = (MonitoringPeriod) monitoringPeriodDao.getByName("Test");
-        Assert.assertNotNull(retrieveReturnType.getId());
-        MonitoringPeriod retrieveReturnType2 = (MonitoringPeriod) monitoringPeriodDao.getById(retrieveReturnType.getId());
-        Assert.assertNotNull(retrieveReturnType2);
-        Assert.assertEquals(retrieveReturnType2.getId(), retrieveReturnType.getId());
-        monitoringPeriodDao.removeById(retrieveReturnType2.getId());
-        MonitoringPeriod retrieveReturnType3 = (MonitoringPeriod) monitoringPeriodDao.getById(retrieveReturnType.getId());
         Assert.assertNull(retrieveReturnType3);
     }
 

@@ -1,9 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
-	xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd
-        http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
-        
+				   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd">
+
 	<property name="uniqueIdentifiersFile" value="/db/data/UniqueIdentifiers.csv"/>
 	<property name="returnTypesFile" value="/db/data/ReturnTypes.csv"/>
 	<property name="parametersFile" value="/db/data/Parameters.csv"/>
@@ -11,8 +9,8 @@
 	<property name="methodsOrStandardsFile" value="/db/data/MethodsOrStandards.csv"/>
 	<property name="qualifiersFile" value="/db/data/Qualifiers.csv"/>
 	<property name="referencePeriodsFile" value="/db/data/ReferencePeriods.csv"/>
-	<property name="monitoringPeriodsFile" value="/db/data/MonitoringPeriods.csv"/>
-	
+	<property name="returnPeriodsFile" value="/db/data/ReturnPeriods.csv"/>
+
 	<preConditions>
 		<dbms type="${db.type}"/>
 		<runningAs username="${db.username}"/>
@@ -73,7 +71,7 @@
 
 	<changeSet id="create-table: return_types" author="Graham Willis">
 		<createTable tableName="return_types">
-			<column name="id" type="bigint" defaultValueSequenceNext="return_types_seq">
+			<column name="id" type="bigint" defaultValueSequenceNext="return_types_seq" autoIncrement="true">
 				<constraints primaryKey="true" nullable="false"/>
 			</column>
 			<column name="name" type="varchar(80)">
@@ -104,8 +102,11 @@
 		<createIndex indexName="idx_return_type_name" tableName="return_types" unique="true">
 			<column name="name"/>
 		</createIndex>
-		<rollback><dropIndex tableName="return_types" indexName="idx_return_type_name"/></rollback>
+		<rollback>
+			<dropIndex tableName="return_types" indexName="idx_return_type_name"/>
+		</rollback>
 	</changeSet>
+
 
 	<!-- 
 	****************************************************************
@@ -115,7 +116,7 @@
 	<changeSet id="create-table: parameters" author="Sam Gardner-Dell">
 		<createTable tableName="parameters">
 			<column name="id" type="BIGINT" autoIncrement="true">
-				<constraints primaryKey="true" />
+				<constraints primaryKey="true"/>
 			</column>
 			<column name="name" type="varchar(150)">
 				<constraints nullable="false" unique="true"/>
@@ -131,8 +132,8 @@
 				Cas numbers have specific rules about their format (e.g. 1-7 digits, dash, 2 digits, dash, check digit)
 				See: https://www.cas.org/content/chemical-substances/checkdig and http://onelastbit.com/?p=444
 			-->
-<!-- 			<column name="cas" type="varchar(15)"> -->
-<!-- 			</column> -->
+			<!-- 			<column name="cas" type="varchar(15)"> -->
+			<!-- 			</column> -->
 		</createTable>
 		<rollback>
 			<dropTable tableName="parameters"/>
@@ -155,10 +156,12 @@
 		<createIndex indexName="idx_parameters_name" tableName="parameters" unique="true">
 			<column name="name"/>
 		</createIndex>
-		<rollback><dropIndex tableName="parameters" indexName="idx_parameters_name"/></rollback>
+		<rollback>
+			<dropIndex tableName="parameters" indexName="idx_parameters_name"/>
+		</rollback>
 	</changeSet>
-	
-	
+
+
 	<!-- 
 	****************************************************************
 	Units
@@ -167,7 +170,7 @@
 	<changeSet id="create-table: units" author="Sam Gardner-Dell">
 		<createTable tableName="units">
 			<column name="id" type="BIGINT" autoIncrement="true">
-				<constraints primaryKey="true" />
+				<constraints primaryKey="true"/>
 			</column>
 			<column name="name" type="varchar(10)">
 				<constraints nullable="false" unique="true"/>
@@ -199,13 +202,12 @@
 		<createIndex indexName="idx_units_name" tableName="units" unique="true">
 			<column name="name"/>
 		</createIndex>
-		<rollback><dropIndex tableName="units" indexName="idx_units_name"/></rollback>
+		<rollback>
+			<dropIndex tableName="units" indexName="idx_units_name"/>
+		</rollback>
 	</changeSet>
-	
-	
-	
-	
-	
+
+
 	<!-- 
 	****************************************************************
 	Method Or Standard
@@ -214,7 +216,7 @@
 	<changeSet id="create-table: methods_or_standards" author="Sam Gardner-Dell">
 		<createTable tableName="methods_or_standards">
 			<column name="id" type="BIGINT" autoIncrement="true">
-				<constraints primaryKey="true" />
+				<constraints primaryKey="true"/>
 			</column>
 			<!-- TODO: Erroneous data in the controlled list page - could probably reduce column length to around 40 once resolved -->
 			<column name="name" type="varchar(150)">
@@ -242,10 +244,12 @@
 		<createIndex indexName="idx_methods_or_standards_name" tableName="methods_or_standards" unique="true">
 			<column name="name"/>
 		</createIndex>
-		<rollback><dropIndex tableName="methods_or_standards" indexName="idx_methods_or_standards_name"/></rollback>
+		<rollback>
+			<dropIndex tableName="methods_or_standards" indexName="idx_methods_or_standards_name"/>
+		</rollback>
 	</changeSet>
-	
-		
+
+
 	<!-- 
 	****************************************************************
 	Qualifiers
@@ -254,7 +258,7 @@
 	<changeSet id="create-table: qualifiers" author="Sam Gardner-Dell">
 		<createTable tableName="qualifiers">
 			<column name="id" type="BIGINT" autoIncrement="true">
-				<constraints primaryKey="true" />
+				<constraints primaryKey="true"/>
 			</column>
 			<column name="name" type="varchar(40)">
 				<constraints nullable="false" unique="true"/>
@@ -281,10 +285,12 @@
 		<createIndex indexName="idx_qualifiers_name" tableName="qualifiers" unique="true">
 			<column name="name"/>
 		</createIndex>
-		<rollback><dropIndex tableName="qualifiers" indexName="idx_qualifiers_name"/></rollback>
+		<rollback>
+			<dropIndex tableName="qualifiers" indexName="idx_qualifiers_name"/>
+		</rollback>
 	</changeSet>
-		
-		
+
+
 	<!-- 
 	****************************************************************
 	Reference Periods
@@ -293,7 +299,7 @@
 	<changeSet id="create-table: reference_periods" author="Sam Gardner-Dell">
 		<createTable tableName="reference_periods">
 			<column name="id" type="BIGINT" autoIncrement="true">
-				<constraints primaryKey="true" />
+				<constraints primaryKey="true"/>
 			</column>
 			<column name="name" type="varchar(120)">
 				<constraints nullable="false" unique="true"/>
@@ -320,45 +326,58 @@
 		<createIndex indexName="idx_reference_periods_name" tableName="reference_periods" unique="true">
 			<column name="name"/>
 		</createIndex>
-		<rollback><dropIndex tableName="reference_periods" indexName="idx_reference_periods_name"/></rollback>
+		<rollback>
+			<dropIndex tableName="reference_periods" indexName="idx_reference_periods_name"/>
+		</rollback>
 	</changeSet>
-			
-		
-	<!-- 
+
+
+	<!--
 	****************************************************************
-	Monitoring Periods
+	Return Periods
 	****************************************************************
 	-->
-	<changeSet id="create-table: monitoring_periods" author="Sam Gardner-Dell">
-		<createTable tableName="monitoring_periods">
-			<column name="id" type="BIGINT" autoIncrement="true">
-				<constraints primaryKey="true" />
+	<changeSet id="create: sequence: return_periods_seq" author="GMW">
+		<createSequence incrementBy="1"
+						minValue="0"
+						sequenceName="return_periods_seq"
+						startValue="0"/>
+	</changeSet>
+
+	<changeSet id="create-table: return_periods" author="Sam Gardner-Dell">
+		<createTable tableName="return_periods">
+			<column name="id" type="BIGINT" autoIncrement="true" defaultValueSequenceNext="return_periods_seq">
+				<constraints primaryKey="true"/>
 			</column>
 			<column name="name" type="varchar(120)">
 				<constraints nullable="false" unique="true"/>
 			</column>
+			<column name="description" type="varchar(1000)"></column>
+			<column name="example" type="varchar(255)"></column>
 		</createTable>
 		<rollback>
-			<dropTable tableName="monitoring_periods"/>
+			<dropTable tableName="return_periods"/>
 		</rollback>
 	</changeSet>
 
-	<changeSet id="load-data: monitoring_periods" author="Sam Gardner-Dell">
+	<changeSet id="load-data: return_periods" author="Sam Gardner-Dell">
 		<preConditions onFail="HALT">
-			<tableExists tableName="monitoring_periods"/>
-			<columnExists tableName="monitoring_periods" columnName="id"/>
-			<sqlCheck expectedResult="0">select count(id) from monitoring_periods</sqlCheck>
+			<tableExists tableName="return_periods"/>
+			<columnExists tableName="return_periods" columnName="id"/>
+			<sqlCheck expectedResult="0">select count(id) from return_periods</sqlCheck>
 		</preConditions>
-		<loadData file="${monitoringPeriodsFile}" tableName="monitoring_periods"/>
+		<loadData file="${returnPeriodsFile}" tableName="return_periods"/>
 		<rollback>
-			<delete tableName="monitoring_periods"></delete>
+			<delete tableName="return_periods"></delete>
 		</rollback>
 	</changeSet>
 
-	<changeSet id="create-index: monitoring_periods" author="Sam Gardner-Dell">
-		<createIndex indexName="idx_monitoring_periods_name" tableName="monitoring_periods" unique="true">
+	<changeSet id="create-index: return_periods" author="Sam Gardner-Dell">
+		<createIndex indexName="idx_return_periods_name" tableName="return_periods" unique="true">
 			<column name="name"/>
 		</createIndex>
-		<rollback><dropIndex tableName="monitoring_periods" indexName="idx_monitoring_periods_name"/></rollback>
+		<rollback>
+			<dropIndex tableName="return_periods" indexName="idx_return_periods_name"/>
+		</rollback>
 	</changeSet>
 </databaseChangeLog>
