@@ -1,0 +1,2 @@
+EA_ID,Site_Name,Rtn_Type,Mon_Date,Mon_Period,Smpl_Ref,Smpl_By,Mon_Point,Parameter,Value,Unit,Ref_Period,Meth_Stand,Comments,CiC,CAS,RD_Code
+EP3136GK,ABC Limited,EPR/IED Landfill Gas infrastructure monitoring,2015-08-05,Annual,Sample Ref,Sampled by 1,Monitor point 1,Temperature,123,mg,Daily mean,BS EN 13284-1,Test comments,True,123,rd code
