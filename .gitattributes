@@ -1,1 +1,9 @@
-*.csv text=auto
+# Set the default behavior, in case people don't have core.autocrlf set.
+* text=auto
+
+# Force csv files to be treated as text
+*.csv text
+*.java text
+*.xml text
+*.properties text
+*.iml text
