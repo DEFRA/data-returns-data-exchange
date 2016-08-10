@@ -181,9 +181,9 @@ public abstract class AbstractJpaDao<E extends PersistedEntity> {
 	@Transactional
 	public void add(E entity) {
         entityManager.persist(entity);
-		E e2 = getByName(entity.getName());
-        cacheByName.put(e2.getName(), e2);
-		LOGGER.info("Added: " + entityClass.getSimpleName() + "id: " + e2.getId() + e2.getName());
+        entityManager.flush();
+        getCache().put(entity.getName(), entity);
+		LOGGER.info("Added: " + entityClass.getSimpleName() + "id: " + entity.getId() + entity.getName());
 	}
 
     /**
@@ -205,6 +205,7 @@ public abstract class AbstractJpaDao<E extends PersistedEntity> {
 	 */
 	public void clearCache() {
 		LOGGER.info("Clear cache: " + entityClass.getSimpleName());
+		cacheByName = null;
 	}
 
 	/**

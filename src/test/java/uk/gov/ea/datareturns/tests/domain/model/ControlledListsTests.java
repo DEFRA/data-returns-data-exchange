@@ -39,38 +39,52 @@ public class ControlledListsTests {
 
     @Test
     public void testMethodOrStandard() {
+        MethodOrStandard methodOrStandard0 = (MethodOrStandard) methodOrStandardDao.getByName("Test");
+        if (methodOrStandard0 != null) {
+            methodOrStandardDao.removeById(methodOrStandard0.getId());
+        }
         // Add and retrieve
         MethodOrStandard methodOrStandard = new MethodOrStandard();
         methodOrStandard.setName("Test");
         methodOrStandardDao.add(methodOrStandard);
-        MethodOrStandard retrieveReturnType = (MethodOrStandard) methodOrStandardDao.getByName("Test");
-        Assert.assertNotNull(retrieveReturnType.getId());
-        MethodOrStandard retrieveReturnType2 = (MethodOrStandard) methodOrStandardDao.getById(retrieveReturnType.getId());
-        Assert.assertNotNull(retrieveReturnType2);
-        Assert.assertEquals(retrieveReturnType2.getId(), retrieveReturnType.getId());
-        methodOrStandardDao.removeById(retrieveReturnType2.getId());
-        MethodOrStandard retrieveReturnType3 = (MethodOrStandard) methodOrStandardDao.getById(retrieveReturnType.getId());
-        Assert.assertNull(retrieveReturnType3);
+        MethodOrStandard retrieveMethodOrStandard = (MethodOrStandard) methodOrStandardDao.getByName("Test");
+        Assert.assertNotNull(retrieveMethodOrStandard.getId());
+        MethodOrStandard retrieveMethodOrStandard2 = (MethodOrStandard) methodOrStandardDao.getById(retrieveMethodOrStandard.getId());
+        Assert.assertNotNull(retrieveMethodOrStandard2);
+        Assert.assertEquals(retrieveMethodOrStandard2.getId(), retrieveMethodOrStandard.getId());
+        methodOrStandardDao.removeById(retrieveMethodOrStandard2.getId());
+        MethodOrStandard retrieveMethodOrStandard3 = (MethodOrStandard) methodOrStandardDao.getById(retrieveMethodOrStandard.getId());
+        Assert.assertNull(retrieveMethodOrStandard3);
     }
 
     @Test
     public void testParameter() {
+        Parameter retrieveParameter0 = (Parameter) parameterDao.getByName("Test");
+        if (retrieveParameter0 != null) {
+            parameterDao.removeById(retrieveParameter0.getId());
+        }
         // Add and retrieve
         Parameter parameter = new Parameter();
         parameter.setName("Test");
         parameterDao.add(parameter);
-        Parameter retrieveReturnType = (Parameter) parameterDao.getByName("Test");
-        Assert.assertNotNull(retrieveReturnType.getId());
-        Parameter retrieveReturnType2 = (Parameter) parameterDao.getById(retrieveReturnType.getId());
-        Assert.assertNotNull(retrieveReturnType2);
-        Assert.assertEquals(retrieveReturnType2.getId(), retrieveReturnType.getId());
-        parameterDao.removeById(retrieveReturnType2.getId());
-        Parameter retrieveReturnType3 = (Parameter) parameterDao.getById(retrieveReturnType.getId());
-        Assert.assertNull(retrieveReturnType3);
+        Parameter retrieveParameter = (Parameter) parameterDao.getByName("Test");
+        Assert.assertNotNull(retrieveParameter.getId());
+        Parameter retrieveParameter2 = (Parameter) parameterDao.getById(retrieveParameter.getId());
+        Assert.assertNotNull(retrieveParameter2);
+        Assert.assertEquals(retrieveParameter2.getId(), retrieveParameter.getId());
+        parameterDao.removeById(retrieveParameter2.getId());
+        Parameter retrieveParameter3 = (Parameter) parameterDao.getById(retrieveParameter.getId());
+        Assert.assertNull(retrieveParameter3);
     }
 
     @Test
     public void testReturnType() {
+        // Make the test type is gone
+        ReturnType retrieveReturnType0 = (ReturnType) returnTypeDao.getByName("Test");
+        if (retrieveReturnType0 != null) {
+            returnTypeDao.removeById(retrieveReturnType0.getId());
+        }
+        
         // Add and retrieve
         ReturnType returnType = new ReturnType();
         returnType.setName("Test");
@@ -88,6 +102,11 @@ public class ControlledListsTests {
 
     @Test
     public void testUnit() {
+        // Make the test type is gone
+        Unit retrieveUnit0 = (Unit) unitDao.getByName("Test");
+        if (retrieveUnit0 != null) {
+            unitDao.removeById(retrieveUnit0.getId());
+        }
         // Add and retrieve
         Unit unit = new Unit();
         unit.setName("Test");
