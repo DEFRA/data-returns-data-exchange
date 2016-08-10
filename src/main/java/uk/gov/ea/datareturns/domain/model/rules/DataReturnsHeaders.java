@@ -43,6 +43,9 @@ public final class DataReturnsHeaders {
 	/** Textual value (Txt_Value) */
 	public static final String TEXT_VALUE = "Txt_Value";
 
+	/** Qualifier values (Qualifier) */
+	public static final String QUALIFIER = "Qualifier";
+
 	/** Unit of measurement (Unit) */
 	public static final String UNIT = "Unit";
 
@@ -80,6 +83,7 @@ public final class DataReturnsHeaders {
 		ALL_VALID_HEADINGS.add(PARAMETER);
 		ALL_VALID_HEADINGS.add(VALUE);
 		ALL_VALID_HEADINGS.add(TEXT_VALUE);
+		ALL_VALID_HEADINGS.add(QUALIFIER);
 		ALL_VALID_HEADINGS.add(UNIT);
 		ALL_VALID_HEADINGS.add(REFERENCE_PERIOD);
 		ALL_VALID_HEADINGS.add(METHOD_STANDARD);

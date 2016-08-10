@@ -16,7 +16,6 @@
 		<runningAs username="${db.username}"/>
 	</preConditions>
 
-
 	<!-- 
 	****************************************************************
 	Unique Identifiers
@@ -67,6 +66,9 @@
 										minValue="0"
 										sequenceName="return_types_seq"
 										startValue="0"/>
+		<rollback>
+			<dropSequence sequenceName="return_types_seq"/>
+		</rollback>
 	</changeSet>
 
 	<changeSet id="create-table: return_types" author="Graham Willis">
@@ -255,14 +257,25 @@
 	Qualifiers
 	****************************************************************
 	-->
+	<changeSet id="create: sequence: qualifiers_seq" author="Sam Gardner-Dell" >
+		<createSequence incrementBy="1"
+						minValue="0"
+						sequenceName="qualifiers_seq"
+						startValue="0"/>
+		<rollback>
+			<dropSequence sequenceName="qualifiers_seq"/>
+		</rollback>
+	</changeSet>
+
 	<changeSet id="create-table: qualifiers" author="Sam Gardner-Dell">
 		<createTable tableName="qualifiers">
-			<column name="id" type="BIGINT" autoIncrement="true">
+			<column name="id" type="BIGINT" defaultValueSequenceNext="qualifiers_seq" autoIncrement="true">
 				<constraints primaryKey="true"/>
 			</column>
-			<column name="name" type="varchar(40)">
+			<column name="name" type="varchar(70)">
 				<constraints nullable="false" unique="true"/>
 			</column>
+			<column name="description" type="varchar(100)"></column>
 		</createTable>
 		<rollback>
 			<dropTable tableName="qualifiers"/>
@@ -337,11 +350,14 @@
 	Return Periods
 	****************************************************************
 	-->
-	<changeSet id="create: sequence: return_periods_seq" author="GMW">
+	<changeSet id="create: sequence: return_periods_seq" author="Sam Gardner-Dell">
 		<createSequence incrementBy="1"
 						minValue="0"
 						sequenceName="return_periods_seq"
 						startValue="0"/>
+		<rollback>
+			<dropSequence sequenceName="return_periods_seq"/>
+		</rollback>
 	</changeSet>
 
 	<changeSet id="create-table: return_periods" author="Sam Gardner-Dell">

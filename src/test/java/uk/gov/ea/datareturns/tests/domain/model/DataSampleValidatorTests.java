@@ -721,7 +721,7 @@ public class DataSampleValidatorTests {
 		record.setSampleBy("Sam Gardner-Dell");
 		record.setParameter("1,1,1,2-Tetrachloroethane");
 		record.setValue("<0.0006");
-		record.setTextValue("Extreme weather");
+		record.setTextValue("true");
 		record.setUnit("m3/s");
 		record.setReferencePeriod("Biannual periodic measurement average value over sample period of between 6 and 8 hours");
 		record.setMethStand("BS ISO 15713");

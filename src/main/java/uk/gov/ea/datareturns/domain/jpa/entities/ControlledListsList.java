@@ -33,6 +33,11 @@ public enum ControlledListsList {
         put("example", "Example");
     }}), "name"),
 
+    QUALIFIERS("Qualifiers", QualifierDao.class, "qualifier", Collections.unmodifiableMap(new HashMap<String, String>() {{
+        put("name", "Name");
+        put("description", "Description");
+    }}), "name"),
+
     METHOD_OR_STANDARD("Monitoring standard or method", MethodOrStandardDao.class, "method", Collections.unmodifiableMap(new HashMap<String, String>() {{
         put("name", "Name");
     }}), "name"),
@@ -52,6 +57,7 @@ public enum ControlledListsList {
     private Map<String, String> displayHeaders; // Column name to column heading
 
     static {
+
         for (ControlledListsList c : ControlledListsList.values()) {
             byPath.put(c.path, c);
         }

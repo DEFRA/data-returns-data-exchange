@@ -30,7 +30,6 @@ public class TxtValueConverter implements Conversion<String, String> {
 		if (booleanValue != null) {
 			return booleanValue.toString();
 		}
-		// If a Boolean mapping was not found then return the input String as it may be a Qualifier from the controlled list.
 		return input;
 	}
 
