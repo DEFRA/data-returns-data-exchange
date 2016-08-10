@@ -111,7 +111,16 @@ public class ResourceIntegrationTests {
 
 	public final static String CONTROLLED_LISTS = "controlled-list";
 
-	@Inject
+	public final static String METH_STAND_VALID = "validation/testMethStand.csv";
+	public final static String METH_STAND_INVALID = "validation/testMethStandInvalid.csv";
+
+    public final static String RTN_TYPE_VALID = "validation/testReturnType.csv";
+    public final static String RTN_TYPE_INVALID = "validation/testReturnTypeInvalid.csv";
+
+    public final static String REF_PERIOD_VALID = "validation/testRefPeriod.csv";
+    public final static String REF_PERIOD_INVALID = "validation/testRefPeriodInvalid.csv";
+
+    @Inject
 	private TestSettings testSettings;
 
 	@Test
@@ -453,6 +462,48 @@ public class ResourceIntegrationTests {
 		// final DataExchangeResult result = getResultFromResponse(resp);
 		// assertThat(result.getAppStatusCode()).isEqualTo(APP_STATUS_SUCCESS.getAppStatusCode());
 	}
+
+	@Test
+	public void testMethStandValid() {
+		final Client client = createClient("test Meth_Stand valid");
+		final Response resp = performUploadStep(client, METH_STAND_VALID, MEDIA_TYPE_CSV);
+		assertThat(resp.getStatus()).isEqualTo(Status.OK.getStatusCode());
+	}
+
+	@Test
+	public void testMethStandInvalid() {
+		final Client client = createClient("test Meth_Stand invalid");
+		final Response resp = performUploadStep(client, METH_STAND_INVALID, MEDIA_TYPE_CSV);
+		assertThat(resp.getStatus()).isEqualTo(Status.BAD_REQUEST.getStatusCode());
+	}
+
+	@Test
+	public void testReturnTypeValid() {
+		final Client client = createClient("test Rtn_Type valid");
+		final Response resp = performUploadStep(client, RTN_TYPE_VALID, MEDIA_TYPE_CSV);
+		assertThat(resp.getStatus()).isEqualTo(Status.OK.getStatusCode());
+	}
+
+	@Test
+	public void testReturnTypeInvalid() {
+		final Client client = createClient("test Rtn_Type invalid");
+		final Response resp = performUploadStep(client, RTN_TYPE_INVALID, MEDIA_TYPE_CSV);
+		assertThat(resp.getStatus()).isEqualTo(Status.BAD_REQUEST.getStatusCode());
+	}
+
+    @Test
+    public void testRefPeriodValid() {
+        final Client client = createClient("test Ref_Period valid");
+        final Response resp = performUploadStep(client, REF_PERIOD_VALID, MEDIA_TYPE_CSV);
+        assertThat(resp.getStatus()).isEqualTo(Status.OK.getStatusCode());
+    }
+
+    @Test
+    public void testRefPeriodInvalid() {
+        final Client client = createClient("test Ref_Period invalid");
+        final Response resp = performUploadStep(client, REF_PERIOD_INVALID, MEDIA_TYPE_CSV);
+        assertThat(resp.getStatus()).isEqualTo(Status.BAD_REQUEST.getStatusCode());
+    }
 
 	///////////////////////////////////////////////////////////////////////////////////////////
 	/////////////////////////////// End Content Validation tests

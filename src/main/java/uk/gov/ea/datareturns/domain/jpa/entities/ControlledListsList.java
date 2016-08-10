@@ -24,7 +24,7 @@ public enum ControlledListsList {
     }}), "name"),
 
     REFERENCE_PERIOD("Reference period", ReferencePeriodDao.class, "ref_period", Collections.unmodifiableMap(new HashMap<String, String>() {{
-        put("name", "Ref_period");
+        put("name", "Ref_Period");
         put("description", "Definition");
     }}), "name"),
 
@@ -40,13 +40,13 @@ public enum ControlledListsList {
     }}), "name"),
 
     METHOD_OR_STANDARD("Monitoring standard or method", MethodOrStandardDao.class, "method", Collections.unmodifiableMap(new HashMap<String, String>() {{
-        put("name", "Meth_stand");
+        put("name", "Meth_Stand");
         put("description", "Definition");
         put("origin", "Origin");
     }}), "name"),
 
     RETURN_TYPE("Return type", ReturnTypeDao.class, "rtn_type", Collections.unmodifiableMap(new HashMap<String, String>() {{
-        put("name", "Rtn_type");
+        put("name", "Rtn_Type");
         put("sector", "Sector");
     }}), "name");
 
