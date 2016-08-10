@@ -63,19 +63,9 @@
 	****************************************************************
 	-->
 
-	<changeSet id="create: sequence: return_types_seq" author="Graham Willis" >
-		<createSequence incrementBy="1"
-										minValue="0"
-										sequenceName="return_types_seq"
-										startValue="0"/>
-		<rollback>
-			<dropSequence sequenceName="return_types_seq"/>
-		</rollback>
-	</changeSet>
-
 	<changeSet id="create-table: return_types" author="Graham Willis">
 		<createTable tableName="return_types">
-			<column name="id" type="bigint" defaultValueSequenceNext="return_types_seq" autoIncrement="true">
+			<column name="id" type="bigserial">
 				<constraints primaryKey="true" nullable="false"/>
 			</column>
 			<column name="name" type="varchar(80)">
@@ -173,8 +163,8 @@
 	-->
 	<changeSet id="create-table: units" author="Sam Gardner-Dell">
 		<createTable tableName="units">
-			<column name="id" type="BIGINT" autoIncrement="true">
-				<constraints primaryKey="true"/>
+			<column name="id" type="bigserial">
+				<constraints primaryKey="true" nullable="false"/>
 			</column>
 			<column name="name" type="varchar(10)">
 				<constraints nullable="false" unique="true"/>
@@ -216,16 +206,10 @@
 	Method Or Standard
 	****************************************************************
 	-->
-	<changeSet id="create: sequence: methods_or_standards_seq" author="Graham Willis" >
-		<createSequence incrementBy="1"
-										minValue="0"
-										sequenceName="methods_or_standards_seq"
-										startValue="0"/>
-	</changeSet>
 
 	<changeSet id="create-table: methods_or_standards" author="Graham Willis">
 		<createTable tableName="methods_or_standards">
-			<column name="id" type="bigint" defaultValueSequenceNext="methods_or_standards_seq" autoIncrement="true">
+			<column name="id" type="bigserial">
 				<constraints primaryKey="true" nullable="false"/>
 			</column>
 			<column name="name" type="varchar(30)">
@@ -270,20 +254,10 @@
 	Qualifiers
 	****************************************************************
 	-->
-	<changeSet id="create: sequence: qualifiers_seq" author="Sam Gardner-Dell" >
-		<createSequence incrementBy="1"
-						minValue="0"
-						sequenceName="qualifiers_seq"
-						startValue="0"/>
-		<rollback>
-			<dropSequence sequenceName="qualifiers_seq"/>
-		</rollback>
-	</changeSet>
-
 	<changeSet id="create-table: qualifiers" author="Sam Gardner-Dell">
 		<createTable tableName="qualifiers">
-			<column name="id" type="BIGINT" defaultValueSequenceNext="qualifiers_seq" autoIncrement="true">
-				<constraints primaryKey="true"/>
+			<column name="id" type="bigserial">
+				<constraints primaryKey="true" nullable="false"/>
 			</column>
 			<column name="name" type="varchar(70)">
 				<constraints nullable="false" unique="true"/>
@@ -322,16 +296,9 @@
 	Reference Periods
 	****************************************************************
 	-->
-	<changeSet id="create: sequence: reference_periods_seq" author="Graham Willis" >
-		<createSequence incrementBy="1"
-										minValue="0"
-										sequenceName="reference_periods_seq"
-										startValue="0"/>
-	</changeSet>
-
 	<changeSet id="create-table: reference_periods" author="Graham Willis">
 		<createTable tableName="reference_periods">
-			<column name="id" type="bigint" defaultValueSequenceNext="reference_periods_seq">
+			<column name="id" type="bigserial">
 				<constraints primaryKey="true" nullable="false"/>
 			</column>
 			<column name="name" type="varchar(200)">
@@ -373,20 +340,11 @@
 	Return Periods
 	****************************************************************
 	-->
-	<changeSet id="create: sequence: return_periods_seq" author="Sam Gardner-Dell">
-		<createSequence incrementBy="1"
-						minValue="0"
-						sequenceName="return_periods_seq"
-						startValue="0"/>
-		<rollback>
-			<dropSequence sequenceName="return_periods_seq"/>
-		</rollback>
-	</changeSet>
 
 	<changeSet id="create-table: return_periods" author="Sam Gardner-Dell">
 		<createTable tableName="return_periods">
-			<column name="id" type="BIGINT" autoIncrement="true" defaultValueSequenceNext="return_periods_seq">
-				<constraints primaryKey="true"/>
+			<column name="id" type="bigserial">
+				<constraints primaryKey="true" nullable="false"/>
 			</column>
 			<column name="name" type="varchar(120)">
 				<constraints nullable="false" unique="true"/>

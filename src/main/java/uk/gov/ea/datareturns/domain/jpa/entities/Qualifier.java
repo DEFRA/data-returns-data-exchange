@@ -1,12 +1,6 @@
 package uk.gov.ea.datareturns.domain.jpa.entities;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.NamedQueries;
-import javax.persistence.NamedQuery;
-import javax.persistence.Table;
+import javax.persistence.*;
 
 /**
  * The persistent class for the qualifiers database table.
@@ -18,11 +12,11 @@ import javax.persistence.Table;
 public class Qualifier implements PersistedEntity {
 
 	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@SequenceGenerator(name = "qualifiers_id_seq", sequenceName = "qualifiers_id_seq", allocationSize=1)
+	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator="qualifiers_id_seq")
 	private Long id;
 
 	private String name;
-
 	private String description;
 
 	public Long getId() {
@@ -33,6 +27,9 @@ public class Qualifier implements PersistedEntity {
 		this.id = id;
 	}
 
+	@Override
+	@Basic
+	@Column(name = "name", nullable = false, length = 70)
 	public String getName() {
 		return this.name;
 	}
@@ -41,11 +38,34 @@ public class Qualifier implements PersistedEntity {
 		this.name = name;
 	}
 
+	@Basic
+	@Column(name = "description", length = 100)
 	public String getDescription() {
 		return description;
 	}
 
 	public void setDescription(String description) {
 		this.description = description;
+	}
+
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (o == null || getClass() != o.getClass()) return false;
+
+		Qualifier qualifier = (Qualifier) o;
+
+		if (id != null ? !id.equals(qualifier.id) : qualifier.id != null) return false;
+		if (name != null ? !name.equals(qualifier.name) : qualifier.name != null) return false;
+		return description != null ? description.equals(qualifier.description) : qualifier.description == null;
+
+	}
+
+	@Override
+	public int hashCode() {
+		int result = id != null ? id.hashCode() : 0;
+		result = 31 * result + (name != null ? name.hashCode() : 0);
+		result = 31 * result + (description != null ? description.hashCode() : 0);
+		return result;
 	}
 }

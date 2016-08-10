@@ -122,5 +122,27 @@ public class ControlledListsTests {
         Unit retrieveUnit3 = (Unit) unitDao.getById(retrieveUnit.getId());
         Assert.assertNull(retrieveUnit3);
     }
+
+    @Test
+    public void testQualifier() {
+        // Make the test type is gone
+        Qualifier retrieveQualifier0 = (Qualifier) qualifierDao.getByName("Test");
+        if (retrieveQualifier0 != null) {
+            qualifierDao.removeById(retrieveQualifier0.getId());
+        }
+        // Add and retrieve
+        Qualifier Qualifier = new Qualifier();
+        Qualifier.setName("Test");
+        Qualifier.setDescription("Test");
+        qualifierDao.add(Qualifier);
+        Qualifier retrieveQualifier = (Qualifier) qualifierDao.getByName("Test");
+        Assert.assertNotNull(retrieveQualifier.getId());
+        Qualifier retrieveQualifier2 = (Qualifier) qualifierDao.getById(retrieveQualifier.getId());
+        Assert.assertNotNull(retrieveQualifier2);
+        Assert.assertEquals(retrieveQualifier2.getId(), retrieveQualifier.getId());
+        qualifierDao.removeById(retrieveQualifier2.getId());
+        Qualifier retrieveQualifier3 = (Qualifier) qualifierDao.getById(retrieveQualifier.getId());
+        Assert.assertNull(retrieveQualifier3);
+    }
 }
 

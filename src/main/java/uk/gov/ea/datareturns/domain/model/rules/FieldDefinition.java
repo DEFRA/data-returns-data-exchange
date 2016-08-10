@@ -44,7 +44,9 @@ public enum FieldDefinition {
 	/** Chemical Abstracts Service value (CAS) */
 	CAS("Chemical Abstracts Service number", null),
 	/** Recovery and disposal code (RD_Code) */
-	RD_Code("Recovery or disposal code", null);
+	RD_Code("Recovery or disposal code", null),
+	/** Qualifier (Qualifier) */
+	Qualifier("Qualifier", "display-list?list=qualifier");
 
 	private final String description;
 

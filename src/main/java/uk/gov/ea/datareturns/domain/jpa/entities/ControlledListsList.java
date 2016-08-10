@@ -35,8 +35,8 @@ public enum ControlledListsList {
     }}), "name"),
 
     QUALIFIERS("Qualifiers", QualifierDao.class, "qualifier", Collections.unmodifiableMap(new HashMap<String, String>() {{
-        put("name", "Name");
-        put("description", "Description");
+        put("name", "Qualifier");
+        put("description", "Definition");
     }}), "name"),
 
     METHOD_OR_STANDARD("Monitoring standard or method", MethodOrStandardDao.class, "method", Collections.unmodifiableMap(new HashMap<String, String>() {{

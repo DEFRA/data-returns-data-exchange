@@ -11,8 +11,8 @@ import javax.persistence.*;
 @Table(name = "return_periods")
 public class ReturnPeriod implements ControlledList {
 	@Id
-	@SequenceGenerator(name = "seq", sequenceName = "return_periods_seq")
-	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator="seq")
+	@SequenceGenerator(name = "return_periods_id_seq", sequenceName = "return_periods_id_seq", allocationSize=1)
+	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator="return_periods_id_seq")
 	private Long id;
 
 	private String name;

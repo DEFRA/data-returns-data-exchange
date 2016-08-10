@@ -12,8 +12,8 @@ import javax.persistence.*;
 public class MethodOrStandard implements ControlledList {
 
 	@Id
-	@SequenceGenerator(name = "seq", sequenceName = "methods_or_standards_seq")
-	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator="seq")
+	@SequenceGenerator(name = "methods_or_standards_id_seq", sequenceName = "methods_or_standards_id_seq", allocationSize=1)
+	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator="methods_or_standards_id_seq")
 	private Long id;
 
 	private String name;
@@ -56,5 +56,28 @@ public class MethodOrStandard implements ControlledList {
 
 	public void setOrigin(String origin) {
 		this.origin = origin;
+	}
+
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (o == null || getClass() != o.getClass()) return false;
+
+		MethodOrStandard that = (MethodOrStandard) o;
+
+		if (id != null ? !id.equals(that.id) : that.id != null) return false;
+		if (name != null ? !name.equals(that.name) : that.name != null) return false;
+		if (description != null ? !description.equals(that.description) : that.description != null) return false;
+		return origin != null ? origin.equals(that.origin) : that.origin == null;
+
+	}
+
+	@Override
+	public int hashCode() {
+		int result = id != null ? id.hashCode() : 0;
+		result = 31 * result + (name != null ? name.hashCode() : 0);
+		result = 31 * result + (description != null ? description.hashCode() : 0);
+		result = 31 * result + (origin != null ? origin.hashCode() : 0);
+		return result;
 	}
 }

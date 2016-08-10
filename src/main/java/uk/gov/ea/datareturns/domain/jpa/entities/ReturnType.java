@@ -12,8 +12,8 @@ import javax.persistence.*;
 public class ReturnType implements ControlledList {
 
 	@Id
-    @SequenceGenerator(name = "seq", sequenceName = "return_types_seq")
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator="seq")
+	@SequenceGenerator(name = "return_types_id_seq", sequenceName = "return_types_id_seq", allocationSize=1)
+	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator="return_types_id_seq")
 	private Long id;
 	private String name;
 	private String sector;
