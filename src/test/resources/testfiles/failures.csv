@@ -1,5 +1,5 @@
-EA_ID,Site_Name,Rtn_Type,Mon_Date,Rtn_Period,Smpl_Ref,Smpl_By,Mon_Point,Parameter,Value,Txt_Value,Unit,Ref_Period,Meth_Stand,Comments,CiC,CAS,RD_Code
-EP3136GK,ABC Limited,,20zzz15-08-05,Period 1,Sample Ref,Sampled by 1,Monitor point 1,Temperature,100,Test Text,mg,Annual,Test method 1,Test comments,True,123,rd code
-EP3136GK,ABC Limited,invalid return type,2015-08-05,Period 1,Sample Ref,Sampled by 1,,,100,Test Text,mg,Annual,Test method 1,Test comments,True,123,rd code
-EP3136GK,ABC Limited,EPR/IED self monitoring periodic leachate production/treatment,2015-08-05,Period 1,Sample Ref,Sampled by 1,Monitor point 1,Temperature,100,Test Text,mg,Annual,Test method 1,Test comments,True,123,rd code
-EP3136GK,ABC Limited,Landfill Gas Borehole,2015-08-05,Period 1,Sample Ref,Sampled by 1,Monitor point 1,Temperature,,Test Text,Mzzzetres,Annual,Test method 1,Test comments,True,123,rd code
+"EA_ID","Site_Name","Rtn_Type","Mon_Date","Rtn_Period","Mon_Point","Parameter","Value","Unit","Ref_Period"
+"EP3136GK","ABC Limited",,"20zzz15-08-05","Period 1","Monitor point 1","Temperature",100,"mg","Annual"
+"EP3136GK","ABC Limited","invalid return type",2015-08-05,"Period 1",,,100,"mg","Annual"
+"EP3136GK","ABC Limited","EPR/IED self monitoring periodic leachate production/treatment",2015-08-05,"Period 1","Monitor point 1","Temperature",100,"mg","Annual"
+"EP3136GK","ABC Limited","Landfill Gas Borehole",2015-08-05,"Period 1","Monitor point 1","Temperature",,"Mzzzetres","Annual"

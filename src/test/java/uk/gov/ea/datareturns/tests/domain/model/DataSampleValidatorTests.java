@@ -721,7 +721,7 @@ public class DataSampleValidatorTests {
 		record.setSampleBy("Sam Gardner-Dell");
 		record.setParameter("1,1,1,2-Tetrachloroethane");
 		record.setValue("<0.0006");
-		record.setTextValue("Extreme weather");
+		record.setTextValue("true");
 		record.setUnit("m3/s");
 		record.setReferencePeriod("95% of all 10-minute averages in any 24-hour period");
 		record.setMethStand("BS ISO 15713");

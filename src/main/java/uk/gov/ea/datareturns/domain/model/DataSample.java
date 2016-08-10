@@ -1,28 +1,20 @@
 package uk.gov.ea.datareturns.domain.model;
 
-import javax.validation.Valid;
-import javax.validation.constraints.Pattern;
-
-import org.hibernate.validator.constraints.Length;
-import org.hibernate.validator.constraints.NotBlank;
-
 import com.univocity.parsers.annotations.Convert;
 import com.univocity.parsers.annotations.Parsed;
-
+import org.hibernate.validator.constraints.Length;
+import org.hibernate.validator.constraints.NotBlank;
 import uk.gov.ea.datareturns.domain.io.csv.generic.AbstractCSVRecord;
 import uk.gov.ea.datareturns.domain.model.rules.DataReturnsHeaders;
 import uk.gov.ea.datareturns.domain.model.rules.conversion.EaIdConverter;
 import uk.gov.ea.datareturns.domain.model.rules.conversion.ReturnsDateConverter;
 import uk.gov.ea.datareturns.domain.model.rules.conversion.TxtValueConverter;
-import uk.gov.ea.datareturns.domain.model.validation.auditors.controlledlist.MethodOrStandardAuditor;
-import uk.gov.ea.datareturns.domain.model.validation.auditors.controlledlist.ReturnPeriodAuditor;
-import uk.gov.ea.datareturns.domain.model.validation.auditors.controlledlist.ParameterAuditor;
-import uk.gov.ea.datareturns.domain.model.validation.auditors.controlledlist.ReferencePeriodAuditor;
-import uk.gov.ea.datareturns.domain.model.validation.auditors.controlledlist.ReturnTypeAuditor;
-import uk.gov.ea.datareturns.domain.model.validation.auditors.controlledlist.TxtValueAuditor;
-import uk.gov.ea.datareturns.domain.model.validation.auditors.controlledlist.UnitAuditor;
+import uk.gov.ea.datareturns.domain.model.validation.auditors.controlledlist.*;
 import uk.gov.ea.datareturns.domain.model.validation.constraints.controlledlist.ControlledList;
 import uk.gov.ea.datareturns.domain.model.validation.constraints.field.ValidReturnsDate;
+
+import javax.validation.Valid;
+import javax.validation.constraints.Pattern;
 
 /**
  * Represents an individual sample (data return) record entry
@@ -103,6 +95,11 @@ public class DataSample extends AbstractCSVRecord {
 	@Convert(conversionClass = TxtValueConverter.class)
 	@ControlledList(auditor = TxtValueAuditor.class, message = "{DR9080-Incorrect}", required = false)
 	private String textValue;
+
+	/** Qualifier value (Qualifier) */
+	@Parsed(field = DataReturnsHeaders.QUALIFIER)
+	@ControlledList(auditor = QualifierAuditor.class, message = "{DR9180-Incorrect}", required = false)
+	private String qualifiers;
 
 	/** Unit of measurement (Unit) */
 	@Parsed(field = DataReturnsHeaders.UNIT)
@@ -299,6 +296,20 @@ public class DataSample extends AbstractCSVRecord {
 	 */
 	public void setTextValue(final String textValue) {
 		this.textValue = textValue;
+	}
+
+	/**
+	 * @return the qualifier values
+	 */
+	public String getQualifiers() {
+		return qualifiers;
+	}
+
+	/**
+	 * @param qualifiers the qualifier values to set
+	 */
+	public void setQualifiers(String qualifiers) {
+		this.qualifiers = qualifiers;
 	}
 
 	/**

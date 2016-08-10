@@ -23,6 +23,8 @@ public class Qualifier implements PersistedEntity {
 
 	private String name;
 
+	private String description;
+
 	public Long getId() {
 		return this.id;
 	}
@@ -39,4 +41,11 @@ public class Qualifier implements PersistedEntity {
 		this.name = name;
 	}
 
+	public String getDescription() {
+		return description;
+	}
+
+	public void setDescription(String description) {
+		this.description = description;
+	}
 }
