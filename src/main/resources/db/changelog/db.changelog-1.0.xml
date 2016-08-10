@@ -208,24 +208,32 @@
 			<dropIndex tableName="units" indexName="idx_units_name"/>
 		</rollback>
 	</changeSet>
-	
-	
-	
-	
-	
+
 	<!-- 
 	****************************************************************
 	Method Or Standard
 	****************************************************************
 	-->
-	<changeSet id="create-table: methods_or_standards" author="Sam Gardner-Dell">
+	<changeSet id="create: sequence: methods_or_standards_seq" author="Graham Willis" >
+		<createSequence incrementBy="1"
+										minValue="0"
+										sequenceName="methods_or_standards_seq"
+										startValue="0"/>
+	</changeSet>
+
+	<changeSet id="create-table: methods_or_standards" author="Graham Willis">
 		<createTable tableName="methods_or_standards">
-			<column name="id" type="BIGINT" autoIncrement="true">
-				<constraints primaryKey="true"/>
+			<column name="id" type="bigint" defaultValueSequenceNext="methods_or_standards_seq" autoIncrement="true">
+				<constraints primaryKey="true" nullable="false"/>
 			</column>
-			<!-- TODO: Erroneous data in the controlled list page - could probably reduce column length to around 40 once resolved -->
-			<column name="name" type="varchar(150)">
+			<column name="name" type="varchar(30)">
 				<constraints nullable="false" unique="true"/>
+			</column>
+			<column name="description" type="varchar(500)">
+				<constraints nullable="true" unique="false"/>
+			</column>
+			<column name="origin" type="varchar(200)">
+				<constraints nullable="true" unique="false"/>
 			</column>
 		</createTable>
 		<rollback>

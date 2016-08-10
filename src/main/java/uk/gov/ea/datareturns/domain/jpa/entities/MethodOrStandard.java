@@ -1,7 +1,6 @@
 package uk.gov.ea.datareturns.domain.jpa.entities;
 
 import javax.persistence.*;
-import java.io.Serializable;
 
 /**
  * The persistent class for the methods_or_standards database table.
@@ -13,10 +12,13 @@ import java.io.Serializable;
 public class MethodOrStandard implements ControlledList {
 
 	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@SequenceGenerator(name = "seq", sequenceName = "methods_or_standards_seq")
+	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator="seq")
 	private Long id;
 
 	private String name;
+	private String description;
+	private String origin;
 
 	public Long getId() {
 		return this.id;
@@ -26,6 +28,8 @@ public class MethodOrStandard implements ControlledList {
 		this.id = id;
 	}
 
+	@Basic
+	@Column(name = "name", nullable = false, length = 30)
 	public String getName() {
 		return this.name;
 	}
@@ -34,22 +38,23 @@ public class MethodOrStandard implements ControlledList {
 		this.name = name;
 	}
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+	@Basic
+	@Column(name = "name", length = 500)
+	public String getDescription() {
+		return description;
+	}
 
-        MethodOrStandard that = (MethodOrStandard) o;
+	public void setDescription(String description) {
+		this.description = description;
+	}
 
-        if (!id.equals(that.id)) return false;
-        return name.equals(that.name);
+	@Basic
+	@Column(name = "name", length = 200)
+	public String getOrigin() {
+		return origin;
+	}
 
-    }
-
-    @Override
-    public int hashCode() {
-        int result = id.hashCode();
-        result = 31 * result + name.hashCode();
-        return result;
-    }
+	public void setOrigin(String origin) {
+		this.origin = origin;
+	}
 }
