@@ -723,7 +723,7 @@ public class DataSampleValidatorTests {
 		record.setValue("<0.0006");
 		record.setTextValue("Extreme weather");
 		record.setUnit("m3/s");
-		record.setReferencePeriod("Biannual periodic measurement average value over sample period of between 6 and 8 hours");
+		record.setReferencePeriod("95% of all 10-minute averages in any 24-hour period");
 		record.setMethStand("BS ISO 15713");
 		record.setComments("Free text comments entered in this field.");
 		record.setCic("True");
