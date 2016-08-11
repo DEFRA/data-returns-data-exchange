@@ -218,9 +218,6 @@
 			<column name="description" type="varchar(500)">
 				<constraints nullable="true" unique="false"/>
 			</column>
-			<column name="origin" type="varchar(200)">
-				<constraints nullable="true" unique="false"/>
-			</column>
 		</createTable>
 		<rollback>
 			<dropTable tableName="methods_or_standards"/>
@@ -304,6 +301,7 @@
 			<column name="name" type="varchar(200)">
 				<constraints nullable="false" unique="true"/>
 			</column>
+			<column name="preferred" type="varchar(200)" />
 			<column name="description" type="varchar(500)">
 				<constraints nullable="true" unique="false"/>
 			</column>

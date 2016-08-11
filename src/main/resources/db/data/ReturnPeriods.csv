@@ -1,5 +1,5 @@
 "name","description","example"
-"Week XX","Duration of a Calendar Week i.e. 7 days. Time interval of seven Calendar Days starting with a Monday. Weeks can be given a Calendar Week number that identifies a calendar week in a calendar year where the first calendar week of a year is that one that includes the first Thursday of that year and that the last calendar week of a calendar year is the week immediately preceding the first calendar week of the next calendar year. Weeks must be numbered from 1 at the begining of January to 52 at the end of December","Week 01"
+"Week XX YYYY","Duration of a Calendar Week i.e. 7 days. Time interval of seven Calendar Days starting with a Monday. Weeks can be given a Calendar Week number that identifies a calendar week in a calendar year where the first calendar week of a year is that one that includes the first Thursday of that year and that the last calendar week of a calendar year is the week immediately preceding the first calendar week of the next calendar year. Weeks must be numbered from 1 at the begining of January to 52 at the end of December","Week 01"
 "Jan YYYY","January duration of the Month i.e. 31 Calendar Days","Jan 2016"
 "Feb YYYY","February duration of the Month i.e. 28 or 29 Calendar Days","Feb 2016"
 "Mar YYYY","March duration of the Month i.e. 31 Calendar Days","March 2016"
@@ -16,6 +16,6 @@
 "Qtr 2 YYYY","Quarter 2: Jul-Sep YYYY","Qtr 2 2016"
 "Qtr 3 YYYY","Quarter 3: Oct-Dec YYYY","Qtr 3 2016"
 "Qtr 4 YYYY","Quarter 4: Jan-Mar YYYY","Qtr 4 2016"
-"Year","Duration of 365 (366 in a Leap Year) Calendar Days. The time interval in a calendar which is required for one revolution of the Earth around the Sun and approximated to an integral number of Calendar Days. Expressed as YYYY ",2016
-"Financial Year","The time interval between 1 April to 31 March - the Fiscal Year. Expressed as YY/YY or YYYY/YY ","16/17 or 2016/17"
+"YYYY","Year. Duration of 365 (366 in a Leap Year) Calendar Days. The time interval in a calendar which is required for one revolution of the Earth around the Sun and approximated to an integral number of Calendar Days. Expressed as YYYY ",2016
+"YYYY/YY","The time interval between 1 April to 31 March - the Fiscal Year. Expressed as YY/YY or YYYY/YY ","16/17 or 2016/17"
 "Water year YYYY","This is the hydrological water year 1 October to 30 September","Water year 2016"

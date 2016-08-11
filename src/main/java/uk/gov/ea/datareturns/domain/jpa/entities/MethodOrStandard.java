@@ -18,7 +18,6 @@ public class MethodOrStandard implements ControlledList {
 
 	private String name;
 	private String description;
-	private String origin;
 
 	public Long getId() {
 		return this.id;
@@ -48,15 +47,6 @@ public class MethodOrStandard implements ControlledList {
 		this.description = description;
 	}
 
-	@Basic
-	@Column(name = "name", length = 200)
-	public String getOrigin() {
-		return origin;
-	}
-
-	public void setOrigin(String origin) {
-		this.origin = origin;
-	}
 
 	@Override
 	public boolean equals(Object o) {
@@ -67,8 +57,7 @@ public class MethodOrStandard implements ControlledList {
 
 		if (id != null ? !id.equals(that.id) : that.id != null) return false;
 		if (name != null ? !name.equals(that.name) : that.name != null) return false;
-		if (description != null ? !description.equals(that.description) : that.description != null) return false;
-		return origin != null ? origin.equals(that.origin) : that.origin == null;
+		return description != null ? description.equals(that.description) : that.description == null;
 
 	}
 
@@ -77,7 +66,6 @@ public class MethodOrStandard implements ControlledList {
 		int result = id != null ? id.hashCode() : 0;
 		result = 31 * result + (name != null ? name.hashCode() : 0);
 		result = 31 * result + (description != null ? description.hashCode() : 0);
-		result = 31 * result + (origin != null ? origin.hashCode() : 0);
 		return result;
 	}
 }

@@ -1,73 +1,73 @@
-name,description,origin
-MMS 1,As agreed as part of leachate monitoring plan,Landfill Sector DEP
-MMS 2,As per LFTGN03 or such other subsequent guidance as may be agreed in writing with the Environment Agency.,Landfill Sector DEP
-MMS 3,As per M2 or such other subsequent guidance as may be agreed in writing with the Environment Agency,Landfill Sector DEP
-MMS 4,Ash sampling protocol,consultation
-MMS 5,BAT conclusion method,consultation
-BS 1747-1,BS 1747-1,consultation
-BS 1747-5,BS 1747-5,consultation
-BS 6068,BS 6068,consultation
-BS EN 12260,BS EN 12260,Landfill Sector DEP
-BS EN 12619,BS EN 12619,Landfill Sector DEP
-BS EN 13211,BS EN 13211,Landfill Sector DEP
-BS EN 13284-1,BS EN 13284-1,Landfill Sector DEP
-BS EN 13506,BS EN 13506,consultation
-BS EN 13725,BS EN 13725,consultation
-BS EN 14181,BS EN 14181,Landfill Sector DEP
-BS EN 14385,BS EN 14385,Landfill Sector DEP
-BS EN 14789,BS EN 14789,Landfill Sector DEP
-BS EN 14790,BS EN 14790,Landfill Sector DEP
-BS EN 14791,BS EN 14791,consultation
-BS EN 14792,BS EN 14792,Landfill Sector DEP
-BS EN 1484,BS EN 1484,Landfill Sector DEP
-BS EN 15058,BS EN 15058,Landfill Sector DEP
-BS EN 15259,BS EN 15259,Landfill Sector DEP
-BS EN 15267-3,BS EN 15267-3,Landfill Sector DEP
-BS EN 1899-1,BS EN 1899-1 ,Landfill Sector DEP
-MMS 6,"BS EN 1948 Parts 1, 2 and 3",Landfill Sector DEP
-BS EN 871,BS EN 872,Landfill Sector DEP
-BS EN ISO 10523,BS EN ISO 10523,Landfill Sector DEP
-BS EN ISO 11732,BS EN ISO 11732,Landfill Sector DEP
-BS EN ISO 12846 ,BS EN ISO 12846 ,Landfill Sector DEP
-BS EN ISO 15586,BS EN ISO 15586,Landfill Sector DEP
-BS EN ISO 15681-2,BS EN ISO 15681-2,Landfill Sector DEP
-BS EN ISO 17294,BS EN ISO 17294,Landfill Sector DEP
-BS EN ISO 17852,BS EN ISO 17852,Landfill Sector DEP
-MMS 7,BS EN ISO 6878 followed by BS EN ISO 15681-1,Landfill Sector DEP
-BS EN ISO 9562,BS EN ISO 9562,Landfill Sector DEP
-BS EN/TS 1948-4,BS EN/TS 1948-4,Landfill Sector DEP
-MMS 8,BS ISO 11338-1 and BS ISO 11338-2,Landfill Sector DEP
-BS ISO 15705,BS ISO 15705,Landfill Sector DEP
-BS ISO 15713,BS ISO 15713,Landfill Sector DEP
-MMS 9,Calibrated handheld monitoring instrument,Landfill Sector DEP
-MMS 10,Calibrated handheld monitoring instrument or Tedlar Bag sample in accordance with LFTGN04; or other such subsequent guidance as may be agreed in writing with the Environment Agency or a method agreed with the Environment Agency.,Landfill Sector DEP
-EN ISO 16587,EN ISO 16588,Landfill Sector DEP
-MMS 11,Environment Agency Guidance TGN02,Landfill Sector DEP
-MMS 12,"Environment Agency Guidance TGN02' Horizontal Guidance Note H1 – Environmental Risk Assessment for permits, Annex J3, version 2.1, Dec  2011) or such other subsequent guidance as may be agreed in writing with the Environment Agency.",Landfill Sector DEP
-MMS 13,GCMS analysis at UKAS accredited laboratory,Landfill Sector DEP
-ISBN 0117516139 ,ISBN 0117516139 ,Landfill Sector DEP
-ISO 14001,ISO 14001,consultation
-MMS 14,MCERTS approved instrumentation,Landfill Sector DEP
-MMS 15,MCERTS self-monitoring of effluent flow scheme,Landfill Sector DEP
-MMS 16,Pollution Inventory Calculated, Pollution Inventory
-MMS 17,Pollution Inventory Calculated - Calculation method prescribed by us in an operating permit or licence for the facility, Pollution Inventory
-MMS 18,Pollution Inventory Calculated - European sector-specific calculation method, Pollution Inventory
-MMS 19,Pollution Inventory Calculated - Mass balance method approved by us, Pollution Inventory
-MMS 20,Pollution Inventory Calculated - Method from the EMEP/CORINAIR atmospheric emission inventory guidebook, Pollution Inventory
-MMS 21,Pollution Inventory Calculated - Method from the guidelines for the monitoring and reporting of green house gas emissions under the Emissions Trading Scheme, Pollution Inventory
-MMS 22,Pollution Inventory Calculated - Method from the IPCC guidelines, Pollution Inventory
-MMS 23,Pollution Inventory Calculated - National or regional binding calculation method prescribed by legal act for the substance and facility concerned, Pollution Inventory
-MMS 24,Pollution Inventory Calculated - Other calculation method, Pollution Inventory
-MMS 25,Pollution Inventory Estimated, Pollution Inventory
-MMS 26,Pollution Inventory Measured, Pollution Inventory
-MMS 27,Pollution Inventory Measured - Alternative measurement method in accordance with existing CEN/ISO measurement standards, Pollution Inventory
-MMS 28,Pollution Inventory Measured - Measurement method demonstrated by means of certified reference materials and approved by us., Pollution Inventory
-MMS 29,Pollution Inventory Measured - Measurement method prescribed by us in an operating permit or licence for the facility, Pollution Inventory
-MMS 30,Pollution Inventory Measured - National or regional binding measurement method prescribed by legal act for the substance and facility concerned, Pollution Inventory
-MMS 31,Pollution Inventory Measured - Other measurement method, Pollution Inventory
-MMS 32,Standard temperature sensor,Landfill Sector DEP
-MMS 33,Trace gas analysis in accordance with LFTGN04 or a trace gas characterisation method agreed with the Environment Agency or such other subsequent guidance as may be agreed in writing with the Environment Agency,Landfill Sector DEP
-MMS 34,Traceable to national standards,Landfill Sector DEP
-VDI 2469-1,VDI 2469-1,Landfill Sector DEP
-VDI 2469-2,VDI 2469-2,Landfill Sector DEP
-MMS 35,While asbestos is being deposited (Pump sampling; 1m above ground level; Flow rate = 4 l/min; minimum sample volume = 480 l; Filter pore size 1.2um; Asbestos fibre detection limit = 0.001 fibres/ml,Landfill Sector DEP
+name,description
+MMS 1,As agreed as part of leachate monitoring plan
+MMS 2,As per LFTGN03 or such other subsequent guidance as may be agreed in writing with the Environment Agency.
+MMS 3,As per M2 or such other subsequent guidance as may be agreed in writing with the Environment Agency
+MMS 4,Ash sampling protocol
+MMS 5,BAT conclusion method
+BS 1747-1,BS 1747-1
+BS 1747-5,BS 1747-5
+BS 6068,BS 6068
+BS EN 12260,BS EN 12260
+BS EN 12619,BS EN 12619
+BS EN 13211,BS EN 13211
+BS EN 13284-1,BS EN 13284-1
+BS EN 13506,BS EN 13506
+BS EN 13725,BS EN 13725
+BS EN 14181,BS EN 14181
+BS EN 14385,BS EN 14385
+BS EN 14789,BS EN 14789
+BS EN 14790,BS EN 14790
+BS EN 14791,BS EN 14791
+BS EN 14792,BS EN 14792
+BS EN 1484,BS EN 1484
+BS EN 15058,BS EN 15058
+BS EN 15259,BS EN 15259
+BS EN 15267-3,BS EN 15267-3
+BS EN 1899-1,BS EN 1899-1 
+MMS 6,"BS EN 1948 Parts 1, 2 and 3"
+BS EN 871,BS EN 872
+BS EN ISO 10523,BS EN ISO 10523
+BS EN ISO 11732,BS EN ISO 11732
+BS EN ISO 12846 ,BS EN ISO 12846 
+BS EN ISO 15586,BS EN ISO 15586
+BS EN ISO 15681-2,BS EN ISO 15681-2
+BS EN ISO 17294,BS EN ISO 17294
+BS EN ISO 17852,BS EN ISO 17852
+MMS 7,BS EN ISO 6878 followed by BS EN ISO 15681-1
+BS EN ISO 9562,BS EN ISO 9562
+BS EN/TS 1948-4,BS EN/TS 1948-4
+MMS 8,BS ISO 11338-1 and BS ISO 11338-2
+BS ISO 15705,BS ISO 15705
+BS ISO 15713,BS ISO 15713
+MMS 9,Calibrated handheld monitoring instrument
+MMS 10,Calibrated handheld monitoring instrument or Tedlar Bag sample in accordance with LFTGN04
+EN ISO 16587,EN ISO 16588
+MMS 11,Environment Agency Guidance TGN02
+MMS 12,"Environment Agency Guidance TGN02' Horizontal Guidance Note H1 – Environmental Risk Assessment for permits, Annex J3, version 2.1, Dec  2011) or such other subsequent guidance as may be agreed in writing with the Environment Agency."
+MMS 13,GCMS analysis at UKAS accredited laboratory
+ISBN 0117516139 ,ISBN 0117516139 
+ISO 14001,ISO 14001
+MMS 14,MCERTS approved instrumentation
+MMS 15,MCERTS self-monitoring of effluent flow scheme
+MMS 16,Pollution Inventory Calculated
+MMS 17,Pollution Inventory Calculated - Calculation method prescribed by us in an operating permit or licence for the facility
+MMS 18,Pollution Inventory Calculated - European sector-specific calculation method
+MMS 19,Pollution Inventory Calculated - Mass balance method approved by us
+MMS 20,Pollution Inventory Calculated - Method from the EMEP/CORINAIR atmospheric emission inventory guidebook
+MMS 21,Pollution Inventory Calculated - Method from the guidelines for the monitoring and reporting of green house gas emissions under the Emissions Trading Scheme
+MMS 22,Pollution Inventory Calculated - Method from the IPCC guidelines
+MMS 23,Pollution Inventory Calculated - National or regional binding calculation method prescribed by legal act for the substance and facility concerned
+MMS 24,Pollution Inventory Calculated - Other calculation method
+MMS 25,Pollution Inventory Estimated
+MMS 26,Pollution Inventory Measured
+MMS 27,Pollution Inventory Measured - Alternative measurement method in accordance with existing CEN/ISO measurement standards
+MMS 28,Pollution Inventory Measured - Measurement method demonstrated by means of certified reference materials and approved by us.
+MMS 29,Pollution Inventory Measured - Measurement method prescribed by us in an operating permit or licence for the facility
+MMS 30,Pollution Inventory Measured - National or regional binding measurement method prescribed by legal act for the substance and facility concerned
+MMS 31,Pollution Inventory Measured - Other measurement method
+MMS 32,Standard temperature sensor
+MMS 33,Trace gas analysis in accordance with LFTGN04 or a trace gas characterisation method agreed with the Environment Agency or such other subsequent guidance as may be agreed in writing with the Environment Agency
+MMS 34,Traceable to national standards
+VDI 2469-1,VDI 2469-1
+VDI 2469-2,VDI 2469-2
+MMS 35,While asbestos is being deposited (Pump sampling

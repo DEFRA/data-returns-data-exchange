@@ -1,40 +1,40 @@
-name,description
-Half hour average,Total cumulative measurement for the 30 minutes preceding the time/date provided
-1 Hour total,Total cumulative measurement for the 1 hour preceding the time/date provided
-2 Hour total,Total cumulative measurement for the 2 hours preceding the time/date provided
-24 Hour total,Total cumulative measurement for the 24 hours preceding the time/date provided
-95% of all 10-minute averages in any 24-hour period,
-95% of validated daily means within a calendar year,
-95% of validated hourly averages within a calendar year,
-Bi-annual periodic measurement average value over sample period of between 6 and 8 hours,
-Calendar monthly mean,"Mean (sum of items divided by the number of entries) of the monitoring taken over the time interval resulting from the division of a Calendar Year in 12 time intervals, each with a specific name and containing a specific number of Calendar Days"
-Continuous,
-Continuous - as appropriate to reference,
-Daily average,The average over the time interval starting at midnight and ending at the next midnight. Where average is taken as the mean: sum of items divided by the number of entries.
-Daily mean,The mean over the time interval starting at midnight and ending at the next midnight. Mean: sum of items divided by the number of entries.
-Daily mean of validated hourly averages,
-Hourly mean,The mean for the hour preceding the time/date given. Mean: sum of items divided by the number of entries.
-Instantaneous,
-Monthly average,"Mean of the monitoring taken over the time interval resulting from the division of a Calendar Year in 12 time intervals, each with a specific name and containing a specific number of Calendar Days"
-Monthly mean of validated hourly averages,
-Periodic - as appropriate to reference,
-periodic daily,
-periodic over minimum 1 hour period,
-"periodic over minimum 30 minute, maximum 8 hour period",
-"periodic over minimum 4 hour period, data reported as 1/2 hour averages",
-"periodic over minimum 6 hours, maximum 8 hour period",
-Pre-operation and when there is a significant operational change,
-Spot sample,
-7 Day total,Total cumulative measurement for the 7 days preceding the time/date provided. Where a day is  the time interval starting at midnight and ending at the next midnight.
-Annual mean,
-Daily load,
-Daily Total,Total cumulative measurement over the time interval starting at midnight and ending at the next midnight
-Maximum daily,
-Minimum daily,
-Monthly average of weekly spot sample,
-Monthly mean,"Mean of the monitoring taken over the time interval resulting from the division of a Calendar Year in 12 time intervals, each with a specific name and containing a specific number of Calendar Days"
-Monthly total,"Total cumulative measurement over the time interval resulting from the division of a Calendar Year in 12 time intervals, each with a specific name and containing a specific number of Calendar Days"
-Previous 72 hours total,Total cumulative measurement for the 72 hours preceding the time/date provided.
-Total weekly load,
-20 Min average,Average over 20 minuets where average is defined as the mean: sum of items divided by the number of entries
-4 day total,used in dust monitoring
+name,preferred,description
+Half hour average,,Total cumulative measurement for the 30 minutes preceding the time/date provided
+1 Hour total,,Total cumulative measurement for the 1 hour preceding the time/date provided
+2 Hour total,,Total cumulative measurement for the 2 hours preceding the time/date provided
+24 Hour total,,Total cumulative measurement for the 24 hours preceding the time/date provided
+95% of all 10-minute averages in any 24-hour period,,
+95% of validated daily means within a calendar year,,
+95% of validated hourly averages within a calendar year,,
+Bi-annual periodic measurement average value over sample period of between 6 and 8 hours,,
+Calendar monthly mean,Monthly Mean,"Mean (sum of items divided by the number of entries) of the monitoring taken over the time interval resulting from the division of a Calendar Year in 12 time intervals, each with a specific name and containing a specific number of Calendar Days"
+Continuous,,
+Continuous - as appropriate to reference,,
+Daily average,Daily mean,The average over the time interval starting at midnight and ending at the next midnight. Where average is taken as the mean: sum of items divided by the number of entries.
+Daily mean,,The mean over the time interval starting at midnight and ending at the next midnight. Mean: sum of items divided by the number of entries.
+Daily mean of validated hourly averages,,
+Hourly mean,,The mean for the hour preceding the time/date given. Mean: sum of items divided by the number of entries.
+Instantaneous,,
+Monthly average,Monthly mean,"Mean of the monitoring taken over the time interval resulting from the division of a Calendar Year in 12 time intervals, each with a specific name and containing a specific number of Calendar Days"
+Monthly mean of validated hourly averages,,
+Periodic - as appropriate to reference,,
+periodic daily,,
+periodic over minimum 1 hour period,,
+"periodic over minimum 30 minute, maximum 8 hour period",,
+"periodic over minimum 4 hour period, data reported as 1/2 hour averages",,
+"periodic over minimum 6 hours, maximum 8 hour period",,
+Pre-operation and when there is a significant operational change,,
+Spot sample,,
+7 Day total,,Total cumulative measurement for the 7 days preceding the time/date provided. Where a day is  the time interval starting at midnight and ending at the next midnight.
+Annual mean,,
+Daily load,,
+Daily Total,24 Hour total,Total cumulative measurement over the time interval starting at midnight and ending at the next midnight
+Maximum daily,,
+Minimum daily,,
+Monthly average of weekly spot sample,,
+Monthly mean,,"Mean of the monitoring taken over the time interval resulting from the division of a Calendar Year in 12 time intervals, each with a specific name and containing a specific number of Calendar Days"
+Monthly total,,"Total cumulative measurement over the time interval resulting from the division of a Calendar Year in 12 time intervals, each with a specific name and containing a specific number of Calendar Days"
+Previous 72 hours total,,Total cumulative measurement for the 72 hours preceding the time/date provided.
+Total weekly load,,
+20 Min average,,Average over 20 minuets where average is defined as the mean: sum of items divided by the number of entries
+4 day total,,used in dust monitoring
