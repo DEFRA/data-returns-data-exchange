@@ -15,6 +15,7 @@
         <class>uk.gov.ea.datareturns.domain.jpa.entities.ReturnType</class>
         <class>uk.gov.ea.datareturns.domain.jpa.entities.Unit</class>
 			<properties>
+
 			<!-- Default persistence properties (connection details will be injected from the application configuration) -->
  			<property name="hibernate.show_sql" value="false"/>
 			<!-- Dont mess with the schema - we use liquibase for this -->
@@ -24,36 +25,18 @@
 				c3p0 connection pool settings
 				see http://www.mchange.com/projects/c3p0
 			-->
-		    <property name="c3p0.minPoolSize" value="3"/>
-		    <property name="c3p0.maxPoolSize" value="20"/>
-		    <!-- Seconds a Connection can remain pooled but unused before being discarded - zero means they never expire -->
-		    <property name="c3p0.maxIdleTime" value="0"/>
+
+			<property name="c3p0.minPoolSize" value="3"/>
+		  <property name="c3p0.maxPoolSize" value="20"/>
+		   <!-- Seconds a Connection can remain pooled but unused before being discarded - zero means they never expire -->
+		   <property name="c3p0.maxIdleTime" value="0"/>
 <!-- 		    <property name="c3p0.maxStatements" value="0"/> -->
-		    <property name="c3p0.maxStatementsPerConnection" value="10"/>
-		    <!-- Disable c3p0 connection testing as we use a JDBC4 compatible driver which can handle this itself -->
-		    <property name="c3p0.idleConnectionTestPeriod" value="0"/>
+		   <property name="c3p0.maxStatementsPerConnection" value="10"/>
+		   <!-- Disable c3p0 connection testing as we use a JDBC4 compatible driver which can handle this itself -->
+		   <property name="c3p0.idleConnectionTestPeriod" value="0"/>
 		    
-			<!-- Second level cache - disabled at this point as we use an in application cache - see also pom.xml-->
-		    <property name="hibernate.cache.use_second_level_cache" value="false"/>
-				<property name="eclipselink.jdbc.url" value="jdbc:postgresql://localhost:5432/data_returns"/>
-				<property name="eclipselink.jdbc.driver" value="org.postgresql.Driver"/>
-				<property name="eclipselink.jdbc.user"/>
-				<property name="eclipselink.jdbc.password"/>
-				<property name="hibernate.connection.url" value="jdbc:postgresql://localhost:5432/data_returns"/>
-				<property name="hibernate.connection.driver_class" value="org.postgresql.Driver"/>
-				<property name="hibernate.connection.username"/>
-				<property name="hibernate.connection.password"/>
-				<property name="openjpa.ConnectionURL" value="jdbc:postgresql://localhost:5432/data_returns"/>
-				<property name="openjpa.ConnectionDriverName" value="org.postgresql.Driver"/>
-				<property name="openjpa.ConnectionUserName"/>
-				<property name="openjpa.ConnectionPassword"/>
-				<property name="toplink.jdbc.url" value="jdbc:postgresql://localhost:5432/data_returns"/>
-				<property name="toplink.jdbc.driver" value="org.postgresql.Driver"/>
-				<property name="toplink.jdbc.user"/>
-				<property name="toplink.jdbc.password"/>
-				<!-- 		    <property name="hibernate.cache.use_second_level_cache" value="true"/> -->
-<!-- 		    <property name="hibernate.cache.use_query_cache" value="true"/> -->
-<!-- 		    <property name="hibernate.cache.region.factory_class" value="org.hibernate.cache.ehcache.EhCacheRegionFactory"/> -->
+			 <!-- Second level cache - disabled at this point as we use an in application cache - see also pom.xml-->
+			 <property name="hibernate.cache.use_second_level_cache" value="false"/>
 		</properties>
     </persistence-unit>
 </persistence>
