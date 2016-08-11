@@ -17,7 +17,7 @@ import java.util.regex.Pattern;
 @Component
 public class ReturnPeriodAuditor implements ControlledListAuditor {
 	private static final String REGEX_YEAR = "(?<year>\\d{4})";
-	private static final String REGEX_WEEK = "Week (?<week>\\d{1,2})";
+	private static final String REGEX_WEEK = "Week (?<week>\\d{1,2}) " + REGEX_YEAR;
 	private static final String REGEX_MONTHS = "(?<month>Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec) " + REGEX_YEAR;
 	private static final String REGEX_QUARTERS = "(?<qtr>Qtr [1234]) " + REGEX_YEAR;
 	private static final String REGEX_FINANCIAL_YEAR = "(?<start>\\d{2}|\\d{4})/(?<end>\\d{2})";
