@@ -713,7 +713,7 @@ public class DataSampleValidatorTests {
 		final DataSample record = new DataSample();
 		record.setEaId(new EaId("DP3431PC"));
 		record.setSiteName("Site Name");
-		record.setReturnType("Landfill Annual monitoring report");
+		record.setReturnType("Landfill leachate monitoring");
 		record.setMonitoringDate(ReturnsDate.from("2016-03-09T11:18:59"));
 		record.setReturnPeriod("Aug 2016");
 		record.setMonitoringPoint("Borehole 1");
@@ -724,7 +724,7 @@ public class DataSampleValidatorTests {
 		record.setTextValue("true");
 		record.setUnit("m3/s");
 		record.setReferencePeriod("95% of all 10-minute averages in any 24-hour period");
-		record.setMethStand("BS ISO 15713");
+		record.setMethStand("BS EN 12260");
 		record.setComments("Free text comments entered in this field.");
 		record.setCic("True");
 		record.setCas("100-74-3");

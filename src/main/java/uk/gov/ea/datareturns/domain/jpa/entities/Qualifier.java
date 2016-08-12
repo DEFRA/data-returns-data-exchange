@@ -17,7 +17,8 @@ public class Qualifier implements PersistedEntity {
 	private Long id;
 
 	private String name;
-	private String description;
+	private String notes;
+	private String suggested_category;
 
 	public Long getId() {
 		return this.id;
@@ -39,33 +40,22 @@ public class Qualifier implements PersistedEntity {
 	}
 
 	@Basic
-	@Column(name = "description", length = 100)
-	public String getDescription() {
-		return description;
+	@Column(name = "notes", length = 100)
+	public String getNotes() {
+		return notes;
 	}
 
-	public void setDescription(String description) {
-		this.description = description;
+	public void setNotes(String description) {
+		this.notes = description;
 	}
 
-	@Override
-	public boolean equals(Object o) {
-		if (this == o) return true;
-		if (o == null || getClass() != o.getClass()) return false;
-
-		Qualifier qualifier = (Qualifier) o;
-
-		if (id != null ? !id.equals(qualifier.id) : qualifier.id != null) return false;
-		if (name != null ? !name.equals(qualifier.name) : qualifier.name != null) return false;
-		return description != null ? description.equals(qualifier.description) : qualifier.description == null;
-
+	@Basic
+	@Column(name = "suggested_category", length = 20)
+	public String getSuggested_category() {
+		return suggested_category;
 	}
 
-	@Override
-	public int hashCode() {
-		int result = id != null ? id.hashCode() : 0;
-		result = 31 * result + (name != null ? name.hashCode() : 0);
-		result = 31 * result + (description != null ? description.hashCode() : 0);
-		return result;
+	public void setSuggested_category(String suggested_category) {
+		this.suggested_category = suggested_category;
 	}
 }

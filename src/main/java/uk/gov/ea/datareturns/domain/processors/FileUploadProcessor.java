@@ -19,10 +19,7 @@ import uk.gov.ea.datareturns.domain.model.DataSample;
 import uk.gov.ea.datareturns.domain.model.EaId;
 import uk.gov.ea.datareturns.domain.model.rules.FileType;
 import uk.gov.ea.datareturns.domain.model.validation.DataSampleValidator;
-import uk.gov.ea.datareturns.domain.result.DataExchangeResult;
-import uk.gov.ea.datareturns.domain.result.ParseResult;
-import uk.gov.ea.datareturns.domain.result.UploadResult;
-import uk.gov.ea.datareturns.domain.result.ValidationErrors;
+import uk.gov.ea.datareturns.domain.result.*;
 import uk.gov.ea.datareturns.domain.storage.StorageProvider;
 import uk.gov.ea.datareturns.util.StopWatch;
 
@@ -160,6 +157,9 @@ public class FileUploadProcessor extends AbstractReturnsProcessor<DataExchangeRe
 				result.setParseResult(new ParseResult(csvInput.getRecords()));
 			} else {
 				LOGGER.debug("File '" + this.clientFilename + "' is INVALID");
+				for (ValidationError v : validationErrors.getErrors()) {
+					LOGGER.debug("Validation error: " + v);
+				}
 				result.setValidationErrors(validationErrors);
 				result.setAppStatusCode(ApplicationExceptionType.VALIDATION_ERRORS.getAppStatusCode());
 			}

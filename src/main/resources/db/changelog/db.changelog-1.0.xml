@@ -215,9 +215,7 @@
 			<column name="name" type="varchar(30)">
 				<constraints nullable="false" unique="true"/>
 			</column>
-			<column name="description" type="varchar(500)">
-				<constraints nullable="true" unique="false"/>
-			</column>
+			<column name="notes" type="varchar(250)"/>
 		</createTable>
 		<rollback>
 			<dropTable tableName="methods_or_standards"/>
@@ -259,7 +257,8 @@
 			<column name="name" type="varchar(70)">
 				<constraints nullable="false" unique="true"/>
 			</column>
-			<column name="description" type="varchar(100)"></column>
+			<column name="notes" type="varchar(100)"></column>
+			<column name="suggested_category" type="varchar(20)"></column>
 		</createTable>
 		<rollback>
 			<dropTable tableName="qualifiers"/>
@@ -298,13 +297,11 @@
 			<column name="id" type="bigserial">
 				<constraints primaryKey="true" nullable="false"/>
 			</column>
-			<column name="name" type="varchar(200)">
+			<column name="name" type="varchar(100)">
 				<constraints nullable="false" unique="true"/>
 			</column>
-			<column name="preferred" type="varchar(200)" />
-			<column name="description" type="varchar(500)">
-				<constraints nullable="true" unique="false"/>
-			</column>
+			<column name="preferred" type="varchar(100)" />
+			<column name="notes" type="varchar(250)"/>
 		</createTable>
 		<rollback>
 			<dropTable tableName="reference_periods"/>
@@ -344,11 +341,11 @@
 			<column name="id" type="bigserial">
 				<constraints primaryKey="true" nullable="false"/>
 			</column>
-			<column name="name" type="varchar(120)">
+			<column name="name" type="varchar(20)">
 				<constraints nullable="false" unique="true"/>
 			</column>
-			<column name="description" type="varchar(1000)"></column>
-			<column name="example" type="varchar(255)"></column>
+			<column name="definition" type="varchar(600)"></column>
+			<column name="example" type="varchar(20)"></column>
 		</createTable>
 		<rollback>
 			<dropTable tableName="return_periods"/>

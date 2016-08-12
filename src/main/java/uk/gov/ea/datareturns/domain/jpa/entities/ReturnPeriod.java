@@ -17,7 +17,7 @@ public class ReturnPeriod implements ControlledList {
 
 	private String name;
 
-	public String description;
+	public String definition;
 
 	public String example;
 
@@ -29,6 +29,8 @@ public class ReturnPeriod implements ControlledList {
 		this.id = id;
 	}
 
+	@Basic
+	@Column(name = "name", nullable = false, length = 20)
 	public String getName() {
 		return this.name;
 	}
@@ -37,14 +39,18 @@ public class ReturnPeriod implements ControlledList {
 		this.name = name;
 	}
 
-	public String getDescription() {
-		return description;
+	@Basic
+	@Column(name = "definition", nullable = false, length = 600)
+	public String getDefinition() {
+		return definition;
 	}
 
-	public void setDescription(String description) {
-		this.description = description;
+	public void setDefinition(String description) {
+		this.definition = description;
 	}
 
+	@Basic
+	@Column(name = "example", nullable = false, length = 20)
 	public String getExample() {
 		return example;
 	}
@@ -55,23 +61,24 @@ public class ReturnPeriod implements ControlledList {
 
 	@Override
 	public boolean equals(Object o) {
-		if (this == o)
-			return true;
-		if (o == null || getClass() != o.getClass())
-			return false;
+		if (this == o) return true;
+		if (o == null || getClass() != o.getClass()) return false;
 
 		ReturnPeriod that = (ReturnPeriod) o;
 
-		if (!id.equals(that.id))
-			return false;
-		return name.equals(that.name);
+		if (id != null ? !id.equals(that.id) : that.id != null) return false;
+		if (name != null ? !name.equals(that.name) : that.name != null) return false;
+		if (definition != null ? !definition.equals(that.definition) : that.definition != null) return false;
+		return example != null ? example.equals(that.example) : that.example == null;
 
 	}
 
 	@Override
 	public int hashCode() {
-		int result = id.hashCode();
-		result = 31 * result + name.hashCode();
+		int result = id != null ? id.hashCode() : 0;
+		result = 31 * result + (name != null ? name.hashCode() : 0);
+		result = 31 * result + (definition != null ? definition.hashCode() : 0);
+		result = 31 * result + (example != null ? example.hashCode() : 0);
 		return result;
 	}
 }

@@ -35,14 +35,14 @@ import static java.util.Comparator.comparing;
  */
 @Repository
 public abstract class AbstractJpaDao<E extends PersistedEntity> {
-	private static final Logger LOGGER = LoggerFactory.getLogger(AbstractJpaDao.class);
+	protected static final Logger LOGGER = LoggerFactory.getLogger(AbstractJpaDao.class);
 
 	@PersistenceContext
-	private EntityManager entityManager;
+	protected EntityManager entityManager;
 
-    private final Class<E> entityClass;
+	protected final Class<E> entityClass;
 
-	private Map<String, E> cacheByName = null;
+	protected Map<String, E> cacheByName = null;
 
     /**
      * Let the Dao class know the type of entity in order that type-safe
@@ -126,7 +126,7 @@ public abstract class AbstractJpaDao<E extends PersistedEntity> {
 	/*
 	 * Builds the cache if necessary and returns built cache
 	 */
-	private Map<String, E> getCache() {
+	protected Map<String, E> getCache() {
 		if (cacheByName == null) {
 			LOGGER.info("Build cache of: " + entityClass.getSimpleName());
 			CriteriaBuilder cb = entityManager.getCriteriaBuilder();

@@ -16,7 +16,8 @@ public class ReferencePeriod implements ControlledList {
 	private Long id;
 
 	private String name;
-	private String description;
+	private String notes;
+	private String preferred;
 
 	@Override
 	public Long getId() {
@@ -30,7 +31,7 @@ public class ReferencePeriod implements ControlledList {
 
 	@Override
 	@Basic
-	@Column(name = "name", nullable = false, length = 200)
+	@Column(name = "name", nullable = false, length = 100)
 	public String getName() {
 		return name;
 	}
@@ -41,33 +42,22 @@ public class ReferencePeriod implements ControlledList {
 	}
 
 	@Basic
-	@Column(name = "name", length = 500)
-	public String getDescription() {
-		return description;
+	@Column(name = "notes", length = 250)
+	public String getNotes() {
+		return notes;
 	}
 
-	public void setDescription(String description) {
-		this.description = description;
+	public void setNotes(String description) {
+		this.notes = description;
 	}
 
-	@Override
-	public boolean equals(Object o) {
-		if (this == o) return true;
-		if (o == null || getClass() != o.getClass()) return false;
-
-		ReferencePeriod that = (ReferencePeriod) o;
-
-		if (id != null ? !id.equals(that.id) : that.id != null) return false;
-		if (name != null ? !name.equals(that.name) : that.name != null) return false;
-		return description != null ? description.equals(that.description) : that.description == null;
-
+	@Basic
+	@Column(name = "preferred", length = 100)
+	public String getPreferred() {
+		return preferred;
 	}
 
-	@Override
-	public int hashCode() {
-		int result = id != null ? id.hashCode() : 0;
-		result = 31 * result + (name != null ? name.hashCode() : 0);
-		result = 31 * result + (description != null ? description.hashCode() : 0);
-		return result;
+	public void setPreferred(String preferred) {
+		this.preferred = preferred;
 	}
 }

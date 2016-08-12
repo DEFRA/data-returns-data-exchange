@@ -1,18 +1,18 @@
 name, sector
-Landfill Leachate Monitoring,Landfill
-Emissions to Surface Water,Landfill
-Emissions to Groundwater,Landfill
-Methane Capped Surfaces,Landfill
-Landfill Gas Borehole,Landfill
-Landfill Gas Engine,Landfill
-Landfill Gas Flare,Landfill
-Emissions to Sewer,Landfill
+Landfill leachate monitoring,Landfill
+Emissions to surface water,Landfill
+Emissions to groundwater,Landfill
+Methane capped surfaces,Landfill
+Landfill gas borehole,Landfill
+Landfill gas engine,Landfill
+Landfill gas flare,Landfill
+Emissions to sewer,Landfill
 Ambient air quality,Landfill
-Air point source emissions return,
-Tankered Emissions,Landfill
-Landfill Annual monitoring report,Landfill
-IED Combustion CEMS,Combustion
-Combustion LCP (Unit) Annual Report,Combustion
-Combustion REM (Installation),Combustion
-Pollution Inventory Substance,PI
-Pollution Inventory Waste,PI
+Air point source emissions,Landfill
+Tankered emissions,Landfill
+Landfill annual monitoring report,Landfill
+IED combustion CEMS,Combustion
+Combustion LCP (unit) annual report,Combustion
+Combustion REM (installation),Combustion
+Pollution inventory substance,PI
+Pollution inventory waste,PI

@@ -149,4 +149,17 @@ public class ValidationError {
 	public void setErrorMessage(final String errorMessage) {
 		this.errorMessage = errorMessage;
 	}
+
+	@Override
+	public String toString() {
+		return "ValidationError{" +
+				"fieldName='" + fieldName + '\'' +
+				", definition='" + definition + '\'' +
+				", lineNumber=" + lineNumber +
+				", errorType='" + errorType + '\'' +
+				", errorCode=" + errorCode +
+				", errorValue='" + errorValue + '\'' +
+				", errorMessage='" + errorMessage + '\'' +
+				'}';
+	}
 }

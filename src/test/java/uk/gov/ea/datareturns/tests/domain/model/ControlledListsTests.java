@@ -133,7 +133,7 @@ public class ControlledListsTests {
         // Add and retrieve
         Qualifier Qualifier = new Qualifier();
         Qualifier.setName("Test");
-        Qualifier.setDescription("Test");
+        Qualifier.setNotes("Test");
         qualifierDao.add(Qualifier);
         Qualifier retrieveQualifier = (Qualifier) qualifierDao.getByName("Test");
         Assert.assertNotNull(retrieveQualifier.getId());

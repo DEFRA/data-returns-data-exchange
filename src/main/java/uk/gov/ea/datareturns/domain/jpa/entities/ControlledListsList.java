@@ -7,44 +7,46 @@ import uk.gov.ea.datareturns.domain.jpa.dao.*;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.LinkedHashMap;
 
 /**
  * Created by graham on 26/07/16.
  */
 public enum ControlledListsList {
 
-    UNITS_AND_MEASURES("Unit or measure", UnitDao.class, "units", Collections.unmodifiableMap(new HashMap<String, String>() {{
+    UNITS_AND_MEASURES("Unit or measure", UnitDao.class, "units", Collections.unmodifiableMap(new LinkedHashMap<String, String>() {{
         put("description", "Description");
         put("measureType", "Measurement Type");
         put("name", "Unit");
     }}), "description"),
 
-    PARAMETERS("Parameters - substance names - and CAS", ParameterDao.class, "parameters", Collections.unmodifiableMap(new HashMap<String, String>() {{
+    PARAMETERS("Parameters - substance names - and CAS", ParameterDao.class, "parameters", Collections.unmodifiableMap(new LinkedHashMap<String, String>() {{
         put("name", "Name");
     }}), "name"),
 
-    REFERENCE_PERIOD("Reference period", ReferencePeriodDao.class, "ref_period", Collections.unmodifiableMap(new HashMap<String, String>() {{
+    REFERENCE_PERIOD("Reference period", ReferencePeriodDao.class, "ref_period", Collections.unmodifiableMap(new LinkedHashMap<String, String>() {{
         put("name", "Ref_Period");
-        put("description", "Definition");
+        put("notes", "Notes");
     }}), "name"),
 
-    RETURN_PERIOD("Return period", ReturnPeriodDao.class, "rtn_period", Collections.unmodifiableMap(new HashMap<String, String>() {{
+    RETURN_PERIOD("Return period", ReturnPeriodDao.class, "rtn_period", Collections.unmodifiableMap(new LinkedHashMap<String, String>() {{
         put("name", "Rtn_Period");
-        put("description", "Definition");
+        put("definition", "Definition");
         put("example", "Example");
     }}), "name"),
 
-    QUALIFIERS("Qualifier", QualifierDao.class, "qualifier", Collections.unmodifiableMap(new HashMap<String, String>() {{
+    QUALIFIERS("Qualifier", QualifierDao.class, "qualifier", Collections.unmodifiableMap(new LinkedHashMap<String, String>() {{
         put("name", "Qualifier");
-        put("description", "Definition");
+        put("notes", "Notes");
+        put("suggested_category", "Suggested Category");
     }}), "name"),
 
-    METHOD_OR_STANDARD("Monitoring standard or method", MethodOrStandardDao.class, "method", Collections.unmodifiableMap(new HashMap<String, String>() {{
+    METHOD_OR_STANDARD("Monitoring standard or method", MethodOrStandardDao.class, "method", Collections.unmodifiableMap(new LinkedHashMap<String, String>() {{
         put("name", "Meth_Stand");
-        put("description", "Definition");
+        put("notes", "Notes");
     }}), "name"),
 
-    RETURN_TYPE("Return type", ReturnTypeDao.class, "rtn_type", Collections.unmodifiableMap(new HashMap<String, String>() {{
+    RETURN_TYPE("Return type", ReturnTypeDao.class, "rtn_type", Collections.unmodifiableMap(new LinkedHashMap<String, String>() {{
         put("name", "Rtn_Type");
     }}), "name");
 

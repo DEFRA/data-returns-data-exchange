@@ -1,11 +1,11 @@
 package uk.gov.ea.datareturns.domain.result;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
  * Container for validation error detail found in the validated model
@@ -33,5 +33,9 @@ public class ValidationErrors {
 	@JsonIgnore
 	public boolean isValid() {
 		return this.errors.isEmpty();
+	}
+
+	public List<ValidationError> getErrors() {
+		return errors;
 	}
 }
