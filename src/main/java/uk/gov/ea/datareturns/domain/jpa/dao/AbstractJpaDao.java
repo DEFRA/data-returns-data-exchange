@@ -42,7 +42,7 @@ public abstract class AbstractJpaDao<E extends PersistedEntity> {
 
 	protected final Class<E> entityClass;
 
-	protected Map<String, E> cacheByName = null;
+	protected volatile Map<String, E> cacheByName = null;
 
     /**
      * Let the Dao class know the type of entity in order that type-safe
@@ -128,16 +128,22 @@ public abstract class AbstractJpaDao<E extends PersistedEntity> {
 	 */
 	protected Map<String, E> getCache() {
 		if (cacheByName == null) {
-			LOGGER.info("Build cache of: " + entityClass.getSimpleName());
-			CriteriaBuilder cb = entityManager.getCriteriaBuilder();
-			CriteriaQuery<E> q = cb.createQuery(entityClass);
-			Root<E> c = q.from(entityClass);
-			q.select(c);
-			TypedQuery<E> query = entityManager.createQuery(q);
-			List<E> results = query.getResultList();
-			cacheByName = results
-					.stream()
-					.collect(Collectors.toMap(PersistedEntity::getName, k -> k));
+			synchronized(this) {
+				if (cacheByName == null) {
+					LOGGER.info("Build cache of: " + entityClass.getSimpleName());
+					CriteriaBuilder cb = entityManager.getCriteriaBuilder();
+					CriteriaQuery<E> q = cb.createQuery(entityClass);
+					Root<E> c = q.from(entityClass);
+					q.select(c);
+					TypedQuery<E> query = entityManager.createQuery(q);
+					List<E> results = query.getResultList();
+					cacheByName = results
+							.stream()
+							.collect(Collectors.toMap(PersistedEntity::getName, k -> k));
+				} else {
+					return this.cacheByName;
+				}
+			}
 		}
 		return this.cacheByName;
 	}

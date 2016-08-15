@@ -55,9 +55,9 @@ public enum ControlledListsList {
     private static final Logger LOGGER = LoggerFactory.getLogger(ControlledListsList.class);
     private final Class<? extends AbstractJpaDao> dao;
     private final String defaultSearch;
-    private String description;
-    private static Map<String, ControlledListsList> byPath = new HashMap<>();
-    private Map<String, String> displayHeaders; // Column name to column heading
+    private final String description;
+    private static final Map<String, ControlledListsList> byPath = new HashMap<>();
+    private final Map<String, String> displayHeaders; // Column name to column heading
 
     static {
 
