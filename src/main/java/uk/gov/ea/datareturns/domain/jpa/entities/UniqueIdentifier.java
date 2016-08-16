@@ -1,10 +1,6 @@
 package uk.gov.ea.datareturns.domain.jpa.entities;
 
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.NamedQueries;
-import javax.persistence.NamedQuery;
-import javax.persistence.Table;
+import javax.persistence.*;
 
 /**
  * The persistent class for the unique_identifiers database table.
@@ -13,25 +9,46 @@ import javax.persistence.Table;
 @SuppressWarnings({ "JavaDoc", "unused" })
 @Entity
 @Table(name = "unique_identifiers")
-@NamedQueries({
-		@NamedQuery(name = "UniqueIdentifier.findAll", query = "SELECT u FROM UniqueIdentifier u"),
-		@NamedQuery(name = "UniqueIdentifier.findAllIdentifiers", query = "SELECT u.identifier FROM UniqueIdentifier u"),
-		@NamedQuery(name = "UniqueIdentifier.findByIdentifier", query = "SELECT u FROM UniqueIdentifier u WHERE u.identifier = :identifier")
-})
-public class UniqueIdentifier {
+public class UniqueIdentifier implements PersistedEntity {
 
 	@Id
-	private String identifier;
+	@SequenceGenerator(name = "unique_identifiers_id_seq", sequenceName = "unique_identifiers_id_seq", allocationSize=1)
+	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator="unique_identifiers_id_seq")
+	private Long id;
+	private String name;
 
-	public UniqueIdentifier() {
+	public Long getId() {
+		return this.id;
+	}
+	public void setId(final Long id) {
+		this.id = id;
 	}
 
-	public String getIdentifier() {
-		return this.identifier;
+	@Basic
+	@Column(name = "name", nullable = false, length = 10)
+	public String getName() {
+		return name;
+	}
+	public void setName(String name) {
+		this.name = name;
 	}
 
-	public void setIdentifier(final String identifier) {
-		this.identifier = identifier;
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (o == null || getClass() != o.getClass()) return false;
+
+		UniqueIdentifier uniqueIdentifier = (UniqueIdentifier) o;
+
+		if (!id.equals(uniqueIdentifier.id)) return false;
+		return name.equals(uniqueIdentifier.name);
+
 	}
 
+	@Override
+	public int hashCode() {
+		int result = id.hashCode();
+		result = 31 * result + name.hashCode();
+		return result;
+	}
 }

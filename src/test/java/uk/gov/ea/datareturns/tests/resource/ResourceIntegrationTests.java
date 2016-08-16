@@ -261,7 +261,7 @@ public class ResourceIntegrationTests {
 
 	@Test
 	public void testInvalidPermitNumber() {
-		final Client client = createClient("test Invalid Permit Number");
+		final Client client = createClient("test Invalid UniqueIdentifier Number");
 		final Response resp = performUploadStep(client, FILE_INVALID_PERMIT_NO, MEDIA_TYPE_CSV);
 		assertThat(resp.getStatus()).isEqualTo(Status.BAD_REQUEST.getStatusCode());
 
@@ -272,7 +272,7 @@ public class ResourceIntegrationTests {
 
 	@Test
 	public void testPermitNumberNotFound() {
-		final Client client = createClient("test Permit Number Not Found");
+		final Client client = createClient("test UniqueIdentifier Number Not Found");
 		final Response resp = performUploadStep(client, FILE_PERMIT_NOT_FOUND, MEDIA_TYPE_CSV);
 		assertThat(resp.getStatus()).isEqualTo(Status.BAD_REQUEST.getStatusCode());
 
@@ -570,7 +570,7 @@ public class ResourceIntegrationTests {
 
 	@Test
 	public void testPermitNumberFound() {
-		final Client client = createClient("test Permit Number Found");
+		final Client client = createClient("test UniqueIdentifier Number Found");
 		final Response resp = performUploadStep(client, FILE_PERMIT_FOUND, MEDIA_TYPE_CSV);
 		assertThat(resp.getStatus()).isEqualTo(Status.OK.getStatusCode());
 

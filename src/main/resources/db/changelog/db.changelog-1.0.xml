@@ -23,11 +23,14 @@
 	Unique Identifiers
 	****************************************************************
 	-->
-	<changeSet id="create-table: unique_identifiers" author="Sam Gardner-Dell">
+	<changeSet id="create-table: unique_identifiers" author="Graham Willis">
 		<createTable tableName="unique_identifiers">
 			<!-- Currently unique identifiers are generally 6 characters long but this could change! -->
-			<column name="identifier" type="varchar(10)">
-				<constraints nullable="false" primaryKey="true" unique="true"/>
+			<column name="id" type="bigserial">
+				<constraints primaryKey="true" nullable="false"/>
+			</column>
+			<column name="name" type="varchar(10)">
+				<constraints nullable="false" unique="true"/>
 			</column>
 		</createTable>
 		<rollback>
@@ -35,11 +38,11 @@
 		</rollback>
 	</changeSet>
 
-	<changeSet id="load-data: unique_identifiers" author="Sam Gardner-Dell">
+	<changeSet id="load-data: unique_identifiers" author="Graham Willis">
 		<preConditions onFail="HALT">
 			<tableExists tableName="unique_identifiers"/>
-			<columnExists tableName="unique_identifiers" columnName="identifier"/>
-			<sqlCheck expectedResult="0">select count(identifier) from unique_identifiers</sqlCheck>
+			<columnExists tableName="unique_identifiers" columnName="name"/>
+			<sqlCheck expectedResult="0">select count(id) from unique_identifiers</sqlCheck>
 		</preConditions>
 		<loadData file="${uniqueIdentifiersFile}" tableName="unique_identifiers"/>
 		<rollback>
@@ -47,15 +50,14 @@
 		</rollback>
 	</changeSet>
 
-	<changeSet id="create-index: unique_identifiers" author="Sam Gardner-Dell">
-		<createIndex indexName="idx_unique_identifiers_identifier" tableName="unique_identifiers" unique="true">
-			<column name="identifier"/>
+	<changeSet id="create-index: unique_identifiers" author="Graham Willis">
+		<createIndex indexName="idx_unique_identifiers_name" tableName="unique_identifiers" unique="true">
+			<column name="name"/>
 		</createIndex>
 		<rollback>
-			<dropIndex tableName="unique_identifiers" indexName="idx_unique_identifiers_identifier"/>
+			<dropIndex tableName="unique_identifiers" indexName="idx_permit_name"/>
 		</rollback>
 	</changeSet>
-
 
 	<!-- 
 	****************************************************************

@@ -9,7 +9,7 @@ import javax.persistence.*;
 @SuppressWarnings({ "JavaDoc", "unused" })
 @Entity
 @Table(name = "qualifiers")
-public class Qualifier implements PersistedEntity {
+public class Qualifier implements ControlledList {
 
 	@Id
 	@SequenceGenerator(name = "qualifiers_id_seq", sequenceName = "qualifiers_id_seq", allocationSize=1)

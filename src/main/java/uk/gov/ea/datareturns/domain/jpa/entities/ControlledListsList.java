@@ -2,52 +2,51 @@ package uk.gov.ea.datareturns.domain.jpa.entities;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import uk.gov.ea.datareturns.domain.dto.DisplayHeaderDto;
 import uk.gov.ea.datareturns.domain.jpa.dao.*;
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.LinkedHashMap;
+import java.util.*;
 
 /**
  * Created by graham on 26/07/16.
  */
 public enum ControlledListsList {
 
-    UNITS_AND_MEASURES("Unit or measure", UnitDao.class, "units", Collections.unmodifiableMap(new LinkedHashMap<String, String>() {{
-        put("description", "Description");
-        put("measureType", "Measurement Type");
-        put("name", "Unit");
+    UNITS_AND_MEASURES("Unit or measure", UnitDao.class, "units", Collections.unmodifiableList(new ArrayList<DisplayHeaderDto>() {{
+        add(new DisplayHeaderDto("description", "Description"));
+        add(new DisplayHeaderDto("measureType", "Measurement Type"));
+        add(new DisplayHeaderDto("name", "Unit"));
     }}), "description"),
 
-    PARAMETERS("Parameters - substance names - and CAS", ParameterDao.class, "parameters", Collections.unmodifiableMap(new LinkedHashMap<String, String>() {{
-        put("name", "Name");
+    PARAMETERS("Parameters - substance names - and CAS", ParameterDao.class, "parameters", Collections.unmodifiableList(new ArrayList<DisplayHeaderDto>() {{
+        add(new DisplayHeaderDto("name", "Name"));
     }}), "name"),
 
-    REFERENCE_PERIOD("Reference period", ReferencePeriodDao.class, "ref_period", Collections.unmodifiableMap(new LinkedHashMap<String, String>() {{
-        put("name", "Ref_Period");
-        put("notes", "Notes");
+    REFERENCE_PERIOD("Reference period", ReferencePeriodDao.class, "ref_period", Collections.unmodifiableList(new ArrayList<DisplayHeaderDto>() {{
+        add(new DisplayHeaderDto("name", "Ref_Period"));
+        add(new DisplayHeaderDto("aliases", "Aliases"));
+        add(new DisplayHeaderDto("notes", "Notes"));
     }}), "name"),
 
-    RETURN_PERIOD("Return period", ReturnPeriodDao.class, "rtn_period", Collections.unmodifiableMap(new LinkedHashMap<String, String>() {{
-        put("name", "Rtn_Period");
-        put("definition", "Definition");
-        put("example", "Example");
+    RETURN_PERIOD("Return period", ReturnPeriodDao.class, "rtn_period", Collections.unmodifiableList(new ArrayList<DisplayHeaderDto>() {{
+        add(new DisplayHeaderDto("name", "Rtn_Period"));
+        add(new DisplayHeaderDto("definition", "Definition"));
+        add(new DisplayHeaderDto("example", "Example"));
     }}), "name"),
 
-    QUALIFIERS("Qualifier", QualifierDao.class, "qualifier", Collections.unmodifiableMap(new LinkedHashMap<String, String>() {{
-        put("name", "Qualifier");
-        put("notes", "Notes");
-        put("suggested_category", "Suggested Category");
+    QUALIFIERS("Qualifier", QualifierDao.class, "qualifier", Collections.unmodifiableList(new ArrayList<DisplayHeaderDto>() {{
+        add(new DisplayHeaderDto("name", "Qualifier"));
+        add(new DisplayHeaderDto("notes", "Notes"));
+        add(new DisplayHeaderDto("suggested_category", "Suggested Category"));
     }}), "name"),
 
-    METHOD_OR_STANDARD("Monitoring standard or method", MethodOrStandardDao.class, "method", Collections.unmodifiableMap(new LinkedHashMap<String, String>() {{
-        put("name", "Meth_Stand");
-        put("notes", "Notes");
+    METHOD_OR_STANDARD("Monitoring standard or method", MethodOrStandardDao.class, "method", Collections.unmodifiableList(new ArrayList<DisplayHeaderDto>() {{
+        add(new DisplayHeaderDto("name", "Meth_Stand"));
+        add(new DisplayHeaderDto("notes", "Notes"));
     }}), "name"),
 
-    RETURN_TYPE("Return type", ReturnTypeDao.class, "rtn_type", Collections.unmodifiableMap(new LinkedHashMap<String, String>() {{
-        put("name", "Rtn_Type");
+    RETURN_TYPE("Return type", ReturnTypeDao.class, "rtn_type", Collections.unmodifiableList(new ArrayList<DisplayHeaderDto>() {{
+        add(new DisplayHeaderDto("name", "Rtn_Type"));
     }}), "name");
 
     private final String path;
@@ -57,7 +56,7 @@ public enum ControlledListsList {
     private final String defaultSearch;
     private final String description;
     private static final Map<String, ControlledListsList> byPath = new HashMap<>();
-    private final Map<String, String> displayHeaders; // Column name to column heading
+    private final List<DisplayHeaderDto> displayHeaders; // Column name to column heading
 
     static {
 
@@ -67,7 +66,7 @@ public enum ControlledListsList {
     }
 
     ControlledListsList(String description, Class<? extends AbstractJpaDao> dao,
-                        String path, Map<String, String> displayHeaders, String defaultSearch) {
+                        String path, List<DisplayHeaderDto> displayHeaders, String defaultSearch) {
         this.description = description;
         this.path = path;
         this.dao = dao;
@@ -91,7 +90,7 @@ public enum ControlledListsList {
         return path;
     }
 
-    public Map<String, String> getDisplayHeaders() {
+    public List<DisplayHeaderDto> getDisplayHeaders() {
         return displayHeaders;
     }
 

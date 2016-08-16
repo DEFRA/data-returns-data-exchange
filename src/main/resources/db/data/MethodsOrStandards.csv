@@ -50,7 +50,7 @@ ISO 14001,
 MMS 14,MCERTS approved instrumentation
 MMS 15,MCERTS self-monitoring of effluent flow scheme
 MMS 16,Pollution Inventory Calculated
-MMS 17,Pollution Inventory Calculated - calculation method prescribed by the Environment Agency in an operating permit or licence for the facility
+MMS 17,Pollution Inventory Calculated - calculation method prescribed by the Environment Agency in an operating uniqueIdentifier or licence for the facility
 MMS 18,Pollution Inventory Calculated - European sector-specific calculation method
 MMS 19,Pollution Inventory Calculated - mass balance method approved by the Environment Agency
 MMS 20,Pollution Inventory Calculated - method from the EMEP/CORINAIR atmospheric emission inventory guidebook
@@ -62,7 +62,7 @@ MMS 25,Pollution Inventory Estimated
 MMS 26,Pollution Inventory Measured
 MMS 27,Pollution Inventory Measured - alternative measurement method in accordance with existing CEN/ISO measurement standards
 MMS 28,Pollution Inventory Measured - measurement method demonstrated by means of certified reference materials and approved by the Environment Agency
-MMS 29,Pollution Inventory Measured - measurement method prescribed by the Environment Agency in an operating permit or licence for the facility
+MMS 29,Pollution Inventory Measured - measurement method prescribed by the Environment Agency in an operating uniqueIdentifier or licence for the facility
 MMS 30,Pollution Inventory Measured – national or regional binding measurement method prescribed by legal act for the substance and facility concerned
 MMS 31,Pollution Inventory Measured – other measurement method
 MMS 32,Standard temperature sensor

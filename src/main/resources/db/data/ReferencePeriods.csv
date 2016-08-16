@@ -1,40 +1,40 @@
 name,preferred,notes
-Half hour average,,Total cumulative measurement for the 30 minutes preceding the time/date provided
-1 hour total,,Total cumulative measurement for the 1 hour preceding the time/date provided
-2 hour total,,Total cumulative measurement for the 2 hours preceding the time/date provided
-24 hour total,,Total cumulative measurement for the 24 hours preceding the time/date provided
-95% of all 10-minute averages in any 24-hour period,,
-95% of validated daily means within a calendar year,,
-95% of validated hourly averages within a calendar year,,
-Bi-annual periodic measurement average value over sample period of between 6 and 8 hours,,
+Half hour average,NULL,Total cumulative measurement for the 30 minutes preceding the time/date provided
+1 hour total,NULL,Total cumulative measurement for the 1 hour preceding the time/date provided
+2 hour total,NULL,Total cumulative measurement for the 2 hours preceding the time/date provided
+24 hour total,NULL,Total cumulative measurement for the 24 hours preceding the time/date provided
+95% of all 10-minute averages in any 24-hour period,NULL,NULL
+95% of validated daily means within a calendar year,NULL,NULL
+95% of validated hourly averages within a calendar year,NULL,NULL
+Bi-annual periodic measurement average value over sample period of between 6 and 8 hours,NULL,NULL
 Calendar monthly mean,Monthly mean,"Mean (sum of items divided by the number of entries) of the monitoring taken over the time interval resulting from the division of a calendar year in 12 time intervals, each with a specific name and containing a specific number of calendar days"
-Continuous,,
-Continuous - as appropriate to reference,,
+Continuous,NULL,NULL
+Continuous - as appropriate to reference,NULL,NULL
 Daily average,Daily mean,Average over the time interval starting at midnight and ending at the next midnight - where average is taken as the mean: sum of items divided by the number of entries
-Daily mean,,Mean over the time interval starting at midnight and ending at the next midnight - mean: sum of items divided by the number of entries
-Daily mean of validated hourly averages,,
-Hourly mean,,Mean for the hour preceding the time/date given - mean: sum of items divided by the number of entries
-Instantaneous,,
+Daily mean,NULL,Mean over the time interval starting at midnight and ending at the next midnight - mean: sum of items divided by the number of entries
+Daily mean of validated hourly averages,NULL,NULL
+Hourly mean,NULL,Mean for the hour preceding the time/date given - mean: sum of items divided by the number of entries
+Instantaneous,NULL,NULL
 Monthly average,Monthly mean,"Mean of the monitoring taken over the time interval resulting from the division of a calendar year in 12 time intervals, each with a specific name and containing a specific number of calendar days"
-Monthly mean of validated hourly averages,,
-Periodic - as appropriate to reference,,
-Periodic daily,,
-Periodic over minimum 1 hour period,,
-"Periodic over minimum 30 minute, maximum 8 hour period",,
-"Periodic over minimum 4 hour period, data reported as half hour averages",,
-"Periodic over minimum 6 hours, maximum 8 hour period",,
-Pre-operation and when there is a significant operational change,,
-Spot sample,,
-7 day total,,Total cumulative measurement for the 7 days preceding the time/date provided - where a day is the time interval starting at midnight and ending at the next midnight
-Annual mean,,
-Daily load,,
+Monthly mean of validated hourly averages,NULL,NULL
+Periodic - as appropriate to reference,NULL,NULL
+Periodic daily,NULL,NULL
+Periodic over minimum 1 hour period,NULL,NULL
+"Periodic over minimum 30 minute, maximum 8 hour period",NULL,NULL
+"Periodic over minimum 4 hour period, data reported as half hour averages",NULL,NULL
+"Periodic over minimum 6 hours, maximum 8 hour period",NULL,NULL
+Pre-operation and when there is a significant operational change,NULL,NULL
+Spot sample,NULL,NULL
+7 day total,NULL,Total cumulative measurement for the 7 days preceding the time/date provided - where a day is the time interval starting at midnight and ending at the next midnight
+Annual mean,NULL,NULL
+Daily load,NULL,NULL
 Daily total,24 hour total,Total cumulative measurement over the time interval starting at midnight and ending at the next midnight
-Maximum daily,,
-Minimum daily,,
-Monthly average of weekly spot sample,,
-Monthly mean,,"Mean of the monitoring taken over the time interval resulting from the division of a calendar year in 12 time intervals, each with a specific name and containing a specific number of calendar days"
-Monthly total,,"Total cumulative measurement over the time interval resulting from the division of a calendar year in 12 time intervals, each with a specific name and containing a specific number of calendar days"
-Previous 72 hours total,,Total cumulative measurement for the 72 hours preceding the time/date provided
-Total weekly load,,
-20 min average,,Average over 20 minutes where average is defined as the mean: sum of items divided by the number of entries
-4 day total,,Used in dust monitoring
+Maximum daily,NULL,NULL
+Minimum daily,NULL,NULL
+Monthly average of weekly spot sample,NULL,NULL
+Monthly mean,NULL,"Mean of the monitoring taken over the time interval resulting from the division of a calendar year in 12 time intervals, each with a specific name and containing a specific number of calendar days"
+Monthly total,NULL,"Total cumulative measurement over the time interval resulting from the division of a calendar year in 12 time intervals, each with a specific name and containing a specific number of calendar days"
+Previous 72 hours total,NULL,Total cumulative measurement for the 72 hours preceding the time/date provided
+Total weekly load,NULL,NULL
+20 min average,NULL,Average over 20 minutes where average is defined as the mean: sum of items divided by the number of entries
+4 day total,NULL,Used in dust monitoring

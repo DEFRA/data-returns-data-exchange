@@ -11,6 +11,7 @@ import uk.gov.ea.datareturns.domain.jpa.dao.*;
 import uk.gov.ea.datareturns.domain.jpa.entities.*;
 
 import javax.inject.Inject;
+import java.util.List;
 
 /**
  * Created by graham on 28/07/16.
@@ -143,6 +144,12 @@ public class ControlledListsTests {
         qualifierDao.removeById(retrieveQualifier2.getId());
         Qualifier retrieveQualifier3 = (Qualifier) qualifierDao.getById(retrieveQualifier.getId());
         Assert.assertNull(retrieveQualifier3);
+    }
+
+    @Test
+    public void testAlias() {
+        List list = referencePeriodDao.list();
+        Assert.assertNotNull(list);
     }
 }
 

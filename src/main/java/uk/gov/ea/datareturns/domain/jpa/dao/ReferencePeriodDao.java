@@ -9,7 +9,7 @@ import uk.gov.ea.datareturns.domain.jpa.entities.ReferencePeriod;
  * @author Sam Gardner-Dell
  */
 @Repository
-public class ReferencePeriodDao extends AbstractJpaDao {
+public class ReferencePeriodDao extends AliasingDao {
 	public ReferencePeriodDao() {
 		super(ReferencePeriod.class);
 	}
