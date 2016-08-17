@@ -5,6 +5,7 @@ import uk.gov.ea.datareturns.domain.jpa.entities.AliasingEntity;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 /**
@@ -25,9 +26,20 @@ public class AliasingDao<E extends AliasingEntity> extends AbstractJpaDao {
      * This override of list() calculates the aliases from the preferred list
      * @return the processed list
      */
+    @Override
     public List<E> list() {
         // Get the list from the cached master list in AbstractJpaDao
         List<E> list = super.list();
+        return aliasProcessor(list);
+    }
+
+    @Override
+    public List<E> list(Predicate predicate) {
+        List<E> list = super.list(predicate);
+        return aliasProcessor(list);
+    }
+
+    private List<E> aliasProcessor(List<E> list) {
         // Split the stream into aliases and basis; with and without preferred set
         List<E> basis = list.stream().filter(e -> e.getPreferred() == null).collect(Collectors.toList());
         List<E> aliases = list.stream().filter(e -> e.getPreferred() != null).collect(Collectors.toList());
@@ -49,4 +61,5 @@ public class AliasingDao<E extends AliasingEntity> extends AbstractJpaDao {
 
         return result;
     }
+
 }

@@ -119,17 +119,6 @@
 			</column>
 			<column name="definition" type="varchar(150)">
 			</column>
-			<!--
-				TODO: NOT SUPPORTING CAS RIGHT NOW AND THERE ARE ERRORS IN THE CONTROLLED LISTS DEFINITION IN THE HELP
-				
-				See ParametersWithCas.csv which includes the CAS column with a lot of invalid values and also multiple values that are
-				separated by a comma for a single parameter type (which makes me think that CAS numbers should be in their own table)
-				
-				Cas numbers have specific rules about their format (e.g. 1-7 digits, dash, 2 digits, dash, check digit)
-				See: https://www.cas.org/content/chemical-substances/checkdig and http://onelastbit.com/?p=444
-			-->
-			<!-- 			<column name="cas" type="varchar(15)"> -->
-			<!-- 			</column> -->
 		</createTable>
 		<rollback>
 			<dropTable tableName="parameters"/>
@@ -148,7 +137,14 @@
 		</rollback>
 	</changeSet>
 
-	<changeSet id="create-index: parameters" author="Sam Gardner-Dell">
+  <changeSet id="update-nulls: parameters" author="Graham Willis" >
+    <update tableName="parameters">
+      <column name="definition"/>
+      <where>definition = ''</where>
+    </update>
+  </changeSet>
+
+  <changeSet id="create-index: parameters" author="Sam Gardner-Dell">
 		<createIndex indexName="idx_parameters_name" tableName="parameters" unique="true">
 			<column name="name"/>
 		</createIndex>
@@ -194,6 +190,13 @@
 		</rollback>
 	</changeSet>
 
+  <changeSet id="update-nulls: units" author="Graham Willis" >
+    <update tableName="units">
+      <column name="description"/>
+      <where>description = ''</where>
+    </update>
+  </changeSet>
+
 	<changeSet id="create-index: units" author="Sam Gardner-Dell">
 		<createIndex indexName="idx_units_name" tableName="units" unique="true">
 			<column name="name"/>
@@ -236,7 +239,14 @@
 		</rollback>
 	</changeSet>
 
-	<changeSet id="create-index: methods_or_standards" author="Sam Gardner-Dell">
+  <changeSet id="update-nulls: methods_or_standards" author="Graham Willis" >
+    <update tableName="methods_or_standards">
+      <column name="notes"/>
+      <where>notes = ''</where>
+    </update>
+  </changeSet>
+
+  <changeSet id="create-index: methods_or_standards" author="Sam Gardner-Dell">
 		<createIndex indexName="idx_methods_or_standards_name" tableName="methods_or_standards" unique="true">
 			<column name="name"/>
 		</createIndex>
@@ -278,6 +288,17 @@
 			<delete tableName="qualifiers"></delete>
 		</rollback>
 	</changeSet>
+  
+  <changeSet id="update-nulls: qualifiers" author="Graham Willis" >
+    <update tableName="qualifiers">
+      <column name="notes"/>
+      <where>notes = ''</where>
+    </update>
+    <update tableName="qualifiers">
+      <column name="suggested_category"/>
+      <where>suggested_category = ''</where>
+    </update>
+  </changeSet>
 
 	<changeSet id="create-index: qualifiers" author="Sam Gardner-Dell">
 		<createIndex indexName="idx_qualifiers_name" tableName="qualifiers" unique="true">
@@ -320,6 +341,17 @@
 		<rollback>
 			<delete tableName="reference_periods"></delete>
 		</rollback>
+	</changeSet>
+
+	<changeSet id="update-nulls: reference_periods" author="Graham Willis" >
+		<update tableName="reference_periods">
+			<column name="notes"/>
+			<where>notes = ''</where>
+		</update>
+		<update tableName="reference_periods">
+			<column name="preferred"/>
+			<where>preferred = ''</where>
+		</update>
 	</changeSet>
 
 	<changeSet id="create-index: reference_periods" author="Sam Gardner-Dell">
@@ -366,7 +398,18 @@
 		</rollback>
 	</changeSet>
 
-	<changeSet id="create-index: return_periods" author="Sam Gardner-Dell">
+  <changeSet id="update-nulls: return_periods" author="Graham Willis" >
+    <update tableName="return_periods">
+      <column name="definition"/>
+      <where>definition = ''</where>
+    </update>
+    <update tableName="return_periods">
+      <column name="example"/>
+      <where>example = ''</where>
+    </update>
+  </changeSet>
+
+  <changeSet id="create-index: return_periods" author="Sam Gardner-Dell">
 		<createIndex indexName="idx_return_periods_name" tableName="return_periods" unique="true">
 			<column name="name"/>
 		</createIndex>
@@ -374,4 +417,5 @@
 			<dropIndex tableName="return_periods" indexName="idx_return_periods_name"/>
 		</rollback>
 	</changeSet>
+
 </databaseChangeLog>
