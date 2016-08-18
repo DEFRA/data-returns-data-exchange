@@ -1,5 +1,7 @@
 package uk.gov.ea.datareturns.domain.jpa.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import javax.persistence.*;
 
 /**
@@ -14,6 +16,7 @@ public class ReturnType implements ControlledList {
 	@Id
 	@SequenceGenerator(name = "return_types_id_seq", sequenceName = "return_types_id_seq", allocationSize=1)
 	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator="return_types_id_seq")
+	@JsonIgnore
 	private Long id;
 	private String name;
 	private String sector;

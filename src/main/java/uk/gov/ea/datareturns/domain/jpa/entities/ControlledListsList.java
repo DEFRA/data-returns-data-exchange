@@ -13,9 +13,9 @@ import java.util.*;
 public enum ControlledListsList {
 
     UNITS_AND_MEASURES("Unit or measure", UnitDao.class, "units", Collections.unmodifiableList(new ArrayList<DisplayHeaderDto>() {{
+        add(new DisplayHeaderDto("name", "Unit"));
         add(new DisplayHeaderDto("description", "Description"));
         add(new DisplayHeaderDto("measureType", "Measurement Type"));
-        add(new DisplayHeaderDto("name", "Unit"));
     }}), "description"),
 
     PARAMETERS("Parameters - substance names - and CAS", ParameterDao.class, "parameters", Collections.unmodifiableList(new ArrayList<DisplayHeaderDto>() {{

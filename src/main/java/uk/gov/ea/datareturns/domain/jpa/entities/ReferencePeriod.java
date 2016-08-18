@@ -1,5 +1,7 @@
 package uk.gov.ea.datareturns.domain.jpa.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import javax.persistence.*;
 import java.util.Set;
 
@@ -24,6 +26,7 @@ public class ReferencePeriod implements ControlledList, AliasingEntity {
 	private Set<String> aliases = null;
 
 	@Override
+	@JsonIgnore
 	public Long getId() {
 		return id;
 	}
@@ -56,6 +59,7 @@ public class ReferencePeriod implements ControlledList, AliasingEntity {
 	}
 
 	@Basic
+	@JsonIgnore
 	@Column(name = "preferred", length = 100)
 	public String getPreferred() {
 		return preferred;
