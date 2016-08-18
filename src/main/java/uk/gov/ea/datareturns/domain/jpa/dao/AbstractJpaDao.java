@@ -21,7 +21,6 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
@@ -41,6 +40,7 @@ public abstract class AbstractJpaDao<E extends PersistedEntity> {
 	protected final Class<E> entityClass;
 
 	protected volatile Map<String, E> cacheByName = null;
+	protected volatile Map<String, E> cacheByUpperCaseName = null;
 
     /**
      * Let the Dao class know the type of entity in order that type-safe
@@ -61,7 +61,7 @@ public abstract class AbstractJpaDao<E extends PersistedEntity> {
 	}
 
     /**
-     * List all entities of type E
+     * List all entities of type E. This list invocation includes any aliases as primaries
      *
      * @return List<E>
      */
@@ -121,8 +121,9 @@ public abstract class AbstractJpaDao<E extends PersistedEntity> {
         return list();
     }
 
-	/*
-	 * Builds the cache if necessary and returns built cache
+	/**
+	 * Builds the cache if necessary and returns built cache. The cache will include any aliases
+	 * as primaries so we can check for the existence of aliases using this (super) class method
 	 */
 	protected Map<String, E> getCache() {
 		if (cacheByName == null) {
@@ -138,12 +139,29 @@ public abstract class AbstractJpaDao<E extends PersistedEntity> {
 					cacheByName = results
 							.stream()
 							.collect(Collectors.toMap(PersistedEntity::getName, k -> k));
-				} else {
-					return this.cacheByName;
 				}
 			}
 		}
-		return this.cacheByName;
+		return cacheByName;
+	}
+
+    /**
+     * Builds the uppercase cache if necessary and returns built cache. The cache will include any aliases
+     * as primaries so we can check for the existence of aliases using this (super) class method
+     */
+	protected Map<String, E> getUpperCaseCache() {
+		if (cacheByUpperCaseName == null) {
+            Map<String, E> localCache = getCache();
+			synchronized(this) {
+				if (cacheByUpperCaseName == null) {
+                    LOGGER.info("Build case insensitive cache of: " + entityClass.getSimpleName());
+                    //Object test = localCache.entrySet().stream().collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+                    //Map<String, List<E>> x = test.stream().collect(Collectors.groupingBy(e -> e.getName().toUpperCase()));
+                    //cacheByUpperCaseName = localCache.entrySet().stream().map(Map.Entry::getValue).collect(Collectors.toMap(e->e.getName().toUpperCase(), e -> e));
+				}
+			}
+		}
+		return cacheByUpperCaseName;
 	}
 
 	/**
@@ -153,30 +171,33 @@ public abstract class AbstractJpaDao<E extends PersistedEntity> {
 	 * @return true if the name exists, false otherwise
 	 */
 	public boolean nameExists(final String name) {
-		return findNames().contains(name);
+		return getCache().get(name) != null;
 	}
 
-	/**
-	 * Retrieve a full set of method or standard names
-	 *
-	 * @return a {@link Set} of method or standard names
-	 */
-    private Set<String> findNames() {
-		return getCache()
-				.entrySet()
-				.stream()
-				.map(Map.Entry::getKey)
-				.collect(Collectors.toSet());
-	}
+    public boolean nameExistsCaseInsensitive(final String name) {
+        return getUpperCaseCache().get(name.toUpperCase()) != null;
+    }
+
+    public String getStandardizedName(final String name) {
+        E e = getUpperCaseCache().get(name.toUpperCase());
+        if (e != null) {
+            return e.getName();
+        } else {
+            return null;
+        }
+    }
 
 	/**
 	 *
-	 * @param name case sensitive name search term
+	 * @param name case sensitive name search term - will also get any aliases
 	 * @return The entity E or null
      */
 	public E getByName(String name) {
 		return getCache().get(name);
 	}
+    public E getByNameCaseInsensitive(String name) {
+        return getUpperCaseCache().get(name.toUpperCase());
+    }
 
     /**
      * Add a new entity of type <E>
@@ -187,7 +208,8 @@ public abstract class AbstractJpaDao<E extends PersistedEntity> {
         entityManager.persist(entity);
         entityManager.flush();
         getCache().put(entity.getName(), entity);
-		LOGGER.info("Added: " + entityClass.getSimpleName() + "id: " + entity.getId() + entity.getName());
+        getUpperCaseCache().put(entity.getName().toUpperCase(), entity);
+		LOGGER.info("Added: " + entityClass.getSimpleName() + "id: " + entity.getId() + " " + entity.getName());
 	}
 
     /**
@@ -199,7 +221,8 @@ public abstract class AbstractJpaDao<E extends PersistedEntity> {
 	@Transactional
 	public void removeById(long id) throws IllegalArgumentException {
 		E entity = getById(id);
-		cacheByName.remove(entity.getName());
+        getCache().remove(entity.getName());
+        getUpperCaseCache().remove(entity.getName().toUpperCase());
 		entityManager.remove(entity);
 		LOGGER.info("Deleted: " + entityClass.getSimpleName() + " ID: " + id);
 	}
@@ -210,6 +233,7 @@ public abstract class AbstractJpaDao<E extends PersistedEntity> {
 	public void clearCache() {
 		LOGGER.info("Clear cache: " + entityClass.getSimpleName());
 		cacheByName = null;
+        cacheByUpperCaseName = null;
 	}
 
 	/**

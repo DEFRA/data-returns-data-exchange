@@ -85,7 +85,6 @@ public class ControlledListsTests {
         if (retrieveReturnType0 != null) {
             returnTypeDao.removeById(retrieveReturnType0.getId());
         }
-        
         // Add and retrieve
         ReturnType returnType = new ReturnType();
         returnType.setName("Test");
@@ -96,6 +95,8 @@ public class ControlledListsTests {
         ReturnType retrieveReturnType2 = (ReturnType) returnTypeDao.getById(retrieveReturnType.getId());
         Assert.assertNotNull(retrieveReturnType2);
         Assert.assertEquals(retrieveReturnType2.getId(), retrieveReturnType.getId());
+        Assert.assertEquals(returnTypeDao.nameExistsCaseInsensitive("tEst"), true);
+        Assert.assertEquals(returnTypeDao.getStandardizedName("tEst"), "Test");
         returnTypeDao.removeById(retrieveReturnType2.getId());
         ReturnType retrieveReturnType3 = (ReturnType) returnTypeDao.getById(retrieveReturnType.getId());
         Assert.assertNull(retrieveReturnType3);
@@ -148,8 +149,62 @@ public class ControlledListsTests {
 
     @Test
     public void testAlias() {
+
+        final String PRIMARY_1 = "Primary 1";
+        final String PRIMARY_2 = "Primary 2";
+        final String PRIMARY_3 = "Primary 3";
+
+        ReferencePeriod referencePeriod1 = (ReferencePeriod) referencePeriodDao.getByName(PRIMARY_1);
+        ReferencePeriod referencePeriod2 = (ReferencePeriod) referencePeriodDao.getByName(PRIMARY_2);
+        ReferencePeriod referencePeriod3 = (ReferencePeriod) referencePeriodDao.getByName(PRIMARY_3);
+
+        if (referencePeriod1 != null) {
+            referencePeriodDao.removeById(referencePeriod1.getId());
+        }
+        if (referencePeriod2 != null) {
+            referencePeriodDao.removeById(referencePeriod2.getId());
+        }
+        if (referencePeriod3 != null) {
+            referencePeriodDao.removeById(referencePeriod3.getId());
+        }
+
+        referencePeriod1 = new ReferencePeriod();
+        referencePeriod2 = new ReferencePeriod();
+        referencePeriod3 = new ReferencePeriod();
+
+        referencePeriod1.setName(PRIMARY_1);
+        referencePeriod2.setName(PRIMARY_2);
+        referencePeriod3.setName(PRIMARY_3);
+
+        referencePeriod2.setPreferred(referencePeriod1.getName());
+        referencePeriod3.setPreferred(referencePeriod1.getName());
+
+        referencePeriodDao.add(referencePeriod1);
+        referencePeriodDao.add(referencePeriod2);
+        referencePeriodDao.add(referencePeriod3);
+
         List list = referencePeriodDao.list();
+
         Assert.assertNotNull(list);
+        Assert.assertNotEquals(list.size(), 0);
+
+        Assert.assertEquals(referencePeriodDao.getByName(PRIMARY_1).getName(), PRIMARY_1);
+        Assert.assertEquals(referencePeriodDao.getByAlias(PRIMARY_2).getName(), PRIMARY_1);
+        Assert.assertEquals(referencePeriodDao.getByAlias(PRIMARY_3).getName(), PRIMARY_1);
+        Assert.assertNull(referencePeriodDao.getByAlias(PRIMARY_1));
+
+        Assert.assertEquals(referencePeriodDao.nameExistsCaseInsensitive(PRIMARY_1.toLowerCase()), true);
+        Assert.assertEquals(referencePeriodDao.getStandardizedName(PRIMARY_1.toLowerCase()), PRIMARY_1);
+
+        Assert.assertEquals(referencePeriodDao.nameExistsCaseInsensitive(PRIMARY_2.toLowerCase()), true);
+        Assert.assertEquals(referencePeriodDao.getStandardizedName(PRIMARY_2.toLowerCase()), PRIMARY_1);
+
+        Assert.assertEquals(referencePeriodDao.nameExistsCaseInsensitive(PRIMARY_3.toLowerCase()), true);
+        Assert.assertEquals(referencePeriodDao.getStandardizedName(PRIMARY_3.toLowerCase()), PRIMARY_1);
+
+        referencePeriodDao.removeById(referencePeriod1.getId());
+        referencePeriodDao.removeById(referencePeriod2.getId());
+        referencePeriodDao.removeById(referencePeriod3.getId());
     }
 }
 
