@@ -123,18 +123,18 @@ public class AliasingDao<E extends AliasingEntity> extends AbstractJpaDao {
         return cacheByUpperCaseAlias;
     }
 
+    /**
+     * Add an entity <E> to the persistence
+     * Note - not calling super.add because of side effects of nested @Transactional
+     * @param entity
+     */
     @Transactional
     public void add(E entity) {
         entityManager.persist(entity);
         entityManager.flush();
-        getCache().put(entity.getName(), entity);
-        getUpperCaseCache().put(entity.getName().toUpperCase(), entity);
-        if (entity.getPreferred() != null) {
-            E alias = (E) super.getByNameCaseInsensitive(entity.getPreferred());
-            getAliasCache().put(entity.getName(), alias);
-            getUpperCaseAliasCache().put(entity.getName().toUpperCase(), alias);
-        }
         LOGGER.info("Added: " + entityClass.getSimpleName() + "id: " + entity.getId() + " " + entity.getName());
+        super.clearCache();
+        clearCache();
     }
 
     /**
@@ -142,22 +142,36 @@ public class AliasingDao<E extends AliasingEntity> extends AbstractJpaDao {
      *
      * @param id The entity identifier
      * @throws IllegalArgumentException
+     *
+     * Note not calling super.removeById because of side effects of nested @Transactional
      */
     @Transactional
+    @Override
     public void removeById(long id) throws IllegalArgumentException {
         E entity = (E) getById(id);
-        // Make sure that the entity is remove from the derived caches first
-        getUpperCaseAliasCache().remove(entity.getName().toUpperCase());
-        getAliasCache().remove(entity.getName());
-        getUpperCaseCache().remove(entity.getName().toUpperCase());
-        getCache().remove(entity.getName());
         entityManager.remove(entity);
         LOGGER.info("Deleted: " + entityClass.getSimpleName() + " ID: " + id);
+        super.clearCache();
+        clearCache();
     }
 
     public void clearCache() {
-        super.clearCache();
-        cacheByAlias = null;
-        cacheByUpperCaseAlias = null;
+        if (cacheByAlias != null) {
+            synchronized (this) {
+                if (cacheByAlias != null) {
+                    cacheByAlias = null;
+                    LOGGER.info("Clear cacheByAlias: " + entityClass.getSimpleName());
+                }
+            }
+        }
+        if (cacheByUpperCaseAlias != null) {
+            synchronized (this) {
+                if (cacheByUpperCaseAlias != null) {
+                    cacheByUpperCaseAlias = null;
+                    LOGGER.info("Clear cacheByUpperCaseAlias: " + entityClass.getSimpleName());
+                }
+            }
+        }
     }
+
 }
