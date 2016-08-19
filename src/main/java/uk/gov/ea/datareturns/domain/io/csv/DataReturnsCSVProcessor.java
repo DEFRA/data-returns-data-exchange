@@ -3,16 +3,6 @@
  */
 package uk.gov.ea.datareturns.domain.io.csv;
 
-import java.io.File;
-import java.lang.reflect.Field;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
 import com.univocity.parsers.annotations.Parsed;
 import com.univocity.parsers.common.ParsingContext;
 import com.univocity.parsers.common.processor.BeanListProcessor;
@@ -21,16 +11,15 @@ import com.univocity.parsers.csv.CsvParser;
 import com.univocity.parsers.csv.CsvParserSettings;
 import com.univocity.parsers.csv.CsvWriter;
 import com.univocity.parsers.csv.CsvWriterSettings;
-
-import uk.gov.ea.datareturns.domain.exceptions.AbstractValidationException;
-import uk.gov.ea.datareturns.domain.exceptions.FileStructureException;
-import uk.gov.ea.datareturns.domain.exceptions.FileTypeUnsupportedException;
-import uk.gov.ea.datareturns.domain.exceptions.MandatoryFieldMissingException;
-import uk.gov.ea.datareturns.domain.exceptions.UnrecognisedFieldException;
+import uk.gov.ea.datareturns.domain.exceptions.*;
 import uk.gov.ea.datareturns.domain.io.csv.generic.CSVModel;
 import uk.gov.ea.datareturns.domain.io.csv.generic.exceptions.InconsistentRowException;
 import uk.gov.ea.datareturns.domain.model.DataSample;
 import uk.gov.ea.datareturns.domain.model.rules.DataReturnsHeaders;
+
+import java.io.File;
+import java.lang.reflect.Field;
+import java.util.*;
 
 /**
  * Data Returns CSV reader/writer for DEP compliant CSV files.

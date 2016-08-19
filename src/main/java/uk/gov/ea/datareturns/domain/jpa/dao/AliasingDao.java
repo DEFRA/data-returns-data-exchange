@@ -2,6 +2,7 @@ package uk.gov.ea.datareturns.domain.jpa.dao;
 
 import org.springframework.transaction.annotation.Transactional;
 import uk.gov.ea.datareturns.domain.jpa.entities.AliasingEntity;
+import uk.gov.ea.datareturns.domain.jpa.entities.ControlledListEntity;
 
 import java.util.List;
 import java.util.Map;
@@ -17,7 +18,7 @@ import java.util.stream.Collectors;
 public class AliasingDao<E extends AliasingEntity> extends AbstractJpaDao {
 
     protected volatile Map<String, E> cacheByAlias = null;
-    protected volatile Map<String, E> cacheByUpperCaseAlias = null;
+    protected volatile Map<String, E> cacheByAliasKey = null;
 
     /**
      * Let the Dao class know the type of entity in order that type-safe
@@ -27,6 +28,36 @@ public class AliasingDao<E extends AliasingEntity> extends AbstractJpaDao {
      */
     AliasingDao(Class<E> entityClass) {
         super(entityClass);
+    }
+
+    /**
+     * This invocation of the standardized name will convert both aliases and cased converted
+     * entries
+     *
+     * @param name - an alias or case inaccurate search term
+     * @return The standardized (controlled-list) name
+     */
+    public String getStandardizedName(final String name) {
+        String key = ControlledListEntity.getKeyFromRelaxedName(name);
+        E e = getAliasKeyCache().get(ControlledListEntity.getKeyFromRelaxedName(name));
+        if (e != null) {
+            return e.getName();
+        } else {
+            e = (E) getKeyCache().get(ControlledListEntity.getKeyFromRelaxedName(name));
+            if (e != null) {
+                return e.getName();
+            }
+            return null;
+        }
+    }
+
+    /**
+     * To retrieve the preferred name from the supplied alias
+     * @param alias
+     * @return the primary name
+     */
+    public E getByAlias(String alias) {
+        return getAliasCache().get(alias);
     }
 
     /**
@@ -46,25 +77,6 @@ public class AliasingDao<E extends AliasingEntity> extends AbstractJpaDao {
         return aliasProcessor(list);
     }
 
-    /**
-     * This invocation of the standardized name will convert both aliases and cased converted
-     * entries
-     *
-     * @param name - an alias or case inaccurate search term
-     * @return The standardized (controlled-list) name
-     */
-    public String getStandardizedName(final String name) {
-        E e = getUpperCaseAliasCache().get(name.toUpperCase());
-        if (e != null) {
-            return e.getName();
-        } else {
-            e = (E) getUpperCaseCache().get(name.toUpperCase());
-            if (e != null) {
-                return e.getName();
-            }
-            return null;
-        }
-    }
 
     private List<E> aliasProcessor(List<E> list) {
         // Split the stream into aliases and basis; with and without preferred set
@@ -88,43 +100,6 @@ public class AliasingDao<E extends AliasingEntity> extends AbstractJpaDao {
 
         return result;
     }
-
-    /**
-     * To retrieve the preferred name from the supplied alias
-     * @param alias
-     * @return the primary name
-     */
-    public E getByAlias(String alias) {
-        return getAliasCache().get(alias);
-    }
-
-    private Map<String, E> getAliasCache() {
-        if (cacheByAlias == null) {
-            synchronized(this) {
-                if (cacheByAlias == null) {
-                    LOGGER.info("Build alias cache of: " + entityClass.getSimpleName());
-                    List<E> list = super.list();
-                    List<E> aliases = list.stream().filter(e -> e.getPreferred() != null).collect(Collectors.toList());
-                    cacheByAlias = aliases.stream().collect(Collectors.toMap(e -> e.getName(), e -> (E) super.getByName(e.getPreferred())));
-                } 
-            }
-        }
-        return cacheByAlias;
-    }
-
-    protected Map<String, E> getUpperCaseAliasCache() {
-        if (cacheByUpperCaseAlias == null) {
-            Map<String, E> localCache = getAliasCache();
-            synchronized(this) {
-                if (cacheByUpperCaseAlias == null) {
-                    LOGGER.info("Build case insensitive alias cache of: " + entityClass.getSimpleName());
-                    cacheByUpperCaseAlias = localCache.entrySet().stream().collect(Collectors.toMap(e -> e.getKey().toUpperCase(), e -> e.getValue()));
-                }
-            }
-        }
-        return cacheByUpperCaseAlias;
-    }
-
     /**
      * Add an entity <E> to the persistence
      * Note - not calling super.add because of side effects of nested @Transactional
@@ -157,20 +132,48 @@ public class AliasingDao<E extends AliasingEntity> extends AbstractJpaDao {
         clearCache();
     }
 
-    public void clearCache() {
+    private Map<String, E> getAliasCache() {
+        if (cacheByAlias == null) {
+            synchronized(this) {
+                if (cacheByAlias == null) {
+                    LOGGER.info("Build alias name cache of: " + entityClass.getSimpleName());
+                    List<E> list = super.list();
+                    List<E> aliases = list.stream().filter(e -> e.getPreferred() != null).collect(Collectors.toList());
+                    Map<String, E> basis = list.stream().filter(e -> e.getPreferred() == null).collect(Collectors.toMap(AliasingEntity::getName, e -> e));
+                    cacheByAlias = aliases.stream().collect(Collectors.toMap(AliasingEntity::getName, e -> basis.get(e.getPreferred())));
+                }
+            }
+        }
+        return cacheByAlias;
+    }
+
+    protected Map<String, E> getAliasKeyCache() {
+        if (cacheByAliasKey == null) {
+            Map<String, E> localCache = getAliasCache();
+            synchronized(this) {
+                if (cacheByAliasKey == null) {
+                    LOGGER.info("Build alias key cache of: " + entityClass.getSimpleName());
+                    cacheByAliasKey = localCache.entrySet().stream().collect(Collectors.toMap(e -> ControlledListEntity.getKeyFromRelaxedName(e.getKey()), e -> e.getValue()));
+                }
+            }
+        }
+        return cacheByAliasKey;
+    }
+
+    protected void clearCache() {
         if (cacheByAlias != null) {
             synchronized (this) {
                 if (cacheByAlias != null) {
                     cacheByAlias = null;
-                    LOGGER.info("Clear cacheByAlias: " + entityClass.getSimpleName());
+                    LOGGER.info("Clear alias name cache: " + entityClass.getSimpleName());
                 }
             }
         }
-        if (cacheByUpperCaseAlias != null) {
+        if (cacheByAliasKey != null) {
             synchronized (this) {
-                if (cacheByUpperCaseAlias != null) {
-                    cacheByUpperCaseAlias = null;
-                    LOGGER.info("Clear cacheByUpperCaseAlias: " + entityClass.getSimpleName());
+                if (cacheByAliasKey != null) {
+                    cacheByAliasKey = null;
+                    LOGGER.info("Clear alias key cache: " + entityClass.getSimpleName());
                 }
             }
         }

@@ -25,7 +25,7 @@ public class ReturnTypeDao extends AbstractJpaDao {
 		if (cacheByName == null) {
 			synchronized(this) {
 				if (cacheByName == null) {
-					LOGGER.info("Build cache of: " + entityClass.getSimpleName());
+					LOGGER.info("Build name cache of: " + entityClass.getSimpleName());
 					List<ReturnType> results = entityManager.createQuery(
 							"select t from ReturnType t where t.sector = :s ", ReturnType.class)
 							.setParameter("s", "Landfill")

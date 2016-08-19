@@ -19,7 +19,10 @@ public interface ControlledListEntity {
      * to a standard format which acts as the key
      */
     default String getKeyFromRelaxedName() {
-        return null;
+        return getName().toUpperCase().replaceAll("\\s{2,}", " ");
     }
 
+    static String getKeyFromRelaxedName(String s) {
+        return s.toUpperCase().replaceAll("\\s{2,}", " ");
+    }
 }

@@ -9,6 +9,8 @@ import uk.gov.ea.datareturns.domain.model.rules.DataReturnsHeaders;
 import uk.gov.ea.datareturns.domain.model.rules.conversion.EaIdConverter;
 import uk.gov.ea.datareturns.domain.model.rules.conversion.ReturnsDateConverter;
 import uk.gov.ea.datareturns.domain.model.rules.conversion.TxtValueConverter;
+import uk.gov.ea.datareturns.domain.model.rules.modifiers.Modifier;
+import uk.gov.ea.datareturns.domain.model.rules.modifiers.ReturnTypeModifier;
 import uk.gov.ea.datareturns.domain.model.validation.auditors.controlledlist.*;
 import uk.gov.ea.datareturns.domain.model.validation.constraints.controlledlist.ControlledList;
 import uk.gov.ea.datareturns.domain.model.validation.constraints.field.ValidReturnsDate;
@@ -47,6 +49,7 @@ public class DataSample extends AbstractCSVRecord {
 	@Parsed(field = DataReturnsHeaders.RETURN_TYPE)
 	@NotBlank(message = "{DR9010-Missing}")
 	@ControlledList(auditor = ReturnTypeAuditor.class, message = "{DR9010-Incorrect}")
+	@Modifier(modifier = ReturnTypeModifier.class)
 	private String returnType;
 
 	/** The monitoring date (Mon_Date) */

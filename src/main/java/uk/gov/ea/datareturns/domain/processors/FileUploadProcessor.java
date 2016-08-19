@@ -112,7 +112,7 @@ public class FileUploadProcessor extends AbstractReturnsProcessor<DataExchangeRe
 			stopwatch.startTask("Parsing file into model");
 
 			// 3. Read the CSV data into a model
-			final CSVModel<DataSample> csvInput = csvProcessor.read(uploadedFile);
+            final CSVModel<DataSample> csvInput = csvProcessor.read(uploadedFile);
 
 			stopwatch.startTask("Validating model");
 			// Validate the model
@@ -123,13 +123,18 @@ public class FileUploadProcessor extends AbstractReturnsProcessor<DataExchangeRe
 
 			if (validationErrors.isValid()) {
 				LOGGER.debug("File '" + this.clientFilename + "' is VALID");
+				stopwatch.startTask("Preparing output files");
+				/*
+				 * Firstly make any alias substitutions and standardize to the controlled lists
+				 */
+                final ModificationProcessor modificationProcessor = new ModificationProcessor(csvInput);
+                final CSVModel<DataSample> csvInputSubstituted = modificationProcessor.performSubstitutions();
 
 				/*
 				 * Prepare the data for output to Emma.
 				 * This involves breaking the data up into separate lists my permit number and creating an individual output file for each
 				 * permit.
 				 */
-				stopwatch.startTask("Preparing output files");
 				final List<File> outputFiles = new ArrayList<>();
 				final Map<String, EaId> outputFileIdentifiers = new HashMap<>();
 				final Map<EaId, List<DataSample>> permitToRecordMap = prepareOutputData(csvInput.getRecords());

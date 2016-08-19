@@ -40,7 +40,7 @@ public abstract class AbstractJpaDao<E extends ControlledListEntity> {
 	protected final Class<E> entityClass;
 
 	protected volatile Map<String, E> cacheByName = null;
-	protected volatile Map<String, E> cacheByUpperCaseName = null;
+	protected volatile Map<String, E> cacheByNameKey = null;
 
     /**
      * Let the Dao class know the type of entity in order that type-safe
@@ -59,6 +59,48 @@ public abstract class AbstractJpaDao<E extends ControlledListEntity> {
     public E getById(final long id) {
 		return entityManager.find(entityClass, id);
 	}
+
+    /**
+     *
+     * @param name case sensitive name search term - will also get any aliases
+     * @return The entity E or null
+     */
+    public E getByName(String name) {
+        return getCache().get(name);
+    }
+
+    /**
+     * Check for the name ignoring cases and multiple spaces
+     * @param name
+     * @return
+     */
+    public boolean nameExistsRelaxed(final String name) {
+        return getKeyCache().get(ControlledListEntity.getKeyFromRelaxedName(name)) != null;
+    }
+
+    /**
+     * Determine if a method or standard with the given name exists
+     *
+     * @param name the method or standard name to check
+     * @return true if the name exists, false otherwise
+     */
+    public boolean nameExists(final String name) {
+        return getCache().get(name) != null;
+    }
+
+    /**
+     * Convert the relaxed name into the exact one held in the list
+     * @param name
+     * @return
+     */
+    public String getStandardizedName(final String name) {
+        E e = getKeyCache().get(ControlledListEntity.getKeyFromRelaxedName(name));
+        if (e != null) {
+            return e.getName();
+        } else {
+            return null;
+        }
+    }
 
     /**
      * List all entities of type E. This list invocation includes any aliases as primaries
@@ -89,6 +131,7 @@ public abstract class AbstractJpaDao<E extends ControlledListEntity> {
 				.sorted(comparing(E::getId))
 				.collect(Collectors.toList());
 	}
+
 
     /**
      * List the entities of type <E> filtered such that the field contains the search term
@@ -129,7 +172,7 @@ public abstract class AbstractJpaDao<E extends ControlledListEntity> {
 		if (cacheByName == null) {
 			synchronized(this) {
 				if (cacheByName == null) {
-					LOGGER.info("Build cache of: " + entityClass.getSimpleName());
+					LOGGER.info("Build name cache of: " + entityClass.getSimpleName());
 					CriteriaBuilder cb = entityManager.getCriteriaBuilder();
 					CriteriaQuery<E> q = cb.createQuery(entityClass);
 					Root<E> c = q.from(entityClass);
@@ -146,76 +189,16 @@ public abstract class AbstractJpaDao<E extends ControlledListEntity> {
 	}
 
     /**
-     * Builds the uppercase cache if necessary and returns built cache. The cache will include any aliases
-     * as primaries so we can check for the existence of aliases using this (super) class method
-     */
-	protected Map<String, E> getUpperCaseCache() {
-		if (cacheByUpperCaseName == null) {
-            Map<String, E> localCache = getCache();
-			synchronized(this) {
-				if (cacheByUpperCaseName == null) {
-                    LOGGER.info("Build case insensitive cache of: " + entityClass.getSimpleName());
-					cacheByUpperCaseName = localCache.entrySet().stream().map(Map.Entry::getValue).collect(Collectors.toMap(e -> e.getName().toUpperCase(), e -> e));
-				}
-			}
-		}
-		return cacheByUpperCaseName;
-	}
-
-    /**
-     *
-     * @param name case sensitive name search term - will also get any aliases
-     * @return The entity E or null
-     */
-    public E getByName(String name) {
-        return getCache().get(name);
-    }
-
-	/**
-	 * Determine if a method or standard with the given name exists
-	 *
-	 * @param name the method or standard name to check
-	 * @return true if the name exists, false otherwise
-	 */
-	public boolean nameExists(final String name) {
-		return getCache().get(name) != null;
-	}
-
-
-    /**
-     * Check for the name ignoring cases and multiple spaces
-     * @param name
-     * @return
-     */
-    public boolean nameExistsRelaxed(final String name) {
-        return getUpperCaseCache().get(name.toUpperCase()) != null;
-    }
-
-    /**
-     * Convert the relaxed name into the exact one held in the list
-     * @param name
-     * @return
-     */
-    public String getStandardizedName(final String name) {
-        E e = getUpperCaseCache().get(name.toUpperCase());
-        if (e != null) {
-            return e.getName();
-        } else {
-            return null;
-        }
-    }
-
-    /**
      * Add a new entity of type <E>
      *
-	 */
-	@Transactional
-	public void add(E entity) {
+     */
+    @Transactional
+    public void add(E entity) {
         entityManager.persist(entity);
         entityManager.flush();
-		LOGGER.info("Added: " + entityClass.getSimpleName() + "id: " + entity.getId() + " " + entity.getName());
+        LOGGER.info("Added: " + entityClass.getSimpleName() + "id: " + entity.getId() + " " + entity.getName());
         clearCache();
-	}
+    }
 
     /**
      * Remove an entity of type <E>
@@ -223,23 +206,40 @@ public abstract class AbstractJpaDao<E extends ControlledListEntity> {
      * @param id The entity identifier
      * @throws IllegalArgumentException
      */
-	@Transactional
-	public void removeById(long id) throws IllegalArgumentException {
-		E entity = getById(id);
-		entityManager.remove(entity);
-		LOGGER.info("Deleted: " + entityClass.getSimpleName() + " ID: " + id);
+    @Transactional
+    public void removeById(long id) throws IllegalArgumentException {
+        E entity = getById(id);
+        entityManager.remove(entity);
+        LOGGER.info("Deleted: " + entityClass.getSimpleName() + " ID: " + id);
         clearCache();
+    }
+
+    /**
+     * Builds the uppercase cache if necessary and returns built cache. The cache will include any aliases
+     * as primaries so we can check for the existence of aliases using this (super) class method
+     */
+	protected Map<String, E> getKeyCache() {
+		if (cacheByNameKey == null) {
+            Map<String, E> localCache = getCache();
+			synchronized(this) {
+				if (cacheByNameKey == null) {
+                    LOGGER.info("Build key cache of: " + entityClass.getSimpleName());
+					cacheByNameKey = localCache.entrySet().stream().map(Map.Entry::getValue).collect(Collectors.toMap(e -> e.getKeyFromRelaxedName(), e -> e));
+				}
+			}
+		}
+		return cacheByNameKey;
 	}
 
 	/**
 	 * Clear the cache by name
 	 */
-	public void clearCache() {
-        if (cacheByUpperCaseName != null) {
+	protected void clearCache() {
+        if (cacheByNameKey != null) {
             synchronized (this) {
-                if (cacheByUpperCaseName != null) {
-                    cacheByUpperCaseName = null;
-                    LOGGER.info("Clear cacheByUpperCaseName: " + entityClass.getSimpleName());
+                if (cacheByNameKey != null) {
+                    cacheByNameKey = null;
+                    LOGGER.info("Clear name cache: " + entityClass.getSimpleName());
                 }
             }
         }
@@ -247,7 +247,7 @@ public abstract class AbstractJpaDao<E extends ControlledListEntity> {
             synchronized (this) {
                 if (cacheByName != null) {
                     cacheByName = null;
-                    LOGGER.info("Clear cacheByName: " + entityClass.getSimpleName());
+                    LOGGER.info("Clear key cache: " + entityClass.getSimpleName());
                 }
             }
         }
