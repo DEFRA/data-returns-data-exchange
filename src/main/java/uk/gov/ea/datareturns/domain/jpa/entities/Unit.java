@@ -11,7 +11,7 @@ import javax.persistence.*;
 @SuppressWarnings({ "JavaDoc", "unused" })
 @Entity
 @Table(name = "units")
-public class Unit implements ControlledList {
+public class Unit implements ControlledListEntity {
 	@Id
 	@SequenceGenerator(name = "units_id_seq", sequenceName = "units_id_seq", allocationSize=1)
 	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator="units_id_seq")

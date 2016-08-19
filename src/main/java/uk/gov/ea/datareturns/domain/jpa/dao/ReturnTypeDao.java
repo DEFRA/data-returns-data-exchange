@@ -1,7 +1,7 @@
 package uk.gov.ea.datareturns.domain.jpa.dao;
 
 import org.springframework.stereotype.Repository;
-import uk.gov.ea.datareturns.domain.jpa.entities.PersistedEntity;
+import uk.gov.ea.datareturns.domain.jpa.entities.ControlledListEntity;
 import uk.gov.ea.datareturns.domain.jpa.entities.ReturnType;
 
 import java.util.List;
@@ -11,7 +11,7 @@ import java.util.stream.Collectors;
 /**
  * DAO for return types.
  *
- * @author Sam Gardner-Dell
+ * @author Graham Willis
  */
 @Repository
 public class ReturnTypeDao extends AbstractJpaDao {
@@ -33,7 +33,7 @@ public class ReturnTypeDao extends AbstractJpaDao {
 
 					cacheByName = results
 							.stream()
-							.collect(Collectors.toMap(PersistedEntity::getName, k -> k));
+							.collect(Collectors.toMap(ControlledListEntity::getName, k -> k));
 				} else {
 					return this.cacheByName;
 				}
@@ -41,5 +41,4 @@ public class ReturnTypeDao extends AbstractJpaDao {
 		}
 		return this.cacheByName;
 	}
-
 }

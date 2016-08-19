@@ -11,7 +11,7 @@ import javax.persistence.*;
 @SuppressWarnings({ "JavaDoc", "unused" })
 @Entity
 @Table(name = "parameters")
-public class Parameter implements ControlledList {
+public class Parameter implements ControlledListEntity {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)

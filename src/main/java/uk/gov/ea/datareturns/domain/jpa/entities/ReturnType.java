@@ -11,7 +11,7 @@ import javax.persistence.*;
 @SuppressWarnings({ "JavaDoc", "unused" })
 @Entity
 @Table(name = "return_types")
-public class ReturnType implements ControlledList {
+public class ReturnType implements ControlledListEntity {
 
 	@Id
 	@SequenceGenerator(name = "return_types_id_seq", sequenceName = "return_types_id_seq", allocationSize=1)

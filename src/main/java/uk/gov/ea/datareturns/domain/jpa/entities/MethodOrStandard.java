@@ -11,7 +11,7 @@ import javax.persistence.*;
 @SuppressWarnings({ "JavaDoc", "unused" })
 @Entity
 @Table(name = "methods_or_standards")
-public class MethodOrStandard implements ControlledList {
+public class MethodOrStandard implements ControlledListEntity {
 
 	@Id
 	@SequenceGenerator(name = "methods_or_standards_id_seq", sequenceName = "methods_or_standards_id_seq", allocationSize=1)

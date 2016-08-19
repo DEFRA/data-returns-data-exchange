@@ -8,8 +8,8 @@ import org.springframework.context.ApplicationContextAware;
 import org.springframework.stereotype.Component;
 import uk.gov.ea.datareturns.domain.dto.ControlledListsDto;
 import uk.gov.ea.datareturns.domain.jpa.dao.AbstractJpaDao;
+import uk.gov.ea.datareturns.domain.jpa.entities.ControlledListEntity;
 import uk.gov.ea.datareturns.domain.jpa.entities.ControlledListsList;
-import uk.gov.ea.datareturns.domain.jpa.entities.PersistedEntity;
 
 import java.time.LocalDate;
 import java.util.HashMap;
@@ -32,28 +32,28 @@ public class ControlledListProcessor implements ApplicationContextAware {
         this.applicationContext = applicationContext;
     }
 
-    private List<? extends PersistedEntity> getListData(ControlledListsList controlledList) {
+    private List<? extends ControlledListEntity> getListData(ControlledListsList controlledList) {
         LOGGER.debug("Get list data: " + controlledList.name());
-        AbstractJpaDao<? extends PersistedEntity> dao = applicationContext.getBean(controlledList.getDao());
+        AbstractJpaDao<? extends ControlledListEntity> dao = applicationContext.getBean(controlledList.getDao());
         return dao.list();
     }
 
-    public List<? extends PersistedEntity> getListData(ControlledListsList controlledList, String searchTerm) {
+    public List<? extends ControlledListEntity> getListData(ControlledListsList controlledList, String searchTerm) {
         if (searchTerm == null || searchTerm.isEmpty()) {
             return getListData(controlledList);
         } else {
             LOGGER.debug("Get list data filtered by name contains: " + controlledList.name());
-            AbstractJpaDao<? extends PersistedEntity> dao = applicationContext.getBean(controlledList.getDao());
+            AbstractJpaDao<? extends ControlledListEntity> dao = applicationContext.getBean(controlledList.getDao());
             return dao.list(e -> e.getName().toLowerCase().contains(searchTerm));
         }
     }
 
-    public List<? extends PersistedEntity> getListData(ControlledListsList controlledList, String field, String contains) {
+    public List<? extends ControlledListEntity> getListData(ControlledListsList controlledList, String field, String contains) {
         if (field == null || field.isEmpty() || contains == null || contains.isEmpty()) {
             return getListData(controlledList);
         } else {
             LOGGER.debug("Get list data filtered by name contains: " + controlledList.name());
-            AbstractJpaDao<? extends PersistedEntity>  dao = applicationContext.getBean(controlledList.getDao());
+            AbstractJpaDao<? extends ControlledListEntity>  dao = applicationContext.getBean(controlledList.getDao());
             return dao.list(field, contains);
         }
     }

@@ -12,7 +12,7 @@ import java.util.Set;
 @SuppressWarnings({ "JavaDoc", "unused" })
 @Entity
 @Table(name = "reference_periods")
-public class ReferencePeriod implements ControlledList, AliasingEntity {
+public class ReferencePeriod implements ControlledListEntity, AliasingEntity {
 	@Id
 	@SequenceGenerator(name = "reference_periods_id_seq", sequenceName = "reference_periods_id_seq", allocationSize=1)
 	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator="reference_periods_id_seq")

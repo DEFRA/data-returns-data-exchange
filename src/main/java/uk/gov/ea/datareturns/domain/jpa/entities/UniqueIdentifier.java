@@ -9,7 +9,7 @@ import javax.persistence.*;
 @SuppressWarnings({ "JavaDoc", "unused" })
 @Entity
 @Table(name = "unique_identifiers")
-public class UniqueIdentifier implements PersistedEntity {
+public class UniqueIdentifier implements ControlledListEntity {
 
 	@Id
 	@SequenceGenerator(name = "unique_identifiers_id_seq", sequenceName = "unique_identifiers_id_seq", allocationSize=1)

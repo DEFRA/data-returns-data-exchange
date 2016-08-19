@@ -80,15 +80,15 @@ public class ControlledListsTests {
         Assert.assertEquals(retrieveParameter2.getId(), retrieveParameter.getId());
 
         // Test the case-insensitive cache
-        Assert.assertEquals(parameterDao.nameExistsCaseInsensitive(NAME_MASH), true);
+        Assert.assertEquals(parameterDao.nameExistsRelaxed(NAME_MASH), true);
         Assert.assertEquals(parameterDao.getStandardizedName(NAME_MASH), NAME);
 
         // Second test to prove cache use
-        Assert.assertEquals(parameterDao.nameExistsCaseInsensitive(NAME_MASH), true);
+        Assert.assertEquals(parameterDao.nameExistsRelaxed(NAME_MASH), true);
         Assert.assertEquals(parameterDao.getStandardizedName(NAME_MASH), NAME);
 
         parameterDao.removeById(retrieveParameter2.getId());
-        Assert.assertEquals(parameterDao.nameExistsCaseInsensitive(NAME_MASH), false);
+        Assert.assertEquals(parameterDao.nameExistsRelaxed(NAME_MASH), false);
         Assert.assertEquals(parameterDao.getStandardizedName(NAME_MASH), null);
 
         Parameter retrieveParameter3 = (Parameter) parameterDao.getById(retrieveParameter.getId());
@@ -117,16 +117,16 @@ public class ControlledListsTests {
         Assert.assertEquals(retrieveReturnType2.getId(), retrieveReturnType.getId());
 
         // Test the case-insensitive cache
-        Assert.assertEquals(returnTypeDao.nameExistsCaseInsensitive(NAME_MASH), true);
+        Assert.assertEquals(returnTypeDao.nameExistsRelaxed(NAME_MASH), true);
         Assert.assertEquals(returnTypeDao.getStandardizedName(NAME_MASH), NAME);
 
         // Second test to prove cache use
-        Assert.assertEquals(returnTypeDao.nameExistsCaseInsensitive(NAME_MASH), true);
+        Assert.assertEquals(returnTypeDao.nameExistsRelaxed(NAME_MASH), true);
         Assert.assertEquals(returnTypeDao.getStandardizedName(NAME_MASH), NAME);
 
         // Remove it and try again
         returnTypeDao.removeById(retrieveReturnType2.getId());
-        Assert.assertEquals(returnTypeDao.nameExistsCaseInsensitive(NAME_MASH), false);
+        Assert.assertEquals(returnTypeDao.nameExistsRelaxed(NAME_MASH), false);
         Assert.assertEquals(returnTypeDao.getStandardizedName(NAME_MASH), null);
         
         ReturnType retrieveReturnType3 = (ReturnType) returnTypeDao.getById(retrieveReturnType.getId());
@@ -231,13 +231,13 @@ public class ControlledListsTests {
         Assert.assertEquals(referencePeriodDao.getByAlias(PRIMARY_3).getName(), PRIMARY_1);
         Assert.assertNull(referencePeriodDao.getByAlias(PRIMARY_1));
 
-        Assert.assertEquals(referencePeriodDao.nameExistsCaseInsensitive(PRIMARY_1_MASH), true);
+        Assert.assertEquals(referencePeriodDao.nameExistsRelaxed(PRIMARY_1_MASH), true);
         Assert.assertEquals(referencePeriodDao.getStandardizedName(PRIMARY_1_MASH), PRIMARY_1);
 
-        Assert.assertEquals(referencePeriodDao.nameExistsCaseInsensitive(PRIMARY_2_MASH), true);
+        Assert.assertEquals(referencePeriodDao.nameExistsRelaxed(PRIMARY_2_MASH), true);
         Assert.assertEquals(referencePeriodDao.getStandardizedName(PRIMARY_2_MASH), PRIMARY_1);
 
-        Assert.assertEquals(referencePeriodDao.nameExistsCaseInsensitive(PRIMARY_3_MASH), true);
+        Assert.assertEquals(referencePeriodDao.nameExistsRelaxed(PRIMARY_3_MASH), true);
         Assert.assertEquals(referencePeriodDao.getStandardizedName(PRIMARY_3_MASH), PRIMARY_1);
 
         referencePeriodDao.removeById(referencePeriod1.getId());

@@ -6,7 +6,7 @@ package uk.gov.ea.datareturns.domain.jpa.dao;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.transaction.annotation.Transactional;
-import uk.gov.ea.datareturns.domain.jpa.entities.PersistedEntity;
+import uk.gov.ea.datareturns.domain.jpa.entities.ControlledListEntity;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -31,7 +31,7 @@ import static java.util.Comparator.comparing;
  *
  * @author Graham Willis
  */
-public abstract class AbstractJpaDao<E extends PersistedEntity> {
+public abstract class AbstractJpaDao<E extends ControlledListEntity> {
 	protected static final Logger LOGGER = LoggerFactory.getLogger(AbstractJpaDao.class);
 
 	@PersistenceContext
@@ -138,7 +138,7 @@ public abstract class AbstractJpaDao<E extends PersistedEntity> {
 					List<E> results = query.getResultList();
 					cacheByName = results
 							.stream()
-							.collect(Collectors.toMap(PersistedEntity::getName, k -> k));
+							.collect(Collectors.toMap(ControlledListEntity::getName, k -> k));
 				}
 			}
 		}
@@ -170,9 +170,6 @@ public abstract class AbstractJpaDao<E extends PersistedEntity> {
     public E getByName(String name) {
         return getCache().get(name);
     }
-    public E getByNameCaseInsensitive(String name) {
-        return getUpperCaseCache().get(name.toUpperCase());
-    }
 
 	/**
 	 * Determine if a method or standard with the given name exists
@@ -184,10 +181,21 @@ public abstract class AbstractJpaDao<E extends PersistedEntity> {
 		return getCache().get(name) != null;
 	}
 
-    public boolean nameExistsCaseInsensitive(final String name) {
+
+    /**
+     * Check for the name ignoring cases and multiple spaces
+     * @param name
+     * @return
+     */
+    public boolean nameExistsRelaxed(final String name) {
         return getUpperCaseCache().get(name.toUpperCase()) != null;
     }
 
+    /**
+     * Convert the relaxed name into the exact one held in the list
+     * @param name
+     * @return
+     */
     public String getStandardizedName(final String name) {
         E e = getUpperCaseCache().get(name.toUpperCase());
         if (e != null) {

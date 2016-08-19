@@ -11,8 +11,8 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import uk.gov.ea.datareturns.domain.dto.ControlledListsDto;
 import uk.gov.ea.datareturns.domain.exceptions.ApplicationExceptionType;
+import uk.gov.ea.datareturns.domain.jpa.entities.ControlledListEntity;
 import uk.gov.ea.datareturns.domain.jpa.entities.ControlledListsList;
-import uk.gov.ea.datareturns.domain.jpa.entities.PersistedEntity;
 import uk.gov.ea.datareturns.domain.processors.ControlledListProcessor;
 import uk.gov.ea.datareturns.domain.processors.FileCompletionProcessor;
 import uk.gov.ea.datareturns.domain.processors.FileUploadProcessor;
@@ -143,7 +143,7 @@ public class DataExchangeResource {
                     ApplicationExceptionType.UNKNOWN_LIST_TYPE, "Request for unknown controlled list: " + listName
             )).build();
         } else {
-			List<? extends PersistedEntity> listData = controlledListProcessor.getListData(controlledList, field, contains);
+			List<? extends ControlledListEntity> listData = controlledListProcessor.getListData(controlledList, field, contains);
             return Response.status(Status.OK).entity(listData).build();
         }
 	}

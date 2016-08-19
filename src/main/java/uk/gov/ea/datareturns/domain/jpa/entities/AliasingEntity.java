@@ -5,7 +5,7 @@ import java.util.Set;
 /**
  * Created by graham on 16/08/16.
  */
-public interface AliasingEntity extends PersistedEntity {
+public interface AliasingEntity extends ControlledListEntity {
     String getPreferred();
     void setPreferred(String preferred);
     Set<String> getAliases();

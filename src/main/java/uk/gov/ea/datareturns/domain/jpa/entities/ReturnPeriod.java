@@ -11,7 +11,7 @@ import javax.persistence.*;
 @SuppressWarnings({ "JavaDoc", "unused" })
 @Entity
 @Table(name = "return_periods")
-public class ReturnPeriod implements ControlledList {
+public class ReturnPeriod implements ControlledListEntity {
 	@Id
 	@SequenceGenerator(name = "return_periods_id_seq", sequenceName = "return_periods_id_seq", allocationSize=1)
 	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator="return_periods_id_seq")

@@ -10,7 +10,9 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 /**
- * Created by graham on 16/08/16.
+ * Extending class for JPA based DAO classes with aliasing
+ *
+ * @author Graham Willis
  */
 public class AliasingDao<E extends AliasingEntity> extends AbstractJpaDao {
 
