@@ -55,11 +55,13 @@ public class DataSampleValidator {
 				final ValidationError error = new ValidationError();
 				final String fieldName = getFieldNameForViolation(model, violation);
 				final String errorValue = Objects.toString(violation.getInvalidValue(), null);
-				final FieldDefinition definition = FieldDefinition.valueOf(fieldName);
+				final FieldDefinition definition = fieldName != null ? FieldDefinition.valueOf(fieldName) : null;
 
 				error.setFieldName(fieldName);
-				error.setDefinition(definition.getDescription());
-				error.setHelpReference(definition.getHelpReference());
+				if (definition != null){
+					error.setDefinition(definition.getDescription());
+					error.setHelpReference(definition.getHelpReference());
+				}
 				error.setErrorValue(errorValue);
 				error.setLineNumber(record.getLineNumber());
 				error.setErrorMessage(violation.getMessage());
