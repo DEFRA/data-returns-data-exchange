@@ -14,7 +14,7 @@ import java.util.stream.Collectors;
  * @author Graham Willis
  */
 @Repository
-public class ReturnTypeDao extends AbstractJpaDao {
+public class ReturnTypeDao extends EntityDao {
 
 	public ReturnTypeDao() {
 		super(ReturnType.class);

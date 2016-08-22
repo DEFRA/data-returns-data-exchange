@@ -116,7 +116,7 @@ public class ResourceIntegrationTests {
 
     public final static String RTN_TYPE_VALID = "validation/testReturnType.csv";
 	public final static String RTN_TYPE_INVALID = "validation/testReturnTypeInvalid.csv";
-	public final static String RTN_TYPE_SUB = "validation/testReturnTypeSubstitution.csv";
+	public final static String RTN_TYPE_SUB = "iotests/testReturnTypeSubstitution.csv";
 
     public final static String REF_PERIOD_VALID = "validation/testRefPeriod.csv";
     public final static String REF_PERIOD_INVALID = "validation/testRefPeriodInvalid.csv";

@@ -7,7 +7,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.stereotype.Component;
 import uk.gov.ea.datareturns.domain.dto.ControlledListsDto;
-import uk.gov.ea.datareturns.domain.jpa.dao.AbstractJpaDao;
+import uk.gov.ea.datareturns.domain.jpa.dao.EntityDao;
 import uk.gov.ea.datareturns.domain.jpa.entities.ControlledListEntity;
 import uk.gov.ea.datareturns.domain.jpa.entities.ControlledListsList;
 
@@ -34,7 +34,7 @@ public class ControlledListProcessor implements ApplicationContextAware {
 
     private List<? extends ControlledListEntity> getListData(ControlledListsList controlledList) {
         LOGGER.debug("Get list data: " + controlledList.name());
-        AbstractJpaDao<? extends ControlledListEntity> dao = applicationContext.getBean(controlledList.getDao());
+        EntityDao<? extends ControlledListEntity> dao = applicationContext.getBean(controlledList.getDao());
         return dao.list();
     }
 
@@ -43,7 +43,7 @@ public class ControlledListProcessor implements ApplicationContextAware {
             return getListData(controlledList);
         } else {
             LOGGER.debug("Get list data filtered by name contains: " + controlledList.name());
-            AbstractJpaDao<? extends ControlledListEntity> dao = applicationContext.getBean(controlledList.getDao());
+            EntityDao<? extends ControlledListEntity> dao = applicationContext.getBean(controlledList.getDao());
             return dao.list(e -> e.getName().toLowerCase().contains(searchTerm));
         }
     }
@@ -53,7 +53,7 @@ public class ControlledListProcessor implements ApplicationContextAware {
             return getListData(controlledList);
         } else {
             LOGGER.debug("Get list data filtered by name contains: " + controlledList.name());
-            AbstractJpaDao<? extends ControlledListEntity>  dao = applicationContext.getBean(controlledList.getDao());
+            EntityDao<? extends ControlledListEntity> dao = applicationContext.getBean(controlledList.getDao());
             return dao.list(field, contains);
         }
     }

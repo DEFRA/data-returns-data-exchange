@@ -1,13 +1,6 @@
 package uk.gov.ea.datareturns.tests.resource;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.Collection;
-import java.util.List;
-
-import javax.inject.Inject;
-
+import com.univocity.parsers.common.TextParsingException;
 import org.assertj.core.api.Assertions;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -17,19 +10,26 @@ import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-
-import com.univocity.parsers.common.TextParsingException;
-
 import uk.gov.ea.datareturns.App;
 import uk.gov.ea.datareturns.domain.exceptions.ProcessingException;
 import uk.gov.ea.datareturns.domain.io.csv.CSVColumnReader;
 import uk.gov.ea.datareturns.domain.io.zip.DataReturnsZipFileModel;
+import uk.gov.ea.datareturns.domain.jpa.dao.ReturnTypeDao;
+import uk.gov.ea.datareturns.domain.jpa.entities.ReturnType;
 import uk.gov.ea.datareturns.domain.model.rules.DataReturnsHeaders;
 import uk.gov.ea.datareturns.domain.processors.FileUploadProcessor;
 import uk.gov.ea.datareturns.domain.result.DataExchangeResult;
 import uk.gov.ea.datareturns.domain.storage.StorageException;
 import uk.gov.ea.datareturns.domain.storage.StorageProvider;
 import uk.gov.ea.datareturns.domain.storage.StorageProvider.StoredFile;
+
+import javax.inject.Inject;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Collection;
+import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Processor Integration Tests
@@ -47,14 +47,17 @@ import uk.gov.ea.datareturns.domain.storage.StorageProvider.StoredFile;
 @DirtiesContext
 public class ProcessorIntegrationTests {
 	public final static String IO_TESTS_FOLDER = "/testfiles/iotests/";
-
 	public final static String BOOLEAN_TESTS = "boolean-values.csv";
+	public final static String RTN_TYPE_SUB = "testReturnTypeSubstitution.csv";
 
 	@Inject
 	private ApplicationContext context;
 
 	@Inject
 	private StorageProvider storage;
+
+	@Inject
+	private ReturnTypeDao returnTypeDao;
 
 	/**
 	 * Tests boolean values are converted as necessary.
@@ -65,6 +68,15 @@ public class ProcessorIntegrationTests {
 		Assertions.assertThat(outputFiles.size()).isEqualTo(1);
 		final String[] expected = { "true", "false", "true", "false", "true", "false", "true", "false" };
 		verifyCSVValues(outputFiles.iterator().next(), DataReturnsHeaders.TEXT_VALUE, expected);
+	}
+
+	@Test
+	public void ReturnTypeValues() {
+		final Collection<File> outputFiles = getOutputFiles(getTestFileStream(RTN_TYPE_SUB));
+		Assertions.assertThat(outputFiles.size()).isEqualTo(1);
+		final List<ReturnType> returnTypes = returnTypeDao.list();
+		final List<String> returnTypeNames = returnTypes.stream().map(ReturnType::getName).collect(Collectors.toList());
+		verifyExpectedValuesContainsCSVValues(outputFiles.iterator().next(), DataReturnsHeaders.RETURN_TYPE, returnTypeNames);
 	}
 
 	/**
@@ -121,6 +133,26 @@ public class ProcessorIntegrationTests {
 		}
 	}
 
+	/**
+	 * For a given output CSV file, check that the values in the specified column are contained by the list expected
+	 *
+	 * @param csvFile the CSV file to parse
+	 * @param columnName the column header of the data to be checked
+	 * @param expectedValues the expected values to be found in the column
+	 */
+	private static void verifyExpectedValuesContainsCSVValues(final File csvFile, final String columnName, final List<String> expectedValues) {
+		try {
+			final List<String> columnData = CSVColumnReader.readColumn(csvFile, columnName);
+			for (int i = 0; i < columnData.size(); i++) {
+				Assertions.assertThat(expectedValues.contains(columnData.get(i)))
+						.as("Not found: " + columnData.get(i))
+						.isTrue();
+			}
+		} catch (final TextParsingException e) {
+			throw new AssertionError("Unable to parse output CSV file.", e);
+		}
+	}
+	
 	/**
 	 * Return an InputStream for a given test file
 	 *

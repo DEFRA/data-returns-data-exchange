@@ -31,8 +31,8 @@ import static java.util.Comparator.comparing;
  *
  * @author Graham Willis
  */
-public abstract class AbstractJpaDao<E extends ControlledListEntity> {
-	protected static final Logger LOGGER = LoggerFactory.getLogger(AbstractJpaDao.class);
+public abstract class EntityDao<E extends ControlledListEntity> {
+	protected static final Logger LOGGER = LoggerFactory.getLogger(EntityDao.class);
 
 	@PersistenceContext
 	protected EntityManager entityManager;
@@ -46,7 +46,7 @@ public abstract class AbstractJpaDao<E extends ControlledListEntity> {
      * Let the Dao class know the type of entity in order that type-safe
      * hibernate operations can be performed
      */
-    protected AbstractJpaDao(Class<E> entityClass) {
+    protected EntityDao(Class<E> entityClass) {
 		this.entityClass = entityClass;
 	}
 

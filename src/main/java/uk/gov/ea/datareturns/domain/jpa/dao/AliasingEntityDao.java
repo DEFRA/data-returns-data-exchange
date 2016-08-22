@@ -15,7 +15,7 @@ import java.util.stream.Collectors;
  *
  * @author Graham Willis
  */
-public class AliasingDao<E extends AliasingEntity> extends AbstractJpaDao {
+public class AliasingEntityDao<E extends AliasingEntity> extends EntityDao {
 
     protected volatile Map<String, E> cacheByAlias = null;
     protected volatile Map<String, E> cacheByAliasKey = null;
@@ -26,7 +26,7 @@ public class AliasingDao<E extends AliasingEntity> extends AbstractJpaDao {
      *
      * @param entityClass
      */
-    AliasingDao(Class<E> entityClass) {
+    AliasingEntityDao(Class<E> entityClass) {
         super(entityClass);
     }
 
@@ -66,7 +66,7 @@ public class AliasingDao<E extends AliasingEntity> extends AbstractJpaDao {
      */
     @Override
     public List<E> list() {
-        // Get the list from the cached master list in AbstractJpaDao
+        // Get the list from the cached master list in EntityDao
         List<E> list = super.list();
         return aliasProcessor(list);
     }

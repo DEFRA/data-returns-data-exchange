@@ -52,20 +52,19 @@ public enum ControlledListsList {
     private final String path;
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ControlledListsList.class);
-    private final Class<? extends AbstractJpaDao> dao;
+    private final Class<? extends EntityDao> dao;
     private final String defaultSearch;
     private final String description;
     private static final Map<String, ControlledListsList> byPath = new HashMap<>();
     private final List<DisplayHeaderDto> displayHeaders; // Column name to column heading
 
     static {
-
         for (ControlledListsList c : ControlledListsList.values()) {
             byPath.put(c.path, c);
         }
     }
 
-    ControlledListsList(String description, Class<? extends AbstractJpaDao> dao,
+    ControlledListsList(String description, Class<? extends EntityDao> dao,
                         String path, List<DisplayHeaderDto> displayHeaders, String defaultSearch) {
         this.description = description;
         this.path = path;
@@ -78,7 +77,7 @@ public enum ControlledListsList {
         return byPath.get(path);
     }
 
-    public Class<? extends AbstractJpaDao> getDao() {
+    public Class<? extends EntityDao> getDao() {
         return dao;
     }
 

@@ -9,7 +9,7 @@ import uk.gov.ea.datareturns.domain.jpa.entities.Parameter;
  * @author Sam Gardner-Dell
  */
 @Repository
-public class ParameterDao extends AbstractJpaDao {
+public class ParameterDao extends EntityDao {
 	public ParameterDao() {
 		super(Parameter.class);
 	}

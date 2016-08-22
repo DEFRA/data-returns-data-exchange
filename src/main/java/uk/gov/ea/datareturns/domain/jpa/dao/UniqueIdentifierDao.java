@@ -9,7 +9,7 @@ import uk.gov.ea.datareturns.domain.jpa.entities.UniqueIdentifier;
  * @author Sam Gardner-Dell
  */
 @Repository
-public class UniqueIdentifierDao extends AbstractJpaDao {
+public class UniqueIdentifierDao extends EntityDao {
 	public UniqueIdentifierDao() {
 		super(UniqueIdentifier.class);
 	}

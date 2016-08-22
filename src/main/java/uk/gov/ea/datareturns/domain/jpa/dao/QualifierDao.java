@@ -9,7 +9,7 @@ import uk.gov.ea.datareturns.domain.jpa.entities.Qualifier;
  * @author Sam Gardner-Dell
  */
 @Repository
-public class QualifierDao extends AbstractJpaDao {
+public class QualifierDao extends EntityDao {
 	public QualifierDao() {
 		super(Qualifier.class);
 	}

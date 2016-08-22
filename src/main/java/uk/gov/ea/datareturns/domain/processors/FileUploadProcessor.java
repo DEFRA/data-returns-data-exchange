@@ -73,6 +73,9 @@ public class FileUploadProcessor extends AbstractReturnsProcessor<DataExchangeRe
 		this.validator = validator;
 	}
 
+	@Inject
+	private ModificationProcessor modificationProcessor;
+
 	/**
 	 * @param inputStream the inputStream to set
 	 */
@@ -127,7 +130,7 @@ public class FileUploadProcessor extends AbstractReturnsProcessor<DataExchangeRe
 				/*
 				 * Firstly make any alias substitutions and standardize to the controlled lists
 				 */
-                final ModificationProcessor modificationProcessor = new ModificationProcessor(csvInput);
+                modificationProcessor.initialize(csvInput);
                 final CSVModel<DataSample> csvInputSubstituted = modificationProcessor.performSubstitutions();
 
 				/*
@@ -137,7 +140,7 @@ public class FileUploadProcessor extends AbstractReturnsProcessor<DataExchangeRe
 				 */
 				final List<File> outputFiles = new ArrayList<>();
 				final Map<String, EaId> outputFileIdentifiers = new HashMap<>();
-				final Map<EaId, List<DataSample>> permitToRecordMap = prepareOutputData(csvInput.getRecords());
+				final Map<EaId, List<DataSample>> permitToRecordMap = prepareOutputData(csvInputSubstituted.getRecords());
 				for (final Map.Entry<EaId, List<DataSample>> entry : permitToRecordMap.entrySet()) {
 					final File permitDataFile = File.createTempFile("output-" + entry.getKey().getIdentifier() + "-", ".csv",
 							this.workingFolder);

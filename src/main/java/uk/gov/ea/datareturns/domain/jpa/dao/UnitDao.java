@@ -9,7 +9,7 @@ import uk.gov.ea.datareturns.domain.jpa.entities.Unit;
  * @author Sam Gardner-Dell
  */
 @Repository
-public class UnitDao extends AbstractJpaDao {
+public class UnitDao extends EntityDao {
 	public UnitDao() {
 		super(Unit.class);
 	}
