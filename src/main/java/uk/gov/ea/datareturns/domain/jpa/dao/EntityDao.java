@@ -94,11 +94,15 @@ public abstract class EntityDao<E extends ControlledListEntity> {
      * @return
      */
     public String getStandardizedName(final String name) {
-        E e = getKeyCache().get(ControlledListEntity.getKeyFromRelaxedName(name));
-        if (e != null) {
-            return e.getName();
-        } else {
+        if (name == null) {
             return null;
+        } else {
+            E e = getKeyCache().get(ControlledListEntity.getKeyFromRelaxedName(name));
+            if (e != null) {
+                return e.getName();
+            } else {
+                return null;
+            }
         }
     }
 

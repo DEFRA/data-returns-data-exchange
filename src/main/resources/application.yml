@@ -100,6 +100,7 @@ processor:
     - Ref_Period={{Ref_Period}}
     - Test method={{Meth_Stand}}
     - Comment={{Comments}}
+    - Qualifier={{Qualifier}}
 #    - CiC={{CiC}}
 #    - CAS={{CAS}}
 #    - RD_Code={{RD_Code}}

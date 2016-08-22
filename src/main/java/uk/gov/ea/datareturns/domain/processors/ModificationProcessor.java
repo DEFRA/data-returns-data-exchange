@@ -84,7 +84,7 @@ public class ModificationProcessor implements ApplicationContextAware {
                     }
                 }
             }
-        } catch (IntrospectionException |IllegalAccessException|InstantiationException e) {
+        } catch (IntrospectionException|IllegalAccessException|InstantiationException e) {
             throw new IOException("Error processing modifications: " + e.getMessage());
         }
     }
@@ -99,9 +99,11 @@ public class ModificationProcessor implements ApplicationContextAware {
                 try {
                     EntityModifier emi = applicationContext.getBean(modificationTask.modifierClass);
                     Object in = modificationTask.readMethod.invoke(row);
-                    Object out = emi.doModify(in);
-                    modificationTask.writeMethod.invoke(row, out);
-                } catch (IllegalAccessException|InvocationTargetException e) {
+                    if (in != null) {
+                        Object out = emi.doModify(in);
+                        modificationTask.writeMethod.invoke(row, out);
+                    }
+                } catch (IllegalAccessException|InvocationTargetException|BeansException e) {
                     throw new IOException("Error processing modifications: " + e.getMessage());
                 }
             }

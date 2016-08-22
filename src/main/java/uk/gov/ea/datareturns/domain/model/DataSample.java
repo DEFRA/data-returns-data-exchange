@@ -10,6 +10,7 @@ import uk.gov.ea.datareturns.domain.model.rules.conversion.EaIdConverter;
 import uk.gov.ea.datareturns.domain.model.rules.conversion.ReturnsDateConverter;
 import uk.gov.ea.datareturns.domain.model.rules.conversion.TxtValueConverter;
 import uk.gov.ea.datareturns.domain.model.rules.modifiers.Modifier;
+import uk.gov.ea.datareturns.domain.model.rules.modifiers.QualifierModifier;
 import uk.gov.ea.datareturns.domain.model.rules.modifiers.ReturnTypeModifier;
 import uk.gov.ea.datareturns.domain.model.validation.auditors.controlledlist.*;
 import uk.gov.ea.datareturns.domain.model.validation.constraints.controlledlist.ControlledList;
@@ -102,6 +103,7 @@ public class DataSample extends AbstractCSVRecord {
 	/** Qualifier value (Qualifier) */
 	@Parsed(field = DataReturnsHeaders.QUALIFIER)
 	@ControlledList(auditor = QualifierAuditor.class, message = "{DR9180-Incorrect}", required = false)
+	@Modifier(modifier = QualifierModifier.class)
 	private String qualifiers;
 
 	/** Unit of measurement (Unit) */

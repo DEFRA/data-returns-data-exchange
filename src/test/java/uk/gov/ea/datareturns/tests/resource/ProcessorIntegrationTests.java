@@ -14,7 +14,9 @@ import uk.gov.ea.datareturns.App;
 import uk.gov.ea.datareturns.domain.exceptions.ProcessingException;
 import uk.gov.ea.datareturns.domain.io.csv.CSVColumnReader;
 import uk.gov.ea.datareturns.domain.io.zip.DataReturnsZipFileModel;
+import uk.gov.ea.datareturns.domain.jpa.dao.QualifierDao;
 import uk.gov.ea.datareturns.domain.jpa.dao.ReturnTypeDao;
+import uk.gov.ea.datareturns.domain.jpa.entities.Qualifier;
 import uk.gov.ea.datareturns.domain.jpa.entities.ReturnType;
 import uk.gov.ea.datareturns.domain.model.rules.DataReturnsHeaders;
 import uk.gov.ea.datareturns.domain.processors.FileUploadProcessor;
@@ -48,7 +50,9 @@ import java.util.stream.Collectors;
 public class ProcessorIntegrationTests {
 	public final static String IO_TESTS_FOLDER = "/testfiles/iotests/";
 	public final static String BOOLEAN_TESTS = "boolean-values.csv";
+
 	public final static String RTN_TYPE_SUB = "testReturnTypeSubstitution.csv";
+	public final static String QUALIFIER_SUB = "testQualifierSubstitution.csv";
 
 	@Inject
 	private ApplicationContext context;
@@ -58,6 +62,9 @@ public class ProcessorIntegrationTests {
 
 	@Inject
 	private ReturnTypeDao returnTypeDao;
+
+	@Inject
+	private QualifierDao qualifierDao;
 
 	/**
 	 * Tests boolean values are converted as necessary.
@@ -77,6 +84,15 @@ public class ProcessorIntegrationTests {
 		final List<ReturnType> returnTypes = returnTypeDao.list();
 		final List<String> returnTypeNames = returnTypes.stream().map(ReturnType::getName).collect(Collectors.toList());
 		verifyExpectedValuesContainsCSVValues(outputFiles.iterator().next(), DataReturnsHeaders.RETURN_TYPE, returnTypeNames);
+	}
+
+	@Test
+	public void QualifierValuesValues() {
+		final Collection<File> outputFiles = getOutputFiles(getTestFileStream(QUALIFIER_SUB));
+		Assertions.assertThat(outputFiles.size()).isEqualTo(1);
+		final List<Qualifier> qualifiers = qualifierDao.list();
+		final List<String> qualifierNames = qualifiers.stream().map(Qualifier::getName).collect(Collectors.toList());
+		verifyExpectedValuesContainsCSVValues(outputFiles.iterator().next(), DataReturnsHeaders.QUALIFIER, qualifierNames);
 	}
 
 	/**
@@ -144,15 +160,17 @@ public class ProcessorIntegrationTests {
 		try {
 			final List<String> columnData = CSVColumnReader.readColumn(csvFile, columnName);
 			for (int i = 0; i < columnData.size(); i++) {
-				Assertions.assertThat(expectedValues.contains(columnData.get(i)))
-						.as("Not found: " + columnData.get(i))
-						.isTrue();
+                if (columnData.get(i) != null) {
+                    Assertions.assertThat(expectedValues.contains(columnData.get(i)))
+                            .as("Not found: " + columnData.get(i))
+                            .isTrue();
+                }
 			}
 		} catch (final TextParsingException e) {
 			throw new AssertionError("Unable to parse output CSV file.", e);
 		}
 	}
-	
+
 	/**
 	 * Return an InputStream for a given test file
 	 *

@@ -28,6 +28,6 @@ public class QualifierAuditor implements ControlledListAuditor {
 	 */
 	@Override
 	public boolean isValid(final Object value) {
-		return this.dao.nameExists(Objects.toString(value, ""));
+		return this.dao.nameExistsRelaxed(Objects.toString(value, ""));
 	}
 }
