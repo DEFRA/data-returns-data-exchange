@@ -52,7 +52,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 @DirtiesContext
 public class ResourceIntegrationTests {
 
-	@Inject
+    @Inject
 	ApiKeys apiKeys;
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(ResourceIntegrationTests.class);
@@ -120,6 +120,8 @@ public class ResourceIntegrationTests {
 
     public final static String REF_PERIOD_VALID = "validation/testRefPeriod.csv";
 	public final static String REF_PERIOD_INVALID = "validation/testRefPeriodInvalid.csv";
+    public static final String REF_PERIOD_SUB = "iotests/testRefPeriodSubstitution.csv";
+
     public final static String UNITS_VALID = "validation/testUnits.csv";
 	public final static String UNITS_INVALID = "validation/testUnitsInvalid.csv";
 
@@ -515,7 +517,15 @@ public class ResourceIntegrationTests {
 		assertThat(resp.getStatus()).isEqualTo(Status.OK.getStatusCode());
 	}
 
-	@Test
+    @Test
+    public void testRefPeriodSubstitution() {
+        final Client client = createClient("test reference period substitution");
+        final Response resp = performUploadStep(client, REF_PERIOD_SUB, MEDIA_TYPE_CSV);
+        assertThat(resp.getStatus()).isEqualTo(Status.OK.getStatusCode());
+    }
+
+
+    @Test
     public void testRefPeriodValid() {
         final Client client = createClient("test Ref_Period valid");
         final Response resp = performUploadStep(client, REF_PERIOD_VALID, MEDIA_TYPE_CSV);

@@ -1,0 +1,7 @@
+"EA_ID","Rtn_Type","Mon_Point","Mon_Date","Parameter","Value","Unit","Meth_Stand","Ref_Period"
+"EP3136GK","Landfill gas boreHole","Monitor point 1",2015-08-05,"16-(Thienylmethylene)Androstane-3,17-Diol SVOCS",123,"ºC", "BS EN 13725","Continuous - as appropriate to reference"
+"EP3136GK","Landfill gas borehole","Monitor point 1",2015-08-05,"16-(Thienylmethylene)Androstane-3,17-Diol SVOCS",123,"ºC", "BS EN 13725","INstantaneous"
+"EP3136GK","Landfill gas borehole","Monitor point 1",2015-08-05,"16-(Thienylmethylene)Androstane-3,17-Diol SVOCS",123,"ºC", "BS EN 13725","Monthly mean"
+"EP3136GK","Landfill gas borehole","Monitor point 1",2015-08-05,"16-(Thienylmethylene)Androstane-3,17-Diol SVOCS",123,"ºC", "BS EN 13725"
+"EP3136GK","Landfill gas borehole","Monitor point 1",2015-08-05,"16-(Thienylmethylene)Androstane-3,17-Diol SVOCS",123,"ºC", "BS EN 13725","7 day total"
+"EP3136GK","Landfill gas borehole","Monitor point 1",2015-08-05,"16-(Thienylmethylene)Androstane-3,17-Diol SVOCS",123,"ºC", "BS EN 13725","7    DAY    TOTAL"

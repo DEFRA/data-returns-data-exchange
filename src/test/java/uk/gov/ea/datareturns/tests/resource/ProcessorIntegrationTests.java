@@ -15,8 +15,10 @@ import uk.gov.ea.datareturns.domain.exceptions.ProcessingException;
 import uk.gov.ea.datareturns.domain.io.csv.CSVColumnReader;
 import uk.gov.ea.datareturns.domain.io.zip.DataReturnsZipFileModel;
 import uk.gov.ea.datareturns.domain.jpa.dao.QualifierDao;
+import uk.gov.ea.datareturns.domain.jpa.dao.ReferencePeriodDao;
 import uk.gov.ea.datareturns.domain.jpa.dao.ReturnTypeDao;
 import uk.gov.ea.datareturns.domain.jpa.entities.Qualifier;
+import uk.gov.ea.datareturns.domain.jpa.entities.ReferencePeriod;
 import uk.gov.ea.datareturns.domain.jpa.entities.ReturnType;
 import uk.gov.ea.datareturns.domain.model.rules.DataReturnsHeaders;
 import uk.gov.ea.datareturns.domain.processors.FileUploadProcessor;
@@ -52,7 +54,8 @@ public class ProcessorIntegrationTests {
 	public final static String BOOLEAN_TESTS = "boolean-values.csv";
 
 	public final static String RTN_TYPE_SUB = "testReturnTypeSubstitution.csv";
-	public final static String QUALIFIER_SUB = "testQualifierSubstitution.csv";
+    public final static String REF_PERIOD_SUB = "testQualifierSubstitution.csv";
+    public final static String QUALIFIER_SUB = "testRefPeriodSubstitution.csv";
 
 	@Inject
 	private ApplicationContext context;
@@ -65,6 +68,9 @@ public class ProcessorIntegrationTests {
 
 	@Inject
 	private QualifierDao qualifierDao;
+
+    @Inject
+    private ReferencePeriodDao referencePeriodDao;
 
 	/**
 	 * Tests boolean values are converted as necessary.
@@ -95,7 +101,16 @@ public class ProcessorIntegrationTests {
 		verifyExpectedValuesContainsCSVValues(outputFiles.iterator().next(), DataReturnsHeaders.QUALIFIER, qualifierNames);
 	}
 
-	/**
+    @Test
+    public void RefPeriodValuesValues() {
+        final Collection<File> outputFiles = getOutputFiles(getTestFileStream(REF_PERIOD_SUB));
+        Assertions.assertThat(outputFiles.size()).isEqualTo(1);
+        final List<ReferencePeriod> referencePeriod = referencePeriodDao.list();
+        final List<String> referencePeriodNames = referencePeriod.stream().map(ReferencePeriod::getName).collect(Collectors.toList());
+        verifyExpectedValuesContainsCSVValues(outputFiles.iterator().next(), DataReturnsHeaders.REFERENCE_PERIOD, referencePeriodNames);
+    }
+
+    /**
 	 * Retrieve the set of output files which are created by the processors for the given {@link InputStream}
 	 *
 	 * @param inputStream the {@link InputStream} containing DEP compliant

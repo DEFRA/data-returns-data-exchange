@@ -11,6 +11,7 @@ import uk.gov.ea.datareturns.domain.model.rules.conversion.ReturnsDateConverter;
 import uk.gov.ea.datareturns.domain.model.rules.conversion.TxtValueConverter;
 import uk.gov.ea.datareturns.domain.model.rules.modifiers.Modifier;
 import uk.gov.ea.datareturns.domain.model.rules.modifiers.QualifierModifier;
+import uk.gov.ea.datareturns.domain.model.rules.modifiers.ReferencePeriodModifier;
 import uk.gov.ea.datareturns.domain.model.rules.modifiers.ReturnTypeModifier;
 import uk.gov.ea.datareturns.domain.model.validation.auditors.controlledlist.*;
 import uk.gov.ea.datareturns.domain.model.validation.constraints.controlledlist.ControlledList;
@@ -115,6 +116,7 @@ public class DataSample extends AbstractCSVRecord {
 	/** Reference period */
 	@Parsed(field = DataReturnsHeaders.REFERENCE_PERIOD)
 	@ControlledList(auditor = ReferencePeriodAuditor.class, message = "{DR9090-Incorrect}", required = false)
+	@Modifier(modifier = ReferencePeriodModifier.class)
 	private String referencePeriod;
 
 	/** Method or standard used (Meth_Stand) */
