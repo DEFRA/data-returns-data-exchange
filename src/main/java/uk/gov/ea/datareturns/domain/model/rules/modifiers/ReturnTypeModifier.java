@@ -6,7 +6,8 @@ import uk.gov.ea.datareturns.domain.jpa.dao.ReturnTypeDao;
 import javax.inject.Inject;
 
 /**
- * Created by graham on 19/08/16.
+ * Graham Willis: 23/08/16
+ * Perform the standard name modification on the return type
  */
 @Component
 public class ReturnTypeModifier implements EntityModifier {

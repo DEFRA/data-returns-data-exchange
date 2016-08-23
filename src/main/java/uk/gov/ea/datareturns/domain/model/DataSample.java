@@ -9,10 +9,7 @@ import uk.gov.ea.datareturns.domain.model.rules.DataReturnsHeaders;
 import uk.gov.ea.datareturns.domain.model.rules.conversion.EaIdConverter;
 import uk.gov.ea.datareturns.domain.model.rules.conversion.ReturnsDateConverter;
 import uk.gov.ea.datareturns.domain.model.rules.conversion.TxtValueConverter;
-import uk.gov.ea.datareturns.domain.model.rules.modifiers.Modifier;
-import uk.gov.ea.datareturns.domain.model.rules.modifiers.QualifierModifier;
-import uk.gov.ea.datareturns.domain.model.rules.modifiers.ReferencePeriodModifier;
-import uk.gov.ea.datareturns.domain.model.rules.modifiers.ReturnTypeModifier;
+import uk.gov.ea.datareturns.domain.model.rules.modifiers.*;
 import uk.gov.ea.datareturns.domain.model.validation.auditors.controlledlist.*;
 import uk.gov.ea.datareturns.domain.model.validation.constraints.controlledlist.ControlledList;
 import uk.gov.ea.datareturns.domain.model.validation.constraints.field.ValidReturnsDate;
@@ -122,6 +119,7 @@ public class DataSample extends AbstractCSVRecord {
 	/** Method or standard used (Meth_Stand) */
 	@Parsed(field = DataReturnsHeaders.METHOD_STANDARD)
 	@ControlledList(auditor = MethodOrStandardAuditor.class, message = "{DR9100-Incorrect}", required = false)
+	@Modifier(modifier = MethodOrStandardModifier.class)
 	private String methStand;
 
 	/** Record comments (Comments) */

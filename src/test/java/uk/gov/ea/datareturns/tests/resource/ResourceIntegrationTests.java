@@ -116,18 +116,15 @@ public class ResourceIntegrationTests {
 
     public final static String RTN_TYPE_VALID = "validation/testReturnType.csv";
 	public final static String RTN_TYPE_INVALID = "validation/testReturnTypeInvalid.csv";
-	public final static String RTN_TYPE_SUB = "iotests/testReturnTypeSubstitution.csv";
 
     public final static String REF_PERIOD_VALID = "validation/testRefPeriod.csv";
 	public final static String REF_PERIOD_INVALID = "validation/testRefPeriodInvalid.csv";
-    public static final String REF_PERIOD_SUB = "iotests/testRefPeriodSubstitution.csv";
 
     public final static String UNITS_VALID = "validation/testUnits.csv";
 	public final static String UNITS_INVALID = "validation/testUnitsInvalid.csv";
 
     public final static String QUALIFIERS_VALID = "validation/testQualifier.csv";
 	public final static String QUALIFIERS_INVALID = "validation/testQualifierInvalid.csv";
-	public final static String QUALIFIERS_SUB = "iotests/testQualifierSubstitution.csv";
 
     public final static String RETURN_PERIOD_VALID = "validation/testReturnPeriod.csv";
 	public final static String RETURN_PERIOD_INVALID = "validation/testReturnPeriodInvalid.csv";
@@ -502,28 +499,6 @@ public class ResourceIntegrationTests {
 		final Response resp = performUploadStep(client, RTN_TYPE_INVALID, MEDIA_TYPE_CSV);
 		assertThat(resp.getStatus()).isEqualTo(Status.BAD_REQUEST.getStatusCode());
 	}
-
-	@Test
-	public void testReturnTypeSubstitution() {
-		final Client client = createClient("test Rtn_Type substitution");
-		final Response resp = performUploadStep(client, RTN_TYPE_SUB, MEDIA_TYPE_CSV);
-		assertThat(resp.getStatus()).isEqualTo(Status.OK.getStatusCode());
-	}
-
-	@Test
-	public void testQualifierSubstitution() {
-		final Client client = createClient("test Qualifier substitution");
-		final Response resp = performUploadStep(client, QUALIFIERS_SUB, MEDIA_TYPE_CSV);
-		assertThat(resp.getStatus()).isEqualTo(Status.OK.getStatusCode());
-	}
-
-    @Test
-    public void testRefPeriodSubstitution() {
-        final Client client = createClient("test reference period substitution");
-        final Response resp = performUploadStep(client, REF_PERIOD_SUB, MEDIA_TYPE_CSV);
-        assertThat(resp.getStatus()).isEqualTo(Status.OK.getStatusCode());
-    }
-
 
     @Test
     public void testRefPeriodValid() {

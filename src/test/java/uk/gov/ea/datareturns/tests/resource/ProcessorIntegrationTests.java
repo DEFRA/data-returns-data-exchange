@@ -14,9 +14,11 @@ import uk.gov.ea.datareturns.App;
 import uk.gov.ea.datareturns.domain.exceptions.ProcessingException;
 import uk.gov.ea.datareturns.domain.io.csv.CSVColumnReader;
 import uk.gov.ea.datareturns.domain.io.zip.DataReturnsZipFileModel;
+import uk.gov.ea.datareturns.domain.jpa.dao.MethodOrStandardDao;
 import uk.gov.ea.datareturns.domain.jpa.dao.QualifierDao;
 import uk.gov.ea.datareturns.domain.jpa.dao.ReferencePeriodDao;
 import uk.gov.ea.datareturns.domain.jpa.dao.ReturnTypeDao;
+import uk.gov.ea.datareturns.domain.jpa.entities.MethodOrStandard;
 import uk.gov.ea.datareturns.domain.jpa.entities.Qualifier;
 import uk.gov.ea.datareturns.domain.jpa.entities.ReferencePeriod;
 import uk.gov.ea.datareturns.domain.jpa.entities.ReturnType;
@@ -55,7 +57,8 @@ public class ProcessorIntegrationTests {
 
 	public final static String RTN_TYPE_SUB = "testReturnTypeSubstitution.csv";
     public final static String REF_PERIOD_SUB = "testQualifierSubstitution.csv";
-    public final static String QUALIFIER_SUB = "testRefPeriodSubstitution.csv";
+	public final static String QUALIFIER_SUB = "testRefPeriodSubstitution.csv";
+	public final static String METH_STAND_SUB = "testMethStandSubstitution.csv";
 
 	@Inject
 	private ApplicationContext context;
@@ -71,6 +74,9 @@ public class ProcessorIntegrationTests {
 
     @Inject
     private ReferencePeriodDao referencePeriodDao;
+
+	@Inject
+	private MethodOrStandardDao methodOrStandardDao;
 
 	/**
 	 * Tests boolean values are converted as necessary.
@@ -110,7 +116,16 @@ public class ProcessorIntegrationTests {
         verifyExpectedValuesContainsCSVValues(outputFiles.iterator().next(), DataReturnsHeaders.REFERENCE_PERIOD, referencePeriodNames);
     }
 
-    /**
+	@Test
+	public void MethodOrStandardValuesValues() {
+		final Collection<File> outputFiles = getOutputFiles(getTestFileStream(METH_STAND_SUB));
+		Assertions.assertThat(outputFiles.size()).isEqualTo(1);
+		final List<MethodOrStandard> methodOrStandard = methodOrStandardDao.list();
+		final List<String> methodOrStandardNames = methodOrStandard.stream().map(MethodOrStandard::getName).collect(Collectors.toList());
+		verifyExpectedValuesContainsCSVValues(outputFiles.iterator().next(), DataReturnsHeaders.METHOD_STANDARD, methodOrStandardNames);
+	}
+
+	/**
 	 * Retrieve the set of output files which are created by the processors for the given {@link InputStream}
 	 *
 	 * @param inputStream the {@link InputStream} containing DEP compliant

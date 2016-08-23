@@ -14,15 +14,4 @@ public interface ControlledListEntity {
     String getName();
     void setName(final String name);
 
-    /**
-     * A default method to convert the reduce variation in name in case and spacing
-     * to a standard format which acts as the key
-     */
-    default String getKeyFromRelaxedName() {
-        return getName().toUpperCase().replaceAll("\\s{2,}", " ");
-    }
-
-    static String getKeyFromRelaxedName(String s) {
-        return s.toUpperCase().replaceAll("\\s{2,}", " ");
-    }
 }

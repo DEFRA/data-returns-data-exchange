@@ -75,7 +75,7 @@ public abstract class EntityDao<E extends ControlledListEntity> {
      * @return
      */
     public boolean nameExistsRelaxed(final String name) {
-        return getKeyCache().get(ControlledListEntity.getKeyFromRelaxedName(name)) != null;
+        return getKeyCache().get(getKeyFromRelaxedName(name)) != null;
     }
 
     /**
@@ -97,7 +97,7 @@ public abstract class EntityDao<E extends ControlledListEntity> {
         if (name == null) {
             return null;
         } else {
-            E e = getKeyCache().get(ControlledListEntity.getKeyFromRelaxedName(name));
+            E e = getKeyCache().get(getKeyFromRelaxedName(name));
             if (e != null) {
                 return e.getName();
             } else {
@@ -136,7 +136,6 @@ public abstract class EntityDao<E extends ControlledListEntity> {
 				.collect(Collectors.toList());
 	}
 
-
     /**
      * List the entities of type <E> filtered such that the field contains the search term
      *
@@ -166,6 +165,15 @@ public abstract class EntityDao<E extends ControlledListEntity> {
             return list();
         }
         return list();
+    }
+
+    /**
+     * A method to convert the reduce variation in name in case and spacing
+     * to a standard format which acts as the key. Here so it can be overridden. The default functionality
+     * is to convert to upper cases and reduce multiple spaces to a single space to create the lookup key.
+     */
+    protected String getKeyFromRelaxedName(String name) {
+        return name.toUpperCase().replaceAll("\\s{2,}", " ");
     }
 
 	/**
@@ -228,7 +236,7 @@ public abstract class EntityDao<E extends ControlledListEntity> {
 			synchronized(this) {
 				if (cacheByNameKey == null) {
                     LOGGER.info("Build key cache of: " + entityClass.getSimpleName());
-					cacheByNameKey = localCache.entrySet().stream().map(Map.Entry::getValue).collect(Collectors.toMap(e -> e.getKeyFromRelaxedName(), e -> e));
+					cacheByNameKey = localCache.entrySet().stream().map(Map.Entry::getValue).collect(Collectors.toMap(e -> getKeyFromRelaxedName(e.getName()), e -> e));
 				}
 			}
 		}

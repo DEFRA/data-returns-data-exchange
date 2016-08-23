@@ -2,7 +2,6 @@ package uk.gov.ea.datareturns.domain.jpa.dao;
 
 import org.springframework.transaction.annotation.Transactional;
 import uk.gov.ea.datareturns.domain.jpa.entities.AliasingEntity;
-import uk.gov.ea.datareturns.domain.jpa.entities.ControlledListEntity;
 
 import java.util.List;
 import java.util.Map;
@@ -38,12 +37,12 @@ public class AliasingEntityDao<E extends AliasingEntity> extends EntityDao {
      * @return The standardized (controlled-list) name
      */
     public String getStandardizedName(final String name) {
-        String key = ControlledListEntity.getKeyFromRelaxedName(name);
-        E e = getAliasKeyCache().get(ControlledListEntity.getKeyFromRelaxedName(name));
+        String key = getKeyFromRelaxedName(name);
+        E e = getAliasKeyCache().get(getKeyFromRelaxedName(name));
         if (e != null) {
             return e.getName();
         } else {
-            e = (E) getKeyCache().get(ControlledListEntity.getKeyFromRelaxedName(name));
+            e = (E) getKeyCache().get(getKeyFromRelaxedName(name));
             if (e != null) {
                 return e.getName();
             }
@@ -153,7 +152,7 @@ public class AliasingEntityDao<E extends AliasingEntity> extends EntityDao {
             synchronized(this) {
                 if (cacheByAliasKey == null) {
                     LOGGER.info("Build alias key cache of: " + entityClass.getSimpleName());
-                    cacheByAliasKey = localCache.entrySet().stream().collect(Collectors.toMap(e -> ControlledListEntity.getKeyFromRelaxedName(e.getKey()), e -> e.getValue()));
+                    cacheByAliasKey = localCache.entrySet().stream().collect(Collectors.toMap(e -> getKeyFromRelaxedName(e.getKey()), e -> e.getValue()));
                 }
             }
         }

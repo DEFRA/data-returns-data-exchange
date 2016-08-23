@@ -101,6 +101,7 @@ processor:
     - Test method={{Meth_Stand}}
     - Comment={{Comments}}
     - Qualifier={{Qualifier}}
+    - Meth_Stand={{Meth_Stand}}
 #    - CiC={{CiC}}
 #    - CAS={{CAS}}
 #    - RD_Code={{RD_Code}}

@@ -6,7 +6,8 @@ import uk.gov.ea.datareturns.domain.jpa.dao.ReferencePeriodDao;
 import javax.inject.Inject;
 
 /**
- * Created by graham on 22/08/16.
+ * Graham Willis: 23/08/16
+ * Perform the standard name modification on the reference period
  */
 @Component
 public class ReferencePeriodModifier implements EntityModifier {

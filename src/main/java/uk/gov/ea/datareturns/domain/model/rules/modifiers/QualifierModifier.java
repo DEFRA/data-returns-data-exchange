@@ -6,7 +6,8 @@ import uk.gov.ea.datareturns.domain.jpa.dao.QualifierDao;
 import javax.inject.Inject;
 
 /**
- * Created by graham on 22/08/16.
+ * Graham Willis: 23/08/16
+ * Perform the standard name modification on the qualifier
  */
 @Component
 public class QualifierModifier implements EntityModifier {
