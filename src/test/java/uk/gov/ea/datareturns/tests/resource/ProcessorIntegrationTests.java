@@ -54,6 +54,7 @@ import java.util.stream.Collectors;
 public class ProcessorIntegrationTests {
 	public final static String IO_TESTS_FOLDER = "/testfiles/iotests/";
 	public final static String BOOLEAN_TESTS = "boolean-values.csv";
+	public final static String RETURN_PERIOD_TESTS = "testReturnPeriodSubstitution.csv";
 
 	public final static String RTN_TYPE_SUB = "testReturnTypeSubstitution.csv";
     public final static String REF_PERIOD_SUB = "testQualifierSubstitution.csv";
@@ -87,6 +88,25 @@ public class ProcessorIntegrationTests {
 		Assertions.assertThat(outputFiles.size()).isEqualTo(1);
 		final String[] expected = { "true", "false", "true", "false", "true", "false", "true", "false" };
 		verifyCSVValues(outputFiles.iterator().next(), DataReturnsHeaders.TEXT_VALUE, expected);
+	}
+	/**
+	 * Tests return period values are converted as necessary.
+	 */
+	@Test
+	public void testReturnPeriodSubstitution() {
+		final Collection<File> outputFiles = getOutputFiles(getTestFileStream(RETURN_PERIOD_TESTS));
+		Assertions.assertThat(outputFiles.size()).isEqualTo(1);
+		final String[] expected = {
+			"Qtr 4 2014",
+			"Water year 2016",
+			"Week 52 2014",
+			"Week 03 2013",
+			"Water year 2015",
+			"Jan 2015",
+			"2016",
+			"2016/17"
+		};
+		verifyCSVValues(outputFiles.iterator().next(), DataReturnsHeaders.RETURN_PERIOD, expected);
 	}
 
 	@Test

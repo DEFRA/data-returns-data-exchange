@@ -1,5 +1,7 @@
 package uk.gov.ea.datareturns.domain.model.rules;
 
+import org.apache.commons.lang3.StringUtils;
+
 import java.util.regex.Pattern;
 
 /**
@@ -8,12 +10,12 @@ import java.util.regex.Pattern;
  * @author Sam Gardner-Dell
  */
 public enum ReturnPeriodFormat {
-	YEAR("(?<year>\\d{4})", "${year}"),
-	WEEK("Week\\s+(?<week>\\d{1,2})\\s+(?<year>\\d{4})", "Week ${week} ${year}"),
-	MONTH("(?<month>Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)\\s+(?<year>\\d{4})", "${month} ${year}"),
-	QUARTER("Qtr\\s+(?<qtr>[1234])\\s+(?<year>\\d{4})", "Qtr ${qtr} ${year}"),
-	FINANCIAL_YEAR("(?<start>\\d{2}|\\d{4})\\s*/\\s*(?<end>\\d{2})", "${start}/${end}"),
-	WATER_YEAR("Water year\\s+(?<year>\\d{4})", "Water year ${year}");
+	YEAR("\\s*(?<year>\\d{4})\\s*", "${year}"),
+	WEEK("\\s*Week\\s*(?<week>\\d{1,2})\\s+(?<year>\\d{4})\\s*", "Week ${week} ${year}"),
+	MONTH("\\s*(?<month>Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)\\s*(?<year>\\d{4})\\s*", "${month} ${year}"),
+	QUARTER("\\s*Qtr\\s*(?<qtr>[1234])\\s*(?<year>\\d{4})\\s*", "Qtr ${qtr} ${year}"),
+	FINANCIAL_YEAR("\\s*(?<start>\\d{2}|\\d{4})\\s*/\\s*(?<end>\\d{2})\\s*", "${start}/${end}"),
+	WATER_YEAR("\\s*Water\\s*year\\s*(?<year>\\d{4})\\s*", "Water year ${year}");
 
 	private final Pattern pattern;
 	private final String replacement;
@@ -50,7 +52,8 @@ public enum ReturnPeriodFormat {
 		ReturnPeriodFormat fmt = from(input);
 		String value = input;
 		if (fmt != null && input != null) {
-			fmt.pattern.matcher(input).replaceAll(fmt.replacement);
+			value = fmt.pattern.matcher(input).replaceAll(fmt.replacement);
+			value = StringUtils.capitalize(value.toLowerCase());
 		}
 		return value;
 	}
