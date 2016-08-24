@@ -103,48 +103,111 @@
 		</rollback>
 	</changeSet>
 
+	<!--
+	****************************************************************
+	Parameters Preload table
+	****************************************************************
+	-->
+	<changeSet id="create-table: parameters_preload" author="Graham Willis">
+		<createTable tableName="parameters_preload">
+			<column name="name" type="varchar(150)">
+				<constraints nullable="false" unique="true"/>
+			</column>
+			<column name="type" type="varchar(100)"/>
+			<column name="alias1" type="varchar(150)"/>
+			<column name="alias2" type="varchar(150)"/>
+			<column name="alias3" type="varchar(150)"/>
+			<column name="alias4" type="varchar(150)"/>
+			<column name="alias5" type="varchar(150)"/>
+			<column name="alias6" type="varchar(150)"/>
+			<column name="alias7" type="varchar(150)"/>
+			<column name="cas" type="varchar(50)"/>
+		</createTable>
+	</changeSet>
+
+	<changeSet id="load-data: parameters_preload" author="Graham Willis">
+		<preConditions onFail="HALT">
+			<tableExists tableName="parameters_preload"/>
+			<columnExists tableName="parameters_preload" columnName="name"/>
+			<sqlCheck expectedResult="0">select count(name) from parameters_preload</sqlCheck>
+		</preConditions>
+		<loadData file="${parametersFile}" tableName="parameters_preload"/>
+		<rollback>
+			<delete tableName="parameters_preload"></delete>
+		</rollback>
+	</changeSet>
+
+	<changeSet id="update-nulls: parameters_preload" author="Graham Willis" >
+		<update tableName="parameters_preload">
+			<column name="type"/>
+			<where>type = ''</where>
+		</update>
+		<update tableName="parameters_preload">
+			<column name="alias1"/>
+			<where>alias1 = ''</where>
+		</update>
+		<update tableName="parameters_preload">
+			<column name="alias2"/>
+			<where>alias2 = ''</where>
+		</update>
+		<update tableName="parameters_preload">
+			<column name="alias3"/>
+			<where>alias3 = ''</where>
+		</update>
+		<update tableName="parameters_preload">
+			<column name="alias4"/>
+			<where>alias4 = ''</where>
+		</update>
+		<update tableName="parameters_preload">
+			<column name="alias5"/>
+			<where>alias5 = ''</where>
+		</update>
+		<update tableName="parameters_preload">
+			<column name="alias6"/>
+			<where>alias6 = ''</where>
+		</update>
+		<update tableName="parameters_preload">
+			<column name="alias7"/>
+			<where>alias7 = ''</where>
+		</update>
+		<update tableName="parameters_preload">
+			<column name="cas"/>
+			<where>cas = ''</where>
+		</update>
+	</changeSet>
 
 	<!-- 
 	****************************************************************
 	Parameters
 	****************************************************************
-	-->
-	<changeSet id="create-table: parameters" author="Sam Gardner-Dell">
+  -->
+
+	<changeSet id="create-table: parameters" author="Graham Willis">
 		<createTable tableName="parameters">
-			<column name="id" type="BIGINT" autoIncrement="true">
+			<column name="id" type="bigserial" autoIncrement="true">
 				<constraints primaryKey="true"/>
 			</column>
 			<column name="name" type="varchar(150)">
 				<constraints nullable="false" unique="true"/>
 			</column>
-			<column name="definition" type="varchar(150)">
-			</column>
+			<column name="preferred" type="varchar(150)"/>
+			<column name="type" type="varchar(100)"/>
+			<column name="cas" type="varchar(50)"/>
 		</createTable>
 		<rollback>
 			<dropTable tableName="parameters"/>
 		</rollback>
 	</changeSet>
 
-	<changeSet id="load-data: parameters" author="Sam Gardner-Dell">
-		<preConditions onFail="HALT">
-			<tableExists tableName="parameters"/>
-			<columnExists tableName="parameters" columnName="id"/>
-			<sqlCheck expectedResult="0">select count(id) from parameters</sqlCheck>
-		</preConditions>
-		<loadData file="${parametersFile}" tableName="parameters"/>
-		<rollback>
-			<delete tableName="parameters"></delete>
-		</rollback>
+  <!-- Don't specify postgress here because liqibase silently fails. No comment. -->
+	<changeSet author="Graham Willis" id="Load parameter from preload table">
+		<sqlFile path="../sql/prepare_parameters.sql"
+             relativeToChangelogFile="true"
+             splitStatements="true"
+             stripComments="true"/>
 	</changeSet>
 
-  <changeSet id="update-nulls: parameters" author="Graham Willis" >
-    <update tableName="parameters">
-      <column name="definition"/>
-      <where>definition = ''</where>
-    </update>
-  </changeSet>
-
-  <changeSet id="create-index: parameters" author="Sam Gardner-Dell">
+	<changeSet id="create-index: parameters" author="Graham Willis">
 		<createIndex indexName="idx_parameters_name" tableName="parameters" unique="true">
 			<column name="name"/>
 		</createIndex>
@@ -153,12 +216,25 @@
 		</rollback>
 	</changeSet>
 
-
-	<!-- 
-	****************************************************************
-	Units
-	****************************************************************
-	-->
+  <changeSet id="update-nulls: parameters" author="Graham Willis" >
+    <update tableName="parameters">
+      <column name="preferred"/>
+      <where>preferred = ''</where>
+    </update>
+    <update tableName="parameters">
+      <column name="type"/>
+      <where>type = ''</where>
+    </update>
+    <update tableName="parameters">
+      <column name="cas"/>
+      <where>cas = ''</where>
+    </update>
+  </changeSet>
+  <!--
+  ****************************************************************
+  Units
+  ****************************************************************
+  -->
 	<changeSet id="create-table: units" author="Sam Gardner-Dell">
 		<createTable tableName="units">
 			<column name="id" type="bigserial">
