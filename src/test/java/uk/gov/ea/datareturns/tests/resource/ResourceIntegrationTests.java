@@ -129,7 +129,10 @@ public class ResourceIntegrationTests {
     public final static String RETURN_PERIOD_VALID = "validation/testReturnPeriod.csv";
 	public final static String RETURN_PERIOD_INVALID = "validation/testReturnPeriodInvalid.csv";
 
-    @Inject
+	public final static String PARAMETERS_VALID = "validation/testParameter.csv";
+	public final static String PARAMETERS_INVALID = "validation/testParameterInvalid.csv";
+
+	@Inject
 	private TestSettings testSettings;
 
 	@Test
@@ -556,7 +559,21 @@ public class ResourceIntegrationTests {
         assertThat(resp.getStatus()).isEqualTo(Status.BAD_REQUEST.getStatusCode());
     }
 
-    ///////////////////////////////////////////////////////////////////////////////////////////
+	@Test
+	public void testParameterValid() {
+		final Client client = createClient("test Parameter valid");
+		final Response resp = performUploadStep(client, PARAMETERS_VALID, MEDIA_TYPE_CSV);
+		assertThat(resp.getStatus()).isEqualTo(Status.OK.getStatusCode());
+	}
+
+	@Test
+	public void testParameterInvalid() {
+		final Client client = createClient("test Parameter invalid");
+		final Response resp = performUploadStep(client, PARAMETERS_INVALID, MEDIA_TYPE_CSV);
+		assertThat(resp.getStatus()).isEqualTo(Status.BAD_REQUEST.getStatusCode());
+	}
+
+	///////////////////////////////////////////////////////////////////////////////////////////
 	/////////////////////////////// End Content Validation tests
 	/////////////////////////////////////////////////////////////////////////////////////////// //////////////////////////////
 	///////////////////////////////////////////////////////////////////////////////////////////

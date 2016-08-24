@@ -99,6 +99,7 @@ public class DataSample extends AbstractCSVRecord {
 	@Parsed(field = DataReturnsHeaders.PARAMETER)
 	@NotBlank(message = "{DR9030-Missing}")
 	@ControlledList(auditor = ParameterAuditor.class, message = "{DR9030-Incorrect}")
+	@Modifier(modifier = ParameterModifier.class)
 	private String parameter;
 
 	/** Value (Value) */

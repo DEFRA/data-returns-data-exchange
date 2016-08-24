@@ -14,14 +14,8 @@ import uk.gov.ea.datareturns.App;
 import uk.gov.ea.datareturns.domain.exceptions.ProcessingException;
 import uk.gov.ea.datareturns.domain.io.csv.CSVColumnReader;
 import uk.gov.ea.datareturns.domain.io.zip.DataReturnsZipFileModel;
-import uk.gov.ea.datareturns.domain.jpa.dao.MethodOrStandardDao;
-import uk.gov.ea.datareturns.domain.jpa.dao.QualifierDao;
-import uk.gov.ea.datareturns.domain.jpa.dao.ReferencePeriodDao;
-import uk.gov.ea.datareturns.domain.jpa.dao.ReturnTypeDao;
-import uk.gov.ea.datareturns.domain.jpa.entities.MethodOrStandard;
-import uk.gov.ea.datareturns.domain.jpa.entities.Qualifier;
-import uk.gov.ea.datareturns.domain.jpa.entities.ReferencePeriod;
-import uk.gov.ea.datareturns.domain.jpa.entities.ReturnType;
+import uk.gov.ea.datareturns.domain.jpa.dao.*;
+import uk.gov.ea.datareturns.domain.jpa.entities.*;
 import uk.gov.ea.datareturns.domain.model.rules.DataReturnsHeaders;
 import uk.gov.ea.datareturns.domain.processors.FileUploadProcessor;
 import uk.gov.ea.datareturns.domain.result.DataExchangeResult;
@@ -60,6 +54,7 @@ public class ProcessorIntegrationTests {
     public final static String REF_PERIOD_SUB = "testQualifierSubstitution.csv";
 	public final static String QUALIFIER_SUB = "testRefPeriodSubstitution.csv";
 	public final static String METH_STAND_SUB = "testMethStandSubstitution.csv";
+	public final static String PARAMETER_SUB = "testParameterSubstitution.csv";
 
 	@Inject
 	private ApplicationContext context;
@@ -78,6 +73,9 @@ public class ProcessorIntegrationTests {
 
 	@Inject
 	private MethodOrStandardDao methodOrStandardDao;
+	
+	@Inject
+	private ParameterDao parameterDao;
 
 	/**
 	 * Tests boolean values are converted as necessary.
@@ -119,7 +117,7 @@ public class ProcessorIntegrationTests {
 	}
 
 	@Test
-	public void QualifierValuesValues() {
+	public void QualifierValues() {
 		final Collection<File> outputFiles = getOutputFiles(getTestFileStream(QUALIFIER_SUB));
 		Assertions.assertThat(outputFiles.size()).isEqualTo(1);
 		final List<Qualifier> qualifiers = qualifierDao.list();
@@ -128,7 +126,7 @@ public class ProcessorIntegrationTests {
 	}
 
     @Test
-    public void RefPeriodValuesValues() {
+    public void RefPeriodValues() {
         final Collection<File> outputFiles = getOutputFiles(getTestFileStream(REF_PERIOD_SUB));
         Assertions.assertThat(outputFiles.size()).isEqualTo(1);
         final List<ReferencePeriod> referencePeriod = referencePeriodDao.list();
@@ -137,12 +135,21 @@ public class ProcessorIntegrationTests {
     }
 
 	@Test
-	public void MethodOrStandardValuesValues() {
+	public void MethodOrStandardValues() {
 		final Collection<File> outputFiles = getOutputFiles(getTestFileStream(METH_STAND_SUB));
 		Assertions.assertThat(outputFiles.size()).isEqualTo(1);
 		final List<MethodOrStandard> methodOrStandard = methodOrStandardDao.list();
 		final List<String> methodOrStandardNames = methodOrStandard.stream().map(MethodOrStandard::getName).collect(Collectors.toList());
 		verifyExpectedValuesContainsCSVValues(outputFiles.iterator().next(), DataReturnsHeaders.METHOD_STANDARD, methodOrStandardNames);
+	}
+
+	@Test
+	public void ParameterValues() {
+		final Collection<File> outputFiles = getOutputFiles(getTestFileStream(PARAMETER_SUB));
+		Assertions.assertThat(outputFiles.size()).isEqualTo(1);
+		final List<Parameter> parameter = parameterDao.list();
+		final List<String> parameterNames = parameter.stream().map(Parameter::getName).collect(Collectors.toList());
+		verifyExpectedValuesContainsCSVValues(outputFiles.iterator().next(), DataReturnsHeaders.PARAMETER, parameterNames);
 	}
 
 	/**

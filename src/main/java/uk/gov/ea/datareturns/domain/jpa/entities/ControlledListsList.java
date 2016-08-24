@@ -20,11 +20,13 @@ public enum ControlledListsList {
 
     PARAMETERS("Parameters - substance names - and CAS", ParameterDao.class, "parameters", Collections.unmodifiableList(new ArrayList<DisplayHeaderDto>() {{
         add(new DisplayHeaderDto("name", "Name"));
+        add(new DisplayHeaderDto("aliases", "Alternatives"));
+        add(new DisplayHeaderDto("cas", "CAS"));
     }}), "name"),
 
     REFERENCE_PERIOD("Reference period", ReferencePeriodDao.class, "ref_period", Collections.unmodifiableList(new ArrayList<DisplayHeaderDto>() {{
         add(new DisplayHeaderDto("name", "Ref_Period"));
-        add(new DisplayHeaderDto("aliases", "Aliases"));
+        add(new DisplayHeaderDto("aliases", "Alternative"));
         add(new DisplayHeaderDto("notes", "Notes"));
     }}), "name"),
 
