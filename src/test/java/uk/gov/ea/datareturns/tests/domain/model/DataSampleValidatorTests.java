@@ -56,8 +56,8 @@ public class DataSampleValidatorTests {
 		final DataSample record = createValidNumericRecord();
 		record.setEaId(new EaId(null));
 		final Set<ConstraintViolation<DataSample>> violations = this.validator.validate(record);
-		// We'll get 2 violations back - one for the field being blank and one for the controlled list value check
-		Assert.assertEquals(2, violations.size());
+		// one violation for the field being blank
+		Assert.assertEquals(1, violations.size());
 	}
 
 	@Test
@@ -65,8 +65,8 @@ public class DataSampleValidatorTests {
 		final DataSample record = createValidNumericRecord();
 		record.setEaId(new EaId(""));
 		final Set<ConstraintViolation<DataSample>> violations = this.validator.validate(record);
-		// We'll get 3 violations back - one for the field being blank, one for the pattern check and one for the controlled list value check
-		Assert.assertEquals(3, violations.size());
+		// one violation for the field being blank, one for the regex format validation
+		Assert.assertEquals(2, violations.size());
 	}
 
 	/*=================================================================================================================
@@ -362,7 +362,7 @@ public class DataSampleValidatorTests {
 		final DataSample record = createValidNumericRecord();
 		record.setParameter(null);
 		final Set<ConstraintViolation<DataSample>> violations = this.validator.validate(record);
-		Assert.assertEquals(2, violations.size());
+		Assert.assertEquals(1, violations.size());
 	}
 
 	@Test
@@ -370,7 +370,7 @@ public class DataSampleValidatorTests {
 		final DataSample record = createValidNumericRecord();
 		record.setParameter("");
 		final Set<ConstraintViolation<DataSample>> violations = this.validator.validate(record);
-		Assert.assertEquals(2, violations.size());
+		Assert.assertEquals(1, violations.size());
 	}
 
 	@Test

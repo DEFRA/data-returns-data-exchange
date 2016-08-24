@@ -9,6 +9,7 @@ import java.time.Instant;
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
 
+import org.apache.commons.lang3.StringUtils;
 import uk.gov.ea.datareturns.domain.model.ReturnsDate;
 
 /**
@@ -17,14 +18,14 @@ import uk.gov.ea.datareturns.domain.model.ReturnsDate;
  * @author Sam Gardner-Dell
  */
 public class ReturnsDateValidator implements ConstraintValidator<ValidReturnsDate, Object> {
-	private String missingTemplate;
+	private ValidReturnsDate constraintAnnotation;
 
 	/* (non-Javadoc)
 	 * @see javax.validation.ConstraintValidator#initialize(java.lang.annotation.Annotation)
 	 */
 	@Override
 	public void initialize(final ValidReturnsDate constraintAnnotation) {
-		this.missingTemplate = constraintAnnotation.missingMessage();
+		this.constraintAnnotation = constraintAnnotation;
 	}
 
 	/* (non-Javadoc)
@@ -45,8 +46,9 @@ public class ReturnsDateValidator implements ConstraintValidator<ValidReturnsDat
 				// TODO: Future release - extend validation to check for dates too far in the past (should be configurable)
 				//				final Instant earliestAllowed = now.minus(18, ChronoUnit.MONTHS);
 				//				isValid = (instant.equals(now) || instant.isBefore(now)) && instant.isAfter(earliestAllowed);
-			} else {
-				context.buildConstraintViolationWithTemplate(this.missingTemplate).addConstraintViolation();
+			} else if (StringUtils.isEmpty(returnsDate.getOriginalValue())) {
+				context.disableDefaultConstraintViolation();
+				context.buildConstraintViolationWithTemplate(constraintAnnotation.missingMessage()).addConstraintViolation();
 			}
 		}
 		return isValid;

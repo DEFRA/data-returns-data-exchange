@@ -23,6 +23,12 @@ public @interface DependentField {
 	String message() default "{uk.gov.ea.datareturns.domain.model.validation.dependentfield.message}";
 
 	/**
+	 * The name of the input field which caused the violation
+	 * @return the name of the input field which caused the violation
+	 */
+	String fieldName();
+
+	/**
 	 * Validation groups
 	 * @return the groups that this validator is associated with
 	 */

@@ -92,6 +92,10 @@ public class ReturnsDate {
 		return fmt;
 	}
 
+	public String getOriginalValue() {
+		return originalValue;
+	}
+
 	/**
 	 * Create a new {@link ReturnsDate} for the given String
 	 *
