@@ -46,10 +46,4 @@ public @interface ControlledList {
 	 * @return the {@link Class} definition for the auditor to use
 	 */
 	Class<? extends ControlledListAuditor> auditor();
-
-	/**
-	 * Is this field required (mandatory)
-	 * @return true if the field is mandatory, false otherwise
-	 */
-	boolean required() default true;
 }

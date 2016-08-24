@@ -25,8 +25,6 @@ public class ControlledListValidator implements ConstraintValidator<ControlledLi
 	/** ControlledListProvider instance to provide the list of values we must validate against */
 	private ControlledListAuditor provider;
 
-	private boolean required = true;
-
 	@Inject
 	private ApplicationContext applicationContext;
 
@@ -35,7 +33,6 @@ public class ControlledListValidator implements ConstraintValidator<ControlledLi
 		try {
 			final Class<? extends ControlledListAuditor> providerType = constraintAnnotation.auditor();
 			this.provider = this.applicationContext.getBean(providerType);
-			this.required = constraintAnnotation.required();
 		} catch (final Throwable t) {
 			LOGGER.error(t.getMessage(), t);
 		}
@@ -44,8 +41,8 @@ public class ControlledListValidator implements ConstraintValidator<ControlledLi
 	@Override
 	public boolean isValid(final Object value, final ConstraintValidatorContext context) {
 		boolean valid = false;
-		if (!this.required && StringUtils.isEmpty(Objects.toString(value, ""))) {
-			// If field is not set to required and value is empty then this is valid.
+		if (StringUtils.isEmpty(Objects.toString(value, ""))) {
+			// If field is empty then this is valid.
 			valid = true;
 		} else {
 			// Assume item is valid if there is no list to validate against.

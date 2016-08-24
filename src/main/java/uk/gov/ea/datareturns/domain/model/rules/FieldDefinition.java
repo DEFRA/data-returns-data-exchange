@@ -4,7 +4,7 @@
 package uk.gov.ea.datareturns.domain.model.rules;
 
 /**
- * TODO: Move this stuff into the database
+ * TODO: Move this stuff back into the frontend where it belongs!
  *
  * @author Sam Gardner-Dell
  */

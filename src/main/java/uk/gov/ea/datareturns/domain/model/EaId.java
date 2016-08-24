@@ -22,7 +22,7 @@ import uk.gov.ea.datareturns.domain.model.validation.constraints.controlledlist.
  */
 public class EaId implements Comparable<EaId> {
 	@NotBlank(message = "{DR9000-Missing}")
-	@Pattern(regexp = "(^[A-Za-z][A-Za-z].*|^[0-9]{5,6}$)", message = "{DR9000-Incorrect}")
+	@Pattern(regexp = "(^[A-Za-z]{2}[0-9]{4}[A-Za-z]{2}|^[0-9]{5,6}$)", message = "{DR9000-Incorrect}")
 	@ControlledList(auditor = UniqueIdentifierAuditor.class, message = "{DR9000-Incorrect}")
 	@JsonProperty
 	private String identifier;

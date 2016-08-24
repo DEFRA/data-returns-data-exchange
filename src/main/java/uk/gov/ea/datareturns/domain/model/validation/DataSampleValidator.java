@@ -13,6 +13,7 @@ import javax.validation.ConstraintViolation;
 import javax.validation.Path.Node;
 import javax.validation.Validator;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 
 import uk.gov.ea.datareturns.domain.io.csv.generic.CSVModel;
@@ -54,12 +55,19 @@ public class DataSampleValidator {
 			for (final ConstraintViolation<DataSample> violation : violations) {
 				final ValidationError error = new ValidationError();
 				final String fieldName = getFieldNameForViolation(model, violation);
-				final String errorValue = Objects.toString(violation.getInvalidValue(), null);
-				final FieldDefinition definition = FieldDefinition.valueOf(fieldName);
+				String errorValue = null;
+				FieldDefinition definition = null;
+				// Is the validation specific to a particular column, or is this a cross-field validation?
+				if (fieldName != null) {
+					errorValue = Objects.toString(violation.getInvalidValue(), null);
+					definition = FieldDefinition.valueOf(fieldName);
+				}
 
 				error.setFieldName(fieldName);
-				error.setDefinition(definition.getDescription());
-				error.setHelpReference(definition.getHelpReference());
+				if (definition != null){
+					error.setDefinition(definition.getDescription());
+					error.setHelpReference(definition.getHelpReference());
+				}
 				error.setErrorValue(errorValue);
 				error.setLineNumber(record.getLineNumber());
 				error.setErrorMessage(violation.getMessage());
@@ -90,8 +98,14 @@ public class DataSampleValidator {
 	 */
 	private static String getFieldNameForViolation(final CSVModel<DataSample> model,
 			final ConstraintViolation<DataSample> violation) {
-		// At the moment the mappings are all done at the top level so we're only interested in the first node on the path, may need to adapt
-		// this in future.
+		// First attempt to retrieve the name of the input field from the declaration on the constraint annotation.
+		String validatorAnnotationFieldName = Objects.toString(violation.getConstraintDescriptor().getAttributes().get("fieldName"), null);
+		if (StringUtils.isNotEmpty(validatorAnnotationFieldName)) {
+			return validatorAnnotationFieldName;
+		}
+
+		// Otherwise, try and retrieve the path to the appropriate field using the property path on the annotation.
+		// This will not work for class-level annotations (hence the functionality above)
 		final Node firstNodeInPath = violation.getPropertyPath().iterator().next();
 		return model.getPojoFieldToHeaderMap().get(firstNodeInPath.toString());
 	}

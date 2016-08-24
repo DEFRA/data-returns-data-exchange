@@ -11,7 +11,12 @@ import uk.gov.ea.datareturns.domain.model.rules.conversion.ReturnsDateConverter;
 import uk.gov.ea.datareturns.domain.model.rules.conversion.TxtValueConverter;
 import uk.gov.ea.datareturns.domain.model.rules.modifiers.*;
 import uk.gov.ea.datareturns.domain.model.validation.auditors.controlledlist.*;
+import uk.gov.ea.datareturns.domain.model.validation.auditors.dependencies.PrimaryFieldBlocksDependentAuditor;
+import uk.gov.ea.datareturns.domain.model.validation.auditors.dependencies.PrimaryFieldRequiresDependentAuditor;
+import uk.gov.ea.datareturns.domain.model.validation.auditors.dependencies.TxtValueSeeCommentRequiresCommentAuditor;
 import uk.gov.ea.datareturns.domain.model.validation.constraints.controlledlist.ControlledList;
+import uk.gov.ea.datareturns.domain.model.validation.constraints.dependencies.DependentField;
+import uk.gov.ea.datareturns.domain.model.validation.constraints.dependencies.RequireExactlyOneOf;
 import uk.gov.ea.datareturns.domain.model.validation.constraints.field.ValidReturnsDate;
 
 import javax.validation.Valid;
@@ -22,12 +27,21 @@ import javax.validation.constraints.Pattern;
  *
  * @author Sam Gardner-Dell
  */
-// TODO: Dependent field validation rules from new DEP
-//@DependentField(primaryFieldGetter="getValue",
-//				dependentFieldGetter="getComments",
-//				auditor=CommentDefinedForNoValueAuditor.class,
-//				message="{DR9999-Dependency}",
-//				groups=DependentField.class)
+// One of Value or Txt_Value must be present but not both
+@RequireExactlyOneOf(fieldGetters = {"getValue", "getTextValue"}, tooFewMessage = "{DR9999-Missing}", tooManyMessage = "{DR9999-Conflict}")
+
+// If Value is present, we must have a Unit
+@DependentField(primaryFieldGetter = "getValue", dependentFieldGetter = "getUnit", fieldName = DataReturnsHeaders.UNIT,
+		auditor = PrimaryFieldRequiresDependentAuditor.class, message = "{DR9050-Missing}")
+
+// If Txt_Value specified, unit must not be used
+@DependentField(primaryFieldGetter = "getTextValue", dependentFieldGetter = "getUnit", fieldName = DataReturnsHeaders.UNIT,
+		auditor = PrimaryFieldBlocksDependentAuditor.class, message = "{DR9050-Conflict}")
+
+// If Txt_Value is "See Comment" then Comment must be present
+@DependentField(primaryFieldGetter = "getTextValue", dependentFieldGetter = "getComments", fieldName = DataReturnsHeaders.COMMENTS,
+		auditor = TxtValueSeeCommentRequiresCommentAuditor.class, message = "{DR9140-Missing}")
+
 public class DataSample extends AbstractCSVRecord {
 	/** Regular expression for fields which should only contain simple text (no special characters) */
 	private static final String REGEX_SIMPLE_TEXT = "^[a-zA-Z0-9 ]*$";
@@ -59,7 +73,8 @@ public class DataSample extends AbstractCSVRecord {
 
 	/** The return period  (Rtn_Period) */
 	@Parsed(field = DataReturnsHeaders.RETURN_PERIOD)
-	@ControlledList(auditor = ReturnPeriodAuditor.class, message = "{DR9070-Incorrect}", required = false)
+	@ControlledList(auditor = ReturnPeriodAuditor.class, message = "{DR9070-Incorrect}")
+	@Modifier(modifier = ReturnPeriodModifier.class)
 	private String returnPeriod;
 
 	/** The monitoring point (Mon_Point) */
@@ -88,37 +103,35 @@ public class DataSample extends AbstractCSVRecord {
 
 	/** Value (Value) */
 	@Parsed(field = DataReturnsHeaders.VALUE)
-	@NotBlank(message = "{DR9040-Missing}")
-	@Pattern(regexp = "([<>]?\\-?(\\d+\\.)?(\\d)+)", message = "{DR9040-Incorrect}")
+	@Pattern(regexp = "([<>]?-?(\\d+\\.)?(\\d)+)", message = "{DR9040-Incorrect}")
 	private String value;
 
 	/** Textual value (Txt_Value) */
 	@Parsed(field = DataReturnsHeaders.TEXT_VALUE)
 	@Convert(conversionClass = TxtValueConverter.class)
-	@ControlledList(auditor = TxtValueAuditor.class, message = "{DR9080-Incorrect}", required = false)
+	@ControlledList(auditor = TxtValueAuditor.class, message = "{DR9080-Incorrect}")
 	private String textValue;
 
 	/** Qualifier value (Qualifier) */
 	@Parsed(field = DataReturnsHeaders.QUALIFIER)
-	@ControlledList(auditor = QualifierAuditor.class, message = "{DR9180-Incorrect}", required = false)
+	@ControlledList(auditor = QualifierAuditor.class, message = "{DR9180-Incorrect}")
 	@Modifier(modifier = QualifierModifier.class)
 	private String qualifiers;
 
 	/** Unit of measurement (Unit) */
 	@Parsed(field = DataReturnsHeaders.UNIT)
-	@NotBlank(message = "{DR9050-Missing}")
 	@ControlledList(auditor = UnitAuditor.class, message = "{DR9050-Incorrect}")
 	private String unit;
 
 	/** Reference period */
 	@Parsed(field = DataReturnsHeaders.REFERENCE_PERIOD)
-	@ControlledList(auditor = ReferencePeriodAuditor.class, message = "{DR9090-Incorrect}", required = false)
+	@ControlledList(auditor = ReferencePeriodAuditor.class, message = "{DR9090-Incorrect}")
 	@Modifier(modifier = ReferencePeriodModifier.class)
 	private String referencePeriod;
 
 	/** Method or standard used (Meth_Stand) */
 	@Parsed(field = DataReturnsHeaders.METHOD_STANDARD)
-	@ControlledList(auditor = MethodOrStandardAuditor.class, message = "{DR9100-Incorrect}", required = false)
+	@ControlledList(auditor = MethodOrStandardAuditor.class, message = "{DR9100-Incorrect}")
 	@Modifier(modifier = MethodOrStandardModifier.class)
 	private String methStand;
 
@@ -157,7 +170,7 @@ public class DataSample extends AbstractCSVRecord {
 	}
 
 	/**
-#	 * @param eaId the eaId to set
+	 #	 * @param eaId the eaId to set
 	 */
 	public void setEaId(final EaId eaId) {
 		this.eaId = eaId;

@@ -143,7 +143,9 @@ public class ProcessorIntegrationTests {
 		} catch (final ProcessingException e) {
 			Assertions.fail("Processor exception thrown", e);
 		}
-		Assertions.assertThat(result.getParseResult().getMappings().isEmpty()).isFalse();
+		Assertions.assertThat(result.getAppStatusCode()).isLessThanOrEqualTo(0);
+		Assertions.assertThat(result.getParseResult()).isNotNull();
+		Assertions.assertThat(result.getParseResult().getMappings()).isNotEmpty();
 		Assertions.assertThat(result.getUploadResult().getFileKey()).isNotEmpty();
 
 		final String fileKey = result.getUploadResult().getFileKey();

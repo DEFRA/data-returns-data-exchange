@@ -1,10 +1,6 @@
 package uk.gov.ea.datareturns.domain.model.validation.constraints.dependencies;
 
-import java.lang.annotation.Documented;
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+import java.lang.annotation.*;
 
 import javax.validation.Constraint;
 import javax.validation.Payload;
@@ -17,6 +13,7 @@ import javax.validation.Payload;
 @Target({ ElementType.TYPE })
 @Retention(RetentionPolicy.RUNTIME)
 @Constraint(validatedBy = DependentFieldValidator.class)
+@Repeatable(DependentField.List.class)
 @Documented
 public @interface DependentField {
 	/**
@@ -24,6 +21,12 @@ public @interface DependentField {
 	 * @return the constraint violation template
 	 */
 	String message() default "{uk.gov.ea.datareturns.domain.model.validation.dependentfield.message}";
+
+	/**
+	 * The name of the input field which caused the violation
+	 * @return the name of the input field which caused the violation
+	 */
+	String fieldName();
 
 	/**
 	 * Validation groups
@@ -58,4 +61,16 @@ public @interface DependentField {
 	 * @return the {@link Class} for the auditor
 	 */
 	Class<? extends DependentFieldAuditor> auditor();
+
+	/**
+	 * Container annotation for {@link DependentField}
+	 *
+	 * @author Sam Gardner-Dell
+	 */
+	@Target({ ElementType.TYPE })
+	@Retention(RetentionPolicy.RUNTIME)
+	@Documented
+	public @interface List {
+		DependentField[] value();
+	}
 }

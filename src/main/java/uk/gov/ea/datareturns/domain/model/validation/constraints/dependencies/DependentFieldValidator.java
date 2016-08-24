@@ -3,14 +3,13 @@
  */
 package uk.gov.ea.datareturns.domain.model.validation.constraints.dependencies;
 
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 
 /**
  * @author Sam Gardner-Dell
@@ -27,10 +26,11 @@ public class DependentFieldValidator implements ConstraintValidator<DependentFie
 
 	@Override
 	public void initialize(final DependentField constraintAnnotation) {
-		System.out.println("initialising DependentFieldValidator");
 		this.primaryFieldGetterName = constraintAnnotation.primaryFieldGetter();
 		this.dependentFieldGetterName = constraintAnnotation.dependentFieldGetter();
 		try {
+			LOGGER.info(String.format("Setting up dependent field validation between %s and %s using auditor %s", primaryFieldGetterName,
+					dependentFieldGetterName, constraintAnnotation.auditor().getName()));
 			final Class<? extends DependentFieldAuditor> providerType = constraintAnnotation.auditor();
 			this.auditor = providerType.newInstance();
 		} catch (IllegalAccessException | InstantiationException e) {
@@ -40,18 +40,18 @@ public class DependentFieldValidator implements ConstraintValidator<DependentFie
 	}
 
 	@Override
-	public boolean isValid(final Object value, final ConstraintValidatorContext context) {
+	public boolean isValid(final Object classInstance, final ConstraintValidatorContext context) {
 		try {
-			final Method primaryFieldGetter = value.getClass().getDeclaredMethod(this.primaryFieldGetterName);
-			final Method dependentFieldGetter = value.getClass().getDeclaredMethod(this.dependentFieldGetterName);
+			final Method primaryFieldGetter = classInstance.getClass().getDeclaredMethod(this.primaryFieldGetterName);
+			final Method dependentFieldGetter = classInstance.getClass().getDeclaredMethod(this.dependentFieldGetterName);
 
-			final Object primaryFieldValue = primaryFieldGetter.invoke(value);
-			final Object dependentFieldValue = dependentFieldGetter.invoke(value);
+			final Object primaryFieldValue = primaryFieldGetter.invoke(classInstance);
+			final Object dependentFieldValue = dependentFieldGetter.invoke(classInstance);
 
 			return this.auditor.isValid(primaryFieldValue, dependentFieldValue);
 		} catch (SecurityException | IllegalArgumentException | IllegalAccessException | InvocationTargetException
 				| NoSuchMethodException e) {
-			e.printStackTrace();
+			LOGGER.error(e.getMessage(), e);
 		}
 		return true;
 	}
