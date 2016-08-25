@@ -39,7 +39,8 @@ public enum ControlledListsList {
     QUALIFIERS("Qualifier", QualifierDao.class, "qualifier", Collections.unmodifiableList(new ArrayList<DisplayHeaderDto>() {{
         add(new DisplayHeaderDto("name", "Qualifier"));
         add(new DisplayHeaderDto("notes", "Notes"));
-        add(new DisplayHeaderDto("suggested_category", "Suggested Category"));
+        add(new DisplayHeaderDto("type", "Type"));
+        add(new DisplayHeaderDto("singleOrMultiple", "Single or multiple"));
     }}), "name"),
 
     METHOD_OR_STANDARD("Monitoring standard or method", MethodOrStandardDao.class, "method", Collections.unmodifiableList(new ArrayList<DisplayHeaderDto>() {{
