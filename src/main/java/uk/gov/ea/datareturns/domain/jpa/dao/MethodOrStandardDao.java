@@ -16,7 +16,7 @@ public class MethodOrStandardDao extends EntityDao {
 
 	// Allow for no spaces in the method or standard
 	protected String getKeyFromRelaxedName(String name) {
-		return name.toUpperCase().replaceAll("\\s", "");
+		return name.toUpperCase().trim().replaceAll("\\s", "");
     }
 
 }

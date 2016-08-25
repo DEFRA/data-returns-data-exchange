@@ -8,7 +8,7 @@ Chlordane-trans,Chemical,Chlordane-gamma,Chlordane-gamma (trans),Trans Chlordane
 Chlordane-cis,Chemical,Chlordane-alpha,cis-Chlordane,Cis Chlordane,alpha-Chlordane,,,,5103-71-9
 "DDT (P,P)",Chemical,"4,4'-DDT","p,p'-DDT"," p,p'-DDT n","p,p-DDT (1,1,1-Trichloro-2,2-bis(4-chlorophenyl)ethane)",,,,50-29-3
 Dibutyl phthalate (n-),Chemical,n-dibutyl phthalate,DBP (Dibutyl Phthalate),Di-n-butyl phthalate,Di-n-butylphthalate,,,,84-74-2
-Dichlorodiphenyldichloroethylene,Chemical,"4,4'-DDE","p,p'-DDE ","p,p'-DDE n","DDE (P,P)",,,,75-55-9
+Dichlorodiphenyldichloroethylene,Chemical,"4,4'-DDE","p,p'-DDE","p,p'-DDE n","DDE (P,P)",,,,75-55-9
 HCH-alpha,Chemical,BHC alpha,alpha - BHC,alpha - HCH,Lindane Alpha,,,,319-84-6
 HCH-delta,Chemical,BHC delta,delta-BHC,delta-HCH,Lindane-delta,,,,319-86-8
 Naphthalene,Chemical,Naphthalene STLPAN,Naphthalene STLPJY,Naphthalene VOC,napthalene STLGEX,,,,91-20-3
@@ -22,11 +22,11 @@ HCH-beta,Chemical,BHC beta,beta-HCH,Lindane-Beta,,,,,319-84-7
 MCPA,Chemical,MCPA (4-chloro-2-methylphenoxyacetic acid),2-methyl-4-chlorophenoxyacetic acid,4-chloro-o-tolyloxyacetic acid,,,,,94-74-6
 Methyl tertiary-butyl ether (MTBE),Chemical,Methyl tert-butyl ether,tert-Butyl methyl ether,tert-Butylmethylether,,,,,1634-04-4
 Tetrachloromethane,Chemical,Carbon tetrachloride,Tetrachloromethane (Carbon Tetrachloride),Carbon tetrachloride (Tetrachloromethane),,,,,56-23-5
-EDTA,Chemical,EDTA (Edetic Acid),Ethylenediaminetetraacetic acid ,,,,,,60-00-4
+EDTA,Chemical,EDTA (Edetic Acid),Ethylenediaminetetraacetic acid,,,,,,60-00-4
 Mercury,Chemical,Mercury Low Dutch T Leachate,Mercury Low Dutch Target AA,,,,,,7439-97-6
 Trichloromethane,Chemical,Chloroform,Chloroform (Trichloromethane),,,,,,67-66-3
 Perfluoro octanyl sulphate (PFOS),Chemical,Perfluorooctane sulphonic acid and its derivatives (PFOS),PFOS,,,,,,1763-23-1
-"1,1,2-Trichloroethane",Chemical,Methylchloroform ,Chlorothene,,,,,,71-5-6
+"1,1,2-Trichloroethane",Chemical,Methylchloroform,Chlorothene,,,,,,71-5-6
 1-Methylethylbenzene,Chemical,Cumene,Isopropylbenzene,,,,,,98-82-8
 "2,4,6-Trichlorophenol",Chemical,"2,4,6-Trichlorophenol STLGG4","2,4,6-Trichlorophenol STLPK2",,,,,,88-06-2
 2-Chlorophenol,Chemical,2-Chlorophenol STLGFU,2-Chlorophenol STLPMP,,,,,,95-57-8
@@ -38,7 +38,6 @@ Di-n-octyl phthalate,Chemical,Di-n-octylphthalate,Dioctyl Phthalate,bis(2-ethylh
 "Ethane-1,2-diol",Chemical,Ethylene glycol,"1,2-dihydroxyethane",,,,,,107-21-1
 Ethylbenzene,Chemical,Ethyl benzene,Ethyl Benzene (VOC),,,,,,100-41-4
 Isopropenylbenzene,Chemical,2-Phenylpropene,alpha-Methylstyrene,,,,,,98-83-9
-Tetrachloroethylene (PER),Chemical,Tetrachloroethene ,Perchloroethylene,,,,,,127-18-4
 Benzene,Chemical,Benzene (VOC),,,,,,,71-43-2
 Cadmium,Chemical,"Cadmium, soluble WAC",,,,,,,7440-43-9
 Short chain (C10-C13) chlorinated paraffins (SCCPs),Chemical Group,C10-C13 Chloroalkanes,,,,,,,85535-84-8
@@ -109,7 +108,7 @@ Atrazine,Chemical,,,,,,,,1912-24-9
 Lead,Chemical,,,,,,,,7439-92-1
 Nickel,Chemical,,,,,,,,7440-02-0
 Trichlorobenzene,Chemical Group,,,,,,,,12002-48-1
-Tributyltin,Chemical,,,,,,,,36643-28-4 
+Tributyltin,Chemical,,,,,,,,36643-28-4
 Chlorfenvinphos,Chemical,,,,,,,,470-90-6
 1(2H)-Acenaphthylenone,Chemical,,,,,,,,2235-15-6
 "1,1,1,2-Tetrafluoroethane",Chemical,,,,,,,,811-97-2
@@ -260,7 +259,7 @@ Aromatics >EC16-EC35,Chemical Group,,,,,,,,0
 "Benzene, (1-pentyloctyl)-",Chemical,,,,,,,,4534-49-0
 "Benzene, (1-propylnonyl)-",Chemical,,,,,,,,2719-64-4
 "Benzene, 1,2,3-trimethyl-",Chemical,,,,,,,,526-73-8
-"Benzene, 1,3,5-tribromo-2-methoxy- ",Chemical,,,,,,,,607-99-8
+"Benzene, 1,3,5-tribromo-2-methoxy-",Chemical,,,,,,,,607-99-8
 "Benzene, 1,3,5-triethyl-",Chemical,,,,,,,,102-25-0
 "Benzene, 1,3-bis(1-methylethyl)-",Chemical,,,,,,,,99-62-7
 "Benzene, 1,3-diethyl-",Chemical,,,,,,,,141-93-5
@@ -519,7 +518,7 @@ tert-Butyl acetate,Chemical,,,,,,,,540-88-5
 tert-Butylamine,Chemical,,,,,,,,75-64-9
 Tetrabutyltin,Chemical,,,,,,,,1461-25-2
 "Tetrachloroethane (1,1,2,2-tetrachloroethane)",Chemical,,,,,,,,0
-Tetracosamethylcyclododecasiloxane SVOCSW ,Chemical,,,,,,,, 18919-94-3
+Tetracosamethylcyclododecasiloxane SVOCSW,Chemical,,,,,,,, 18919-94-3
 "Tetrahydrofuran-2-one, 5-[1-hydroxyhexyl]-",Chemical,,,,,,,,87877-77-8
 Tetrasodium pyrophosphate,Chemical,,,,,,,,7722-88-5
 Thallium and its compounds expressed as thallium (Total Tl),Chemical Group,,,,,,,,0
@@ -558,33 +557,33 @@ PCB 52,Chemical,,,,,,,,
 Aroclor 1210,Chemical,,,,,,,,
 "2,4-D",Chemical,"2,4-D ((2,4-Dichlorophenoxy)acetic Acid)","2,4 D","2,4-dichlorophenoxy acetic acid","2,4-Dichlorophenoxyacetic Acid",,,,
 "1,19-Eicosadiene",Chemical,,,,,,,,
-Aliphatics C6-C8,Chemical Group,>C6-C8 Aliphatics,Aliphatics >C6-C8,>C6-C8 Aliphatics (EC=7),>C6-C8 Aliphatics ,,,,
+Aliphatics C6-C8,Chemical Group,>C6-C8 Aliphatics,Aliphatics >C6-C8,>C6-C8 Aliphatics (EC=7),>C6-C8 Aliphatics,,,,
 Carbon dioxide,Chemical,Carbon Dioxide (CO2),Carbon Dioxide Airborne,carbon dioxide produced,CO2,,,,
 "DDT (O,P)",Chemical,"o,p-DDT","o,p'-DDT","2,4-DDT",Trichloro-2(2chlorophenyl)2ethane opDDT,,,,
 Dichlorodiphenyldichloroethane,Chemical,"p,p'TDE","TDE (P,P)","DDD (P,P)","4,4'DDD",,,,
 Dissolved oxygen,Chemical,Dissolved Oxygen (field),Dissolved Oxygen (field) saturation,Dissolved Oxygen saturation,DO (Dissolved Oxygen),,,,
 Mecoprop,Chemical,MCPP,Mecoprop STLGG8,Methyl-4-chlorophenoxymethylacetic acid (2-),Mecoprop STLGZN,,,,
 Methane,Chemical,CH4,Methane (Airborne hydrocarbons),Methane Flow,Methane Flux,,,,
-PAHs (Polycyclic Aromatic Hydrocarbons),Chemical Group,PAH,Polyaromatic Hydrocarbons ,poly-cyclic aromatic hydrocarbons ,PAHs,,,,
-Tetrachloroethene,Chemical,PCE,Tetrachloroethene (Perchloroethene),Tetrachloroethylene,Tetrachlorethylene,,,,
+PAHs (Polycyclic Aromatic Hydrocarbons),Chemical Group,PAH,Polyaromatic Hydrocarbons,poly-cyclic aromatic hydrocarbons,PAHs,,,,
+Tetrachloroethene,Chemical,PCE,Tetrachloroethene (Perchloroethene),Tetrachloroethylene,Tetrachlorethylene,Tetrachloroethylene (PER),Perchloroethylene,,
 Phosphine,Chemical,,,,,,,,
 "1,1,2-Trichloro-1,2,2-trifluoroethane",Chemical,Freon 113,Trichlorotrifluoroethane,"1,1,2-trichloro-1,2,2-trifluoro-ethane",,,,,
 Aliphatics C10-C12,Chemical Group,>C10-C12 Aliphatics,>C10-C12 Aliphatics (EC=11),Aliphatics >C10-C12,,,,,
-Aliphatics C12-C16 (aq),Chemical Group,>C12-C16 Aliphatics ,>C12-C16 Aliphatics (EC=14),Aliphatics >C12-C16 (aq),,,,,
+Aliphatics C12-C16 (aq),Chemical Group,>C12-C16 Aliphatics,>C12-C16 Aliphatics (EC=14),Aliphatics >C12-C16 (aq),,,,,
 Aliphatics C16-C21 (aq),Chemical Group,>C16-C21 Aliphatics,>C16-C21 Aliphatics (EC=18.5),Aliphatics >C16-C21 (aq),,,,,
 Endosulfan alpha (1),Chemical,Endosulfan I,alpha-Endosulphan,,,,,,
-Aliphatics C21-C35 (aq),Chemical Group,>C21-C35 Aliphatics ,>C21-C35 Aliphatics (EC=28),Aliphatics >C21-C35 (aq),,,,,
-Aliphatics C5-C6,Chemical Group,Aliphatics >C5-C6,C5-C6 Aliphatics ,C5-C6 Aliphatics (EC=5.5),,,,,
-Aliphatics C8-C10,Chemical Group,>C8-C10 Aliphatics ,>C8-C10 Aliphatics (EC=9),Aliphatics >C8-C10,,,,,
+Aliphatics C21-C35 (aq),Chemical Group,>C21-C35 Aliphatics,>C21-C35 Aliphatics (EC=28),Aliphatics >C21-C35 (aq),,,,,
+Aliphatics C5-C6,Chemical Group,Aliphatics >C5-C6,C5-C6 Aliphatics,C5-C6 Aliphatics (EC=5.5),,,,,
+Aliphatics C8-C10,Chemical Group,>C8-C10 Aliphatics,>C8-C10 Aliphatics (EC=9),Aliphatics >C8-C10,,,,,
 Ammonia,Chemical,Ammonia (NH3),Ammonia as N,ammonia as total ammonia,,,,,
 Aromatics > EC10-EC12,Chemical Group,>C10-C12 Aromatics,>C10-C12 Aromatics (EC =,>EC10-EC12 Aromatics,,,,,
-Aromatics >EC12-EC16 (aq),Chemical Group,>C12-C16 Aromatics (EC=14),>C12-C16 Aromatics ,>EC12-EC16 Aromatics,,,,,
-Aromatics >EC16-EC21 (aq),Chemical Group,>C16-C21 Aromatics ,>C16-C21 Aromatics (EC=18.5),>EC16-EC21 Aromatics,,,,,
+Aromatics >EC12-EC16 (aq),Chemical Group,>C12-C16 Aromatics (EC=14),>C12-C16 Aromatics,>EC12-EC16 Aromatics,,,,,
+Aromatics >EC16-EC21 (aq),Chemical Group,>C16-C21 Aromatics,>C16-C21 Aromatics (EC=18.5),>EC16-EC21 Aromatics,,,,,
 Aromatics >EC8-EC10,Chemical Group,>C8-C10 Aromatics,>C8-C10 Aromatics (EC=9),>EC8-EC10 Aromatics,,,,,
 Benzyl butyl phthalate,Chemical,Butylbenzylphthalate,BBP (Butyl Benzyl Phthalate),Butyl benzyl phthalate,,,,,
 Carbon monoxide,Chemical,Carbon monoxide (CO),Carbon Monoxide v,CO,,,,,
 "DDD (O,P)",Chemical,"2,4-DDD","TDE (O,P)","o,p'-TDE",,,,,
-"DDE (O,P)",Chemical,"2,4-DDE","o,p'-DDE","o,p-DDE  n",,,,,
+"DDE (O,P)",Chemical,"2,4-DDE","o,p'-DDE","o,p-DDE n",,,,,
 Gasoline range organics,Chemical Group,GRO,Gasoline range organics surrogate recovery,GRO surrogate,,,,,
 "Hexachloro - 1,3 - butadiene",Chemical,Hexachlorobutadiene,Hexachlorobutadiene STLPAM,Hexachlorobutadiene STLPJZ,,,,,
 Phosphorus,Chemical,Phosphorus - Available,"Phosphorus, soluble reactive","Phosphorus, Total Inorganic",,,,,
@@ -604,7 +603,7 @@ Acetonitrile,Chemical,,,,,,,,
 2-Butoxyethanol,Chemical,2-Butoxy ethanol,Ethylene glycol monobutyl ether,,,,,,
 3-Nitroaniline,Chemical,,,,,,,,
 3- and 4-Methylphenol,Chemical,3- & 4-Methylphenol,3 & 4-Methylphenol,,,,,,
-4-Bromophenyl phenyl ether,Chemical,Bromophenyl phenyl ether, 4-bromophenyl phenyl ether,,,,,,
+4-Bromophenyl phenyl ether,Chemical,Bromophenyl phenyl ether,,,,,,,
 4-Methyl-2-pentanone,Chemical,4-methylpentan-2-one,Methyl isobutyl ketone,,,,,,
 Aliphatics & Aromatics C5-35 (aq),Chemical Group,C5-C35 Aliphatics/Aromatics,Aliphatics and Aromatics > C5-35 (aq),,,,,,
 Aliphatics C12-C35 (aq),Chemical Group,>C12-C35 Aliphatics,Aliphatics > EC12-EC35 (aq),,,,,,
@@ -621,7 +620,7 @@ DDT (Dichlorodiphenyltrichloroethane),Chemical,DDT Total,Dichlorodiphenyltrichlo
 Disodium tetraborate decahydrate,Chemical,Sodium tetraborate,Borax,,,,,,
 "1,3-Dichloropropane",Chemical,,,,,,,,
 Endosulfan beta (2),Chemical,Endosulfan beta (2) (LL),Endosulfan II,,,,,,
-Ethylene oxide,Chemical,"1,2-Epoxyethane","Ethylene oxide  (1,2-Epoxyethane)",,,,,,
+Ethylene oxide,Chemical,"1,2-Epoxyethane","Ethylene oxide (1,2-Epoxyethane)",,,,,,
 Fenchlorophos,Chemical,Ronnel,Fenchlorphos,,,,,,
 Fenoprop,Chemical,"2-(2,4,5-trichlorophenoxy)propanoic acid",Silvex,,,,,,
 Ibuprofen,Chemical,"Benzenacetic acid, alpha-methyl-4-(2-methylpropyl)",Ibroprofen,,,,,,
@@ -653,7 +652,7 @@ Xylene (m and p),Chemical group,Xylene (m and p) VOC,p/m Xylene,,,,,,
 Xylene (o),Chemical,Xylene (o) VOC,o-xylene,,,,,,
 Borehole Base Below Ref Point,Physical parameter,Dip to base (bct),Dip to base (bgl),,,,,,
 Oil and Grease,Physical parameter,Oil/Grease,Oil and Grease (Visual),,,,,,
-Particulate matter ,Physical parameter,Particles,Particulates,,,,,,
+Particulate matter,Physical parameter,Particles,Particulates,,,,,,
 Particulate matter - PM10,Physical parameter,Particles (PM10),Particulates (PM10),,,,,,
 "2,2’,3,4’,5,6’-Hexachlorobiphenyl",Chemical,PCB 148,,,,,,,
 Phenol Index,Physical parameter,Phenols (Phenol Index),Phenol Index as C6H5OH,,,,,,
@@ -882,7 +881,7 @@ Azinphos-ethyl,Chemical,Azinphos ethyl,,,,,,,
 Azinphos-methyl,Chemical,Azinphos methyl,,,,,,,
 >C21-C40 Aliphatics,Chemical Group,,,,,,,,
 Beta,Radioisotope group,Beta Analysis,,,,,,,
-"Bezenesulfamide, N-butyl- ",Chemical,Butyl benzene sulphonamide,,,,,,,
+"Bezenesulfamide, N-butyl-",Chemical,Butyl benzene sulphonamide,,,,,,,
 Biphenyl,Chemical,PCB 0,,,,,,,
 Bis(2-chloroethyl) ether,Chemical,Dichloroethyl ether,,,,,,,
 Bisphenol A,Chemical,"Phenol, 4,4'-[1-methylethylidene]bis-",,,,,,,
@@ -903,7 +902,7 @@ Chloroethene,Chemical,Vinyl chloride,,,,,,,
 Chloromethane,Chemical,Methyl chloride,,,,,,,
 Chlorophyll,Chemical Group,"Chlorophyll, Acetone Extract",,,,,,,
 Chlorpyrifos,Chemical,Chlorpyriphos-methyl,,,,,,,
-Cyclic octaatomic sulphur,Chemical,Cyclic octaatomic sulfur (SVOCSW) ,,,,,,,
+Cyclic octaatomic sulphur,Chemical,Cyclic octaatomic sulfur (SVOCSW),,,,,,,
 Cyclohexane Extractable Matter,Chemical group,Cyclohexane Extractable Material,,,,,,,
 Demetons,Chemical Group,Demeton,,,,,,,
 "Detergents, anionic",Chemical Group,Detergents (anionic lauryl sulphate),,,,,,,
@@ -912,11 +911,11 @@ Dichlobenil,Chemical,"2,6-Dichlorobenzonitrile",,,,,,,
 Dimethyl ether,Chemical,Dimethylether,,,,,,,
 Dimethylphenols,Chemical Group,xylenols,,,,,,,
 Dioxins and furans (PCDDs/PCDFs) - as I-TEQ,Chemical Group,Dioxins / furans (I-TEQ),,,,,,,
-Dissolved Organic Carbon,Chemical group,Organic carbon ,,,,,,,
+Dissolved Organic Carbon,Chemical group,Organic carbon,,,,,,,
 Ethanal,Chemical,Acetaldehyde,,,,,,,
 Ethene,Chemical,Ethylene,,,,,,,
 Halogenated organic compounds (total),Chemical Group,organohalogens,,,,,,,
-Hexachlorocyclohexane ,Chemical,HCH,,,,,,,
+Hexachlorocyclohexane,Chemical,HCH,,,,,,,
 Hexadecanoic acid,Chemical,n-hexadecanoic acid,,,,,,,
 Hexan-2-one,Chemical,2-hexanone,,,,,,,
 Hexanoic acid,Chemical,n-caproic acid,,,,,,,
@@ -938,7 +937,7 @@ Magnesium hardness,Chemical,Magnesium Hardness as CaCO3,,,,,,,
 Magnesium oxide,Chemical,Magnesium Oxide (as Mg),,,,,,,
 Mercury (II) nitrate,Chemical,Mercury nitrate,,,,,,,
 Mercury and its compounds expressed as mercury (total Hg),Chemical Group,Mercury and its compounds,,,,,,,
-Methoxychlor,Chemical,"Methoxychlor, p,p ",,,,,,,
+Methoxychlor,Chemical,"Methoxychlor, p,p",,,,,,,
 Methyl cyanoacrylate,Chemical,Methyl-2-cyanoacrylate,,,,,,,
 n-Butyric acid,Chemical,butyric acid,,,,,,,
 Nitrilotriacetic Acid,Chemical,NTA (Nitrilotriacetic Acid),,,,,,,
@@ -956,7 +955,7 @@ Pentan-3-one,Chemical,Diethyl ketone,,,,,,,
 "Pesticides, total",Chemical Group,Total pesticides,,,,,,,
 Phenol,Chemical,Phenol low level STLTC1,,,,,,,
 "Phenol, 4-(1,1-dimethylethyl)",Chemical,"Phenol, p-tert-butyl- [SVOCSW]",,,,,,,
-Phenols  - 8 speciated,Chemical Group,Total phenols of 8 speciated,,,,,,,
+Phenols - 8 speciated,Chemical Group,Total phenols of 8 speciated,,,,,,,
 "Phenols, non-para, total",Chemical Group,Total Non-Para phenols (4-aminophenazone),,,,,,,
 Phenylamine,Chemical,Aniline,,,,,,,
 Phosalone,Chemical,Phorate,,,,,,,
@@ -1079,7 +1078,7 @@ Copper arsenate,Chemical,,,,,,,,
 "2,4,6-Trinitrotoluene",Chemical,,,,,,,,
 Arochlor 1258,Chemical,,,,,,,,
 "2,4-D (ester)",Chemical,,,,,,,,
-"2,4-D Methyl Ester  ",Chemical,,,,,,,,
+"2,4-D Methyl Ester",Chemical,,,,,,,,
 "2,5-Dichlorophenol",Chemical,,,,,,,,
 "2,6-Dichlorophenol",Chemical,,,,,,,,
 "2,6-Dinitrotoluene",Chemical,,,,,,,,
@@ -1248,7 +1247,7 @@ Benzotriazole,Chemical,,,,,,,,
 Benzyl alcohol,Chemical,,,,,,,,
 Beryllium-7,Chemical,,,,,,,,
 Beta Phellandrene,Chemical,,,,,,,,
-Bezenamine-4-octyl-N-(4-octylphenyl)- ,Chemical,,,,,,,,
+Bezenamine-4-octyl-N-(4-octylphenyl)-,Chemical,,,,,,,,
 "Benzenesulfonamide, N-butyl-4-methyl",Chemical,,,,,,,,
 Benzonitrile,Chemical,,,,,,,,
 Bicarbonate,Chemical,,,,,,,,
@@ -1347,7 +1346,7 @@ Carbophenothion,Chemical,,,,,,,,
 Carboxylic Acid Unidentified circa C20,Chemical group,,,,,,,,
 Carene,Chemical,,,,,,,,
 Carveol,Chemical,,,,,,,,
-Cations ,Chemical group,,,,,,,,
+Cations,Chemical group,,,,,,,,
 Cellulose,Chemical,,,,,,,,
 Cerium 144,Chemical,,,,,,,,
 Cerium-144,Chemical,,,,,,,,
@@ -1468,10 +1467,10 @@ Dimethylphthalate,Chemical,,,,,,,,
 Dinitrobenzenes,Chemical Group,,,,,,,,
 Dinonyl Phenol,Chemical,,,,,,,,
 Dinoseb,Chemical,,,,,,,,
-Dioxin-like PCBs (WHO-TEQ  Birds),Chemical Group,,,,,,,,
-Dioxin-like PCBs (WHO-TEQ  Fish),Chemical Group,,,,,,,,
+Dioxin-like PCBs (WHO-TEQ Birds),Chemical Group,,,,,,,,
+Dioxin-like PCBs (WHO-TEQ Fish),Chemical Group,,,,,,,,
 Dioxin-like PCBs (WHO-TEQ Humans / Mammals),Chemical Group,,,,,,,,
-Dioxins ,Chemical group,,,,,,,,
+Dioxins,Chemical group,,,,,,,,
 Dioxins / furans (WHO-TEQ Birds),Chemical Group,,,,,,,,
 Dioxins / furans (WHO-TEQ Fish),Chemical Group,,,,,,,,
 Dioxins / furans (WHO-TEQ Humans / Mammals),Chemical Group,,,,,,,,
@@ -1752,7 +1751,6 @@ Nonachlorobiphenyl,Chemical,,,,,,,,
 Nonacosane,Chemical,,,,,,,,
 Nonadecane,Chemical,,,,,,,,
 Nonylphenol ethoxylate,Chemical Group,,,,,,,,
-NOx ,Chemical Group,,,,,,,,
 NSO / Resins,Chemical Group,,,,,,,,
 "NVM, light petroleum extract",Chemical group,,,,,,,,
 "o,p'-Methoxychlor",Chemical,,,,,,,,
@@ -1851,7 +1849,7 @@ Personnel,Chemical,,,,,,,,
 "Pesticides (other than aldrin, dieldrin, heptachlor, heptachlor epoxide)",Chemical Group,,,,,,,,
 Phenanthrene,Chemical,,,,,,,,
 Phenanthrene-d10,Chemical,,,,,,,,
-Phenols ,Chemical Group,,,,,,,,
+Phenols,Chemical Group,,,,,,,,
 Phenolic compounds,Chemical Group,,,,,,,,
 Phenol-D6,Chemical,,,,,,,,
 Phenols - phenol and simple substituted - as C,Chemical Group,,,,,,,,
@@ -1969,7 +1967,7 @@ Silicon tetrachloride,Chemical,,,,,,,,
 Silver-108,Chemical,,,,,,,,
 Silver-110,Chemical,,,,,,,,
 Silvexx,Chemical,,,,,,,,
-SO2 ,Chemical,,,,,,,,
+SO2,Chemical,,,,,,,,
 Sodium,Chemical,,,,,,,,
 "Sodium 2-(2,4-Dichlorophenoxy)ethyl sulphate",Chemical,,,,,,,,
 Sodium 22,Chemical,,,,,,,,
@@ -2445,9 +2443,9 @@ Algae Green,Biological Parameter,,,,,,,,
 Algae others,Biological Parameter,,,,,,,,
 Algal count,Biological Parameter,,,,,,,,
 Colony Counts,Biological Parameter,,,,,,,,
-Total coliforms ,Biological Parameter,,,,,,,,
-Total Viable Count ,Biological Parameter,,,,,,,,
-Plate Count ,Biological Parameter,,,,,,,,
+Total coliforms,Biological Parameter,,,,,,,,
+Total Viable Count,Biological Parameter,,,,,,,,
+Plate Count,Biological Parameter,,,,,,,,
 Clostridium perfringens (Including Spores),Biological Parameter,,,,,,,,
 Entero Viruses,Biological Parameter,,,,,,,,
 EPH,Biological Parameter,,,,,,,,

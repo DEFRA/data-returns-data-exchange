@@ -173,7 +173,7 @@ public abstract class EntityDao<E extends ControlledListEntity> {
      * is to convert to upper cases and reduce multiple spaces to a single space to create the lookup key.
      */
     protected String getKeyFromRelaxedName(String name) {
-        return name.toUpperCase().replaceAll("\\s{2,}", " ");
+        return name.toUpperCase().trim().replaceAll("\\s{2,}", " ");
     }
 
 	/**
