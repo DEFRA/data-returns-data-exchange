@@ -1,5 +1,7 @@
 package uk.gov.ea.datareturns.domain.jpa.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import javax.persistence.*;
 
 /**
@@ -11,6 +13,7 @@ import javax.persistence.*;
 @Table(name = "qualifiers")
 public class Qualifier implements ControlledListEntity {
 
+	@JsonIgnore
 	@Id
 	@SequenceGenerator(name = "qualifiers_id_seq", sequenceName = "qualifiers_id_seq", allocationSize=1)
 	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator="qualifiers_id_seq")
@@ -18,7 +21,8 @@ public class Qualifier implements ControlledListEntity {
 
 	private String name;
 	private String notes;
-	private String suggested_category;
+	private String type;
+	private String SingleOrMultiple;
 
 	public Long getId() {
 		return this.id;
@@ -30,7 +34,7 @@ public class Qualifier implements ControlledListEntity {
 
 	@Override
 	@Basic
-	@Column(name = "name", nullable = false, length = 70)
+	@Column(name = "name", nullable = false, length = 100)
 	public String getName() {
 		return this.name;
 	}
@@ -50,12 +54,46 @@ public class Qualifier implements ControlledListEntity {
 	}
 
 	@Basic
-	@Column(name = "suggested_category", length = 20)
-	public String getSuggested_category() {
-		return suggested_category;
+	@Column(name = "type", length = 50)
+	public String getType() {
+		return type;
 	}
 
-	public void setSuggested_category(String suggested_category) {
-		this.suggested_category = suggested_category;
+	public void setType(String suggested_category) {
+		this.type = suggested_category;
+	}
+
+    @Basic
+    @Column(name = "singleormultiple", length = 20)
+	public String getSingleOrMultiple() {
+		return SingleOrMultiple;
+	}
+
+	public void setSingleOrMultiple(String singleOrMultiple) {
+		SingleOrMultiple = singleOrMultiple;
+	}
+
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (o == null || getClass() != o.getClass()) return false;
+
+		Qualifier qualifier = (Qualifier) o;
+
+		if (id != null ? !id.equals(qualifier.id) : qualifier.id != null) return false;
+		if (name != null ? !name.equals(qualifier.name) : qualifier.name != null) return false;
+		if (notes != null ? !notes.equals(qualifier.notes) : qualifier.notes != null) return false;
+		if (type != null ? !type.equals(qualifier.type) : qualifier.type != null) return false;
+		return SingleOrMultiple != null ? SingleOrMultiple.equals(qualifier.SingleOrMultiple) : qualifier.SingleOrMultiple == null;
+	}
+
+	@Override
+	public int hashCode() {
+		int result = id != null ? id.hashCode() : 0;
+		result = 31 * result + (name != null ? name.hashCode() : 0);
+		result = 31 * result + (notes != null ? notes.hashCode() : 0);
+		result = 31 * result + (type != null ? type.hashCode() : 0);
+		result = 31 * result + (SingleOrMultiple != null ? SingleOrMultiple.hashCode() : 0);
+		return result;
 	}
 }

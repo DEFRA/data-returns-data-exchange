@@ -342,11 +342,12 @@
 			<column name="id" type="bigserial">
 				<constraints primaryKey="true" nullable="false"/>
 			</column>
-			<column name="name" type="varchar(70)">
+			<column name="name" type="varchar(100)">
 				<constraints nullable="false" unique="true"/>
 			</column>
 			<column name="notes" type="varchar(100)"></column>
-			<column name="suggested_category" type="varchar(20)"></column>
+			<column name="type" type="varchar(50)"></column>
+			<column name="singleormultiple" type="varchar(20)"></column>
 		</createTable>
 		<rollback>
 			<dropTable tableName="qualifiers"/>
@@ -371,9 +372,13 @@
       <where>notes = ''</where>
     </update>
     <update tableName="qualifiers">
-      <column name="suggested_category"/>
-      <where>suggested_category = ''</where>
+      <column name="type"/>
+      <where>type = ''</where>
     </update>
+		<update tableName="qualifiers">
+			<column name="singleormultiple"/>
+			<where>singleormultiple = ''</where>
+		</update>
   </changeSet>
 
 	<changeSet id="create-index: qualifiers" author="Sam Gardner-Dell">
@@ -384,7 +389,6 @@
 			<dropIndex tableName="qualifiers" indexName="idx_qualifiers_name"/>
 		</rollback>
 	</changeSet>
-
 
 	<!-- 
 	****************************************************************

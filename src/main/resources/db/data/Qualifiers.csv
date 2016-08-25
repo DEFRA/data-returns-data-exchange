@@ -1,202 +1,218 @@
-name,suggested_category,notes
-% of total,Calculation,A percentage of the total
-0.5x dilution,Sample condition,
-10x dilution,Sample condition,
-1x dilution,Sample condition,
-25x dilution,Sample condition,
-2x dilution,Sample condition,
-3x dilution,Sample condition,
-4-hour start up,Operating condition,
-Abnormal,Operating condition,
-Acid positive,Sample condition,
-Acidified,Sample condition,
-Additional dilution,Sample condition,
-Aerobic,Sample condition,
-After derivatisation,Sample condition,
-Air dried,Sample condition,
-Air dried solids,Sample condition,
-Albuminoid,Sample condition,
-All isomers,Sample content,"Various - Xylene, Trichlorobenzene, Hexachlorocyclohexane"
-Anaerobic,Sample condition,
-As ITEQ,Sample condition,Dioxins and furans
-As WHO TEQ,Sample condition,Dioxins and furans and PCBs
-At rest,Operating condition,
-Background corrected,Calculation,
-Beta oestradiol equivalent,Sample condition,
-Bioavailable,Sample condition,
-Calculated,Sample condition,
-Coded,Sample condition,
-Combined,Calculation,
-Combined fraction,Calculation,
-combined limit,Operating condition,
-Comparison,Sample condition,
-Complex,Sample condition,
-Confirmed,Sample condition,
-Corrected,Sample condition,
-Count,Sample content,
-Critical Threshold (CT),Sample condition,
-Detected,Sample condition,
-Dielectric strength,Sample condition,
-Digested,Sample condition,
-Disposal,Sample condition,Hazardous/non-hazardous waste transfer
-Dissolved,Sample condition,
-Dry weight,Sample condition,
-Drying,Sample condition,
-Duration,Sample condition,
-Dynamic load,Operating condition,
-Easily liberable,Sample condition,
-Emulsified,Sample condition,
-Estimated,Sample condition,
-Extract,Sample condition,
-Extractable,Sample condition,
-Extreme weather,Operating condition,
-Filtered,Sample condition,
-Filtration simple,Sample condition,
-Fraction,Sample condition,
-Fraction organic,Sample condition,
-Free,Sample condition,
-Free and loosely complexed,Sample condition,
-From minimum,Calculation,
-From qualifying renewable fuel sources,Sample condition,In relation to CO2 production
-Gas,Sample condition,
-Gas fired,Sample condition,
-Gas oil/low sulphur fuel,Sample condition,
-Gauged,Sample condition,
-High COP,Sample condition,
-High load,Sample condition,
-Ignition,Sample condition,
-In non-aqueous liquid,Sample condition,
-In pore water,Sample condition,
-In situ,Sample condition,
-Insoluble,Sample condition,
-Instrumental,Sample condition,
-Integrator,Sample condition,
-ITEQ,Sample condition,International toxic equivalents
-Largest,Sample condition,
-Leach,Sample condition,
-Leachable,Sample condition,
-Leachate,Sample condition,
-Load,Sample condition,
-Low COP,Sample condition,
-Low level,Sample condition,
-Low load,Sample condition,
-Lower 95% confidence limit,Sample condition,
-Main colour,Sample condition,
-Maximum,Calculation,
-Mean,Calculation,
-Measured,Calculation,
-Median,Calculation,
-MEPP,Operating condition,
-MEPP down or cross gradient,Operating condition,
-MEPP up gradient,Operating condition,
-Mixed isomers,Sample content,
-Natural gas,Operating condition,
-Natural gas and standby fuel when the boiler is run for >72 hours,Operating condition,
-Naturalised,Sample condition,
-Nature,Sample condition,
-Nature code,Sample condition,
-Negative,Sample condition,
-Nett,Calculation,
-Non-fossil fuel,Operating condition,Energy consumption
-Non-volatile,Sample condition,
-Normal,Operating condition,
-Normal operation,Operating condition,
-On site,Sample condition,
-One stage,Sample condition,
-Oxidised,Sample condition,
-Particulate,Sample condition,
-Passive sampling,Sample condition,
-Peak reading,Sample condition,
-Per tonne of dissolved solids sludge,Calculation,
-Per tonne of product,Calculation,
-Permanent,Sample condition,
-Physically separable,Sample condition,
-Positive,Sample condition,
-Predicted,Calculation,
-Presumptive,Sample condition,
-Pumping,Operating condition,
-Purged,Operating condition,
-Qualitative,Calculation,
-Quantitative,Calculation,
-Quantity,Sample condition,
-Rate of change,Sample condition,
-Ratio,Calculation,
-Recovery,Sample condition,Hazardous/non-hazardous waste transfer
-Reducible,Sample condition,
-Relative to atmospheric pressure,Calculation,
-Relative to chart datum,Calculation,
-Relative to local datum,Sample condition,
-Residue,Sample condition,
-Respirable dust,Sample condition,
-Rolling total,Calculation,
-Screen,Sample condition,
-Semi-quantitative,Sample condition,
-Semi-volatile,Sample condition,
-Separable,Sample condition,
-Settleable,Sample condition,
-Settled,Sample condition,
-Shaken,Sample condition,
-Sieved,Sample condition,
-Smallest,Calculation,
-Solid,Sample condition,
-Solid Sample,Sample condition,
-Soluble,Sample condition,
-Soluble 2:1,Sample condition,
-Standby fuel,Operating condition,
-Standby fuel only,Operating condition,
-Stirred,Sample condition,
-Strandline,Sample condition,
-Strandline scale 0-3,Sample condition,
-Strandline to waters edge,Sample condition,
-Strandline to waters edge scale 0-3,Sample condition,
-Sum identified,Calculation,
-Sum of 25 congeners,Calculation,
-Sum of all isomers,Calculation,
-Sum of components,Calculation,
-Sum of derivatives,Calculation,
-Sum of isomers,Calculation,
-Surface,Sample condition,
-Suspended,Sample condition,
-Temporary,Operating condition,
-Texture,Sample condition,
-Threshold number,Sample condition,
-Titration,Sample condition,
-To maximum,Calculation,
-Total,Calculation,
-Total available,Calculation,
-Total count,Calculation,
-Total derived,Calculation,
-Total isomers,Calculation,
-Total load,Operating condition,
-Total moving 7-day emissions,Calculation,
-Total oxidisable,Calculation,
-Total residual,Calculation,
-Total surface,Calculation,
-Total toxicity,Calculation,
-Total volatile,Calculation,
-Tracer,Sample condition,
-Two stage,Sample condition,
-Unacidified,Sample condition,
-Undistilled,Sample condition,
-Unfiltered,Sample condition,
-Unsettleable,Sample condition,
-Unsieved,Sample condition,
-Upper 95% confidence limit,Sample condition,
-Viral tracer,Sample condition,
-Visual,Sample condition,
-Volatile,Sample condition,
-Volatile scan,Sample condition,
-Waters edge,Sample condition,
-Waters edge scale 0-3,Sample condition,
-Wet weight,Sample condition,
-Rising,Operating condition,In relation to atmospheric pressure (or other parameters)
-Falling,Operating condition,In relation to atmospheric pressure (or other parameters)
-At 35°c,Sample condition,
-At 105°c,Sample condition,
-At 20°c,Sample condition,
-At 25°c,Sample condition,
-At 22°c,Sample condition,
-At 37°c,Sample condition,
-1 day,Sample condition,Length of culture for water samples
-3 day,Sample condition,Length of culture for water samples
-In 100ml,Sample condition,Culture counts by volume for water samples
+"name","notes","type","singleormultiple"
+"% of Total","A percentage of the Total","Calculation","Qualifier"
+"0.5x Dilution",,"Sample condition","Qualifier"
+"10x Dilution",,"Sample condition","Qualifier"
+"1x Dilution",,"Sample condition","Qualifier"
+"25x Dilution",,"Sample condition","Qualifier"
+"2x Dilution",,"Sample condition","Qualifier"
+"3x Dilution",,"Sample condition","Qualifier"
+"4-hour start up",,"Operating condition","Qualifier"
+"Abnormal",,"Operating condition","Qualifier"
+"Acid Positive",,"Sample condition","Qualifier"
+"Acidified",,"Sample condition","Qualifier"
+"Additional Dilution",,"Sample condition","Qualifier"
+"Aerobic",,"Sample condition","Qualifier"
+"After Derivatisation",,"Sample condition","Qualifier"
+"Air Dried",,"Sample condition","Qualifier"
+"Air Dried Solids",,"Sample condition","Qualifier"
+"Albuminoid",,"Sample condition","Qualifier"
+"All isomers","Various - Xylene, Trichlorobenzene, Hexachlorocyclohexane","Sample content","Qualifier"
+"Anaerobic",,"Sample condition","Qualifier"
+"As ITEQ","Dioxins and furans, ","Sample condition","Qualifier"
+"As WHO TEQ","Dioxins and furans and PCBs","Sample condition","Qualifier"
+"At rest",,"Operating condition","Qualifier"
+"Background Corrected",,"Calculation","Qualifier"
+"Beta Oestradiol Equivalent",,"Sample condition","Qualifier"
+"Bioavailable",,"Sample condition","Qualifier"
+"Calculated",,"Sample condition","Qualifier"
+"Coded",,"Sample condition","Qualifier"
+"Combined",,"Calculation","Qualifier"
+"Combined Fraction",,"Calculation","Qualifier"
+"combined limit",,"Operating condition","Qualifier"
+"Comparison",,"Sample condition","Qualifier"
+"Complex",,"Sample condition","Qualifier"
+"Confirmed",,"Sample condition","Qualifier"
+"Corrected",,"Sample condition","Qualifier"
+"Count",,"Sample content","Qualifier"
+"Critical Threshold (CT)",,"Sample condition","Qualifier"
+"Detected",,"Sample condition","Qualifier"
+"Dielectric Strength",,"Sample condition","Qualifier"
+"Digested",,"Sample condition","Qualifier"
+"Disposal ","Hazardous/Non-hazardous waste transfer","Sample condition","Qualifier"
+"Dissolved",,"Sample condition","Qualifier"
+"Dry Weight",,"Sample condition (moisture)","Qualifier"
+"Drying",,"Sample condition","Qualifier"
+"Duration",,"Sample condition","Qualifier"
+"Dynamic Load",,"Operating condition","Qualifier"
+"Easily Liberable",,"Sample condition","Qualifier"
+"Emulsified",,"Sample condition","Qualifier"
+"Estimated",,"Sample condition","Qualifier"
+"Extract",,"Sample condition","Qualifier"
+"Extractable",,"Sample condition","Qualifier"
+"Extreme weather",,"Operating condition","Qualifier"
+"Filtered",,"Sample condition","Qualifier"
+"Filtration Simple",,"Sample condition","Qualifier"
+"Fraction",,"Sample condition","Qualifier"
+"Fraction Organic",,"Sample condition","Qualifier"
+"Free",,"Sample condition","Qualifier"
+"Free and Loosely Complexed",,"Sample condition","Qualifier"
+"From Minimum",,"Calculation","Qualifier"
+"From Qualifying Renewable Fuel Sources","In relation to CO2 production","Sample condition","Qualifier"
+"Gas",,"Sample condition","Qualifier"
+"Gas fired",,"Sample condition","Qualifier"
+"Gas oil / low sulphur fuel",,"Sample condition","Qualifier"
+"Gauged",,"Sample condition","Qualifier"
+"High COP",,"Sample condition","Qualifier"
+"High Load",,"Sample condition","Qualifier"
+"Ignition",,"Sample condition","Qualifier"
+"In non-aqueous liquid",,"Sample condition","Qualifier"
+"In leachate","Used for metals in leachate as opposed to ground water samples","Sample condition","Qualifier"
+"In pore water",,"Sample condition","Qualifier"
+"In situ",,"Sample condition","Qualifier"
+"Insoluble",,"Sample condition","Qualifier"
+"Instrumental",,"Sample condition","Qualifier"
+"Integrator",,"Sample condition","Qualifier"
+"ITEQ","International toxic equivalents","Sample condition","Qualifier"
+"Largest",,"Sample condition","Qualifier"
+"Leach",,"Sample condition","Qualifier"
+"Leachable",,"Sample condition","Qualifier"
+"Leachate",,"Sample condition","Qualifier"
+"Load",,"Sample condition","Qualifier"
+"Low COP",,"Sample condition","Qualifier"
+"Low Level",,"Sample condition","Qualifier"
+"Low Load",,"Sample condition","Qualifier"
+"Lower 95% Confidence Limit",,"Sample condition","Qualifier"
+"Main Colour",,"Sample condition","Qualifier"
+"Maximum",,"Calculation","Qualifier"
+"Mean",,"Calculation","Qualifier"
+"Measured",,"Calculation","Qualifier"
+"Median",,"Calculation","Qualifier"
+"MEPP",,"Operating condition","Qualifier"
+"MEPP Down or Cross gradient",,"Operating condition","Qualifier"
+"MEPP Up gradient",,"Operating condition","Qualifier"
+"Mixed Isomers",,"Sample content","Qualifier"
+"Natural gas",,"Operating condition","Qualifier"
+"Natural gas and standby fuel when the boiler is run for >72 hours",,"Operating condition","Qualifier"
+"Naturalised",,"Sample condition","Qualifier"
+"Nature",,"Sample condition","Qualifier"
+"Nature Code",,"Sample condition","Qualifier"
+"Negative",,"Sample condition","Qualifier"
+"Nett",,"Calculation","Qualifier"
+"Non-Fossil Fuel","Energy consumption","Operating condition","Qualifier"
+"Non-volatile",,"Sample condition","Qualifier"
+"Normal",,"Operating condition","Qualifier"
+"Normal operation",,"Operating condition","Qualifier"
+"On site",,"Sample condition","Qualifier"
+"One stage",,"Sample condition","Qualifier"
+"Oxidised",,"Sample condition","Qualifier"
+"Particulate",,"Sample condition","Qualifier"
+"Passive Sampling",,"Sample condition","Qualifier"
+"Peak Reading",,"Sample condition","Qualifier"
+"Per tonne of dissolved solids sludge",,"Calculation","Qualifier"
+"Per tonne of product",,"Calculation","Qualifier"
+"Permanent",,"Sample condition","Qualifier"
+"Physically Separable",,"Sample condition","Qualifier"
+"Positive",,"Sample condition","Qualifier"
+"Predicted",,"Calculation","Qualifier"
+"Presumptive",,"Sample condition","Qualifier"
+"Pumping",,"Operating condition","Qualifier"
+"Purged",,"Operating condition","Qualifier"
+"Qualitative",,"Calculation","Qualifier"
+"Quantitative",,"Calculation","Qualifier"
+"Quantity",,"Sample condition","Qualifier"
+"Rate of Change",,"Sample condition","Qualifier"
+"Ratio",,"Calculation","Qualifier"
+"Recovery","Hazardous/Non-hazardous waste transfer","Sample condition","Qualifier"
+"Reducible",,"Sample condition","Qualifier"
+"Relative to Atmospheric Pressure",,"Calculation","Qualifier"
+"Relative to Chart Datum",,"Calculation","Qualifier"
+"Relative to Local Datum",,"Sample condition","Qualifier"
+"Residue",,"Sample condition","Qualifier"
+"Respirable Dust",,"Sample condition","Qualifier"
+"Rolling Total",,"Calculation","Qualifier"
+"Screen",,"Sample condition","Qualifier"
+"Semi-quantitative",,"Sample condition","Qualifier"
+"Semi-volatile",,"Sample condition","Qualifier"
+"Separable",,"Sample condition","Qualifier"
+"Settleable",,"Sample condition","Qualifier"
+"Settled",,"Sample condition","Qualifier"
+"Shaken",,"Sample condition","Qualifier"
+"Sieved",,"Sample condition","Qualifier"
+"Smallest",,"Calculation","Qualifier"
+"Solid",,"Sample condition","Qualifier"
+"Solid sample",,"Sample condition","Qualifier"
+"Soluble",,"Sample condition","Qualifier"
+"Soluble 2:1",,"Sample condition","Qualifier"
+"Standby fuel",,"Operating condition","Qualifier"
+"Standby fuel only",,"Operating condition","Qualifier"
+"Stirred",,"Sample condition","Qualifier"
+"Strandline",,"Sample condition","Qualifier"
+"Strandline Scale 0-3",,"Sample condition","Qualifier"
+"Strandline to Waters Edge",,"Sample condition","Qualifier"
+"Strandline to Waters Edge Scale 0-3",,"Sample condition","Qualifier"
+"Sum Identified",,"Calculation","Qualifier"
+"Sum of 25 Congeners",,"Calculation","Qualifier"
+"Sum of All Isomers",,"Calculation","Qualifier"
+"Sum of Components",,"Calculation","Qualifier"
+"Sum of Derivatives",,"Calculation","Qualifier"
+"Sum of Isomers",,"Calculation","Qualifier"
+"Surface",,"Sample condition","Qualifier"
+"Suspended",,"Sample condition","Qualifier"
+"Temporary",,"Operating condition","Qualifier"
+"Texture",,"Sample condition","Qualifier"
+"Threshold Number",,"Sample condition","Qualifier"
+"Titration",,"Sample condition","Qualifier"
+"To Maximum",,"Calculation","Qualifier"
+"Total",,"Calculation","Qualifier"
+"Total Available",,"Calculation","Qualifier"
+"Total Count",,"Calculation","Qualifier"
+"Total Derived",,"Calculation","Qualifier"
+"Total Isomers",,"Calculation","Qualifier"
+"Total Load",,"Operating condition","Qualifier"
+"Total Moving 7-Day Emissions",,"Calculation","Qualifier"
+"Total Oxidisable",,"Calculation","Qualifier"
+"Total Residual",,"Calculation","Qualifier"
+"Total Surface",,"Calculation","Qualifier"
+"Total Toxicity",,"Calculation","Qualifier"
+"Total Volatile",,"Calculation","Qualifier"
+"Tracer",,"Sample condition","Qualifier"
+"Two Stage",,"Sample condition","Qualifier"
+"Unacidified",,"Sample condition","Qualifier"
+"Undistilled",,"Sample condition","Qualifier"
+"Unfiltered",,"Sample condition","Qualifier"
+"Unsettleable",,"Sample condition","Qualifier"
+"Unsieved",,"Sample condition","Qualifier"
+"Upper 95% Confidence Limit",,"Sample condition","Qualifier"
+"Viral Tracer",,"Sample condition","Qualifier"
+"Visual",,"Sample condition","Qualifier"
+"Volatile",,"Sample condition","Qualifier"
+"Volatile Scan",,"Sample condition","Qualifier"
+"Waters Edge",,"Sample condition","Qualifier"
+"Waters Edge Scale 0-3",,"Sample condition","Qualifier"
+"Wet Weight",,"Sample condition (moisture)","Qualifier"
+"Rising","In relation to atmospheric pressure (or other parameters)","Operating condition","Qualifier"
+"Falling","In relation to atmospheric pressure (or other parameters)","Operating condition","Qualifier"
+"at 35°c",,"Sample condition (temperature)","Qualifier"
+"at 105°c",,"Sample condition (temperature)","Qualifier"
+"at 20°c",,"Sample condition (temperature)","Qualifier"
+"at 25°c",,"Sample condition (temperature)","Qualifier"
+"at 22°c",,"Sample condition (temperature)","Qualifier"
+"at 37°c",,"Sample condition (temperature)","Qualifier"
+"1 day","Length of culture for water samples ","Sample condition (analysis time)","Qualifier"
+"3 day","Length of culture for water samples","Sample condition (analysis time)","Qualifier"
+"in 100ml","Culture counts by volume for water samples","Sample condition (volume)","Qualifier"
+"in 500ml","Bacterial counts by volume of water sample","Sample condition (volume)","Qualifier"
+"dissolved or emulsified","Relating to hydrocarbons","Sample condition","Qualifier"
+"PAH","Poly aromatic Hydro Carbon","Sample content","Qualifier"
+"ESG SVOC",,"Sample content","Qualifier"
+"Total, unfiltered",,"Combined qualifier","Combined qualifier"
+"Dissolved, filtered",,"Combined qualifier","Combined qualifier"
+"Total avlailiable, filtered",,"Combined qualifier","Combined qualifier"
+"Dissolved, total",,"Combined qualifier","Combined qualifier"
+"After tuning","In NOx measurement","Operating condition","Qualifier"
+"Before tuning","In NOx measurement","Operating condition","Qualifier"
+"Flow","e.g. Methane flow m3/hr","Calculation","Qualifier"
+"Flux","e.g. Methane flux mg/m2/sec or ppm (v/v)","Calculation","Qualifier"
+"Minimum",,"Calculation","Qualifier"
+"at 180°c",,"Sample condition","Qualifier"
+"Precipitated","Sulphur","Sample condition","Qualifier"
