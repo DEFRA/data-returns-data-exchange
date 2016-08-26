@@ -565,14 +565,15 @@ public class DataSampleValidatorTests {
 	@Test
 	public void testUnitValid() {
 		final DataSample record = createValidNumericRecord();
-		record.setUnit("Hazen");
+		record.setUnit("HU");
 		final Set<ConstraintViolation<DataSample>> violations = this.validator.validate(record);
 		Assert.assertEquals(0, violations.size());
 	}
+
 	@Test
 	public void testUnitProhibitedWithTextValue() {
 		final DataSample record = createValidTextRecord();
-		record.setUnit("Hazen");
+		record.setUnit("HU");
 		final Set<ConstraintViolation<DataSample>> violations = this.validator.validate(record);
 		Assert.assertEquals(1, violations.size());
 	}

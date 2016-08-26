@@ -19,7 +19,12 @@ public class MethodOrStandard implements ControlledListEntity {
 	@JsonIgnore
 	private Long id;
 
+	@Basic
+	@Column(name = "name", nullable = false, length = 30)
 	private String name;
+
+	@Basic
+	@Column(name = "notes", length = 250)
 	private String notes;
 
 	public Long getId() {
@@ -30,8 +35,6 @@ public class MethodOrStandard implements ControlledListEntity {
 		this.id = id;
 	}
 
-	@Basic
-	@Column(name = "name", nullable = false, length = 30)
 	public String getName() {
 		return this.name;
 	}
@@ -40,8 +43,6 @@ public class MethodOrStandard implements ControlledListEntity {
 		this.name = name;
 	}
 
-	@Basic
-	@Column(name = "notes", length = 250)
 	public String getNotes() {
 		return notes;
 	}

@@ -19,9 +19,20 @@ public class Qualifier implements ControlledListEntity {
 	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator="qualifiers_id_seq")
 	private Long id;
 
+	@Basic
+	@Column(name = "name", nullable = false, length = 100)
 	private String name;
+
+	@Basic
+	@Column(name = "notes", length = 100)
 	private String notes;
+
+	@Basic
+	@Column(name = "type", length = 50)
 	private String type;
+
+	@Basic
+	@Column(name = "singleormultiple", length = 20)
 	private String SingleOrMultiple;
 
 	public Long getId() {
@@ -33,8 +44,6 @@ public class Qualifier implements ControlledListEntity {
 	}
 
 	@Override
-	@Basic
-	@Column(name = "name", nullable = false, length = 100)
 	public String getName() {
 		return this.name;
 	}
@@ -43,8 +52,6 @@ public class Qualifier implements ControlledListEntity {
 		this.name = name;
 	}
 
-	@Basic
-	@Column(name = "notes", length = 100)
 	public String getNotes() {
 		return notes;
 	}
@@ -53,8 +60,6 @@ public class Qualifier implements ControlledListEntity {
 		this.notes = description;
 	}
 
-	@Basic
-	@Column(name = "type", length = 50)
 	public String getType() {
 		return type;
 	}
@@ -63,8 +68,6 @@ public class Qualifier implements ControlledListEntity {
 		this.type = suggested_category;
 	}
 
-    @Basic
-    @Column(name = "singleormultiple", length = 20)
 	public String getSingleOrMultiple() {
 		return SingleOrMultiple;
 	}

@@ -122,6 +122,7 @@ public class DataSample extends AbstractCSVRecord {
 	/** Unit of measurement (Unit) */
 	@Parsed(field = DataReturnsHeaders.UNIT)
 	@ControlledList(auditor = UnitAuditor.class, message = "{DR9050-Incorrect}")
+	@Modifier(modifier = UnitModifier.class)
 	private String unit;
 
 	/** Reference period */

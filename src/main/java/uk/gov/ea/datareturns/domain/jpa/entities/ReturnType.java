@@ -18,7 +18,13 @@ public class ReturnType implements ControlledListEntity {
 	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator="return_types_id_seq")
 	@JsonIgnore
 	private Long id;
+
+	@Basic
+	@Column(name = "name", nullable = false, length = 80)
 	private String name;
+
+	@Basic
+	@Column(name = "sector", nullable = false, length = 20)
 	private String sector;
 
 	public Long getId() {
@@ -28,8 +34,6 @@ public class ReturnType implements ControlledListEntity {
 		this.id = id;
 	}
 
-	@Basic
-	@Column(name = "name", nullable = false, length = 80)
 	public String getName() {
 		return name;
 	}
@@ -37,8 +41,6 @@ public class ReturnType implements ControlledListEntity {
 		this.name = name;
 	}
 
-	@Basic
-	@Column(name = "sector", nullable = false, length = 20)
 	public String getSector() {
 		return sector;
 	}

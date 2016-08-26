@@ -23,7 +23,7 @@
 	Unique Identifiers
 	****************************************************************
 	-->
-	<changeSet id="create-table: unique_identifiers" author="Graham Willis">
+	<changeSet id="create-table: unique_identifiers" author="Environment Agency">
 		<createTable tableName="unique_identifiers">
 			<!-- Currently unique identifiers are generally 6 characters long but this could change! -->
 			<column name="id" type="bigserial">
@@ -38,7 +38,7 @@
 		</rollback>
 	</changeSet>
 
-	<changeSet id="load-data: unique_identifiers" author="Graham Willis">
+	<changeSet id="load-data: unique_identifiers" author="Environment Agency">
 		<preConditions onFail="HALT">
 			<tableExists tableName="unique_identifiers"/>
 			<columnExists tableName="unique_identifiers" columnName="name"/>
@@ -50,7 +50,7 @@
 		</rollback>
 	</changeSet>
 
-	<changeSet id="create-index: unique_identifiers" author="Graham Willis">
+	<changeSet id="create-index: unique_identifiers" author="Environment Agency">
 		<createIndex indexName="idx_unique_identifiers_name" tableName="unique_identifiers" unique="true">
 			<column name="name"/>
 		</createIndex>
@@ -65,7 +65,7 @@
 	****************************************************************
 	-->
 
-	<changeSet id="create-table: return_types" author="Graham Willis">
+	<changeSet id="create-table: return_types" author="Environment Agency">
 		<createTable tableName="return_types">
 			<column name="id" type="bigserial">
 				<constraints primaryKey="true" nullable="false"/>
@@ -82,7 +82,7 @@
 		</rollback>
 	</changeSet>
 
-	<changeSet id="load-data: return_types" author="Sam Gardner-Dell">
+	<changeSet id="load-data: return_types" author="Environment Agency">
 		<preConditions onFail="HALT">
 			<tableExists tableName="return_types"/>
 			<columnExists tableName="return_types" columnName="name"/>
@@ -94,7 +94,7 @@
 		</rollback>
 	</changeSet>
 
-	<changeSet id="create-index: return_types" author="Sam Gardner-Dell">
+	<changeSet id="create-index: return_types" author="Environment Agency">
 		<createIndex indexName="idx_return_type_name" tableName="return_types" unique="true">
 			<column name="name"/>
 		</createIndex>
@@ -108,7 +108,7 @@
 	Parameters Preload table
 	****************************************************************
 	-->
-	<changeSet id="create-table: parameters_preload" author="Graham Willis">
+	<changeSet id="create-table: parameters_preload" author="Environment Agency">
 		<createTable tableName="parameters_preload">
 			<column name="name" type="varchar(150)">
 				<constraints nullable="false" unique="true"/>
@@ -125,7 +125,7 @@
 		</createTable>
 	</changeSet>
 
-	<changeSet id="load-data: parameters_preload" author="Graham Willis">
+	<changeSet id="load-data: parameters_preload" author="Environment Agency">
 		<preConditions onFail="HALT">
 			<tableExists tableName="parameters_preload"/>
 			<columnExists tableName="parameters_preload" columnName="name"/>
@@ -137,7 +137,7 @@
 		</rollback>
 	</changeSet>
 
-	<changeSet id="update-nulls: parameters_preload" author="Graham Willis" >
+	<changeSet id="update-nulls: parameters_preload" author="Environment Agency">
 		<update tableName="parameters_preload">
 			<column name="type"/>
 			<where>type = ''</where>
@@ -182,7 +182,7 @@
 	****************************************************************
   -->
 
-	<changeSet id="create-table: parameters" author="Graham Willis">
+	<changeSet id="create-table: parameters" author="Environment Agency">
 		<createTable tableName="parameters">
 			<column name="id" type="bigserial" autoIncrement="true">
 				<constraints primaryKey="true"/>
@@ -200,14 +200,14 @@
 	</changeSet>
 
   <!-- Don't specify postgress here because liqibase silently fails. No comment. -->
-	<changeSet author="Graham Willis" id="Load parameter from preload table">
+	<changeSet id="normalize: parameters" author="Environment Agency">
 		<sqlFile path="../sql/prepare_parameters.sql"
              relativeToChangelogFile="true"
              splitStatements="true"
              stripComments="true"/>
 	</changeSet>
 
-	<changeSet id="create-index: parameters" author="Graham Willis">
+	<changeSet id="create-index: parameters" author="Environment Agency">
 		<createIndex indexName="idx_parameters_name" tableName="parameters" unique="true">
 			<column name="name"/>
 		</createIndex>
@@ -216,7 +216,7 @@
 		</rollback>
 	</changeSet>
 
-  <changeSet id="update-nulls: parameters" author="Graham Willis" >
+  <changeSet id="update-nulls: parameters" author="Environment Agency">
     <update tableName="parameters">
       <column name="preferred"/>
       <where>preferred = ''</where>
@@ -230,12 +230,22 @@
       <where>cas = ''</where>
     </update>
   </changeSet>
+
+  <changeSet author="Environment Agency" id="addForeignKeyConstraint-parameters">
+    <addForeignKeyConstraint baseColumnNames="preferred"
+                             baseTableName="parameters"
+                             constraintName="fk_parameters"
+                             referencedColumnNames="name"
+                             referencedTableName="parameters"/>
+  </changeSet>
+
   <!--
   ****************************************************************
   Units
   ****************************************************************
   -->
-	<changeSet id="create-table: units" author="Sam Gardner-Dell">
+
+	<changeSet id="create-table: units" author="Environment Agency">
 		<createTable tableName="units">
 			<column name="id" type="bigserial">
 				<constraints primaryKey="true" nullable="false"/>
@@ -243,18 +253,18 @@
 			<column name="name" type="varchar(10)">
 				<constraints nullable="false" unique="true"/>
 			</column>
-			<!-- TODO: This should probably be moved out to its own table -->
-			<column name="measure_type" type="varchar(50)">
-				<constraints nullable="false"/>
-			</column>
-			<column name="description" type="varchar(100)"/>
+			<column name="preferred" type="varchar(10)"/>
+			<column name="long_name" type="varchar(50)"/>
+			<column name="unicode" type="varchar(50)"/>
+			<column name="description" type="varchar(200)"/>
+			<column name="type" type="varchar(50)"/>
 		</createTable>
 		<rollback>
 			<dropTable tableName="units"/>
 		</rollback>
 	</changeSet>
 
-	<changeSet id="load-data: units" author="Sam Gardner-Dell">
+	<changeSet id="load-data: units" author="Environment Agency">
 		<preConditions onFail="HALT">
 			<tableExists tableName="units"/>
 			<columnExists tableName="units" columnName="id"/>
@@ -266,14 +276,30 @@
 		</rollback>
 	</changeSet>
 
-  <changeSet id="update-nulls: units" author="Graham Willis" >
-    <update tableName="units">
-      <column name="description"/>
-      <where>description = ''</where>
-    </update>
-  </changeSet>
+  <changeSet id="update-nulls: units" author="Environment Agency">
+		<update tableName="units">
+			<column name="preferred"/>
+			<where>preferred = ''</where>
+		</update>
+		<update tableName="units">
+			<column name="long_name"/>
+			<where>long_name = ''</where>
+		</update>
+		<update tableName="units">
+			<column name="unicode"/>
+			<where>unicode = ''</where>
+		</update>
+		<update tableName="units">
+			<column name="description"/>
+			<where>description = ''</where>
+		</update>
+		<update tableName="units">
+			<column name="type"/>
+			<where>type = ''</where>
+		</update>
+	</changeSet>
 
-	<changeSet id="create-index: units" author="Sam Gardner-Dell">
+	<changeSet id="create-index: units" author="Environment Agency">
 		<createIndex indexName="idx_units_name" tableName="units" unique="true">
 			<column name="name"/>
 		</createIndex>
@@ -282,13 +308,21 @@
 		</rollback>
 	</changeSet>
 
-	<!-- 
-	****************************************************************
-	Method Or Standard
-	****************************************************************
-	-->
+  <changeSet author="Environment Agency" id="addForeignKeyConstraint-units">
+    <addForeignKeyConstraint baseColumnNames="preferred"
+                             baseTableName="units"
+                             constraintName="fk_units"
+                             referencedColumnNames="name"
+                             referencedTableName="units"/>
+  </changeSet>
 
-	<changeSet id="create-table: methods_or_standards" author="Graham Willis">
+  <!--
+  ****************************************************************
+  Method Or Standard
+  ****************************************************************
+  -->
+
+	<changeSet id="create-table: methods_or_standards" author="Environment Agency">
 		<createTable tableName="methods_or_standards">
 			<column name="id" type="bigserial">
 				<constraints primaryKey="true" nullable="false"/>
@@ -303,7 +337,7 @@
 		</rollback>
 	</changeSet>
 
-	<changeSet id="load-data: methods_or_standards" author="Sam Gardner-Dell">
+	<changeSet id="load-data: methods_or_standards" author="Environment Agency">
 		<preConditions onFail="HALT">
 			<tableExists tableName="methods_or_standards"/>
 			<columnExists tableName="methods_or_standards" columnName="id"/>
@@ -315,14 +349,14 @@
 		</rollback>
 	</changeSet>
 
-  <changeSet id="update-nulls: methods_or_standards" author="Graham Willis" >
+  <changeSet id="update-nulls: methods_or_standards" author="Environment Agency">
     <update tableName="methods_or_standards">
       <column name="notes"/>
       <where>notes = ''</where>
     </update>
   </changeSet>
 
-  <changeSet id="create-index: methods_or_standards" author="Sam Gardner-Dell">
+  <changeSet id="create-index: methods_or_standards" author="Environment Agency">
 		<createIndex indexName="idx_methods_or_standards_name" tableName="methods_or_standards" unique="true">
 			<column name="name"/>
 		</createIndex>
@@ -331,13 +365,12 @@
 		</rollback>
 	</changeSet>
 
-
 	<!-- 
 	****************************************************************
 	Qualifiers
 	****************************************************************
 	-->
-	<changeSet id="create-table: qualifiers" author="Sam Gardner-Dell">
+	<changeSet id="create-table: qualifiers" author="Environment Agency">
 		<createTable tableName="qualifiers">
 			<column name="id" type="bigserial">
 				<constraints primaryKey="true" nullable="false"/>
@@ -354,7 +387,7 @@
 		</rollback>
 	</changeSet>
 
-	<changeSet id="load-data: qualifiers" author="Sam Gardner-Dell">
+	<changeSet id="load-data: qualifiers" author="Environment Agency">
 		<preConditions onFail="HALT">
 			<tableExists tableName="qualifiers"/>
 			<columnExists tableName="qualifiers" columnName="id"/>
@@ -366,7 +399,7 @@
 		</rollback>
 	</changeSet>
   
-  <changeSet id="update-nulls: qualifiers" author="Graham Willis" >
+  <changeSet id="update-nulls: qualifiers" author="Environment Agency">
     <update tableName="qualifiers">
       <column name="notes"/>
       <where>notes = ''</where>
@@ -381,7 +414,7 @@
 		</update>
   </changeSet>
 
-	<changeSet id="create-index: qualifiers" author="Sam Gardner-Dell">
+	<changeSet id="create-index: qualifiers" author="Environment Agency">
 		<createIndex indexName="idx_qualifiers_name" tableName="qualifiers" unique="true">
 			<column name="name"/>
 		</createIndex>
@@ -395,7 +428,7 @@
 	Reference Periods
 	****************************************************************
 	-->
-	<changeSet id="create-table: reference_periods" author="Graham Willis">
+	<changeSet id="create-table: reference_periods" author="Environment Agency">
 		<createTable tableName="reference_periods">
 			<column name="id" type="bigserial">
 				<constraints primaryKey="true" nullable="false"/>
@@ -411,7 +444,7 @@
 		</rollback>
 	</changeSet>
 
-	<changeSet id="load-data: reference_periods" author="Sam Gardner-Dell">
+	<changeSet id="load-data: reference_periods" author="Environment Agency">
 		<preConditions onFail="HALT">
 			<tableExists tableName="reference_periods"/>
 			<columnExists tableName="reference_periods" columnName="id"/>
@@ -423,7 +456,7 @@
 		</rollback>
 	</changeSet>
 
-	<changeSet id="update-nulls: reference_periods" author="Graham Willis" >
+	<changeSet id="update-nulls: reference_periods" author="Environment Agency">
 		<update tableName="reference_periods">
 			<column name="notes"/>
 			<where>notes = ''</where>
@@ -434,7 +467,7 @@
 		</update>
 	</changeSet>
 
-	<changeSet id="create-index: reference_periods" author="Sam Gardner-Dell">
+	<changeSet id="create-index: reference_periods" author="Environment Agency">
 		<createIndex indexName="idx_reference_periods_name" tableName="reference_periods" unique="true">
 			<column name="name"/>
 		</createIndex>
@@ -443,14 +476,20 @@
 		</rollback>
 	</changeSet>
 
-
+  <changeSet author="Environment Agency" id="addForeignKeyConstraint-reference_periods">
+    <addForeignKeyConstraint baseColumnNames="preferred"
+                             baseTableName="reference_periods"
+                             constraintName="fk_reference_periods"
+                             referencedColumnNames="name"
+                             referencedTableName="reference_periods"/>
+  </changeSet>
 	<!--
 	****************************************************************
 	Return Periods
 	****************************************************************
 	-->
 
-	<changeSet id="create-table: return_periods" author="Sam Gardner-Dell">
+	<changeSet id="create-table: return_periods" author="Environment Agency">
 		<createTable tableName="return_periods">
 			<column name="id" type="bigserial">
 				<constraints primaryKey="true" nullable="false"/>
@@ -466,7 +505,7 @@
 		</rollback>
 	</changeSet>
 
-	<changeSet id="load-data: return_periods" author="Sam Gardner-Dell">
+	<changeSet id="load-data: return_periods" author="Environment Agency">
 		<preConditions onFail="HALT">
 			<tableExists tableName="return_periods"/>
 			<columnExists tableName="return_periods" columnName="id"/>
@@ -478,7 +517,7 @@
 		</rollback>
 	</changeSet>
 
-  <changeSet id="update-nulls: return_periods" author="Graham Willis" >
+  <changeSet id="update-nulls: return_periods" author="Environment Agency">
     <update tableName="return_periods">
       <column name="definition"/>
       <where>definition = ''</where>
@@ -489,7 +528,7 @@
     </update>
   </changeSet>
 
-  <changeSet id="create-index: return_periods" author="Sam Gardner-Dell">
+  <changeSet id="create-index: return_periods" author="Environment Agency">
 		<createIndex indexName="idx_return_periods_name" tableName="return_periods" unique="true">
 			<column name="name"/>
 		</createIndex>

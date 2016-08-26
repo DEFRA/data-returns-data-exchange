@@ -18,10 +18,16 @@ public class ReturnPeriod implements ControlledListEntity {
 	@JsonIgnore
 	private Long id;
 
+	@Basic
+	@Column(name = "name", nullable = false, length = 20)
 	private String name;
 
+	@Basic
+	@Column(name = "definition", nullable = false, length = 600)
 	public String definition;
 
+	@Basic
+	@Column(name = "example", nullable = false, length = 20)
 	public String example;
 
 	public Long getId() {
@@ -32,8 +38,6 @@ public class ReturnPeriod implements ControlledListEntity {
 		this.id = id;
 	}
 
-	@Basic
-	@Column(name = "name", nullable = false, length = 20)
 	public String getName() {
 		return this.name;
 	}
@@ -42,8 +46,6 @@ public class ReturnPeriod implements ControlledListEntity {
 		this.name = name;
 	}
 
-	@Basic
-	@Column(name = "definition", nullable = false, length = 600)
 	public String getDefinition() {
 		return definition;
 	}
@@ -52,8 +54,6 @@ public class ReturnPeriod implements ControlledListEntity {
 		this.definition = description;
 	}
 
-	@Basic
-	@Column(name = "example", nullable = false, length = 20)
 	public String getExample() {
 		return example;
 	}

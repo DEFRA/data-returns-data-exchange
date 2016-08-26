@@ -143,12 +143,19 @@ public class ControlledListsTests {
         // Add and retrieve
         Unit unit = new Unit();
         unit.setName(NAME);
-        unit.setDescription(NAME);
-        unit.setMeasureType(NAME);
+        unit.setDescription(NAME + NAME + NAME);
+        unit.setType("Type");
+        unit.setLongName(NAME + NAME);
+        unit.setUnicode("UC");
+
         unitDao.add(unit);
 
         Unit retrieveUnit = (Unit) unitDao.getByName(NAME);
         Assert.assertNotNull(retrieveUnit.getId());
+        Assert.assertEquals(retrieveUnit.getDescription(), NAME + NAME + NAME);
+        Assert.assertEquals(retrieveUnit.getLongName(), NAME + NAME);
+        Assert.assertEquals(retrieveUnit.getType(), "Type");
+        Assert.assertEquals(retrieveUnit.getUnicode(), "UC");
 
         Unit retrieveUnit2 = (Unit) unitDao.getById(retrieveUnit.getId());
         Assert.assertNotNull(retrieveUnit2);
@@ -196,14 +203,16 @@ public class ControlledListsTests {
         ReferencePeriod referencePeriod2 = (ReferencePeriod) referencePeriodDao.getByName(PRIMARY_2);
         ReferencePeriod referencePeriod3 = (ReferencePeriod) referencePeriodDao.getByName(PRIMARY_3);
 
-        if (referencePeriod1 != null) {
-            referencePeriodDao.removeById(referencePeriod1.getId());
-        }
+        // Have to remove 2 & 3 first in order not to violates foreign key constraint fk_reference_periods
         if (referencePeriod2 != null) {
             referencePeriodDao.removeById(referencePeriod2.getId());
         }
         if (referencePeriod3 != null) {
             referencePeriodDao.removeById(referencePeriod3.getId());
+        }
+
+        if (referencePeriod1 != null) {
+            referencePeriodDao.removeById(referencePeriod1.getId());
         }
 
         referencePeriod1 = new ReferencePeriod();
@@ -240,9 +249,11 @@ public class ControlledListsTests {
         Assert.assertEquals(referencePeriodDao.nameExistsRelaxed(PRIMARY_3_MASH), true);
         Assert.assertEquals(referencePeriodDao.getStandardizedName(PRIMARY_3_MASH), PRIMARY_1);
 
-        referencePeriodDao.removeById(referencePeriod1.getId());
         referencePeriodDao.removeById(referencePeriod2.getId());
         referencePeriodDao.removeById(referencePeriod3.getId());
+
+        // Last
+        referencePeriodDao.removeById(referencePeriod1.getId());
     }
 }
 
