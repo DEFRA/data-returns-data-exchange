@@ -12,6 +12,7 @@
 	<property name="qualifiersFile" value="/db/data/Qualifiers.csv"/>
 	<property name="referencePeriodsFile" value="/db/data/ReferencePeriods.csv"/>
 	<property name="returnPeriodsFile" value="/db/data/ReturnPeriods.csv"/>
+	<property name="textValuesFile" value="/db/data/TextValues.csv"/>
 
 	<preConditions>
 		<dbms type="${db.type}"/>
@@ -536,5 +537,63 @@
 			<dropIndex tableName="return_periods" indexName="idx_return_periods_name"/>
 		</rollback>
 	</changeSet>
+
+	<!--
+	****************************************************************
+	Text Values
+	****************************************************************
+	-->
+
+	<changeSet id="create-table: text_values" author="Environment Agency">
+		<createTable tableName="text_values">
+			<column name="id" type="bigserial">
+				<constraints primaryKey="true" nullable="false"/>
+			</column>
+			<column name="name" type="varchar(30)">
+				<constraints nullable="false" unique="true"/>
+			</column>
+			<column name="preferred" type="varchar(30)"/>
+		</createTable>
+		<rollback>
+			<dropTable tableName="text_values"/>
+		</rollback>
+	</changeSet>
+
+	<changeSet id="load-data: text_values" author="Environment Agency">
+		<preConditions onFail="HALT">
+			<tableExists tableName="text_values"/>
+			<columnExists tableName="text_values" columnName="id"/>
+			<sqlCheck expectedResult="0">select count(id) from text_values</sqlCheck>
+		</preConditions>
+		<loadData file="${textValuesFile}" tableName="text_values"/>
+		<rollback>
+			<delete tableName="text_values"></delete>
+		</rollback>
+	</changeSet>
+
+	<changeSet id="update-nulls: text_values" author="Environment Agency">
+		<update tableName="text_values">
+			<column name="preferred"/>
+			<where>preferred = ''</where>
+		</update>
+	</changeSet>
+
+	<changeSet id="create-index: text_values" author="Environment Agency">
+		<createIndex indexName="idx_text_values_name" tableName="text_values" unique="true">
+			<column name="name"/>
+		</createIndex>
+		<rollback>
+			<dropIndex tableName="text_values" indexName="idx_text_values_name"/>
+		</rollback>
+	</changeSet>
+
+	<changeSet author="Environment Agency" id="addForeignKeyConstraint-text_values">
+		<addForeignKeyConstraint baseColumnNames="preferred"
+														 baseTableName="text_values"
+														 constraintName="fk_text_values"
+														 referencedColumnNames="name"
+														 referencedTableName="text_values"/>
+	</changeSet>
+
 
 </databaseChangeLog>

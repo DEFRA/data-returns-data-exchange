@@ -8,7 +8,6 @@ import uk.gov.ea.datareturns.domain.io.csv.generic.AbstractCSVRecord;
 import uk.gov.ea.datareturns.domain.model.rules.DataReturnsHeaders;
 import uk.gov.ea.datareturns.domain.model.rules.conversion.EaIdConverter;
 import uk.gov.ea.datareturns.domain.model.rules.conversion.ReturnsDateConverter;
-import uk.gov.ea.datareturns.domain.model.rules.conversion.TxtValueConverter;
 import uk.gov.ea.datareturns.domain.model.rules.modifiers.*;
 import uk.gov.ea.datareturns.domain.model.validation.auditors.controlledlist.*;
 import uk.gov.ea.datareturns.domain.model.validation.auditors.dependencies.PrimaryFieldBlocksDependentAuditor;
@@ -109,8 +108,8 @@ public class DataSample extends AbstractCSVRecord {
 
 	/** Textual value (Txt_Value) */
 	@Parsed(field = DataReturnsHeaders.TEXT_VALUE)
-	@Convert(conversionClass = TxtValueConverter.class)
 	@ControlledList(auditor = TxtValueAuditor.class, message = "{DR9080-Incorrect}")
+	@Modifier(modifier = TextValueModifier.class)
 	private String textValue;
 
 	/** Qualifier value (Qualifier) */

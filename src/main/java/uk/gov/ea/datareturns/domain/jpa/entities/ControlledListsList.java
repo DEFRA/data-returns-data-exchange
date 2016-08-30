@@ -53,6 +53,11 @@ public enum ControlledListsList {
     METHOD_OR_STANDARD("Monitoring standard or method", MethodOrStandardDao.class, "method", Collections.unmodifiableList(new ArrayList<DisplayHeaderDto>() {{
         add(new DisplayHeaderDto("name", "Meth_Stand"));
         add(new DisplayHeaderDto("notes", "Notes"));
+    }}), "name"),
+
+    TEXT_VALUES("Text Values", TextValueDao.class, "txt_value", Collections.unmodifiableList(new ArrayList<DisplayHeaderDto>() {{
+        add(new DisplayHeaderDto("name", "Txt_Value"));
+        add(new DisplayHeaderDto("aliases", "Alternatives"));
     }}), "name");
 
     private final String path;

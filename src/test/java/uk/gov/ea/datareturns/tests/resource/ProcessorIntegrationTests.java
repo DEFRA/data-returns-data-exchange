@@ -24,6 +24,7 @@ import uk.gov.ea.datareturns.domain.storage.StorageProvider;
 import uk.gov.ea.datareturns.domain.storage.StorageProvider.StoredFile;
 
 import javax.inject.Inject;
+import javax.xml.soap.Text;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -47,7 +48,7 @@ import java.util.stream.Collectors;
 @DirtiesContext
 public class ProcessorIntegrationTests {
 	public final static String IO_TESTS_FOLDER = "/testfiles/iotests/";
-	public final static String BOOLEAN_TESTS = "boolean-values.csv";
+	public final static String BOOLEAN_TESTS = "testTextValueSubstitution.csv";
 	public final static String RETURN_PERIOD_TESTS = "testReturnPeriodSubstitution.csv";
 
 	public final static String RTN_TYPE_SUB = "testReturnTypeSubstitution.csv";
@@ -56,6 +57,7 @@ public class ProcessorIntegrationTests {
 	public final static String METH_STAND_SUB = "testMethStandSubstitution.csv";
 	public final static String PARAMETER_SUB = "testParameterSubstitution.csv";
 	public final static String UNITS_SUB = "testUnitsSubstitution.csv";
+	public final static String TEXT_SUB = "testTextValueSubstitution.csv";
 
 	@Inject
 	private ApplicationContext context;
@@ -81,17 +83,9 @@ public class ProcessorIntegrationTests {
 	@Inject
 	private UnitDao unitDao;
 
+	@Inject
+	private TextValueDao textValueDao;
 
-	/**
-	 * Tests boolean values are converted as necessary.
-	 */
-	@Test
-	public void testBooleanValues() {
-		final Collection<File> outputFiles = getOutputFiles(getTestFileStream(BOOLEAN_TESTS));
-		Assertions.assertThat(outputFiles.size()).isEqualTo(1);
-		final String[] expected = { "true", "false", "true", "false", "true", "false", "true", "false" };
-		verifyCSVValues(outputFiles.iterator().next(), DataReturnsHeaders.TEXT_VALUE, expected);
-	}
 	/**
 	 * Tests return period values are converted as necessary.
 	 */
@@ -113,7 +107,16 @@ public class ProcessorIntegrationTests {
 	}
 
 	@Test
-	public void ReturnTypeValues() {
+	public void TextValueValueSubstitution() {
+		final Collection<File> outputFiles = getOutputFiles(getTestFileStream(TEXT_SUB));
+		Assertions.assertThat(outputFiles.size()).isEqualTo(1);
+		final List<TextValue> textValues = textValueDao.list();
+		final List<String> textValuesNames = textValues.stream().map(TextValue::getName).collect(Collectors.toList());
+		verifyExpectedValuesContainsCSVValues(outputFiles.iterator().next(), DataReturnsHeaders.TEXT_VALUE, textValuesNames);
+	}
+
+	@Test
+	public void ReturnTypeValueSubstitution() {
 		final Collection<File> outputFiles = getOutputFiles(getTestFileStream(RTN_TYPE_SUB));
 		Assertions.assertThat(outputFiles.size()).isEqualTo(1);
 		final List<ReturnType> returnTypes = returnTypeDao.list();
@@ -122,7 +125,7 @@ public class ProcessorIntegrationTests {
 	}
 
 	@Test
-	public void QualifierValues() {
+	public void QualifierValueSubstitution() {
 		final Collection<File> outputFiles = getOutputFiles(getTestFileStream(QUALIFIER_SUB));
 		Assertions.assertThat(outputFiles.size()).isEqualTo(1);
 		final List<Qualifier> qualifiers = qualifierDao.list();
@@ -131,7 +134,7 @@ public class ProcessorIntegrationTests {
 	}
 
     @Test
-    public void RefPeriodValues() {
+    public void RefPeriodValueSubstitution() {
         final Collection<File> outputFiles = getOutputFiles(getTestFileStream(REF_PERIOD_SUB));
         Assertions.assertThat(outputFiles.size()).isEqualTo(1);
         final List<ReferencePeriod> referencePeriod = referencePeriodDao.list();
@@ -140,7 +143,7 @@ public class ProcessorIntegrationTests {
     }
 
 	@Test
-	public void MethodOrStandardValues() {
+	public void MethodOrStandardValueSubstitution() {
 		final Collection<File> outputFiles = getOutputFiles(getTestFileStream(METH_STAND_SUB));
 		Assertions.assertThat(outputFiles.size()).isEqualTo(1);
 		final List<MethodOrStandard> methodOrStandard = methodOrStandardDao.list();
@@ -149,7 +152,7 @@ public class ProcessorIntegrationTests {
 	}
 
 	@Test
-	public void ParameterValues() {
+	public void ParameterValueSubstitution() {
 		final Collection<File> outputFiles = getOutputFiles(getTestFileStream(PARAMETER_SUB));
 		Assertions.assertThat(outputFiles.size()).isEqualTo(1);
 		final List<Parameter> parameter = parameterDao.list();
@@ -158,7 +161,7 @@ public class ProcessorIntegrationTests {
 	}
 
 	@Test
-	public void UnitValues() {
+	public void UnitValueSubstitution() {
 		final Collection<File> outputFiles = getOutputFiles(getTestFileStream(UNITS_SUB));
 		Assertions.assertThat(outputFiles.size()).isEqualTo(1);
 		final List<Unit> unit = unitDao.list();

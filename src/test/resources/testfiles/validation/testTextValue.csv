@@ -1,0 +1,10 @@
+"EA_ID","Rtn_Type","Mon_Point","Mon_Date","Parameter","Value","Unit","Txt_Value","Comments"
+"EP3136GK","Landfill gas borehole","Monitor point 1",2015-08-05,"16-(Thienylmethylene)Androstane-3,17-Diol SVOCS",,,"Gas fired",
+"EP3136GK","Landfill gas borehole","Monitor point 1",2015-08-05,"16-(Thienylmethylene)Androstane-3,17-Diol SVOCS",,,"TRUE",
+"EP3136GK","Landfill gas borehole","Monitor point 1",2015-08-05,"16-(Thienylmethylene)Androstane-3,17-Diol SVOCS",,,"true",
+"EP3136GK","Landfill gas borehole","Monitor point 1",2015-08-05,"16-(Thienylmethylene)Androstane-3,17-Diol SVOCS",,,"false ",
+"EP3136GK","Landfill gas borehole","Monitor point 1",2015-08-05,"16-(Thienylmethylene)Androstane-3,17-Diol SVOCS",,,"Yes",
+"EP3136GK","Landfill gas borehole","Monitor point 1",2015-08-05,"16-(Thienylmethylene)Androstane-3,17-Diol SVOCS",,,"See comment","A comment"
+"EP3136GK","Landfill gas borehole","Monitor point 1",2015-08-05,"16-(Thienylmethylene)Androstane-3,17-Diol SVOCS",,,"See comments","A comment"
+"EP3136GK","Landfill gas borehole","Monitor point 1",2015-08-05,"16-(Thienylmethylene)Androstane-3,17-Diol SVOCS",,,"1",
+"EP3136GK","Landfill gas borehole","Monitor point 1",2015-08-05,"16-(Thienylmethylene)Androstane-3,17-Diol SVOCS",100,"µg",,

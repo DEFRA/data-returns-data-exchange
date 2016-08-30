@@ -20,6 +20,7 @@ import uk.gov.ea.datareturns.App;
 import uk.gov.ea.datareturns.config.TestSettings;
 import uk.gov.ea.datareturns.domain.exceptions.ApplicationExceptionType;
 import uk.gov.ea.datareturns.domain.result.DataExchangeResult;
+import uk.gov.ea.datareturns.domain.result.ValidationErrors;
 import uk.gov.ea.datareturns.web.security.ApiKeys;
 
 import javax.inject.Inject;
@@ -131,6 +132,9 @@ public class ResourceIntegrationTests {
 
 	public final static String PARAMETERS_VALID = "validation/testParameter.csv";
 	public final static String PARAMETERS_INVALID = "validation/testParameterInvalid.csv";
+
+    public final static String TEXT_VALUE_VALID = "validation/testTextValue.csv";
+    public final static String TEXT_VALUE_INVALID = "validation/testTextValueInvalid.csv";
 
 	@Inject
 	private TestSettings testSettings;
@@ -487,7 +491,16 @@ public class ResourceIntegrationTests {
 		final Client client = createClient("test Meth_Stand invalid");
 		final Response resp = performUploadStep(client, METH_STAND_INVALID, MEDIA_TYPE_CSV);
 		assertThat(resp.getStatus()).isEqualTo(Status.BAD_REQUEST.getStatusCode());
-	}
+
+        final DataExchangeResult result = getResultFromResponse(resp);
+        ValidationErrors validationErrors = result.getValidationErrors();
+        assertThat(validationErrors.getErrors().stream().anyMatch(e ->
+                e.getLineNumber() == 2L &&
+                        e.getErrorType().equals("Incorrect") &&
+                        e.getErrorCode() == 9100
+        )).isTrue();
+
+    }
 
 	@Test
 	public void testReturnTypeValid() {
@@ -501,6 +514,14 @@ public class ResourceIntegrationTests {
 		final Client client = createClient("test Rtn_Type invalid");
 		final Response resp = performUploadStep(client, RTN_TYPE_INVALID, MEDIA_TYPE_CSV);
 		assertThat(resp.getStatus()).isEqualTo(Status.BAD_REQUEST.getStatusCode());
+
+        final DataExchangeResult result = getResultFromResponse(resp);
+        ValidationErrors validationErrors = result.getValidationErrors();
+        assertThat(validationErrors.getErrors().stream().anyMatch(e ->
+                e.getLineNumber() == 2L &&
+                        e.getErrorType().equals("Incorrect") &&
+                        e.getErrorCode() == 9010
+        )).isTrue();
 	}
 
     @Test
@@ -515,6 +536,14 @@ public class ResourceIntegrationTests {
         final Client client = createClient("test Ref_Period invalid");
         final Response resp = performUploadStep(client, REF_PERIOD_INVALID, MEDIA_TYPE_CSV);
         assertThat(resp.getStatus()).isEqualTo(Status.BAD_REQUEST.getStatusCode());
+
+        final DataExchangeResult result = getResultFromResponse(resp);
+        ValidationErrors validationErrors = result.getValidationErrors();
+        assertThat(validationErrors.getErrors().stream().anyMatch(e ->
+                e.getLineNumber() == 2L &&
+                        e.getErrorType().equals("Incorrect") &&
+                        e.getErrorCode() == 9090
+        )).isTrue();
     }
 
     @Test
@@ -529,6 +558,13 @@ public class ResourceIntegrationTests {
         final Client client = createClient("test Units invalid");
         final Response resp = performUploadStep(client, UNITS_INVALID, MEDIA_TYPE_CSV);
         assertThat(resp.getStatus()).isEqualTo(Status.BAD_REQUEST.getStatusCode());
+        final DataExchangeResult result = getResultFromResponse(resp);
+        ValidationErrors validationErrors = result.getValidationErrors();
+        assertThat(validationErrors.getErrors().stream().anyMatch(e ->
+                e.getLineNumber() == 2L &&
+                        e.getErrorType().equals("Incorrect") &&
+                        e.getErrorCode() == 9050
+        )).isTrue();
     }
 
     @Test
@@ -543,6 +579,13 @@ public class ResourceIntegrationTests {
         final Client client = createClient("test Qualifiers invalid");
         final Response resp = performUploadStep(client, QUALIFIERS_INVALID, MEDIA_TYPE_CSV);
         assertThat(resp.getStatus()).isEqualTo(Status.BAD_REQUEST.getStatusCode());
+        final DataExchangeResult result = getResultFromResponse(resp);
+        ValidationErrors validationErrors = result.getValidationErrors();
+        assertThat(validationErrors.getErrors().stream().anyMatch(e ->
+                e.getLineNumber() == 2L &&
+                        e.getErrorType().equals("Incorrect") &&
+                        e.getErrorCode() == 9180
+        )).isTrue();
     }
 
     @Test
@@ -557,6 +600,43 @@ public class ResourceIntegrationTests {
         final Client client = createClient("test ReturnPeriod invalid");
         final Response resp = performUploadStep(client, RETURN_PERIOD_INVALID, MEDIA_TYPE_CSV);
         assertThat(resp.getStatus()).isEqualTo(Status.BAD_REQUEST.getStatusCode());
+        final DataExchangeResult result = getResultFromResponse(resp);
+        ValidationErrors validationErrors = result.getValidationErrors();
+        assertThat(validationErrors.getErrors().stream().anyMatch(e ->
+                e.getLineNumber() == 2L &&
+                        e.getErrorType().equals("Incorrect") &&
+                        e.getErrorCode() == 9070
+        )).isTrue();
+
+        assertThat(validationErrors.getErrors().stream().anyMatch(e ->
+                e.getLineNumber() == 3L &&
+                        e.getErrorType().equals("Incorrect") &&
+                        e.getErrorCode() == 9070
+        )).isTrue();
+
+        assertThat(validationErrors.getErrors().stream().anyMatch(e ->
+                e.getLineNumber() == 4L &&
+                        e.getErrorType().equals("Incorrect") &&
+                        e.getErrorCode() == 9070
+        )).isTrue();
+
+        assertThat(validationErrors.getErrors().stream().anyMatch(e ->
+                e.getLineNumber() == 5L &&
+                        e.getErrorType().equals("Incorrect") &&
+                        e.getErrorCode() == 9070
+        )).isTrue();
+
+        assertThat(validationErrors.getErrors().stream().anyMatch(e ->
+                e.getLineNumber() == 6L &&
+                        e.getErrorType().equals("Incorrect") &&
+                        e.getErrorCode() == 9070
+        )).isTrue();
+
+        assertThat(validationErrors.getErrors().stream().anyMatch(e ->
+                e.getLineNumber() == 7L &&
+                        e.getErrorType().equals("Incorrect") &&
+                        e.getErrorCode() == 9070
+        )).isTrue();
     }
 
 	@Test
@@ -571,7 +651,76 @@ public class ResourceIntegrationTests {
 		final Client client = createClient("test Parameter invalid");
 		final Response resp = performUploadStep(client, PARAMETERS_INVALID, MEDIA_TYPE_CSV);
 		assertThat(resp.getStatus()).isEqualTo(Status.BAD_REQUEST.getStatusCode());
+        final DataExchangeResult result = getResultFromResponse(resp);
+        ValidationErrors validationErrors = result.getValidationErrors();
+
+        // Test missing
+        assertThat(validationErrors.getErrors().stream().anyMatch(e ->
+                e.getLineNumber() == 2L &&
+                        e.getErrorType().equals("Missing") &&
+                        e.getErrorCode() == 9030
+        )).isTrue();
+
+        // Test incorrect
+        assertThat(validationErrors.getErrors().stream().anyMatch(e ->
+                e.getLineNumber() == 3L &&
+                        e.getErrorType().equals("Incorrect") &&
+                        e.getErrorCode() == 9030
+        )).isTrue();
 	}
+
+	@Test
+	public void testTextValueValid() {
+		final Client client = createClient("test Text Value valid");
+		final Response resp = performUploadStep(client, TEXT_VALUE_VALID, MEDIA_TYPE_CSV);
+		assertThat(resp.getStatus()).isEqualTo(Status.OK.getStatusCode());
+	}
+
+	@Test
+	public void testTextValueInvalid() {
+		final Client client = createClient("test Text Value invalid");
+		final Response resp = performUploadStep(client, TEXT_VALUE_INVALID, MEDIA_TYPE_CSV);
+		assertThat(resp.getStatus()).isEqualTo(Status.BAD_REQUEST.getStatusCode());
+        final DataExchangeResult result = getResultFromResponse(resp);
+        ValidationErrors validationErrors = result.getValidationErrors();
+
+        // Only one of value and text value
+        assertThat(validationErrors.getErrors().stream().anyMatch(e ->
+                e.getLineNumber() == 2L &&
+                e.getErrorType().equals("Conflict") &&
+                e.getErrorCode() == 9999
+        )).isTrue();
+
+        // Units must not be used with text value
+        assertThat(validationErrors.getErrors().stream().anyMatch(e ->
+                e.getLineNumber() == 2L &&
+                        e.getErrorType().equals("Conflict") &&
+                        e.getErrorCode() == 9050
+        )).isTrue();
+
+        // Text value is not in the list
+        assertThat(validationErrors.getErrors().stream().anyMatch(e ->
+                e.getLineNumber() == 3L &&
+                        e.getErrorType().equals("Incorrect") &&
+                        e.getErrorCode() == 9080
+        )).isTrue();
+
+        // Neither value or text value are present
+        assertThat(validationErrors.getErrors().stream().anyMatch(e ->
+                e.getLineNumber() == 4L &&
+                        e.getErrorType().equals("Missing") &&
+                        e.getErrorCode() == 9999
+        )).isTrue();
+
+        // If Txt_Value is "See Comment" then Comment must be present
+        assertThat(validationErrors.getErrors().stream().anyMatch(e ->
+                e.getLineNumber() == 5L &&
+                        e.getErrorType().equals("Missing") &&
+                        e.getErrorCode() == 9140
+        )).isTrue();
+
+    }
+
 
 	///////////////////////////////////////////////////////////////////////////////////////////
 	/////////////////////////////// End Content Validation tests

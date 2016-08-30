@@ -41,6 +41,9 @@ public class ControlledListsTests {
     @Inject
     UnitDao unitDao;
 
+    @Inject
+    TextValueDao textValueDao;
+
     @Test
     public void testMethodOrStandard() {
         MethodOrStandard methodOrStandard0 = (MethodOrStandard) methodOrStandardDao.getByName(NAME);
@@ -128,7 +131,7 @@ public class ControlledListsTests {
         returnTypeDao.removeById(retrieveReturnType2.getId());
         Assert.assertEquals(returnTypeDao.nameExistsRelaxed(NAME_MASH), false);
         Assert.assertEquals(returnTypeDao.getStandardizedName(NAME_MASH), null);
-        
+
         ReturnType retrieveReturnType3 = (ReturnType) returnTypeDao.getById(retrieveReturnType.getId());
         Assert.assertNull(retrieveReturnType3);
     }
@@ -186,6 +189,28 @@ public class ControlledListsTests {
         qualifierDao.removeById(retrieveQualifier2.getId());
         Qualifier retrieveQualifier3 = (Qualifier) qualifierDao.getById(retrieveQualifier.getId());
         Assert.assertNull(retrieveQualifier3);
+    }
+
+    @Test
+    public void testTextValues() {
+        TextValue  textValue0 = (TextValue) textValueDao.getByName(NAME);
+        if (textValue0 != null) {
+            qualifierDao.removeById(textValue0.getId());
+        }
+        // Add and retrieve
+        TextValue TextValue = new TextValue();
+        TextValue.setName(NAME);
+        textValueDao.add(TextValue);
+        TextValue retrieveTextValue = (TextValue) textValueDao.getByName(NAME);
+        Assert.assertNotNull(retrieveTextValue.getId());
+
+        TextValue retrieveTextValue2 = (TextValue) textValueDao.getById(retrieveTextValue.getId());
+        Assert.assertNotNull(retrieveTextValue2);
+        Assert.assertEquals(retrieveTextValue2.getId(), retrieveTextValue.getId());
+
+        textValueDao.removeById(retrieveTextValue2.getId());
+        TextValue retrieveTextValue3 = (TextValue) textValueDao.getById(retrieveTextValue.getId());
+        Assert.assertNull(retrieveTextValue3);
     }
 
     @Test
@@ -255,5 +280,6 @@ public class ControlledListsTests {
         // Last
         referencePeriodDao.removeById(referencePeriod1.getId());
     }
+
 }
 
