@@ -19,16 +19,28 @@ public class Parameter implements AliasingEntity {
 	@JsonIgnore
 	private Long id;
 
+	@Basic
+	@Column(name = "name", nullable = false, length = 150)
 	private String name;
+
+	@Basic
+	@Column(name = "cas", length = 50)
 	private String cas;
+
+	@JsonIgnore
+	@Basic
+	@Column(name = "preferred", length = 150)
 	private String preferred;
+
+	@JsonIgnore
+	@Basic
+	@Column(name = "type", length = 100)
 	private String type;
 
     @Transient
     Set<String> aliases = null;
 
     @Override
-    @JsonIgnore
     public Long getId() {
 		return id;
 	}
@@ -39,8 +51,6 @@ public class Parameter implements AliasingEntity {
 	}
 
 	@Override
-	@Basic
-	@Column(name = "name", nullable = false, length = 150)
 	public String getName() {
 		return name;
 	}
@@ -51,9 +61,6 @@ public class Parameter implements AliasingEntity {
 	}
 
 	@Override
-	@JsonIgnore
-	@Basic
-	@Column(name = "preferred", length = 150)
 	public String getPreferred() {
 		return preferred;
 	}
@@ -63,9 +70,6 @@ public class Parameter implements AliasingEntity {
 		this.preferred = preferred;
 	}
 
-	@JsonIgnore
-	@Basic
-    @Column(name = "type", length = 100)
     public String getType() {
         return type;
     }
@@ -74,8 +78,6 @@ public class Parameter implements AliasingEntity {
         this.type = type;
     }
 
-    @Basic
-    @Column(name = "cas", length = 50)
     public String getCas() {
         return cas;
     }

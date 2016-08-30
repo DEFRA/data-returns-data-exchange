@@ -13,20 +13,30 @@ import java.util.Set;
 @Entity
 @Table(name = "reference_periods")
 public class ReferencePeriod implements ControlledListEntity, AliasingEntity {
+
+	@JsonIgnore
 	@Id
 	@SequenceGenerator(name = "reference_periods_id_seq", sequenceName = "reference_periods_id_seq", allocationSize=1)
 	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator="reference_periods_id_seq")
 	private Long id;
 
+	@Basic
+	@Column(name = "name", nullable = false, length = 100)
 	private String name;
+
+	@Basic
+	@Column(name = "notes", length = 250)
 	private String notes;
+
+	@Basic
+	@JsonIgnore
+	@Column(name = "preferred", length = 100)
 	private String preferred;
 
     @Transient
 	private Set<String> aliases = null;
 
 	@Override
-	@JsonIgnore
 	public Long getId() {
 		return id;
 	}
@@ -37,8 +47,6 @@ public class ReferencePeriod implements ControlledListEntity, AliasingEntity {
 	}
 
 	@Override
-	@Basic
-	@Column(name = "name", nullable = false, length = 100)
 	public String getName() {
 		return name;
 	}
@@ -48,8 +56,6 @@ public class ReferencePeriod implements ControlledListEntity, AliasingEntity {
 		this.name = name;
 	}
 
-	@Basic
-	@Column(name = "notes", length = 250)
 	public String getNotes() {
 		return notes;
 	}
@@ -58,9 +64,6 @@ public class ReferencePeriod implements ControlledListEntity, AliasingEntity {
 		this.notes = description;
 	}
 
-	@Basic
-	@JsonIgnore
-	@Column(name = "preferred", length = 100)
 	public String getPreferred() {
 		return preferred;
 	}

@@ -55,6 +55,7 @@ public class ProcessorIntegrationTests {
 	public final static String QUALIFIER_SUB = "testRefPeriodSubstitution.csv";
 	public final static String METH_STAND_SUB = "testMethStandSubstitution.csv";
 	public final static String PARAMETER_SUB = "testParameterSubstitution.csv";
+	public final static String UNITS_SUB = "testUnitsSubstitution.csv";
 
 	@Inject
 	private ApplicationContext context;
@@ -76,6 +77,10 @@ public class ProcessorIntegrationTests {
 	
 	@Inject
 	private ParameterDao parameterDao;
+
+	@Inject
+	private UnitDao unitDao;
+
 
 	/**
 	 * Tests boolean values are converted as necessary.
@@ -152,6 +157,15 @@ public class ProcessorIntegrationTests {
 		verifyExpectedValuesContainsCSVValues(outputFiles.iterator().next(), DataReturnsHeaders.PARAMETER, parameterNames);
 	}
 
+	@Test
+	public void UnitValues() {
+		final Collection<File> outputFiles = getOutputFiles(getTestFileStream(UNITS_SUB));
+		Assertions.assertThat(outputFiles.size()).isEqualTo(1);
+		final List<Unit> unit = unitDao.list();
+		final List<String> unitNames = unit.stream().map(Unit::getName).collect(Collectors.toList());
+		verifyExpectedValuesContainsCSVValues(outputFiles.iterator().next(), DataReturnsHeaders.UNIT, unitNames);
+	}
+	
 	/**
 	 * Retrieve the set of output files which are created by the processors for the given {@link InputStream}
 	 *

@@ -1,162 +1,368 @@
-name,measure_type,description
-ug,Mass,Microgram
-mg,Mass,Milligram
-g,Mass,Gram
-kg,Mass,Kilogram
-t,Mass,Tonne
-mol,Mass,"mole, an amount of a substance"
-mm,Length,Millimetre
-cm,Length,Centimetre
-m,Length,Metre
-km,Length,Kilometre
-mm2,Area,Square millimetre
-cm2,Area,Square centimetre
-m2,Area,Square metre
-km2,Area,Square kilometre
-Ha,Area,Hectare
-mm3,Volume,Cubic millimetre
-cm3,Volume,Cubic centimetre
-m3,Volume,Cubic metre
-ul,Volume,Microlitre
-ml,Volume,Millilitre
-l,Volume,Litre
-s,Time,Second
-min,Time,Minute
-hr,Time,Hour
-day,Time,Day
-wk,Time,Week
-mth,Time,Month
-qrt,Time,Quarter
-yr,Time,Year
-J,Energy and Power,Joule
-kJ,Energy and Power,Kilojoule
-MJ,Energy and Power,Megajoule
-TJ,Energy and Power,Terrajoule
-W,Energy and Power,Watt
-kW,Energy and Power,Kilowatt
-MW,Energy and Power,Megawatt
-GW,Energy and Power,Gigawatt
-TW,Energy and Power,Terrawatt
-mV,Electricity,Millivolt
-V,Electricity,Volt
-kV,Electricity,Kilovolt
-MV,Electricity,Megavolt
-mA,Electricity,Milliamp
-A,Electricity,Amp
-kA,Electricity,Kiloamp
-Hz,Electromagnetic Radiation,Hertz
-kHz,Electromagnetic Radiation,Kilohertz
-MHz,Electromagnetic Radiation,Megahertz
-Bq,Radioactive Decay,Becquerels
-ºC,Temperature,degrees Celsius
-DegC,Temperature,degrees Celsius
-Pa,Pressure,"Pascal, unit of pressure"
-mBar,Pressure,Millibar
-Bar,Pressure,Bar
-pH,Miscellaneous,Acidity measure
-%,Miscellaneous,"Percentage, a number expressed as a fraction of 100"
-Hazen,Miscellaneous,Hazen
-ppm,Miscellaneous,Parts per million
-ppb,Miscellaneous,Parts per billion
-95%ile,Miscellaneous,95 Percentile
-FTU,Miscellaneous,Formazin Turbidity Unit
-ug/kg,Concentration (Mass/Mass),Microgram per Kilogram
-mg/kg,Concentration (Mass/Mass),Milligram per Kilogram
-g/t,Concentration (Mass/Mass),Gram per Tonne
-ug/l,Concentration (Mass/Volume),Microgram per Litre
-mg/l,Concentration (Mass/Volume),Milligram per Litre
-g/l,Concentration (Mass/Volume),Gram per Litre
-kg/l,Concentration (Mass/Volume),Kilogram per Litre
-ug/m3,Concentration (Mass/Volume),Microgram per Cubic metre
-mg/m3,Concentration (Mass/Volume),Milligram per Cubic metre
-g/m3,Concentration (Mass/Volume),Gram per Cubic metre
-kg/m3,Concentration (Mass/Volume),Kilogram per Cubic metre
-ug/m2,Concentration (Mass/Area),Microgram per Square metre
-mg/m2,Concentration (Mass/Area),Milligram per Square metre
-g/m2,Concentration (Mass/Area),Gram per Square metre
-kg/m2,Concentration (Mass/Area),Kilogram per Square metre
-% v/v,Concentration (Volume/Volume),Percentage volume for volume
-ug/s,Flow (Mass/Time),Microgram per Second
-mg/s,Flow (Mass/Time),Milligram per Second
-g/s,Flow (Mass/Time),Gram per Second
-kg/s,Flow (Mass/Time),Kilogram per Second
-mg/min,Flow (Mass/Time),Milligram per Minute
-g/min,Flow (Mass/Time),Gram per Minute
-kg/min,Flow (Mass/Time),Kilogram per Minute
-t/min,Flow (Mass/Time),Tonne per Minute
-ug/hr,Flow (Mass/Time),Microgram per Hour
-mg/hr,Flow (Mass/Time),Milligram per Hour
-g/hr,Flow (Mass/Time),Gram per Hour
-kg/hr,Flow (Mass/Time),Kilogram per Hour
-t/hr,Flow (Mass/Time),Tonne per Hour
-ug/day,Flow (Mass/Time),Microgram per Day
-mg/day,Flow (Mass/Time),Milligram per Day
-g/day,Flow (Mass/Time),Gram per Day
-kg/day,Flow (Mass/Time),Kilogram per Day
-t/day,Flow (Mass/Time),Tonne per Day
-ug/wk,Flow (Mass/Time),Microgram per Week
-mg/wk,Flow (Mass/Time),Milligram per Week
-g/wk,Flow (Mass/Time),Gram per Week
-kg/wk,Flow (Mass/Time),Kilogram per Week
-t/wk,Flow (Mass/Time),Tonne per Week
-kg/yr,Flow (Mass/Time),Kilogram per Year
-t/yr,Flow (Mass/Time),Tonne per Year
-mm3/s,Flow (Volume/Time),Cubic millimetre per Second
-cm3/s,Flow (Volume/Time),Cubic centimetre per Second
-m3/s,Flow (Volume/Time),Cubic metre per Second
-ul/s,Flow (Volume/Time),Microlitre per Second
-ml/s,Flow (Volume/Time),Millilitre per Second
-l/s,Flow (Volume/Time),Litre per Second
-mm3/min,Flow (Volume/Time),Cubic millimetre per Minute
-cm3/min,Flow (Volume/Time),Cubic centimetre per Minute
-m3/min,Flow (Volume/Time),Cubic metre per Minute
-ul/min,Flow (Volume/Time),Microlitre per Minute
-ml/min,Flow (Volume/Time),Millilitre per Minute
-l/min,Flow (Volume/Time),Litre per Minute
-cm3/hr,Flow (Volume/Time),Cubic centimetre per Hour
-m3/hr,Flow (Volume/Time),Cubic metre per Hour
-ul/hr,Flow (Volume/Time),Microlitre per Hour
-ml/hr,Flow (Volume/Time),Millilitre per Hour
-l/hr,Flow (Volume/Time),Litre per Hour
-mm3/day,Flow (Volume/Time),Cubic millimetre per Day
-cm3/day,Flow (Volume/Time),Cubic centimetre per Day
-m3/day,Flow (Volume/Time),Cubic metre per Day
-ul/day,Flow (Volume/Time),Microlitre per Day
-ml/day,Flow (Volume/Time),Millilitre per Day
-l/day,Flow (Volume/Time),Litre per Day
-mm3/wk,Flow (Volume/Time),Cubic millimetre per Week
-cm3/wk,Flow (Volume/Time),Cubic centimetre per Week
-m3/wk,Flow (Volume/Time),Cubic metre per Week
-ul/wk,Flow (Volume/Time),Microlitre per Week
-ml/wk,Flow (Volume/Time),Millilitre per Week
-l/wk,Flow (Volume/Time),Litre per Week
-m3/yr,Flow (Volume/Time),Cubic metre per Year
-l/yr,Flow (Volume/Time),Litre per Year
-cm/s,Speed (Length/Time),Centimetre per Second
-m/s,Speed (Length/Time),Metre per Second
-cm/min,Speed (Length/Time),Centimetre per Minute
-m/min,Speed (Length/Time),Metre per Minute
-cm/hr,Speed (Length/Time),Centimetre per Hour
-m/hr,Speed (Length/Time),Metre per Hour
-km/hr,Speed (Length/Time),Kilometre per Hour
-cm/day,Speed (Length/Time),Centimetre per Day
-m/day,Speed (Length/Time),Metre per Day
-km/day,Speed (Length/Time),Kilometre per Day
-cm/wk,Speed (Length/Time),Centimetre per Week
-m/wk,Speed (Length/Time),Metre per Week
-km/wk,Speed (Length/Time),Kilometre per Week
-cm/mth,Speed (Length/Time),Centimetre per Month
-m/mth,Speed (Length/Time),Metre per Month
-cm/yr,Speed (Length/Time),Centimetre per Year
-m/yr,Speed (Length/Time),Metre per Year
-km/yr,Speed (Length/Time),Kilometre per Year
-Bq/cm2,Radioactivity,Becquerels per Square centimetre
-Bq/m2,Radioactivity,Becquerels per Square metre
-Bq/cm3,Radioactivity,Becquerels per Cubic centimetre
-Bq/m3,Radioactivity,Becquerels per Cubic metre
-Bq/g,Radioactivity,Becquerels per Gram
-Bq/kg,Radioactivity,Becquerels per Kilogram
-Bq/l,Radioactivity,Becquerels per Litre
-kWh,Electrical Flow,Kilowatt Hour
-MWh,Electrical Flow,Megawatt Hour
-GWh,Electrical Flow,Gigawatt Hour
+"name","preferred","long_name","unicode","description","type"
+"%",,"Percentage",,"A number expressed as a fraction of 100","Misc"
+"%v/v",,"Percentage volume for volume",,"A unit of volume percent concentration","Concentration (Vol/Vol)"
+"%Wt/Wt",,"Percentage weight for weight",,"A unit of weight percent concentration","Concentration (Wt/Wt)"
+"′","'","Minute","(U+2032)","This character is a prime - a unit of angular measure used in geographic coordinates (latitude or longitude)","Misc"
+"'",,"Minute",,"This character is a quote, an allowable alternative to a prime - a unit of angular measure used in geographic coordinates (latitude or longitude)","Misc"
+"″","""","Second","(U+2033)","This character is a double prime - a unit of angular measure used in geographic coordinates (latitude or longitude)","Misc"
+"""",,"Second",,"This character is a double quote allowable alternative to double prime - a unit of angular measure used in geographic coordinates (latitude or longitude)","Misc"
+"°",,"Degree","(U+00B0)","A unit of angular measure used in geographic coordinates (latitude or longitude)","Misc"
+"µg",,"Microgram","(U+00B5)g","A unit of mass","Mass"
+"µg/day",,"Micrograms per day","(U+00B5)g/day","A measure of volume flow rate or discharge","Flow (Mass/Time)"
+"µg/h",,"Micrograms per hour","(U+00B5)g/h","A measure of volume flow rate or discharge","Flow (Mass/Time)"
+"µg/hr","µg/h","Micrograms per hour","(U+00B5)g/hr","A measure of volume flow rate or discharge","Flow (Mass/Time)"
+"µg/kg","µgkg-1","Micrograms per Kilograms","(U+00B5)g/kg","A unit of concentration used for chemicals in biota","Concentration (Mass/Mass)"
+"µg/l",,"Micrograms per Litre","(U+00B5)g/l","A unit of concentration","Concentration (Mass/Vol)"
+"µg/m","µg/min","Micrograms per minute","(U+00B5)g/m","A measure of volume flow rate or discharge","Flow (Mass/Time)"
+"µg/m2",,"Micrograms per cubic metre","(U+00B5)g/m2","A unit of concentration","Concentration (Mass/Vol)"
+"µg/m3",,"Micrograms per cubic metre","(U+00B5)g/m3","A unit of concentration","Concentration (Mass/Vol)"
+"µg/min",,"Micrograms per minute","(U+00B5)g/min","A measure of volume flow rate or discharge","Flow (Mass/Time)"
+"µg/s",,"Micrograms per second","(U+00B5)g/s","A measure of volume flow rate or discharge","Flow (Mass/Time)"
+"µg/wk",,"Micrograms per week","(U+00B5)g/wk","A measure of volume flow rate or discharge","Flow (Mass/Time)"
+"µgkg-1",,"Micrograms per kilograms","(U+00B5)g/kg","A unit of concentration used for chemicals in biota","Concentration (Mass/Mass)"
+"µl",,"Microlitre","(U+00B5)l","A unit of volume","Volume"
+"µl/day",,"Microlitres per day","(U+00B5)l/day","A measure of mass flow rate","Flow (Vol/Time)"
+"µl/h",,"Microlitres per hour","(U+00B5)l/h","A measure of mass flow rate","Flow (Vol/Time)"
+"µl/hr","µl/h","Microlitres per hour","(U+00B5)l/hr","A measure of mass flow rate","Flow (Vol/Time)"
+"µl/m","µl/min","Microlitres per minute","(U+00B5)l/m","A measure of mass flow rate","Flow (Vol/Time)"
+"µl/min",,"Microlitres per minute","(U+00B5)l/min","A measure of mass flow rate","Flow (Vol/Time)"
+"µl/s",,"Microlitres per second","(U+00B5)l/s","A measure of mass flow rate","Flow (Vol/Time)"
+"µl/wk",,"Microlitres per week","(U+00B5)l/wk","A measure of mass flow rate","Flow (Vol/Time)"
+"µmol/l",,"Micromoles per litre","(U+00B5)mol/l","A unit of concentration","Concentration (Mass/Vol)"
+"µS/cm","µScm-1","Microsiemens per centimetre","(U+00B5)S/cm","A unit of conductivity","Electric Conductvity"
+"µScm-1",,"Microsiemens per centimetre","(U+00B5)S/cm","A unit of conductivity","Electric Conductvity"
+"µV",,"Microvolt","(U+00B5)V","A unit of electrical potential","Electricty"
+"‰",,"Percentage per mille","(U+2030)","A number expressed as a fraction of 1000","Misc"
+"95%ile",,"95th percentile",,"The value below which 95% of recorded measurements or observations occur","Misc"
+"A",,"Ampere",,"A unit of electric current","Electricty"
+"a",,"Year",,"A unit of time","Time"
+"ABS/cm","cm-1","Absorption per centimetre",,"A unit of absorption","Misc"
+"ABS/m","m-1","Absorbance per metre",,"A unit of absorbance","Misc"
+"Bar",,"Bar",,"A unit of pressure","Pressure"
+"Bq",,"Becquerel",,"A unit of radioactivity","Radioactive Decay"
+"kBq",,"Kilobecquerel",,"A unit of radioactivity","Radioactive Decay"
+"Bq/cm2","Bqcm-2","Becquerels per square centimetre",,"A unit of radioactive surface contamination","Radioactivity"
+"Bq/cm3","Bqcm-3","Becquerels per cubic centimetre",,"A unit of radioactivity concentration","Radioactivity"
+"Bq/g",,"Becquerels per gram",,"A unit of radioactivity concentration","Radioactivity"
+"Bq/kg","Bqkg-1","Becquerels per kilograms",,"A unit of radioactivity concentration","Radioactivity"
+"Bq/l",,"Becquerels per litre",,"A unit of radioactivity concentration","Radioactivity"
+"Bq/m2","Bqm-2","Becquerels per square metre",,"A unit of radioactive surface contamination","Radioactivity"
+"Bq/m3","Bqm-3","Becquerels per cubic metre",,"A unit of radioactivity concentration","Radioactivity"
+"Bqcm-2",,"Becquerels per square centimetre",,"A unit of radioactive surface contamination","Radioactivity"
+"Bqcm-3",,"Becquerels per cubic centimetre",,"A unit of radioactivity concentration","Radioactivity"
+"Bqkg-1",,"Becquerels per kilograms",,"A unit of radioactivity concentration","Radioactivity"
+"Bqm-2",,"Becquerels per square metre",,"A unit of radioactivity concentration","Radioactivity"
+"Bqm-3",,"Becquerels per cubic metre",,"A unit of radioactivity concentration","Radioactivity"
+"CFU",,"Colony Forming Unit",,"A unit used to estimate the number of viable bacteria or fungal cells","Misc"
+"cm",,"Centimetre",,"A unit of distance","Length"
+"cm/a",,"Centimetres per year",,"A unit of velocity and speed","Speed (Length/Time)"
+"cm/day",,"Centimetres per day",,"A unit of velocity and speed","Speed (Length/Time)"
+"cm/hr",,"Centimetres per hour",,"A unit of velocity and speed","Speed (Length/Time)"
+"cm/min",,"Centimetres per minute",,"A unit of velocity and speed","Speed (Length/Time)"
+"cm/mth",,"Centimetres per month",,"A unit of velocity and speed","Speed (Length/Time)"
+"cm/s",,"Centimetres per second",,"A unit of velocity and speed","Speed (Length/Time)"
+"cm/wk",,"Centimetres per week",,"A unit of velocity and speed","Speed (Length/Time)"
+"cm/y","cm/a","Centimetres per year",,"A unit of velocity and speed","Speed (Length/Time)"
+"cm-1",,"Absorption per centimetre",,"A unit of absorption","Misc"
+"cm2",,"Square centimetre",,"A unit of area","Area"
+"cm3",,"Cubic centimetre",,"A unit of volume","Volume"
+"cm3/day",,"Cubic centimetres per day",,"A measure of volume flow rate or discharge","Flow (Vol/Time)"
+"cm3/hr",,"Cubic centimetres per hour",,"A measure of volume flow rate or discharge","Flow (Vol/Time)"
+"cm3/min",,"Cubic centimetres per minute",,"A measure of volume flow rate or discharge","Flow (Vol/Time)"
+"cm3/s",,"Cubic centimetres per second",,"A measure of volume flow rate or discharge","Flow (Vol/Time)"
+"d",,"Day",,"A unit of time","Time"
+"day","d","Day",,"A unit of time","Time"
+"dB",,"Decibel",,"A measure of sound","Sound"
+"f/ml",,"Fibers per millilitre",,"A unit of concentration","Concentration"
+"FTU",,"Formazin Turbidity Unit",,"A unit for turbidity","Misc"
+"g",,"Gram",,"A unit of mass","Mass"
+"g/cm3","gcm-3","Grams per cubic centimetre",,"A unit of density","Concentration (Mass/Vol)"
+"g/day",,"Grams per day",,"A measure of volume flow rate or discharge","Flow (Mass/Time)"
+"g/hr",,"Grams per hour",,"A measure of volume flow rate or discharge","Flow (Mass/Time)"
+"g/kg","gkg-1","Grams per kilograms",,"A unit of concentration used for chemicals in biota","Concentration (Mass/Mass)"
+"g/l",,"Grams per litre",,"A unit of concentration","Concentration (Mass/Vol)"
+"g/m2",,"Gramme per square metre",,"A unit of concentration","Concentration (Mass/Area)"
+"g/m3",,"Grams per cubic metre",,"A unit of concentration","Concentration (Mass/Vol)"
+"g/min",,"Grams per minute",,"A measure of volume flow rate or discharge","Flow (Mass/Time)"
+"g/ml",,"Grams per millilitre",,"A unit of density","Concentration (Mass/Vol)"
+"g/s",,"Grams per second",,"A measure of volume flow rate or discharge","Flow (Mass/Time)"
+"g/t",,"Grams per tonne",,"A unit of concentration","Concentration (Mass/Vol)"
+"g/wk",,"Grams per week",,"A measure of volume flow rate or discharge","Flow (Mass/Time)"
+"gal/h",,"Gallons per hour",,"A measure of fuel consumption","Misc"
+"GBq",,"Gigabecquerel",,"A unit of radioactivity","Radioactive Decay"
+"gcm-3",,"Grams per Cubic centimetre",,"A unit of density","Concentration (Mass/Vol)"
+"gkg-1",,"Grams per kilograms",,"A unit of concentration used for chemicals in biota","Concentration (Mass/Mass)"
+"GW",,"Gigawatt",,"A unit of power","Energy and Power"
+"GWh",,"Gigawatt hour",,"A unit of energy","Elecrical Flow"
+"GWh/GJ",,"Gigawatt hours per gigajoule",,"A unit of energy comparison","Misc"
+"h",,"Hour",,"A unit of time","Time"
+"ha",,"Hectare",,"A unit of area","Area"
+"hr","h","Hour",,"A unit of time","Time"
+"HU",,"Hazen Unit",,"A measure of discolouration of water","Misc"
+"Hz",,"Hertz",,"A unit of frequency","Electormagnetic Radiation"
+"J",,"Joule",,"A unit of energy","Energy and Power"
+"J/cm2","Jcm-2","Joules per square Centimetre",,"A unit of energy density","Misc"
+"J/m2","Jm-2","Joules per square metre",,"A unit of energy density","Misc"
+"Jcm-2",,"Joules per square centimetre",,"A unit of energy density","Misc"
+"Jm-2",,"Joules per square metre",,"A unit of energy density","Misc"
+"K",,"Kelvin",,"A measure of temperature","Temperature"
+"kg",,"Kilograms",,"A unit of mass","Mass"
+"kg/a",,"Kilograms per year",,"A measure of mass flow rate","Flow (Mass/Time)"
+"kg/d",,"Kilograms per day",,"A measure of volume flow rate or discharge","Flow (Mass/Time)"
+"kg/h",,"Kilograms per hour",,"A measure of volume flow rate or discharge","Flow (Mass/Time)"
+"kg/l",,"Kilograms per litre",,"A unit of concentration","Concentration (Mass/Vol)"
+"kg/m2",,"Kilograms per square metre",,"A unit of concentration","Concentration (Mass/Area)"
+"kg/m3","kgm-3","Kilograms per cubic metre",,"A unit of concentration (and density)","Concentration (Mass/Vol)"
+"kg/min",,"Kilograms per minute",,"A measure of volume flow rate or discharge","Flow (Mass/Time)"
+"kg/month",,"Kilograms per month",,"A measure of volume flow rate or discharge","Flow (Mass/Time)"
+"kg/s",,"Kilograms per second",,"A measure of mass flow rate","Flow (Mass/Time)"
+"kg/t",,"Kilograms per tonne",,"A unit of concentration","Concentration (Mass/Vol)"
+"kg/wk",,"Kilograms per week",,"A measure of mass flow rate","Flow (Mass/Time)"
+"kg/y","kg/a","Kilograms per year",,"A measure of mass flow rate","Flow (Mass/Time)"
+"kgm-3",,"Kilograms per cubic metre",,"A unit of concentration (and density)","Concentration (Mass/Vol)"
+"kHz",,"Kilohertz",,"A unit of frequency","Electormagnetic Radiation"
+"kJ",,"Kilojoule",,"A unit of energy","Energy and Power"
+"km",,"Kilometre",,"A unit of distance","Length"
+"km/a",,"Kilometres per year",,"A unit of velocity and speed","Speed (Length/Time)"
+"km/day",,"Kilometres per day",,"A unit of velocity and speed","Speed (Length/Time)"
+"km/h",,"Kilometres per hour",,"A unit of velocity and speed","Speed (Length/Time)"
+"km/hr","km/h","Kilometres per hour",,"A unit of velocity and speed","Speed (Length/Time)"
+"km/l",,"Kilometres per litre",,"A measure of fuel consumption","Misc"
+"km/mth",,"Kilometres per month",,"A unit of velocity and speed","Speed (Length/Time)"
+"km/wk",,"Kilometres per week",,"A unit of velocity and speed","Speed (Length/Time)"
+"km/y","km/a","Kilometres per year",,"A unit of velocity and speed","Speed (Length/Time)"
+"km2",,"Square kilometre",,"A unit of area","Area"
+"kV",,"Kilovolt",,"A unit of electrical potential","Electricty"
+"kW",,"Kilowatt",,"A unit of power","Energy and Power"
+"kWh",,"Kilowatt hour",,"A unit of energy","Elecrical Flow"
+"l",,"Litre",,"A unit of volume","Volume"
+"l/a",,"Litres per year",,"A measure of volume flow rate or discharge","Flow (Vol/Time)"
+"l/d",,"Litres per day",,"A measure of volume flow rate or discharge","Flow (Vol/Time)"
+"l/h",,"Litres per hour",,"A measure of volume flow rate or discharge","Flow (Vol/Time)"
+"l/min",,"Litres per minute",,"A measure of volume flow rate or discharge","Flow (Vol/Time)"
+"l/s",,"Litres per second",,"A measure of volume flow rate or discharge","Flow (Vol/Time)"
+"l/s/m",,"Litres per second per Metre",,"A measure of weir overflow rate","Misc"
+"l/wk",,"Litres per week",,"A measure of volume flow rate or discharge","Flow (Vol/Time)"
+"l/y","l/a","Litres per year",,"A measure of volume flow rate or discharge","Flow (Vol/Time)"
+"m",,"Metre",,"A unit of distance","Length"
+"min","","Minute",,"A unit of time","Time"
+"m/a",,"Metres per year",,"A unit of velocity and speed","Speed (Length/Time)"
+"m/day",,"Metres per day",,"A unit of velocity and speed","Speed (Length/Time)"
+"m/hr",,"Metres per hour",,"A unit of velocity and speed","Speed (Length/Time)"
+"m/min",,"Metres per minute",,"A unit of velocity and speed","Speed (Length/Time)"
+"m/mth",,"Metres per month",,"A unit of velocity and speed","Speed (Length/Time)"
+"m/s","ms-1","Metres per second",,"A unit of velocity and speed","Speed (Length/Time)"
+"m/wk",,"Metres per week",,"A unit of velocity and speed","Speed (Length/Time)"
+"m/y","m/a","Metres per year",,"A unit of velocity and speed","Speed (Length/Time)"
+"m-1",,"Absorbance per metre",,"A unit of absorbance","Misc"
+"m2",,"Square metre",,"A unit of area","Area"
+"m2/s",,"Square metres per second",,"A unit of kinematic viscosity","Misc"
+"m3",,"Cubic metre",,"A unit of volume","Volume"
+"m3/d",,"Cubic metres per day",,"A measure of volume flow rate or discharge","Flow (Vol/Time)"
+"m3/h",,"Cubic metres per hour",,"A measure of volume flow rate or discharge","Flow (Vol/Time)"
+"m3/min",,"Cubic metres per minute",,"A measure of volume flow rate or discharge","Flow (Vol/Time)"
+"m3/s",,"Cubic metres per second",,"A measure of volume flow rate or discharge","Flow (Vol/Time)"
+"m3/wk",,"Cubic metres per week",,"A measure of volume flow rate or discharge","Flow (Vol/Time)"
+"m3/y",,"Cubic metres per year",,"A measure of volume flow rate or discharge","Flow (Vol/Time)"
+"mA",,"Milliamp",,"A unit of electric current","Electricty"
+"MBq",,"Megabecquerel",,"A unit of radioactivity","Radioactive Decay"
+"mg",,"Milligram",,"A unit of mass","Mass"
+"mg/d",,"Milligrams per day",,"A measure of volume flow rate or discharge","Flow (Mass/Time)"
+"mg/day","mg/d","Milligrams per day",,"A measure of volume flow rate or discharge","Flow (Mass/Time)"
+"mg/h",,"Milligrams per hour",,"A measure of volume flow rate or discharge","Flow (Mass/Time)"
+"mg/hr","mg/h","Milligrams per hour",,"A measure of volume flow rate or discharge","Flow (Mass/Time)"
+"mg/kg","mgkg-1","Milligrams per kilogram",,"A unit of concentration used for chemicals in biota","Concentration (Mass/Mass)"
+"mg/l",,"Milligrams per litre",,"A unit of concentration","Concentration (Mass/Vol)"
+"mg/m","mg/min","Milligrams per minute",,"A measure of volume flow rate or discharge","Flow (Mass/Time)"
+"mg/m2",,"Milligram per square metre",,"A unit of concentration","Concentration (Mass/Area)"
+"mg/m2/s",,"Milligrams per square meter per second",,"A measure of volume flow rate or discharge","Flow (Mass/Area/Time)"
+"mg/m3",,"Milligrams per cubic metre",,"A unit of concentration","Concentration (Mass/Vol)"
+"mg/min",,"Milligrams per minute",,"A measure of volume flow rate or discharge","Flow (Mass/Time)"
+"mg/s",,"Milligrams per second",,"A measure of volume flow rate or discharge","Flow (Mass/Time)"
+"mg/wk",,"Milligrams per week",,"A measure of volume flow rate or discharge","Flow (Mass/Time)"
+"mgkg-1",,"Milligrams per Kilograms",,"A unit of concentration used for chemicals in biota","Concentration (Mass/Mass)"
+"mg/Nm3","mgNm-3","Emissions versus normal gas volume",,"A unit of gas concentration","Concentration (Mass/Vol)"
+"mgNm-3",,"Emissions versus normal gas volume",,"A unit of gas concentration","Concentration (Mass/Vol)"
+"MHz",,"Megahertz",,"A unit of frequency","Electormagnetic Radiation"
+"MJ",,"Megajoule",,"A unit of energy","Energy and Power"
+"ml",,"Millilitre",,"A unit of volume","Volume"
+"Ml",,"Megalitre",,"A unit of volume","Volume"
+"ml/d",,"Millilitres per day",,"A measure of volume flow rate or discharge","Flow (Vol/Time)"
+"Ml/d",,"Megalitres per day",,"A measure of volume flow rate or discharge","Flow (Vol/Time)"
+"ml/day","ml/d","Millilitres per day",,"A measure of volume flow rate or discharge","Flow (Vol/Time)"
+"ml/h",,"Millilitres per hour",,"A measure of volume flow rate or discharge","Flow (Vol/Time)"
+"ml/hr","ml/h","Millilitres per hour",,"A measure of volume flow rate or discharge","Flow (Vol/Time)"
+"ml/m","ml/min","Millilitres per minute",,"A measure of volume flow rate or discharge","Flow (Vol/Time)"
+"ml/min",,"Millilitres per minute",,"A measure of volume flow rate or discharge","Flow (Vol/Time)"
+"ml/s",,"Millilitres per second",,"A measure of volume flow rate or discharge","Flow (Vol/Time)"
+"ml/wk",,"Millilitres per week",,"A measure of volume flow rate or discharge","Flow (Vol/Time)"
+"mm",,"Millimetre",,"A unit of distance","Length"
+"mm/h",,"Millimetres per hour",,"A unit of velocity and speed","Speed (Length/Time)"
+"mm2",,"Square millimetre",,"A unit of area","Area"
+"mm3",,"Cubic millimetres",,"A unit of volume","Volume"
+"mm3/d",,"Cubic millimetres per day",,"A measure of volume flow rate or discharge","Flow (Vol/Time)"
+"mm3/day","mm3/d","Cubic millimetres per day",,"A measure of volume flow rate or discharge","Flow (Vol/Time)"
+"mm3/h",,"Cubic millimetres per hour",,"A measure of volume flow rate or discharge","Flow (Vol/Time)"
+"mm3/hr","mm3/h","Cubic millimetres per hour",,"A measure of volume flow rate or discharge","Flow (Vol/Time)"
+"mm3/m","mm3/min","Cubic millimetres per minute",,"A measure of volume flow rate or discharge","Flow (Vol/Time)"
+"mm3/min",,"Cubic millimetres per minute",,"A measure of volume flow rate or discharge","Flow (Vol/Time)"
+"mm3/s",,"Cubic millimetres per second",,"A measure of volume flow rate or discharge","Flow (Vol/Time)"
+"mm3/wk",,"Cubic millimetres per week",,"A measure of volume flow rate or discharge","Flow (Vol/Time)"
+"mmol/l",,"Millimoles per litre",,"A unit of concentration","Concentration (Mass/Vol)"
+"mol",,"Mole",,"An amount of a substance","Mass"
+"mol/kg",,"Moles per kilograms",,"A unit of concentration (molality)","Concentration (Mass/Mass)"
+"mol/l",,"Moles per litre",,"A unit of concentration (molarity)","Concentration (Mass/Vol)"
+"mol/m3",,"Moles per Cubic metre",,"A unit of concentration","Concentration (Mass/Vol)"
+"MPa",,"Megapascal",,"A unit of pressure","Pressure"
+"mpg",,"Miles per gallon",,"A measure of fuel consumption","Misc"
+"mS/cm","mScm-1","Millisiemens per centimetre",,"A unit of conductivity","Electric Conductvity"
+"mS/m","mSm-1","Millisiemens per metre",,"A unit of conductivity","Electric Conductvity"
+"ms-1",,"Metres per second",,"A unit of velocity and speed","Speed (Length/Time)"
+"mScm-1",,"Millisiemens per centimetre",,"A unit of conductivity","Electric Conductvity"
+"mSm-1",,"Millisiemens per metre",,"A unit of conductivity","Electric Conductvity"
+"mth",,"Month",,"A unit of time","Time"
+"mV",,"Millivolt",,"A unit of electrical potential","Electricty"
+"MV",,"Megavolt",,"A unit of electrical potential","Electricty"
+"MW",,"Megawatt",,"A unit of power","Energy and Power"
+"mW/m2","mWm-2","Milliwatts per square metre",,"A unit of power density","Energy and Power"
+"MWh",,"Megawatt hour",,"A unit of energy","Elecrical Flow"
+"mWm-2",,"Milliwatts per square metre",,"A unit of power density","Energy and Power"
+"ng/l",,"Nanograms per litre",,"A unit of concentration","Concentration (Mass/Vol)"
+"ng/m3",,"Nanograms per cubic metre",,"A unit of concentration","Concentration (Mass/Vol)"
+"ng/kg","ngkg-1","Nanograms per kilograms",,"A unit of concentration used for chemicals in biota",
+"ngkg-1",,"Nanograms per kilograms",,"A unit of concentration used for chemicals in biota","Concentration (Mass/Mass)"
+"nm",,"Nanometre",,"A unit of distance","Length"
+"NTU",,"Nephelometric Turbidity Unit",,"A unit of turbidity","Misc"
+"ºC",,"Degrees Celsius","(U+00B0)C","A measure of temperature","Temperature"
+"Pa",,"Pascal",,"A unit of pressure","Pressure"
+"PFU",,"Plaque Forming Unit",,"A unit used in phage quantification","Misc"
+"pg/l",,"Picograms per litre",,"A unit of concentration","Concentration (Mass/Vol)"
+"pg/m3",,"Picograms per cubic metre ",,"A unit of concentration","Concentration (Mass/Vol)"
+"pH",,"Potential of hydrogen",,"A measure of acidity","Misc"
+"ppb",,"Parts per billion",,"A measure of ratio","Misc"
+"ppm",,"Parts per million",,"A measure of ratio","Misc"
+"qrt",,"Quarter",,"A unit of time","Time"
+"RFU",,"Relative Fluorescence Unit",,"A unit of quantity and size","Misc"
+"㎭","rad","Radian","(U+33AD)","The SI unit of angular measure","Misc"
+"rad",,"Radian",,"The SI unit of angular measure","Misc"
+"s",,"Second",,"A unit of time","Time"
+"t",,"Metric tonne",,"A unit of mass","Mass"
+"t/a",,"Tonnes per year",,"A measure of mass flow rate","Flow (Mass/Time)"
+"t/d",,"Tonnes per day",,"A measure of mass flow rate","Flow (Mass/Time)"
+"t/h",,"Tonnes per hour",,"A measure of mass flow rate","Flow (Mass/Time)"
+"t/hr","t/h","Tonnes per hour",,"A measure of mass flow rate","Flow (Mass/Time)"
+"t/min",,"Tonnes per minute",,"A measure of mass flow rate","Flow (Mass/Time)"
+"t/s",,"Tonnes per second",,"A measure of mass flow rate","Flow (Mass/Time)"
+"t/wk",,"Tonnes per week",,"A measure of mass flow rate","Flow (Mass/Time)"
+"t/y","t/a","Tonnes per year",,"A measure of mass flow rate","Flow (Mass/Time)"
+"t/yr","t/a","Tonnes per year",,"A measure of mass flow rate","Flow (Mass/Time)"
+"TBq",,"Terabecquerel",,"A unit of radioactivity","Radioactive Decay"
+"TJ",,"Terrajoule",,"A unit of energy","Energy and Power"
+"TJ/m3","TJm-3","Terrajoules per cubic metre",,"A unit of energy density","Energy and Power "
+"TJm-3",,"Terrajoules per cubic metre",,"A unit of energy density","Energy and Power "
+"tSO2/GWh",,"Emissions versus electrical power generated",,"A unit of emissions versus power generated","Energy and Power "
+"TW",,"Terrawatt",,"A unit of energy","Energy and Power"
+"TWh",,"Terrawatt hour",,"A unit of energy","Energy and Power"
+"ug","µg","Microgram",,"A unit of mass","Mass"
+"ug/day","µg/day","Micrograms per day",,"A measure of volume flow rate or discharge","Flow (Mass/Time)"
+"ug/h","µg/h","Micrograms per hour",,"A measure of volume flow rate or discharge","Flow (Mass/Time)"
+"ug/hr","µg/h","Micrograms per hour",,"A measure of volume flow rate or discharge","Flow (Mass/Time)"
+"ug/kg","µgkg-1","Micrograms per kilogram",,"A unit of concentration used for chemicals in biota","Concentration (Mass/Mass)"
+"ug/l","µg/l","Micrograms per litre",,"A unit of concentration","Concentration (Mass/Vol)"
+"ug/m","µg/min","Micrograms per minute",,"A measure of volume flow rate or discharge","Flow (Mass/Time)"
+"ug/m2","µg/m2","Micrograms per square metre",,"A unit of concentration","Concentration (Mass/Vol)"
+"ug/m3","µg/m3","Micrograms per cubic metre",,"A unit of concentration","Concentration (Mass/Vol)"
+"ug/min","µg/min","Micrograms per minute",,"A measure of volume flow rate or discharge","Flow (Mass/Time)"
+"ug/s","µg/s","Micrograms per second",,"A measure of volume flow rate or discharge","Flow (Mass/Time)"
+"ug/wk","µg/wk","Micrograms per week",,"A measure of volume flow rate or discharge","Flow (Mass/Time)"
+"ul","µl","Microlitre",,"A unit of volume","Volume"
+"ul/day","µl/day","Microlitres per day",,"A measure of mass flow rate","Flow (Vol/Time)"
+"ul/h","µl/h","Microlitres per hour",,"A measure of mass flow rate","Flow (Vol/Time)"
+"ul/hr","µl/h","Microlitres per hour",,"A measure of mass flow rate","Flow (Vol/Time)"
+"ul/m","µl/min","Microlitres per minute",,"A measure of mass flow rate","Flow (Vol/Time)"
+"ul/min","µl/min","Microlitres per minute",,"A measure of mass flow rate","Flow (Vol/Time)"
+"ul/s","µl/s","Microlitres per second",,"A measure of mass flow rate","Flow (Vol/Time)"
+"ul/wk","µl/wk","Microlitres per week",,"A measure of mass flow rate","Flow (Vol/Time)"
+"umol/l","µmol/l","Micromoles per litre",,"A unit of concentration","Concentration (Mass/Vol)"
+"uS/cm","µScm-1","Microsiemens per centimetre",,"A unit of conductivity","Electric Conductvity"
+"uV","µV","Microvolt",,"A unit of electrical potential","Electricty"
+"V",,"Volt",,"A unit of electrical potential","Electricty"
+"W",,"Watt",,"A unit of power","Energy and Power"
+"wk",,"Week",,"A unit of time","Time"
+"Wm-2",,"Watts per square metre",,"A unit of power density","Energy and Power "
+"W/m2","Wm-2","Watts per square metre",,"A unit of power density","Energy and Power"
+"y","a","Year",,"A unit of time","Time"
+"µg/m²","µg/m2","Micrograms per cubic metre","(U+00B5)g/m(U+00B2)","A unit of concentration","Concentration (Mass/Vol)"
+"µg/m³","µg/m3","Micrograms per cubic metre","(U+00B5)g/m(U+00B3)","A unit of concentration","Concentration (Mass/Vol)"
+"µgkg⁻¹","µgkg-1","Micrograms per kilograms","(U+00B5)gkg(U+207B)(U+00B9)","A unit of concentration used for chemicals in biota","Concentration (Mass/Mass)"
+"µScm⁻¹","µScm-1","Microsiemens per centimetre","(U+00B5)Scm(U+207B)(U+00B9)","A unit of conductivity","Electric Conductvity"
+"Bq/cm²","Bqcm-2","Becquerels per square centimetre","Bq/cm(U+00B2)","A unit of radioactive surface contamination","Radioactivity"
+"Bq/cm³","Bqcm-3","Becquerels per cubic centimetre","Bq/cm(U+00B3)","A unit of radioactivity concentration","Radioactivity"
+"Bq/m²","Bqm-2","Becquerels per square metre","Bq/m(U+00B2)","A unit of radioactive surface contamination","Radioactivity"
+"Bq/m³","Bqm-3","Becquerels per cubic metre","Bq/m(U+00B3)","A unit of radioactivity concentration","Radioactivity"
+"Bqcm⁻²","Bqcm-2","Becquerels per square centimetre","Bqcm(U+207B)(U+00B2)","A unit of radioactive surface contamination","Radioactivity"
+"Bqcm⁻³","Bqcm-3","Becquerels per cubic centimetre","Bqcm(U+207B)(U+00B3)","A unit of radioactivity concentration","Radioactivity"
+"Bqkg⁻¹","Bqkg-1","Becquerels per kilograms","Bqkg(U+207B)(U+00B9)","A unit of radioactivity concentration","Radioactivity"
+"Bqm⁻²","Bqm-2","Becquerels per square metre","Bqm(U+207B)(U+00B2)","A unit of radioactive surface contamination","Radioactivity"
+"Bqm⁻³","Bqm-3","Becquerels per cubic metre","Bqm(U+207B)(U+00B3)","A unit of radioactivity concentration","Radioactivity"
+"cm⁻¹","cm-1","Absorption per centimetre","cm(U+207B)(U+00B9)","A unit of absorption","Misc"
+"cm²","cm2","Square centimetre","cm(U+00B2)","A unit of area","Area"
+"cm³","cm3","Cubic centimetre","cm(U+00B3)","A unit of volume","Volume"
+"cm³/day","cm3/day","Cubic centimetres per day","cm(U+00B3)/day","A measure of volume flow rate or discharge","Flow (Vol/Time)"
+"cm³/hr","cm3/hr","Cubic centimetres per hour","cm(U+00B3)/hr","A measure of volume flow rate or discharge","Flow (Vol/Time)"
+"cm³/min","cm3/min","Cubic centimetres per minute","cm(U+00B3)/min","A measure of volume flow rate or discharge","Flow (Vol/Time)"
+"cm³/s","cm3/s","Cubic centimetres per second","cm(U+00B3)/s","A measure of volume flow rate or discharge","Flow (Vol/Time)"
+"g/cm³","gcm-3","Grams per cubic centimetre","g/cm(U+00B3)","A unit of density","Concentration (Mass/Vol)"
+"g/m²","g/m2","Gramme per square metre","g/m(U+00B2)","A unit of concentration","Concentration (Mass/Area)"
+"g/m³","g/m3","Grams per cubic metre","g/m(U+00B3)","A unit of concentration","Concentration (Mass/Vol)"
+"gcm⁻³","gcm-3","Grams per Cubic centimetre","gcm(U+207B)(U+00B3)","A unit of density","Concentration (Mass/Vol)"
+"gkg⁻¹","gkg-1","Grams per kilograms","gkg(U+207B)(U+00B9)","A unit of concentration used for chemicals in biota","Concentration (Mass/Mass)"
+"J/cm²","Jcm-2","Joules per square Centimetre","J/cm(U+00B2)","A unit of energy density","Misc"
+"J/m²","Jm-2","Joules per square metre","J/m(U+00B2)","A unit of energy density","Misc"
+"Jcm⁻²","Jcm-2","Joules per square centimetre","Jcm(U+207B)(U+00B2)","A unit of energy density","Misc"
+"Jm⁻²","Jm-2","Joules per square metre","Jm(U+207B)(U+00B2)","A unit of energy density","Misc"
+"kg/m²","kg/m2","Kilograms per square metre","kg/m(U+00B2)","A unit of concentration","Concentration (Mass/Area)"
+"kg/m³","kgm-3","Kilograms per cubic metre","kg/m(U+00B3)","A unit of concentration (and density)","Concentration (Mass/Vol)"
+"kgm⁻³","kgm-3","Kilograms per cubic metre","kgm(U+207B)(U+00B3)","A unit of concentration (and density)","Concentration (Mass/Vol)"
+"km²","km2","Square kilometre","km(U+00B2)","A unit of area","Area"
+"m⁻¹","m-1","Absorbance per metre","m(U+207B)(U+00B9)","A unit of absorbance","Misc"
+"m²","m2","Square metre","m(U+00B2)","A unit of area","Area"
+"m²/s","m2/s","Square metres per second","m(U+00B2)/s","A unit of kinematic viscosity","Misc"
+"m³","m3","Cubic metre","m(U+00B3)","A unit of volume","Volume"
+"m³/d","m3/d","Cubic metres per day","m(U+00B3)/d","A measure of volume flow rate or discharge","Flow (Vol/Time)"
+"m³/h","m3/h","Cubic metres per hour","m(U+00B3)/h","A measure of volume flow rate or discharge","Flow (Vol/Time)"
+"m³/min","m3/min","Cubic metres per minute","m(U+00B3)/min","A measure of volume flow rate or discharge","Flow (Vol/Time)"
+"m³/s","m3/s","Cubic metres per second","m(U+00B3)/s","A measure of volume flow rate or discharge","Flow (Vol/Time)"
+"m³/wk","m3/wk","Cubic metres per week","m(U+00B3)/wk","A measure of volume flow rate or discharge","Flow (Vol/Time)"
+"m³/y","m3/y","Cubic metres per year","m(U+00B3)/y","A measure of volume flow rate or discharge","Flow (Vol/Time)"
+"mg/m²","mg/m2","Milligram per square metre","mg/m(U+00B2)","A unit of concentration","Concentration (Mass/Area)"
+"mg/m²/s","mg/m2/s","Milligrams per square meter per second","mg/m(U+00B2)/s","A measure of volume flow rate or discharge","Flow (Mass/Area/Time)"
+"mg/m³","mg/m3","Milligrams per cubic metre","mg/m(U+00B3)","A unit of concentration","Concentration (Mass/Vol)"
+"mgkg⁻¹","mgkg-1","Milligrams per Kilograms","mgkg(U+207B)(U+00B9)","A unit of concentration used for chemicals in biota","Concentration (Mass/Mass)"
+"mgNm⁻³","mgNm-3","Emissions versus normal gas volume","mgNm(U+207B)(U+00B3)","A unit of gas concentration","Concentration (Mass/Vol)"
+"mm²","mm2","Square millimetre","mm(U+00B2)","A unit of area","Area"
+"mm³","mm3","Cubic millimetres","mm(U+00B3)","A unit of volume","Volume"
+"mm³/d","mm3/d","Cubic millimetres per day","mm(U+00B3)/d","A measure of volume flow rate or discharge","Flow (Vol/Time)"
+"mm³/day","mm3/d","Cubic millimetres per day","mm(U+00B3)/day","A measure of volume flow rate or discharge","Flow (Vol/Time)"
+"mm³/h","mm3/h","Cubic millimetres per hour","mm(U+00B3)/h","A measure of volume flow rate or discharge","Flow (Vol/Time)"
+"mm³/hr","mm3/h","Cubic millimetres per hour","mm(U+00B3)/hr","A measure of volume flow rate or discharge","Flow (Vol/Time)"
+"mm³/m","mm3/min","Cubic millimetres per minute","mm(U+00B3)/m","A measure of volume flow rate or discharge","Flow (Vol/Time)"
+"mm³/min","mm3/min","Cubic millimetres per minute","mm(U+00B3)/min","A measure of volume flow rate or discharge","Flow (Vol/Time)"
+"mm³/s","mm3/s","Cubic millimetres per second","mm(U+00B3)/s","A measure of volume flow rate or discharge","Flow (Vol/Time)"
+"mm³/wk","mm3/wk","Cubic millimetres per week","mm(U+00B3)/wk","A measure of volume flow rate or discharge","Flow (Vol/Time)"
+"mol/m³","mol/m3","Moles per Cubic metre","mol/m(U+00B3)","A unit of concentration","Concentration (Mass/Vol)"
+"ms⁻¹","ms-1","Metres per second","ms(U+207B)(U+00B9)","A unit of velocity and speed","Speed (Length/Time)"
+"mScm⁻¹","mScm-1","Millisiemens per centimetre","mScm(U+207B)(U+00B9)","A unit of conductivity","Electric Conductvity"
+"mSm⁻¹","mSm-1","Millisiemens per metre","mSm(U+207B)(U+00B9)","A unit of conductivity","Electric Conductvity"
+"mW/m²","mWm-2","Milliwatts per square metre","mW/m(U+00B2)","A unit of power density","Energy and Power"
+"mWm⁻²","mWm-2","Milliwatts per square metre","mWm(U+207B)(U+00B2)","A unit of power density","Energy and Power"
+"ng/m³","ng/m3","Nanograms per cubic metre","ng/m(U+00B3)","A unit of concentration","Concentration (Mass/Vol)"
+"ngkg⁻¹","ngkg-1","Nanograms per kilograms","ngkg(U+207B)(U+00B9)","A unit of concentration used for chemicals in biota","Concentration (Mass/Mass)"
+"pg/m³","pg/m3","Picograms per cubic metre ","pg/m(U+00B3)","A unit of concentration","Concentration (Mass/Vol)"
+"TJm⁻³","TJm-3","Terrajoules per cubic metre","TJm(U+207B)(U+00B3)","A unit of energy density","Energy and Power "
+"tSO²/GWh","tSO2/GWh","Emissions versus electrical power generated","tSO(U+00B2)/GWh","A unit of emissions versus power generated","Energy and Power "
+"ug/m²","µg/m2","Micrograms per square metre","ug/m(U+00B2)","A unit of concentration","Concentration (Mass/Vol)"
+"ug/m³","µg/m3","Micrograms per cubic metre","ug/m(U+00B3)","A unit of concentration","Concentration (Mass/Vol)"
+"ugkg⁻¹","µgkg-1","Micrograms per kilogram","ugkg(U+207B)(U+00B9)","A unit of concentration used for chemicals in biota","Concentration (Mass/Mass)"
+"uScm⁻¹","µScm-1","Microsiemens per centimetre","uScm(U+207B)(U+00B9)","A unit of conductivity","Electric Conductvity"
+"Wm⁻²","Wm-2","Watts per square metre","Wm(U+207B)(U+00B2)","A unit of power density","Energy and Power "

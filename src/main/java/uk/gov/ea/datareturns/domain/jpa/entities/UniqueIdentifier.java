@@ -15,6 +15,9 @@ public class UniqueIdentifier implements ControlledListEntity {
 	@SequenceGenerator(name = "unique_identifiers_id_seq", sequenceName = "unique_identifiers_id_seq", allocationSize=1)
 	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator="unique_identifiers_id_seq")
 	private Long id;
+
+	@Basic
+	@Column(name = "name", nullable = false, length = 10)
 	private String name;
 
 	public Long getId() {
@@ -24,8 +27,6 @@ public class UniqueIdentifier implements ControlledListEntity {
 		this.id = id;
 	}
 
-	@Basic
-	@Column(name = "name", nullable = false, length = 10)
 	public String getName() {
 		return name;
 	}
