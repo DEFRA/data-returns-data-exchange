@@ -59,7 +59,7 @@ public class DataSample extends AbstractCSVRecord {
 	@Parsed(field = DataReturnsHeaders.SITE_NAME)
 	@Pattern(regexp = REGEX_SIMPLE_TEXT, message = "{DR9110-Incorrect}")
 	@Length(max = 255, message = "{DR9110-Length}")
-	@NotBlank(message = "{DR1010-Missing}")
+	@NotBlank(message = "{DR9110-Missing}")
 	private String siteName;
 
 	/** The return type (Rtn_Type) */
