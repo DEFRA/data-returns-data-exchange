@@ -1,4 +1,4 @@
-package uk.gov.ea.datareturns.domain.model.rules.modifiers;
+package uk.gov.ea.datareturns.domain.model.rules.modifiers.field;
 
 import org.springframework.stereotype.Component;
 import uk.gov.ea.datareturns.domain.model.rules.ReturnPeriodFormat;

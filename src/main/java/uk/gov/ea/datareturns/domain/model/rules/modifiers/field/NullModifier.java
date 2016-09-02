@@ -1,4 +1,4 @@
-package uk.gov.ea.datareturns.domain.model.rules.modifiers;
+package uk.gov.ea.datareturns.domain.model.rules.modifiers.field;
 
 /**
  * Graham Willis: 23/08/16

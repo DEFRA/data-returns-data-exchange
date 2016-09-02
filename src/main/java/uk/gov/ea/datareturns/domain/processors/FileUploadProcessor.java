@@ -74,7 +74,7 @@ public class FileUploadProcessor extends AbstractReturnsProcessor<DataExchangeRe
 	}
 
 	@Inject
-	private ModificationProcessor modificationProcessor;
+	private ModificationProcessor<DataSample> modificationProcessor;
 
 	/**
 	 * @param inputStream the inputStream to set
@@ -130,8 +130,8 @@ public class FileUploadProcessor extends AbstractReturnsProcessor<DataExchangeRe
 				/*
 				 * Firstly make any alias substitutions and standardize to the controlled lists
 				 */
-                modificationProcessor.initialize(csvInput);
-                final CSVModel<DataSample> csvInputSubstituted = modificationProcessor.performSubstitutions();
+                modificationProcessor.initialize(DataSample.class, csvInput);
+                final CSVModel<DataSample> csvInputSubstituted = modificationProcessor.makeModifications();
 
 				/*
 				 * Prepare the data for output to Emma.

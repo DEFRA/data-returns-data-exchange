@@ -112,7 +112,7 @@ public class ProcessorIntegrationTests {
 		Assertions.assertThat(outputFiles.size()).isEqualTo(1);
 		final List<TextValue> textValues = textValueDao.list();
 		final List<String> textValuesNames = textValues.stream().map(TextValue::getName).collect(Collectors.toList());
-		verifyExpectedValuesContainsCSVValues(outputFiles.iterator().next(), DataReturnsHeaders.TEXT_VALUE, textValuesNames);
+		verifyExpectedValuesContainsCSVValues(outputFiles.iterator().next(), DataReturnsHeaders.VALUE, textValuesNames);
 	}
 
 	@Test

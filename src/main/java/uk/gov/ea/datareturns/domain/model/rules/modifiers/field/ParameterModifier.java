@@ -1,4 +1,4 @@
-package uk.gov.ea.datareturns.domain.model.rules.modifiers;
+package uk.gov.ea.datareturns.domain.model.rules.modifiers.field;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

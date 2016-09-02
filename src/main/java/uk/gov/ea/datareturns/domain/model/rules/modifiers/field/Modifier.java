@@ -1,10 +1,10 @@
-package uk.gov.ea.datareturns.domain.model.rules.modifiers;
+package uk.gov.ea.datareturns.domain.model.rules.modifiers.field;
 
 import java.lang.annotation.*;
 
 /**
  * Graham Willis: 19/08/16.
- * Causes the entity described in the @Parsed annotation
+ * Causes the field described in the @Parsed annotation
  * to be modified by the class specified in modifier
  */
 @Documented

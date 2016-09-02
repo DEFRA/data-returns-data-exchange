@@ -8,7 +8,9 @@ import uk.gov.ea.datareturns.domain.io.csv.generic.AbstractCSVRecord;
 import uk.gov.ea.datareturns.domain.model.rules.DataReturnsHeaders;
 import uk.gov.ea.datareturns.domain.model.rules.conversion.EaIdConverter;
 import uk.gov.ea.datareturns.domain.model.rules.conversion.ReturnsDateConverter;
-import uk.gov.ea.datareturns.domain.model.rules.modifiers.*;
+import uk.gov.ea.datareturns.domain.model.rules.modifiers.field.*;
+import uk.gov.ea.datareturns.domain.model.rules.modifiers.record.PostValidationModifier;
+import uk.gov.ea.datareturns.domain.model.rules.modifiers.record.FinalValueModifier;
 import uk.gov.ea.datareturns.domain.model.validation.auditors.controlledlist.*;
 import uk.gov.ea.datareturns.domain.model.validation.auditors.dependencies.PrimaryFieldBlocksDependentAuditor;
 import uk.gov.ea.datareturns.domain.model.validation.auditors.dependencies.PrimaryFieldRequiresDependentAuditor;
@@ -41,6 +43,8 @@ import javax.validation.constraints.Pattern;
 @DependentField(primaryFieldGetter = "getTextValue", dependentFieldGetter = "getComments", fieldName = DataReturnsHeaders.COMMENTS,
 		auditor = TxtValueSeeCommentRequiresCommentAuditor.class, message = "{DR9140-Missing}")
 
+// Generic post process operator - used to map the Value OR Txt_Value to a resultant field
+@PostValidationModifier(modifier = FinalValueModifier.class)
 public class DataSample extends AbstractCSVRecord {
 	/** Regular expression for fields which should only contain simple text (no special characters) */
 	private static final String REGEX_SIMPLE_TEXT = "^[a-zA-Z0-9 ]*$";
@@ -55,6 +59,7 @@ public class DataSample extends AbstractCSVRecord {
 	@Parsed(field = DataReturnsHeaders.SITE_NAME)
 	@Pattern(regexp = REGEX_SIMPLE_TEXT, message = "{DR9110-Incorrect}")
 	@Length(max = 255, message = "{DR9110-Length}")
+	@NotBlank(message = "{DR1010-Missing}")
 	private String siteName;
 
 	/** The return type (Rtn_Type) */
@@ -428,4 +433,5 @@ public class DataSample extends AbstractCSVRecord {
 	public void setRdCode(final String rdCode) {
 		this.rdCode = rdCode;
 	}
+
 }
