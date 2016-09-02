@@ -94,10 +94,15 @@ public class ModificationProcessor<T extends AbstractCSVRecord> implements Appli
             }
             //RecordModifier dataSampleClass.getAnnotation(RecordModifier.class);
             // Process the record level annotations
-            PostValidationModifiers postValidationModifiers = dataSampleClass.getAnnotation(PostValidationModifiers.class);
-            if (postValidationModifiers != null) {
-                for (PostValidationModifier postValidationModifier : postValidationModifiers.value()) {
-                    recordModificationTaskList.add(postValidationModifier.modifier());
+            PostValidationModifier pvm1 = dataSampleClass.getAnnotation(PostValidationModifier.class);
+            if (pvm1 != null) {
+                recordModificationTaskList.add(pvm1.modifier());
+            } else {
+                PostValidationModifiers postValidationModifiers = dataSampleClass.getAnnotation(PostValidationModifiers.class);
+                if (postValidationModifiers != null) {
+                    for (PostValidationModifier pvm2 : postValidationModifiers.value()) {
+                        recordModificationTaskList.add(pvm2.modifier());
+                    }
                 }
             }
         } catch (IntrospectionException | IllegalAccessException | InstantiationException e) {

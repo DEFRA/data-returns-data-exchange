@@ -95,16 +95,6 @@ processor:
     - Unit={{Unit}}
     - Test Method={{Meth_Stand}}
     - Comment={{Comments}}
-#    - Sample Ref={{Smpl_Ref}}
-#    - Source={{Smpl_By}}
-#    - Variable={{Parameter}} ({{Unit}})
-    - Parameter={{Parameter}}
-    - Ref_Period={{Ref_Period}}
-    - Meth_Stand={{Meth_Stand}}
-    - Qualifier={{Qualifier}}
-#    - CiC={{CiC}}
-#    - CAS={{CAS}}
-#    - RD_Code={{RD_Code}}
 
 test:
   testFilesLocation: /testfiles
@@ -233,10 +223,28 @@ spring:
 spring:
   profiles: production
   profiles.include: cluster
-  
-# Live monitor pro settings - disabled until we're ready!
-#monitorProEmail:
-#  subjectLowerNumericUniqueId: EA_LP_10000_TO_69000_LIST
-#  subjectUpperNumericUniqueId: EA_LP_70000_ABOVE_LIST
-#  subjectLowerAlphaNumericUniqueId: EA_LP_AA_TO_GZ_LIST
-#  subjectUpperAlphaNumericUniqueId: EA_LP_HA_TO_ZZ_LIST
+---
+###############################################################################
+#
+# Profile: IntegrationTests. Used so that a simplified monitor-pro file format
+# can be used in integration testing while the monitor-pro file format is
+# subject to change
+#
+###############################################################################
+spring:
+  profiles: IntegrationTests
+
+processor:
+  outputMappings:
+    - Site={{Site_Name}}
+    - Rtn_Type={{Rtn_Type}}
+    - Rtn_Period={{Rtn_Period}}
+    - Date={{Mon_Date}}
+    - Value={{Value}}
+    - Unit={{Unit}}
+    - Meth_Stand={{Meth_Stand}}
+    - Comment={{Comments}}
+    - Parameter={{Parameter}}
+    - Ref_Period={{Ref_Period}}
+    - Meth_Stand={{Meth_Stand}}
+    - Qualifier={{Qualifier}}
