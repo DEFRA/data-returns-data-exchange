@@ -10,25 +10,25 @@ package uk.gov.ea.datareturns.domain.model.rules;
  */
 public enum FieldDefinition {
 	/** The EA Unique Identifier (EA_ID) */
-	EA_ID("Environment Agency unique identifier", "http://data-returns-help.herokuapp.com/help/detailed-guides/regime-specific-rules"),
+	EA_ID("Environment Agency unique identifier", "http://data-returns-help.herokuapp.com/"),
 	/** The site name (Site_Name) */
-	Site_Name(null, "http://data-returns-help.herokuapp.com/help/detailed-guides/regime-specific-rules"),
+	Site_Name(null, "http://data-returns-help.herokuapp.com/"),
 	/** The return type (Rtn_Type) */
 	Rtn_Type("Return type", "/display-list?list=rtn_type"),
 	/** The monitoring date (Mon_Date) */
-	Mon_Date("Monitoring date", "http://data-returns-help.herokuapp.com/help/detailed-guides/regime-specific-rules"),
+	Mon_Date("Monitoring date", "http://data-returns-help.herokuapp.com/"),
 	/** The return period (Rtn_Period) */
 	Rtn_Period("Return period", "/display-list?list=rtn_period"),
 	/** The monitoring point (Mon_Point) */
-	Mon_Point("Monitor point reference", "http://data-returns-help.herokuapp.com/help/detailed-guides/regime-specific-rules"),
+	Mon_Point("Monitor point reference", "http://data-returns-help.herokuapp.com/"),
 	/** Sample reference (Smpl_Ref) */
-	Smpl_Ref("Sample reference", "http://data-returns-help.herokuapp.com/help/detailed-guides/regime-specific-rules"),
+	Smpl_Ref("Sample reference", "http://data-returns-help.herokuapp.com/"),
 	/** Sampled by (Smpl_By) */
-	Smpl_By("Sampled by", "http://data-returns-help.herokuapp.com/help/detailed-guides/regime-specific-rules"),
+	Smpl_By("Sampled by", "http://data-returns-help.herokuapp.com/"),
 	/** Parameter value (Parameter) */
 	Parameter("Parameter", "/display-list?list=parameters"),
 	/** Value (Value) */
-	Value("Value", "http://data-returns-help.herokuapp.com/help/detailed-guides/regime-specific-rules"),
+	Value("Value", "http://data-returns-help.herokuapp.com/"),
 	/** Textual value (Txt_Value) */
 	Txt_Value("Text value", "http://data-returns-help.herokuapp.com/help/detailed-guides/qualifiers"),
 	/** Unit of measurement (Unit) */
@@ -38,7 +38,7 @@ public enum FieldDefinition {
 	/** Method or standard used (Meth_Stand) */
 	Meth_Stand("Monitoring method or standard", "/display-list?list=method"),
 	/** Record comments (Comments) */
-	Comments(null, "http://data-returns-help.herokuapp.com/help/detailed-guides/regime-specific-rules"),
+	Comments(null, "http://data-returns-help.herokuapp.com/"),
 	/** Commercial in confidence data (CiC) */
 	CiC("Commercial in confidence", null),
 	/** Chemical Abstracts Service value (CAS) */
@@ -46,7 +46,7 @@ public enum FieldDefinition {
 	/** Recovery and disposal code (RD_Code) */
 	RD_Code("Recovery or disposal code", null),
 	/** Qualifier (Qualifier) */
-	Qualifier("Qualifier", "display-list?list=qualifier");
+	Qualifier("Qualifier", "/display-list?list=qualifier");
 
 	private final String description;
 
