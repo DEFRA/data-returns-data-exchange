@@ -19,9 +19,6 @@ public class TxtValueSeeCommentRequiresCommentAuditor implements DependentFieldA
 		final String txtValueField = Objects.toString(textValueFieldData, null);
 		final String commentField = Objects.toString(commentFieldData, null);
 
-		if (SEE_COMMENT_VALUE.equalsIgnoreCase(txtValueField)) {
-			return StringUtils.isNotBlank(commentField);
-		}
-		return true;
+		return !SEE_COMMENT_VALUE.equalsIgnoreCase(txtValueField) || StringUtils.isNotBlank(commentField);
 	}
 }

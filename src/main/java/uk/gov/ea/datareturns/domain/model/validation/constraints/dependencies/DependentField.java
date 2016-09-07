@@ -70,7 +70,7 @@ public @interface DependentField {
 	@Target({ ElementType.TYPE })
 	@Retention(RetentionPolicy.RUNTIME)
 	@Documented
-	public @interface List {
+	@interface List {
 		DependentField[] value();
 	}
 }

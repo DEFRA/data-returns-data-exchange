@@ -4,6 +4,7 @@ import org.springframework.stereotype.Component;
 import uk.gov.ea.datareturns.domain.jpa.dao.MethodOrStandardDao;
 
 import javax.inject.Inject;
+import java.util.Objects;
 
 /**
  * Graham Willis: 23/08/16
@@ -16,6 +17,6 @@ public class MethodOrStandardModifier implements EntityModifier {
     private MethodOrStandardDao methodOrStandardDao;
 
     public Object doModify(Object input) {
-        return methodOrStandardDao.getStandardizedName(input.toString());
+        return methodOrStandardDao.getStandardizedName(Objects.toString(input, ""));
     }
 }

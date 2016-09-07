@@ -14,10 +14,10 @@ import java.util.stream.Collectors;
  *
  * @author Graham Willis
  */
-public class AliasingEntityDao<E extends AliasingEntity> extends EntityDao {
+public class AliasingEntityDao<E extends AliasingEntity> extends EntityDao<E> {
 
-    protected volatile Map<String, E> cacheByAlias = null;
-    protected volatile Map<String, E> cacheByAliasKey = null;
+    private volatile Map<String, E> cacheByAlias = null;
+    private volatile Map<String, E> cacheByAliasKey = null;
 
     /**
      * Let the Dao class know the type of entity in order that type-safe
@@ -37,12 +37,11 @@ public class AliasingEntityDao<E extends AliasingEntity> extends EntityDao {
      * @return The standardized (controlled-list) name
      */
     public String getStandardizedName(final String name) {
-        String key = getKeyFromRelaxedName(name);
         E e = getAliasKeyCache().get(getKeyFromRelaxedName(name));
         if (e != null) {
             return e.getName();
         } else {
-            e = (E) getKeyCache().get(getKeyFromRelaxedName(name));
+            e = getKeyCache().get(getKeyFromRelaxedName(name));
             if (e != null) {
                 return e.getName();
             }
@@ -71,7 +70,7 @@ public class AliasingEntityDao<E extends AliasingEntity> extends EntityDao {
     }
 
     @Override
-    public List<E> list(Predicate predicate) {
+    public List<E> list(Predicate<E> predicate) {
         List<E> list = super.list(predicate);
         return aliasProcessor(list);
     }

@@ -4,6 +4,7 @@ import org.springframework.stereotype.Component;
 import uk.gov.ea.datareturns.domain.jpa.dao.UnitDao;
 
 import javax.inject.Inject;
+import java.util.Objects;
 
 /**
  * Created by graham on 26/08/16.
@@ -15,7 +16,7 @@ public class UnitModifier implements EntityModifier {
 
     @Override
     public Object doModify(Object input) {
-        return unitDao.getStandardizedName(input.toString());
+        return unitDao.getStandardizedName(Objects.toString(input, ""));
     }
 }
 

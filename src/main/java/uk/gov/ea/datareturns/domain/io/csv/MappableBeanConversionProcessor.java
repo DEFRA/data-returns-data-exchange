@@ -3,14 +3,14 @@
  */
 package uk.gov.ea.datareturns.domain.io.csv;
 
+import com.samskivert.mustache.Template;
+import com.univocity.parsers.common.CommonSettings;
+import com.univocity.parsers.common.processor.BeanWriterProcessor;
+import uk.gov.ea.datareturns.util.MustacheTemplates;
+
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
-import com.univocity.parsers.common.CommonSettings;
-import com.univocity.parsers.common.processor.BeanWriterProcessor;
 
 /**
  * Allows the output of fields from a bean to be customised based on a hashmap containing mappings.
@@ -32,11 +32,7 @@ import com.univocity.parsers.common.processor.BeanWriterProcessor;
  * @param <T> the bean class to be serialized to CSV
  */
 public class MappableBeanConversionProcessor<T> extends BeanWriterProcessor<T> {
-	/** Token pattern matcher.  Matches tokens such as {{EA_ID}} */
-	private static final Pattern TOKEN = Pattern.compile("\\{\\{(?<fieldname>\\w+)\\}\\}");
-
-	/** Tokenised strings for the output of data under each heading **/
-	private final String[] outputFormatTokens;
+	private final Map<String, String> outputTemplates;
 
 	/** The set of all fields in the bean, based on the values that were read in.  Defines the set of tokens that can be used in the output data */
 	private final String[] beanFields;
@@ -44,13 +40,12 @@ public class MappableBeanConversionProcessor<T> extends BeanWriterProcessor<T> {
 	/**
 	 * Initialises the BeanWriterProcessor with the annotated bean class and mapping String
 	 * @param beanType the class annotated with one or more of the annotations provided in {@link com.univocity.parsers.annotations}.
-	 * @param outputMappings the mappings for the output CSV. map of output headings to tokenised values representing the input fields to
-	 * be output under each particular heading.
+	 * @param outputTemplates the mustache template text for each output heading
 	 * @param beanFields the set of all fields contained by the bean (the set of headers used when reading the bean)
 	 */
-	public MappableBeanConversionProcessor(final Class<T> beanType, final Map<String, String> outputMappings, final String[] beanFields) {
+	public MappableBeanConversionProcessor(final Class<T> beanType, final Map<String, String> outputTemplates, final String[] beanFields) {
 		super(beanType);
-		this.outputFormatTokens = outputMappings.values().toArray(new String[outputMappings.size()]);
+		this.outputTemplates = outputTemplates;
 		this.beanFields = beanFields;
 	}
 
@@ -66,25 +61,17 @@ public class MappableBeanConversionProcessor<T> extends BeanWriterProcessor<T> {
 	public Object[] write(final T input, final String[] headers, final int[] indexesToWrite) {
 		super.initialize();
 		final Object[] reverseMappedValues = reverseConversions(input, this.beanFields, indexesToWrite);
-
 		final Map<String, String> mappings = new HashMap<>();
 		for (int i = 0; i < this.beanFields.length; i++) {
 			mappings.put(this.beanFields[i], Objects.toString(reverseMappedValues[i], ""));
 		}
 
-		final String[] mappedValues = new String[this.outputFormatTokens.length];
-		for (int i = 0; i < mappedValues.length; i++) {
-			final Matcher fieldMatcher = TOKEN.matcher(this.outputFormatTokens[i]);
-			final StringBuffer sb = new StringBuffer();
-
-			while (fieldMatcher.find()) {
-				final String fieldName = fieldMatcher.group("fieldname");
-				fieldMatcher.appendReplacement(sb, Matcher.quoteReplacement(mappings.get(fieldName)));
-			}
-			fieldMatcher.appendTail(sb);
-			mappedValues[i] = sb.toString();
+		final String[] outputValues = new String[outputTemplates.size()];
+		int index = 0;
+		for (final Map.Entry<String, String> entry : outputTemplates.entrySet()) {
+			final Template tmpl = MustacheTemplates.get(entry.getKey(), entry.getValue());
+			outputValues[index++] = tmpl.execute(mappings);
 		}
-
-		return mappedValues;
+		return outputValues;
 	}
 }

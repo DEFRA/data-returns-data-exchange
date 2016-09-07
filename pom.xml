@@ -137,7 +137,7 @@
 			<artifactId>metrics-jetty9</artifactId>
 			<version>${dropwizard-metrics.version}</version>
 		</dependency>
-		
+
 		<!-- Jersey JAX-RS -->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
@@ -154,7 +154,7 @@
 			<artifactId>jersey-media-multipart</artifactId>
 			<version>${jersey.version}</version>
 		</dependency>
-		
+
 		<!--  JPA via Hibernate ORM -->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
@@ -169,10 +169,10 @@
 			<artifactId>hibernate-entitymanager</artifactId>
 		</dependency>
 		<!-- Second level cache - disabled at this point as we use an in application cache - see also persistence.xml-->
-<!-- 		<dependency> -->
-<!-- 			<groupId>org.hibernate</groupId> -->
-<!-- 			<artifactId>hibernate-ehcache</artifactId> -->
-<!-- 		</dependency> -->
+		<!-- 		<dependency> -->
+		<!-- 			<groupId>org.hibernate</groupId> -->
+		<!-- 			<artifactId>hibernate-ehcache</artifactId> -->
+		<!-- 		</dependency> -->
 		<dependency>
 			<groupId>org.hibernate</groupId>
 			<artifactId>hibernate-java8</artifactId>
@@ -188,7 +188,7 @@
 			<groupId>org.hibernate</groupId>
 			<artifactId>hibernate-validator</artifactId>
 		</dependency>
-		
+
 		<dependency>
 			<groupId>org.postgresql</groupId>
 			<artifactId>postgresql</artifactId>
@@ -199,18 +199,18 @@
 		</dependency>
 		<!-- special dependency to fix liquibase's logging fetish -->
 		<dependency>
-		    <groupId>com.mattbertolini</groupId>
-		    <artifactId>liquibase-slf4j</artifactId>
-		    <version>${liquibase-slf4j.version}</version>
+			<groupId>com.mattbertolini</groupId>
+			<artifactId>liquibase-slf4j</artifactId>
+			<version>${liquibase-slf4j.version}</version>
 		</dependency>
-		
+
 		<!-- Errbit error reporting -->
 		<dependency>
 			<groupId>net.anthavio</groupId>
 			<artifactId>airbrake-logback</artifactId>
 			<version>${airbrake-logback.version}</version>
 		</dependency>
-		
+
 
 		<!-- CSV Parsing -->
 		<dependency>
@@ -218,14 +218,22 @@
 			<artifactId>univocity-parsers</artifactId>
 			<version>${univocity.parsers.version}</version>
 		</dependency>
-		
+
+
+		<!-- Mustache support -->
+
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-mustache</artifactId>
+		</dependency>
+
 		<!-- AWS S3 Integration -->
 		<dependency>
 			<groupId>com.amazonaws</groupId>
 			<artifactId>aws-java-sdk-s3</artifactId>
 			<version>${aws.java.sdk.version}</version>
 		</dependency>
-		
+
 		<!-- Apache commons -->
 		<dependency>
 			<groupId>org.apache.commons</groupId>

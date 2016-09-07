@@ -4,6 +4,7 @@ import org.springframework.stereotype.Component;
 import uk.gov.ea.datareturns.domain.jpa.dao.TextValueDao;
 
 import javax.inject.Inject;
+import java.util.Objects;
 
 /**
  * Created by graham on 30/08/16.
@@ -15,6 +16,6 @@ public class TextValueModifier implements EntityModifier {
 
     @Override
     public Object doModify(Object input) {
-        return dao.getStandardizedName(input.toString());
+        return dao.getStandardizedName(Objects.toString(input, ""));
     }
 }

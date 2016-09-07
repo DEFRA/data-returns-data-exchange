@@ -45,5 +45,27 @@ logging:
     org.glassfish: INFO
     # Useful to log REST requests and responses (set to INFO for headers or DEBUG for full request/response logging)
     org.glassfish.jersey.filter.LoggingFilter: INFO
-  
-  
+
+###############################################################################
+#
+# Extra mappings are used (not normally output so that the integration tests can test substitution values
+#
+###############################################################################
+
+processor:
+  outputMappings:
+    - Site={{EA_ID}} - {{Site_Name}}
+    - Rtn_Type={{Rtn_Type}}
+    - SamplePoint={{Mon_Point}}
+    - Rtn_Period={{Rtn_Period}}
+    - Date={{Mon_Date}}
+    - Variable={{Parameter}}{{#Qualifier}} {#{{Qualifier}}}{{/Qualifier}}{{#Ref_Period}} {@{{Ref_Period}}}{{/Ref_Period}}
+    - Value={{Value}}{{Txt_Value}}
+    - Unit={{Unit}}
+    - Test Method={{Meth_Stand}}
+    - Meth_Stand={{Meth_Stand}}
+    - Comment={{Comments}}
+    - Parameter={{Parameter}}
+    - Ref_Period={{Ref_Period}}
+    - Meth_Stand={{Meth_Stand}}
+    - Qualifier={{Qualifier}}
