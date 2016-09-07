@@ -87,13 +87,13 @@ processor:
   outputMappings:
     - Site={{EA_ID}} - {{Site_Name}}
     - Rtn_Type={{Rtn_Type}}
-    - SamplePoint={{Mon_Point}}
+    - Sample Point={{Mon_Point}}
     - Rtn_Period={{Rtn_Period}}
     - Date={{Mon_Date}}
-    - Variable={{Parameter}} - {{Qualifier}} - {{Ref_Period}}
+    - Variable={{Parameter}} {#{{Qualifier}}} {@{{Ref_Period}}}
     - Value={{Value}}
     - Unit={{Unit}}
-    - Test Method={{Meth_Stand}}
+    - Test method={{Meth_Stand}}
     - Comment={{Comments}}
 
 test:
