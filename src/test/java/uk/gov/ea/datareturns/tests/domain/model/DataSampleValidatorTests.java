@@ -513,26 +513,6 @@ public class DataSampleValidatorTests {
 		Assert.assertEquals(0, violations.size());
 	}
 
-	@Test
-	public void testTextValueInvalid() {
-		final DataSample record = createValidTextRecord();
-		record.setTextValue(RandomStringUtils.random(30));
-		final Set<ConstraintViolation<DataSample>> violations = this.validator.validate(record);
-		Assert.assertEquals(1, violations.size());
-	}
-
-	@Test
-	public void testTextValueBooleans() {
-		final DataSample record = createValidTextRecord();
-		final String[] allowedBooleans = { "true", "false", "yes", "no", "1", "0", "True", "False", "tRuE", "yEs", "fAlSe" };
-
-		for (final String bool : allowedBooleans) {
-			record.setTextValue(bool);
-			final Set<ConstraintViolation<DataSample>> violations = this.validator.validate(record);
-			Assert.assertTrue("Boolean value " + bool + " failed validation ", violations.isEmpty());
-		}
-	}
-
 	/*=================================================================================================================
 	 *
 	 * UNIT
