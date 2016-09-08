@@ -10,13 +10,13 @@ import uk.gov.ea.datareturns.domain.jpa.entities.MethodOrStandard;
  */
 @Repository
 public class MethodOrStandardDao extends EntityDao<MethodOrStandard> {
-	public MethodOrStandardDao() {
-		super(MethodOrStandard.class);
-	}
+    public MethodOrStandardDao() {
+        super(MethodOrStandard.class);
+    }
 
-	// Allow for no spaces in the method or standard
-	protected String getKeyFromRelaxedName(String name) {
-		return name.toUpperCase().trim().replaceAll("\\s", "");
+    // Allow for no spaces in the method or standard
+    protected String getKeyFromRelaxedName(String name) {
+        return name.toUpperCase().trim().replaceAll("\\s", "");
     }
 
 }

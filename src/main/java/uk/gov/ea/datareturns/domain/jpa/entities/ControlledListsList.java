@@ -16,11 +16,12 @@ public enum ControlledListsList {
         add(new DisplayHeaderDto("name", "Rtn_Type"));
     }}), "name"),
 
-    REFERENCE_PERIOD("Reference period", ReferencePeriodDao.class, "ref_period", Collections.unmodifiableList(new ArrayList<DisplayHeaderDto>() {{
-        add(new DisplayHeaderDto("name", "Ref_Period"));
-        add(new DisplayHeaderDto("aliases", "Alternatives"));
-        add(new DisplayHeaderDto("notes", "Notes"));
-    }}), "name"),
+    REFERENCE_PERIOD("Reference period", ReferencePeriodDao.class, "ref_period",
+            Collections.unmodifiableList(new ArrayList<DisplayHeaderDto>() {{
+                add(new DisplayHeaderDto("name", "Ref_Period"));
+                add(new DisplayHeaderDto("aliases", "Alternatives"));
+                add(new DisplayHeaderDto("notes", "Notes"));
+            }}), "name"),
 
     RETURN_PERIOD("Return period", ReturnPeriodDao.class, "rtn_period", Collections.unmodifiableList(new ArrayList<DisplayHeaderDto>() {{
         add(new DisplayHeaderDto("name", "Rtn_Period"));
@@ -28,11 +29,12 @@ public enum ControlledListsList {
         add(new DisplayHeaderDto("example", "Example"));
     }}), "name"),
 
-    PARAMETERS("Parameters - substance names - and CAS", ParameterDao.class, "parameters", Collections.unmodifiableList(new ArrayList<DisplayHeaderDto>() {{
-        add(new DisplayHeaderDto("name", "Parameter"));
-        add(new DisplayHeaderDto("aliases", "Alternatives"));
-        add(new DisplayHeaderDto("cas", "CAS"));
-    }}), "name"),
+    PARAMETERS("Parameters - substance names - and CAS", ParameterDao.class, "parameters",
+            Collections.unmodifiableList(new ArrayList<DisplayHeaderDto>() {{
+                add(new DisplayHeaderDto("name", "Parameter"));
+                add(new DisplayHeaderDto("aliases", "Alternatives"));
+                add(new DisplayHeaderDto("cas", "CAS"));
+            }}), "name"),
 
     UNITS_AND_MEASURES("Unit or measure", UnitDao.class, "units", Collections.unmodifiableList(new ArrayList<DisplayHeaderDto>() {{
         add(new DisplayHeaderDto("name", "Unit"));
@@ -50,10 +52,11 @@ public enum ControlledListsList {
         add(new DisplayHeaderDto("singleOrMultiple", "Single or multiple"));
     }}), "name"),
 
-    METHOD_OR_STANDARD("Monitoring standard or method", MethodOrStandardDao.class, "method", Collections.unmodifiableList(new ArrayList<DisplayHeaderDto>() {{
-        add(new DisplayHeaderDto("name", "Meth_Stand"));
-        add(new DisplayHeaderDto("notes", "Notes"));
-    }}), "name"),
+    METHOD_OR_STANDARD("Monitoring standard or method", MethodOrStandardDao.class, "method",
+            Collections.unmodifiableList(new ArrayList<DisplayHeaderDto>() {{
+                add(new DisplayHeaderDto("name", "Meth_Stand"));
+                add(new DisplayHeaderDto("notes", "Notes"));
+            }}), "name"),
 
     TEXT_VALUES("Text Values", TextValueDao.class, "txt_value", Collections.unmodifiableList(new ArrayList<DisplayHeaderDto>() {{
         add(new DisplayHeaderDto("name", "Txt_Value"));
@@ -76,7 +79,7 @@ public enum ControlledListsList {
     }
 
     ControlledListsList(String description, Class<? extends EntityDao> dao,
-                        String path, List<DisplayHeaderDto> displayHeaders, String defaultSearch) {
+            String path, List<DisplayHeaderDto> displayHeaders, String defaultSearch) {
         this.description = description;
         this.path = path;
         this.dao = dao;

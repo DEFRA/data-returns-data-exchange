@@ -1,6 +1,3 @@
-/**
- *
- */
 package uk.gov.ea.datareturns.domain.processors;
 
 import org.apache.commons.io.FileUtils;
@@ -45,90 +42,89 @@ import java.util.Map;
 @Component
 @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 public class FileUploadProcessor extends AbstractReturnsProcessor<DataExchangeResult> {
-	private static final Logger LOGGER = LoggerFactory.getLogger(FileUploadProcessor.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(FileUploadProcessor.class);
 
-	private final StorageProvider storage;
+    private final StorageProvider storage;
 
-	private final DataSampleValidator validator;
+    private final DataSampleValidator validator;
 
-	private InputStream inputStream;
+    private InputStream inputStream;
 
-	private String clientFilename;
+    private String clientFilename;
 
-	private ModificationProcessor<DataSample> modificationProcessor;
+    private ModificationProcessor<DataSample> modificationProcessor;
 
-	/**
-	 * Create a new {@link FileUploadProcessor}.
-	 *
-	 * @param processorSettings processor specific configuration settings
-	 * @param storage the storage provider.
-	 * @param validator the validator component to perform validation on the file content
-	 * @throws ProcessingException if a processing error occurs while attempting to process/validate the file submission
-	 *
-	 */
-	@Inject
-	public FileUploadProcessor(final ProcessorSettings processorSettings, final StorageProvider storage,
-			final DataSampleValidator validator, final ModificationProcessor<DataSample> modificationProcessor)
-			throws ProcessingException {
-		super(processorSettings);
-		this.storage = storage;
-		this.validator = validator;
-		this.modificationProcessor = modificationProcessor;
-	}
+    /**
+     * Create a new {@link FileUploadProcessor}.
+     *
+     * @param processorSettings processor specific configuration settings
+     * @param storage the storage provider.
+     * @param validator the validator component to perform validation on the file content
+     * @throws ProcessingException if a processing error occurs while attempting to process/validate the file submission
+     *
+     */
+    @Inject
+    public FileUploadProcessor(final ProcessorSettings processorSettings, final StorageProvider storage,
+            final DataSampleValidator validator, final ModificationProcessor<DataSample> modificationProcessor)
+            throws ProcessingException {
+        super(processorSettings);
+        this.storage = storage;
+        this.validator = validator;
+        this.modificationProcessor = modificationProcessor;
+    }
 
+    /**
+     * @param inputStream the inputStream to set
+     */
+    public void setInputStream(final InputStream inputStream) {
+        this.inputStream = inputStream;
+    }
 
-	/**
-	 * @param inputStream the inputStream to set
-	 */
-	public void setInputStream(final InputStream inputStream) {
-		this.inputStream = inputStream;
-	}
+    /**
+     * @param clientFilename the clientFilename to set
+     */
+    public void setClientFilename(final String clientFilename) {
+        this.clientFilename = clientFilename;
+    }
 
-	/**
-	 * @param clientFilename the clientFilename to set
-	 */
-	public void setClientFilename(final String clientFilename) {
-		this.clientFilename = clientFilename;
-	}
+    /* (non-Javadoc)
+     * @see uk.gov.ea.datareturns.domain.processors.AbstractReturnsProcessor#doProcess()
+     */
+    @Override
+    protected DataExchangeResult doProcess() throws ProcessingException {
+        try {
+            if (this.inputStream == null) {
+                throw new ProcessingException("Unable to process a null stream");
+            }
 
-	/* (non-Javadoc)
-	 * @see uk.gov.ea.datareturns.domain.processors.AbstractReturnsProcessor#doProcess()
-	 */
-	@Override
-	protected DataExchangeResult doProcess() throws ProcessingException {
-		try {
-			if (this.inputStream == null) {
-				throw new ProcessingException("Unable to process a null stream");
-			}
+            final StopWatch stopwatch = new StopWatch("data-exchange upload timer");
+            stopwatch.startTask("Preparing File");
 
-			final StopWatch stopwatch = new StopWatch("data-exchange upload timer");
-			stopwatch.startTask("Preparing File");
+            final DataReturnsCSVProcessor csvProcessor = new DataReturnsCSVProcessor();
+            final File uploadedFile = File.createTempFile("dr-upload", ".csv", this.workingFolder);
 
-			final DataReturnsCSVProcessor csvProcessor = new DataReturnsCSVProcessor();
-			final File uploadedFile = File.createTempFile("dr-upload", ".csv", this.workingFolder);
+            // 1. Save upload file on server
+            FileUtils.copyInputStreamToFile(this.inputStream, uploadedFile);
 
-			// 1. Save upload file on server
-			FileUtils.copyInputStreamToFile(this.inputStream, uploadedFile);
+            // 2. Do some basic checks on the upload file
+            checkUploadFile(this.clientFilename, uploadedFile);
 
-			// 2. Do some basic checks on the upload file
-			checkUploadFile(this.clientFilename, uploadedFile);
+            stopwatch.startTask("Parsing file into model");
 
-			stopwatch.startTask("Parsing file into model");
-
-			// 3. Read the CSV data into a model
+            // 3. Read the CSV data into a model
             final CSVModel<DataSample> csvInput = csvProcessor.read(uploadedFile);
 
-			stopwatch.startTask("Validating model");
-			// Validate the model
-			final ValidationErrors validationErrors = this.validator.validateModel(csvInput);
+            stopwatch.startTask("Validating model");
+            // Validate the model
+            final ValidationErrors validationErrors = this.validator.validateModel(csvInput);
 
-			// Woohoo! prepare success/failure response
-			final DataExchangeResult result = new DataExchangeResult(new UploadResult(this.clientFilename));
+            // Woohoo! prepare success/failure response
+            final DataExchangeResult result = new DataExchangeResult(new UploadResult(this.clientFilename));
 
-			if (validationErrors.isValid()) {
-				LOGGER.debug("File '" + this.clientFilename + "' is VALID");
-				stopwatch.startTask("Preparing output files");
-				/*
+            if (validationErrors.isValid()) {
+                LOGGER.debug("File '" + this.clientFilename + "' is VALID");
+                stopwatch.startTask("Preparing output files");
+                /*
 				 * Firstly make any alias substitutions and standardize to the controlled lists
 				 */
                 modificationProcessor.initialize(DataSample.class, csvInput);
@@ -139,92 +135,92 @@ public class FileUploadProcessor extends AbstractReturnsProcessor<DataExchangeRe
 				 * This involves breaking the data up into separate lists my permit number and creating an individual output file for each
 				 * permit.
 				 */
-				final List<File> outputFiles = new ArrayList<>();
-				final Map<String, EaId> outputFileIdentifiers = new HashMap<>();
-				final Map<EaId, List<DataSample>> permitToRecordMap = prepareOutputData(csvInputSubstituted.getRecords());
-				for (final Map.Entry<EaId, List<DataSample>> entry : permitToRecordMap.entrySet()) {
-					final File permitDataFile = File.createTempFile("output-" + entry.getKey().getIdentifier() + "-", ".csv",
-							this.workingFolder);
-					csvProcessor.write(entry.getValue(), getProcessorSettings().getOutputMappingsMap(), permitDataFile);
-					outputFiles.add(permitDataFile);
-					outputFileIdentifiers.put(permitDataFile.getName(), entry.getKey());
-				}
+                final List<File> outputFiles = new ArrayList<>();
+                final Map<String, EaId> outputFileIdentifiers = new HashMap<>();
+                final Map<EaId, List<DataSample>> permitToRecordMap = prepareOutputData(csvInputSubstituted.getRecords());
+                for (final Map.Entry<EaId, List<DataSample>> entry : permitToRecordMap.entrySet()) {
+                    final File permitDataFile = File.createTempFile("output-" + entry.getKey().getIdentifier() + "-", ".csv",
+                            this.workingFolder);
+                    csvProcessor.write(entry.getValue(), getProcessorSettings().getOutputMappingsMap(), permitDataFile);
+                    outputFiles.add(permitDataFile);
+                    outputFileIdentifiers.put(permitDataFile.getName(), entry.getKey());
+                }
 
-				// Persist the file to the configured storage provider (e.g. Amazon S3)
-				stopwatch.startTask("Zipping output files");
-				final DataReturnsZipFileModel zipModel = new DataReturnsZipFileModel();
-				zipModel.setInputFile(uploadedFile);
-				zipModel.setOutputFiles(outputFiles);
-				zipModel.setOutputFileIdentifiers(outputFileIdentifiers);
-				final File zipFile = zipModel.toZipFile(this.workingFolder);
+                // Persist the file to the configured storage provider (e.g. Amazon S3)
+                stopwatch.startTask("Zipping output files");
+                final DataReturnsZipFileModel zipModel = new DataReturnsZipFileModel();
+                zipModel.setInputFile(uploadedFile);
+                zipModel.setOutputFiles(outputFiles);
+                zipModel.setOutputFileIdentifiers(outputFileIdentifiers);
+                final File zipFile = zipModel.toZipFile(this.workingFolder);
 
-				stopwatch.startTask("Persisting output files to temporary storage");
-				final String fileKey = this.storage.storeTemporaryData(zipFile);
-				result.getUploadResult().setFileKey(fileKey);
+                stopwatch.startTask("Persisting output files to temporary storage");
+                final String fileKey = this.storage.storeTemporaryData(zipFile);
+                result.getUploadResult().setFileKey(fileKey);
 
-				// Construct a parse result to return to the client
-				result.setParseResult(new ParseResult(csvInput.getRecords()));
-			} else {
-				LOGGER.debug("File '" + this.clientFilename + "' is INVALID");
-				for (ValidationError v : validationErrors.getErrors()) {
-					LOGGER.debug("Validation error: " + v);
-				}
-				result.setValidationErrors(validationErrors);
-				result.setAppStatusCode(ApplicationExceptionType.VALIDATION_ERRORS.getAppStatusCode());
-			}
+                // Construct a parse result to return to the client
+                result.setParseResult(new ParseResult(csvInput.getRecords()));
+            } else {
+                LOGGER.debug("File '" + this.clientFilename + "' is INVALID");
+                for (ValidationError v : validationErrors.getErrors()) {
+                    LOGGER.debug("Validation error: " + v);
+                }
+                result.setValidationErrors(validationErrors);
+                result.setAppStatusCode(ApplicationExceptionType.VALIDATION_ERRORS.getAppStatusCode());
+            }
 
-			stopwatch.stop();
-			if (LOGGER.isDebugEnabled()) {
-				LOGGER.debug(stopwatch.prettyPrint());
-			}
+            stopwatch.stop();
+            if (LOGGER.isDebugEnabled()) {
+                LOGGER.debug(stopwatch.prettyPrint());
+            }
 
-			return result;
-		} catch (final IOException e) {
-			throw new ProcessingException(e);
-		}
-	}
+            return result;
+        } catch (final IOException e) {
+            throw new ProcessingException(e);
+        }
+    }
 
-	/**
-	 * Basic file validation
-	 *
-	 * @param clientFilename the filename of the file reported by the client
-	 * @param uploadedFile the file that was uploaded
-	 * @throws AbstractValidationException if basic validation fails
-	 */
-	private static void checkUploadFile(final String clientFilename, final File uploadedFile) throws AbstractValidationException {
-		final String fileType = FilenameUtils.getExtension(clientFilename);
+    /**
+     * Basic file validation
+     *
+     * @param clientFilename the filename of the file reported by the client
+     * @param uploadedFile the file that was uploaded
+     * @throws AbstractValidationException if basic validation fails
+     */
+    private static void checkUploadFile(final String clientFilename, final File uploadedFile) throws AbstractValidationException {
+        final String fileType = FilenameUtils.getExtension(clientFilename);
 
-		// Release 1 must be csv - do not agree with checking file extension (means nothing) but this is a requirement!
-		if (!FileType.CSV.getExtension().equalsIgnoreCase(fileType)) {
-			throw new FileTypeUnsupportedException("Unsupported file type '" + fileType + "'");
-		}
+        // Release 1 must be csv - do not agree with checking file extension (means nothing) but this is a requirement!
+        if (!FileType.CSV.getExtension().equalsIgnoreCase(fileType)) {
+            throw new FileTypeUnsupportedException("Unsupported file type '" + fileType + "'");
+        }
 
-		// Check for empty files
-		if (FileUtils.sizeOf(uploadedFile) == 0) {
-			throw new FileEmptyException("The uploaded file is empty");
-		}
-	}
+        // Check for empty files
+        if (FileUtils.sizeOf(uploadedFile) == 0) {
+            throw new FileEmptyException("The uploaded file is empty");
+        }
+    }
 
-	/**
-	 * Prepare a Map of permit numbers (key) to a {@link List} of {@link DataSample}s (value) belonging to that permit
-	 *
-	 * @param records the {@link List} of {@link DataSample} to prepared for output
-	 * @return a {@link Map} of {@link EaId}s to a {@link List} of {@link DataSample}s
-	 */
-	private static Map<EaId, List<DataSample>> prepareOutputData(final List<DataSample> records) {
-		final Map<EaId, List<DataSample>> recordMap = new HashMap<>();
+    /**
+     * Prepare a Map of permit numbers (key) to a {@link List} of {@link DataSample}s (value) belonging to that permit
+     *
+     * @param records the {@link List} of {@link DataSample} to prepared for output
+     * @return a {@link Map} of {@link EaId}s to a {@link List} of {@link DataSample}s
+     */
+    private static Map<EaId, List<DataSample>> prepareOutputData(final List<DataSample> records) {
+        final Map<EaId, List<DataSample>> recordMap = new HashMap<>();
 
-		for (final DataSample record : records) {
+        for (final DataSample record : records) {
 			/*
 			 * Build the output map
 			 */
-			List<DataSample> recordsForPermit = recordMap.get(record.getEaId());
-			if (recordsForPermit == null) {
-				recordsForPermit = new ArrayList<>();
-			}
-			recordsForPermit.add(record);
-			recordMap.put(record.getEaId(), recordsForPermit);
-		}
-		return recordMap;
-	}
+            List<DataSample> recordsForPermit = recordMap.get(record.getEaId());
+            if (recordsForPermit == null) {
+                recordsForPermit = new ArrayList<>();
+            }
+            recordsForPermit.add(record);
+            recordMap.put(record.getEaId(), recordsForPermit);
+        }
+        return recordMap;
+    }
 }

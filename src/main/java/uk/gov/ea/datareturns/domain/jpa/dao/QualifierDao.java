@@ -10,7 +10,7 @@ import uk.gov.ea.datareturns.domain.jpa.entities.Qualifier;
  */
 @Repository
 public class QualifierDao extends EntityDao<Qualifier> {
-	public QualifierDao() {
-		super(Qualifier.class);
-	}
+    public QualifierDao() {
+        super(Qualifier.class);
+    }
 }

@@ -10,7 +10,7 @@ import uk.gov.ea.datareturns.domain.jpa.entities.Parameter;
  */
 @Repository
 public class ParameterDao extends AliasingEntityDao<Parameter> {
-	public ParameterDao() {
-		super(Parameter.class);
-	}
+    public ParameterDao() {
+        super(Parameter.class);
+    }
 }

@@ -1,6 +1,5 @@
 package uk.gov.ea.datareturns.domain.dto;
 
-
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import java.time.LocalDate;
@@ -15,6 +14,10 @@ public class ControlledListsDto {
     private final List<DisplayHeaderDto> displayHeaders;
     private String description;
     private String defaultSearch;
+    private String path;
+
+    @JsonIgnore
+    private LocalDate lastUpdate;
 
     public String getPath() {
         return path;
@@ -24,17 +27,13 @@ public class ControlledListsDto {
         this.path = path;
     }
 
-    private String path;
-
-    @JsonIgnore
-    private LocalDate lastUpdate;
-
-    public ControlledListsDto(String description, String path, List<DisplayHeaderDto> displayHeaders, LocalDate lastUpdate, String defaultSearch) {
+    public ControlledListsDto(String description, String path, List<DisplayHeaderDto> displayHeaders, LocalDate lastUpdate,
+            String defaultSearch) {
         this.description = description;
         this.path = path;
         this.lastUpdate = lastUpdate;
         this.displayHeaders = displayHeaders;
-        this.defaultSearch =defaultSearch;
+        this.defaultSearch = defaultSearch;
     }
 
     public String getDescription() {
@@ -64,6 +63,5 @@ public class ControlledListsDto {
     public void setDefaultSearch(String defaultSearch) {
         this.defaultSearch = defaultSearch;
     }
-
 
 }

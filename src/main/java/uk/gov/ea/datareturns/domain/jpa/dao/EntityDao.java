@@ -1,6 +1,3 @@
-/**
- *
- */
 package uk.gov.ea.datareturns.domain.jpa.dao;
 
 import org.slf4j.Logger;
@@ -32,23 +29,23 @@ import static java.util.Comparator.comparing;
  * @author Graham Willis
  */
 public abstract class EntityDao<E extends ControlledListEntity> {
-	protected static final Logger LOGGER = LoggerFactory.getLogger(EntityDao.class);
+    protected static final Logger LOGGER = LoggerFactory.getLogger(EntityDao.class);
 
-	@PersistenceContext
-	protected EntityManager entityManager;
+    @PersistenceContext
+    protected EntityManager entityManager;
 
-	protected final Class<E> entityClass;
+    protected final Class<E> entityClass;
 
-	protected volatile Map<String, E> cacheByName = null;
-	protected volatile Map<String, E> cacheByNameKey = null;
+    protected volatile Map<String, E> cacheByName = null;
+    protected volatile Map<String, E> cacheByNameKey = null;
 
     /**
      * Let the Dao class know the type of entity in order that type-safe
      * hibernate operations can be performed
      */
     protected EntityDao(Class<E> entityClass) {
-		this.entityClass = entityClass;
-	}
+        this.entityClass = entityClass;
+    }
 
     /**
      * Get an entity of type <E> by is unique identifier
@@ -57,8 +54,8 @@ public abstract class EntityDao<E extends ControlledListEntity> {
      * @return E
      */
     public E getById(final long id) {
-		return entityManager.find(entityClass, id);
-	}
+        return entityManager.find(entityClass, id);
+    }
 
     /**
      *
@@ -112,13 +109,13 @@ public abstract class EntityDao<E extends ControlledListEntity> {
      * @return List<E>
      */
     public List<E> list() {
-		return getCache()
-				.entrySet()
-				.stream()
-				.map(Map.Entry::getValue)
-				.sorted(comparing(E::getId))
-				.collect(Collectors.toList());
-	}
+        return getCache()
+                .entrySet()
+                .stream()
+                .map(Map.Entry::getValue)
+                .sorted(comparing(E::getId))
+                .collect(Collectors.toList());
+    }
 
     /**
      * List all entities of type <E> which satisfy a predicate
@@ -127,14 +124,14 @@ public abstract class EntityDao<E extends ControlledListEntity> {
      * @return List<E>
      */
     public List<E> list(Predicate<E> predicate) {
-		return getCache()
-				.entrySet()
-				.stream()
-				.map(Map.Entry::getValue)
-				.filter(predicate)
-				.sorted(comparing(E::getId))
-				.collect(Collectors.toList());
-	}
+        return getCache()
+                .entrySet()
+                .stream()
+                .map(Map.Entry::getValue)
+                .filter(predicate)
+                .sorted(comparing(E::getId))
+                .collect(Collectors.toList());
+    }
 
     /**
      * List the entities of type <E> filtered such that the field contains the search term
@@ -150,8 +147,8 @@ public abstract class EntityDao<E extends ControlledListEntity> {
                     final Method readMethod = pd.getReadMethod();
                     Predicate<E> builtPredicate = e -> {
                         try {
-                            return readMethod.invoke(e).toString().toLowerCase().replaceAll("\\s+","")
-									.contains(contains.toLowerCase().replaceAll("\\s+",""));
+                            return readMethod.invoke(e).toString().toLowerCase().replaceAll("\\s+", "")
+                                    .contains(contains.toLowerCase().replaceAll("\\s+", ""));
                         } catch (IllegalAccessException e1) {
                             return true;
                         } catch (InvocationTargetException e1) {
@@ -176,29 +173,29 @@ public abstract class EntityDao<E extends ControlledListEntity> {
         return name.toUpperCase().trim().replaceAll("\\s{2,}", " ");
     }
 
-	/**
-	 * Builds the cache if necessary and returns built cache. The cache will include any aliases
-	 * as primaries so we can check for the existence of aliases using this (super) class method
-	 */
-	protected Map<String, E> getCache() {
-		if (cacheByName == null) {
-			synchronized(this) {
-				if (cacheByName == null) {
-					LOGGER.info("Build name cache of: " + entityClass.getSimpleName());
-					CriteriaBuilder cb = entityManager.getCriteriaBuilder();
-					CriteriaQuery<E> q = cb.createQuery(entityClass);
-					Root<E> c = q.from(entityClass);
-					q.select(c);
-					TypedQuery<E> query = entityManager.createQuery(q);
-					List<E> results = query.getResultList();
-					cacheByName = results
-							.stream()
-							.collect(Collectors.toMap(ControlledListEntity::getName, k -> k));
-				}
-			}
-		}
-		return cacheByName;
-	}
+    /**
+     * Builds the cache if necessary and returns built cache. The cache will include any aliases
+     * as primaries so we can check for the existence of aliases using this (super) class method
+     */
+    protected Map<String, E> getCache() {
+        if (cacheByName == null) {
+            synchronized (this) {
+                if (cacheByName == null) {
+                    LOGGER.info("Build name cache of: " + entityClass.getSimpleName());
+                    CriteriaBuilder cb = entityManager.getCriteriaBuilder();
+                    CriteriaQuery<E> q = cb.createQuery(entityClass);
+                    Root<E> c = q.from(entityClass);
+                    q.select(c);
+                    TypedQuery<E> query = entityManager.createQuery(q);
+                    List<E> results = query.getResultList();
+                    cacheByName = results
+                            .stream()
+                            .collect(Collectors.toMap(ControlledListEntity::getName, k -> k));
+                }
+            }
+        }
+        return cacheByName;
+    }
 
     /**
      * Add a new entity of type <E>
@@ -230,23 +227,24 @@ public abstract class EntityDao<E extends ControlledListEntity> {
      * Builds the uppercase cache if necessary and returns built cache. The cache will include any aliases
      * as primaries so we can check for the existence of aliases using this (super) class method
      */
-	protected Map<String, E> getKeyCache() {
-		if (cacheByNameKey == null) {
+    protected Map<String, E> getKeyCache() {
+        if (cacheByNameKey == null) {
             Map<String, E> localCache = getCache();
-			synchronized(this) {
-				if (cacheByNameKey == null) {
+            synchronized (this) {
+                if (cacheByNameKey == null) {
                     LOGGER.info("Build key cache of: " + entityClass.getSimpleName());
-					cacheByNameKey = localCache.entrySet().stream().map(Map.Entry::getValue).collect(Collectors.toMap(e -> getKeyFromRelaxedName(e.getName()), e -> e));
-				}
-			}
-		}
-		return cacheByNameKey;
-	}
+                    cacheByNameKey = localCache.entrySet().stream().map(Map.Entry::getValue)
+                            .collect(Collectors.toMap(e -> getKeyFromRelaxedName(e.getName()), e -> e));
+                }
+            }
+        }
+        return cacheByNameKey;
+    }
 
-	/**
-	 * Clear the cache by name
-	 */
-	protected void clearCache() {
+    /**
+     * Clear the cache by name
+     */
+    protected void clearCache() {
         if (cacheByNameKey != null) {
             synchronized (this) {
                 if (cacheByNameKey != null) {
@@ -263,12 +261,12 @@ public abstract class EntityDao<E extends ControlledListEntity> {
                 }
             }
         }
-	}
+    }
 
-	/**
-	 * Get the class of the entity being operated on
-	 */
-	public Class<E> getEntityClass() {
-		return entityClass;
-	}
+    /**
+     * Get the class of the entity being operated on
+     */
+    public Class<E> getEntityClass() {
+        return entityClass;
+    }
 }

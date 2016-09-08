@@ -12,14 +12,14 @@ import java.util.Objects;
  */
 public class PrimaryFieldBlocksDependentAuditor implements DependentFieldAuditor {
 
-	@Override
-	public boolean isValid(final Object primaryFieldValue, final Object dependentFieldValue) {
-		final String primaryField = Objects.toString(primaryFieldValue, null);
-		final String dependentField = Objects.toString(dependentFieldValue, null);
+    @Override
+    public boolean isValid(final Object primaryFieldValue, final Object dependentFieldValue) {
+        final String primaryField = Objects.toString(primaryFieldValue, null);
+        final String dependentField = Objects.toString(dependentFieldValue, null);
 
-		if (StringUtils.isNotEmpty(primaryField)) {
-			return StringUtils.isEmpty(dependentField);
-		}
-		return true;
-	}
+        if (StringUtils.isNotEmpty(primaryField)) {
+            return StringUtils.isEmpty(dependentField);
+        }
+        return true;
+    }
 }

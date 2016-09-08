@@ -6,25 +6,25 @@ package uk.gov.ea.datareturns.domain.io.csv.generic;
  * @author Sam Gardner-Dell
  */
 public abstract class AbstractCSVRecord {
-	private long lineNumber;
+    private long lineNumber;
 
-	/**
-	 * Create a new {@link AbstractCSVRecord}
-	 */
-	protected AbstractCSVRecord() {
-	}
+    /**
+     * Create a new {@link AbstractCSVRecord}
+     */
+    protected AbstractCSVRecord() {
+    }
 
-	/**
-	 * @return the lineNumber
-	 */
-	public long getLineNumber() {
-		return this.lineNumber;
-	}
+    /**
+     * @return the lineNumber
+     */
+    public long getLineNumber() {
+        return this.lineNumber;
+    }
 
-	/**
-	 * @param lineNumber the lineNumber to set
-	 */
-	public void setLineNumber(final long lineNumber) {
-		this.lineNumber = lineNumber;
-	}
+    /**
+     * @param lineNumber the lineNumber to set
+     */
+    public void setLineNumber(final long lineNumber) {
+        this.lineNumber = lineNumber;
+    }
 }

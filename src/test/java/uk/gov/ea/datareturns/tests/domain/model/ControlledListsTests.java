@@ -193,7 +193,7 @@ public class ControlledListsTests {
 
     @Test
     public void testTextValues() {
-        TextValue  textValue0 = (TextValue) textValueDao.getByName(NAME);
+        TextValue textValue0 = (TextValue) textValueDao.getByName(NAME);
         if (textValue0 != null) {
             qualifierDao.removeById(textValue0.getId());
         }

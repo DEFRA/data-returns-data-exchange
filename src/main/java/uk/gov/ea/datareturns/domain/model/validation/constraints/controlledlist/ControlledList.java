@@ -1,16 +1,8 @@
-/**
- *
- */
 package uk.gov.ea.datareturns.domain.model.validation.constraints.controlledlist;
-
-import java.lang.annotation.Documented;
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
 
 import javax.validation.Constraint;
 import javax.validation.Payload;
+import java.lang.annotation.*;
 
 /**
  * Annotation to enable hibernate validator based validation of values that
@@ -23,27 +15,28 @@ import javax.validation.Payload;
 @Constraint(validatedBy = ControlledListValidator.class)
 @Documented
 public @interface ControlledList {
-	/**
-	 * Default constraint violation template
-	 * @return the constraint violation template
-	 */
-	String message() default "{uk.gov.ea.datareturns.domain.model.validation.controlledlist.message}";
+    /**
+     * Default constraint violation template
+     * @return the constraint violation template
+     */
+    String message() default "{uk.gov.ea.datareturns.domain.model.validation.controlledlist.message}";
 
-	/**
-	 * Validation groups
-	 * @return the groups that this validator is associated with
-	 */
-	Class<?>[] groups() default {};
+    /**
+     * Validation groups
+     * @return the groups that this validator is associated with
+     */
+    Class<?>[] groups() default {};
 
-	/**
-	 * Validation payload
-	 * @return the Payload
-	 */
-	Class<? extends Payload>[] payload() default {};
-	/**
-	 * The controlled list auditor class responsible for auditing values in this field
-	 *
-	 * @return the {@link Class} definition for the auditor to use
-	 */
-	Class<? extends ControlledListAuditor> auditor();
+    /**
+     * Validation payload
+     * @return the Payload
+     */
+    Class<? extends Payload>[] payload() default {};
+
+    /**
+     * The controlled list auditor class responsible for auditing values in this field
+     *
+     * @return the {@link Class} definition for the auditor to use
+     */
+    Class<? extends ControlledListAuditor> auditor();
 }

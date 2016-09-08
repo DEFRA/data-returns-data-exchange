@@ -14,20 +14,20 @@ import java.util.Objects;
  */
 @Component
 public class QualifierAuditor implements ControlledListAuditor {
-	@Inject
-	private QualifierDao dao;
+    @Inject
+    private QualifierDao dao;
 
-	/**
-	 *
-	 */
-	public QualifierAuditor() {
-	}
+    /**
+     *
+     */
+    public QualifierAuditor() {
+    }
 
-	/* (non-Javadoc)
-	 * @see uk.gov.ea.datareturns.domain.model.validation.constraints.ControlledListAuditor#isValid(java.lang.Object)
-	 */
-	@Override
-	public boolean isValid(final Object value) {
-		return this.dao.nameExistsRelaxed(Objects.toString(value, ""));
-	}
+    /* (non-Javadoc)
+     * @see uk.gov.ea.datareturns.domain.model.validation.constraints.ControlledListAuditor#isValid(java.lang.Object)
+     */
+    @Override
+    public boolean isValid(final Object value) {
+        return this.dao.nameExistsRelaxed(Objects.toString(value, ""));
+    }
 }

@@ -15,47 +15,48 @@ import java.lang.annotation.*;
 @Repeatable(RequireExactlyOneOf.List.class)
 @Documented
 public @interface RequireExactlyOneOf {
-	/**
-	 * @return the constraint violation template
-	 */
-	String message() default "{uk.gov.ea.datareturns.domain.model.validation.onerequired.default.message}";
-	/**
-	 * @return the constraint violation template
-	 */
-	String tooFewMessage() default "{uk.gov.ea.datareturns.domain.model.validation.onerequired.toofew.message}";
-	/**
-	 * @return the constraint violation template
-	 */
-	String tooManyMessage() default "{uk.gov.ea.datareturns.domain.model.validation.onerequired.toomany.message}";
+    /**
+     * @return the constraint violation template
+     */
+    String message() default "{uk.gov.ea.datareturns.domain.model.validation.onerequired.default.message}";
 
-	/**
-	 * Validation groups
-	 * @return the groups that this validator is associated with
-	 */
-	Class<?>[] groups() default {};
+    /**
+     * @return the constraint violation template
+     */
+    String tooFewMessage() default "{uk.gov.ea.datareturns.domain.model.validation.onerequired.toofew.message}";
 
-	/**
-	 * Validation payload
-	 * @return the Payload
-	 */
-	Class<? extends Payload>[] payload() default {};
+    /**
+     * @return the constraint violation template
+     */
+    String tooManyMessage() default "{uk.gov.ea.datareturns.domain.model.validation.onerequired.toomany.message}";
 
-	/**
-	 * Retrieve an array of getter methods that will be invoked to test that exactly one field is non-null
-	 *
-	 * @return an array of Strings representing getter methods
-	 */
-	String[] fieldGetters();
+    /**
+     * Validation groups
+     * @return the groups that this validator is associated with
+     */
+    Class<?>[] groups() default {};
 
-	/**
-	 * Container annotation for {@link RequireExactlyOneOf}
-	 *
-	 * @author Sam Gardner-Dell
-	 */
-	@Target({ ElementType.TYPE })
-	@Retention(RetentionPolicy.RUNTIME)
-	@Documented
-	@interface List {
-		RequireExactlyOneOf[] value();
-	}
+    /**
+     * Validation payload
+     * @return the Payload
+     */
+    Class<? extends Payload>[] payload() default {};
+
+    /**
+     * Retrieve an array of getter methods that will be invoked to test that exactly one field is non-null
+     *
+     * @return an array of Strings representing getter methods
+     */
+    String[] fieldGetters();
+
+    /**
+     * Container annotation for {@link RequireExactlyOneOf}
+     *
+     * @author Sam Gardner-Dell
+     */
+    @Target({ ElementType.TYPE })
+    @Retention(RetentionPolicy.RUNTIME)
+    @Documented @interface List {
+        RequireExactlyOneOf[] value();
+    }
 }

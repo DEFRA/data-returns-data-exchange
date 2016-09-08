@@ -10,7 +10,7 @@ import uk.gov.ea.datareturns.domain.jpa.entities.UniqueIdentifier;
  */
 @Repository
 public class UniqueIdentifierDao extends EntityDao<UniqueIdentifier> {
-	public UniqueIdentifierDao() {
-		super(UniqueIdentifier.class);
-	}
+    public UniqueIdentifierDao() {
+        super(UniqueIdentifier.class);
+    }
 }

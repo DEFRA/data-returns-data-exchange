@@ -10,13 +10,13 @@ import uk.gov.ea.datareturns.domain.jpa.entities.TextValue;
  */
 @Repository
 public class TextValueDao extends AliasingEntityDao<TextValue> {
-	public TextValueDao() {
-		super(TextValue.class);
-	}
+    public TextValueDao() {
+        super(TextValue.class);
+    }
 
-	// Allow for no spaces in the method or standard
-	protected String getKeyFromRelaxedName(String name) {
-		return name.toUpperCase().trim().replaceAll("\\s", "");
-	}
+    // Allow for no spaces in the method or standard
+    protected String getKeyFromRelaxedName(String name) {
+        return name.toUpperCase().trim().replaceAll("\\s", "");
+    }
 
 }

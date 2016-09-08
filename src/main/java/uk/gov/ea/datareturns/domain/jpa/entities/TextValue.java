@@ -13,57 +13,57 @@ import java.util.Set;
 @Entity
 @Table(name = "text_values")
 public class TextValue implements AliasingEntity {
-	@Id
-	@SequenceGenerator(name = "text_values_id_seq", sequenceName = "text_values_id_seq", allocationSize=1)
-	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator="text_values_id_seq")
-	@JsonIgnore
-	private Long id;
+    @Id
+    @SequenceGenerator(name = "text_values_id_seq", sequenceName = "text_values_id_seq", allocationSize = 1)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "text_values_id_seq")
+    @JsonIgnore
+    private Long id;
 
     @Basic
     @Column(name = "name", nullable = false, length = 30)
-	private String name;
+    private String name;
 
-	@JsonIgnore
+    @JsonIgnore
     @Basic
     @Column(name = "preferred", length = 30)
-	private String preferred;
+    private String preferred;
 
-	@Transient
-	private Set<String> aliases = null;
+    @Transient
+    private Set<String> aliases = null;
 
-	public Long getId() {
-		return this.id;
-	}
+    public Long getId() {
+        return this.id;
+    }
 
-	public void setId(final Long id) {
-		this.id = id;
-	}
+    public void setId(final Long id) {
+        this.id = id;
+    }
 
-	public String getName() {
-		return this.name;
-	}
+    public String getName() {
+        return this.name;
+    }
 
-	public void setName(final String name) {
-		this.name = name;
-	}
+    public void setName(final String name) {
+        this.name = name;
+    }
 
-	@Override
-	public String getPreferred() {
-		return this.preferred;
-	}
+    @Override
+    public String getPreferred() {
+        return this.preferred;
+    }
 
-	@Override
-	public void setPreferred(String preferred) {
-		this.preferred = preferred;
-	}
+    @Override
+    public void setPreferred(String preferred) {
+        this.preferred = preferred;
+    }
 
-	@Override
-	public Set<String> getAliases() {
-		return this.aliases;
-	}
+    @Override
+    public Set<String> getAliases() {
+        return this.aliases;
+    }
 
-	@Override
-	public void setAliases(Set<String> aliases) {
-		this.aliases = aliases;
-	}
+    @Override
+    public void setAliases(Set<String> aliases) {
+        this.aliases = aliases;
+    }
 }

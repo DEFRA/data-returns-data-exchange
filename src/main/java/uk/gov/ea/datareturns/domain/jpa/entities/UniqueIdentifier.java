@@ -11,46 +11,48 @@ import javax.persistence.*;
 @Table(name = "unique_identifiers")
 public class UniqueIdentifier implements ControlledListEntity {
 
-	@Id
-	@SequenceGenerator(name = "unique_identifiers_id_seq", sequenceName = "unique_identifiers_id_seq", allocationSize=1)
-	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator="unique_identifiers_id_seq")
-	private Long id;
+    @Id
+    @SequenceGenerator(name = "unique_identifiers_id_seq", sequenceName = "unique_identifiers_id_seq", allocationSize = 1)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "unique_identifiers_id_seq")
+    private Long id;
 
-	@Basic
-	@Column(name = "name", nullable = false, length = 10)
-	private String name;
+    @Basic
+    @Column(name = "name", nullable = false, length = 10)
+    private String name;
 
-	public Long getId() {
-		return this.id;
-	}
-	public void setId(final Long id) {
-		this.id = id;
-	}
+    public Long getId() {
+        return this.id;
+    }
 
-	public String getName() {
-		return name;
-	}
-	public void setName(String name) {
-		this.name = name;
-	}
+    public void setId(final Long id) {
+        this.id = id;
+    }
 
-	@Override
-	public boolean equals(Object o) {
-		if (this == o)
-			return true;
-		if (o == null || getClass() != o.getClass())
-			return false;
+    public String getName() {
+        return name;
+    }
 
-		UniqueIdentifier uniqueIdentifier = (UniqueIdentifier) o;
+    public void setName(String name) {
+        this.name = name;
+    }
 
-		return id.equals(uniqueIdentifier.id) && name.equals(uniqueIdentifier.name);
+    @Override
+    public boolean equals(Object o) {
+        if (this == o)
+            return true;
+        if (o == null || getClass() != o.getClass())
+            return false;
 
-	}
+        UniqueIdentifier uniqueIdentifier = (UniqueIdentifier) o;
 
-	@Override
-	public int hashCode() {
-		int result = id.hashCode();
-		result = 31 * result + name.hashCode();
-		return result;
-	}
+        return id.equals(uniqueIdentifier.id) && name.equals(uniqueIdentifier.name);
+
+    }
+
+    @Override
+    public int hashCode() {
+        int result = id.hashCode();
+        result = 31 * result + name.hashCode();
+        return result;
+    }
 }

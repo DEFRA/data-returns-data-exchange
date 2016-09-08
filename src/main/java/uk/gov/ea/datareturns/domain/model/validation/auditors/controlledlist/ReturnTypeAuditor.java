@@ -1,6 +1,3 @@
-/**
- *
- */
 package uk.gov.ea.datareturns.domain.model.validation.auditors.controlledlist;
 
 import org.springframework.stereotype.Component;
@@ -17,21 +14,21 @@ import java.util.Objects;
  */
 @Component
 public class ReturnTypeAuditor implements ControlledListAuditor {
-	@Inject
-	private ReturnTypeDao dao;
+    @Inject
+    private ReturnTypeDao dao;
 
-	/**
-	 *
-	 */
-	public ReturnTypeAuditor() {
+    /**
+     *
+     */
+    public ReturnTypeAuditor() {
 
-	}
+    }
 
-	/* (non-Javadoc)
-	 * @see uk.gov.ea.datareturns.domain.model.validation.constraints.ControlledListAuditor#isValid(java.lang.Object)
-	 */
-	@Override
-	public boolean isValid(final Object value) {
-		return this.dao.nameExistsRelaxed(Objects.toString(value, ""));
-	}
+    /* (non-Javadoc)
+     * @see uk.gov.ea.datareturns.domain.model.validation.constraints.ControlledListAuditor#isValid(java.lang.Object)
+     */
+    @Override
+    public boolean isValid(final Object value) {
+        return this.dao.nameExistsRelaxed(Objects.toString(value, ""));
+    }
 }

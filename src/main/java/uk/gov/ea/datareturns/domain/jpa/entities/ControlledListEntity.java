@@ -9,9 +9,11 @@ package uk.gov.ea.datareturns.domain.jpa.entities;
  */
 public interface ControlledListEntity {
     Long getId();
+
     void setId(final Long id);
 
     String getName();
+
     void setName(final String name);
 
 }

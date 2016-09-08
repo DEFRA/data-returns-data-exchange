@@ -10,28 +10,28 @@ import uk.gov.ea.datareturns.domain.jpa.entities.Unit;
  */
 @Repository
 public class UnitDao extends AliasingEntityDao<Unit> {
-	public UnitDao() {
-		super(Unit.class);
-	}
+    public UnitDao() {
+        super(Unit.class);
+    }
 
-	// Allow for no spaces in the method or standard
-	protected String getKeyFromRelaxedName(String name) {
-		return name.trim();
-	}
+    // Allow for no spaces in the method or standard
+    protected String getKeyFromRelaxedName(String name) {
+        return name.trim();
+    }
 
-	// Override this we don't want to use the key cache here
-	@Override
-	public String getStandardizedName(final String name) {
-		Unit unit = getByAlias(name);
-		if (unit != null) {
-			return unit.getName();
-		} else {
-			unit = getCache().get(name);
-			if (unit != null) {
-				return unit.getName();
-			} else {
-				return null;
-			}
-		}
-	}
+    // Override this we don't want to use the key cache here
+    @Override
+    public String getStandardizedName(final String name) {
+        Unit unit = getByAlias(name);
+        if (unit != null) {
+            return unit.getName();
+        } else {
+            unit = getCache().get(name);
+            if (unit != null) {
+                return unit.getName();
+            } else {
+                return null;
+            }
+        }
+    }
 }

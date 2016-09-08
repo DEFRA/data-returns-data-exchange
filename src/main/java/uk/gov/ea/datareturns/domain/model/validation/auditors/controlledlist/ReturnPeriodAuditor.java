@@ -1,6 +1,3 @@
-/**
- *
- */
 package uk.gov.ea.datareturns.domain.model.validation.auditors.controlledlist;
 
 import org.springframework.stereotype.Component;
@@ -16,16 +13,17 @@ import java.util.Objects;
  */
 @Component
 public class ReturnPeriodAuditor implements ControlledListAuditor {
-	/**
-	 *
-	 */
-	public ReturnPeriodAuditor() {}
+    /**
+     *
+     */
+    public ReturnPeriodAuditor() {
+    }
 
-	/* (non-Javadoc)
-	 * @see uk.gov.ea.datareturns.domain.model.validation.constraints.ControlledListAuditor#isValid(java.lang.Object)
-	 */
-	@Override
-	public boolean isValid(final Object value) {
-		return ReturnPeriodFormat.from(Objects.toString(value, null)) != null;
-	}
+    /* (non-Javadoc)
+     * @see uk.gov.ea.datareturns.domain.model.validation.constraints.ControlledListAuditor#isValid(java.lang.Object)
+     */
+    @Override
+    public boolean isValid(final Object value) {
+        return ReturnPeriodFormat.from(Objects.toString(value, null)) != null;
+    }
 }

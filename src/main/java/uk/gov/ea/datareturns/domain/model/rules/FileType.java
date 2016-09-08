@@ -6,27 +6,27 @@ package uk.gov.ea.datareturns.domain.model.rules;
  * @author Sam Gardner-Dell
  */
 public enum FileType {
-	/** Comma separated values files */
-	CSV("csv"),
-	/** Extensible markup language files */
-	XML("xml");
+    /** Comma separated values files */
+    CSV("csv"),
+    /** Extensible markup language files */
+    XML("xml");
 
-	private final String extension;
+    private final String extension;
 
-	/**
-	 * Create a new FileType
-	 * @param extension the file extension
-	 */
-	FileType(final String extension) {
-		this.extension = extension;
-	}
+    /**
+     * Create a new FileType
+     * @param extension the file extension
+     */
+    FileType(final String extension) {
+        this.extension = extension;
+    }
 
-	/**
-	 * Retrieve the file extension for the file type
-	 *
-	 * @return the file extension
-	 */
-	public String getExtension() {
-		return this.extension;
-	}
+    /**
+     * Retrieve the file extension for the file type
+     *
+     * @return the file extension
+     */
+    public String getExtension() {
+        return this.extension;
+    }
 }

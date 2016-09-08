@@ -10,7 +10,7 @@ import uk.gov.ea.datareturns.domain.jpa.entities.ReferencePeriod;
  */
 @Repository
 public class ReferencePeriodDao extends AliasingEntityDao<ReferencePeriod> {
-	public ReferencePeriodDao() {
-		super(ReferencePeriod.class);
-	}
+    public ReferencePeriodDao() {
+        super(ReferencePeriod.class);
+    }
 }

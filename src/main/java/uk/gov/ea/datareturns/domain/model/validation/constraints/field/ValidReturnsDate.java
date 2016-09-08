@@ -1,16 +1,8 @@
-/**
- *
- */
 package uk.gov.ea.datareturns.domain.model.validation.constraints.field;
-
-import java.lang.annotation.Documented;
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
 
 import javax.validation.Constraint;
 import javax.validation.Payload;
+import java.lang.annotation.*;
 
 /**
  * Annotation to enable hibernate validator based validation of monitoring dates
@@ -24,27 +16,27 @@ import javax.validation.Payload;
 @Constraint(validatedBy = ReturnsDateValidator.class)
 @Documented
 public @interface ValidReturnsDate {
-	/**
-	 * Default message template for violations
-	 * @return the message template to use for violations
-	 */
-	String message() default "{DR9020-Incorrect}";
+    /**
+     * Default message template for violations
+     * @return the message template to use for violations
+     */
+    String message() default "{DR9020-Incorrect}";
 
-	/**
-	 * The message template to use for missing dates
-	 * @return the message template to use for violations
-	 */
-	String missingMessage() default "{DR9020-Missing}";
+    /**
+     * The message template to use for missing dates
+     * @return the message template to use for violations
+     */
+    String missingMessage() default "{DR9020-Missing}";
 
-	/**
-	 * Validation groups
-	 * @return the groups that this validator is associated with
-	 */
-	Class<?>[] groups() default {};
+    /**
+     * Validation groups
+     * @return the groups that this validator is associated with
+     */
+    Class<?>[] groups() default {};
 
-	/**
-	 * Validation payload
-	 * @return the Payload
-	 */
-	Class<? extends Payload>[] payload() default {};
+    /**
+     * Validation payload
+     * @return the Payload
+     */
+    Class<? extends Payload>[] payload() default {};
 }

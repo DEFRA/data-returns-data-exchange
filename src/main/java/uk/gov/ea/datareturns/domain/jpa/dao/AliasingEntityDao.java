@@ -75,7 +75,6 @@ public class AliasingEntityDao<E extends AliasingEntity> extends EntityDao<E> {
         return aliasProcessor(list);
     }
 
-
     private List<E> aliasProcessor(List<E> list) {
         // Split the stream into aliases and basis; with and without preferred set
         List<E> basis = list.stream().filter(e -> e.getPreferred() == null).collect(Collectors.toList());
@@ -98,6 +97,7 @@ public class AliasingEntityDao<E extends AliasingEntity> extends EntityDao<E> {
 
         return result;
     }
+
     /**
      * Add an entity <E> to the persistence
      * Note - not calling super.add because of side effects of nested @Transactional
@@ -123,7 +123,7 @@ public class AliasingEntityDao<E extends AliasingEntity> extends EntityDao<E> {
     @Transactional
     @Override
     public void removeById(long id) throws IllegalArgumentException {
-        E entity = (E) getById(id);
+        E entity = getById(id);
         entityManager.remove(entity);
         LOGGER.info("Deleted: " + entityClass.getSimpleName() + " ID: " + id);
         super.clearCache();
@@ -132,12 +132,13 @@ public class AliasingEntityDao<E extends AliasingEntity> extends EntityDao<E> {
 
     private Map<String, E> getAliasCache() {
         if (cacheByAlias == null) {
-            synchronized(this) {
+            synchronized (this) {
                 if (cacheByAlias == null) {
                     LOGGER.info("Build alias name cache of: " + entityClass.getSimpleName());
                     List<E> list = super.list();
                     List<E> aliases = list.stream().filter(e -> e.getPreferred() != null).collect(Collectors.toList());
-                    Map<String, E> basis = list.stream().filter(e -> e.getPreferred() == null).collect(Collectors.toMap(AliasingEntity::getName, e -> e));
+                    Map<String, E> basis = list.stream().filter(e -> e.getPreferred() == null)
+                            .collect(Collectors.toMap(AliasingEntity::getName, e -> e));
                     cacheByAlias = aliases.stream().collect(Collectors.toMap(AliasingEntity::getName, e -> basis.get(e.getPreferred())));
                 }
             }
@@ -148,10 +149,11 @@ public class AliasingEntityDao<E extends AliasingEntity> extends EntityDao<E> {
     protected Map<String, E> getAliasKeyCache() {
         if (cacheByAliasKey == null) {
             Map<String, E> localCache = getAliasCache();
-            synchronized(this) {
+            synchronized (this) {
                 if (cacheByAliasKey == null) {
                     LOGGER.info("Build alias key cache of: " + entityClass.getSimpleName());
-                    cacheByAliasKey = localCache.entrySet().stream().collect(Collectors.toMap(e -> getKeyFromRelaxedName(e.getKey()), e -> e.getValue()));
+                    cacheByAliasKey = localCache.entrySet().stream()
+                            .collect(Collectors.toMap(e -> getKeyFromRelaxedName(e.getKey()), Map.Entry::getValue));
                 }
             }
         }

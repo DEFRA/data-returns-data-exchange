@@ -1,6 +1,3 @@
-/**
- *
- */
 package uk.gov.ea.datareturns.domain.storage;
 
 /**
@@ -9,15 +6,15 @@ package uk.gov.ea.datareturns.domain.storage;
  * @author Sam Gardner-Dell
  */
 public class StorageKeyMismatchException extends StorageException {
-	/** Appease the gods of serialization */
-	private static final long serialVersionUID = 1L;
+    /** Appease the gods of serialization */
+    private static final long serialVersionUID = 1L;
 
-	/**
-	 * Create a new {@link StorageKeyMismatchException}
-	 *
-	 * @param message the detailed exception message
-	 */
-	public StorageKeyMismatchException(final String message) {
-		super(message);
-	}
+    /**
+     * Create a new {@link StorageKeyMismatchException}
+     *
+     * @param message the detailed exception message
+     */
+    public StorageKeyMismatchException(final String message) {
+        super(message);
+    }
 }

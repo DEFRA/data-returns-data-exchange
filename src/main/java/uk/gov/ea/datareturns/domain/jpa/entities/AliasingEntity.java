@@ -7,7 +7,10 @@ import java.util.Set;
  */
 public interface AliasingEntity extends ControlledListEntity {
     String getPreferred();
+
     void setPreferred(String preferred);
+
     Set<String> getAliases();
+
     void setAliases(Set<String> aliases);
 }

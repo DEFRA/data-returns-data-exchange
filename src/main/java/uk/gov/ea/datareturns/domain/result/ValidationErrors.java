@@ -13,29 +13,29 @@ import java.util.List;
  * @author Sam Gardner-Dell
  */
 public class ValidationErrors {
-	@JsonProperty("validationErrors")
-	private final List<ValidationError> errors = Collections.synchronizedList(new ArrayList<>());
+    @JsonProperty("validationErrors")
+    private final List<ValidationError> errors = Collections.synchronizedList(new ArrayList<>());
 
-	/**
-	 * Add a new validation error into the list of validation errors
-	 *
-	 * @param error the validation error to be added
-	 */
-	public void addError(final ValidationError error) {
-		this.errors.add(error);
-	}
+    /**
+     * Add a new validation error into the list of validation errors
+     *
+     * @param error the validation error to be added
+     */
+    public void addError(final ValidationError error) {
+        this.errors.add(error);
+    }
 
-	/**
-	 * Check if a validation error exists
-	 *
-	 * @return true if a validation error exists, false otherwise
-	 */
-	@JsonIgnore
-	public boolean isValid() {
-		return this.errors.isEmpty();
-	}
+    /**
+     * Check if a validation error exists
+     *
+     * @return true if a validation error exists, false otherwise
+     */
+    @JsonIgnore
+    public boolean isValid() {
+        return this.errors.isEmpty();
+    }
 
-	public List<ValidationError> getErrors() {
-		return errors;
-	}
+    public List<ValidationError> getErrors() {
+        return errors;
+    }
 }

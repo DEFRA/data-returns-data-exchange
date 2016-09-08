@@ -10,7 +10,7 @@ import uk.gov.ea.datareturns.domain.jpa.entities.ReturnPeriod;
  */
 @Repository
 public class ReturnPeriodDao extends EntityDao<ReturnPeriod> {
-	public ReturnPeriodDao() {
-		super(ReturnPeriod.class);
-	}
+    public ReturnPeriodDao() {
+        super(ReturnPeriod.class);
+    }
 }
