@@ -36,13 +36,14 @@ public class UniqueIdentifier implements ControlledListEntity {
 
 	@Override
 	public boolean equals(Object o) {
-		if (this == o) return true;
-		if (o == null || getClass() != o.getClass()) return false;
+		if (this == o)
+			return true;
+		if (o == null || getClass() != o.getClass())
+			return false;
 
 		UniqueIdentifier uniqueIdentifier = (UniqueIdentifier) o;
 
-		if (!id.equals(uniqueIdentifier.id)) return false;
-		return name.equals(uniqueIdentifier.name);
+		return id.equals(uniqueIdentifier.id) && name.equals(uniqueIdentifier.name);
 
 	}
 

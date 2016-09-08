@@ -150,6 +150,5 @@ public class DataReturnsCSVProcessor {
 		// Write the record headers of this file
 		writer.writeHeaders();
 		writer.processRecordsAndClose(records);
-
 	}
 }

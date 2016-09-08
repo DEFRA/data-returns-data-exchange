@@ -70,6 +70,7 @@ public abstract class AbstractReturnsProcessor<R> {
 	 *
 	 * Note: This is an override point.  Overriding implementations must call super.cleanup()
 	 */
+	@SuppressWarnings("WeakerAccess")
 	protected void cleanup() {
 		if (!FileUtils.deleteQuietly(workingFolder)) {
 			try {

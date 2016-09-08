@@ -9,7 +9,7 @@ import uk.gov.ea.datareturns.domain.jpa.entities.MethodOrStandard;
  * @author Sam Gardner-Dell
  */
 @Repository
-public class MethodOrStandardDao extends EntityDao {
+public class MethodOrStandardDao extends EntityDao<MethodOrStandard> {
 	public MethodOrStandardDao() {
 		super(MethodOrStandard.class);
 	}

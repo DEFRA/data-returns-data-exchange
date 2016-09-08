@@ -55,6 +55,8 @@ public class FileUploadProcessor extends AbstractReturnsProcessor<DataExchangeRe
 
 	private String clientFilename;
 
+	private ModificationProcessor<DataSample> modificationProcessor;
+
 	/**
 	 * Create a new {@link FileUploadProcessor}.
 	 *
@@ -66,15 +68,14 @@ public class FileUploadProcessor extends AbstractReturnsProcessor<DataExchangeRe
 	 */
 	@Inject
 	public FileUploadProcessor(final ProcessorSettings processorSettings, final StorageProvider storage,
-			final DataSampleValidator validator)
+			final DataSampleValidator validator, final ModificationProcessor<DataSample> modificationProcessor)
 			throws ProcessingException {
 		super(processorSettings);
 		this.storage = storage;
 		this.validator = validator;
+		this.modificationProcessor = modificationProcessor;
 	}
 
-	@Inject
-	private ModificationProcessor<DataSample> modificationProcessor;
 
 	/**
 	 * @param inputStream the inputStream to set

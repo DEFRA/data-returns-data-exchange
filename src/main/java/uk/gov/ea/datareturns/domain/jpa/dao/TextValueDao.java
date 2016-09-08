@@ -9,7 +9,7 @@ import uk.gov.ea.datareturns.domain.jpa.entities.TextValue;
  * @author Sam Gardner-Dell
  */
 @Repository
-public class TextValueDao extends AliasingEntityDao {
+public class TextValueDao extends AliasingEntityDao<TextValue> {
 	public TextValueDao() {
 		super(TextValue.class);
 	}

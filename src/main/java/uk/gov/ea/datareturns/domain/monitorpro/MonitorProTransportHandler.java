@@ -1,10 +1,5 @@
 package uk.gov.ea.datareturns.domain.monitorpro;
 
-import java.io.File;
-import java.util.List;
-
-import javax.inject.Inject;
-
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.mail.EmailAttachment;
 import org.apache.commons.mail.EmailException;
@@ -12,13 +7,11 @@ import org.apache.commons.mail.MultiPartEmail;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
-
-import com.univocity.parsers.common.TextParsingException;
-
 import uk.gov.ea.datareturns.config.email.MonitorProEmailConfiguration;
-import uk.gov.ea.datareturns.domain.io.csv.CSVColumnReader;
 import uk.gov.ea.datareturns.domain.model.EaId;
-import uk.gov.ea.datareturns.domain.model.rules.DataReturnsHeaders;
+
+import javax.inject.Inject;
+import java.io.File;
 
 /**
  * Handles the transport of data to MonitorPro

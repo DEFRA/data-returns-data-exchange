@@ -23,7 +23,7 @@ public class ParameterModifier implements EntityModifier {
     @Override
     public Object doModify(Object input) {
         LOGGER.debug("Received parameter name: " + Objects.toString(input, ""));
-        String modifiedParameterName = parameterDao.getStandardizedName(input.toString());
+        String modifiedParameterName = parameterDao.getStandardizedName(Objects.toString(input, ""));
         LOGGER.debug("Modified parameter name: " + modifiedParameterName);
         return modifiedParameterName;
     }

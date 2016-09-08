@@ -4,6 +4,7 @@ import org.springframework.stereotype.Component;
 import uk.gov.ea.datareturns.domain.jpa.dao.ReferencePeriodDao;
 
 import javax.inject.Inject;
+import java.util.Objects;
 
 /**
  * Graham Willis: 23/08/16
@@ -16,6 +17,6 @@ public class ReferencePeriodModifier implements EntityModifier {
 
     @Override
     public Object doModify(Object input) {
-        return referencePeriodDao.getStandardizedName(input.toString());
+        return referencePeriodDao.getStandardizedName(Objects.toString(input, ""));
     }
 }

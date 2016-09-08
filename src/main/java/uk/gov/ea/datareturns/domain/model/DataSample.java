@@ -9,8 +9,6 @@ import uk.gov.ea.datareturns.domain.model.rules.DataReturnsHeaders;
 import uk.gov.ea.datareturns.domain.model.rules.conversion.EaIdConverter;
 import uk.gov.ea.datareturns.domain.model.rules.conversion.ReturnsDateConverter;
 import uk.gov.ea.datareturns.domain.model.rules.modifiers.field.*;
-import uk.gov.ea.datareturns.domain.model.rules.modifiers.record.PostValidationModifier;
-import uk.gov.ea.datareturns.domain.model.rules.modifiers.record.FinalValueModifier;
 import uk.gov.ea.datareturns.domain.model.validation.auditors.controlledlist.*;
 import uk.gov.ea.datareturns.domain.model.validation.auditors.dependencies.PrimaryFieldBlocksDependentAuditor;
 import uk.gov.ea.datareturns.domain.model.validation.auditors.dependencies.PrimaryFieldRequiresDependentAuditor;
@@ -43,8 +41,6 @@ import javax.validation.constraints.Pattern;
 @DependentField(primaryFieldGetter = "getTextValue", dependentFieldGetter = "getComments", fieldName = DataReturnsHeaders.COMMENTS,
 		auditor = TxtValueSeeCommentRequiresCommentAuditor.class, message = "{DR9140-Missing}")
 
-// Generic post process operator - used to map the Value OR Txt_Value to a resultant field
-@PostValidationModifier(modifier = FinalValueModifier.class)
 public class DataSample extends AbstractCSVRecord {
 	/** Regular expression for fields which should only contain simple text (no special characters) */
 	private static final String REGEX_SIMPLE_TEXT = "^[a-zA-Z0-9 ]*$";

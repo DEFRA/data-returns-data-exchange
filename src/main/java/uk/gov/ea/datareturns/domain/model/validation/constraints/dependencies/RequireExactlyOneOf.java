@@ -55,7 +55,7 @@ public @interface RequireExactlyOneOf {
 	@Target({ ElementType.TYPE })
 	@Retention(RetentionPolicy.RUNTIME)
 	@Documented
-	public @interface List {
+	@interface List {
 		RequireExactlyOneOf[] value();
 	}
 }
