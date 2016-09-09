@@ -61,7 +61,6 @@ public class DataSampleValidator {
                 error.setFieldName(fieldName);
                 if (definition != null) {
                     error.setDefinition(definition.getDescription());
-                    error.setHelpReference(definition.getHelpReference());
                 }
                 error.setErrorValue(errorValue);
                 error.setLineNumber(record.getLineNumber());

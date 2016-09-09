@@ -14,9 +14,6 @@ public class ValidationError {
     @JsonProperty("definition")
     private String definition;
 
-    @JsonProperty("helpReference")
-    private String helpReference;
-
     @JsonProperty("lineNumber")
     private long lineNumber;
 
@@ -64,20 +61,6 @@ public class ValidationError {
      */
     public void setDefinition(final String definition) {
         this.definition = definition;
-    }
-
-    /**
-     * @return the helpReference
-     */
-    public String getHelpReference() {
-        return this.helpReference;
-    }
-
-    /**
-     * @param helpReference the helpReference to set
-     */
-    public void setHelpReference(final String helpReference) {
-        this.helpReference = helpReference;
     }
 
     /**
