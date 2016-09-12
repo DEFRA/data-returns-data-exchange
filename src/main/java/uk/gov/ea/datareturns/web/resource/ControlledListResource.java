@@ -26,6 +26,7 @@ import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
  * @author Sam Gardner-Dell
  */
 @Component
+@Path("/controlled-list/")
 @Scope(ConfigurableBeanFactory.SCOPE_SINGLETON)
 public class ControlledListResource {
     private static final Logger LOGGER = LoggerFactory.getLogger(ControlledListResource.class);
@@ -43,8 +44,8 @@ public class ControlledListResource {
     }
 
     @GET
-    @Path("/controlled-list/")
     @Produces(APPLICATION_JSON)
+    @Path("/lists/")
     public Response listControlledLists() {
         LOGGER.debug("Request for /controlled-list");
         Map<String, ControlledListsDto> listData = controlledListProcessor.getListData();
@@ -53,7 +54,7 @@ public class ControlledListResource {
 
 
     @GET
-    @Path("/controlled-list/{listname}/")
+    @Path("/lists/{listname}/")
     @Produces(APPLICATION_JSON)
     public Response getControlledList(
             @PathParam("listname") final String listName,

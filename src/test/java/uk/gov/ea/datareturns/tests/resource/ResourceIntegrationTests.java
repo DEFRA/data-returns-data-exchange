@@ -110,7 +110,7 @@ public class ResourceIntegrationTests {
 
     public final static String STEP_COMPLETE = "data-exchange/complete";
 
-    public final static String CONTROLLED_LISTS = "controlled-list";
+    public final static String CONTROLLED_LISTS = "controlled-list/lists";
 
     public final static String METH_STAND_VALID = "validation/testMethStand.csv";
     public final static String METH_STAND_INVALID = "validation/testMethStandInvalid.csv";

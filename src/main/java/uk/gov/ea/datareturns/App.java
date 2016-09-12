@@ -3,6 +3,7 @@ package uk.gov.ea.datareturns;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.autoconfigure.mustache.MustacheAutoConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Scope;
 import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
@@ -12,7 +13,7 @@ import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
  *
  * @author Sam Gardner-Dell
  */
-@SpringBootApplication
+@SpringBootApplication(exclude = { MustacheAutoConfiguration.class })
 public class App {
     /**
      * Application main startup method
