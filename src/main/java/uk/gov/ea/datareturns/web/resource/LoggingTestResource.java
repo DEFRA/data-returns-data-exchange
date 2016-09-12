@@ -33,12 +33,12 @@ public class LoggingTestResource {
     @GET
     @Path("/test")
     @Produces(APPLICATION_JSON)
-    public Response testError() {
+    public Response testLogging() {
         final String timestamp = new Date().toString();
-        LOGGER.debug("/test endpoint invoked at " + timestamp);
-        LOGGER.info("/test endpoint invoked at " + timestamp);
-        LOGGER.warn("/test endpoint invoked at " + timestamp);
-        LOGGER.error("/test endpoint invoked at " + timestamp);
+        LOGGER.debug("/logging/test endpoint invoked at " + timestamp);
+        LOGGER.info("/logging/test endpoint invoked at " + timestamp);
+        LOGGER.warn("/logging/test endpoint invoked at " + timestamp);
+        LOGGER.error("/logging/test endpoint invoked at " + timestamp);
         return Response.status(Response.Status.OK).entity(timestamp).build();
     }
 }

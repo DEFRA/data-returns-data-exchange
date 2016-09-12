@@ -19,7 +19,7 @@ public final class ExceptionMessageContainer {
      * @param message the message detailing the problem
      */
     public ExceptionMessageContainer(final ApplicationExceptionType exceptionType, final String message) {
-        this.appStatusCode = exceptionType.getAppStatusCode();
+        this.appStatusCode = exceptionType != null ? exceptionType.getAppStatusCode() : -1;
         this.message = message;
     }
 

@@ -21,7 +21,9 @@ public enum ApplicationExceptionType {
     /** DR1000 **/
     UNKNOWN_LIST_TYPE(1000, "Unknown controlled list"),
     /** DR3000 - unexpected system error */
-    SYSTEM_FAILURE(3000, "A system failure occurred");
+    SYSTEM_FAILURE(3000, "A system failure occurred"),
+    /** DR4000 - unexpected system error */
+    CLIENT_FAILURE(4000, "Bad request");
 
     private final int appStatusCode;
 

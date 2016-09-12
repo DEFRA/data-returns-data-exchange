@@ -25,7 +25,6 @@ import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
  *
  * @author Sam Gardner-Dell
  */
-@Path("/controlled-list/")
 @Component
 @Scope(ConfigurableBeanFactory.SCOPE_SINGLETON)
 public class ControlledListResource {
@@ -44,23 +43,23 @@ public class ControlledListResource {
     }
 
     @GET
-    @Path("/")
+    @Path("/controlled-list/")
     @Produces(APPLICATION_JSON)
     public Response listControlledLists() {
-        LOGGER.debug("Request for /data-exchange/controlled");
+        LOGGER.debug("Request for /controlled-list");
         Map<String, ControlledListsDto> listData = controlledListProcessor.getListData();
         return Response.status(Response.Status.OK).entity(listData).build();
     }
 
 
     @GET
-    @Path("/{listname}/")
+    @Path("/controlled-list/{listname}/")
     @Produces(APPLICATION_JSON)
     public Response getControlledList(
             @PathParam("listname") final String listName,
             @QueryParam("field") final String field,
             @QueryParam("contains") final String contains) throws Exception {
-        LOGGER.debug("Request for /data-exchange/controlled-list/" + listName + " Field: " + field + " contains: " + contains);
+        LOGGER.debug("Request for /controlled-list/" + listName + " Field: " + field + " contains: " + contains);
         ControlledListsList controlledList = ControlledListsList.getByPath(listName);
 
         // Check we have a registered controlled list type
