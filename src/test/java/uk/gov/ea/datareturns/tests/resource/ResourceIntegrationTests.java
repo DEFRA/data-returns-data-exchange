@@ -104,11 +104,11 @@ public class ResourceIntegrationTests {
 
     public final static String TRUE = "true";
 
-    public final static String URI = "http://localhost:%d/data-exchange/%s";
+    public final static String URI = "http://localhost:%d/%s";
 
-    public final static String STEP_UPLOAD = "upload";
+    public final static String STEP_UPLOAD = "data-exchange/upload";
 
-    public final static String STEP_COMPLETE = "complete";
+    public final static String STEP_COMPLETE = "data-exchange/complete";
 
     public final static String CONTROLLED_LISTS = "controlled-list";
 
