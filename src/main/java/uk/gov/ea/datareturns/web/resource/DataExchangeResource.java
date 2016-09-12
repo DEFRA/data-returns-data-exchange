@@ -45,9 +45,6 @@ public class DataExchangeResource {
 
     private final ApplicationContext context;
 
-    @Inject
-    ControlledListProcessor controlledListProcessor;
-
     /**
      * Create a new {@link DataExchangeResource} RESTful service
      *
@@ -124,36 +121,4 @@ public class DataExchangeResource {
         final DataExchangeResult result = processor.process();
         return Response.status(Status.OK).entity(result).build();
     }
-
-    @GET
-    @Path("/controlled-list/{listname}/")
-    @Produces(APPLICATION_JSON)
-    public Response getControlledList(
-            @PathParam("listname") final String listName,
-            @QueryParam("field") final String field,
-            @QueryParam("contains") final String contains) throws Exception {
-        LOGGER.debug("Request for /data-exchange/controlled-list/" + listName + " Field: " + field + " contains: " + contains);
-        ControlledListsList controlledList = ControlledListsList.getByPath(listName);
-
-        // Check we have a registered controlled list type
-        if (controlledList == null) {
-            LOGGER.error("Request for unknown controlled list: " + listName);
-            return Response.status(Status.BAD_REQUEST).entity(new ExceptionMessageContainer(
-                    ApplicationExceptionType.UNKNOWN_LIST_TYPE, "Request for unknown controlled list: " + listName
-            )).build();
-        } else {
-            List<? extends ControlledListEntity> listData = controlledListProcessor.getListData(controlledList, field, contains);
-            return Response.status(Status.OK).entity(listData).build();
-        }
-    }
-
-    @GET
-    @Path("/controlled-list/")
-    @Produces(APPLICATION_JSON)
-    public Response listControlledLists() {
-        LOGGER.debug("Request for /data-exchange/controlled");
-        Map<String, ControlledListsDto> listData = controlledListProcessor.getListData();
-        return Response.status(Status.OK).entity(listData).build();
-    }
-
 }
