@@ -16,6 +16,8 @@ public enum ApplicationExceptionType {
     HEADER_MANDATORY_FIELD_MISSING(820, "Mandatory headings missing"),
     /** DR0840 - Unrecognised field found */
     HEADER_UNRECOGNISED_FIELD_FOUND(840, "Unrecognised field found"),
+    /** DR0860 - Duplicate field found */
+    HEADER_DUPLICATE_FIELD_FOUND(860, "Duplicate field found"),
     /** DR0900 - validation errors in file content */
     VALIDATION_ERRORS(900, "One or more validation problems are present and must be corrected"),
     /** DR1000 **/

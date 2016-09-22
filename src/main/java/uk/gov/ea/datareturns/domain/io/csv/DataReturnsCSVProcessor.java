@@ -121,6 +121,12 @@ public class DataReturnsCSVProcessor {
             throw new UnrecognisedFieldException("Unrecognised field(s) encountered: " + tempCsvHeaderSet.toString());
         }
 
+        // If the set size is less than the original headers array length then there were duplicate field headings in the file
+        if (csvHeaders.size() < headers.length) {
+            // In this case we only had duplicate instances of recognised headers
+            throw new DuplicateFieldException("Duplicate fields found " + tempCsvHeaderSet.toString());
+        }
+
         final List<DataSample> records = rowProcessor.getBeans();
         final CSVModel<DataSample> model = new CSVModel<>();
         model.setPojoFieldToHeaderMap(fieldMap);
