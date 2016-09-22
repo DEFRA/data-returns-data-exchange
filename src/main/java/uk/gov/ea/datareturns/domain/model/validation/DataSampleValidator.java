@@ -56,7 +56,7 @@ public class DataSampleValidator {
                 if (fieldName != null) {
                     // TODO: How to show the value of a specific field when using a class level dependent field annotation....
                     // See test file CUKE7029_Text_Value_and_Value_and_unit_FAIL.csv
-                    if (violation.getInvalidValue() instanceof String) {
+                    if (!(violation.getInvalidValue() instanceof DataSample)) {
                         errorValue = Objects.toString(violation.getInvalidValue(), null);
                     }
                     definition = FieldDefinition.valueOf(fieldName);

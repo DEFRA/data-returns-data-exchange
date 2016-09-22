@@ -58,16 +58,13 @@ public class ReturnsDate {
     }
 
     /**
-     * Returns the String representation of this {@link ReturnsDate}.
+     * Returns the String representation of this {@link ReturnsDate} as originally entered
      *
-     * If the date was successfully parsed then this method returns the result of the underlying {@link Instant#toString()} method,
-     * otherwise the original user-specified String is returned.
-     *
-     * @return a String representation of this {@link ReturnsDate}
+     * @return a String representation of this {@link ReturnsDate} as originally entered
      */
     @Override
     public String toString() {
-        return (this.instant != null) ? this.instant.toString() : this.originalValue;
+        return this.originalValue;
     }
 
     /**
