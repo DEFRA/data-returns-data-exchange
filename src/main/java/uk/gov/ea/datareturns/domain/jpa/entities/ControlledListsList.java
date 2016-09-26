@@ -29,7 +29,7 @@ public enum ControlledListsList {
         add(new DisplayHeaderDto("example", "Example"));
     }}), "name"),
 
-    PARAMETERS("Parameters - substance names - and CAS", ParameterDao.class, "parameters",
+    PARAMETERS("Parameter (substance name)", ParameterDao.class, "parameters",
             Collections.unmodifiableList(new ArrayList<DisplayHeaderDto>() {{
                 add(new DisplayHeaderDto("name", "Parameter"));
                 add(new DisplayHeaderDto("aliases", "Alternatives"));
@@ -58,7 +58,7 @@ public enum ControlledListsList {
                 add(new DisplayHeaderDto("notes", "Notes"));
             }}), "name"),
 
-    TEXT_VALUES("Text Values", TextValueDao.class, "txt_value", Collections.unmodifiableList(new ArrayList<DisplayHeaderDto>() {{
+    TEXT_VALUES("Text value", TextValueDao.class, "txt_value", Collections.unmodifiableList(new ArrayList<DisplayHeaderDto>() {{
         add(new DisplayHeaderDto("name", "Txt_Value"));
         add(new DisplayHeaderDto("aliases", "Alternatives"));
     }}), "name");
