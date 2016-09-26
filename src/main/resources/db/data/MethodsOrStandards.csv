@@ -43,7 +43,7 @@ MMS 9,Calibrated handheld monitoring instrument
 MMS 10,Calibrated handheld monitoring instrument or Tedlar bag sample in accordance with LFTGN04
 EN ISO 16587,
 MMS 11,Environment Agency Guidance TGN02
-MMS 12,"Environment Agency Guidance TGN02 Horizontal Guidance Note H1 – environmental risk assessment for permits, Annex J3, version 2.1, Dec 2011 or such other subsequent guidance as may be agreed in writing with the Environment Agency"
+MMS 12,"Environment Agency Guidance TGN02 Horizontal Guidance Note H1 - environmental risk assessment for permits, Annex J3, version 2.1, Dec 2011 or such other subsequent guidance as may be agreed in writing with the Environment Agency"
 MMS 13,GCMS analysis at UKAS accredited laboratory
 ISBN 0117516139,
 ISO 14001,
@@ -63,8 +63,8 @@ MMS 26,Pollution Inventory Measured
 MMS 27,Pollution Inventory Measured - alternative measurement method in accordance with existing CEN/ISO measurement standards
 MMS 28,Pollution Inventory Measured - measurement method demonstrated by means of certified reference materials and approved by the Environment Agency
 MMS 29,Pollution Inventory Measured - measurement method prescribed by the Environment Agency in an operating uniqueIdentifier or licence for the facility
-MMS 30,Pollution Inventory Measured – national or regional binding measurement method prescribed by legal act for the substance and facility concerned
-MMS 31,Pollution Inventory Measured – other measurement method
+MMS 30,Pollution Inventory Measured - national or regional binding measurement method prescribed by legal act for the substance and facility concerned
+MMS 31,Pollution Inventory Measured - other measurement method
 MMS 32,Standard temperature sensor
 MMS 33,Trace gas analysis in accordance with LFTGN04 or a trace gas characterisation method agreed with the Environment Agency or such other subsequent guidance as may be agreed in writing with the Environment Agency
 MMS 34,Traceable to national standards
