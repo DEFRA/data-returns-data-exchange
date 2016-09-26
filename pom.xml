@@ -348,6 +348,7 @@
 				<artifactId>spring-boot-maven-plugin</artifactId>
 				<configuration>
 					<executable>true</executable>
+					<mainClass>uk.gov.ea.datareturns.App</mainClass>
 				</configuration>
 			</plugin>
 
