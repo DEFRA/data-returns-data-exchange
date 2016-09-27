@@ -716,7 +716,7 @@ public class DataSampleValidatorTests {
      */
     private static DataSample createValidNumericRecord() {
         final DataSample record = new DataSample();
-        record.setEaId(new EaId("DP3431PC"));
+        record.setEaId(new EaId("DP3135ZP"));
         record.setSiteName("Site Name");
         record.setReturnType("Landfill leachate monitoring");
         record.setMonitoringDate(ReturnsDate.from("2016-03-09T11:18:59"));
