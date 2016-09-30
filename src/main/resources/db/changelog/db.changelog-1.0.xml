@@ -74,9 +74,6 @@
 			<column name="name" type="varchar(80)">
 				<constraints nullable="false" unique="true"/>
 			</column>
-			<column name="sector" type="varchar(20)">
-				<constraints nullable="false" unique="false"/>
-			</column>
 		</createTable>
 		<rollback>
 			<dropTable tableName="return_types"/>
