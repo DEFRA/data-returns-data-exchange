@@ -1,23 +1,26 @@
 package uk.gov.ea.datareturns.domain.jpa.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import javax.persistence.*;
 
 /**
- * The persistent class for the unique_identifiers database table.
+ * The persistent class for the methods_or_standards database table.
  *
  */
 @SuppressWarnings({ "JavaDoc", "unused" })
 @Entity
-@Table(name = "unique_identifiers")
-public class UniqueIdentifier implements ControlledListEntity {
+@Table(name = "releases_and_transfers")
+public class ReleasesAndTransfers implements ControlledListEntity {
 
     @Id
-    @SequenceGenerator(name = "unique_identifiers_id_seq", sequenceName = "unique_identifiers_id_seq", allocationSize = 1)
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "unique_identifiers_id_seq")
+    @SequenceGenerator(name = "releases_and_transfers_id_seq", sequenceName = "releases_and_transfers_id_seq", allocationSize = 1)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "releases_and_transfers_id_seq")
+    @JsonIgnore
     private Long id;
 
     @Basic
-    @Column(name = "name", nullable = false, length = 10)
+    @Column(name = "name", nullable = false, length = 30)
     private String name;
 
     public Long getId() {
@@ -29,10 +32,10 @@ public class UniqueIdentifier implements ControlledListEntity {
     }
 
     public String getName() {
-        return name;
+        return this.name;
     }
 
-    public void setName(String name) {
+    public void setName(final String name) {
         this.name = name;
     }
 
@@ -41,7 +44,7 @@ public class UniqueIdentifier implements ControlledListEntity {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
-        UniqueIdentifier that = (UniqueIdentifier) o;
+        ReleasesAndTransfers that = (ReleasesAndTransfers) o;
 
         return name.equals(that.name);
     }
@@ -50,5 +53,4 @@ public class UniqueIdentifier implements ControlledListEntity {
     public int hashCode() {
         return name.hashCode();
     }
-
 }
