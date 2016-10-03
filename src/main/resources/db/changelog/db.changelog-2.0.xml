@@ -48,6 +48,18 @@
 		</rollback>
 	</changeSet>
 
+	<changeSet id="create-index: dependencies" author="Environment Agency">
+		<createIndex indexName="idx_dependencies" tableName="dependencies" unique="true">
+			<column name="return_type"/>
+			<column name="parameter"/>
+			<column name="releases_and_transfers"/>
+			<column name="units"/>
+		</createIndex>
+		<rollback>
+			<dropIndex tableName="dependencies" indexName="idx_dependencies"/>
+		</rollback>
+	</changeSet>
+
 	<!-- 
 	****************************************************************
 	Releases and Transfers

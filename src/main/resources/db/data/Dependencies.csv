@@ -4966,7 +4966,6 @@ IED Chap 3 Inventory,Total Annual SO2 emission,*,t
 IED Chap 3 Inventory,Total Annual NOx emission,*,t
 IED Chap 3 Inventory,Total Annual Dust emission,*,t
 IED Chap 3 Inventory,Annual energy input,*,TJ
-return_type,parameter,releases_and_transfers,units
 Landfill leachate monitoring,"1,1,1,2-Tetrafluoroethane",*,*
 Emissions to surface water,"1,1,1,2-Tetrafluoroethane",*,*
 Emissions to groundwater,"1,1,1,2-Tetrafluoroethane",*,*
