@@ -32,11 +32,6 @@ public class DependenciesTests {
     }
 
     @Test
-    public void integrity() {
-        Assert.assertTrue(dao.checkIntegrity());
-    }
-
-    @Test
     public void buildCache() {
         Assert.assertNotNull(dao.buildCache());
     }

@@ -3,9 +3,11 @@ package uk.gov.ea.datareturns.domain.jpa.dao;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Repository;
+import uk.gov.ea.datareturns.domain.exceptions.ProcessingException;
 import uk.gov.ea.datareturns.domain.jpa.entities.Dependencies;
 import uk.gov.ea.datareturns.domain.jpa.entities.DependenciesId;
 
+import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -67,7 +69,7 @@ public class DependenciesDao {
 
         return cache;
     }
-    //returnTypeDao.getKeyFromRelaxedName(
+
     /**
      * List all the dependencies
      */
@@ -87,7 +89,8 @@ public class DependenciesDao {
      * can be found in the base tables
      * @return true is OK
      */
-    public boolean checkIntegrity() {
+    @PostConstruct
+    public void checkIntegrity() throws ProcessingException{
         boolean hasIntegrity = true;
 
         // Test parameters
@@ -150,6 +153,8 @@ public class DependenciesDao {
             }
         }
 
-        return hasIntegrity;
+        if (!hasIntegrity) {
+            throw new ProcessingException("Dependencies data has errors");
+        }
     }
 }
