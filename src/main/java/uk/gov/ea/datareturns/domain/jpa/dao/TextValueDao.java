@@ -15,8 +15,8 @@ public class TextValueDao extends AliasingEntityDao<TextValue> {
     }
 
     // Allow for no spaces in the method or standard
-    protected String getKeyFromRelaxedName(String name) {
-        return name.toUpperCase().trim().replaceAll("\\s", "");
+    public String getKeyFromRelaxedName(String name) {
+        return name == null ? null : name.toUpperCase().trim().replaceAll("\\s", "");
     }
 
 }

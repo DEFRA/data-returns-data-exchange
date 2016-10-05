@@ -15,8 +15,8 @@ public class UnitDao extends AliasingEntityDao<Unit> {
     }
 
     // Allow for no spaces in the method or standard
-    protected String getKeyFromRelaxedName(String name) {
-        return name.trim();
+    public String getKeyFromRelaxedName(String name) {
+        return name == null ? null : name.trim();
     }
 
     // Override this we don't want to use the key cache here

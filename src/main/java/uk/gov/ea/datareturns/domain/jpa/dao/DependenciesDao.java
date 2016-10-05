@@ -4,8 +4,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Repository;
 import uk.gov.ea.datareturns.domain.exceptions.ProcessingException;
-import uk.gov.ea.datareturns.domain.jpa.entities.Dependencies;
-import uk.gov.ea.datareturns.domain.jpa.entities.DependenciesId;
+import uk.gov.ea.datareturns.domain.jpa.entities.*;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
@@ -55,7 +54,7 @@ public class DependenciesDao {
 
     public Map<String, Map<String, Map<String, Set<String>>>> buildCache() {
         if (cache == null) {
-            LOGGER.info("Building dependencies cache");
+            LOGGER.info("Build name cache of: Dependencies");
             cache = list().stream().collect(
                     Collectors.groupingBy(t -> returnTypeDao.getKeyFromRelaxedName(t.getReturnType()),
                             Collectors.groupingBy(r -> releasesAndTransfersDao.getKeyFromRelaxedName(r.getReleasesAndTransfers()),
@@ -68,6 +67,10 @@ public class DependenciesDao {
         }
 
         return cache;
+    }
+
+    public Map<String, Map<String, Map<String, Set<String>>>> getCache() {
+        return buildCache();
     }
 
     /**
@@ -84,6 +87,21 @@ public class DependenciesDao {
         return results;
     }
 
+    /*
+     * Detect the exclusion^ character at the beginning of a string
+     */
+    public static boolean IsExclustion(String s) {
+        return s.charAt(0) == '^' ? true : false;
+    }
+
+    /*
+     * Return a string with any exclusion characters removed
+     * or return the unmutated string
+     */
+    public static String removeExclusion(String s) {
+        return !IsExclustion(s) ? s : s.substring(1);
+    }
+
     /**
      * Test that all items in the dependencies table
      * can be found in the base tables
@@ -97,6 +115,7 @@ public class DependenciesDao {
         List<String> missingParameters = list()
             .stream()
                 .map(Dependencies::getParameter)
+                .map(p -> removeExclusion(p))
                 .filter(p -> !p.trim().equals("*"))
                 .filter(p -> !parameterDao.nameExists(p))
                 .collect(Collectors.toList());
@@ -112,6 +131,7 @@ public class DependenciesDao {
         List<String> missingReturnTypes = list()
                 .stream()
                 .map(Dependencies::getReturnType)
+                .map(p -> removeExclusion(p))
                 .filter(p -> !p.trim().equals("*"))
                 .filter(p -> !returnTypeDao.nameExists(p))
                 .collect(Collectors.toList());
@@ -127,6 +147,7 @@ public class DependenciesDao {
         List<String> missingReleasesAndTransfers = list()
                 .stream()
                 .map(Dependencies::getReleasesAndTransfers)
+                .map(p -> removeExclusion(p))
                 .filter(p -> !p.trim().equals("*"))
                 .filter(p -> !releasesAndTransfersDao.nameExists(p))
                 .collect(Collectors.toList());
@@ -142,6 +163,7 @@ public class DependenciesDao {
         List<String> missingUnits = list()
                 .stream()
                 .map(Dependencies::getUnits)
+                .map(p -> removeExclusion(p))
                 .filter(p -> !p.trim().equals("*"))
                 .filter(p -> !unitDao.nameExists(p))
                 .collect(Collectors.toList());
