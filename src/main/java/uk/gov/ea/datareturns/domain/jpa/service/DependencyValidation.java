@@ -33,7 +33,7 @@ public class DependencyValidation {
     DependenciesDao dao;
 
     public enum DependencyValidationResult {
-        BAD_RETURN_TYPE, BAD_RELEASE, NO_PARAMETER, OK, NO_RELEASE, BAD_PARAMETER, BAD_UNITS, BAD_DATA, NO_RETURN_TYPE
+        BAD_RETURN_TYPE, BAD_RELEASE, NO_PARAMETER, OK, NO_RELEASE, BAD_PARAMETER, BAD_UNITS, BAD_DATA, RELEASE_NOT_APPLICABLE, NO_RETURN_TYPE
     }
 
     /*
@@ -60,24 +60,26 @@ public class DependencyValidation {
 
         if (releasesAndTransfers == null) {
             // Ignoring releases and transfers
-            // We require a wildcard in the map here
-            if (cacheReleasesAndTransfersCache.containsKey("*")) {
-                return validate(cacheReleasesAndTransfersCache.get("*"), parameterName, unitName);
+            // We require a inverse-wildcard in the map here
+            if (cacheReleasesAndTransfersCache.containsKey("^*")) {
+                return validate(cacheReleasesAndTransfersCache.get("^*"), parameterName, unitName);
             } else {
-                return DependencyValidationResult.NO_RELEASE;
+                return DependencyValidationResult.BAD_DATA;
             }
         } else {
             // The order is important - first look for specific inclusion
             // Then the exclusion, then the wildcard - otherwise it is
-            if (cacheReleasesAndTransfersCache.containsKey(releasesAndTransfers)) {
+            if (cacheReleasesAndTransfersCache.containsKey(releasesAndTransfersName)) {
                 // Found - Ok
-                return validate(cacheReleasesAndTransfersCache.get(releasesAndTransfers), parameterName, unitName);
-            } if (cacheReleasesAndTransfersCache.containsKey("^" + releasesAndTransfers)) {
+                return validate(cacheReleasesAndTransfersCache.get(releasesAndTransfersName), parameterName, unitName);
+            } if (cacheReleasesAndTransfersCache.containsKey("^" + releasesAndTransfersName)) {
                 // Test for specific exclusion
                 return DependencyValidationResult.BAD_RELEASE;
             } if (cacheReleasesAndTransfersCache.containsKey("*")) {
                 // Wildcard allow any
                 return validate(cacheReleasesAndTransfersCache.get("*"), parameterName, unitName);
+            } else if (cacheReleasesAndTransfersCache.containsKey("^*")) {
+                return DependencyValidationResult.RELEASE_NOT_APPLICABLE;
             } else {
                 return DependencyValidationResult.BAD_DATA;
             }

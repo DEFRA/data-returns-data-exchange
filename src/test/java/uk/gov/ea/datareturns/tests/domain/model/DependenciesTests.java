@@ -8,10 +8,7 @@ import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.junit4.SpringRunner;
 import uk.gov.ea.datareturns.App;
 import uk.gov.ea.datareturns.domain.jpa.dao.*;
-import uk.gov.ea.datareturns.domain.jpa.entities.Dependencies;
-import uk.gov.ea.datareturns.domain.jpa.entities.Parameter;
-import uk.gov.ea.datareturns.domain.jpa.entities.ReturnType;
-import uk.gov.ea.datareturns.domain.jpa.entities.Unit;
+import uk.gov.ea.datareturns.domain.jpa.entities.*;
 import uk.gov.ea.datareturns.domain.jpa.service.DependencyValidation;
 
 import javax.inject.Inject;
@@ -108,5 +105,24 @@ public class DependenciesTests {
                 = dependencyValidation.validate(returnType, new Parameter(), unit);
         Assert.assertEquals(DependencyValidation.DependencyValidationResult.NO_PARAMETER, result);
     }
+
+    /*
+     * The should be excluded by using  "^*" - none may be given
+     */
+    @Test
+    public void dependencyTestLandfillSpecifyReleases() {
+        ReturnType returnType = returnTypeDao.getByName("Emissions to sewer");
+        Assert.assertNotNull(returnType);
+        Parameter parameter = parameterDao.getByName("Diethylenetriamine");
+        Assert.assertNotNull(parameter);
+        Unit unit = unitDao.getByName("µScm⁻¹");
+        Assert.assertNotNull(unit);
+        ReleasesAndTransfers releasesAndTransfers = releasesAndTransfersDao.getByName("Controlled Water");
+        Assert.assertNotNull(releasesAndTransfers);
+        DependencyValidation.DependencyValidationResult result
+                = dependencyValidation.validate(returnType, releasesAndTransfers, parameter, unit);
+        Assert.assertEquals(DependencyValidation.DependencyValidationResult.RELEASE_NOT_APPLICABLE, result);
+    }
+
 
 }
