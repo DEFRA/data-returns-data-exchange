@@ -55,9 +55,8 @@ public class DependenciesTests {
     }
 
     /*
-     * Test landfill happy paths
+     * Test landfill happy paths - no unit
      */
-
     @Test
     public void dependencyTestLandfillHappy1() {
         ReturnType returnType = returnTypeDao.getByName("Emissions to groundwater");
@@ -69,6 +68,9 @@ public class DependenciesTests {
         Assert.assertEquals(DependencyValidation.DependencyValidationResult.OK, result);
     }
 
+    /*
+     * Test landfill happy paths - with unit
+     */
     @Test
     public void dependencyTestLandfillHappy2() {
         ReturnType returnType = returnTypeDao.getByName("Emissions to groundwater");
@@ -82,6 +84,9 @@ public class DependenciesTests {
         Assert.assertEquals(DependencyValidation.DependencyValidationResult.OK, result);
     }
 
+    /*
+     * With disallowed parameter
+     */
     @Test
     public void dependencyTestLandfillWrongParameter() {
         ReturnType returnType = returnTypeDao.getByName("Ambient air quality");
@@ -95,6 +100,9 @@ public class DependenciesTests {
         Assert.assertEquals(DependencyValidation.DependencyValidationResult.BAD_PARAMETER, result);
     }
 
+    /*
+     * With no parameter
+     */
     @Test
     public void dependencyTestLandfillNoParameter() {
         ReturnType returnType = returnTypeDao.getByName("Ambient air quality");
@@ -104,13 +112,15 @@ public class DependenciesTests {
         DependencyValidation.DependencyValidationResult result
                 = dependencyValidation.validate(returnType, new Parameter(), unit);
         Assert.assertEquals(DependencyValidation.DependencyValidationResult.NO_PARAMETER, result);
+        result = dependencyValidation.validate(returnType, null, unit);
+        Assert.assertEquals(DependencyValidation.DependencyValidationResult.NO_PARAMETER, result);
     }
 
     /*
-     * The should be excluded by using  "^*" - none may be given
+     * The should be excluded by using  "^*" - none should be given
      */
     @Test
-    public void dependencyTestLandfillSpecifyReleases() {
+    public void dependencyTestLandfillSpecifyReleasesInError() {
         ReturnType returnType = returnTypeDao.getByName("Emissions to sewer");
         Assert.assertNotNull(returnType);
         Parameter parameter = parameterDao.getByName("Diethylenetriamine");

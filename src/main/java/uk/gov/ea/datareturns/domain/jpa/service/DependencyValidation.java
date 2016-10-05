@@ -33,11 +33,27 @@ public class DependencyValidation {
     DependenciesDao dao;
 
     public enum DependencyValidationResult {
-        BAD_RETURN_TYPE, BAD_RELEASE, NO_PARAMETER, OK, NO_RELEASE, BAD_PARAMETER, BAD_UNITS, BAD_DATA, RELEASE_NOT_APPLICABLE, NO_RETURN_TYPE
+        BAD_RETURN_TYPE, BAD_RELEASE, NO_PARAMETER, OK, NO_RELEASE,
+        BAD_PARAMETER, BAD_UNITS, BAD_DATA, RELEASE_NOT_APPLICABLE,
+        UNIT_NOT_APPLICABLE, NO_RETURN_TYPE
     }
 
     /*
      * Validation starts by validating the return type and releases and transfers
+     *
+     * The validation rules are as follows
+     * (1) A return type must be specified in all circumstances otherwise NO_RETURN_TYPE is returned
+     * (2) If the return type is one for which releases and transfers are specified
+     *     then the releases and transfers are either stated explicitly in the dependencies file or
+     *     may be declared as the wildcard '*' which allows any set value. In the first case if
+     *     the release is not matched then BAD_RELEASE is returned. With the wildcard then any release
+     *     is allowed (it is assumed that the entity is already atomically checked in the list)
+     * (3) Parameters are always required. In the dependencies table they may me listed explicitly
+     *     or with a wildcard '*' or disallowed with the inverse wildcard '^*'. Either BAD_PARAMETER
+     *     or NO_PARAMETER can be returned.
+     * (4) The units are not required unless specified by the inverse wildcard '^*' in which case
+     *     UNIT_NOT_APPLICABLE is returned. If a unit is supplied and not found then BAD_UNITS
+     *     is returned.
      */
     public DependencyValidationResult validate(ReturnType returnType,
                                                ReleasesAndTransfers releasesAndTransfers,
@@ -118,7 +134,7 @@ public class DependencyValidation {
      */
     private DependencyValidationResult validate(Set<String> unitCache, String unitName) {
         if (unitName == null) {
-            // Ok not to have a unit
+            // Ok not to have a unit (Unless ^* is specified)
             return DependencyValidationResult.OK;
         } else {
             if (unitCache.contains(unitName)) {
@@ -129,6 +145,9 @@ public class DependencyValidation {
             } else if (unitCache.contains("*")) {
                 // Units on wildcard - all allowed
                 return DependencyValidationResult.OK;
+            } else if (unitCache.contains("^*")) {
+                // Units on inverse wildcard - not allowed
+                return DependencyValidationResult.UNIT_NOT_APPLICABLE;
             } else {
                 return DependencyValidationResult.BAD_DATA;
             }

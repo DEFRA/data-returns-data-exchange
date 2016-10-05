@@ -56,13 +56,13 @@ public class DependenciesDao {
         if (cache == null) {
             LOGGER.info("Build name cache of: Dependencies");
             cache = list().stream().collect(
-                    Collectors.groupingBy(t -> returnTypeDao.getKeyFromRelaxedName(t.getReturnType()),
-                            Collectors.groupingBy(r -> releasesAndTransfersDao.getKeyFromRelaxedName(r.getReleasesAndTransfers()),
-                                    Collectors.groupingBy(p -> parameterDao.getKeyFromRelaxedName(p.getParameter()),
-                                            Collectors.mapping(u -> unitDao.getKeyFromRelaxedName(u.getUnits()), Collectors.toCollection(HashSet::new))
-                                    )
-                            )
+                Collectors.groupingBy(t -> returnTypeDao.getKeyFromRelaxedName(t.getReturnType()),
+                    Collectors.groupingBy(r -> releasesAndTransfersDao.getKeyFromRelaxedName(r.getReleasesAndTransfers()),
+                        Collectors.groupingBy(p -> parameterDao.getKeyFromRelaxedName(p.getParameter()),
+                            Collectors.mapping(u -> unitDao.getKeyFromRelaxedName(u.getUnits()), Collectors.toCollection(HashSet::new))
+                        )
                     )
+                )
             );
         }
 
