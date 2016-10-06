@@ -90,7 +90,7 @@ public class DependenciesDao {
     /*
      * Detect the exclusion^ character at the beginning of a string
      */
-    public static boolean IsExclustion(String s) {
+    public static boolean IsExclusion(String s) {
         return s.charAt(0) == '^' ? true : false;
     }
 
@@ -99,7 +99,7 @@ public class DependenciesDao {
      * or return the unmutated string
      */
     public static String removeExclusion(String s) {
-        return !IsExclustion(s) ? s : s.substring(1);
+        return !IsExclusion(s) ? s : s.substring(1);
     }
 
     /**
@@ -117,6 +117,9 @@ public class DependenciesDao {
                 .map(Dependencies::getParameter)
                 .map(p -> removeExclusion(p))
                 .filter(p -> !p.trim().equals("*"))
+                .filter(p -> !p.trim().equals("^*"))
+                .filter(p -> !p.trim().equals("*-"))
+                .filter(p -> !p.trim().equals("..."))
                 .filter(p -> !parameterDao.nameExists(p))
                 .collect(Collectors.toList());
 
@@ -133,6 +136,9 @@ public class DependenciesDao {
                 .map(Dependencies::getReturnType)
                 .map(p -> removeExclusion(p))
                 .filter(p -> !p.trim().equals("*"))
+                .filter(p -> !p.trim().equals("^*"))
+                .filter(p -> !p.trim().equals("*-"))
+                .filter(p -> !p.trim().equals("..."))
                 .filter(p -> !returnTypeDao.nameExists(p))
                 .collect(Collectors.toList());
 
@@ -149,6 +155,9 @@ public class DependenciesDao {
                 .map(Dependencies::getReleasesAndTransfers)
                 .map(p -> removeExclusion(p))
                 .filter(p -> !p.trim().equals("*"))
+                .filter(p -> !p.trim().equals("^*"))
+                .filter(p -> !p.trim().equals("*-"))
+                .filter(p -> !p.trim().equals("..."))
                 .filter(p -> !releasesAndTransfersDao.nameExists(p))
                 .collect(Collectors.toList());
 
@@ -165,6 +174,9 @@ public class DependenciesDao {
                 .map(Dependencies::getUnits)
                 .map(p -> removeExclusion(p))
                 .filter(p -> !p.trim().equals("*"))
+                .filter(p -> !p.trim().equals("^*"))
+                .filter(p -> !p.trim().equals("*-"))
+                .filter(p -> !p.trim().equals("..."))
                 .filter(p -> !unitDao.nameExists(p))
                 .collect(Collectors.toList());
 
