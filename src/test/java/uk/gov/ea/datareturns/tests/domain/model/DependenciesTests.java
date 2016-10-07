@@ -9,10 +9,7 @@ import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.junit4.SpringRunner;
 import uk.gov.ea.datareturns.App;
 import uk.gov.ea.datareturns.domain.jpa.dao.*;
-import uk.gov.ea.datareturns.domain.jpa.entities.Dependencies;
-import uk.gov.ea.datareturns.domain.jpa.entities.Parameter;
-import uk.gov.ea.datareturns.domain.jpa.entities.ReturnType;
-import uk.gov.ea.datareturns.domain.jpa.entities.Unit;
+import uk.gov.ea.datareturns.domain.jpa.entities.*;
 import uk.gov.ea.datareturns.domain.jpa.service.DependencyValidation;
 import uk.gov.ea.datareturns.domain.jpa.service.DependencyValidation.DependencyValidationHierarchy;
 import uk.gov.ea.datareturns.domain.jpa.service.DependencyValidation.DependencyValidationResultType;
@@ -64,14 +61,17 @@ public class DependenciesTests {
      * Test landfill happy paths - no unit
      */
     @Test
-    public void dependencyTestLandfillHappy1() {
+    public void dependencyLandfillHappy1() {
         ReturnType returnType = returnTypeDao.getByName("Emissions to groundwater");
         Assert.assertNotNull(returnType);
+
         Parameter parameter = parameterDao.getByName("Trichlorobenzene");
         Assert.assertNotNull(parameter);
+
         Pair<DependencyValidationHierarchy, DependencyValidationResultType> result
                 = dependencyValidation.validate(returnType, parameter);
 
+        // We don't need to check the level (terminating entity for the happy path
         Assert.assertEquals(Pair.of(null,
                 DependencyValidation.DependencyValidationResultType.OK).getRight(), result.getRight());
     }
@@ -80,13 +80,16 @@ public class DependenciesTests {
      * Test landfill happy paths - with unit
      */
     @Test
-    public void dependencyTestLandfillHappy2() {
+    public void dependencyLandfillHappy2() {
         ReturnType returnType = returnTypeDao.getByName("Emissions to groundwater");
         Assert.assertNotNull(returnType);
+
         Parameter parameter = parameterDao.getByName("Benzoic acid, p-tert-butyl");
         Assert.assertNotNull(parameter);
+
         Unit unit = unitDao.getByName("cm3/hr");
         Assert.assertNotNull(unit);
+
         Pair<DependencyValidationHierarchy, DependencyValidationResultType> result
                 = dependencyValidation.validate(returnType, parameter, unit);
         Assert.assertEquals(Pair.of(null,
@@ -97,103 +100,403 @@ public class DependenciesTests {
      * With disallowed parameter
      */
     @Test
-    public void dependencyTestLandfillWrongParameter() {
+    public void dependencyLandfillWrongParameter() {
         ReturnType returnType = returnTypeDao.getByName("Ambient air quality");
         Assert.assertNotNull(returnType);
+
         Parameter parameter = parameterDao.getByName("Krypton 85");
         Assert.assertNotNull(parameter);
+
         Unit unit = unitDao.getByName("cm3/hr");
         Assert.assertNotNull(unit);
+
         Pair<DependencyValidationHierarchy, DependencyValidationResultType> result
                 = dependencyValidation.validate(returnType, parameter, unit);
+
         Assert.assertEquals(Pair.of(DependencyValidationHierarchy.PARAMETER,
-                DependencyValidationResultType.NOT_FOUND), result);
+                DependencyValidationResultType.EXCLUDED), result);
     }
 
     /*
      * With no parameter
      */
-//    @Test
-//    public void dependencyTestLandfillNoParameter() {
-//        ReturnType returnType = returnTypeDao.getByName("Ambient air quality");
-//        Assert.assertNotNull(returnType);
-//        Unit unit = unitDao.getByName("cm3/hr");
-//        Assert.assertNotNull(unit);
-//        DependencyValidation.DependencyValidationResult result
-//                = dependencyValidation.validate(returnType, new Parameter(), unit);
-//        Assert.assertEquals(DependencyValidation.DependencyValidationResult.NO_PARAMETER, result);
-//        result = dependencyValidation.validate(returnType, null, unit);
-//        Assert.assertEquals(DependencyValidation.DependencyValidationResult.NO_PARAMETER, result);
-//    }
+    @Test
+    public void dependencyLandfillNoParameter() {
+        ReturnType returnType = returnTypeDao.getByName("Ambient air quality");
+        Assert.assertNotNull(returnType);
+
+        Unit unit = unitDao.getByName("cm3/hr");
+        Assert.assertNotNull(unit);
+
+        Pair<DependencyValidationHierarchy, DependencyValidationResultType> result
+                = dependencyValidation.validate(returnType, null, unit);
+
+        Assert.assertEquals(Pair.of(DependencyValidationHierarchy.PARAMETER,
+                DependencyValidationResultType.EXPECTED), result);
+    }
 
     /*
      * The should be excluded by using  "^*" - none should be given
      */
-//    @Test
-//    public void dependencyTestLandfillSpecifyReleasesInError() {
-//        ReturnType returnType = returnTypeDao.getByName("Emissions to sewer");
-//        Assert.assertNotNull(returnType);
-//        Parameter parameter = parameterDao.getByName("Diethylenetriamine");
-//        Assert.assertNotNull(parameter);
-//        Unit unit = unitDao.getByName("µScm⁻¹");
-//        Assert.assertNotNull(unit);
-//        ReleasesAndTransfers releasesAndTransfers = releasesAndTransfersDao.getByName("Controlled Water");
-//        Assert.assertNotNull(releasesAndTransfers);
-//        DependencyValidation.DependencyValidationResult result
-//                = dependencyValidation.validate(returnType, releasesAndTransfers, parameter, unit);
-//        Assert.assertEquals(DependencyValidation.DependencyValidationResult.RELEASE_NOT_APPLICABLE, result);
-//    }
+    @Test
+    public void dependencyLandfillSpecifyReleasesInError() {
+        ReturnType returnType = returnTypeDao.getByName("Emissions to sewer");
+        Assert.assertNotNull(returnType);
+
+        Parameter parameter = parameterDao.getByName("Diethylenetriamine");
+        Assert.assertNotNull(parameter);
+
+        Unit unit = unitDao.getByName("µScm⁻¹");
+        Assert.assertNotNull(unit);
+
+        ReleasesAndTransfers releasesAndTransfers = releasesAndTransfersDao.getByName("Controlled Water");
+        Assert.assertNotNull(releasesAndTransfers);
+
+        Pair<DependencyValidationHierarchy, DependencyValidationResultType> result
+                = dependencyValidation.validate(returnType, releasesAndTransfers, parameter, unit);
+
+        Assert.assertEquals(Pair.of(DependencyValidationHierarchy.RELEASE,
+                DependencyValidationResultType.NOT_EXPECTED), result);
+    }
 
     /*
      * Pollution Inventory happy path
      */
-//    @Test
-//    public void dependencyTestLandPollutionInventoryHappyPath1() {
-//        ReturnType returnType = returnTypeDao.getByName("Pollution Inventory");
-//        Assert.assertNotNull(returnType);
-//        Parameter parameter = parameterDao.getByName("Aldrin");
-//        Assert.assertNotNull(parameter);
-//        ReleasesAndTransfers releasesAndTransfers = releasesAndTransfersDao.getByName("Air");
-//        Assert.assertNotNull(releasesAndTransfers);
-//        Unit unit = unitDao.getByName("g");
-//        Assert.assertNotNull(unit);
-//        DependencyValidation.DependencyValidationResult result
-//                = dependencyValidation.validate(returnType, releasesAndTransfers, parameter, unit);
-//        Assert.assertEquals(DependencyValidation.DependencyValidationResult.OK, result);
-//    }
+    @Test
+    public void dependencyPollutionInventoryHappyPath1() {
+        ReturnType returnType = returnTypeDao.getByName("Pollution Inventory");
+        Assert.assertNotNull(returnType);
+
+        Parameter parameter = parameterDao.getByName("Aldrin");
+        Assert.assertNotNull(parameter);
+
+        ReleasesAndTransfers releasesAndTransfers = releasesAndTransfersDao.getByName("Air");
+        Assert.assertNotNull(releasesAndTransfers);
+
+        Unit unit = unitDao.getByName("g");
+        Assert.assertNotNull(unit);
+
+        Pair<DependencyValidationHierarchy, DependencyValidationResultType> result
+                = dependencyValidation.validate(returnType, releasesAndTransfers, parameter, unit);
+
+        Assert.assertEquals(Pair.of(null,
+                DependencyValidation.DependencyValidationResultType.OK).getRight(), result.getRight());
+    }
 
     /*
-     * No unit - OK
+     * No unit - this is an error for pollution inventory
      */
-//    @Test
-//    public void dependencyTestLandPollutionInventoryHappyPath2() {
-//        ReturnType returnType = returnTypeDao.getByName("Pollution Inventory");
-//        Assert.assertNotNull(returnType);
-//        Parameter parameter = parameterDao.getByName("Aldrin");
-//        Assert.assertNotNull(parameter);
-//        ReleasesAndTransfers releasesAndTransfers = releasesAndTransfersDao.getByName("Air");
-//        Assert.assertNotNull(releasesAndTransfers);
-//        DependencyValidation.DependencyValidationResult result
-//                = dependencyValidation.validate(returnType, releasesAndTransfers, parameter, null);
-//        Assert.assertEquals(DependencyValidation.DependencyValidationResult.OK, result);
-//    }
+    @Test
+    public void dependencyPollutionInventoryNoUnit() {
+        ReturnType returnType = returnTypeDao.getByName("Pollution Inventory");
+        Assert.assertNotNull(returnType);
+
+        Parameter parameter = parameterDao.getByName("Aldrin");
+        Assert.assertNotNull(parameter);
+
+        ReleasesAndTransfers releasesAndTransfers = releasesAndTransfersDao.getByName("Air");
+        Assert.assertNotNull(releasesAndTransfers);
+
+        Pair<DependencyValidationHierarchy, DependencyValidationResultType> result
+                = dependencyValidation.validate(returnType, releasesAndTransfers, parameter, null);
+
+        Assert.assertEquals(Pair.of(DependencyValidationHierarchy.UNIT,
+                DependencyValidationResultType.EXPECTED), result);
+    }
 
     /*
      * Wrong unit
      */
-//    @Test
-//    public void dependencyTestLandPollutionInventoryWrongUnits() {
-//        ReturnType returnType = returnTypeDao.getByName("Pollution Inventory");
-//        Assert.assertNotNull(returnType);
-//        Parameter parameter = parameterDao.getByName("Alachlor");
-//        Assert.assertNotNull(parameter);
-//        ReleasesAndTransfers releasesAndTransfers = releasesAndTransfersDao.getByName("Controlled Water");
-//        Assert.assertNotNull(releasesAndTransfers);
-//        Unit unit = unitDao.getByName("µgkg⁻¹");
-//        Assert.assertNotNull(unit);
-//        DependencyValidation.DependencyValidationResult result
-//                = dependencyValidation.validate(returnType, releasesAndTransfers, parameter, unit);
-//        Assert.assertEquals(DependencyValidation.DependencyValidationResult.BAD_UNITS, result);
-//    }
+    @Test
+    public void dependencyPollutionInventoryWrongUnits() {
+        ReturnType returnType = returnTypeDao.getByName("Pollution Inventory");
+        Assert.assertNotNull(returnType);
+
+        Parameter parameter = parameterDao.getByName("Alachlor");
+        Assert.assertNotNull(parameter);
+
+        ReleasesAndTransfers releasesAndTransfers = releasesAndTransfersDao.getByName("Controlled Water");
+        Assert.assertNotNull(releasesAndTransfers);
+
+        Unit unit = unitDao.getByName("µgkg⁻¹");
+        Assert.assertNotNull(unit);
+
+        Pair<DependencyValidationHierarchy, DependencyValidationResultType> result
+                        = dependencyValidation.validate(returnType, releasesAndTransfers, parameter, unit);
+
+        Assert.assertEquals(Pair.of(DependencyValidationHierarchy.UNIT,
+                DependencyValidationResultType.NOT_FOUND), result);
+    }
+
+    @Test
+    public void dependencyPollutionInventoryWrongParameter() {
+        ReturnType returnType = returnTypeDao.getByName("Pollution Inventory");
+        Assert.assertNotNull(returnType);
+
+        Parameter parameter = parameterDao.getByName("Diethylenetriamine");
+        Assert.assertNotNull(parameter);
+
+        ReleasesAndTransfers releasesAndTransfers = releasesAndTransfersDao.getByName("Controlled Water");
+        Assert.assertNotNull(releasesAndTransfers);
+
+        Unit unit = unitDao.getByName("kg");
+        Assert.assertNotNull(unit);
+
+        Pair<DependencyValidationHierarchy, DependencyValidationResultType> result
+                = dependencyValidation.validate(returnType, releasesAndTransfers, parameter, unit);
+
+        Assert.assertEquals(Pair.of(DependencyValidationHierarchy.PARAMETER,
+                DependencyValidationResultType.NOT_FOUND), result);
+    }
+
+    @Test
+    public void dependencyPollutionInventoryNoParameter() {
+        ReturnType returnType = returnTypeDao.getByName("Pollution Inventory");
+        Assert.assertNotNull(returnType);
+
+        ReleasesAndTransfers releasesAndTransfers = releasesAndTransfersDao.getByName("Controlled Water");
+        Assert.assertNotNull(releasesAndTransfers);
+
+        Unit unit = unitDao.getByName("kg");
+        Assert.assertNotNull(unit);
+
+        Pair<DependencyValidationHierarchy, DependencyValidationResultType> result
+                = dependencyValidation.validate(returnType, releasesAndTransfers, null, unit);
+
+        Assert.assertEquals(Pair.of(DependencyValidationHierarchy.PARAMETER,
+                DependencyValidationResultType.EXPECTED), result);
+    }
+
+    @Test
+    public void dependencyPollutionInventoryNoRelease() {
+        ReturnType returnType = returnTypeDao.getByName("Pollution Inventory");
+        Assert.assertNotNull(returnType);
+
+        Parameter parameter = parameterDao.getByName("Diethylenetriamine");
+        Assert.assertNotNull(parameter);
+
+        Unit unit = unitDao.getByName("kg");
+        Assert.assertNotNull(unit);
+
+        Pair<DependencyValidationHierarchy, DependencyValidationResultType> result
+                = dependencyValidation.validate(returnType, null, parameter, unit);
+
+        Assert.assertEquals(Pair.of(DependencyValidationHierarchy.RELEASE,
+                DependencyValidationResultType.EXPECTED), result);
+    }
+
+    @Test
+    public void dependencyREMHappyPath1() {
+        ReturnType returnType = returnTypeDao.getByName("REM Return");
+        Assert.assertNotNull(returnType);
+
+        Parameter parameter = parameterDao.getByName("Net Water Used");
+        Assert.assertNotNull(parameter);
+
+        Unit unit = unitDao.getByName("m3");
+        Assert.assertNotNull(unit);
+
+        Pair<DependencyValidationHierarchy, DependencyValidationResultType> result
+                = dependencyValidation.validate(returnType, parameter, unit);
+
+        Assert.assertEquals(Pair.of(null,
+                DependencyValidation.DependencyValidationResultType.OK).getRight(), result.getRight());
+    }
+
+    @Test
+    public void dependencyREMWrongUnit() {
+        ReturnType returnType = returnTypeDao.getByName("REM Return");
+        Assert.assertNotNull(returnType);
+
+        Parameter parameter = parameterDao.getByName("Net Water Used");
+        Assert.assertNotNull(parameter);
+
+        Unit unit = unitDao.getByName("t");
+        Assert.assertNotNull(unit);
+
+        Pair<DependencyValidationHierarchy, DependencyValidationResultType> result
+                = dependencyValidation.validate(returnType, parameter, unit);
+
+        Assert.assertEquals(Pair.of(DependencyValidationHierarchy.UNIT,
+                DependencyValidationResultType.NOT_FOUND), result);
+    }
+
+    @Test
+    public void dependencyREMNoUnit() {
+        ReturnType returnType = returnTypeDao.getByName("REM Return");
+        Assert.assertNotNull(returnType);
+
+        Parameter parameter = parameterDao.getByName("Net Water Used");
+        Assert.assertNotNull(parameter);
+
+        Pair<DependencyValidationHierarchy, DependencyValidationResultType> result
+                = dependencyValidation.validate(returnType, parameter, null);
+
+        Assert.assertEquals(Pair.of(DependencyValidationHierarchy.UNIT,
+                DependencyValidationResultType.EXPECTED), result);
+    }
+
+    @Test
+    public void dependencyREMWrongParameter() {
+        ReturnType returnType = returnTypeDao.getByName("REM Return");
+        Assert.assertNotNull(returnType);
+
+        Parameter parameter = parameterDao.getByName("Diethylenetriamine");
+        Assert.assertNotNull(parameter);
+
+        Pair<DependencyValidationHierarchy, DependencyValidationResultType> result
+                = dependencyValidation.validate(returnType, parameter, null);
+
+        Assert.assertEquals(Pair.of(DependencyValidationHierarchy.PARAMETER,
+                DependencyValidationResultType.NOT_FOUND), result);
+    }
+
+    @Test
+    public void dependencyREMNoParameter() {
+        ReturnType returnType = returnTypeDao.getByName("REM Return");
+        Assert.assertNotNull(returnType);
+
+        Pair<DependencyValidationHierarchy, DependencyValidationResultType> result
+                = dependencyValidation.validate(returnType, null, null);
+
+        Assert.assertEquals(Pair.of(DependencyValidationHierarchy.PARAMETER,
+                DependencyValidationResultType.EXPECTED), result);
+    }
+
+    @Test
+    public void dependencyREMUnexpectedRelease() {
+        ReturnType returnType = returnTypeDao.getByName("REM Return");
+        Assert.assertNotNull(returnType);
+
+        ReleasesAndTransfers releasesAndTransfers = releasesAndTransfersDao.getByName("Controlled Water");
+        Assert.assertNotNull(releasesAndTransfers);
+
+        Parameter parameter = parameterDao.getByName("Net Water Used");
+        Assert.assertNotNull(parameter);
+
+        Unit unit = unitDao.getByName("t");
+        Assert.assertNotNull(unit);
+
+        Pair<DependencyValidationHierarchy, DependencyValidationResultType> result
+                = dependencyValidation.validate(returnType, releasesAndTransfers, parameter, unit);
+
+        Assert.assertEquals(Pair.of(DependencyValidationHierarchy.RELEASE,
+                DependencyValidationResultType.NOT_EXPECTED), result);
+    }
+
+    @Test
+    public void dependencyLCPHappy() {
+        ReturnType returnType = returnTypeDao.getByName("IED Chap 3 Inventory");
+        Assert.assertNotNull(returnType);
+
+        Parameter parameter = parameterDao.getByName("Net Energy Input Other solid fuels");
+        Assert.assertNotNull(parameter);
+
+        Unit unit = unitDao.getByName("TJ");
+        Assert.assertNotNull(unit);
+
+        Pair<DependencyValidationHierarchy, DependencyValidationResultType> result
+                = dependencyValidation.validate(returnType, parameter, unit);
+
+        Assert.assertEquals(Pair.of(null,
+                DependencyValidation.DependencyValidationResultType.OK).getRight(), result.getRight());
+    }
+
+    @Test
+    public void dependencyLCPWrongUnit() {
+        ReturnType returnType = returnTypeDao.getByName("IED Chap 3 Inventory");
+        Assert.assertNotNull(returnType);
+
+        Parameter parameter = parameterDao.getByName("Net Energy Input Other solid fuels");
+        Assert.assertNotNull(parameter);
+
+        Unit unit = unitDao.getByName("g");
+        Assert.assertNotNull(unit);
+
+        Pair<DependencyValidationHierarchy, DependencyValidationResultType> result
+                = dependencyValidation.validate(returnType, parameter, unit);
+
+        Assert.assertEquals(Pair.of(DependencyValidationHierarchy.UNIT,
+                DependencyValidationResultType.NOT_FOUND), result);
+    }
+
+    @Test
+    public void dependencyLCPNoUnit() {
+        ReturnType returnType = returnTypeDao.getByName("IED Chap 3 Inventory");
+        Assert.assertNotNull(returnType);
+
+        Parameter parameter = parameterDao.getByName("Net Energy Input Other solid fuels");
+        Assert.assertNotNull(parameter);
+
+        Pair<DependencyValidationHierarchy, DependencyValidationResultType> result
+                = dependencyValidation.validate(returnType, parameter, null);
+
+        Assert.assertEquals(Pair.of(DependencyValidationHierarchy.UNIT,
+                DependencyValidationResultType.EXPECTED), result);
+    }
+
+    @Test
+    public void dependencyLCPWrongParameter() {
+        ReturnType returnType = returnTypeDao.getByName("IED Chap 3 Inventory");
+        Assert.assertNotNull(returnType);
+
+        Parameter parameter = parameterDao.getByName("Diethylenetriamine");
+        Assert.assertNotNull(parameter);
+
+        Unit unit = unitDao.getByName("TJ");
+        Assert.assertNotNull(unit);
+
+        Pair<DependencyValidationHierarchy, DependencyValidationResultType> result
+                = dependencyValidation.validate(returnType, parameter, unit);
+
+        Assert.assertEquals(Pair.of(DependencyValidationHierarchy.PARAMETER,
+                DependencyValidationResultType.NOT_FOUND), result);
+    }
+
+    @Test
+    public void dependencyLCPNoParameter() {
+        ReturnType returnType = returnTypeDao.getByName("IED Chap 3 Inventory");
+        Assert.assertNotNull(returnType);
+
+        Unit unit = unitDao.getByName("TJ");
+        Assert.assertNotNull(unit);
+
+        Pair<DependencyValidationHierarchy, DependencyValidationResultType> result
+                = dependencyValidation.validate(returnType, null, unit);
+
+        Assert.assertEquals(Pair.of(DependencyValidationHierarchy.PARAMETER,
+                DependencyValidationResultType.EXPECTED), result);
+    }
+
+    @Test
+    public void dependencyLCPUnexpectedRelease() {
+        ReturnType returnType = returnTypeDao.getByName("IED Chap 3 Inventory");
+        Assert.assertNotNull(returnType);
+
+        ReleasesAndTransfers releasesAndTransfers = releasesAndTransfersDao.getByName("Controlled Water");
+        Assert.assertNotNull(releasesAndTransfers);
+
+        Parameter parameter = parameterDao.getByName("Net Energy Input Other solid fuels");
+        Assert.assertNotNull(parameter);
+
+        Unit unit = unitDao.getByName("TJ");
+        Assert.assertNotNull(unit);
+
+        Pair<DependencyValidationHierarchy, DependencyValidationResultType> result
+                = dependencyValidation.validate(returnType, releasesAndTransfers, parameter, unit);
+
+        Assert.assertEquals(Pair.of(DependencyValidationHierarchy.RELEASE,
+                DependencyValidationResultType.NOT_EXPECTED), result);
+    }
+
+    @Test
+    public void nothing() {
+        Pair<DependencyValidationHierarchy, DependencyValidationResultType> result
+                = dependencyValidation.validate(null, null, null, null);
+
+        // We don't need to check the level (terminating entity for the happy path
+        Assert.assertEquals(Pair.of(DependencyValidationHierarchy.RETURN_TYPE,
+                DependencyValidationResultType.EXPECTED), result);
+    }
 
 }

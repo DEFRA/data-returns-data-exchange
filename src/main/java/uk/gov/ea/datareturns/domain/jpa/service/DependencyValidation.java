@@ -39,7 +39,6 @@ import java.util.Set;
  Item1
  Item2
  Item3
-
  *-
 
  Example 3 - must not be supplied otherwise error
@@ -102,7 +101,7 @@ public class DependencyValidation {
     }
 
     public enum DependencyValidationResultType {
-        OK, EXPECTED, NOT_EXPECTED, NOT_FOUND, EXCLUDED, BAD_DATA
+        OK, EXPECTED, NOT_EXPECTED, NOT_FOUND, EXCLUDED
     }
 
     public Pair<DependencyValidationHierarchy, DependencyValidationResultType> validate(ReturnType returnType,
@@ -168,8 +167,8 @@ public class DependencyValidation {
                 // We don't care - OK
                 return Pair.of(level, DependencyValidationResultType.OK);
             } else {
-                // This is wrong
-                return Pair.of(level, DependencyValidationResultType.BAD_DATA);
+                // We didn't find what we were looking for
+                return Pair.of(level, DependencyValidationResultType.NOT_FOUND);
             }
         } else {
             /*
@@ -184,9 +183,12 @@ public class DependencyValidation {
             } else if (cache.containsKey("*")) {
                 // if the item is on a wildcard its an error
                 return Pair.of(level, DependencyValidationResultType.EXPECTED);
+            } else if (cache.containsKey("...")) {
+                // We don't care - OK
+                return Pair.of(level, DependencyValidationResultType.OK);
             } else {
-                // This is wrong
-                return Pair.of(level, DependencyValidationResultType.BAD_DATA);
+                // This is wrong - nothing is given but we are expecting something
+                return Pair.of(level, DependencyValidationResultType.EXPECTED);
             }
         }
     }
@@ -218,8 +220,8 @@ public class DependencyValidation {
                 // We don't care - OK
                 return Pair.of(level, DependencyValidationResultType.OK);
             } else {
-                // This is wrong
-                return Pair.of(level, DependencyValidationResultType.BAD_DATA);
+                // We have not found the item
+                return Pair.of(level, DependencyValidationResultType.NOT_FOUND);
             }
         } else {
             /*
@@ -234,9 +236,12 @@ public class DependencyValidation {
             } else if (cache.contains("*")) {
                 // if the item is on a plain wildcard its an error
                 return Pair.of(level, DependencyValidationResultType.EXPECTED);
+            } else if (cache.contains("...")) {
+                // We don't care - OK
+                return Pair.of(level, DependencyValidationResultType.OK);
             } else {
-                // This is wrong
-                return Pair.of(level, DependencyValidationResultType.BAD_DATA);
+                // This is wrong - nothing is given but we are expecting something.
+                return Pair.of(level, DependencyValidationResultType.EXPECTED);
             }
         }
     }
