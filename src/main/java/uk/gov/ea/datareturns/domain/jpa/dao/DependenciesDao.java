@@ -46,12 +46,20 @@ public class DependenciesDao {
     //HashMap<ReturnType, HashMap<ReleasesAndTransfers, HashMap<Parameters, HashSet<Unit>>>>;
     Map<String, Map<String, Map<String, Set<String>>>> cache = null;
 
+    /*
+     * Use to sort the results of the query, strictly unnecessary
+     */
     private Comparator<Dependencies> groupByComparator = Comparator
             .comparing(Dependencies::getReturnType)
             .thenComparing(Dependencies::getReleasesAndTransfers)
             .thenComparing(Dependencies::getParameter)
             .thenComparing(Dependencies::getUnits);
 
+    /**
+     * Builds the dependencies cache.
+     * This is a thing of beauty. Java 8 streaming API. Awesome!
+     * It pretty much explains itself.
+     */
     public Map<String, Map<String, Map<String, Set<String>>>> buildCache() {
         if (cache == null) {
             LOGGER.info("Build name cache of: Dependencies");

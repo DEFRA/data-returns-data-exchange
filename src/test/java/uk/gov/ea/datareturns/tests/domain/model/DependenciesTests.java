@@ -11,8 +11,8 @@ import uk.gov.ea.datareturns.App;
 import uk.gov.ea.datareturns.domain.jpa.dao.*;
 import uk.gov.ea.datareturns.domain.jpa.entities.*;
 import uk.gov.ea.datareturns.domain.jpa.service.DependencyValidation;
-import uk.gov.ea.datareturns.domain.jpa.service.DependencyValidation.DependencyValidationHierarchy;
-import uk.gov.ea.datareturns.domain.jpa.service.DependencyValidation.DependencyValidationResultType;
+import uk.gov.ea.datareturns.domain.jpa.service.DependencyValidation.Entity;
+import uk.gov.ea.datareturns.domain.jpa.service.DependencyValidation.Result;
 
 import javax.inject.Inject;
 import java.util.List;
@@ -68,12 +68,12 @@ public class DependenciesTests {
         Parameter parameter = parameterDao.getByName("Trichlorobenzene");
         Assert.assertNotNull(parameter);
 
-        Pair<DependencyValidationHierarchy, DependencyValidationResultType> result
+        Pair<Entity, Result> result
                 = dependencyValidation.validate(returnType, parameter);
 
         // We don't need to check the level (terminating entity for the happy path
         Assert.assertEquals(Pair.of(null,
-                DependencyValidation.DependencyValidationResultType.OK).getRight(), result.getRight());
+                Result.OK).getRight(), result.getRight());
     }
 
     /*
@@ -90,10 +90,10 @@ public class DependenciesTests {
         Unit unit = unitDao.getByName("cm3/hr");
         Assert.assertNotNull(unit);
 
-        Pair<DependencyValidationHierarchy, DependencyValidationResultType> result
+        Pair<Entity, Result> result
                 = dependencyValidation.validate(returnType, parameter, unit);
         Assert.assertEquals(Pair.of(null,
-                DependencyValidation.DependencyValidationResultType.OK).getRight(), result.getRight());
+                Result.OK).getRight(), result.getRight());
     }
 
     /*
@@ -110,11 +110,11 @@ public class DependenciesTests {
         Unit unit = unitDao.getByName("cm3/hr");
         Assert.assertNotNull(unit);
 
-        Pair<DependencyValidationHierarchy, DependencyValidationResultType> result
+        Pair<Entity, Result> result
                 = dependencyValidation.validate(returnType, parameter, unit);
 
-        Assert.assertEquals(Pair.of(DependencyValidationHierarchy.PARAMETER,
-                DependencyValidationResultType.EXCLUDED), result);
+        Assert.assertEquals(Pair.of(Entity.PARAMETER,
+                Result.EXCLUDED), result);
     }
 
     /*
@@ -128,11 +128,11 @@ public class DependenciesTests {
         Unit unit = unitDao.getByName("cm3/hr");
         Assert.assertNotNull(unit);
 
-        Pair<DependencyValidationHierarchy, DependencyValidationResultType> result
+        Pair<Entity, Result> result
                 = dependencyValidation.validate(returnType, null, unit);
 
-        Assert.assertEquals(Pair.of(DependencyValidationHierarchy.PARAMETER,
-                DependencyValidationResultType.EXPECTED), result);
+        Assert.assertEquals(Pair.of(Entity.PARAMETER,
+                Result.EXPECTED), result);
     }
 
     /*
@@ -152,11 +152,11 @@ public class DependenciesTests {
         ReleasesAndTransfers releasesAndTransfers = releasesAndTransfersDao.getByName("Controlled Water");
         Assert.assertNotNull(releasesAndTransfers);
 
-        Pair<DependencyValidationHierarchy, DependencyValidationResultType> result
+        Pair<Entity, Result> result
                 = dependencyValidation.validate(returnType, releasesAndTransfers, parameter, unit);
 
-        Assert.assertEquals(Pair.of(DependencyValidationHierarchy.RELEASE,
-                DependencyValidationResultType.NOT_EXPECTED), result);
+        Assert.assertEquals(Pair.of(Entity.RELEASE,
+                Result.NOT_EXPECTED), result);
     }
 
     /*
@@ -176,11 +176,11 @@ public class DependenciesTests {
         Unit unit = unitDao.getByName("g");
         Assert.assertNotNull(unit);
 
-        Pair<DependencyValidationHierarchy, DependencyValidationResultType> result
+        Pair<Entity, Result> result
                 = dependencyValidation.validate(returnType, releasesAndTransfers, parameter, unit);
 
         Assert.assertEquals(Pair.of(null,
-                DependencyValidation.DependencyValidationResultType.OK).getRight(), result.getRight());
+                Result.OK).getRight(), result.getRight());
     }
 
     /*
@@ -197,11 +197,11 @@ public class DependenciesTests {
         ReleasesAndTransfers releasesAndTransfers = releasesAndTransfersDao.getByName("Air");
         Assert.assertNotNull(releasesAndTransfers);
 
-        Pair<DependencyValidationHierarchy, DependencyValidationResultType> result
+        Pair<Entity, Result> result
                 = dependencyValidation.validate(returnType, releasesAndTransfers, parameter, null);
 
-        Assert.assertEquals(Pair.of(DependencyValidationHierarchy.UNIT,
-                DependencyValidationResultType.EXPECTED), result);
+        Assert.assertEquals(Pair.of(Entity.UNIT,
+                Result.EXPECTED), result);
     }
 
     /*
@@ -221,11 +221,11 @@ public class DependenciesTests {
         Unit unit = unitDao.getByName("µgkg⁻¹");
         Assert.assertNotNull(unit);
 
-        Pair<DependencyValidationHierarchy, DependencyValidationResultType> result
+        Pair<Entity, Result> result
                         = dependencyValidation.validate(returnType, releasesAndTransfers, parameter, unit);
 
-        Assert.assertEquals(Pair.of(DependencyValidationHierarchy.UNIT,
-                DependencyValidationResultType.NOT_FOUND), result);
+        Assert.assertEquals(Pair.of(Entity.UNIT,
+                Result.NOT_FOUND), result);
     }
 
     @Test
@@ -242,11 +242,11 @@ public class DependenciesTests {
         Unit unit = unitDao.getByName("kg");
         Assert.assertNotNull(unit);
 
-        Pair<DependencyValidationHierarchy, DependencyValidationResultType> result
+        Pair<Entity, Result> result
                 = dependencyValidation.validate(returnType, releasesAndTransfers, parameter, unit);
 
-        Assert.assertEquals(Pair.of(DependencyValidationHierarchy.PARAMETER,
-                DependencyValidationResultType.NOT_FOUND), result);
+        Assert.assertEquals(Pair.of(Entity.PARAMETER,
+                Result.NOT_FOUND), result);
     }
 
     @Test
@@ -260,11 +260,11 @@ public class DependenciesTests {
         Unit unit = unitDao.getByName("kg");
         Assert.assertNotNull(unit);
 
-        Pair<DependencyValidationHierarchy, DependencyValidationResultType> result
+        Pair<Entity, Result> result
                 = dependencyValidation.validate(returnType, releasesAndTransfers, null, unit);
 
-        Assert.assertEquals(Pair.of(DependencyValidationHierarchy.PARAMETER,
-                DependencyValidationResultType.EXPECTED), result);
+        Assert.assertEquals(Pair.of(Entity.PARAMETER,
+                Result.EXPECTED), result);
     }
 
     @Test
@@ -278,11 +278,11 @@ public class DependenciesTests {
         Unit unit = unitDao.getByName("kg");
         Assert.assertNotNull(unit);
 
-        Pair<DependencyValidationHierarchy, DependencyValidationResultType> result
+        Pair<Entity, Result> result
                 = dependencyValidation.validate(returnType, null, parameter, unit);
 
-        Assert.assertEquals(Pair.of(DependencyValidationHierarchy.RELEASE,
-                DependencyValidationResultType.EXPECTED), result);
+        Assert.assertEquals(Pair.of(Entity.RELEASE,
+                Result.EXPECTED), result);
     }
 
     @Test
@@ -296,11 +296,11 @@ public class DependenciesTests {
         Unit unit = unitDao.getByName("m3");
         Assert.assertNotNull(unit);
 
-        Pair<DependencyValidationHierarchy, DependencyValidationResultType> result
+        Pair<Entity, Result> result
                 = dependencyValidation.validate(returnType, parameter, unit);
 
         Assert.assertEquals(Pair.of(null,
-                DependencyValidation.DependencyValidationResultType.OK).getRight(), result.getRight());
+                Result.OK).getRight(), result.getRight());
     }
 
     @Test
@@ -314,11 +314,11 @@ public class DependenciesTests {
         Unit unit = unitDao.getByName("t");
         Assert.assertNotNull(unit);
 
-        Pair<DependencyValidationHierarchy, DependencyValidationResultType> result
+        Pair<Entity, Result> result
                 = dependencyValidation.validate(returnType, parameter, unit);
 
-        Assert.assertEquals(Pair.of(DependencyValidationHierarchy.UNIT,
-                DependencyValidationResultType.NOT_FOUND), result);
+        Assert.assertEquals(Pair.of(Entity.UNIT,
+                Result.NOT_FOUND), result);
     }
 
     @Test
@@ -329,11 +329,11 @@ public class DependenciesTests {
         Parameter parameter = parameterDao.getByName("Net Water Used");
         Assert.assertNotNull(parameter);
 
-        Pair<DependencyValidationHierarchy, DependencyValidationResultType> result
+        Pair<Entity, Result> result
                 = dependencyValidation.validate(returnType, parameter, null);
 
-        Assert.assertEquals(Pair.of(DependencyValidationHierarchy.UNIT,
-                DependencyValidationResultType.EXPECTED), result);
+        Assert.assertEquals(Pair.of(Entity.UNIT,
+                Result.EXPECTED), result);
     }
 
     @Test
@@ -344,11 +344,11 @@ public class DependenciesTests {
         Parameter parameter = parameterDao.getByName("Diethylenetriamine");
         Assert.assertNotNull(parameter);
 
-        Pair<DependencyValidationHierarchy, DependencyValidationResultType> result
+        Pair<Entity, Result> result
                 = dependencyValidation.validate(returnType, parameter, null);
 
-        Assert.assertEquals(Pair.of(DependencyValidationHierarchy.PARAMETER,
-                DependencyValidationResultType.NOT_FOUND), result);
+        Assert.assertEquals(Pair.of(Entity.PARAMETER,
+                Result.NOT_FOUND), result);
     }
 
     @Test
@@ -356,11 +356,11 @@ public class DependenciesTests {
         ReturnType returnType = returnTypeDao.getByName("REM Return");
         Assert.assertNotNull(returnType);
 
-        Pair<DependencyValidationHierarchy, DependencyValidationResultType> result
+        Pair<Entity, Result> result
                 = dependencyValidation.validate(returnType, null, null);
 
-        Assert.assertEquals(Pair.of(DependencyValidationHierarchy.PARAMETER,
-                DependencyValidationResultType.EXPECTED), result);
+        Assert.assertEquals(Pair.of(Entity.PARAMETER,
+                Result.EXPECTED), result);
     }
 
     @Test
@@ -377,11 +377,11 @@ public class DependenciesTests {
         Unit unit = unitDao.getByName("t");
         Assert.assertNotNull(unit);
 
-        Pair<DependencyValidationHierarchy, DependencyValidationResultType> result
+        Pair<Entity, Result> result
                 = dependencyValidation.validate(returnType, releasesAndTransfers, parameter, unit);
 
-        Assert.assertEquals(Pair.of(DependencyValidationHierarchy.RELEASE,
-                DependencyValidationResultType.NOT_EXPECTED), result);
+        Assert.assertEquals(Pair.of(Entity.RELEASE,
+                Result.NOT_EXPECTED), result);
     }
 
     @Test
@@ -395,11 +395,11 @@ public class DependenciesTests {
         Unit unit = unitDao.getByName("TJ");
         Assert.assertNotNull(unit);
 
-        Pair<DependencyValidationHierarchy, DependencyValidationResultType> result
+        Pair<Entity, Result> result
                 = dependencyValidation.validate(returnType, parameter, unit);
 
         Assert.assertEquals(Pair.of(null,
-                DependencyValidation.DependencyValidationResultType.OK).getRight(), result.getRight());
+                Result.OK).getRight(), result.getRight());
     }
 
     @Test
@@ -413,11 +413,11 @@ public class DependenciesTests {
         Unit unit = unitDao.getByName("g");
         Assert.assertNotNull(unit);
 
-        Pair<DependencyValidationHierarchy, DependencyValidationResultType> result
+        Pair<Entity, Result> result
                 = dependencyValidation.validate(returnType, parameter, unit);
 
-        Assert.assertEquals(Pair.of(DependencyValidationHierarchy.UNIT,
-                DependencyValidationResultType.NOT_FOUND), result);
+        Assert.assertEquals(Pair.of(Entity.UNIT,
+                Result.NOT_FOUND), result);
     }
 
     @Test
@@ -428,11 +428,11 @@ public class DependenciesTests {
         Parameter parameter = parameterDao.getByName("Net Energy Input Other solid fuels");
         Assert.assertNotNull(parameter);
 
-        Pair<DependencyValidationHierarchy, DependencyValidationResultType> result
+        Pair<Entity, Result> result
                 = dependencyValidation.validate(returnType, parameter, null);
 
-        Assert.assertEquals(Pair.of(DependencyValidationHierarchy.UNIT,
-                DependencyValidationResultType.EXPECTED), result);
+        Assert.assertEquals(Pair.of(Entity.UNIT,
+                Result.EXPECTED), result);
     }
 
     @Test
@@ -446,11 +446,11 @@ public class DependenciesTests {
         Unit unit = unitDao.getByName("TJ");
         Assert.assertNotNull(unit);
 
-        Pair<DependencyValidationHierarchy, DependencyValidationResultType> result
+        Pair<Entity, Result> result
                 = dependencyValidation.validate(returnType, parameter, unit);
 
-        Assert.assertEquals(Pair.of(DependencyValidationHierarchy.PARAMETER,
-                DependencyValidationResultType.NOT_FOUND), result);
+        Assert.assertEquals(Pair.of(Entity.PARAMETER,
+                Result.NOT_FOUND), result);
     }
 
     @Test
@@ -461,11 +461,11 @@ public class DependenciesTests {
         Unit unit = unitDao.getByName("TJ");
         Assert.assertNotNull(unit);
 
-        Pair<DependencyValidationHierarchy, DependencyValidationResultType> result
+        Pair<Entity, Result> result
                 = dependencyValidation.validate(returnType, null, unit);
 
-        Assert.assertEquals(Pair.of(DependencyValidationHierarchy.PARAMETER,
-                DependencyValidationResultType.EXPECTED), result);
+        Assert.assertEquals(Pair.of(Entity.PARAMETER,
+                Result.EXPECTED), result);
     }
 
     @Test
@@ -482,21 +482,21 @@ public class DependenciesTests {
         Unit unit = unitDao.getByName("TJ");
         Assert.assertNotNull(unit);
 
-        Pair<DependencyValidationHierarchy, DependencyValidationResultType> result
+        Pair<Entity, Result> result
                 = dependencyValidation.validate(returnType, releasesAndTransfers, parameter, unit);
 
-        Assert.assertEquals(Pair.of(DependencyValidationHierarchy.RELEASE,
-                DependencyValidationResultType.NOT_EXPECTED), result);
+        Assert.assertEquals(Pair.of(Entity.RELEASE,
+                Result.NOT_EXPECTED), result);
     }
 
     @Test
     public void nothing() {
-        Pair<DependencyValidationHierarchy, DependencyValidationResultType> result
+        Pair<Entity, Result> result
                 = dependencyValidation.validate(null, null, null, null);
 
         // We don't need to check the level (terminating entity for the happy path
-        Assert.assertEquals(Pair.of(DependencyValidationHierarchy.RETURN_TYPE,
-                DependencyValidationResultType.EXPECTED), result);
+        Assert.assertEquals(Pair.of(Entity.RETURN_TYPE,
+                Result.EXPECTED), result);
     }
 
 }
