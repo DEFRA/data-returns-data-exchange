@@ -23,6 +23,10 @@ public class ReturnType implements ControlledListEntity {
     @Column(name = "name", nullable = false, length = 80)
     private String name;
 
+    @Basic
+    @Column(name = "sector", nullable = false, length = 20)
+    private String sector;
+
     public Long getId() {
         return this.id;
     }
@@ -37,6 +41,14 @@ public class ReturnType implements ControlledListEntity {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public String getSector() {
+        return sector;
+    }
+
+    public void setSector(String sector) {
+        this.sector = sector;
     }
 
     @Override
