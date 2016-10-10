@@ -81,7 +81,7 @@ public class DependencyValidation {
 
         /*
          * All the caches use the normalized keys. Alias resolution will happen
-         * prior when instantiating the entities.
+         * prior when instantiating the entities
          */
         String returnTypeName = returnType == null ? null : returnTypeDao.getKeyFromRelaxedName(returnType.getName());
         String releasesAndTransfersName = releasesAndTransfers == null ? null : releasesAndTransfersDao.getKeyFromRelaxedName(releasesAndTransfers.getName());
@@ -95,7 +95,7 @@ public class DependencyValidation {
     }
 
     /*
-     * These overrides are for connivance
+     * These overrides are for convenience
      */
     public Pair<Entity, Result> validate(ReturnType returnType, Parameter parameter, Unit unit) {
         return validate(returnType, null, parameter, unit);
