@@ -13,55 +13,10 @@ import java.util.Arrays;
 import java.util.Map;
 import java.util.Set;
 
-/**********************************************************************
-
- Rules for the dependency table and cache
-
- **********************************************************************
-
- These symbols are used in the dependencies table
-
- *      - Any item - must supply (Not terminating)
- ^Item  - disallowed item (Terminating)
- Item   - allowed item (Not terminating)
- ^*     - No item or error (Not terminating)
- *-     - Any item but optionally not supplied (Not terminating)
- ...    - Irrelevant (Terminating)
-
- Example 1 - must be either Item1,Item2,Item3
-
- Item1
- Item2
- Item3
-
- Example 2 - must be either Item1, Item2, Item3 but optionally not supplied
-
- Item1
- Item2
- Item3
- *-
-
- Example 3 - must not be supplied otherwise error
- ^*
-
- Example 4 - must be either Item1, Item2, Item3 but not item4
- Item1
- Item2
- Item3
- ^Item4,...,...
-
- Example 5 - Any Item
- *
-
- Example 6 - Any item except Item4
- *
- ^Item4,...,...
-
- Example 7 Any item except Item4 but optionally not supplied
- ^Item4
- *-
-
- **************************************************************/
+/**
+ * Evaluate if the required mutual dependencies between lists are met
+ * by the input data
+ */
 @Service
 public class DependencyValidation {
 
@@ -178,22 +133,22 @@ public class DependencyValidation {
             /*
              * If the entity name is supplied (not null)
              */
-            if (cache.containsKey("^" + entityName[0])) {
+            if (cache.containsKey(DependencyValidationSymbols.EXCLUDE + entityName[0])) {
                 // If we have supplied an explicitly excluded item then report an error
                 return Pair.of(level, Result.EXCLUDED);
-            } else if (cache.containsKey("^*")) {
+            } else if (cache.containsKey(DependencyValidationSymbols.EXCLUDE_ALL)) {
                 // If we have the inverse wildcard we are not expecting an item so error
                 return Pair.of(level, Result.NOT_EXPECTED);
             } else if (cache.containsKey(entityName[0])) {
                 // Item explicitly listed - Proceed
                 return getDependencyValidationResult(level, cache, entityName[0], entityName);
-            } else if(cache.containsKey("*-")) {
+            } else if(cache.containsKey(DependencyValidationSymbols.INCLUDE_ALL_OPTIONALLY)) {
                 // if the item is optionally supplied with a wildcard - proceed
-                return getDependencyValidationResult(level, cache, "*-", entityName);
-            } else if (cache.containsKey("*")) {
+                return getDependencyValidationResult(level, cache, DependencyValidationSymbols.INCLUDE_ALL_OPTIONALLY, entityName);
+            } else if (cache.containsKey(DependencyValidationSymbols.INCLUDE_ALL)) {
                 // if the item is on a wildcard - proceed
-                return getDependencyValidationResult(level, cache, "*", entityName);
-            } else if (cache.containsKey("...")) {
+                return getDependencyValidationResult(level, cache, DependencyValidationSymbols.INCLUDE_ALL, entityName);
+            } else if (cache.containsKey(DependencyValidationSymbols.NOT_APPLICABLE)) {
                 // We don't care - OK
                 return Pair.of(level, Result.OK);
             } else {
@@ -204,16 +159,16 @@ public class DependencyValidation {
             /*
              * If the entity name is not supplied (null)
              */
-            if (cache.containsKey("^*")) {
+            if (cache.containsKey(DependencyValidationSymbols.EXCLUDE_ALL)) {
                 // If we have the inverse wildcard we are not expecting an item so no error - proceed
-                return getDependencyValidationResult(level, cache, "^*", entityName);
-            } else if(cache.containsKey("*-")) {
+                return getDependencyValidationResult(level, cache, DependencyValidationSymbols.EXCLUDE_ALL, entityName);
+            } else if(cache.containsKey(DependencyValidationSymbols.INCLUDE_ALL_OPTIONALLY)) {
                 // if the item is optionally supplied with a wildcard we are good - proceed
-                return getDependencyValidationResult(level, cache, "*-", entityName);
-            } else if (cache.containsKey("*")) {
+                return getDependencyValidationResult(level, cache, DependencyValidationSymbols.INCLUDE_ALL_OPTIONALLY, entityName);
+            } else if (cache.containsKey(DependencyValidationSymbols.INCLUDE_ALL)) {
                 // if the item is on a wildcard its an error
                 return Pair.of(level, Result.EXPECTED);
-            } else if (cache.containsKey("...")) {
+            } else if (cache.containsKey(DependencyValidationSymbols.NOT_APPLICABLE)) {
                 // We don't care - OK
                 return Pair.of(level, Result.OK);
             } else {
@@ -232,22 +187,22 @@ public class DependencyValidation {
             /*
              * If the entity name is supplied (not null)
              */
-            if (cache.contains("^" + entityName[0])) {
+            if (cache.contains(DependencyValidationSymbols.EXCLUDE + entityName[0])) {
                 // If we have supplied an explicitly excluded item then report an error
                 return Pair.of(level, Result.EXCLUDED);
-            } else if (cache.contains("^*")) {
+            } else if (cache.contains(DependencyValidationSymbols.EXCLUDE_ALL)) {
                 // If we have the inverse wildcard we are not expecting an item so error
                 return Pair.of(level, Result.NOT_EXPECTED);
             } else if (cache.contains(entityName[0])) {
                 // Item explicitly listed - Proceed
                 return Pair.of(level, Result.OK);
-            } else if(cache.contains("*-")) {
+            } else if(cache.contains(DependencyValidationSymbols.INCLUDE_ALL_OPTIONALLY)) {
                 // if the item is optionally supplied with a wildcard - OK
                 return Pair.of(level, Result.OK);
-            } else if (cache.contains("*")) {
+            } else if (cache.contains(DependencyValidationSymbols.INCLUDE_ALL)) {
                 // if the item is on a wildcard - OK
                 return Pair.of(level, Result.OK);
-            } else if (cache.contains("...")) {
+            } else if (cache.contains(DependencyValidationSymbols.NOT_APPLICABLE)) {
                 // We don't care - OK
                 return Pair.of(level, Result.OK);
             } else {
@@ -258,16 +213,16 @@ public class DependencyValidation {
             /*
              * If the entity name is not supplied (null)
              */
-            if (cache.contains("^*")) {
+            if (cache.contains(DependencyValidationSymbols.EXCLUDE_ALL)) {
                 // If we have the inverse wildcard we are not expecting an item so no error - ok
                 return Pair.of(level, Result.OK);
-            } else if(cache.contains("*-")) {
+            } else if(cache.contains(DependencyValidationSymbols.INCLUDE_ALL_OPTIONALLY)) {
                 // if the item is optionally supplied with a wildcard we are good
                 return Pair.of(level, Result.OK);
-            } else if (cache.contains("*")) {
+            } else if (cache.contains(DependencyValidationSymbols.INCLUDE_ALL)) {
                 // if the item is on a plain wildcard its an error
                 return Pair.of(level, Result.EXPECTED);
-            } else if (cache.contains("...")) {
+            } else if (cache.contains(DependencyValidationSymbols.NOT_APPLICABLE)) {
                 // We don't care - OK
                 return Pair.of(level, Result.OK);
             } else {

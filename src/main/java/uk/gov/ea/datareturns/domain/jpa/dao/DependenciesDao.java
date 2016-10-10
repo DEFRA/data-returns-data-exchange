@@ -5,6 +5,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Repository;
 import uk.gov.ea.datareturns.domain.exceptions.ProcessingException;
 import uk.gov.ea.datareturns.domain.jpa.entities.*;
+import uk.gov.ea.datareturns.domain.jpa.service.DependencyValidationSymbols;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
@@ -57,7 +58,6 @@ public class DependenciesDao {
 
     /**
      * Builds the dependencies cache.
-     * This is a thing of beauty. Java 8 streaming API. Awesome!
      * It pretty much explains itself.
      */
     public Map<String, Map<String, Map<String, Set<String>>>> buildCache() {
@@ -124,10 +124,11 @@ public class DependenciesDao {
             .stream()
                 .map(Dependencies::getParameter)
                 .map(p -> removeExclusion(p))
-                .filter(p -> !p.trim().equals("*"))
-                .filter(p -> !p.trim().equals("^*"))
-                .filter(p -> !p.trim().equals("*-"))
-                .filter(p -> !p.trim().equals("..."))
+                .filter(p -> !p.trim().equals(DependencyValidationSymbols.INCLUDE_ALL))
+                .filter(p -> !p.trim().equals(DependencyValidationSymbols.EXCLUDE_ALL))
+                .filter(p -> !p.trim().equals(DependencyValidationSymbols.EXCLUDE))
+                .filter(p -> !p.trim().equals(DependencyValidationSymbols.INCLUDE_ALL_OPTIONALLY))
+                .filter(p -> !p.trim().equals(DependencyValidationSymbols.NOT_APPLICABLE))
                 .filter(p -> !parameterDao.nameExists(p))
                 .collect(Collectors.toList());
 
@@ -143,10 +144,11 @@ public class DependenciesDao {
                 .stream()
                 .map(Dependencies::getReturnType)
                 .map(p -> removeExclusion(p))
-                .filter(p -> !p.trim().equals("*"))
-                .filter(p -> !p.trim().equals("^*"))
-                .filter(p -> !p.trim().equals("*-"))
-                .filter(p -> !p.trim().equals("..."))
+                .filter(p -> !p.trim().equals(DependencyValidationSymbols.INCLUDE_ALL))
+                .filter(p -> !p.trim().equals(DependencyValidationSymbols.EXCLUDE_ALL))
+                .filter(p -> !p.trim().equals(DependencyValidationSymbols.EXCLUDE))
+                .filter(p -> !p.trim().equals(DependencyValidationSymbols.INCLUDE_ALL_OPTIONALLY))
+                .filter(p -> !p.trim().equals(DependencyValidationSymbols.NOT_APPLICABLE))
                 .filter(p -> !returnTypeDao.nameExists(p))
                 .collect(Collectors.toList());
 
@@ -162,10 +164,11 @@ public class DependenciesDao {
                 .stream()
                 .map(Dependencies::getReleasesAndTransfers)
                 .map(p -> removeExclusion(p))
-                .filter(p -> !p.trim().equals("*"))
-                .filter(p -> !p.trim().equals("^*"))
-                .filter(p -> !p.trim().equals("*-"))
-                .filter(p -> !p.trim().equals("..."))
+                .filter(p -> !p.trim().equals(DependencyValidationSymbols.INCLUDE_ALL))
+                .filter(p -> !p.trim().equals(DependencyValidationSymbols.EXCLUDE_ALL))
+                .filter(p -> !p.trim().equals(DependencyValidationSymbols.EXCLUDE))
+                .filter(p -> !p.trim().equals(DependencyValidationSymbols.INCLUDE_ALL_OPTIONALLY))
+                .filter(p -> !p.trim().equals(DependencyValidationSymbols.NOT_APPLICABLE))
                 .filter(p -> !releasesAndTransfersDao.nameExists(p))
                 .collect(Collectors.toList());
 
@@ -181,10 +184,11 @@ public class DependenciesDao {
                 .stream()
                 .map(Dependencies::getUnits)
                 .map(p -> removeExclusion(p))
-                .filter(p -> !p.trim().equals("*"))
-                .filter(p -> !p.trim().equals("^*"))
-                .filter(p -> !p.trim().equals("*-"))
-                .filter(p -> !p.trim().equals("..."))
+                .filter(p -> !p.trim().equals(DependencyValidationSymbols.INCLUDE_ALL))
+                .filter(p -> !p.trim().equals(DependencyValidationSymbols.EXCLUDE_ALL))
+                .filter(p -> !p.trim().equals(DependencyValidationSymbols.EXCLUDE))
+                .filter(p -> !p.trim().equals(DependencyValidationSymbols.INCLUDE_ALL_OPTIONALLY))
+                .filter(p -> !p.trim().equals(DependencyValidationSymbols.NOT_APPLICABLE))
                 .filter(p -> !unitDao.nameExists(p))
                 .collect(Collectors.toList());
 
