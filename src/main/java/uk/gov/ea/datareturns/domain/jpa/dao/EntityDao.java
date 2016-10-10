@@ -19,6 +19,7 @@ import java.lang.reflect.Method;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Predicate;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import static java.util.Comparator.comparing;
@@ -38,6 +39,8 @@ public abstract class EntityDao<E extends ControlledListEntity> {
 
     protected volatile Map<String, E> cacheByName = null;
     protected volatile Map<String, E> cacheByNameKey = null;
+
+    Pattern removeMultipleSpaces = Pattern.compile("\\s{2,}");
 
     /**
      * Let the Dao class know the type of entity in order that type-safe
@@ -170,7 +173,7 @@ public abstract class EntityDao<E extends ControlledListEntity> {
      * is to convert to upper cases and reduce multiple spaces to a single space to create the lookup key.
      */
     public String getKeyFromRelaxedName(String name) {
-        return name == null ? null : name.toUpperCase().trim().replaceAll("\\s{2,}", " ");
+        return name == null ? null : removeMultipleSpaces.matcher(name.toUpperCase().trim()).replaceAll(" ");
     }
 
     /**
