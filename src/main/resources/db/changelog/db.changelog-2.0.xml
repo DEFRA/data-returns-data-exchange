@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+	xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd
+        http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
+
+	<property name="releasesAndTransfersFile" value="/db/data/ReleasesAndTransfers.csv"/>
+	<property name="dependenciesFile" value="/db/data/Dependencies.csv"/>
+
+	<preConditions>
+		<dbms type="${db.type}"/>
+		<runningAs username="${db.username}"/>
+	</preConditions>
+
+	<!--
+  ****************************************************************
+  Dependencies
+  ****************************************************************
+  -->
+	<changeSet id="create-table: dependencies" author="Environment Agency">
+		<createTable tableName="dependencies">
+			<column name="return_type" type="varchar(80)">
+				<constraints nullable="false" unique="false"/>
+			</column>
+			<column name="parameter" type="varchar(150)">
+				<constraints nullable="false" unique="false"/>
+			</column>
+			<column name="releases_and_transfers" type="varchar(50)">
+				<constraints nullable="false" unique="false"/>
+			</column>
+			<column name="units" type="varchar(10)">
+				<constraints nullable="false" unique="false"/>
+			</column>
+		</createTable>
+		<rollback>
+			<dropTable tableName="dependencies"/>
+		</rollback>
+	</changeSet>
+
+	<changeSet id="load-data: dependencies" author="Environment Agency">
+		<preConditions onFail="HALT">
+			<tableExists tableName="dependencies"/>
+			<sqlCheck expectedResult="0">select count(*) from dependencies</sqlCheck>
+		</preConditions>
+		<loadData file="${dependenciesFile}" tableName="dependencies"/>
+		<rollback>
+			<delete tableName="dependencies"></delete>
+		</rollback>
+	</changeSet>
+
+	<changeSet id="create-index: dependencies" author="Environment Agency">
+		<createIndex indexName="idx_dependencies" tableName="dependencies" unique="true">
+			<column name="return_type"/>
+			<column name="parameter"/>
+			<column name="releases_and_transfers"/>
+			<column name="units"/>
+		</createIndex>
+		<rollback>
+			<dropIndex tableName="dependencies" indexName="idx_dependencies"/>
+		</rollback>
+	</changeSet>
+
+	<!-- 
+	****************************************************************
+	Releases and Transfers
+	****************************************************************
+	-->
+	<changeSet id="create-table: releases_and_transfers" author="Environment Agency">
+		<createTable tableName="releases_and_transfers">
+			<!-- Currently unique identifiers are generally 6 characters long but this could change! -->
+			<column name="id" type="bigserial">
+				<constraints primaryKey="true" nullable="false"/>
+			</column>
+			<column name="name" type="varchar(50)">
+				<constraints nullable="false" unique="true"/>
+			</column>
+		</createTable>
+		<rollback>
+			<dropTable tableName="releases_and_transfers"/>
+		</rollback>
+	</changeSet>
+
+	<changeSet id="load-data: releases_and_transfers" author="Environment Agency">
+		<preConditions onFail="HALT">
+			<tableExists tableName="releases_and_transfers"/>
+			<columnExists tableName="releases_and_transfers" columnName="name"/>
+			<sqlCheck expectedResult="0">select count(id) from releases_and_transfers</sqlCheck>
+		</preConditions>
+		<loadData file="${releasesAndTransfersFile}" tableName="releases_and_transfers"/>
+		<rollback>
+			<delete tableName="releases_and_transfers"></delete>
+		</rollback>
+	</changeSet>
+
+	<changeSet id="create-index: releases_and_transfers" author="Environment Agency">
+		<createIndex indexName="idx_releases_and_transfers_name" tableName="releases_and_transfers" unique="true">
+			<column name="name"/>
+		</createIndex>
+		<rollback>
+			<dropIndex tableName="releases_and_transfers" indexName="idx_releases_and_transfers_name"/>
+		</rollback>
+	</changeSet>
+
+</databaseChangeLog>

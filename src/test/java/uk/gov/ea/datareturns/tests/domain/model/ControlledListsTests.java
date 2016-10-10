@@ -3,9 +3,9 @@ package uk.gov.ea.datareturns.tests.domain.model;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.springframework.boot.test.ConfigFileApplicationContextInitializer;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.context.junit4.SpringRunner;
 import uk.gov.ea.datareturns.App;
 import uk.gov.ea.datareturns.domain.jpa.dao.*;
 import uk.gov.ea.datareturns.domain.jpa.entities.*;
@@ -16,8 +16,9 @@ import java.util.List;
 /**
  * Created by graham on 28/07/16.
  */
-@RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = App.class, initializers = ConfigFileApplicationContextInitializer.class)
+@SpringBootTest(classes=App.class)
+@DirtiesContext
+@RunWith(SpringRunner.class)
 public class ControlledListsTests {
 
     public static final String NAME = "Casespaces";
@@ -109,7 +110,6 @@ public class ControlledListsTests {
         // Add and retrieve
         ReturnType returnType = new ReturnType();
         returnType.setName(NAME);
-        returnType.setSector(LANDFILL);
         returnTypeDao.add(returnType);
 
         ReturnType retrieveReturnType = (ReturnType) returnTypeDao.getByName(NAME);

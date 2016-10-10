@@ -1,4 +1,4 @@
-name, sector
+name,sector
 Landfill leachate monitoring,Landfill
 Emissions to surface water,Landfill
 Emissions to groundwater,Landfill
@@ -11,8 +11,6 @@ Ambient air quality,Landfill
 Air point source emissions,Landfill
 Tankered emissions,Landfill
 Landfill annual monitoring report,Landfill
-IED combustion CEMS,Combustion
-Combustion LCP (unit) annual report,Combustion
-Combustion REM (installation),Combustion
-Pollution inventory substance,PI
-Pollution inventory waste,PI
+Pollution Inventory,PI
+REM Return,REM
+IED Chap 3 Inventory,LCP

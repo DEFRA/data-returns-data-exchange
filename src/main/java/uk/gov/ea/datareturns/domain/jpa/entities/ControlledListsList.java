@@ -61,6 +61,10 @@ public enum ControlledListsList {
     TEXT_VALUES("Text value", TextValueDao.class, "txt_value", Collections.unmodifiableList(new ArrayList<DisplayHeaderDto>() {{
         add(new DisplayHeaderDto("name", "Txt_Value"));
         add(new DisplayHeaderDto("aliases", "Alternatives"));
+    }}), "name"),
+
+    RELEASES_AND_TRANSFERS("Releases and transfers", ReleasesAndTransfersDao.class, "mon_point", Collections.unmodifiableList(new ArrayList<DisplayHeaderDto>() {{
+        add(new DisplayHeaderDto("name", "Mon_point"));
     }}), "name");
 
     private final String path;

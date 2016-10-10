@@ -98,32 +98,16 @@ public class Parameter implements AliasingEntity {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o)
-            return true;
-        if (o == null || getClass() != o.getClass())
-            return false;
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
 
-        Parameter parameter = (Parameter) o;
+        Parameter that = (Parameter) o;
 
-        if (id != null ? !id.equals(parameter.id) : parameter.id != null)
-            return false;
-        if (name != null ? !name.equals(parameter.name) : parameter.name != null)
-            return false;
-        if (cas != null ? !cas.equals(parameter.cas) : parameter.cas != null)
-            return false;
-        if (preferred != null ? !preferred.equals(parameter.preferred) : parameter.preferred != null)
-            return false;
-        return type != null ? type.equals(parameter.type) : parameter.type == null;
-
+        return name.equals(that.name);
     }
 
     @Override
     public int hashCode() {
-        int result = id != null ? id.hashCode() : 0;
-        result = 31 * result + (name != null ? name.hashCode() : 0);
-        result = 31 * result + (cas != null ? cas.hashCode() : 0);
-        result = 31 * result + (preferred != null ? preferred.hashCode() : 0);
-        result = 31 * result + (type != null ? type.hashCode() : 0);
-        return result;
+        return name.hashCode();
     }
 }
