@@ -499,4 +499,12 @@ public class DependenciesTests {
                 Result.EXPECTED), result);
     }
 
+    /*
+     * Test the reporting (displaying the published controlled lists
+     * with resolved dependencies
+     */
+    @Test
+    public void reporting() {
+
+    }
 }

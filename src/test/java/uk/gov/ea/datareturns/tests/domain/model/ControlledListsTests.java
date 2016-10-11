@@ -110,6 +110,7 @@ public class ControlledListsTests {
         // Add and retrieve
         ReturnType returnType = new ReturnType();
         returnType.setName(NAME);
+        returnType.setSector(LANDFILL);
         returnTypeDao.add(returnType);
 
         ReturnType retrieveReturnType = (ReturnType) returnTypeDao.getByName(NAME);
