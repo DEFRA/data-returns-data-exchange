@@ -52,6 +52,11 @@ public class MethodOrStandard implements ControlledListEntity {
     }
 
     @Override
+    public ControlledListsList getControlledListType() {
+        return ControlledListsList.METHOD_OR_STANDARD;
+    }
+
+    @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
@@ -65,4 +70,6 @@ public class MethodOrStandard implements ControlledListEntity {
     public int hashCode() {
         return name.hashCode();
     }
+
+
 }

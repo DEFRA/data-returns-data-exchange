@@ -11,7 +11,7 @@ import javax.persistence.*;
 @SuppressWarnings({ "JavaDoc", "unused" })
 @Entity
 @Table(name = "return_types")
-public class ReturnType implements ControlledListEntity {
+public class ReturnType implements ControlledListEntity, DependentEntity {
 
     @Id
     @SequenceGenerator(name = "return_types_id_seq", sequenceName = "return_types_id_seq", allocationSize = 1)
@@ -49,6 +49,11 @@ public class ReturnType implements ControlledListEntity {
 
     public void setSector(String sector) {
         this.sector = sector;
+    }
+
+    @Override
+    public ControlledListsList getControlledListType() {
+        return ControlledListsList.RETURN_TYPE;
     }
 
     @Override

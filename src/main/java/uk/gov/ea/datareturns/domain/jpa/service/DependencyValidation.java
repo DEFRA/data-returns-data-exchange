@@ -3,10 +3,7 @@ package uk.gov.ea.datareturns.domain.jpa.service;
 import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.stereotype.Service;
 import uk.gov.ea.datareturns.domain.jpa.dao.*;
-import uk.gov.ea.datareturns.domain.jpa.entities.Parameter;
-import uk.gov.ea.datareturns.domain.jpa.entities.ReleasesAndTransfers;
-import uk.gov.ea.datareturns.domain.jpa.entities.ReturnType;
-import uk.gov.ea.datareturns.domain.jpa.entities.Unit;
+import uk.gov.ea.datareturns.domain.jpa.entities.*;
 
 import javax.inject.Inject;
 import java.util.Arrays;
@@ -36,30 +33,6 @@ public class DependencyValidation {
     DependenciesDao dao;
 
     /*
-     * The set of mutually dependent entities which are being validated. The level specifies
-     * the order of validation starting at RETURN_TYPE. Where the result is OK the entity is irrelevant
-     */
-    public enum Entity {
-        RETURN_TYPE(0), RELEASE(1), PARAMETER(2), UNIT(3);
-
-        private int level = 0;
-        private Entity[] values;
-
-        Entity(int level) {
-            this.level = level;
-        }
-
-        public Entity[] getValues() {
-            return Entity.values();
-        }
-
-        public Entity next() {
-            Entity[] arr = getValues();
-            return arr[this.level + 1];
-        }
-    }
-
-    /*
      * The result of the validation. Excluded entities are distinguished from
      * not found. From an end user perspective the two things are the same.
      * EXPECTED indicates that a required entity has not been supplied and
@@ -74,10 +47,10 @@ public class DependencyValidation {
      * as a pair of the validating entity and the result. The validating entity is
      * on relevant where the result is not OK, otherwise it holds the lowest level validated
      */
-    public Pair<Entity, Result> validate(ReturnType returnType,
-                                         ReleasesAndTransfers releasesAndTransfers,
-                                         Parameter parameter,
-                                         Unit unit) {
+    public Pair<ControlledListsList, Result> validate(ReturnType returnType,
+                                                      ReleasesAndTransfers releasesAndTransfers,
+                                                      Parameter parameter,
+                                                      Unit unit) {
 
         /*
          * All the caches use the normalized keys. Alias resolution will happen
@@ -88,20 +61,56 @@ public class DependencyValidation {
         String parameterName = parameter == null ? null : parameterDao.getKeyFromRelaxedName(parameter.getName());
         String unitName = unit == null ? null : unitDao.getKeyFromRelaxedName(unit.getName());
 
-        return evaluate(Entity.RETURN_TYPE, (Map)dao.getCache(),
+        return evaluate(ControlledListsList.RETURN_TYPE, (Map)dao.getCache(),
                 new String[]{returnTypeName, releasesAndTransfersName, parameterName, unitName}
         );
 
     }
 
     /*
-     * These overrides are for convenience
+     * This signature is to call from the navigator --
      */
-    public Pair<Entity, Result> validate(ReturnType returnType, Parameter parameter, Unit unit) {
+    public Pair<ControlledListsList, Result> validate(DependentEntity entity, DependentEntity... entities) {
+        ReturnType returnType = null;
+        ReleasesAndTransfers releasesAndTransfers = null;
+        Parameter parameter = null;
+        Unit unit = null;
+
+        for (DependentEntity d : entities) {
+            if (d instanceof ReturnType) {
+                returnType = (ReturnType) d;
+            } else if (d instanceof ReleasesAndTransfers) {
+                releasesAndTransfers = (ReleasesAndTransfers) d;
+            } else if (d instanceof Parameter) {
+                parameter = (Parameter) d;
+            } else if (d instanceof Unit) {
+                unit = (Unit) d;
+            }
+        }
+
+        if (entity instanceof ReturnType) {
+            returnType = (ReturnType) entity;
+        } else if (entity instanceof ReleasesAndTransfers) {
+            releasesAndTransfers = (ReleasesAndTransfers) entity;
+        } else if (entity instanceof Parameter) {
+            parameter = (Parameter) entity;
+        } else if (entity instanceof Unit) {
+            unit = (Unit) entity;
+        }
+
+        return validate(returnType, releasesAndTransfers, parameter, unit);
+    }
+
+
+
+    /*
+     * These other signatures are for convenience
+     */
+    public Pair<ControlledListsList, Result> validate(ReturnType returnType, Parameter parameter, Unit unit) {
         return validate(returnType, null, parameter, unit);
     }
 
-    public Pair<Entity, Result> validate(ReturnType returnType, Parameter parameter) {
+    public Pair<ControlledListsList, Result> validate(ReturnType returnType, Parameter parameter) {
          return validate(returnType, null, parameter, null);
     }
 
@@ -117,7 +126,7 @@ public class DependencyValidation {
      * Map<String, Set<String>> - cache by parameters
      * Set<String> - a hash-set of units
      */
-    private Pair<Entity, Result> getDependencyValidationResult(Entity level, Map cache, String cacheKey, String[] entityName) {
+    private Pair<ControlledListsList, Result> getDependencyValidationResult(ControlledListsList level, Map cache, String cacheKey, String[] entityName) {
         if (cache.get(cacheKey) instanceof Set) {
             return evaluate(level.next(), (Set)cache.get(cacheKey), Arrays.copyOfRange(entityName, 1, entityName.length));
         } else {
@@ -128,7 +137,7 @@ public class DependencyValidation {
     /*
      * Main evaluating function which is recursive as the rules are the same for each entity
      */
-    private Pair<Entity, Result> evaluate(Entity level, Map cache, String... entityName) {
+    private Pair<ControlledListsList, Result> evaluate(ControlledListsList level, Map cache, String... entityName) {
         if (entityName[0] != null) {
             /*
              * If the entity name is supplied (not null)
@@ -182,7 +191,7 @@ public class DependencyValidation {
      * If the validation is not already complete and returned out of the above
      * recursive method it is terminated by this operation with a set lookup
      */
-    private Pair<Entity, Result> evaluate(Entity level, Set cache, String... entityName) {
+    private Pair<ControlledListsList, Result> evaluate(ControlledListsList level, Set cache, String... entityName) {
         if (entityName[0] != null) {
             /*
              * If the entity name is supplied (not null)

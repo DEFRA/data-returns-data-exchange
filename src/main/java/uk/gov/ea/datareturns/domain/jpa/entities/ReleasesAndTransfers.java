@@ -11,7 +11,7 @@ import javax.persistence.*;
 @SuppressWarnings({ "JavaDoc", "unused" })
 @Entity
 @Table(name = "releases_and_transfers")
-public class ReleasesAndTransfers implements ControlledListEntity {
+public class ReleasesAndTransfers implements ControlledListEntity, DependentEntity {
 
     @Id
     @SequenceGenerator(name = "releases_and_transfers_id_seq", sequenceName = "releases_and_transfers_id_seq", allocationSize = 1)
@@ -37,6 +37,11 @@ public class ReleasesAndTransfers implements ControlledListEntity {
 
     public void setName(final String name) {
         this.name = name;
+    }
+
+    @Override
+    public ControlledListsList getControlledListType() {
+        return ControlledListsList.RELEASES_AND_TRANSFERS;
     }
 
     @Override

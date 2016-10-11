@@ -4,7 +4,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Repository;
 import uk.gov.ea.datareturns.domain.exceptions.ProcessingException;
-import uk.gov.ea.datareturns.domain.jpa.entities.*;
+import uk.gov.ea.datareturns.domain.jpa.entities.Dependencies;
+import uk.gov.ea.datareturns.domain.jpa.entities.DependenciesId;
 import uk.gov.ea.datareturns.domain.jpa.service.DependencyValidationSymbols;
 
 import javax.annotation.PostConstruct;
@@ -45,7 +46,7 @@ public class DependenciesDao {
     }
 
     //HashMap<ReturnType, HashMap<ReleasesAndTransfers, HashMap<Parameters, HashSet<Unit>>>>;
-    Map<String, Map<String, Map<String, Set<String>>>> cache = null;
+    private volatile Map<String, Map<String, Map<String, Set<String>>>> cache = null;
 
     /*
      * Use to sort the results of the query, strictly unnecessary
@@ -58,20 +59,25 @@ public class DependenciesDao {
 
     /**
      * Builds the dependencies cache.
-     * It pretty much explains itself.
+     * It pretty much explains itself. Note the doublic check locking
+     * on the cache and the volatile keyword
      */
     public Map<String, Map<String, Map<String, Set<String>>>> buildCache() {
         if (cache == null) {
-            LOGGER.info("Build name cache of: Dependencies");
-            cache = list().stream().collect(
-                Collectors.groupingBy(t -> returnTypeDao.getKeyFromRelaxedName(t.getReturnType()),
-                    Collectors.groupingBy(r -> releasesAndTransfersDao.getKeyFromRelaxedName(r.getReleasesAndTransfers()),
-                        Collectors.groupingBy(p -> parameterDao.getKeyFromRelaxedName(p.getParameter()),
-                            Collectors.mapping(u -> unitDao.getKeyFromRelaxedName(u.getUnits()), Collectors.toCollection(HashSet::new))
-                        )
-                    )
-                )
-            );
+            synchronized (this) {
+                if (cache == null) {
+                    LOGGER.info("Build name cache of: Dependencies");
+                    cache = list().stream().collect(
+                            Collectors.groupingBy(t -> returnTypeDao.getKeyFromRelaxedName(t.getReturnType()),
+                                    Collectors.groupingBy(r -> releasesAndTransfersDao.getKeyFromRelaxedName(r.getReleasesAndTransfers()),
+                                            Collectors.groupingBy(p -> parameterDao.getKeyFromRelaxedName(p.getParameter()),
+                                                    Collectors.mapping(u -> unitDao.getKeyFromRelaxedName(u.getUnits()), Collectors.toCollection(HashSet::new))
+                                            )
+                                    )
+                            )
+                    );
+                }
+            }
         }
 
         return cache;

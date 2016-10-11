@@ -15,4 +15,6 @@ public interface ControlledListEntity {
     String getName();
 
     void setName(final String name);
+
+    ControlledListsList getControlledListType();
 }

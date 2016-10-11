@@ -12,7 +12,7 @@ import java.util.Set;
 @SuppressWarnings({ "JavaDoc", "unused" })
 @Entity
 @Table(name = "units")
-public class Unit implements AliasingEntity {
+public class Unit implements AliasingEntity, DependentEntity {
     @Id
     @SequenceGenerator(name = "units_id_seq", sequenceName = "units_id_seq", allocationSize = 1)
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "units_id_seq")
@@ -112,6 +112,11 @@ public class Unit implements AliasingEntity {
     @Override
     public void setAliases(Set<String> aliases) {
         this.aliases = aliases;
+    }
+
+    @Override
+    public ControlledListsList getControlledListType() {
+        return ControlledListsList.UNITS;
     }
 
     @Override

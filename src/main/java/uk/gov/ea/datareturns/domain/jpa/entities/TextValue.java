@@ -68,6 +68,11 @@ public class TextValue implements AliasingEntity {
     }
 
     @Override
+    public ControlledListsList getControlledListType() {
+        return ControlledListsList.TEXT_VALUES;
+    }
+
+    @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;

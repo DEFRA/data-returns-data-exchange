@@ -12,7 +12,7 @@ import java.util.Set;
 @SuppressWarnings({ "JavaDoc", "unused" })
 @Entity
 @Table(name = "parameters")
-public class Parameter implements AliasingEntity {
+public class Parameter implements AliasingEntity, DependentEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -94,6 +94,11 @@ public class Parameter implements AliasingEntity {
     @Override
     public void setAliases(Set<String> aliases) {
         this.aliases = aliases;
+    }
+
+    @Override
+    public ControlledListsList getControlledListType() {
+        return ControlledListsList.PARAMETERS;
     }
 
     @Override
