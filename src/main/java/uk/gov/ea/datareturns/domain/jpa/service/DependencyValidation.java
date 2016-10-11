@@ -68,42 +68,6 @@ public class DependencyValidation {
     }
 
     /*
-     * This signature is to call from the navigator --
-     */
-    public Pair<ControlledListsList, Result> validate(DependentEntity entity, DependentEntity... entities) {
-        ReturnType returnType = null;
-        ReleasesAndTransfers releasesAndTransfers = null;
-        Parameter parameter = null;
-        Unit unit = null;
-
-        for (DependentEntity d : entities) {
-            if (d instanceof ReturnType) {
-                returnType = (ReturnType) d;
-            } else if (d instanceof ReleasesAndTransfers) {
-                releasesAndTransfers = (ReleasesAndTransfers) d;
-            } else if (d instanceof Parameter) {
-                parameter = (Parameter) d;
-            } else if (d instanceof Unit) {
-                unit = (Unit) d;
-            }
-        }
-
-        if (entity instanceof ReturnType) {
-            returnType = (ReturnType) entity;
-        } else if (entity instanceof ReleasesAndTransfers) {
-            releasesAndTransfers = (ReleasesAndTransfers) entity;
-        } else if (entity instanceof Parameter) {
-            parameter = (Parameter) entity;
-        } else if (entity instanceof Unit) {
-            unit = (Unit) entity;
-        }
-
-        return validate(returnType, releasesAndTransfers, parameter, unit);
-    }
-
-
-
-    /*
      * These other signatures are for convenience
      */
     public Pair<ControlledListsList, Result> validate(ReturnType returnType, Parameter parameter, Unit unit) {

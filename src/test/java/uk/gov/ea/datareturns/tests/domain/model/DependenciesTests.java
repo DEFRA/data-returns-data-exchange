@@ -506,58 +506,58 @@ public class DependenciesTests {
      * Test the reporting (displaying the published controlled lists
      * with resolved dependencies
      */
-    @Test
-    public void traverseError_1() {
-        Pair<ControlledListsList, List<DependentEntity>> result = dependencyNavigation.getChildren(new DependentEntity[] {});
-        Assert.assertEquals(result, null);
-    }
+//    @Test
+//    public void traverseError_1() {
+//        Pair<ControlledListsList, List<DependentEntity>> result = dependencyNavigation.getChildren(new DependentEntity[] {});
+//        Assert.assertEquals(result, null);
+//    }
 
-    @Test
-    public void traverseError_2() {
-        ReturnType returnType = returnTypeDao.getByName("Pollution Inventory");
-        Assert.assertNotNull(returnType);
+//    @Test
+//    public void traverseError_2() {
+//        ReturnType returnType = returnTypeDao.getByName("Pollution Inventory");
+//        Assert.assertNotNull(returnType);
+//
+//        Parameter parameter = parameterDao.getByName("Alachlor");
+//        Assert.assertNotNull(parameter);
+//
+//        ReleasesAndTransfers releasesAndTransfers = releasesAndTransfersDao.getByName("Controlled Water");
+//        Assert.assertNotNull(releasesAndTransfers);
+//
+//        Unit unit = unitDao.getByName("TJ");
+//
+//        Pair<ControlledListsList, List<DependentEntity>> result = dependencyNavigation.getChildren(
+//                new DependentEntity[] {returnType, parameter, releasesAndTransfers, unit});
+//
+//        Assert.assertEquals(result, null);
+//    }
 
-        Parameter parameter = parameterDao.getByName("Alachlor");
-        Assert.assertNotNull(parameter);
+//    @Test
+//    public void traverseReturnTypeReturningParameters_1() {
+//        ReturnType returnType = returnTypeDao.getByName("Pollution Inventory");
+//        Assert.assertNotNull(returnType);
+//
+//        Parameter parameter = parameterDao.getByName("Alachlor");
+//        Assert.assertNotNull(parameter);
+//
+//        ReleasesAndTransfers releasesAndTransfers = releasesAndTransfersDao.getByName("Controlled Water");
+//        Assert.assertNotNull(releasesAndTransfers);
+//
+//        Pair<ControlledListsList, List<DependentEntity>> result = dependencyNavigation.getChildren(
+//                 new DependentEntity[] {returnType, parameter, releasesAndTransfers} );
+//
+//        Assert.assertNotNull(result.getRight().size());
+//        Assert.assertEquals(result.getLeft(), ControlledListsList.UNITS);
+//    }
 
-        ReleasesAndTransfers releasesAndTransfers = releasesAndTransfersDao.getByName("Controlled Water");
-        Assert.assertNotNull(releasesAndTransfers);
-
-        Unit unit = unitDao.getByName("TJ");
-
-        Pair<ControlledListsList, List<DependentEntity>> result = dependencyNavigation.getChildren(
-                new DependentEntity[] {returnType, parameter, releasesAndTransfers, unit});
-
-        Assert.assertEquals(result, null);
-    }
-
-    @Test
-    public void traverseReturnTypeReturningParameters_1() {
-        ReturnType returnType = returnTypeDao.getByName("Pollution Inventory");
-        Assert.assertNotNull(returnType);
-
-        Parameter parameter = parameterDao.getByName("Alachlor");
-        Assert.assertNotNull(parameter);
-
-        ReleasesAndTransfers releasesAndTransfers = releasesAndTransfersDao.getByName("Controlled Water");
-        Assert.assertNotNull(releasesAndTransfers);
-
-        Pair<ControlledListsList, List<DependentEntity>> result = dependencyNavigation.getChildren(
-                new DependentEntity[] {returnType, parameter, releasesAndTransfers} );
-
-        Assert.assertNotNull(result.getRight().size());
-        Assert.assertEquals(result.getLeft(), ControlledListsList.UNITS);
-    }
-
-    @Test
-    public void traverseReturnTypeReturningLandfillParameters() {
-        ReturnType returnType = returnTypeDao.getByName("Emissions to groundwater");
-        Assert.assertNotNull(returnType);
-
-        Pair<ControlledListsList, List<DependentEntity>> result = dependencyNavigation.getChildren(
-                new DependentEntity[] {returnType} );
-
-        Assert.assertNotNull(result.getRight().size());
-        Assert.assertEquals(result.getLeft(), ControlledListsList.PARAMETERS);
-    }
+//    @Test
+//    public void traverseReturnTypeReturningLandfillParameters() {
+//        ReturnType returnType = returnTypeDao.getByName("Emissions to groundwater");
+//        Assert.assertNotNull(returnType);
+//
+//        Pair<ControlledListsList, List<DependentEntity>> result = dependencyNavigation.getChildren(
+//                new DependentEntity[] {returnType} );
+//
+//        Assert.assertNotNull(result.getRight().size());
+//        Assert.assertEquals(result.getLeft(), ControlledListsList.PARAMETERS);
+//    }
 }

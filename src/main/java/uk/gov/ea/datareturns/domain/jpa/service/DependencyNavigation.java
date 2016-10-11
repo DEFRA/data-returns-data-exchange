@@ -7,16 +7,13 @@ import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.stereotype.Component;
-import uk.gov.ea.datareturns.domain.jpa.dao.DependenciesDao;
-import uk.gov.ea.datareturns.domain.jpa.dao.EntityDao;
-import uk.gov.ea.datareturns.domain.jpa.entities.ControlledListsList;
-import uk.gov.ea.datareturns.domain.jpa.entities.DependentEntity;
+import uk.gov.ea.datareturns.domain.jpa.dao.*;
+import uk.gov.ea.datareturns.domain.jpa.entities.*;
 
 import javax.inject.Inject;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * Created by graham on 11/10/16.
@@ -27,20 +24,39 @@ public class DependencyNavigation implements ApplicationContextAware  {
     private ApplicationContext applicationContext;
 
     @Inject
-    private DependencyValidation dependencyValidation;
+    private ParameterDao parameterDao;
+
+    @Inject
+    private ReturnTypeDao returnTypeDao;
+
+    @Inject
+    private ReleasesAndTransfersDao releasesAndTransfersDao;
+
+    @Inject
+    private UnitDao unitDao;
 
     @Inject
     private DependenciesDao dao;
 
-    public Pair<ControlledListsList, List<DependentEntity>> getChildren2(DependentEntity... entities) {
+    public Pair<ControlledListsList, List<DependentEntity>> getChildren(ReturnType returnType,
+                                                                        ReleasesAndTransfers releasesAndTransfers,
+                                                                        Parameter parameter,
+                                                                        Unit unit) {
         // We need to traverse the cache using the components we are given and substituting
         // wildcards and processing exclusions where necessary
+        Map<String, Map<String, Map<String, Set<String>>>> cache = dao.getCache();
+        // Figure out what we have been given
+        String returnTypeName = returnType == null ? null : returnTypeDao.getKeyFromRelaxedName(returnType.getName());
+        String releasesAndTransfersName = releasesAndTransfers == null ? null : releasesAndTransfersDao.getKeyFromRelaxedName(releasesAndTransfers.getName());
+        String parameterName = parameter == null ? null : parameterDao.getKeyFromRelaxedName(parameter.getName());
+        String unitName = unit == null ? null : unitDao.getKeyFromRelaxedName(unit.getName());
 
         return null;
     }
 
     // Wrong - you have to traverse the hierarchy - using something analagous to the functions
     // in the validator. Problem is you just cannot know what you are going to get until you have it.
+/*
     public Pair<ControlledListsList, List<DependentEntity>> getChildren(DependentEntity... entities) {
         // Take the set we are given and find the lowest level in the hierarchy
         // Then get the dao of the level below that loop it validating each entry
@@ -74,6 +90,7 @@ public class DependencyNavigation implements ApplicationContextAware  {
             return null;
         }
     }
+*/
 
     /*
      * Returns a the list of entities at at the child level to the one being specified skipping
