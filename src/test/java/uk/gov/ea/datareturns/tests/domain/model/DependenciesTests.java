@@ -4,6 +4,8 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.junit4.SpringRunner;
@@ -24,6 +26,9 @@ import java.util.List;
 @DirtiesContext
 @RunWith(SpringRunner.class)
 public class DependenciesTests {
+
+    protected static final Logger LOGGER = LoggerFactory.getLogger(DependenciesTests.class);
+
     @Inject
     DependenciesDao dao;
 
@@ -503,56 +508,90 @@ public class DependenciesTests {
     }
 
     /*
-     * Test the reporting (displaying the published controlled lists
-     * with resolved dependencies
+     * Test the hierarchy traverse and listing
      */
-//    @Test
-//    public void traverseError_1() {
-//        Pair<ControlledListsList, List<DependentEntity>> result = dependencyNavigation.traverseHierarchy(new DependentEntity[] {});
-//        Assert.assertEquals(result, null);
-//    }
+    @Test
+    public void traverseErrorNoReleasesAndTransfers() {
+        ReturnType returnType = returnTypeDao.getByName("Pollution Inventory");
+        Assert.assertNotNull(returnType);
 
-//    @Test
-//    public void traverseError_2() {
-//        ReturnType returnType = returnTypeDao.getByName("Pollution Inventory");
-//        Assert.assertNotNull(returnType);
-//
-//        Parameter parameter = parameterDao.getByName("Alachlor");
-//        Assert.assertNotNull(parameter);
-//
-//        ReleasesAndTransfers releasesAndTransfers = releasesAndTransfersDao.getByName("Controlled Water");
-//        Assert.assertNotNull(releasesAndTransfers);
-//
-//        Unit unit = unitDao.getByName("TJ");
-//
-//        Pair<ControlledListsList, List<DependentEntity>> result = dependencyNavigation.traverseHierarchy(
-//                new DependentEntity[] {returnType, parameter, releasesAndTransfers, unit});
-//
-//        Assert.assertEquals(result, null);
-//    }
+        Parameter parameter = parameterDao.getByName("Alachlor");
+        Assert.assertNotNull(parameter);
 
-//    @Test
-//    public void traverseReturnTypeReturningParameters_1() {
-//        ReturnType returnType = returnTypeDao.getByName("Pollution Inventory");
-//        Assert.assertNotNull(returnType);
-//
-//        ReleasesAndTransfers releasesAndTransfers = releasesAndTransfersDao.getByName("Air");
-//        Assert.assertNotNull(releasesAndTransfers);
-//
-//        Pair<ControlledListsList, List<DependentEntity>> result = dependencyNavigation.traverseHierarchy(returnType, releasesAndTransfers);
-//
-//        Assert.assertNotNull(result.getRight().size());
-//        Assert.assertEquals(result.getLeft(), ControlledListsList.UNITS);
-//    }
-//
-//    @Test
-//    public void traverseReturnTypeReturningLandfillParameters() {
-//        ReturnType returnType = returnTypeDao.getByName("Emissions to groundwater");
-//        Assert.assertNotNull(returnType);
-//
-//        Pair<ControlledListsList, List<DependentEntity>> result = dependencyNavigation.traverseHierarchy(returnType);
-//
-//        Assert.assertNotNull(result.getRight().size());
-//        Assert.assertEquals(result.getLeft(), ControlledListsList.PARAMETERS);
-//    }
+        Pair<ControlledListsList, List<? extends DependentEntity>> result = dependencyNavigation.traverseHierarchy(returnType, parameter);
+
+        Assert.assertNull(result.getRight());
+        Assert.assertEquals(result.getLeft(), ControlledListsList.RELEASES_AND_TRANSFERS);
+    }
+
+    @Test
+    public void traverseReturningReleasesAndTransfersDao() {
+        ReturnType returnType = returnTypeDao.getByName("Pollution Inventory");
+        Assert.assertNotNull(returnType);
+
+        Pair<ControlledListsList, List<? extends DependentEntity>> result = dependencyNavigation.traverseHierarchy(returnType);
+
+        Assert.assertNotNull(result.getRight().size());
+        Assert.assertEquals(result.getLeft(), ControlledListsList.RELEASES_AND_TRANSFERS);
+
+        printList(result.getRight());
+    }
+
+    @Test
+    public void traverseReturningPollutionInventoryParameters() {
+        ReturnType returnType = returnTypeDao.getByName("Pollution Inventory");
+        Assert.assertNotNull(returnType);
+
+        ReleasesAndTransfers releasesAndTransfers = releasesAndTransfersDao.getByName("Air");
+        Assert.assertNotNull(releasesAndTransfers);
+
+        Pair<ControlledListsList, List<? extends DependentEntity>> result = dependencyNavigation.traverseHierarchy(returnType, releasesAndTransfers);
+
+        Assert.assertNotNull(result.getRight().size());
+        Assert.assertEquals(result.getLeft(), ControlledListsList.PARAMETERS);
+
+        printList(result.getRight());
+    }
+
+    @Test
+    public void traverseReturningLandfillUnits() {
+        ReturnType returnType = returnTypeDao.getByName("Emissions to sewer");
+        Assert.assertNotNull(returnType);
+
+        Parameter parameter = parameterDao.getByName("Ziram");
+        Assert.assertNotNull(parameter);
+
+        Pair<ControlledListsList, List<? extends DependentEntity>> result = dependencyNavigation.traverseHierarchy(returnType, parameter);
+
+        Assert.assertNotNull(result.getRight().size());
+        Assert.assertEquals(result.getLeft(), ControlledListsList.UNITS);
+
+        printList(result.getRight());
+    }
+
+    @Test
+    public void traverseReturningPollutionInventoryUnits() {
+        ReturnType returnType = returnTypeDao.getByName("Pollution Inventory");
+        Assert.assertNotNull(returnType);
+
+        ReleasesAndTransfers releasesAndTransfers = releasesAndTransfersDao.getByName("Air");
+        Assert.assertNotNull(releasesAndTransfers);
+
+        Parameter parameter = parameterDao.getByName("Tritium");
+        Assert.assertNotNull(parameter);
+
+        Pair<ControlledListsList, List<? extends DependentEntity>> result = dependencyNavigation.traverseHierarchy(returnType, releasesAndTransfers, parameter);
+
+        Assert.assertNotNull(result.getRight().size());
+        Assert.assertEquals(result.getLeft(), ControlledListsList.UNITS);
+
+        printList(result.getRight());
+    }
+
+
+    private void printList(List<? extends DependentEntity> list) {
+        for(DependentEntity e: list) {
+            LOGGER.info(e.getName());
+        }
+    }
 }

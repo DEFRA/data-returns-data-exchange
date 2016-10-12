@@ -64,7 +64,6 @@ public class DependencyValidation {
         return evaluate(ControlledListsList.RETURN_TYPE, (Map)dao.getCache(),
                 new String[]{returnTypeName, releasesAndTransfersName, parameterName, unitName}
         );
-
     }
 
     /*
@@ -101,7 +100,7 @@ public class DependencyValidation {
     /*
      * Main evaluating function which is recursive as the rules are the same for each entity
      */
-    private Pair<ControlledListsList, Result> evaluate(ControlledListsList level, Map cache, String... entityName) {
+    protected Pair<ControlledListsList, Result> evaluate(ControlledListsList level, Map cache, String... entityName) {
         if (entityName[0] != null) {
             /*
              * If the entity name is supplied (not null)

@@ -36,26 +36,30 @@ public class DependencyNavigation implements ApplicationContextAware  {
     @Inject
     private DependenciesDao dao;
 
+    @Inject
+    DependencyValidation dependencyValidation;
+
+
     /*
      * These other signatures are for convenience
      */
-    public Pair<ControlledListsList, List<DependentEntity>> traverseHierarchy(ReturnType returnType) {
+    public Pair<ControlledListsList, List<? extends DependentEntity>> traverseHierarchy(ReturnType returnType) {
         return traverseHierarchy(returnType, null, null, null);
     }
 
-    public Pair<ControlledListsList, List<DependentEntity>> traverseHierarchy(ReturnType returnType, Parameter parameter) {
+    public Pair<ControlledListsList, List<? extends DependentEntity>> traverseHierarchy(ReturnType returnType, Parameter parameter) {
         return traverseHierarchy(returnType, null, parameter, null);
     }
 
-    public Pair<ControlledListsList, List<DependentEntity>> traverseHierarchy(ReturnType returnType, ReleasesAndTransfers releasesAndTransfers) {
+    public Pair<ControlledListsList, List<? extends DependentEntity>> traverseHierarchy(ReturnType returnType, ReleasesAndTransfers releasesAndTransfers) {
         return traverseHierarchy(returnType, releasesAndTransfers, null, null);
     }
 
-    public Pair<ControlledListsList, List<DependentEntity>> traverseHierarchy(ReturnType returnType, ReleasesAndTransfers releasesAndTransfers, Parameter parameter) {
+    public Pair<ControlledListsList, List<? extends DependentEntity>> traverseHierarchy(ReturnType returnType, ReleasesAndTransfers releasesAndTransfers, Parameter parameter) {
         return traverseHierarchy(returnType, releasesAndTransfers, parameter, null);
     }
 
-    public Pair<ControlledListsList, List<DependentEntity>> traverseHierarchy(ReturnType returnType,
+    public Pair<ControlledListsList, List<? extends DependentEntity>> traverseHierarchy(ReturnType returnType,
                                                                               ReleasesAndTransfers releasesAndTransfers,
                                                                               Parameter parameter,
                                                                               Unit unit) {
@@ -69,45 +73,47 @@ public class DependencyNavigation implements ApplicationContextAware  {
         String parameterName = parameter == null ? null : parameterDao.getKeyFromRelaxedName(parameter.getName());
         String unitName = unit == null ? null : unitDao.getKeyFromRelaxedName(unit.getName());
 
-        return doTraverse(ControlledListsList.RETURN_TYPE, cache,
-                new String[] {returnTypeName, releasesAndTransfersName, parameterName, unitName}, new ArrayList<String>()
-        );
+        // Put the names in a list
+        Map<ControlledListsList, String> entityNames = new HashMap();
+
+        entityNames.put(ControlledListsList.RETURN_TYPE, returnTypeName);
+        entityNames.put(ControlledListsList.RELEASES_AND_TRANSFERS, releasesAndTransfersName);
+        entityNames.put(ControlledListsList.PARAMETERS, parameterName);
+        entityNames.put(ControlledListsList.UNITS, unitName);
+
+        return doTraverse(ControlledListsList.RETURN_TYPE, cache, entityNames, new HashMap<>());
     }
 
-    private Pair<ControlledListsList,List<DependentEntity>> shim(ControlledListsList level, Map cache, String cacheKey, String[] entityName, List<String> keys) {
-        keys.add(entityName[0]);
+    private Pair<ControlledListsList,List<? extends DependentEntity>> shim(ControlledListsList level, Map cache, String cacheKey, Map<ControlledListsList, String> entityNames, Map<ControlledListsList, String> keys) {
+        // Move the key between the traversing array to the traversed array
+        keys.put(level, entityNames.remove(level));
         if (cache.get(cacheKey) instanceof Set) {
-            return doTraverse(level.next(), (Set)cache.get(cacheKey), Arrays.copyOfRange(entityName, 1, entityName.length), keys);
+            return getFilteredList(keys, level.next(), (Set)cache.get(cacheKey));
         } else {
-            return doTraverse(level.next(), (Map)cache.get(cacheKey), Arrays.copyOfRange(entityName, 1, entityName.length), keys);
+            return doTraverse(level.next(), (Map)cache.get(cacheKey), entityNames, keys);
         }
     }
 
-    private Pair<ControlledListsList,List<DependentEntity>> doTraverse(ControlledListsList level, Map cache, String[] entityName, List<String> keys) {
-        if (entityName.length == 0) {
-            /*
-             * We have reached the end of the supplied entities and so we can list the data
-             */
-            return getFilteredList();
-        } else if (entityName[0] != null) {
+    private Pair<ControlledListsList, List<? extends DependentEntity>> doTraverse(ControlledListsList level, Map cache, Map<ControlledListsList, String> entityNames, Map<ControlledListsList, String> keys) {
+        if (entityNames.get(level) != null) {
             /*
              * If the entity name is supplied (not null)
              */
-            if (cache.containsKey(DependencyValidationSymbols.EXCLUDE + entityName[0])) {
+            if (cache.containsKey(DependencyValidationSymbols.EXCLUDE + entityNames.get(level))) {
                 // If we have supplied an explicitly excluded item then return null
                 return Pair.of(level, null);
             } else if (cache.containsKey(DependencyValidationSymbols.EXCLUDE_ALL)) {
-                // If we have the inverse wildcard we are not expecting an item so error
+                // If we have the inverse wildcard we are not expecting an item so carry error
                 return Pair.of(level, null);
-            } else if (cache.containsKey(entityName[0])) {
+            } else if (cache.containsKey(entityNames.get(level))) {
                 // Item explicitly listed - Proceed
-                return shim(level, cache, entityName[0], entityName, keys);
+                return shim(level, cache, entityNames.get(level), entityNames, keys);
             } else if (cache.containsKey(DependencyValidationSymbols.INCLUDE_ALL_OPTIONALLY)) {
                 // if the item is optionally supplied with a wildcard - proceed
-                return shim(level, cache, DependencyValidationSymbols.INCLUDE_ALL_OPTIONALLY, entityName, keys);
+                return shim(level, cache, DependencyValidationSymbols.INCLUDE_ALL_OPTIONALLY, entityNames, keys);
             } else if (cache.containsKey(DependencyValidationSymbols.INCLUDE_ALL)) {
                 // if the item is on a wildcard - proceed
-                return shim(level, cache, DependencyValidationSymbols.INCLUDE_ALL, entityName, keys);
+                return shim(level, cache, DependencyValidationSymbols.INCLUDE_ALL, entityNames, keys);
             } else if (cache.containsKey(DependencyValidationSymbols.NOT_APPLICABLE)) {
                 // We should not be here
                 return Pair.of(level, null);
@@ -115,84 +121,88 @@ public class DependencyNavigation implements ApplicationContextAware  {
                 // We didn't find what we were looking for
                 return Pair.of(level, null);
             }
+        } else if (entityNames.get(level) == null && cache.containsKey(DependencyValidationSymbols.EXCLUDE_ALL)) {
+            return shim(level, cache, DependencyValidationSymbols.EXCLUDE_ALL, entityNames, keys);
+        } else if (allNulls(entityNames)) {
+            return getFilteredList(keys, level, cache);
         } else {
             return Pair.of(level, null);
         }
     }
 
-    private Pair<ControlledListsList,List<DependentEntity>> doTraverse(ControlledListsList level, Set cache, String[] entityName, List<String> keys) {
-        if (entityName[0] != null) {
-            /*
-             * If the entity name is supplied (not null)
-             */
-            if (cache.contains(DependencyValidationSymbols.EXCLUDE + entityName[0])) {
-                // If we have supplied an explicitly excluded item then return null
-                return Pair.of(level, null);
-            } else if (cache.contains(DependencyValidationSymbols.EXCLUDE_ALL)) {
-                // If we have the inverse wildcard we are not expecting an item so error
-                return Pair.of(level, null);
-            } else if (cache.contains(entityName[0])) {
-                // Item explicitly listed - Proceed
-                return Pair.of(level, null);
-            } else if (cache.contains(DependencyValidationSymbols.INCLUDE_ALL_OPTIONALLY)) {
-                // if the item is optionally supplied with a wildcard - proceed
-                return Pair.of(level, null);
-            } else if (cache.contains(DependencyValidationSymbols.INCLUDE_ALL)) {
-                // if the item is on a wildcard - proceed
-                return Pair.of(level, null);
-            } else if (cache.contains(DependencyValidationSymbols.NOT_APPLICABLE)) {
-                // We should not be here
-                return Pair.of(level, null);
-            } else {
-                // We didn't find what we were looking for
-                return Pair.of(level, null);
-            }
-        } else {
+    public Pair<ControlledListsList, List<? extends DependentEntity>> getFilteredList(Map<ControlledListsList, String> keys, ControlledListsList level, Map cache) {
+        // Get the Dao from the level
+        Class<? extends EntityDao> listItemDaoClass = level.getDao();
+
+        // Get the DAO from spring
+        EntityDao<? extends DependentEntity> listItemDao = applicationContext.getBean(listItemDaoClass);
+        List<? extends DependentEntity> itemList = listItemDao.list();
+        List<DependentEntity> resultList = new ArrayList();
+
+        if (cache.containsKey(DependencyValidationSymbols.EXCLUDE_ALL)) {
+            // If we have the inverse wildcard we are not expecting anything item which is an error
             return Pair.of(level, null);
-        }
-    }
-
-    public Pair<ControlledListsList, List<DependentEntity>> getFilteredList() {
-        return null;
-    }
-
-    // Wrong - you have to traverse the hierarchy - using something analagous to the functions
-    // in the validator. Problem is you just cannot know what you are going to get until you have it.
-/*
-    public Pair<ControlledListsList, List<DependentEntity>> traverseHierarchy(DependentEntity... entities) {
-        // Take the set we are given and find the lowest level in the hierarchy
-        // Then get the dao of the level below that loop it validating each entry
-        // We need to get the ControlledListList item for each of the entities
-        try {
-            List<ControlledListsList> lists = Arrays.stream(entities)
-                .map(DependentEntity::getControlledListType)
-                .sorted(ControlledListsList.hierarchyOrder)
-                .collect(Collectors.toList());
-
-            ControlledListsList deepest = lists.stream().max(ControlledListsList.hierarchyOrder).get();
-            ControlledListsList listItem = deepest.next();
-            Class<? extends EntityDao> listItemDaoClass = listItem.getDao();
-
-            // Get the DAO from spring
-            EntityDao<? extends DependentEntity> listItemDao = applicationContext.getBean(listItemDaoClass);
-            List<? extends DependentEntity> itemList = listItemDao.list();
-            List<DependentEntity> resultList = new ArrayList();
-
-            // Run the validator
+        } else if (cache.containsKey(DependencyValidationSymbols.INCLUDE_ALL_OPTIONALLY)) {
+            // if the item is optionally supplied with a wildcard - add all output
+            return Pair.of(level, itemList);
+        } else if (cache.containsKey(DependencyValidationSymbols.INCLUDE_ALL)) {
+            // if the item is on a wildcard - add to the output
+            return Pair.of(level, itemList);
+        } else if (cache.containsKey(DependencyValidationSymbols.NOT_APPLICABLE)) {
+            // No applicable output
+            return Pair.of(level, null);
+        } else {
+            // Test the items individually with the cache.
             for (DependentEntity e : itemList) {
-                Pair<ControlledListsList, DependencyValidation.Result> result = dependencyValidation.validate(e, entities);
-                if (isOk(result)) {
+                String name = listItemDao.getKeyFromRelaxedName(e.getName());
+
+                if (cache.containsKey(DependencyValidationSymbols.EXCLUDE + name)) {
+                    // Explicitly excluded - do nothing
+                } else if (cache.containsKey(name)) {
+                    // Item explicitly listed - add to the output
                     resultList.add(e);
                 }
             }
-
-            return Pair.of(listItem, resultList);
-        } catch (Exception e) {
-            LOGGER.error("Given types are invalid: " + entities);
-            return null;
         }
+        return Pair.of(level, resultList);
     }
-*/
+
+    public Pair<ControlledListsList, List<? extends DependentEntity>> getFilteredList(Map<ControlledListsList, String> keys, ControlledListsList level, Set cache) {
+        // Get the Dao from the level
+        Class<? extends EntityDao> listItemDaoClass = level.getDao();
+
+        // Get the DAO from spring
+        EntityDao<? extends DependentEntity> listItemDao = applicationContext.getBean(listItemDaoClass);
+        List<? extends DependentEntity> itemList = listItemDao.list();
+        List<DependentEntity> resultList = new ArrayList();
+
+        if (cache.contains(DependencyValidationSymbols.EXCLUDE_ALL)) {
+            // If we have the inverse wildcard we are not expecting anything item which is an error
+            return Pair.of(level, null);
+        } else if (cache.contains(DependencyValidationSymbols.INCLUDE_ALL_OPTIONALLY)) {
+            // if the item is optionally supplied with a wildcard - add all output
+            return Pair.of(level, itemList);
+        } else if (cache.contains(DependencyValidationSymbols.INCLUDE_ALL)) {
+            // if the item is on a wildcard - add to the output
+            return Pair.of(level, itemList);
+        } else if (cache.contains(DependencyValidationSymbols.NOT_APPLICABLE)) {
+            // No applicable output
+            return Pair.of(level, null);
+        } else {
+            // Test the items individually with the cache.
+            for (DependentEntity e : itemList) {
+                String name = listItemDao.getKeyFromRelaxedName(e.getName());
+
+                if (cache.contains(DependencyValidationSymbols.EXCLUDE + name)) {
+                    // Explicitly excluded - do nothing
+                } else if (cache.contains(name)) {
+                    // Item explicitly listed - add to the output
+                    resultList.add(e);
+                }
+            }
+        }
+        return Pair.of(level, resultList);
+    }
 
     /*
      * Returns a the list of entities at at the child level to the one being specified skipping
@@ -204,13 +214,13 @@ public class DependencyNavigation implements ApplicationContextAware  {
         this.applicationContext = applicationContext;
     }
 
-    // Helpers
-    boolean isOk(Pair<ControlledListsList, DependencyValidation.Result> result) {
-        return result.getRight().equals(DependencyValidation.Result.OK);
+    private boolean allNulls(Map m) {
+        Set ks = m.keySet();
+        for (Object key: ks) {
+            if (m.get(key) != null) {
+                return false;
+            }
+        }
+        return true;
     }
-
-    boolean isNotExpected(Pair<ControlledListsList, DependencyValidation.Result> result) {
-        return result.getRight().equals(DependencyValidation.Result.NOT_EXPECTED);
-    }
-
 }
