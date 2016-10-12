@@ -5,27 +5,23 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import javax.persistence.*;
 
 /**
- * The persistent class for the return_types database table.
+ * The persistent class for the methods_or_standards database table.
  *
  */
 @SuppressWarnings({ "JavaDoc", "unused" })
 @Entity
-@Table(name = "return_types")
-public class ReturnType implements ControlledListEntity, DependentEntity {
+@Table(name = "releases_and_transfers")
+public class ReleasesAndTransfers implements ControlledListEntity, DependentEntity {
 
     @Id
-    @SequenceGenerator(name = "return_types_id_seq", sequenceName = "return_types_id_seq", allocationSize = 1)
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "return_types_id_seq")
+    @SequenceGenerator(name = "releases_and_transfers_id_seq", sequenceName = "releases_and_transfers_id_seq", allocationSize = 1)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "releases_and_transfers_id_seq")
     @JsonIgnore
     private Long id;
 
     @Basic
-    @Column(name = "name", nullable = false, length = 80)
+    @Column(name = "name", nullable = false, length = 30)
     private String name;
-
-    @Basic
-    @Column(name = "sector", nullable = false, length = 20)
-    private String sector;
 
     public Long getId() {
         return this.id;
@@ -36,24 +32,16 @@ public class ReturnType implements ControlledListEntity, DependentEntity {
     }
 
     public String getName() {
-        return name;
+        return this.name;
     }
 
-    public void setName(String name) {
+    public void setName(final String name) {
         this.name = name;
-    }
-
-    public String getSector() {
-        return sector;
-    }
-
-    public void setSector(String sector) {
-        this.sector = sector;
     }
 
     @Override
     public ControlledListsList getControlledListType() {
-        return ControlledListsList.RETURN_TYPE;
+        return ControlledListsList.RELEASES_AND_TRANSFERS;
     }
 
     @Override
@@ -61,7 +49,7 @@ public class ReturnType implements ControlledListEntity, DependentEntity {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
-        ReturnType that = (ReturnType) o;
+        ReleasesAndTransfers that = (ReleasesAndTransfers) o;
 
         return name.equals(that.name);
     }
@@ -70,5 +58,4 @@ public class ReturnType implements ControlledListEntity, DependentEntity {
     public int hashCode() {
         return name.hashCode();
     }
-
 }

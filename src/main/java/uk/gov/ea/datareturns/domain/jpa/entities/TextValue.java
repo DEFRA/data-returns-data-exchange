@@ -66,4 +66,25 @@ public class TextValue implements AliasingEntity {
     public void setAliases(Set<String> aliases) {
         this.aliases = aliases;
     }
+
+    @Override
+    public ControlledListsList getControlledListType() {
+        return ControlledListsList.TEXT_VALUES;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        TextValue that = (TextValue) o;
+
+        return name.equals(that.name);
+    }
+
+    @Override
+    public int hashCode() {
+        return name.hashCode();
+    }
+
 }

@@ -77,32 +77,22 @@ public class Qualifier implements ControlledListEntity {
     }
 
     @Override
+    public ControlledListsList getControlledListType() {
+        return ControlledListsList.QUALIFIERS;
+    }
+
+    @Override
     public boolean equals(Object o) {
-        if (this == o)
-            return true;
-        if (o == null || getClass() != o.getClass())
-            return false;
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
 
-        Qualifier qualifier = (Qualifier) o;
+        Qualifier that = (Qualifier) o;
 
-        if (id != null ? !id.equals(qualifier.id) : qualifier.id != null)
-            return false;
-        if (name != null ? !name.equals(qualifier.name) : qualifier.name != null)
-            return false;
-        if (notes != null ? !notes.equals(qualifier.notes) : qualifier.notes != null)
-            return false;
-        if (type != null ? !type.equals(qualifier.type) : qualifier.type != null)
-            return false;
-        return SingleOrMultiple != null ? SingleOrMultiple.equals(qualifier.SingleOrMultiple) : qualifier.SingleOrMultiple == null;
+        return name.equals(that.name);
     }
 
     @Override
     public int hashCode() {
-        int result = id != null ? id.hashCode() : 0;
-        result = 31 * result + (name != null ? name.hashCode() : 0);
-        result = 31 * result + (notes != null ? notes.hashCode() : 0);
-        result = 31 * result + (type != null ? type.hashCode() : 0);
-        result = 31 * result + (SingleOrMultiple != null ? SingleOrMultiple.hashCode() : 0);
-        return result;
+        return name.hashCode();
     }
 }

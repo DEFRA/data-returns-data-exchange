@@ -14,7 +14,7 @@ public enum ControlledListsList {
 
     RETURN_TYPE("Return type", ReturnTypeDao.class, "rtn_type", Collections.unmodifiableList(new ArrayList<DisplayHeaderDto>() {{
         add(new DisplayHeaderDto("name", "Rtn_Type"));
-    }}), "name"),
+    }}), "name", 0),
 
     REFERENCE_PERIOD("Reference period", ReferencePeriodDao.class, "ref_period",
             Collections.unmodifiableList(new ArrayList<DisplayHeaderDto>() {{
@@ -34,16 +34,16 @@ public enum ControlledListsList {
                 add(new DisplayHeaderDto("name", "Parameter"));
                 add(new DisplayHeaderDto("aliases", "Alternatives"));
                 add(new DisplayHeaderDto("cas", "CAS"));
-            }}), "name"),
+            }}), "name", 2),
 
-    UNITS_AND_MEASURES("Unit or measure", UnitDao.class, "units", Collections.unmodifiableList(new ArrayList<DisplayHeaderDto>() {{
+    UNITS("Unit or measure", UnitDao.class, "units", Collections.unmodifiableList(new ArrayList<DisplayHeaderDto>() {{
         add(new DisplayHeaderDto("name", "Unit"));
         add(new DisplayHeaderDto("aliases", "Alternatives"));
         add(new DisplayHeaderDto("longName", "Long Name"));
         add(new DisplayHeaderDto("type", "Measurement Type"));
         add(new DisplayHeaderDto("unicode", "Unicode"));
         add(new DisplayHeaderDto("description", "Definition"));
-    }}), "name"),
+    }}), "name", 3),
 
     QUALIFIERS("Qualifier", QualifierDao.class, "qualifier", Collections.unmodifiableList(new ArrayList<DisplayHeaderDto>() {{
         add(new DisplayHeaderDto("name", "Qualifier"));
@@ -61,6 +61,14 @@ public enum ControlledListsList {
     TEXT_VALUES("Text value", TextValueDao.class, "txt_value", Collections.unmodifiableList(new ArrayList<DisplayHeaderDto>() {{
         add(new DisplayHeaderDto("name", "Txt_Value"));
         add(new DisplayHeaderDto("aliases", "Alternatives"));
+    }}), "name"),
+
+    RELEASES_AND_TRANSFERS("Releases and transfers", ReleasesAndTransfersDao.class, "mon_point", Collections.unmodifiableList(new ArrayList<DisplayHeaderDto>() {{
+        add(new DisplayHeaderDto("name", "Mon_point"));
+    }}), "name", 1),
+
+    UNIQUE_IDENTIFIER("Releases and transfers", UniqueIdentifierDao.class, "ea_id", Collections.unmodifiableList(new ArrayList<DisplayHeaderDto>() {{
+        add(new DisplayHeaderDto("name", "EA_ID"));
     }}), "name");
 
     private final String path;
@@ -71,10 +79,30 @@ public enum ControlledListsList {
     private final String description;
     private static final Map<String, ControlledListsList> byPath = new HashMap<>();
     private final List<DisplayHeaderDto> displayHeaders; // Column name to column heading
+    private Integer hierarchyLevel = null;
+
+    public static Comparator<ControlledListsList> hierarchyOrder = Comparator
+            .comparing(ControlledListsList::getHierarchyLevel);
 
     static {
         for (ControlledListsList c : ControlledListsList.values()) {
             byPath.put(c.path, c);
+        }
+    }
+
+    public ControlledListsList next() {
+        if (this.hierarchyLevel == null) {
+            // Not on the hierarchy
+            return null;
+        } else {
+            ControlledListsList[] arr = values();
+            for (ControlledListsList cl : arr) {
+                if (cl.hierarchyLevel != null && cl.hierarchyLevel == this.hierarchyLevel + 1) {
+                    return cl;
+                }
+            }
+            // Probably iterated off the end of the array.
+            return null;
         }
     }
 
@@ -85,6 +113,17 @@ public enum ControlledListsList {
         this.dao = dao;
         this.displayHeaders = displayHeaders;
         this.defaultSearch = defaultSearch;
+        this.hierarchyLevel = null;
+    }
+
+    ControlledListsList(String description, Class<? extends EntityDao> dao,
+                        String path, List<DisplayHeaderDto> displayHeaders, String defaultSearch, Integer hierarchyLevel) {
+        this.description = description;
+        this.path = path;
+        this.dao = dao;
+        this.displayHeaders = displayHeaders;
+        this.defaultSearch = defaultSearch;
+        this.hierarchyLevel = hierarchyLevel;
     }
 
     public static ControlledListsList getByPath(String path) {
@@ -109,5 +148,9 @@ public enum ControlledListsList {
 
     public String getDefaultSearch() {
         return defaultSearch;
+    }
+
+    public Integer getHierarchyLevel() {
+        return this.hierarchyLevel;
     }
 }

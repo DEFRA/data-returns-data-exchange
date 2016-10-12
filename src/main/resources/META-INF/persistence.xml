@@ -14,6 +14,7 @@
         <class>uk.gov.ea.datareturns.domain.jpa.entities.ReferencePeriod</class>
         <class>uk.gov.ea.datareturns.domain.jpa.entities.ReturnType</class>
         <class>uk.gov.ea.datareturns.domain.jpa.entities.Unit</class>
+			<class>uk.gov.ea.datareturns.domain.jpa.entities.Dependencies</class>
 			<properties>
 
 			<!-- Default persistence properties (connection details will be injected from the application configuration) -->
@@ -37,6 +38,7 @@
 		    
 			 <!-- Second level cache - disabled at this point as we use an in application cache - see also pom.xml-->
 			 <property name="hibernate.cache.use_second_level_cache" value="false"/>
-		</properties>
+			
+			</properties>
     </persistence-unit>
 </persistence>

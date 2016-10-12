@@ -37,22 +37,23 @@ public class UniqueIdentifier implements ControlledListEntity {
     }
 
     @Override
+    public ControlledListsList getControlledListType() {
+        return ControlledListsList.UNIQUE_IDENTIFIER;
+    }
+
+    @Override
     public boolean equals(Object o) {
-        if (this == o)
-            return true;
-        if (o == null || getClass() != o.getClass())
-            return false;
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
 
-        UniqueIdentifier uniqueIdentifier = (UniqueIdentifier) o;
+        UniqueIdentifier that = (UniqueIdentifier) o;
 
-        return id.equals(uniqueIdentifier.id) && name.equals(uniqueIdentifier.name);
-
+        return name.equals(that.name);
     }
 
     @Override
     public int hashCode() {
-        int result = id.hashCode();
-        result = 31 * result + name.hashCode();
-        return result;
+        return name.hashCode();
     }
+
 }
