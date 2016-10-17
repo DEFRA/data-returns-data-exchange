@@ -52,6 +52,7 @@ public class ReturnType implements ControlledListEntity, DependentEntity {
     }
 
     @Override
+    @JsonIgnore
     public ControlledListsList getControlledListType() {
         return ControlledListsList.RETURN_TYPE;
     }

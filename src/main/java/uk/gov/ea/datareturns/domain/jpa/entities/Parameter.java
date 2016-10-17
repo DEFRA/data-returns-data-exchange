@@ -97,6 +97,7 @@ public class Parameter implements AliasingEntity, DependentEntity {
     }
 
     @Override
+    @JsonIgnore
     public ControlledListsList getControlledListType() {
         return ControlledListsList.PARAMETERS;
     }

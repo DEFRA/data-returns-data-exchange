@@ -40,7 +40,7 @@ public abstract class EntityDao<E extends ControlledListEntity> {
     protected volatile Map<String, E> cacheByName = null;
     protected volatile Map<String, E> cacheByNameKey = null;
 
-    Pattern removeMultipleSpaces = Pattern.compile("\\s{2,}");
+    final Pattern removeMultipleSpaces = Pattern.compile("\\s{2,}");
 
     /**
      * Let the Dao class know the type of entity in order that type-safe
@@ -133,6 +133,21 @@ public abstract class EntityDao<E extends ControlledListEntity> {
                 .map(Map.Entry::getValue)
                 .filter(predicate)
                 .sorted(comparing(E::getId))
+                .collect(Collectors.toList());
+    }
+
+    /**
+     * Apply a basic name filter (MPV) to an existing list. Used in the navigation
+     * where the list is already determined
+     * @param list The list to filter
+     * @param contains The search term
+     * @return the filtered list
+     */
+    public List<E> filterByName(List<E> list, String contains) {
+        return list
+                .stream()
+                .filter(e -> e.getName().toLowerCase().replaceAll("\\s+", "").contains(contains.toLowerCase().replaceAll("\\s+", "")))
+                .sorted(comparing(E::getName))
                 .collect(Collectors.toList());
     }
 

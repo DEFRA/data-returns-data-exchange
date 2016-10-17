@@ -84,6 +84,7 @@ public class ReferencePeriod implements ControlledListEntity, AliasingEntity {
     }
 
     @Override
+    @JsonIgnore
     public ControlledListsList getControlledListType() {
         return ControlledListsList.REFERENCE_PERIOD;
     }

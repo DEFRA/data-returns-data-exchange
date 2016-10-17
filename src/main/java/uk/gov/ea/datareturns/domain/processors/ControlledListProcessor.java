@@ -1,5 +1,6 @@
 package uk.gov.ea.datareturns.domain.processors;
 
+import org.apache.commons.lang3.tuple.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeansException;
@@ -7,10 +8,15 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.stereotype.Component;
 import uk.gov.ea.datareturns.domain.dto.ControlledListsDto;
+import uk.gov.ea.datareturns.domain.dto.NavigationDto;
 import uk.gov.ea.datareturns.domain.jpa.dao.EntityDao;
-import uk.gov.ea.datareturns.domain.jpa.entities.ControlledListEntity;
-import uk.gov.ea.datareturns.domain.jpa.entities.ControlledListsList;
+import uk.gov.ea.datareturns.domain.jpa.dao.ParameterDao;
+import uk.gov.ea.datareturns.domain.jpa.dao.ReleasesAndTransfersDao;
+import uk.gov.ea.datareturns.domain.jpa.dao.ReturnTypeDao;
+import uk.gov.ea.datareturns.domain.jpa.entities.*;
+import uk.gov.ea.datareturns.domain.jpa.service.DependencyNavigation;
 
+import javax.inject.Inject;
 import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.List;
@@ -24,6 +30,18 @@ import java.util.Map;
 @SuppressWarnings("unchecked")
 @Component
 public class ControlledListProcessor implements ApplicationContextAware {
+    @Inject
+    private ParameterDao parameterDao;
+
+    @Inject
+    private ReturnTypeDao returnTypeDao;
+
+    @Inject
+    private ReleasesAndTransfersDao releasesAndTransfersDao;
+
+    @Inject
+    private DependencyNavigation dependencyNavigation;
+
     private static final Logger LOGGER = LoggerFactory.getLogger(ControlledListProcessor.class);
     private ApplicationContext applicationContext;
 
@@ -71,5 +89,22 @@ public class ControlledListProcessor implements ApplicationContextAware {
                     list.getDefaultSearch()));
         }
         return result;
+    }
+
+    public NavigationDto getNavigatedListData(String returnTypeName, String releaseTypeName, String parameterName, String contains) {
+        ReturnType returnType = returnTypeName == null ? null : returnTypeDao.getByName(returnTypeName);
+        ReleasesAndTransfers releasesAndTransfers = releaseTypeName == null ? null : releasesAndTransfersDao.getByName(releaseTypeName);
+        Parameter parameter = parameterName == null ? null : parameterDao.getByName(parameterName);
+        Pair<ControlledListsList, List<? extends DependentEntity>> result = dependencyNavigation.traverseHierarchy(returnType, releasesAndTransfers, parameter);
+        ControlledListsList controlledList = result.getLeft();
+        List returnedList = result.getRight();
+
+        if (contains != null) {
+            EntityDao<? extends ControlledListEntity> dao = applicationContext.getBean(controlledList.getDao());
+            List<? extends ControlledListEntity> filteredList = dao.filterByName(returnedList, contains);
+            return new NavigationDto(controlledList.getPath(), controlledList.getDescription(), filteredList);
+        } else {
+            return new NavigationDto(controlledList.getPath(), controlledList.getDescription(), result.getRight());
+        }
     }
 }

@@ -1,5 +1,7 @@
 package uk.gov.ea.datareturns.domain.jpa.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import javax.persistence.*;
 
 /**
@@ -37,6 +39,7 @@ public class UniqueIdentifier implements ControlledListEntity {
     }
 
     @Override
+    @JsonIgnore
     public ControlledListsList getControlledListType() {
         return ControlledListsList.UNIQUE_IDENTIFIER;
     }

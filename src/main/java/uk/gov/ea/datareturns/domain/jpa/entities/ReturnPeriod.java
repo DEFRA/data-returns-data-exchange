@@ -63,6 +63,7 @@ public class ReturnPeriod implements ControlledListEntity {
     }
 
     @Override
+    @JsonIgnore
     public ControlledListsList getControlledListType() {
         return ControlledListsList.RETURN_PERIOD;
     }

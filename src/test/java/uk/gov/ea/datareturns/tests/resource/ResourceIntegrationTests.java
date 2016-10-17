@@ -111,6 +111,7 @@ public class ResourceIntegrationTests {
     public final static String STEP_COMPLETE = "data-exchange/complete";
 
     public final static String CONTROLLED_LISTS = "controlled-list/lists";
+    public final static String CONTROLLED_LISTS_NAVIGATION = "controlled-list/nav";
 
     public final static String METH_STAND_VALID = "validation/testMethStand.csv";
     public final static String METH_STAND_INVALID = "validation/testMethStandInvalid.csv";
@@ -312,6 +313,9 @@ public class ResourceIntegrationTests {
         //		assertThat(resp.getStatus()).isEqualTo(Status.OK.getStatusCode());
     }
 
+    /*
+     * Test basic controlled lists functionality
+     */
     @Test
     public void testControlledListBadList() {
         Client client = createClient("test Controlled List Bad List");
@@ -399,6 +403,18 @@ public class ResourceIntegrationTests {
     public void testControlledListReturnType2() {
         Client client = createClient("test Controlled List Return Type2");
         final String uri = createURIForStep(CONTROLLED_LISTS) + "/rtn_type";
+        Response response = client.target(uri).request(MediaType.APPLICATION_JSON_TYPE).get();
+        assertThat(response.getStatus()).isEqualTo(Status.OK.getStatusCode());
+    }
+
+    /*
+     * Test extended controlled lists functionality - navigation
+     * This is a basic ping type test....not going to duplicate all the integration tests here
+     */
+    @Test
+    public void testListReturnTypes() {
+        Client client = createClient("Nav: List Return Types");
+        final String uri = createURIForStep(CONTROLLED_LISTS_NAVIGATION);
         Response response = client.target(uri).request(MediaType.APPLICATION_JSON_TYPE).get();
         assertThat(response.getStatus()).isEqualTo(Status.OK.getStatusCode());
     }

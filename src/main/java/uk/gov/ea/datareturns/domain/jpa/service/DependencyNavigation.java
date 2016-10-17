@@ -14,7 +14,10 @@ import javax.inject.Inject;
 import java.util.*;
 
 /**
- * Created by graham on 11/10/16.
+ * Navigate through the tree of mutual dependencies between lists
+ * Return Type -> Releases and transfers (For PI) -> Parameters -> Units
+ * Allows the resulting filtered list to be returned at any level
+ * The dependencies are encoded in the in Dependencies.csv file
  */
 @Component
 public class DependencyNavigation implements ApplicationContextAware  {
@@ -88,7 +91,7 @@ public class DependencyNavigation implements ApplicationContextAware  {
         // Move the key between the traversing array to the traversed array
         keys.put(level, entityNames.remove(level));
         if (cache.get(cacheKey) instanceof Set) {
-            return getFilteredList(keys, level.next(), (Set)cache.get(cacheKey));
+            return getFilteredList(level.next(), (Set)cache.get(cacheKey));
         } else {
             return doTraverse(level.next(), (Map)cache.get(cacheKey), entityNames, keys);
         }
@@ -124,13 +127,13 @@ public class DependencyNavigation implements ApplicationContextAware  {
         } else if (entityNames.get(level) == null && cache.containsKey(DependencyValidationSymbols.EXCLUDE_ALL)) {
             return shim(level, cache, DependencyValidationSymbols.EXCLUDE_ALL, entityNames, keys);
         } else if (allNulls(entityNames)) {
-            return getFilteredList(keys, level, cache);
+            return getFilteredList(level, cache);
         } else {
             return Pair.of(level, null);
         }
     }
 
-    public Pair<ControlledListsList, List<? extends DependentEntity>> getFilteredList(Map<ControlledListsList, String> keys, ControlledListsList level, Map cache) {
+    public Pair<ControlledListsList, List<? extends DependentEntity>> getFilteredList(ControlledListsList level, Map cache) {
         // Get the Dao from the level
         Class<? extends EntityDao> listItemDaoClass = level.getDao();
 
@@ -142,12 +145,6 @@ public class DependencyNavigation implements ApplicationContextAware  {
         if (cache.containsKey(DependencyValidationSymbols.EXCLUDE_ALL)) {
             // If we have the inverse wildcard we are not expecting anything item which is an error
             return Pair.of(level, null);
-        } else if (cache.containsKey(DependencyValidationSymbols.INCLUDE_ALL_OPTIONALLY)) {
-            // if the item is optionally supplied with a wildcard - add all output
-            return Pair.of(level, itemList);
-        } else if (cache.containsKey(DependencyValidationSymbols.INCLUDE_ALL)) {
-            // if the item is on a wildcard - add to the output
-            return Pair.of(level, itemList);
         } else if (cache.containsKey(DependencyValidationSymbols.NOT_APPLICABLE)) {
             // No applicable output
             return Pair.of(level, null);
@@ -155,11 +152,16 @@ public class DependencyNavigation implements ApplicationContextAware  {
             // Test the items individually with the cache.
             for (DependentEntity e : itemList) {
                 String name = listItemDao.getKeyFromRelaxedName(e.getName());
-
                 if (cache.containsKey(DependencyValidationSymbols.EXCLUDE + name)) {
                     // Explicitly excluded - do nothing
+                } else if (cache.containsKey(DependencyValidationSymbols.INCLUDE_ALL)) {
+                    // Item included via wildcard
+                    resultList.add(e);
+                } else if (cache.containsKey(DependencyValidationSymbols.INCLUDE_ALL_OPTIONALLY)) {
+                    // Item included via optional wildcard
+                    resultList.add(e);
                 } else if (cache.containsKey(name)) {
-                    // Item explicitly listed - add to the output
+                    // Item included by name
                     resultList.add(e);
                 }
             }
@@ -167,7 +169,7 @@ public class DependencyNavigation implements ApplicationContextAware  {
         return Pair.of(level, resultList);
     }
 
-    public Pair<ControlledListsList, List<? extends DependentEntity>> getFilteredList(Map<ControlledListsList, String> keys, ControlledListsList level, Set cache) {
+    public Pair<ControlledListsList, List<? extends DependentEntity>> getFilteredList(ControlledListsList level, Set cache) {
         // Get the Dao from the level
         Class<? extends EntityDao> listItemDaoClass = level.getDao();
 
@@ -179,24 +181,24 @@ public class DependencyNavigation implements ApplicationContextAware  {
         if (cache.contains(DependencyValidationSymbols.EXCLUDE_ALL)) {
             // If we have the inverse wildcard we are not expecting anything item which is an error
             return Pair.of(level, null);
-        } else if (cache.contains(DependencyValidationSymbols.INCLUDE_ALL_OPTIONALLY)) {
-            // if the item is optionally supplied with a wildcard - add all output
-            return Pair.of(level, itemList);
-        } else if (cache.contains(DependencyValidationSymbols.INCLUDE_ALL)) {
-            // if the item is on a wildcard - add to the output
-            return Pair.of(level, itemList);
         } else if (cache.contains(DependencyValidationSymbols.NOT_APPLICABLE)) {
             // No applicable output
             return Pair.of(level, null);
         } else {
             // Test the items individually with the cache.
+            // I have split out the branching for clarity
             for (DependentEntity e : itemList) {
                 String name = listItemDao.getKeyFromRelaxedName(e.getName());
-
                 if (cache.contains(DependencyValidationSymbols.EXCLUDE + name)) {
                     // Explicitly excluded - do nothing
+                } else if (cache.contains(DependencyValidationSymbols.INCLUDE_ALL)) {
+                    // Item included via wildcard
+                    resultList.add(e);
+                } else if (cache.contains(DependencyValidationSymbols.INCLUDE_ALL_OPTIONALLY)) {
+                    // Item included via optional wildcard
+                    resultList.add(e);
                 } else if (cache.contains(name)) {
-                    // Item explicitly listed - add to the output
+                    // Item included by name
                     resultList.add(e);
                 }
             }

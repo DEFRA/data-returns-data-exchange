@@ -11,8 +11,9 @@ import java.util.Map;
 import java.util.Set;
 
 /**
- * Evaluate if the required mutual dependencies between lists are met
- * by the input data
+ * Validate a given input against the set of mutual dependencies between lists
+ * Return Type -> Releases and transfers (For PI) -> Parameters -> Units
+ * The dependencies are encoded in the in Dependencies.csv file
  */
 @Service
 public class DependencyValidation {
@@ -62,8 +63,7 @@ public class DependencyValidation {
         String unitName = unit == null ? null : unitDao.getKeyFromRelaxedName(unit.getName());
 
         return evaluate(ControlledListsList.RETURN_TYPE, (Map)dao.getCache(),
-                new String[]{returnTypeName, releasesAndTransfersName, parameterName, unitName}
-        );
+                returnTypeName, releasesAndTransfersName, parameterName, unitName);
     }
 
     /*
