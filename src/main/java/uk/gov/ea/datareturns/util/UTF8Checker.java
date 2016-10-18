@@ -4,6 +4,7 @@ import org.apache.commons.io.Charsets;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
@@ -54,7 +55,7 @@ public class UTF8Checker {
     public static List<Violation> checkFile(File file, final int maxAsciiAllowed) {
         final List<Violation> violations = new ArrayList<>();
         try {
-            final List<String> lines = Files.readAllLines(file.toPath(), Charsets.UTF_8);
+            final List<String> lines = Files.readAllLines(file.toPath(), StandardCharsets.UTF_8);
             int lineNo = 0;
             for (String line : lines) {
                 lineNo++;

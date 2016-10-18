@@ -4,6 +4,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.transaction.annotation.Transactional;
 import uk.gov.ea.datareturns.domain.jpa.entities.ControlledListEntity;
+import uk.gov.ea.datareturns.util.SpringApplicationContextProvider;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -70,6 +71,16 @@ public abstract class EntityDao<E extends ControlledListEntity> {
     public E getByName(String name) {
         return getCache().get(name);
     }
+    /**
+     * Retrieve an entity using a relaxed key lookup
+     *
+     * @param name case insensitive and whitespace agnostic name search term - will also get any aliases
+     * @return The entity E or null
+     */
+    public E getByNameRelaxed(String name) {
+        E e = getKeyCache().get(getKeyFromRelaxedName(name));
+        return e;
+    }
 
     /**
      * Check for the name ignoring cases and multiple spaces
@@ -77,7 +88,7 @@ public abstract class EntityDao<E extends ControlledListEntity> {
      * @return
      */
     public boolean nameExistsRelaxed(final String name) {
-        return getKeyCache().get(getKeyFromRelaxedName(name)) != null;
+        return getByNameRelaxed(name) != null;
     }
 
     /**
@@ -96,16 +107,11 @@ public abstract class EntityDao<E extends ControlledListEntity> {
      * @return
      */
     public String getStandardizedName(final String name) {
-        if (name == null) {
-            return null;
-        } else {
-            E e = getKeyCache().get(getKeyFromRelaxedName(name));
-            if (e != null) {
-                return e.getName();
-            } else {
-                return null;
-            }
+        if (name != null) {
+            E e = getByNameRelaxed(name);
+            return e != null ? e.getName() : null;
         }
+        return null;
     }
 
     /**
@@ -139,21 +145,6 @@ public abstract class EntityDao<E extends ControlledListEntity> {
     }
 
     /**
-     * Apply a basic name filter (MPV) to an existing list. Used in the navigation
-     * where the list is already determined
-     * @param list The list to filter
-     * @param contains The search term
-     * @return the filtered list
-     */
-    public List<E> filterByName(List<E> list, String contains) {
-        return list
-                .stream()
-                .filter(e -> containsIgnoreCaseIgnoreSpaces(e.getName(), contains))
-                .sorted(comparing(E::getName))
-                .collect(Collectors.toList());
-    }
-
-    /**
      * List the entities of type <E> filtered such that the field contains the search term
      *
      * @param field The name of the field used for filtering
@@ -167,7 +158,8 @@ public abstract class EntityDao<E extends ControlledListEntity> {
                     final Method readMethod = pd.getReadMethod();
                     Predicate<E> builtPredicate = e -> {
                         try {
-                            return containsIgnoreCaseIgnoreSpaces(readMethod.invoke(e).toString(), contains);
+                            return readMethod.invoke(e).toString().toLowerCase().replaceAll("\\s+", "")
+                                    .contains(contains.toLowerCase().replaceAll("\\s+", ""));
                         } catch (IllegalAccessException e1) {
                             return true;
                         } catch (InvocationTargetException e1) {
@@ -182,6 +174,22 @@ public abstract class EntityDao<E extends ControlledListEntity> {
         }
         return list();
     }
+
+    /**
+     * Apply a basic name filter (MPV) to an existing list. Used in the navigation
+     * where the list is already determined
+     * @param list The list to filter
+     * @param contains The search term
+     * @return the filtered list
+     */
+    public List<E> filterByName(List<E> list, String contains) {
+        return list
+                .stream()
+                .filter(e -> containsIgnoreCaseIgnoreSpaces(e.getName(), contains))
+                .sorted(comparing(E::getName))
+                .collect(Collectors.toList());
+    }
+
 
     /**
      * A method to convert the reduce variation in name in case and spacing
@@ -283,13 +291,6 @@ public abstract class EntityDao<E extends ControlledListEntity> {
     }
 
     /**
-     * Get the class of the entity being operated on
-     */
-    public Class<E> getEntityClass() {
-        return entityClass;
-    }
-
-    /**
      * Helper function to compare two strings cases insensitively ignoring whilespace
      * @param a
      * @param b
@@ -297,5 +298,23 @@ public abstract class EntityDao<E extends ControlledListEntity> {
      */
     private boolean containsIgnoreCaseIgnoreSpaces(String a, String b) {
         return removeSpaces.matcher(a).replaceAll("").contains(removeSpaces.matcher(b).replaceAll(""));
+    }
+
+    /**
+     * Get the class of the entity being operated on
+     */
+    public Class<E> getEntityClass() {
+        return entityClass;
+    }
+
+    /**
+     * Retrieve a DAO for a given DAO class
+     * This is intended to allow access to the DAO's from a non-spring managed context
+     *
+     * @param daoClass the desired dao class
+     * @return the spring managed dao for the given class
+     */
+    public static <E extends ControlledListEntity> EntityDao<E> getDao(Class<? extends EntityDao<E>> daoClass) {
+        return SpringApplicationContextProvider.getApplicationContext().getBean(daoClass);
     }
 }

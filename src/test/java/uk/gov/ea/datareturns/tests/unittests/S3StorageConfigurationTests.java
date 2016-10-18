@@ -9,11 +9,10 @@ import com.amazonaws.auth.AWSCredentials;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.springframework.boot.test.ConfigFileApplicationContextInitializer;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.junit4.SpringRunner;
 import uk.gov.ea.datareturns.App;
 import uk.gov.ea.datareturns.config.storage.S3StorageConfiguration;
 
@@ -25,10 +24,10 @@ import javax.inject.Inject;
  * @author Sam Gardner-Dell
  *
  */
-@RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = App.class, initializers = ConfigFileApplicationContextInitializer.class)
-@ActiveProfiles("S3StorageConfigurationTests")
+@SpringBootTest(classes = App.class, webEnvironment = SpringBootTest.WebEnvironment.NONE)
 @DirtiesContext
+@RunWith(SpringRunner.class)
+@ActiveProfiles("S3StorageConfigurationTests")
 public class S3StorageConfigurationTests {
     // Note: These constants should match the values in S3ConfigTest.yml
     private static final String AWS_ACCESS_KEY = "AWS_ACCESS_KEY";

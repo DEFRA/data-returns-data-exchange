@@ -76,7 +76,7 @@ logging:
     # Glassfish
     org.glassfish: WARN
     # Useful to log REST requests and responses (set to INFO for headers or DEBUG for full request/response logging)
-    org.glassfish.jersey.filter.LoggingFilter: WARN
+    org.glassfish.jersey.logging.LoggingFeature: WARN
 
 processor:
   outputLocation: ./work/output
@@ -168,7 +168,7 @@ logging:
     # Glassfish
     org.glassfish: INFO
     # Useful to log REST requests and responses (set to INFO for headers or DEBUG for full request/response logging)
-    org.glassfish.jersey.filter.LoggingFilter: DEBUG
+    org.glassfish.jersey.logging.LoggingFeature: DEBUG
 
 
 ---

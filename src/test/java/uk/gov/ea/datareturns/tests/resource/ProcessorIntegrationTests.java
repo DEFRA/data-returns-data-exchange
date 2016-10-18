@@ -4,19 +4,18 @@ import com.univocity.parsers.common.TextParsingException;
 import org.assertj.core.api.Assertions;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.springframework.boot.test.ConfigFileApplicationContextInitializer;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.ApplicationContext;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.junit4.SpringRunner;
 import uk.gov.ea.datareturns.App;
 import uk.gov.ea.datareturns.domain.exceptions.ProcessingException;
 import uk.gov.ea.datareturns.domain.io.csv.CSVColumnReader;
 import uk.gov.ea.datareturns.domain.io.zip.DataReturnsZipFileModel;
 import uk.gov.ea.datareturns.domain.jpa.dao.*;
 import uk.gov.ea.datareturns.domain.jpa.entities.*;
-import uk.gov.ea.datareturns.domain.model.rules.DataReturnsHeaders;
+import uk.gov.ea.datareturns.domain.model.rules.FieldDefinition;
 import uk.gov.ea.datareturns.domain.processors.FileUploadProcessor;
 import uk.gov.ea.datareturns.domain.result.DataExchangeResult;
 import uk.gov.ea.datareturns.domain.storage.StorageException;
@@ -41,18 +40,18 @@ import java.util.stream.Collectors;
  *
  * @author Sam Gardner-Dell
  */
-@RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = App.class, initializers = ConfigFileApplicationContextInitializer.class)
-@ActiveProfiles("IntegrationTests")
+@SpringBootTest(classes = App.class, webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 @DirtiesContext
+@RunWith(SpringRunner.class)
+@ActiveProfiles("IntegrationTests")
 public class ProcessorIntegrationTests {
     public final static String IO_TESTS_FOLDER = "/testfiles/iotests/";
     public final static String BOOLEAN_TESTS = "testTextValueSubstitution.csv";
     public final static String RETURN_PERIOD_TESTS = "testReturnPeriodSubstitution.csv";
 
     public final static String RTN_TYPE_SUB = "testReturnTypeSubstitution.csv";
-    public final static String REF_PERIOD_SUB = "testQualifierSubstitution.csv";
-    public final static String QUALIFIER_SUB = "testRefPeriodSubstitution.csv";
+    public final static String REF_PERIOD_SUB = "testRefPeriodSubstitution.csv";
+    public final static String QUALIFIER_SUB = "testQualifierSubstitution.csv";
     public final static String METH_STAND_SUB = "testMethStandSubstitution.csv";
     public final static String PARAMETER_SUB = "testParameterSubstitution.csv";
     public final static String UNITS_SUB = "testUnitsSubstitution.csv";
@@ -102,70 +101,70 @@ public class ProcessorIntegrationTests {
                 "2016",
                 "2016/17"
         };
-        verifyCSVValues(outputFiles.iterator().next(), DataReturnsHeaders.RETURN_PERIOD, expected);
+        verifyColumnContainsExactly(outputFiles.iterator().next(), FieldDefinition.Rtn_Period.getName(), expected);
     }
 
     @Test
-    public void TextValueValueSubstitution() {
+    public void testTextValueValueSubstitution() {
         final Collection<File> outputFiles = getOutputFiles(getTestFileStream(TEXT_SUB));
         Assertions.assertThat(outputFiles.size()).isEqualTo(1);
         final List<TextValue> textValues = textValueDao.list();
         final List<String> textValuesNames = textValues.stream().map(TextValue::getName).collect(Collectors.toList());
-        verifyExpectedValuesContainsCSVValues(outputFiles.iterator().next(), DataReturnsHeaders.VALUE, textValuesNames);
+        verifyColumnDataContainedIn(outputFiles.iterator().next(), FieldDefinition.Value.getName(), textValuesNames);
     }
 
     @Test
-    public void ReturnTypeValueSubstitution() {
+    public void testReturnTypeValueSubstitution() {
         final Collection<File> outputFiles = getOutputFiles(getTestFileStream(RTN_TYPE_SUB));
         Assertions.assertThat(outputFiles.size()).isEqualTo(1);
         final List<ReturnType> returnTypes = returnTypeDao.list();
         final List<String> returnTypeNames = returnTypes.stream().map(ReturnType::getName).collect(Collectors.toList());
-        verifyExpectedValuesContainsCSVValues(outputFiles.iterator().next(), DataReturnsHeaders.RETURN_TYPE, returnTypeNames);
+        verifyColumnDataContainedIn(outputFiles.iterator().next(), FieldDefinition.Rtn_Type.getName(), returnTypeNames);
     }
 
     @Test
-    public void QualifierValueSubstitution() {
+    public void testQualifierValueSubstitution() {
         final Collection<File> outputFiles = getOutputFiles(getTestFileStream(QUALIFIER_SUB));
         Assertions.assertThat(outputFiles.size()).isEqualTo(1);
         final List<Qualifier> qualifiers = qualifierDao.list();
         final List<String> qualifierNames = qualifiers.stream().map(Qualifier::getName).collect(Collectors.toList());
-        verifyExpectedValuesContainsCSVValues(outputFiles.iterator().next(), DataReturnsHeaders.QUALIFIER, qualifierNames);
+        verifyColumnDataContainedIn(outputFiles.iterator().next(), FieldDefinition.Qualifier.getName(), qualifierNames);
     }
 
     @Test
-    public void RefPeriodValueSubstitution() {
+    public void testRefPeriodValueSubstitution() {
         final Collection<File> outputFiles = getOutputFiles(getTestFileStream(REF_PERIOD_SUB));
         Assertions.assertThat(outputFiles.size()).isEqualTo(1);
         final List<ReferencePeriod> referencePeriod = referencePeriodDao.list();
         final List<String> referencePeriodNames = referencePeriod.stream().map(ReferencePeriod::getName).collect(Collectors.toList());
-        verifyExpectedValuesContainsCSVValues(outputFiles.iterator().next(), DataReturnsHeaders.REFERENCE_PERIOD, referencePeriodNames);
+        verifyColumnDataContainedIn(outputFiles.iterator().next(), FieldDefinition.Ref_Period.getName(), referencePeriodNames);
     }
 
     @Test
-    public void MethodOrStandardValueSubstitution() {
+    public void testMethodOrStandardValueSubstitution() {
         final Collection<File> outputFiles = getOutputFiles(getTestFileStream(METH_STAND_SUB));
         Assertions.assertThat(outputFiles.size()).isEqualTo(1);
         final List<MethodOrStandard> methodOrStandard = methodOrStandardDao.list();
         final List<String> methodOrStandardNames = methodOrStandard.stream().map(MethodOrStandard::getName).collect(Collectors.toList());
-        verifyExpectedValuesContainsCSVValues(outputFiles.iterator().next(), DataReturnsHeaders.METHOD_STANDARD, methodOrStandardNames);
+        verifyColumnDataContainedIn(outputFiles.iterator().next(), FieldDefinition.Meth_Stand.getName(), methodOrStandardNames);
     }
 
     @Test
-    public void ParameterValueSubstitution() {
+    public void testParameterValueSubstitution() {
         final Collection<File> outputFiles = getOutputFiles(getTestFileStream(PARAMETER_SUB));
         Assertions.assertThat(outputFiles.size()).isEqualTo(1);
         final List<Parameter> parameter = parameterDao.list();
         final List<String> parameterNames = parameter.stream().map(Parameter::getName).collect(Collectors.toList());
-        verifyExpectedValuesContainsCSVValues(outputFiles.iterator().next(), DataReturnsHeaders.PARAMETER, parameterNames);
+        verifyColumnDataContainedIn(outputFiles.iterator().next(), FieldDefinition.Parameter.getName(), parameterNames);
     }
 
     @Test
-    public void UnitValueSubstitution() {
+    public void testUnitValueSubstitution() {
         final Collection<File> outputFiles = getOutputFiles(getTestFileStream(UNITS_SUB));
         Assertions.assertThat(outputFiles.size()).isEqualTo(1);
         final List<Unit> unit = unitDao.list();
         final List<String> unitNames = unit.stream().map(Unit::getName).collect(Collectors.toList());
-        verifyExpectedValuesContainsCSVValues(outputFiles.iterator().next(), DataReturnsHeaders.UNIT, unitNames);
+        verifyColumnDataContainedIn(outputFiles.iterator().next(), FieldDefinition.Unit.getName(), unitNames);
     }
 
     /**
@@ -209,16 +208,13 @@ public class ProcessorIntegrationTests {
      * @param columnName the column header of the data to be checked
      * @param expectedValues the expected values to be found in the column (in document order)
      */
-    private static void verifyCSVValues(final File csvFile, final String columnName, final String[] expectedValues) {
+    private static void verifyColumnContainsExactly(final File csvFile, final String columnName, final String[] expectedValues) {
         try {
             final List<String> columnData = CSVColumnReader.readColumn(csvFile, columnName);
             Assertions.assertThat(expectedValues.length).isEqualTo(columnData.size());
 
-            for (int i = 0; i < columnData.size(); i++) {
-                Assertions.assertThat(columnData.get(i))
-                        .as("Mismatched value on row " + (i + 1))
-                        .isEqualTo(expectedValues[i]);
-            }
+            // Ensure that the expected values and column data match exactly (including order)
+            Assertions.assertThat(expectedValues).containsExactlyElementsOf(columnData);
         } catch (final TextParsingException e) {
             throw new AssertionError("Unable to parse output CSV file.", e);
         }
@@ -229,19 +225,12 @@ public class ProcessorIntegrationTests {
      *
      * @param csvFile the CSV file to parse
      * @param columnName the column header of the data to be checked
-     * @param expectedValues the expected values to be found in the column
+     * @param allowedValues the expected values
      */
-    private static void verifyExpectedValuesContainsCSVValues(final File csvFile, final String columnName,
-            final List<String> expectedValues) {
+    private static void verifyColumnDataContainedIn(final File csvFile, final String columnName, final List<String> allowedValues) {
         try {
             final List<String> columnData = CSVColumnReader.readColumn(csvFile, columnName);
-            for (int i = 0; i < columnData.size(); i++) {
-                if (columnData.get(i) != null) {
-                    Assertions.assertThat(expectedValues.contains(columnData.get(i)))
-                            .as("Not found: " + columnData.get(i))
-                            .isTrue();
-                }
-            }
+            Assertions.assertThat(allowedValues).containsAll(columnData);
         } catch (final TextParsingException e) {
             throw new AssertionError("Unable to parse output CSV file.", e);
         }

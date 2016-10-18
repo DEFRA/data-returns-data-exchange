@@ -8,7 +8,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 import uk.gov.ea.datareturns.config.email.MonitorProEmailConfiguration;
-import uk.gov.ea.datareturns.domain.model.EaId;
+import uk.gov.ea.datareturns.domain.model.fields.impl.EaId;
 
 import javax.inject.Inject;
 import java.io.File;
@@ -69,7 +69,7 @@ public class MonitorProTransportHandler {
             email.addTo(this.settings.getTo());
             email.setFrom(this.settings.getFrom());
 
-            final String messageBody = StringUtils.replace(this.settings.getBody(), "{{EA_ID}}", eaId.getIdentifier());
+            final String messageBody = StringUtils.replace(this.settings.getBody(), "{{EA_ID}}", eaId.getValue().getName());
             email.setMsg(messageBody);
             email.setStartTLSEnabled(this.settings.isUseTLS());
 

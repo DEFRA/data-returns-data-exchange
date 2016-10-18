@@ -1,8 +1,8 @@
 package uk.gov.ea.datareturns.tests.unittests;
 
+import org.junit.Assert;
 import org.junit.Test;
-import uk.gov.ea.datareturns.domain.model.rules.DataReturnsHeaders;
-import uk.gov.ea.datareturns.tests.util.TestUtils;
+import uk.gov.ea.datareturns.domain.model.rules.FieldDefinition;
 
 /**
  * Tests the {@link DataReturnsHeadersTests} rules meet the application specification
@@ -10,24 +10,23 @@ import uk.gov.ea.datareturns.tests.util.TestUtils;
  * @author Sam Gardner-Dell
  */
 public class DataReturnsHeadersTests {
-
-    @Test
-    public void testUtilityClassDefinition() throws ReflectiveOperationException {
-        TestUtils.assertUtilityClassWellDefined(DataReturnsHeaders.class);
-    }
-
     @Test(expected = UnsupportedOperationException.class)
     public void testAllHeadingsUnmodifiable() {
-        DataReturnsHeaders.getAllHeadings().add("Test");
+        FieldDefinition.ALL_FIELD_NAMES.add("Test");
     }
 
     @Test(expected = UnsupportedOperationException.class)
     public void testMandatoryHeadingsUnmodifiable() {
-        DataReturnsHeaders.getMandatoryHeadings().add("Test");
+        FieldDefinition.MANDATORY_FIELDS.add(FieldDefinition.Comments);
+    }
+
+    @Test(expected = UnsupportedOperationException.class)
+    public void testMandatoryHeadingNamesUnmodifiable() {
+        FieldDefinition.MANDATORY_FIELD_NAMES.add("Test");
     }
 
     @Test
     public void testAllHeadingsIncludesMandatoryHeadings() {
-        DataReturnsHeaders.getAllHeadings().containsAll(DataReturnsHeaders.getMandatoryHeadings());
+        Assert.assertTrue(FieldDefinition.ALL_FIELD_NAMES.containsAll(FieldDefinition.MANDATORY_FIELD_NAMES));
     }
 }
