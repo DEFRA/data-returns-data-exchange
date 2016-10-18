@@ -30,17 +30,22 @@ import java.util.Map;
 @SuppressWarnings("unchecked")
 @Component
 public class ControlledListProcessor implements ApplicationContextAware {
-    @Inject
+
     private ParameterDao parameterDao;
-
-    @Inject
     private ReturnTypeDao returnTypeDao;
-
-    @Inject
     private ReleasesAndTransfersDao releasesAndTransfersDao;
+    private DependencyNavigation dependencyNavigation;
 
     @Inject
-    private DependencyNavigation dependencyNavigation;
+    public ControlledListProcessor(ParameterDao parameterDao, ReturnTypeDao returnTypeDao,
+                                   ReleasesAndTransfersDao releasesAndTransfersDao,
+                                   DependencyNavigation dependencyNavigation) {
+
+        this.parameterDao = parameterDao;
+        this.returnTypeDao = returnTypeDao;
+        this.releasesAndTransfersDao = releasesAndTransfersDao;
+        this.dependencyNavigation = dependencyNavigation;
+    }
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ControlledListProcessor.class);
     private ApplicationContext applicationContext;
@@ -91,6 +96,14 @@ public class ControlledListProcessor implements ApplicationContextAware {
         return result;
     }
 
+    /**
+     * Navigate throw dependent controlled lists
+     * @param returnTypeName
+     * @param releaseTypeName
+     * @param parameterName
+     * @param contains
+     * @return the data transfer object for the result of the navigation
+     */
     public NavigationDto getNavigatedListData(String returnTypeName, String releaseTypeName, String parameterName, String contains) {
         ReturnType returnType = returnTypeName == null ? null : returnTypeDao.getByName(returnTypeName);
         ReleasesAndTransfers releasesAndTransfers = releaseTypeName == null ? null : releasesAndTransfersDao.getByName(releaseTypeName);

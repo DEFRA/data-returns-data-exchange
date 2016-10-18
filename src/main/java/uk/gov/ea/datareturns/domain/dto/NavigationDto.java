@@ -6,7 +6,8 @@ import uk.gov.ea.datareturns.domain.jpa.entities.DependentEntity;
 import java.util.List;
 
 /**
- * Created by graham on 17/10/16.
+ * DTO for the result of dependent list navigation, contains teh name and description and
+ * list contents and is serialized into a JSON formatted string
  */
 public class NavigationDto {
     private String name;

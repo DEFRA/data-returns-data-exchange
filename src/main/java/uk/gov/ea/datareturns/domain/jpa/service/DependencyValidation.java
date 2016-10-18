@@ -18,20 +18,22 @@ import java.util.Set;
 @Service
 public class DependencyValidation {
 
-    @Inject
     private ParameterDao parameterDao;
-
-    @Inject
     private ReturnTypeDao returnTypeDao;
-
-    @Inject
     private ReleasesAndTransfersDao releasesAndTransfersDao;
-
-    @Inject
     private UnitDao unitDao;
+    private DependenciesDao dao;
 
     @Inject
-    DependenciesDao dao;
+    public DependencyValidation(ParameterDao parameterDao, ReturnTypeDao returnTypeDao,
+                                ReleasesAndTransfersDao releasesAndTransfersDao,
+                                UnitDao unitDao, DependenciesDao dao) {
+        this.parameterDao = parameterDao;
+        this.returnTypeDao = returnTypeDao;
+        this.releasesAndTransfersDao = releasesAndTransfersDao;
+        this.unitDao = unitDao;
+        this.dao = dao;
+    }
 
     /*
      * The result of the validation. Excluded entities are distinguished from

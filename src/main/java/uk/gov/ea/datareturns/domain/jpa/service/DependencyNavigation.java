@@ -22,30 +22,32 @@ import java.util.*;
 @Component
 public class DependencyNavigation implements ApplicationContextAware  {
     protected static final Logger LOGGER = LoggerFactory.getLogger(DependencyNavigation.class);
+
     private ApplicationContext applicationContext;
-
-    @Inject
     private ParameterDao parameterDao;
-
-    @Inject
     private ReturnTypeDao returnTypeDao;
-
-    @Inject
     private ReleasesAndTransfersDao releasesAndTransfersDao;
-
-    @Inject
     private UnitDao unitDao;
-
-    @Inject
     private DependenciesDao dao;
+    private DependencyValidation dependencyValidation;
 
     @Inject
-    DependencyValidation dependencyValidation;
+    public DependencyNavigation(ParameterDao parameterDao, ReturnTypeDao returnTypeDao,
+                                ReleasesAndTransfersDao releasesAndTransfersDao,
+                                UnitDao unitDao, DependenciesDao dao,
+                                DependencyValidation dependencyValidation) {
 
+        this.parameterDao = parameterDao;
+        this.returnTypeDao = returnTypeDao;
+        this.releasesAndTransfersDao = releasesAndTransfersDao;
+        this.unitDao = unitDao;
+        this.dao = dao;
+        this.dependencyValidation = dependencyValidation;
+    }
 
     /*
-     * These other signatures are for convenience
-     */
+         * These other signatures are for convenience
+         */
     public Pair<ControlledListsList, List<? extends DependentEntity>> traverseHierarchy(ReturnType returnType) {
         return traverseHierarchy(returnType, null, null, null);
     }
