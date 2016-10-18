@@ -11,26 +11,29 @@ import java.util.Map;
 import java.util.Set;
 
 /**
- * Evaluate if the required mutual dependencies between lists are met
- * by the input data
+ * Validate a given input against the set of mutual dependencies between lists
+ * Return Type -> Releases and transfers (For PI) -> Parameters -> Units
+ * The dependencies are encoded in the in Dependencies.csv file
  */
 @Service
 public class DependencyValidation {
 
-    @Inject
     private ParameterDao parameterDao;
-
-    @Inject
     private ReturnTypeDao returnTypeDao;
-
-    @Inject
     private ReleasesAndTransfersDao releasesAndTransfersDao;
-
-    @Inject
     private UnitDao unitDao;
+    private DependenciesDao dao;
 
     @Inject
-    DependenciesDao dao;
+    public DependencyValidation(ParameterDao parameterDao, ReturnTypeDao returnTypeDao,
+                                ReleasesAndTransfersDao releasesAndTransfersDao,
+                                UnitDao unitDao, DependenciesDao dao) {
+        this.parameterDao = parameterDao;
+        this.returnTypeDao = returnTypeDao;
+        this.releasesAndTransfersDao = releasesAndTransfersDao;
+        this.unitDao = unitDao;
+        this.dao = dao;
+    }
 
     /*
      * The result of the validation. Excluded entities are distinguished from
@@ -62,9 +65,7 @@ public class DependencyValidation {
         String unitName = unit == null ? null : unitDao.getKeyFromRelaxedName(unit.getName());
 
         return evaluate(ControlledListsList.RETURN_TYPE, (Map)dao.getCache(),
-                new String[]{returnTypeName, releasesAndTransfersName, parameterName, unitName}
-        );
-
+                returnTypeName, releasesAndTransfersName, parameterName, unitName);
     }
 
     /*
@@ -101,7 +102,7 @@ public class DependencyValidation {
     /*
      * Main evaluating function which is recursive as the rules are the same for each entity
      */
-    private Pair<ControlledListsList, Result> evaluate(ControlledListsList level, Map cache, String... entityName) {
+    protected Pair<ControlledListsList, Result> evaluate(ControlledListsList level, Map cache, String... entityName) {
         if (entityName[0] != null) {
             /*
              * If the entity name is supplied (not null)

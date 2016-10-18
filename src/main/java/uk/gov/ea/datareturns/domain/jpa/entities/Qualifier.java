@@ -77,6 +77,7 @@ public class Qualifier implements ControlledListEntity {
     }
 
     @Override
+    @JsonIgnore
     public ControlledListsList getControlledListType() {
         return ControlledListsList.QUALIFIERS;
     }

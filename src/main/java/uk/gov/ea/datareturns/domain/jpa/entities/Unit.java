@@ -115,6 +115,7 @@ public class Unit implements AliasingEntity, DependentEntity {
     }
 
     @Override
+    @JsonIgnore
     public ControlledListsList getControlledListType() {
         return ControlledListsList.UNITS;
     }

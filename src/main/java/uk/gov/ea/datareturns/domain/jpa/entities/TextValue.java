@@ -68,6 +68,7 @@ public class TextValue implements AliasingEntity {
     }
 
     @Override
+    @JsonIgnore
     public ControlledListsList getControlledListType() {
         return ControlledListsList.TEXT_VALUES;
     }

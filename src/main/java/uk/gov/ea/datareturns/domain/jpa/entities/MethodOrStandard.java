@@ -52,6 +52,7 @@ public class MethodOrStandard implements ControlledListEntity {
     }
 
     @Override
+    @JsonIgnore
     public ControlledListsList getControlledListType() {
         return ControlledListsList.METHOD_OR_STANDARD;
     }

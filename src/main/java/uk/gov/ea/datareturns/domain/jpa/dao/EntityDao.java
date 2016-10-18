@@ -31,6 +31,7 @@ import static java.util.Comparator.comparing;
  */
 public abstract class EntityDao<E extends ControlledListEntity> {
     protected static final Logger LOGGER = LoggerFactory.getLogger(EntityDao.class);
+    private final String regex = "\\s+";
 
     @PersistenceContext
     protected EntityManager entityManager;
@@ -40,7 +41,8 @@ public abstract class EntityDao<E extends ControlledListEntity> {
     protected volatile Map<String, E> cacheByName = null;
     protected volatile Map<String, E> cacheByNameKey = null;
 
-    Pattern removeMultipleSpaces = Pattern.compile("\\s{2,}");
+    private final Pattern removeMultipleSpaces = Pattern.compile("\\s{2,}");
+    private final Pattern removeSpaces = Pattern.compile("\\s+");
 
     /**
      * Let the Dao class know the type of entity in order that type-safe
@@ -137,6 +139,21 @@ public abstract class EntityDao<E extends ControlledListEntity> {
     }
 
     /**
+     * Apply a basic name filter (MPV) to an existing list. Used in the navigation
+     * where the list is already determined
+     * @param list The list to filter
+     * @param contains The search term
+     * @return the filtered list
+     */
+    public List<E> filterByName(List<E> list, String contains) {
+        return list
+                .stream()
+                .filter(e -> containsIgnoreCaseIgnoreSpaces(e.getName(), contains))
+                .sorted(comparing(E::getName))
+                .collect(Collectors.toList());
+    }
+
+    /**
      * List the entities of type <E> filtered such that the field contains the search term
      *
      * @param field The name of the field used for filtering
@@ -150,8 +167,7 @@ public abstract class EntityDao<E extends ControlledListEntity> {
                     final Method readMethod = pd.getReadMethod();
                     Predicate<E> builtPredicate = e -> {
                         try {
-                            return readMethod.invoke(e).toString().toLowerCase().replaceAll("\\s+", "")
-                                    .contains(contains.toLowerCase().replaceAll("\\s+", ""));
+                            return containsIgnoreCaseIgnoreSpaces(readMethod.invoke(e).toString(), contains);
                         } catch (IllegalAccessException e1) {
                             return true;
                         } catch (InvocationTargetException e1) {
@@ -271,5 +287,15 @@ public abstract class EntityDao<E extends ControlledListEntity> {
      */
     public Class<E> getEntityClass() {
         return entityClass;
+    }
+
+    /**
+     * Helper function to compare two strings cases insensitively ignoring whilespace
+     * @param a
+     * @param b
+     * @return
+     */
+    private boolean containsIgnoreCaseIgnoreSpaces(String a, String b) {
+        return removeSpaces.matcher(a).replaceAll("").contains(removeSpaces.matcher(b).replaceAll(""));
     }
 }
