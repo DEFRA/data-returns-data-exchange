@@ -28,15 +28,11 @@ import java.util.*;
 @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 public class DataReturnsCSVProcessor {
     private static final Logger LOGGER = LoggerFactory.getLogger(DataReturnsCSVProcessor.class);
-    private final ApplicationContext context;
 
     /**
      * Default constructor
      */
-    @Inject
-    public DataReturnsCSVProcessor(final ApplicationContext context) {
-        this.context = context;
-
+    public DataReturnsCSVProcessor() {
     }
 
     /**

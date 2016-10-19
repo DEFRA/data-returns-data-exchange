@@ -71,6 +71,7 @@ public abstract class EntityDao<E extends ControlledListEntity> {
     public E getByName(String name) {
         return getCache().get(name);
     }
+
     /**
      * Retrieve an entity using a relaxed key lookup
      *
@@ -158,11 +159,8 @@ public abstract class EntityDao<E extends ControlledListEntity> {
                     final Method readMethod = pd.getReadMethod();
                     Predicate<E> builtPredicate = e -> {
                         try {
-                            return readMethod.invoke(e).toString().toLowerCase().replaceAll("\\s+", "")
-                                    .contains(contains.toLowerCase().replaceAll("\\s+", ""));
-                        } catch (IllegalAccessException e1) {
-                            return true;
-                        } catch (InvocationTargetException e1) {
+                            return containsIgnoreCaseIgnoreSpaces(readMethod.invoke(e).toString(), contains);
+                        } catch (IllegalAccessException | InvocationTargetException ex) {
                             return true;
                         }
                     };
@@ -189,7 +187,6 @@ public abstract class EntityDao<E extends ControlledListEntity> {
                 .sorted(comparing(E::getName))
                 .collect(Collectors.toList());
     }
-
 
     /**
      * A method to convert the reduce variation in name in case and spacing

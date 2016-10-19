@@ -51,7 +51,7 @@ public class BeanConversionProcessor<T> implements RowProcessor {
     public final void rowProcessed(String[] row, ParsingContext context) {
         T instance = createBean(row, context);
         if (instance != null) {
-            beanProcessed(instance, context);
+            beanProcessed(instance);
         }
     }
 
@@ -95,9 +95,8 @@ public class BeanConversionProcessor<T> implements RowProcessor {
      * Bean processed.
      *
      * @param bean the bean
-     * @param context the context
      */
-    public void beanProcessed(final T bean, final ParsingContext context) {
+    public void beanProcessed(final T bean) {
         beans.add(bean);
     }
 
