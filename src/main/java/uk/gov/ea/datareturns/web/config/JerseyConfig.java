@@ -1,6 +1,6 @@
 package uk.gov.ea.datareturns.web.config;
 
-import org.glassfish.jersey.filter.LoggingFilter;
+import org.glassfish.jersey.logging.LoggingFeature;
 import org.glassfish.jersey.media.multipart.MultiPartFeature;
 import org.glassfish.jersey.server.ResourceConfig;
 import org.slf4j.Logger;
@@ -62,12 +62,13 @@ public class JerseyConfig extends ResourceConfig {
         register(context.getBean(AuthorizationFilterFileUpload.class));
 
         // Configure the logging filter based on log configuration
-        final Logger loggingFilterLogger = LoggerFactory.getLogger(LoggingFilter.class);
+        final Logger loggingFilterLogger = LoggerFactory.getLogger(LoggingFeature.class);
         final boolean attachLogger = loggingFilterLogger.isInfoEnabled();
-        final boolean printEntity = loggingFilterLogger.isDebugEnabled();
-        if (attachLogger || printEntity) {
-            final java.util.logging.Logger jerseyJulLogger = java.util.logging.Logger.getLogger(LoggingFilter.class.getName());
-            register(new LoggingFilter(jerseyJulLogger, printEntity));
+        final LoggingFeature.Verbosity verbosity = loggingFilterLogger.isDebugEnabled() ? LoggingFeature.Verbosity.PAYLOAD_ANY :
+                LoggingFeature.Verbosity.HEADERS_ONLY;
+        if (attachLogger) {
+            final java.util.logging.Logger jerseyJulLogger = java.util.logging.Logger.getLogger(LoggingFeature.class.getName());
+            register(new LoggingFeature(jerseyJulLogger, verbosity));
         }
     }
 }

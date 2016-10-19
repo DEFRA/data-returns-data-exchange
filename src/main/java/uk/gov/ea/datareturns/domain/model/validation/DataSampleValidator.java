@@ -2,9 +2,10 @@ package uk.gov.ea.datareturns.domain.model.validation;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
-import uk.gov.ea.datareturns.domain.io.csv.generic.CSVModel;
 import uk.gov.ea.datareturns.domain.model.DataSample;
+import uk.gov.ea.datareturns.domain.model.fields.FieldValue;
 import uk.gov.ea.datareturns.domain.model.rules.FieldDefinition;
+import uk.gov.ea.datareturns.domain.model.rules.FieldMapping;
 import uk.gov.ea.datareturns.domain.result.ValidationError;
 import uk.gov.ea.datareturns.domain.result.ValidationErrors;
 
@@ -12,62 +13,65 @@ import javax.inject.Inject;
 import javax.validation.ConstraintViolation;
 import javax.validation.Path.Node;
 import javax.validation.Validator;
+import java.util.Collection;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
+ * The type Data sample validator.
  * @author Sam Gardner-Dell
- *
  */
 @Component
 public class DataSampleValidator {
     private static final Pattern ERROR_KEY_PATTERN = Pattern.compile("^\\{DR(?<errorCode>\\d{4})-(?<errorType>\\w+)\\}$");
 
-    @Inject
-    private Validator validator;
+    private static final Map<String, String> FIELD_MAPPING = FieldMapping.getBeanToFieldNameMap(DataSample.class);
+
+    /** hibernate validator instance */
+    private final Validator validator;
 
     /**
-     * Create a new {@link DataSampleValidator}
+     * Instantiates a new {@link DataSample} validator.
+     *
+     * @param validator the hibernate validator instance
      */
-    public DataSampleValidator() {
-
+    @Inject
+    public DataSampleValidator(final Validator validator) {
+        this.validator = validator;
     }
 
     /**
      * Validate the specified model of {@link DataSample}s
      *
      * @param model the model to be validated
-     * @return a {@link ValidationErrors} instance detailing any validation errors (if any) which were found with the model.
-     * 		   Use {@link ValidationErrors#isValid()} to determine if any errors were found.
+     * @return a {@link ValidationErrors} instance detailing any validation errors (if any) which were found with the model. 		   Use {@link ValidationErrors#isValid()} to determine if any errors were found.
      */
-    public final ValidationErrors validateModel(final CSVModel<DataSample> model) {
+    public final ValidationErrors validateModel(final Collection<DataSample> model) {
         final ValidationErrors validationErrors = new ValidationErrors();
 
-        for (final DataSample record : model.getRecords()) {
+        // Record number starts at 2 (line 1 = header, line 2 = start of data)
+        int recordNumber = 2;
+        for (final DataSample record : model) {
             final Set<ConstraintViolation<DataSample>> violations = this.validator.validate(record);
             for (final ConstraintViolation<DataSample> violation : violations) {
                 final ValidationError error = new ValidationError();
-                final String fieldName = getFieldNameForViolation(model, violation);
                 String errorValue = null;
-                FieldDefinition definition = null;
-                // Is the validation specific to a particular column, or is this a cross-field validation?
-                if (fieldName != null) {
-                    // TODO: How to show the value of a specific field when using a class level dependent field annotation....
-                    // See test file CUKE7029_Text_Value_and_Value_and_unit_FAIL.csv
-                    if (!(violation.getInvalidValue() instanceof DataSample)) {
-                        errorValue = Objects.toString(violation.getInvalidValue(), null);
-                    }
-                    definition = FieldDefinition.valueOf(fieldName);
+                FieldDefinition definition = getFieldForViolation(model, violation);
+                if (violation.getInvalidValue() instanceof String) {
+                    errorValue = (String) violation.getInvalidValue();
+                } else if (violation.getInvalidValue() instanceof FieldValue) {
+                    errorValue = ((FieldValue) violation.getInvalidValue()).getInputValue();
                 }
 
-                error.setFieldName(fieldName);
                 if (definition != null) {
+                    error.setFieldName(definition.getName());
                     error.setDefinition(definition.getDescription());
                 }
                 error.setErrorValue(errorValue);
-                error.setLineNumber(record.getLineNumber());
+                error.setLineNumber(recordNumber);
                 error.setErrorMessage(violation.getMessage());
                 final Matcher errorKeyMatcher = ERROR_KEY_PATTERN.matcher(violation.getMessageTemplate());
 
@@ -83,6 +87,7 @@ public class DataSampleValidator {
 
                 validationErrors.addError(error);
             }
+            recordNumber++;
         }
         return validationErrors;
     }
@@ -92,19 +97,28 @@ public class DataSampleValidator {
      *
      * @param model the model being validated
      * @param violation the violation which occurred
-     * @return the name of the CSV field which caused the problem.
+     * @return the {@link FieldDefinition} for the CSV field which caused the problem.
      */
-    private static String getFieldNameForViolation(final CSVModel<DataSample> model,
+    private static FieldDefinition getFieldForViolation(final Collection<DataSample> model,
             final ConstraintViolation<DataSample> violation) {
         // First attempt to retrieve the name of the input field from the declaration on the constraint annotation.
         String validatorAnnotationFieldName = Objects.toString(violation.getConstraintDescriptor().getAttributes().get("fieldName"), null);
         if (StringUtils.isNotEmpty(validatorAnnotationFieldName)) {
-            return validatorAnnotationFieldName;
+            return FieldDefinition.valueOf(validatorAnnotationFieldName);
+        }
+
+        if (violation.getInvalidValue() instanceof FieldValue) {
+            FieldValue fv = (FieldValue) violation.getInvalidValue();
+            return fv.getField();
         }
 
         // Otherwise, try and retrieve the path to the appropriate field using the property path on the annotation.
         // This will not work for class-level annotations (hence the functionality above)
         final Node firstNodeInPath = violation.getPropertyPath().iterator().next();
-        return model.getPojoFieldToHeaderMap().get(firstNodeInPath.toString());
+        String mapping = FIELD_MAPPING.get(firstNodeInPath.toString());
+        if (mapping != null) {
+            return FieldDefinition.valueOf(mapping);
+        }
+        return null;
     }
 }

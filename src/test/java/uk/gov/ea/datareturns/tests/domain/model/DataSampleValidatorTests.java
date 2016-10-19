@@ -7,14 +7,12 @@ import org.apache.commons.lang3.RandomStringUtils;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.springframework.boot.test.ConfigFileApplicationContextInitializer;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.junit4.SpringRunner;
 import uk.gov.ea.datareturns.App;
 import uk.gov.ea.datareturns.domain.model.DataSample;
-import uk.gov.ea.datareturns.domain.model.EaId;
-import uk.gov.ea.datareturns.domain.model.ReturnsDate;
+import uk.gov.ea.datareturns.domain.model.fields.impl.*;
 
 import javax.inject.Inject;
 import javax.validation.ConstraintViolation;
@@ -29,11 +27,10 @@ import java.util.Set;
  *
  * @author Sam Gardner-Dell
  */
-@RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = App.class, initializers = ConfigFileApplicationContextInitializer.class)
+@SpringBootTest(classes = App.class)
 @DirtiesContext
+@RunWith(SpringRunner.class)
 public class DataSampleValidatorTests {
-
     @Inject
     private Validator validator;
 
@@ -78,7 +75,7 @@ public class DataSampleValidatorTests {
     @Test
     public void testBlankReturnType() {
         final DataSample record = createValidNumericRecord();
-        record.setReturnType("   ");
+        record.setReturnType(new ReturnType("   "));
         final Set<ConstraintViolation<DataSample>> violations = this.validator.validate(record);
         // We'll get 2 violations back - one for the field being blank, the second for the controlled list value check
         Assert.assertEquals(2, violations.size());
@@ -87,7 +84,7 @@ public class DataSampleValidatorTests {
     @Test
     public void testInvalidReturnType() {
         final DataSample record = createValidNumericRecord();
-        record.setReturnType("Invalid Return Type Value");
+        record.setReturnType(new ReturnType("Invalid Return Type Value"));
         final Set<ConstraintViolation<DataSample>> violations = this.validator.validate(record);
         Assert.assertEquals(1, violations.size());
     }
@@ -101,7 +98,7 @@ public class DataSampleValidatorTests {
     @Test
     public void testMonitoringDateNull() {
         final DataSample record = createValidNumericRecord();
-        record.setMonitoringDate(null);
+        record.setMonitoringDate(new MonitoringDate(null));
         final Set<ConstraintViolation<DataSample>> violations = this.validator.validate(record);
         Assert.assertFalse(violations.isEmpty());
     }
@@ -109,7 +106,7 @@ public class DataSampleValidatorTests {
     @Test
     public void testMonitoringDateEmpty() {
         final DataSample record = createValidNumericRecord();
-        record.setMonitoringDate(ReturnsDate.from(""));
+        record.setMonitoringDate(new MonitoringDate(""));
         final Set<ConstraintViolation<DataSample>> violations = this.validator.validate(record);
         Assert.assertFalse(violations.isEmpty());
     }
@@ -118,7 +115,7 @@ public class DataSampleValidatorTests {
     public void testMonitoringDateInvalidFormat() {
         final DataSample record = createValidNumericRecord();
         final String testDate = LocalDateTime.now(ZoneOffset.UTC).format(DateTimeFormatter.ofPattern("yyyy/MM/dd"));
-        record.setMonitoringDate(ReturnsDate.from(testDate));
+        record.setMonitoringDate(new MonitoringDate(testDate));
         final Set<ConstraintViolation<DataSample>> violations = this.validator.validate(record);
         Assert.assertFalse(violations.isEmpty());
     }
@@ -127,7 +124,7 @@ public class DataSampleValidatorTests {
     public void testMonitoringDateInternationalFormat() {
         final DataSample record = createValidNumericRecord();
         final String testDate = LocalDateTime.now(ZoneOffset.UTC).format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
-        record.setMonitoringDate(ReturnsDate.from(testDate));
+        record.setMonitoringDate(new MonitoringDate(testDate));
         final Set<ConstraintViolation<DataSample>> violations = this.validator.validate(record);
         Assert.assertEquals(0, violations.size());
     }
@@ -136,7 +133,7 @@ public class DataSampleValidatorTests {
     public void testMonitoringDateInternationalFormatWithTime() {
         final DataSample record = createValidNumericRecord();
         final String testDate = LocalDateTime.now(ZoneOffset.UTC).format(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss"));
-        record.setMonitoringDate(ReturnsDate.from(testDate));
+        record.setMonitoringDate(new MonitoringDate(testDate));
         final Set<ConstraintViolation<DataSample>> violations = this.validator.validate(record);
         Assert.assertEquals(0, violations.size());
     }
@@ -145,7 +142,7 @@ public class DataSampleValidatorTests {
     public void testMonitoringDateInternationalFormatWithTimeSpaceSeparator() {
         final DataSample record = createValidNumericRecord();
         final String testDate = LocalDateTime.now(ZoneOffset.UTC).format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
-        record.setMonitoringDate(ReturnsDate.from(testDate));
+        record.setMonitoringDate(new MonitoringDate(testDate));
         final Set<ConstraintViolation<DataSample>> violations = this.validator.validate(record);
         Assert.assertEquals(0, violations.size());
     }
@@ -154,7 +151,7 @@ public class DataSampleValidatorTests {
     public void testMonitoringDateUKFormat() {
         final DataSample record = createValidNumericRecord();
         final String testDate = LocalDateTime.now(ZoneOffset.UTC).format(DateTimeFormatter.ofPattern("dd-MM-yyyy"));
-        record.setMonitoringDate(ReturnsDate.from(testDate));
+        record.setMonitoringDate(new MonitoringDate(testDate));
         final Set<ConstraintViolation<DataSample>> violations = this.validator.validate(record);
         Assert.assertEquals(0, violations.size());
     }
@@ -163,7 +160,7 @@ public class DataSampleValidatorTests {
     public void testMonitoringDateUKWithTime() {
         final DataSample record = createValidNumericRecord();
         final String testDate = LocalDateTime.now(ZoneOffset.UTC).format(DateTimeFormatter.ofPattern("dd-MM-yyyy'T'HH:mm:ss"));
-        record.setMonitoringDate(ReturnsDate.from(testDate));
+        record.setMonitoringDate(new MonitoringDate(testDate));
         final Set<ConstraintViolation<DataSample>> violations = this.validator.validate(record);
         Assert.assertEquals(0, violations.size());
     }
@@ -172,7 +169,7 @@ public class DataSampleValidatorTests {
     public void testMonitoringDateUKWithTimeSpaceSeparator() {
         final DataSample record = createValidNumericRecord();
         final String testDate = LocalDateTime.now(ZoneOffset.UTC).format(DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss"));
-        record.setMonitoringDate(ReturnsDate.from(testDate));
+        record.setMonitoringDate(new MonitoringDate(testDate));
         final Set<ConstraintViolation<DataSample>> violations = this.validator.validate(record);
         Assert.assertEquals(0, violations.size());
     }
@@ -181,7 +178,7 @@ public class DataSampleValidatorTests {
     public void testMonitoringDateUKFormatWithSlashes() {
         final DataSample record = createValidNumericRecord();
         final String testDate = LocalDateTime.now(ZoneOffset.UTC).format(DateTimeFormatter.ofPattern("dd/MM/yyyy"));
-        record.setMonitoringDate(ReturnsDate.from(testDate));
+        record.setMonitoringDate(new MonitoringDate(testDate));
         final Set<ConstraintViolation<DataSample>> violations = this.validator.validate(record);
         Assert.assertEquals(0, violations.size());
     }
@@ -190,7 +187,7 @@ public class DataSampleValidatorTests {
     public void testMonitoringDateUKWithTimeWithSlashes() {
         final DataSample record = createValidNumericRecord();
         final String testDate = LocalDateTime.now(ZoneOffset.UTC).format(DateTimeFormatter.ofPattern("dd/MM/yyyy'T'HH:mm:ss"));
-        record.setMonitoringDate(ReturnsDate.from(testDate));
+        record.setMonitoringDate(new MonitoringDate(testDate));
         final Set<ConstraintViolation<DataSample>> violations = this.validator.validate(record);
         Assert.assertEquals(0, violations.size());
     }
@@ -199,7 +196,7 @@ public class DataSampleValidatorTests {
     public void testMonitoringDateUKWithTimeWithSlashesSpaceSeparator() {
         final DataSample record = createValidNumericRecord();
         final String testDate = LocalDateTime.now(ZoneOffset.UTC).format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss"));
-        record.setMonitoringDate(ReturnsDate.from(testDate));
+        record.setMonitoringDate(new MonitoringDate(testDate));
         final Set<ConstraintViolation<DataSample>> violations = this.validator.validate(record);
         Assert.assertEquals(0, violations.size());
     }
@@ -209,7 +206,7 @@ public class DataSampleValidatorTests {
         final DataSample record = createValidNumericRecord();
         final LocalDateTime anHourFromNow = LocalDateTime.now(ZoneOffset.UTC).plusDays(1);
         final String testDate = anHourFromNow.format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
-        record.setMonitoringDate(ReturnsDate.from(testDate));
+        record.setMonitoringDate(new MonitoringDate(testDate));
         final Set<ConstraintViolation<DataSample>> violations = this.validator.validate(record);
         Assert.assertEquals(1, violations.size());
     }
@@ -219,7 +216,7 @@ public class DataSampleValidatorTests {
         final DataSample record = createValidNumericRecord();
         final LocalDateTime anHourFromNow = LocalDateTime.now(ZoneOffset.UTC).plusHours(1);
         final String testDate = anHourFromNow.format(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss"));
-        record.setMonitoringDate(ReturnsDate.from(testDate));
+        record.setMonitoringDate(new MonitoringDate(testDate));
         final Set<ConstraintViolation<DataSample>> violations = this.validator.validate(record);
         Assert.assertEquals(1, violations.size());
     }
@@ -231,13 +228,13 @@ public class DataSampleValidatorTests {
     //		DataSample record = createValidNumericRecord();
     //		LocalDateTime fiveYearsAgo = LocalDateTime.now(ZoneOffset.UTC).minusYears(5);
     //		String testDate = fiveYearsAgo.format(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss"));
-    //		record.setMonitoringDate(ReturnsDate.from(testDate));
+    //		record.setMonitoringDate(new MonitoringDate(testDate));
     //		Set<ConstraintViolation<DataSample>> violations = validator.validate(record);
     //		Assert.assertEquals(1, violations.size());
     //	}
 
 	/*=================================================================================================================
-	 *
+     *
 	 * RETURN PERIOD
 	 *
 	 *=================================================================================================================
@@ -254,7 +251,7 @@ public class DataSampleValidatorTests {
     @Test
     public void testReturnPeriodLength() {
         final DataSample record = createValidNumericRecord();
-        record.setReturnPeriod(RandomStringUtils.random(20));
+        record.setReturnPeriod(new ReturnPeriod(RandomStringUtils.random(20)));
         final Set<ConstraintViolation<DataSample>> violations = this.validator.validate(record);
         Assert.assertEquals(1, violations.size());
     }
@@ -268,7 +265,7 @@ public class DataSampleValidatorTests {
     @Test
     public void testMonitoringPointNull() {
         final DataSample record = createValidNumericRecord();
-        record.setMonitoringPoint(null);
+        record.setMonitoringPoint(new MonitoringPoint(null));
         final Set<ConstraintViolation<DataSample>> violations = this.validator.validate(record);
         Assert.assertEquals(1, violations.size());
     }
@@ -276,7 +273,7 @@ public class DataSampleValidatorTests {
     @Test
     public void testMonitoringPointEmpty() {
         final DataSample record = createValidNumericRecord();
-        record.setMonitoringPoint("");
+        record.setMonitoringPoint(new MonitoringPoint(""));
         final Set<ConstraintViolation<DataSample>> violations = this.validator.validate(record);
         Assert.assertEquals(1, violations.size());
     }
@@ -284,11 +281,11 @@ public class DataSampleValidatorTests {
     @Test
     public void testMonitoringPointLength() {
         final DataSample record = createValidNumericRecord();
-        record.setMonitoringPoint(RandomStringUtils.randomAlphanumeric(30));
+        record.setMonitoringPoint(new MonitoringPoint(RandomStringUtils.randomAlphanumeric(30)));
         Set<ConstraintViolation<DataSample>> violations = this.validator.validate(record);
         Assert.assertEquals(0, violations.size());
 
-        record.setMonitoringPoint(RandomStringUtils.randomAlphanumeric(31));
+        record.setMonitoringPoint(new MonitoringPoint(RandomStringUtils.randomAlphanumeric(31)));
         violations = this.validator.validate(record);
         Assert.assertEquals(1, violations.size());
     }
@@ -298,7 +295,7 @@ public class DataSampleValidatorTests {
         final DataSample record = createValidNumericRecord();
         final String invalidCharacters = "!\"£$%^&*()-_=+[]{};:'@#~,<.>/?\\|`¬€";
         for (final char c : invalidCharacters.toCharArray()) {
-            record.setMonitoringPoint(String.valueOf(c));
+            record.setMonitoringPoint(new MonitoringPoint(String.valueOf(c)));
             final Set<ConstraintViolation<DataSample>> violations = this.validator.validate(record);
             Assert.assertEquals(1, violations.size());
         }
@@ -310,28 +307,28 @@ public class DataSampleValidatorTests {
      *
      *=================================================================================================================
      */
-    @Test
-    public void testSampleReferenceLength() {
-        final DataSample record = createValidNumericRecord();
-        record.setSampleReference(RandomStringUtils.randomAlphanumeric(255));
-        Set<ConstraintViolation<DataSample>> violations = this.validator.validate(record);
-        Assert.assertEquals(0, violations.size());
-
-        record.setSampleReference(RandomStringUtils.randomAlphanumeric(256));
-        violations = this.validator.validate(record);
-        Assert.assertEquals(1, violations.size());
-    }
-
-    @Test
-    public void testSampleReferenceSpecialCharacters() {
-        final DataSample record = createValidNumericRecord();
-        final String invalidCharacters = "!\"£$%^&*()-_=+[]{};:'@#~,<.>/?\\|`¬€";
-        for (final char c : invalidCharacters.toCharArray()) {
-            record.setSampleReference(String.valueOf(c));
-            final Set<ConstraintViolation<DataSample>> violations = this.validator.validate(record);
-            Assert.assertEquals(1, violations.size());
-        }
-    }
+    //    @Test
+    //    public void testSampleReferenceLength() {
+    //        final DataSample record = createValidNumericRecord();
+    //        record.setSampleReference(new RandomStringUtils.randomAlphanumeric(255));
+    //        Set<ConstraintViolation<DataSample>> violations = this.validator.validate(record);
+    //        Assert.assertEquals(0, violations.size());
+    //
+    //        record.setSampleReference(RandomStringUtils.randomAlphanumeric(256));
+    //        violations = this.validator.validate(record);
+    //        Assert.assertEquals(1, violations.size());
+    //    }
+    //
+    //    @Test
+    //    public void testSampleReferenceSpecialCharacters() {
+    //        final DataSample record = createValidNumericRecord();
+    //        final String invalidCharacters = "!\"£$%^&*()-_=+[]{};:'@#~,<.>/?\\|`¬€";
+    //        for (final char c : invalidCharacters.toCharArray()) {
+    //            record.setSampleReference(String.valueOf(c));
+    //            final Set<ConstraintViolation<DataSample>> violations = this.validator.validate(record);
+    //            Assert.assertEquals(1, violations.size());
+    //        }
+    //    }
 
     /*=================================================================================================================
      *
@@ -339,17 +336,17 @@ public class DataSampleValidatorTests {
      *
      *=================================================================================================================
      */
-    @Test
-    public void testSampleByLength() {
-        final DataSample record = createValidNumericRecord();
-        record.setSampleBy(RandomStringUtils.random(255));
-        Set<ConstraintViolation<DataSample>> violations = this.validator.validate(record);
-        Assert.assertEquals(0, violations.size());
-
-        record.setSampleBy(RandomStringUtils.random(256));
-        violations = this.validator.validate(record);
-        Assert.assertEquals(1, violations.size());
-    }
+    //    @Test
+    //    public void testSampleByLength() {
+    //        final DataSample record = createValidNumericRecord();
+    //        record.setSampleBy(RandomStringUtils.random(255));
+    //        Set<ConstraintViolation<DataSample>> violations = this.validator.validate(record);
+    //        Assert.assertEquals(0, violations.size());
+    //
+    //        record.setSampleBy(RandomStringUtils.random(256));
+    //        violations = this.validator.validate(record);
+    //        Assert.assertEquals(1, violations.size());
+    //    }
 
     /*=================================================================================================================
      *
@@ -360,7 +357,7 @@ public class DataSampleValidatorTests {
     @Test
     public void testParameterNull() {
         final DataSample record = createValidNumericRecord();
-        record.setParameter(null);
+        record.setParameter(new Parameter(null));
         final Set<ConstraintViolation<DataSample>> violations = this.validator.validate(record);
         Assert.assertEquals(1, violations.size());
     }
@@ -368,7 +365,7 @@ public class DataSampleValidatorTests {
     @Test
     public void testParameterEmpty() {
         final DataSample record = createValidNumericRecord();
-        record.setParameter("");
+        record.setParameter(new Parameter(""));
         final Set<ConstraintViolation<DataSample>> violations = this.validator.validate(record);
         Assert.assertEquals(1, violations.size());
     }
@@ -376,7 +373,7 @@ public class DataSampleValidatorTests {
     @Test
     public void testParameterInvalid() {
         final DataSample record = createValidNumericRecord();
-        record.setParameter("An invalid parameter value");
+        record.setParameter(new Parameter("An invalid parameter value"));
         final Set<ConstraintViolation<DataSample>> violations = this.validator.validate(record);
         Assert.assertEquals(1, violations.size());
     }
@@ -384,7 +381,7 @@ public class DataSampleValidatorTests {
     @Test
     public void testParameterValid() {
         final DataSample record = createValidNumericRecord();
-        record.setParameter("1,2,3,4-Tetrachlorobenzene");
+        record.setParameter(new Parameter("1,2,3,4-Tetrachlorobenzene"));
         final Set<ConstraintViolation<DataSample>> violations = this.validator.validate(record);
         Assert.assertEquals(0, violations.size());
     }
@@ -398,7 +395,7 @@ public class DataSampleValidatorTests {
     @Test
     public void testValueNull() {
         final DataSample record = createValidNumericRecord();
-        record.setValue(null);
+        record.setValue(new Value(null));
         final Set<ConstraintViolation<DataSample>> violations = this.validator.validate(record);
         Assert.assertEquals(1, violations.size());
     }
@@ -406,7 +403,7 @@ public class DataSampleValidatorTests {
     @Test
     public void testValueEmpty() {
         final DataSample record = createValidNumericRecord();
-        record.setValue("  ");
+        record.setValue(new Value("  "));
         final Set<ConstraintViolation<DataSample>> violations = this.validator.validate(record);
         Assert.assertEquals(1, violations.size());
     }
@@ -414,7 +411,7 @@ public class DataSampleValidatorTests {
     @Test
     public void testValueInvalid() {
         final DataSample record = createValidNumericRecord();
-        record.setValue("<>232323");
+        record.setValue(new Value("<>232323"));
         final Set<ConstraintViolation<DataSample>> violations = this.validator.validate(record);
         Assert.assertEquals(1, violations.size());
     }
@@ -422,16 +419,16 @@ public class DataSampleValidatorTests {
     @Test
     public void testValueProhibitedWithTextValue() {
         final DataSample record = createValidNumericRecord();
-        record.setTextValue("true");
+        record.setTextValue(new TxtValue("true"));
         final Set<ConstraintViolation<DataSample>> violations = this.validator.validate(record);
-        // Two violations, first for text value used with value, second for unit used with value
+        // Two violations, first for text value used with value, second for unit used with text value
         Assert.assertEquals(2, violations.size());
     }
 
     @Test
     public void testValueValidLessThanInteger() {
         final DataSample record = createValidNumericRecord();
-        record.setValue("<1");
+        record.setValue(new Value("<1"));
         final Set<ConstraintViolation<DataSample>> violations = this.validator.validate(record);
         Assert.assertEquals(0, violations.size());
     }
@@ -439,7 +436,7 @@ public class DataSampleValidatorTests {
     @Test
     public void testValueValidGreaterThanInteger() {
         final DataSample record = createValidNumericRecord();
-        record.setValue(">1");
+        record.setValue(new Value(">1"));
         final Set<ConstraintViolation<DataSample>> violations = this.validator.validate(record);
         Assert.assertEquals(0, violations.size());
     }
@@ -447,7 +444,7 @@ public class DataSampleValidatorTests {
     @Test
     public void testValueValidLessThanDecimal() {
         final DataSample record = createValidNumericRecord();
-        record.setValue("<0.1");
+        record.setValue(new Value("<0.1"));
         final Set<ConstraintViolation<DataSample>> violations = this.validator.validate(record);
         Assert.assertEquals(0, violations.size());
     }
@@ -455,7 +452,7 @@ public class DataSampleValidatorTests {
     @Test
     public void testValueValidGreaterThanDecimal() {
         final DataSample record = createValidNumericRecord();
-        record.setValue(">0.1");
+        record.setValue(new Value(">0.1"));
         final Set<ConstraintViolation<DataSample>> violations = this.validator.validate(record);
         Assert.assertEquals(0, violations.size());
     }
@@ -463,7 +460,7 @@ public class DataSampleValidatorTests {
     @Test
     public void testValueInvalidLessThanDecimalNoLeadingZero() {
         final DataSample record = createValidNumericRecord();
-        record.setValue("<.1");
+        record.setValue(new Value("<.1"));
         final Set<ConstraintViolation<DataSample>> violations = this.validator.validate(record);
         Assert.assertEquals(1, violations.size());
     }
@@ -471,7 +468,7 @@ public class DataSampleValidatorTests {
     @Test
     public void testValueInvalidGreaterThanDecimalNoLeadingZero() {
         final DataSample record = createValidNumericRecord();
-        record.setValue(">.1");
+        record.setValue(new Value(">.1"));
         final Set<ConstraintViolation<DataSample>> violations = this.validator.validate(record);
         Assert.assertEquals(1, violations.size());
     }
@@ -479,7 +476,7 @@ public class DataSampleValidatorTests {
     @Test
     public void testValueInvalidLessThanSignOnly() {
         final DataSample record = createValidNumericRecord();
-        record.setValue("<");
+        record.setValue(new Value("<"));
         final Set<ConstraintViolation<DataSample>> violations = this.validator.validate(record);
         Assert.assertEquals(1, violations.size());
     }
@@ -487,7 +484,7 @@ public class DataSampleValidatorTests {
     @Test
     public void testValueInvalidGreaterThanSignOnly() {
         final DataSample record = createValidNumericRecord();
-        record.setValue(">");
+        record.setValue(new Value(">"));
         final Set<ConstraintViolation<DataSample>> violations = this.validator.validate(record);
         Assert.assertEquals(1, violations.size());
     }
@@ -495,7 +492,7 @@ public class DataSampleValidatorTests {
     @Test
     public void testValueInvalidMinusSignOnly() {
         final DataSample record = createValidNumericRecord();
-        record.setValue("-");
+        record.setValue(new Value("-"));
         final Set<ConstraintViolation<DataSample>> violations = this.validator.validate(record);
         Assert.assertEquals(1, violations.size());
     }
@@ -509,7 +506,7 @@ public class DataSampleValidatorTests {
     @Test
     public void testTextValueNull() {
         final DataSample record = createValidNumericRecord();
-        record.setTextValue(null);
+        record.setTextValue(new TxtValue(null));
         final Set<ConstraintViolation<DataSample>> violations = this.validator.validate(record);
         Assert.assertEquals(0, violations.size());
     }
@@ -523,7 +520,7 @@ public class DataSampleValidatorTests {
     @Test
     public void testUnitNullForNumericValue() {
         final DataSample record = createValidNumericRecord();
-        record.setUnit(null);
+        record.setUnit(new Unit(null));
         final Set<ConstraintViolation<DataSample>> violations = this.validator.validate(record);
         Assert.assertEquals(1, violations.size());
     }
@@ -531,7 +528,7 @@ public class DataSampleValidatorTests {
     @Test
     public void testUnitNullForTextValue() {
         final DataSample record = createValidTextRecord();
-        record.setUnit(null);
+        record.setUnit(new Unit(null));
         final Set<ConstraintViolation<DataSample>> violations = this.validator.validate(record);
         Assert.assertEquals(0, violations.size());
     }
@@ -539,7 +536,7 @@ public class DataSampleValidatorTests {
     @Test
     public void testUnitEmpty() {
         final DataSample record = createValidNumericRecord();
-        record.setUnit(" ");
+        record.setUnit(new Unit(" "));
         final Set<ConstraintViolation<DataSample>> violations = this.validator.validate(record);
         Assert.assertEquals(1, violations.size());
     }
@@ -547,7 +544,7 @@ public class DataSampleValidatorTests {
     @Test
     public void testUnitValid() {
         final DataSample record = createValidNumericRecord();
-        record.setUnit("HU");
+        record.setUnit(new Unit("HU"));
         final Set<ConstraintViolation<DataSample>> violations = this.validator.validate(record);
         Assert.assertEquals(0, violations.size());
     }
@@ -555,7 +552,7 @@ public class DataSampleValidatorTests {
     @Test
     public void testUnitProhibitedWithTextValue() {
         final DataSample record = createValidTextRecord();
-        record.setUnit("HU");
+        record.setUnit(new Unit("HU"));
         final Set<ConstraintViolation<DataSample>> violations = this.validator.validate(record);
         Assert.assertEquals(1, violations.size());
     }
@@ -569,7 +566,7 @@ public class DataSampleValidatorTests {
     @Test
     public void testReferencePeriodNull() {
         final DataSample record = createValidNumericRecord();
-        record.setReferencePeriod(null);
+        record.setReferencePeriod(new ReferencePeriod(null));
         final Set<ConstraintViolation<DataSample>> violations = this.validator.validate(record);
         Assert.assertEquals(0, violations.size());
     }
@@ -577,7 +574,7 @@ public class DataSampleValidatorTests {
     @Test
     public void testReferencePeriodInvalid() {
         final DataSample record = createValidNumericRecord();
-        record.setReferencePeriod(RandomStringUtils.random(30));
+        record.setReferencePeriod(new ReferencePeriod(RandomStringUtils.random(30)));
         final Set<ConstraintViolation<DataSample>> violations = this.validator.validate(record);
         Assert.assertEquals(1, violations.size());
     }
@@ -591,7 +588,7 @@ public class DataSampleValidatorTests {
     @Test
     public void testMethStandNull() {
         final DataSample record = createValidNumericRecord();
-        record.setMethStand(null);
+        record.setMethStand(new MethodOrStandard(null));
         final Set<ConstraintViolation<DataSample>> violations = this.validator.validate(record);
         Assert.assertEquals(0, violations.size());
     }
@@ -599,7 +596,7 @@ public class DataSampleValidatorTests {
     @Test
     public void testMethStandInvalid() {
         final DataSample record = createValidNumericRecord();
-        record.setMethStand(RandomStringUtils.random(31));
+        record.setMethStand(new MethodOrStandard(RandomStringUtils.random(31)));
         final Set<ConstraintViolation<DataSample>> violations = this.validator.validate(record);
         Assert.assertEquals(1, violations.size());
     }
@@ -613,7 +610,7 @@ public class DataSampleValidatorTests {
     @Test
     public void testCommentsNull() {
         final DataSample record = createValidNumericRecord();
-        record.setComments(null);
+        record.setComments(new Comments(null));
         final Set<ConstraintViolation<DataSample>> violations = this.validator.validate(record);
         Assert.assertEquals(0, violations.size());
     }
@@ -621,11 +618,11 @@ public class DataSampleValidatorTests {
     @Test
     public void testCommentsLength() {
         final DataSample record = createValidNumericRecord();
-        record.setComments(RandomStringUtils.random(255));
+        record.setComments(new Comments(RandomStringUtils.random(255)));
         Set<ConstraintViolation<DataSample>> violations = this.validator.validate(record);
         Assert.assertEquals(0, violations.size());
 
-        record.setComments(RandomStringUtils.random(256));
+        record.setComments(new Comments(RandomStringUtils.random(256)));
         violations = this.validator.validate(record);
         Assert.assertEquals(1, violations.size());
     }
@@ -639,7 +636,7 @@ public class DataSampleValidatorTests {
     @Test
     public void testCicNull() {
         final DataSample record = createValidNumericRecord();
-        record.setCic(null);
+        record.setCic(new Cic(null));
         final Set<ConstraintViolation<DataSample>> violations = this.validator.validate(record);
         Assert.assertEquals(0, violations.size());
     }
@@ -647,11 +644,11 @@ public class DataSampleValidatorTests {
     @Test
     public void testCicLength() {
         final DataSample record = createValidNumericRecord();
-        record.setCic(RandomStringUtils.random(255));
+        record.setCic(new Cic(RandomStringUtils.random(255)));
         Set<ConstraintViolation<DataSample>> violations = this.validator.validate(record);
         Assert.assertEquals(0, violations.size());
 
-        record.setCic(RandomStringUtils.random(256));
+        record.setCic(new Cic(RandomStringUtils.random(256)));
         violations = this.validator.validate(record);
         Assert.assertEquals(1, violations.size());
     }
@@ -662,25 +659,25 @@ public class DataSampleValidatorTests {
      *
      *=================================================================================================================
      */
-    @Test
-    public void testCasNull() {
-        final DataSample record = createValidNumericRecord();
-        record.setCas(null);
-        final Set<ConstraintViolation<DataSample>> violations = this.validator.validate(record);
-        Assert.assertEquals(0, violations.size());
-    }
-
-    @Test
-    public void testCasLength() {
-        final DataSample record = createValidNumericRecord();
-        record.setCas(RandomStringUtils.random(255));
-        Set<ConstraintViolation<DataSample>> violations = this.validator.validate(record);
-        Assert.assertEquals(0, violations.size());
-
-        record.setCas(RandomStringUtils.random(256));
-        violations = this.validator.validate(record);
-        Assert.assertEquals(1, violations.size());
-    }
+    //    @Test
+    //    public void testCasNull() {
+    //        final DataSample record = createValidNumericRecord();
+    //        record.setCas(null);
+    //        final Set<ConstraintViolation<DataSample>> violations = this.validator.validate(record);
+    //        Assert.assertEquals(0, violations.size());
+    //    }
+    //
+    //    @Test
+    //    public void testCasLength() {
+    //        final DataSample record = createValidNumericRecord();
+    //        record.setCas(RandomStringUtils.random(255));
+    //        Set<ConstraintViolation<DataSample>> violations = this.validator.validate(record);
+    //        Assert.assertEquals(0, violations.size());
+    //
+    //        record.setCas(RandomStringUtils.random(256));
+    //        violations = this.validator.validate(record);
+    //        Assert.assertEquals(1, violations.size());
+    //    }
 
     /*=================================================================================================================
      *
@@ -688,25 +685,25 @@ public class DataSampleValidatorTests {
      *
      *=================================================================================================================
      */
-    @Test
-    public void testRdCodeNull() {
-        final DataSample record = createValidNumericRecord();
-        record.setRdCode(null);
-        final Set<ConstraintViolation<DataSample>> violations = this.validator.validate(record);
-        Assert.assertEquals(0, violations.size());
-    }
-
-    @Test
-    public void testRdCodeLength() {
-        final DataSample record = createValidNumericRecord();
-        record.setRdCode(RandomStringUtils.random(255));
-        Set<ConstraintViolation<DataSample>> violations = this.validator.validate(record);
-        Assert.assertEquals(0, violations.size());
-
-        record.setRdCode(RandomStringUtils.random(256));
-        violations = this.validator.validate(record);
-        Assert.assertEquals(1, violations.size());
-    }
+    //    @Test
+    //    public void testRdCodeNull() {
+    //        final DataSample record = createValidNumericRecord();
+    //        record.setRdCode(null);
+    //        final Set<ConstraintViolation<DataSample>> violations = this.validator.validate(record);
+    //        Assert.assertEquals(0, violations.size());
+    //    }
+    //
+    //    @Test
+    //    public void testRdCodeLength() {
+    //        final DataSample record = createValidNumericRecord();
+    //        record.setRdCode(RandomStringUtils.random(255));
+    //        Set<ConstraintViolation<DataSample>> violations = this.validator.validate(record);
+    //        Assert.assertEquals(0, violations.size());
+    //
+    //        record.setRdCode(RandomStringUtils.random(256));
+    //        violations = this.validator.validate(record);
+    //        Assert.assertEquals(1, violations.size());
+    //    }
 
     /**
      * Creates a {@link DataSample} instance with all values setup
@@ -717,22 +714,22 @@ public class DataSampleValidatorTests {
     private static DataSample createValidNumericRecord() {
         final DataSample record = new DataSample();
         record.setEaId(new EaId("DP3135ZP"));
-        record.setSiteName("Site Name");
-        record.setReturnType("Landfill leachate monitoring");
-        record.setMonitoringDate(ReturnsDate.from("2016-03-09T11:18:59"));
-        record.setReturnPeriod("Aug 2016");
-        record.setMonitoringPoint("Borehole 1");
-        record.setSampleReference("Sample Reference");
-        record.setSampleBy("Sam Gardner-Dell");
-        record.setParameter("1,1,1,2-Tetrachloroethane");
-        record.setValue("<0.0006");
-        record.setUnit("m3/s");
-        record.setReferencePeriod("95% of all 10-minute averages in any 24-hour period");
-        record.setMethStand("BS EN 12260");
-        record.setComments("Free text comments entered in this field.");
-        record.setCic("True");
-        record.setCas("100-74-3");
-        record.setRdCode("D13");
+        record.setSiteName(new SiteName("Site Name"));
+        record.setReturnType(new ReturnType("Landfill leachate monitoring"));
+        record.setMonitoringDate(new MonitoringDate("2016-03-09T11:18:59"));
+        record.setReturnPeriod(new ReturnPeriod("Aug 2016"));
+        record.setMonitoringPoint(new MonitoringPoint("Borehole 1"));
+        //        record.setSampleReference("Sample Reference");
+        //        record.setSampleBy("Sam Gardner-Dell");
+        record.setParameter(new Parameter("1,1,1,2-Tetrachloroethane"));
+        record.setValue(new Value("<0.0006"));
+        record.setUnit(new Unit("m3/s"));
+        record.setReferencePeriod(new ReferencePeriod("95% of all 10-minute averages in any 24-hour period"));
+        record.setMethStand(new MethodOrStandard("BS EN 12260"));
+        record.setComments(new Comments("Free text comments entered in this field."));
+        record.setCic(new Cic("True"));
+        //        record.setCas("100-74-3");
+        //        record.setRdCode("D13");
         return record;
     }
 
@@ -743,9 +740,9 @@ public class DataSampleValidatorTests {
      */
     private static DataSample createValidTextRecord() {
         final DataSample record = createValidNumericRecord();
-        record.setValue(null);
-        record.setTextValue("true");
-        record.setUnit(null);
+        record.setValue(new Value(null));
+        record.setTextValue(new TxtValue("true"));
+        record.setUnit(new Unit(null));
         return record;
     }
 }

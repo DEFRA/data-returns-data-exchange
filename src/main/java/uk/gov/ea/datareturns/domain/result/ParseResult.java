@@ -1,10 +1,10 @@
 package uk.gov.ea.datareturns.domain.result;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonUnwrapped;
 import org.apache.commons.collections4.ComparatorUtils;
 import uk.gov.ea.datareturns.domain.model.DataSample;
-import uk.gov.ea.datareturns.domain.model.EaId;
+import uk.gov.ea.datareturns.domain.model.fields.impl.EaId;
 
 import java.util.*;
 
@@ -25,11 +25,11 @@ public class ParseResult {
     }
 
     /**
-     * Create a new ParseResult from the {@link List} of records that was parsed
+     * Create a new ParseResult from the {@link Collection} of records that was parsed
      *
-     * @param records the {@link List} of {@link DataSample} objects which were parsed
+     * @param records the {@link Collection} of {@link DataSample} objects which were parsed
      */
-    public ParseResult(final List<DataSample> records) {
+    public ParseResult(final Collection<DataSample> records) {
         // Mapping of Site_Name to details about a particular EA_ID.  Note that site is optional
         // so identifiers with no site are displayed at the top of the structure with a null site name
         final Map<String, SiteSummary> siteSummariesMap = new TreeMap<>(ComparatorUtils.nullLowComparator(null));
@@ -41,7 +41,7 @@ public class ParseResult {
 		 */
         for (final DataSample record : records) {
             final EaId eaId = record.getEaId();
-            final String siteName = record.getSiteName();
+            final String siteName = record.getSiteName().getValue();
 
             // Retrieve the set of identifiers belonging to this site.
             SiteSummary siteSummary = siteSummariesMap.get(siteName);
@@ -117,9 +117,13 @@ public class ParseResult {
      * @author Sam Gardner-Dell
      */
     public static class EaIdSummary implements Comparable<EaIdSummary> {
-        @JsonUnwrapped
+        @JsonIgnore
         private EaId eaId;
-        @JsonProperty
+
+        @JsonProperty @SuppressWarnings("unused")
+        private String identifier;
+
+        @JsonProperty @SuppressWarnings("unused")
         private long count;
 
         /**
@@ -136,6 +140,7 @@ public class ParseResult {
          */
         public EaIdSummary(final EaId eaId) {
             this.eaId = eaId;
+            this.identifier = eaId.getEntity().getName();
             this.count = 0;
         }
 

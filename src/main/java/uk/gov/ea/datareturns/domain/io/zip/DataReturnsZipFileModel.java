@@ -1,7 +1,7 @@
 package uk.gov.ea.datareturns.domain.io.zip;
 
 import org.apache.commons.io.FileUtils;
-import uk.gov.ea.datareturns.domain.model.EaId;
+import uk.gov.ea.datareturns.domain.model.fields.impl.EaId;
 
 import java.io.File;
 import java.io.IOException;
@@ -114,7 +114,7 @@ public class DataReturnsZipFileModel {
             if (outputFileIdentifiers != null) {
                 final Properties outputFileIdProperties = new Properties();
                 outputFileIdentifiers.forEach((fileName, eaId) -> {
-                    outputFileIdProperties.put(fileName, eaId.getIdentifier());
+                    outputFileIdProperties.put(fileName, eaId.getValue().getName());
                 });
 
                 entry = new ZipEntry(FILE_OUTPUT_IDENTIFIERS);

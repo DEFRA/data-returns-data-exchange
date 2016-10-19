@@ -35,7 +35,7 @@ public final class CSVColumnReader {
         final CsvParserSettings parserSettings = new CsvParserSettings();
         parserSettings.setHeaderExtractionEnabled(true);
         parserSettings.setLineSeparatorDetectionEnabled(true);
-        parserSettings.setRowProcessor(rowProcessor);
+        parserSettings.setProcessor(rowProcessor);
         // Only read the column that we're after!
         parserSettings.selectFields(columnName);
 

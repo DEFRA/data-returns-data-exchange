@@ -1,162 +1,99 @@
 package uk.gov.ea.datareturns.domain.model;
 
-import com.univocity.parsers.annotations.Convert;
-import com.univocity.parsers.annotations.Parsed;
-import org.hibernate.validator.constraints.Length;
-import org.hibernate.validator.constraints.NotBlank;
-import uk.gov.ea.datareturns.domain.io.csv.generic.AbstractCSVRecord;
-import uk.gov.ea.datareturns.domain.model.rules.DataReturnsHeaders;
-import uk.gov.ea.datareturns.domain.model.rules.conversion.EaIdConverter;
-import uk.gov.ea.datareturns.domain.model.rules.conversion.ReturnsDateConverter;
-import uk.gov.ea.datareturns.domain.model.rules.modifiers.field.*;
-import uk.gov.ea.datareturns.domain.model.validation.auditors.controlledlist.*;
-import uk.gov.ea.datareturns.domain.model.validation.auditors.dependencies.PrimaryFieldBlocksDependentAuditor;
-import uk.gov.ea.datareturns.domain.model.validation.auditors.dependencies.PrimaryFieldRequiresDependentAuditor;
-import uk.gov.ea.datareturns.domain.model.validation.auditors.dependencies.TxtValueSeeCommentRequiresCommentAuditor;
-import uk.gov.ea.datareturns.domain.model.validation.constraints.controlledlist.ControlledList;
-import uk.gov.ea.datareturns.domain.model.validation.constraints.dependencies.DependentField;
-import uk.gov.ea.datareturns.domain.model.validation.constraints.dependencies.RequireExactlyOneOf;
-import uk.gov.ea.datareturns.domain.model.validation.constraints.field.ValidReturnsDate;
+import uk.gov.ea.datareturns.domain.model.fields.MappedField;
+import uk.gov.ea.datareturns.domain.model.fields.impl.*;
+import uk.gov.ea.datareturns.domain.model.rules.FieldDefinition;
+import uk.gov.ea.datareturns.domain.model.validation.constraints.factory.ValidRecord;
 
 import javax.validation.Valid;
-import javax.validation.constraints.Pattern;
 
 /**
  * Represents an individual sample (data return) record entry
  *
  * @author Sam Gardner-Dell
  */
-// One of Value or Txt_Value must be present but not both
-@RequireExactlyOneOf(fieldGetters = { "getValue",
-        "getTextValue" }, tooFewMessage = "{DR9999-Missing}", tooManyMessage = "{DR9999-Conflict}")
-
-// If Value is present, we must have a Unit
-@DependentField(primaryFieldGetter = "getValue", dependentFieldGetter = "getUnit", fieldName = DataReturnsHeaders.UNIT,
-        auditor = PrimaryFieldRequiresDependentAuditor.class, message = "{DR9050-Missing}")
-
-// If Txt_Value specified, unit must not be used
-@DependentField(primaryFieldGetter = "getTextValue", dependentFieldGetter = "getUnit", fieldName = DataReturnsHeaders.UNIT,
-        auditor = PrimaryFieldBlocksDependentAuditor.class, message = "{DR9050-Conflict}")
-
-// If Txt_Value is "See Comment" then Comment must be present
-@DependentField(primaryFieldGetter = "getTextValue", dependentFieldGetter = "getComments", fieldName = DataReturnsHeaders.COMMENTS,
-        auditor = TxtValueSeeCommentRequiresCommentAuditor.class, message = "{DR9140-Missing}")
-
-public class DataSample extends AbstractCSVRecord {
-    /** Regular expression for fields which should only contain simple text (no special characters) */
-    private static final String REGEX_SIMPLE_TEXT = "^[a-zA-Z0-9 ]*$";
-
+@ValidRecord(DataSample.class)
+public class DataSample {
     /** The EA Unique Identifier (EA_ID) */
-    @Parsed(field = DataReturnsHeaders.EA_IDENTIFIER)
-    @Convert(conversionClass = EaIdConverter.class)
-    @Valid
+    @Valid @MappedField(FieldDefinition.EA_ID)
     private EaId eaId;
 
     /** The site name (Site_Name) */
-    @Parsed(field = DataReturnsHeaders.SITE_NAME)
-    @Pattern(regexp = REGEX_SIMPLE_TEXT, message = "{DR9110-Incorrect}")
-    @Length(max = 255, message = "{DR9110-Length}")
-    @NotBlank(message = "{DR9110-Missing}")
-    private String siteName;
+    @Valid @MappedField(FieldDefinition.Site_Name)
+    private SiteName siteName;
 
     /** The return type (Rtn_Type) */
-    @Parsed(field = DataReturnsHeaders.RETURN_TYPE)
-    @NotBlank(message = "{DR9010-Missing}")
-    @ControlledList(auditor = ReturnTypeAuditor.class, message = "{DR9010-Incorrect}")
-    @Modifier(modifier = ReturnTypeModifier.class)
-    private String returnType;
+    @Valid @MappedField(FieldDefinition.Rtn_Type)
+    private ReturnType returnType;
 
     /** The monitoring date (Mon_Date) */
-    @Parsed(field = DataReturnsHeaders.MONITORING_DATE)
-    @Convert(conversionClass = ReturnsDateConverter.class)
-    @ValidReturnsDate // see ValidReturnsDate annotation class for validation messages
-    private ReturnsDate monitoringDate;
+    @Valid @MappedField(FieldDefinition.Mon_Date)
+    private MonitoringDate monitoringDate;
 
     /** The return period  (Rtn_Period) */
-    @Parsed(field = DataReturnsHeaders.RETURN_PERIOD)
-    @ControlledList(auditor = ReturnPeriodAuditor.class, message = "{DR9070-Incorrect}")
-    @Modifier(modifier = ReturnPeriodModifier.class)
-    private String returnPeriod;
+    @Valid @MappedField(FieldDefinition.Rtn_Period)
+    private ReturnPeriod returnPeriod;
 
     /** The monitoring point (Mon_Point) */
-    @Parsed(field = DataReturnsHeaders.MONITORING_POINT)
-    @NotBlank(message = "{DR9060-Missing}")
-    @Length(max = 30, message = "{DR9060-Length}")
-    @Pattern(regexp = REGEX_SIMPLE_TEXT, message = "{DR9060-Incorrect}")
-    private String monitoringPoint;
-
-    /** Sample reference (Smpl_Ref) */
-    @Parsed(field = DataReturnsHeaders.SAMPLE_REFERENCE)
-    @Length(max = 255, message = "{DR9120-Length}")
-    @Pattern(regexp = REGEX_SIMPLE_TEXT, message = "{DR9120-Incorrect}")
-    private String sampleReference;
-
-    /** Sampled by (Smpl_By) */
-    @Parsed(field = DataReturnsHeaders.SAMPLE_BY)
-    @Length(max = 255, message = "{DR9130-Length}")
-    private String sampleBy;
+    @Valid @MappedField(FieldDefinition.Mon_Point)
+    private MonitoringPoint monitoringPoint;
 
     /** Parameter value (Parameter) */
-    @Parsed(field = DataReturnsHeaders.PARAMETER)
-    @NotBlank(message = "{DR9030-Missing}")
-    @ControlledList(auditor = ParameterAuditor.class, message = "{DR9030-Incorrect}")
-    @Modifier(modifier = ParameterModifier.class)
-    private String parameter;
+    @Valid @MappedField(FieldDefinition.Parameter)
+    private Parameter parameter;
 
     /** Value (Value) */
-    @Parsed(field = DataReturnsHeaders.VALUE)
-    @Pattern(regexp = "([<>]?-?(\\d+\\.)?(\\d)+)", message = "{DR9040-Incorrect}")
-    private String value;
+    @Valid @MappedField(FieldDefinition.Value)
+    private Value value;
 
     /** Textual value (Txt_Value) */
-    @Parsed(field = DataReturnsHeaders.TEXT_VALUE)
-    @ControlledList(auditor = TxtValueAuditor.class, message = "{DR9080-Incorrect}")
-    @Modifier(modifier = TextValueModifier.class)
-    private String textValue;
+    @Valid @MappedField(FieldDefinition.Txt_Value)
+    private TxtValue textValue;
 
     /** Qualifier value (Qualifier) */
-    @Parsed(field = DataReturnsHeaders.QUALIFIER)
-    @ControlledList(auditor = QualifierAuditor.class, message = "{DR9180-Incorrect}")
-    @Modifier(modifier = QualifierModifier.class)
-    private String qualifiers;
+    @Valid @MappedField(FieldDefinition.Qualifier)
+    private Qualifier qualifier;
 
     /** Unit of measurement (Unit) */
-    @Parsed(field = DataReturnsHeaders.UNIT)
-    @ControlledList(auditor = UnitAuditor.class, message = "{DR9050-Incorrect}")
-    @Modifier(modifier = UnitModifier.class)
-    private String unit;
+    @Valid @MappedField(FieldDefinition.Unit)
+    private Unit unit;
 
     /** Reference period */
-    @Parsed(field = DataReturnsHeaders.REFERENCE_PERIOD)
-    @ControlledList(auditor = ReferencePeriodAuditor.class, message = "{DR9090-Incorrect}")
-    @Modifier(modifier = ReferencePeriodModifier.class)
-    private String referencePeriod;
+    @Valid @MappedField(FieldDefinition.Ref_Period)
+    private ReferencePeriod referencePeriod;
 
     /** Method or standard used (Meth_Stand) */
-    @Parsed(field = DataReturnsHeaders.METHOD_STANDARD)
-    @ControlledList(auditor = MethodOrStandardAuditor.class, message = "{DR9100-Incorrect}")
-    @Modifier(modifier = MethodOrStandardModifier.class)
-    private String methStand;
+    @Valid @MappedField(FieldDefinition.Meth_Stand)
+    private MethodOrStandard methStand;
 
     /** Record comments (Comments) */
-    @Parsed(field = DataReturnsHeaders.COMMENTS)
-    @Length(max = 255, message = "{DR9140-Length}")
-    private String comments;
+    @Valid @MappedField(FieldDefinition.Comments)
+    private Comments comments;
 
     /** Commercial in confidence data (CiC) */
-    @Parsed(field = DataReturnsHeaders.COMMERCIAL_IN_CONFIDENCE)
-    @Length(max = 255, message = "{DR9150-Length}")
-    private String cic;
+    @Valid @MappedField(FieldDefinition.CiC)
+    private Cic cic;
 
-    /** Chemical Abstracts Service value (CAS) */
-    @Parsed(field = DataReturnsHeaders.CHEMICAL_ABSTRACTS_SERVICE)
-    @Length(max = 255, message = "{DR9160-Length}")
-    private String cas;
+    //    /** Sample reference (Smpl_Ref) */
+    //    @Length(max = 255, message = "{DR9120-Length}")
+    //    @Pattern(regexp = FieldValue.REGEX_SIMPLE_TEXT, message = "{DR9120-Incorrect}")
+    //    @Valid @MappedField(FieldDefinition.Smpl_Ref)
+    //    private String sampleReference;
+    //
+    //    /** Sampled by (Smpl_By) */
+    //    @Length(max = 255, message = "{DR9130-Length}")
+    //    @Valid @MappedField(FieldDefinition.Smpl_By)
+    //    private String sampleBy;
 
-    /** Recovery and disposal code (RD_Code) */
-    @Parsed(field = DataReturnsHeaders.RECOVERY_AND_DISPOSAL_CODE)
-    @Length(max = 255, message = "{DR9170-Length}")
-    private String rdCode;
+    //    /** Chemical Abstracts Service value (CAS) */
+    //    @Length(max = 255, message = "{DR9160-Length}")
+    //    @Valid @MappedField(FieldDefinition.CAS)
+    //    private String cas;
+    //`
+    //    /** Recovery and disposal code (RD_Code) */
+    //    @Length(max = 255, message = "{DR9170-Length}")
+    //    @Valid @MappedField(FieldDefinition.RD_Code)
+    //    private String rdCode;
 
     /**
      * Default constructor
@@ -166,269 +103,272 @@ public class DataSample extends AbstractCSVRecord {
     }
 
     /**
-     * @return the eaId
+     * Gets ea id.
+     *
+     * @return the ea id
      */
     public EaId getEaId() {
-        return this.eaId;
+        return eaId;
     }
 
     /**
-     #	 * @param eaId the eaId to set
+     * Sets ea id.
+     *
+     * @param eaId the ea id
      */
-    public void setEaId(final EaId eaId) {
+    public void setEaId(EaId eaId) {
         this.eaId = eaId;
     }
 
     /**
-     * @return the siteName
+     * Gets site name.
+     *
+     * @return the site name
      */
-    public String getSiteName() {
-        return this.siteName;
+    public SiteName getSiteName() {
+        return siteName;
     }
 
     /**
-     * @param siteName the siteName to set
+     * Sets site name.
+     *
+     * @param siteName the site name
      */
-    public void setSiteName(final String siteName) {
+    public void setSiteName(SiteName siteName) {
         this.siteName = siteName;
     }
 
     /**
-     * @return the returnType
+     * Gets return type.
+     *
+     * @return the return type
      */
-    public String getReturnType() {
-        return this.returnType;
+    public ReturnType getReturnType() {
+        return returnType;
     }
 
     /**
-     * @param returnType the returnType to set
+     * Sets return type.
+     *
+     * @param returnType the return type
      */
-    public void setReturnType(final String returnType) {
+    public void setReturnType(ReturnType returnType) {
         this.returnType = returnType;
     }
 
     /**
-     * @return the monitoringDate
+     * Gets monitoring date.
+     *
+     * @return the monitoring date
      */
-    public ReturnsDate getMonitoringDate() {
-        return this.monitoringDate;
+    public MonitoringDate getMonitoringDate() {
+        return monitoringDate;
     }
 
     /**
-     * @param monitoringDate the monitoringDate to set
+     * Sets monitoring date.
+     *
+     * @param monitoringDate the monitoring date
      */
-    public void setMonitoringDate(final ReturnsDate monitoringDate) {
+    public void setMonitoringDate(MonitoringDate monitoringDate) {
         this.monitoringDate = monitoringDate;
     }
 
     /**
-     * @return the returnPeriod
+     * Gets return period.
+     *
+     * @return the return period
      */
-    public String getReturnPeriod() {
-        return this.returnPeriod;
+    public ReturnPeriod getReturnPeriod() {
+        return returnPeriod;
     }
 
     /**
-     * @param returnPeriod the returnPeriod to set
+     * Sets return period.
+     *
+     * @param returnPeriod the return period
      */
-    public void setReturnPeriod(final String returnPeriod) {
+    public void setReturnPeriod(ReturnPeriod returnPeriod) {
         this.returnPeriod = returnPeriod;
     }
 
     /**
-     * @return the monitoringPoint
+     * Gets monitoring point.
+     *
+     * @return the monitoring point
      */
-    public String getMonitoringPoint() {
-        return this.monitoringPoint;
+    public MonitoringPoint getMonitoringPoint() {
+        return monitoringPoint;
     }
 
     /**
-     * @param monitoringPoint the monitoringPoint to set
+     * Sets monitoring point.
+     *
+     * @param monitoringPoint the monitoring point
      */
-    public void setMonitoringPoint(final String monitoringPoint) {
+    public void setMonitoringPoint(MonitoringPoint monitoringPoint) {
         this.monitoringPoint = monitoringPoint;
     }
 
     /**
-     * @return the sampleReference
-     */
-    public String getSampleReference() {
-        return this.sampleReference;
-    }
-
-    /**
-     * @param sampleReference the sampleReference to set
-     */
-    public void setSampleReference(final String sampleReference) {
-        this.sampleReference = sampleReference;
-    }
-
-    /**
-     * @return the sampleBy
-     */
-    public String getSampleBy() {
-        return this.sampleBy;
-    }
-
-    /**
-     * @param sampleBy the sampleBy to set
-     */
-    public void setSampleBy(final String sampleBy) {
-        this.sampleBy = sampleBy;
-    }
-
-    /**
+     * Gets parameter.
+     *
      * @return the parameter
      */
-    public String getParameter() {
-        return this.parameter;
+    public Parameter getParameter() {
+        return parameter;
     }
 
     /**
-     * @param parameter the parameter to set
+     * Sets parameter.
+     *
+     * @param parameter the parameter
      */
-    public void setParameter(final String parameter) {
+    public void setParameter(Parameter parameter) {
         this.parameter = parameter;
     }
 
     /**
+     * Gets value.
+     *
      * @return the value
      */
-    public String getValue() {
-        return this.value;
+    public Value getValue() {
+        return value;
     }
 
     /**
-     * @param value the value to set
+     * Sets value.
+     *
+     * @param value the value
      */
-    public void setValue(final String value) {
+    public void setValue(Value value) {
         this.value = value;
     }
 
     /**
-     * @return the textValue
+     * Gets text value.
+     *
+     * @return the text value
      */
-    public String getTextValue() {
-        return this.textValue;
+    public TxtValue getTextValue() {
+        return textValue;
     }
 
     /**
-     * @param textValue the textValue to set
+     * Sets text value.
+     *
+     * @param textValue the text value
      */
-    public void setTextValue(final String textValue) {
+    public void setTextValue(TxtValue textValue) {
         this.textValue = textValue;
     }
 
     /**
-     * @return the qualifier values
+     * Gets qualifier.
+     *
+     * @return the qualifier
      */
-    public String getQualifiers() {
-        return qualifiers;
+    public Qualifier getQualifier() {
+        return qualifier;
     }
 
     /**
-     * @param qualifiers the qualifier values to set
+     * Sets qualifier.
+     *
+     * @param qualifier the qualifier
      */
-    public void setQualifiers(String qualifiers) {
-        this.qualifiers = qualifiers;
+    public void setQualifier(Qualifier qualifier) {
+        this.qualifier = qualifier;
     }
 
     /**
+     * Gets unit.
+     *
      * @return the unit
      */
-    public String getUnit() {
-        return this.unit;
+    public Unit getUnit() {
+        return unit;
     }
 
     /**
-     * @param unit the unit to set
+     * Sets unit.
+     *
+     * @param unit the unit
      */
-    public void setUnit(final String unit) {
+    public void setUnit(Unit unit) {
         this.unit = unit;
     }
 
     /**
-     * @return the referencePeriod
+     * Gets reference period.
+     *
+     * @return the reference period
      */
-    public String getReferencePeriod() {
-        return this.referencePeriod;
+    public ReferencePeriod getReferencePeriod() {
+        return referencePeriod;
     }
 
     /**
-     * @param referencePeriod the referencePeriod to set
+     * Sets reference period.
+     *
+     * @param referencePeriod the reference period
      */
-    public void setReferencePeriod(final String referencePeriod) {
+    public void setReferencePeriod(ReferencePeriod referencePeriod) {
         this.referencePeriod = referencePeriod;
     }
 
     /**
-     * @return the methStand
+     * Gets meth stand.
+     *
+     * @return the meth stand
      */
-    public String getMethStand() {
-        return this.methStand;
+    public MethodOrStandard getMethStand() {
+        return methStand;
     }
 
     /**
-     * @param methStand the methStand to set
+     * Sets meth stand.
+     *
+     * @param methStand the meth stand
      */
-    public void setMethStand(final String methStand) {
+    public void setMethStand(MethodOrStandard methStand) {
         this.methStand = methStand;
     }
 
     /**
+     * Gets comments.
+     *
      * @return the comments
      */
-    public String getComments() {
-        return this.comments;
+    public Comments getComments() {
+        return comments;
     }
 
     /**
-     * @param comments the comments to set
+     * Sets comments.
+     *
+     * @param comments the comments
      */
-    public void setComments(final String comments) {
+    public void setComments(Comments comments) {
         this.comments = comments;
     }
 
     /**
+     * Gets cic.
+     *
      * @return the cic
      */
-    public String getCic() {
-        return this.cic;
+    public Cic getCic() {
+        return cic;
     }
 
     /**
-     * @param cic the cic to set
+     * Sets cic.
+     *
+     * @param cic the cic
      */
-    public void setCic(final String cic) {
+    public void setCic(Cic cic) {
         this.cic = cic;
     }
-
-    /**
-     * @return the cas
-     */
-    public String getCas() {
-        return this.cas;
-    }
-
-    /**
-     * @param cas the cas to set
-     */
-    public void setCas(final String cas) {
-        this.cas = cas;
-    }
-
-    /**
-     * @return the rdCode
-     */
-    public String getRdCode() {
-        return this.rdCode;
-    }
-
-    /**
-     * @param rdCode the rdCode to set
-     */
-    public void setRdCode(final String rdCode) {
-        this.rdCode = rdCode;
-    }
-
 }

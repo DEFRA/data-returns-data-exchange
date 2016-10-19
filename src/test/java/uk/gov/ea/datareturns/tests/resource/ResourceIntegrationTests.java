@@ -11,11 +11,10 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.boot.test.SpringApplicationConfiguration;
-import org.springframework.boot.test.WebIntegrationTest;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.junit4.SpringRunner;
 import uk.gov.ea.datareturns.App;
 import uk.gov.ea.datareturns.config.TestSettings;
 import uk.gov.ea.datareturns.domain.exceptions.ApplicationExceptionType;
@@ -46,11 +45,11 @@ import static org.assertj.core.api.Assertions.assertThat;
  * Application - returns a standard HTML error code + an application specific
  * status code to help identify what went wrong.
  */
-@RunWith(SpringJUnit4ClassRunner.class)
-@WebIntegrationTest
-@ActiveProfiles("IntegrationTests")
-@SpringApplicationConfiguration(App.class)
+
+@SpringBootTest(classes = App.class, webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 @DirtiesContext
+@RunWith(SpringRunner.class)
+@ActiveProfiles("IntegrationTests")
 public class ResourceIntegrationTests {
 
     @Inject
@@ -192,7 +191,7 @@ public class ResourceIntegrationTests {
      */
     @Test
     public void testUnrecognisedFieldsFound() {
-        final Client client = createClient("test Unrecognised Field Found");
+        final Client client = createClient("test Unrecognised MappedField Found");
         final Response resp = performUploadStep(client, FILE_CSV_UNRECOGNISED_FIELD_FOUND, MEDIA_TYPE_CSV);
         assertThat(resp.getStatus()).isEqualTo(Status.BAD_REQUEST.getStatusCode());
 
@@ -457,7 +456,7 @@ public class ResourceIntegrationTests {
 
     @Test
     public void testAcceptableValueFieldChars() {
-        final Client client = createClient("test Acceptable Value Field Characters");
+        final Client client = createClient("test Acceptable Value MappedField Characters");
         final Response resp = performUploadStep(client, FILE_CSV_VALID_VALUE_CHARS, MEDIA_TYPE_CSV);
         assertThat(resp.getStatus()).isEqualTo(Status.OK.getStatusCode());
 
@@ -467,7 +466,7 @@ public class ResourceIntegrationTests {
 
     @Test
     public void testUnacceptableValueFieldChars() {
-        final Client client = createClient("test Unacceptable Value Field Characters");
+        final Client client = createClient("test Unacceptable Value MappedField Characters");
         final Response resp = performUploadStep(client, FILE_CSV_INVALID_VALUE_CHARS, MEDIA_TYPE_CSV);
         assertThat(resp.getStatus()).isEqualTo(Status.BAD_REQUEST.getStatusCode());
         //

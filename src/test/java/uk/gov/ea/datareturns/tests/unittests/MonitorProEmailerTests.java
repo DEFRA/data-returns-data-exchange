@@ -9,8 +9,13 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.context.junit4.SpringRunner;
+import uk.gov.ea.datareturns.App;
 import uk.gov.ea.datareturns.config.email.MonitorProEmailConfiguration;
-import uk.gov.ea.datareturns.domain.model.EaId;
+import uk.gov.ea.datareturns.domain.model.fields.impl.EaId;
 import uk.gov.ea.datareturns.domain.monitorpro.MonitorProTransportException;
 import uk.gov.ea.datareturns.domain.monitorpro.MonitorProTransportHandler;
 import uk.gov.ea.datareturns.domain.monitorpro.MonitorProTransportHandler.EmailTransportHandler;
@@ -27,6 +32,9 @@ import java.util.Objects;
  * @author Sam Gardner-Dell
  *
  */
+@SpringBootTest(classes=App.class)
+@DirtiesContext
+@RunWith(SpringRunner.class)
 public class MonitorProEmailerTests {
     private static File testSuccessFile;
 

@@ -44,7 +44,7 @@ logging:
     # Glassfish
     org.glassfish: INFO
     # Useful to log REST requests and responses (set to INFO for headers or DEBUG for full request/response logging)
-    org.glassfish.jersey.filter.LoggingFilter: INFO
+    org.glassfish.jersey.logging.LoggingFeature: INFO
 
 ###############################################################################
 #

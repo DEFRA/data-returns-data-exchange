@@ -3,10 +3,13 @@ package uk.gov.ea.datareturns.util;
 import com.samskivert.mustache.Mustache;
 import com.samskivert.mustache.Template;
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.CharSet;
+import org.apache.commons.lang3.CharSetUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -39,7 +42,7 @@ public final class MustacheTemplates {
     public static Template get(String resource) {
         Template templ = null;
         try {
-            final String templateText = IOUtils.toString(MustacheTemplates.class.getResourceAsStream(resource));
+            final String templateText = IOUtils.toString(MustacheTemplates.class.getResourceAsStream(resource), StandardCharsets.UTF_8);
             templ = get(resource, templateText);
         } catch (IOException e) {
             LOGGER.error("Unable to read template file " + resource);

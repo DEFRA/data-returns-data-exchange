@@ -10,10 +10,9 @@ import org.springframework.stereotype.Component;
 import uk.gov.ea.datareturns.config.ProcessorSettings;
 import uk.gov.ea.datareturns.domain.exceptions.*;
 import uk.gov.ea.datareturns.domain.io.csv.DataReturnsCSVProcessor;
-import uk.gov.ea.datareturns.domain.io.csv.generic.CSVModel;
 import uk.gov.ea.datareturns.domain.io.zip.DataReturnsZipFileModel;
 import uk.gov.ea.datareturns.domain.model.DataSample;
-import uk.gov.ea.datareturns.domain.model.EaId;
+import uk.gov.ea.datareturns.domain.model.fields.impl.EaId;
 import uk.gov.ea.datareturns.domain.model.rules.FileType;
 import uk.gov.ea.datareturns.domain.model.validation.DataSampleValidator;
 import uk.gov.ea.datareturns.domain.result.*;
@@ -24,10 +23,7 @@ import javax.inject.Inject;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Processor for file uploads to the data-returns service.
@@ -48,11 +44,11 @@ public class FileUploadProcessor extends AbstractReturnsProcessor<DataExchangeRe
 
     private final DataSampleValidator validator;
 
+    private final DataReturnsCSVProcessor csvProcessor;
+
     private InputStream inputStream;
 
     private String clientFilename;
-
-    private ModificationProcessor<DataSample> modificationProcessor;
 
     /**
      * Create a new {@link FileUploadProcessor}.
@@ -65,12 +61,12 @@ public class FileUploadProcessor extends AbstractReturnsProcessor<DataExchangeRe
      */
     @Inject
     public FileUploadProcessor(final ProcessorSettings processorSettings, final StorageProvider storage,
-            final DataSampleValidator validator, final ModificationProcessor<DataSample> modificationProcessor)
+            final DataSampleValidator validator, final DataReturnsCSVProcessor csvProcessor)
             throws ProcessingException {
         super(processorSettings);
         this.storage = storage;
         this.validator = validator;
-        this.modificationProcessor = modificationProcessor;
+        this.csvProcessor = csvProcessor;
     }
 
     /**
@@ -100,7 +96,6 @@ public class FileUploadProcessor extends AbstractReturnsProcessor<DataExchangeRe
             final StopWatch stopwatch = new StopWatch("data-exchange upload timer");
             stopwatch.startTask("Preparing File");
 
-            final DataReturnsCSVProcessor csvProcessor = new DataReturnsCSVProcessor();
             final File uploadedFile = File.createTempFile("dr-upload", ".csv", this.workingFolder);
 
             // 1. Save upload file on server
@@ -112,11 +107,11 @@ public class FileUploadProcessor extends AbstractReturnsProcessor<DataExchangeRe
             stopwatch.startTask("Parsing file into model");
 
             // 3. Read the CSV data into a model
-            final CSVModel<DataSample> csvInput = csvProcessor.read(uploadedFile);
+            final Collection<DataSample> model = csvProcessor.read(uploadedFile);
 
             stopwatch.startTask("Validating model");
             // Validate the model
-            final ValidationErrors validationErrors = this.validator.validateModel(csvInput);
+            final ValidationErrors validationErrors = this.validator.validateModel(model);
 
             // Woohoo! prepare success/failure response
             final DataExchangeResult result = new DataExchangeResult(new UploadResult(this.clientFilename));
@@ -124,22 +119,17 @@ public class FileUploadProcessor extends AbstractReturnsProcessor<DataExchangeRe
             if (validationErrors.isValid()) {
                 LOGGER.debug("File '" + this.clientFilename + "' is VALID");
                 stopwatch.startTask("Preparing output files");
-                /*
-				 * Firstly make any alias substitutions and standardize to the controlled lists
-				 */
-                modificationProcessor.initialize(DataSample.class, csvInput);
-                final CSVModel<DataSample> csvInputSubstituted = modificationProcessor.makeModifications();
 
 				/*
-				 * Prepare the data for output to Emma.
+                 * Prepare the data for output to Emma.
 				 * This involves breaking the data up into separate lists my permit number and creating an individual output file for each
 				 * permit.
 				 */
                 final List<File> outputFiles = new ArrayList<>();
                 final Map<String, EaId> outputFileIdentifiers = new HashMap<>();
-                final Map<EaId, List<DataSample>> permitToRecordMap = prepareOutputData(csvInputSubstituted.getRecords());
+                final Map<EaId, List<DataSample>> permitToRecordMap = prepareOutputData(model);
                 for (final Map.Entry<EaId, List<DataSample>> entry : permitToRecordMap.entrySet()) {
-                    final File permitDataFile = File.createTempFile("output-" + entry.getKey().getIdentifier() + "-", ".csv",
+                    final File permitDataFile = File.createTempFile("output-" + entry.getKey().getValue().getName() + "-", ".csv",
                             this.workingFolder);
                     csvProcessor.write(entry.getValue(), getProcessorSettings().getOutputMappingsMap(), permitDataFile);
                     outputFiles.add(permitDataFile);
@@ -159,11 +149,13 @@ public class FileUploadProcessor extends AbstractReturnsProcessor<DataExchangeRe
                 result.getUploadResult().setFileKey(fileKey);
 
                 // Construct a parse result to return to the client
-                result.setParseResult(new ParseResult(csvInput.getRecords()));
+                result.setParseResult(new ParseResult(model));
             } else {
-                LOGGER.debug("File '" + this.clientFilename + "' is INVALID");
-                for (ValidationError v : validationErrors.getErrors()) {
-                    LOGGER.debug("Validation error: " + v);
+                if (LOGGER.isDebugEnabled()) {
+                    LOGGER.debug("File '" + this.clientFilename + "' is INVALID");
+                    for (ValidationError v : validationErrors.getErrors()) {
+                        LOGGER.debug("Validation error: " + v);
+                    }
                 }
                 result.setValidationErrors(validationErrors);
                 result.setAppStatusCode(ApplicationExceptionType.VALIDATION_ERRORS.getAppStatusCode());
@@ -202,12 +194,12 @@ public class FileUploadProcessor extends AbstractReturnsProcessor<DataExchangeRe
     }
 
     /**
-     * Prepare a Map of permit numbers (key) to a {@link List} of {@link DataSample}s (value) belonging to that permit
+     * Prepare a Map of permit numbers (key) to a {@link Collection} of {@link DataSample}s (value) belonging to that permit
      *
-     * @param records the {@link List} of {@link DataSample} to prepared for output
-     * @return a {@link Map} of {@link EaId}s to a {@link List} of {@link DataSample}s
+     * @param records the {@link Collection} of {@link DataSample} to prepared for output
+     * @return a {@link Map} of {@link EaId}s to a {@link Collection} of {@link DataSample}s
      */
-    private static Map<EaId, List<DataSample>> prepareOutputData(final List<DataSample> records) {
+    private static Map<EaId, List<DataSample>> prepareOutputData(final Collection<DataSample> records) {
         final Map<EaId, List<DataSample>> recordMap = new HashMap<>();
 
         for (final DataSample record : records) {
