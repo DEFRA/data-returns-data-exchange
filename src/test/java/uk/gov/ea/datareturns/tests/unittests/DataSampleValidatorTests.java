@@ -1,7 +1,7 @@
 /**
  *
  */
-package uk.gov.ea.datareturns.tests.domain.model;
+package uk.gov.ea.datareturns.tests.unittests;
 
 import org.apache.commons.lang3.RandomStringUtils;
 import org.junit.Assert;
