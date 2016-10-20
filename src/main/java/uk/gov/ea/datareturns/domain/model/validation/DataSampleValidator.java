@@ -73,6 +73,7 @@ public class DataSampleValidator {
                 error.setErrorValue(errorValue);
                 error.setLineNumber(recordNumber);
                 error.setErrorMessage(violation.getMessage());
+
                 final Matcher errorKeyMatcher = ERROR_KEY_PATTERN.matcher(violation.getMessageTemplate());
 
                 int errorCode = 0;

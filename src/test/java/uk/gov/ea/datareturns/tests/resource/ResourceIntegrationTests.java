@@ -324,6 +324,14 @@ public class ResourceIntegrationTests {
     }
 
     @Test
+    public void testListMetadata() {
+        Client client = createClient("test List Metadata");
+        final String uri = createURIForStep(CONTROLLED_LISTS);
+        Response response = client.target(uri).request(MediaType.APPLICATION_JSON_TYPE).get();
+        assertThat(response.getStatus()).isEqualTo(Status.OK.getStatusCode());
+    }
+
+    @Test
     public void testControlledListParameters() {
         Client client = createClient("test Controlled List Parameters");
         final String uri = createURIForStep(CONTROLLED_LISTS) + "/parameters";
