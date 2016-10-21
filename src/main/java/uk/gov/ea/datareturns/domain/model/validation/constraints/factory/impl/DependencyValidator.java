@@ -20,17 +20,22 @@ public class DependencyValidator implements RecordConstraintValidator<DataSample
 
     @Override
     public boolean isValid(DataSample record, ConstraintValidatorContext context) {
-        ReturnType returnType = record.getReturnType().getEntity();
-        ReleasesAndTransfers releasesAndTransfers = null;
-        Parameter parameter = record.getParameter().getEntity();
-        Unit unit = record.getUnit().getEntity();
+        uk.gov.ea.datareturns.domain.model.fields.impl.ReturnType returnType = record.getReturnType();
+        //uk.gov.ea.datareturns.domain.model.fields.impl.ReleasesAndTransfers releasesAndTransfers = null;
+        uk.gov.ea.datareturns.domain.model.fields.impl.Parameter parameter = record.getParameter();
+        uk.gov.ea.datareturns.domain.model.fields.impl.Unit unit = record.getUnit();
+
+        ReturnType returnTypeEntity = (returnType != null) ? returnType.getEntity() : null;
+        ReleasesAndTransfers releasesAndTransfersEntity = null;
+        Parameter parameterEntity = (parameter != null) ? parameter.getEntity() : null;
+        Unit unitEntity = (unit != null) ? unit.getEntity() : null;
 
         // We are instantiated through reflection so we need to get the validation engine via the spring application context
         DependencyValidation dependencyValidation = SpringApplicationContextProvider.getApplicationContext().getBean(DependencyValidation.class);
 
         // Call the dependency validation engine
         Pair<ControlledListsList, DependencyValidation.Result> validation
-                = dependencyValidation.validate(returnType, releasesAndTransfers, parameter, unit);
+                = dependencyValidation.validate(returnTypeEntity, releasesAndTransfersEntity, parameterEntity, unitEntity);
 
         String message = null;
         DependencyValidation.Result result = validation.getRight();
@@ -43,21 +48,23 @@ public class DependencyValidator implements RecordConstraintValidator<DataSample
 
             switch (level) {
                 case UNITS:
-                    message = "{DR9450-Conflict}";
+                    message = "{DR9450-Combination}";
                     break;
                 case PARAMETERS:
-                    message = "{DR9430-Conflict}";
+                    message = "{DR9430-Combination}";
                    break;
                 case RELEASES_AND_TRANSFERS:
-                    message = "{DR9570-Conflict}";
+                    message = "{DR9570-Combination}";
                     break;
                 case RETURN_TYPE:
-                    message = "{DR9040-Conflict}";
+                    message = "{DR9040-Combination}";
                     break;
             }
         }
         
-        context.buildConstraintViolationWithTemplate(message);
+        context.buildConstraintViolationWithTemplate(message)
+                .addPropertyNode(level.getfieldDefinition().getName())
+                .addConstraintViolation();
 
         return false;
     }

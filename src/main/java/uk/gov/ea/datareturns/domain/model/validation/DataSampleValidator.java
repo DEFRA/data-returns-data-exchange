@@ -6,6 +6,7 @@ import uk.gov.ea.datareturns.domain.model.DataSample;
 import uk.gov.ea.datareturns.domain.model.fields.FieldValue;
 import uk.gov.ea.datareturns.domain.model.rules.FieldDefinition;
 import uk.gov.ea.datareturns.domain.model.rules.FieldMapping;
+import uk.gov.ea.datareturns.domain.result.DependencyValidationError;
 import uk.gov.ea.datareturns.domain.result.ValidationError;
 import uk.gov.ea.datareturns.domain.result.ValidationErrors;
 
@@ -32,6 +33,7 @@ public class DataSampleValidator {
 
     /** hibernate validator instance */
     private final Validator validator;
+    private final String COMBINATION = "Combination"; //TODO - String constants class for error type?
 
     /**
      * Instantiates a new {@link DataSample} validator.
@@ -57,7 +59,27 @@ public class DataSampleValidator {
         for (final DataSample record : model) {
             final Set<ConstraintViolation<DataSample>> violations = this.validator.validate(record);
             for (final ConstraintViolation<DataSample> violation : violations) {
-                final ValidationError error = new ValidationError();
+                int errorCode = 0;
+                String errorType = "Unknown";
+
+                final Matcher errorKeyMatcher = ERROR_KEY_PATTERN.matcher(violation.getMessageTemplate());
+                if (errorKeyMatcher.matches()) {
+                    errorCode = Integer.parseInt(errorKeyMatcher.group("errorCode"));
+                    errorType = errorKeyMatcher.group("errorType");
+                }
+
+                ValidationError error = null;
+                if (errorType.equals(COMBINATION)) {
+                    //error = new DependencyValidationError(
+                    //        Optional.of(record.getReturnType().getEntity().getName()),
+                    //        null,
+                    //        record.getParameter().getEntity().getName(),
+                    //        record.getUnit().getEntity().getName());
+                    error = new DependencyValidationError(null, null, null, null);
+                } else {
+                    error = new ValidationError();
+                }
+
                 String errorValue = null;
                 FieldDefinition definition = getFieldForViolation(model, violation);
                 if (violation.getInvalidValue() instanceof String) {
@@ -74,15 +96,6 @@ public class DataSampleValidator {
                 error.setLineNumber(recordNumber);
                 error.setErrorMessage(violation.getMessage());
 
-                final Matcher errorKeyMatcher = ERROR_KEY_PATTERN.matcher(violation.getMessageTemplate());
-
-                int errorCode = 0;
-                String errorType = "Unknown";
-
-                if (errorKeyMatcher.matches()) {
-                    errorCode = Integer.parseInt(errorKeyMatcher.group("errorCode"));
-                    errorType = errorKeyMatcher.group("errorType");
-                }
                 error.setErrorCode(errorCode);
                 error.setErrorType(errorType);
 
@@ -120,6 +133,13 @@ public class DataSampleValidator {
         if (mapping != null) {
             return FieldDefinition.valueOf(mapping);
         }
+
+        // Try to retrieve the fieldname directly
+        FieldDefinition fieldDefinition = FieldDefinition.forFieldName(firstNodeInPath.toString());
+        if (fieldDefinition != null) {
+            return fieldDefinition;
+        }
+
         return null;
     }
 }
