@@ -44,27 +44,35 @@ public class DependencyValidator implements RecordConstraintValidator<DataSample
         if (result == DependencyValidation.Result.OK) {
             return true;
         } else {
-            context.disableDefaultConstraintViolation();
-
-            switch (level) {
-                case UNITS:
-                    message = "{DR9450-Combination}";
-                    break;
-                case PARAMETERS:
-                    message = "{DR9430-Combination}";
-                   break;
-                case RELEASES_AND_TRANSFERS:
-                    message = "{DR9570-Combination}";
-                    break;
-                case RETURN_TYPE:
-                    message = "{DR9040-Combination}";
-                    break;
+            // We will disregard 'missing' because this
+            // is detected by the straight forward controlled lists check
+            // (Except in the case of releases)
+            if (result == DependencyValidation.Result.EXPECTED && level != ControlledListsList.RELEASES_AND_TRANSFERS) {
+                return true;
+            } else {
+                switch (level) {
+                    case UNITS:
+                        message = "{DR9450-Combination}";
+                        break;
+                    case PARAMETERS:
+                        message = "{DR9430-Combination}";
+                        break;
+                    case RELEASES_AND_TRANSFERS:
+                        message = "{DR9570-Combination}";
+                        break;
+                    case RETURN_TYPE:
+                        message = "{DR9410-Combination}";
+                        break;
+                }
             }
         }
-        
-        context.buildConstraintViolationWithTemplate(message)
-                .addPropertyNode(level.getfieldDefinition().getName())
-                .addConstraintViolation();
+
+        if (message != null) {
+            context.disableDefaultConstraintViolation();
+            context.buildConstraintViolationWithTemplate(message)
+                    .addPropertyNode(level.getfieldDefinition().getName())
+                    .addConstraintViolation();
+        }
 
         return false;
     }

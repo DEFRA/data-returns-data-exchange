@@ -136,6 +136,10 @@ public class ResourceIntegrationTests {
     public final static String TEXT_VALUE_VALID = "validation/testTextValue.csv";
     public final static String TEXT_VALUE_INVALID = "validation/testTextValueInvalid.csv";
 
+    public final static String REM_VALID_PARAMETER = "validation/testDependencyREMValid.csv";
+    public final static String REM_INVALID_PARAMETER = "validation/testDependencyREMInvalid.csv";
+    public final static String REM_INVALID_UNIT = "validation/testDependencyREMInvalidUnit.csv";
+
     @Inject
     private TestSettings testSettings;
 
@@ -415,8 +419,8 @@ public class ResourceIntegrationTests {
     }
 
     /*
-     * Test extended controlled lists functionality - navigation
-     * This is a basic ping type test....not going to duplicate all the integration tests here
+     * Test extended controlled lists functionality - navigation/validation
+     * These are a small set of tests....not going to duplicate all the integration tests here
      */
     @Test
     public void testListReturnTypes() {
@@ -426,6 +430,27 @@ public class ResourceIntegrationTests {
         assertThat(response.getStatus()).isEqualTo(Status.OK.getStatusCode());
     }
 
+    @Test
+    public void testREMValidParameter() {
+        Client client = createClient("Nav: REM valid parameter");
+        final Response response = performUploadStep(client, REM_VALID_PARAMETER, MEDIA_TYPE_CSV);
+        assertThat(response.getStatus()).isEqualTo(Status.OK.getStatusCode());
+    }
+
+    @Test
+    public void testREMInvalidParameter() {
+        Client client = createClient("Nav: REM valid parameter");
+        final Response response = performUploadStep(client, REM_INVALID_PARAMETER, MEDIA_TYPE_CSV);
+        assertThat(response.getStatus()).isEqualTo(Status.BAD_REQUEST.getStatusCode());
+    }
+
+    @Test
+    public void testREMInvalidUnit() {
+        Client client = createClient("Nav: REM invalid unit");
+        final Response response = performUploadStep(client, REM_INVALID_UNIT, MEDIA_TYPE_CSV);
+        assertThat(response.getStatus()).isEqualTo(Status.BAD_REQUEST.getStatusCode());
+    }
+    
     ///////////////////////////////////////////////////////////////////////////////////////////
     /////////////////////// End Application Exception handling tests
     /////////////////////////////////////////////////////////////////////////////////////////// //////////////////////////

@@ -70,12 +70,12 @@ public class DataSampleValidator {
 
                 ValidationError error = null;
                 if (errorType.equals(COMBINATION)) {
-                    //error = new DependencyValidationError(
-                    //        Optional.of(record.getReturnType().getEntity().getName()),
-                    //        null,
-                    //        record.getParameter().getEntity().getName(),
-                    //        record.getUnit().getEntity().getName());
-                    error = new DependencyValidationError(null, null, null, null);
+                    error = new DependencyValidationError(
+                            (record.getReturnType() != null) ? record.getReturnType().getEntity().getName() : null,
+                            null,
+                            (record.getParameter() != null) ? record.getParameter().getEntity().getName() : null,
+                            (record.getUnit() != null) ? record.getUnit().getEntity().getName() : null
+                    );
                 } else {
                     error = new ValidationError();
                 }
