@@ -106,10 +106,10 @@ monitorProEmail:
   port: ${monpro.email.port}
   from: ${monpro.email.from}
   to: ${monpro.email.to}
-  subjectLowerNumericUniqueId: EALFP1069_TEST_LIST
-  subjectUpperNumericUniqueId: EALFP70AB_TEST_LIST
-  subjectLowerAlphaNumericUniqueId: EALFPAAGZ_TEST_LIST
-  subjectUpperAlphaNumericUniqueId: EALFPHAZZ_TEST_LIST
+  subjectLowerNumericUniqueId: EA LFP 10 69 TEST LIST
+  subjectUpperNumericUniqueId: EA LFP 70 AB TEST LIST
+  subjectLowerAlphaNumericUniqueId: EA LFP AA GZ TEST LIST
+  subjectUpperAlphaNumericUniqueId: EA LFP HA ZZ TEST LIST
   body: ${monpro.email.body}
   useTLS: ${monpro.email.tls}
 # Use local storage when not running in a cluster  
