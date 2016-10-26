@@ -37,6 +37,7 @@ public class MessageCodes {
         public final static String Mon_Point = "{DR9060-Incorrect}";
         public final static String Site_Name = "{DR9110-Incorrect}";
         public final static String Value = "{DR9040-Incorrect}";
+        public final static String Mon_Date = "{DR9020-Incorrect}";
     }
 
     /**
@@ -52,6 +53,7 @@ public class MessageCodes {
         public final static String RequireCommentsForTxtValue = "{DR9140-Missing}";
         public final static String RequireUnitForValue = "{DR9050-Missing}";
         public final static String RequireValueOrTxtValue = "{DR9999-Missing}";
+        public final static String Mon_Date = "{DR9020-Missing}";
     }
 
     /**
@@ -104,15 +106,17 @@ public class MessageCodes {
         messageFieldsMap.put(Incorrect.Mon_Point, new ArrayList<>(Collections.singletonList(FieldDefinition.Mon_Point)));
         messageFieldsMap.put(Incorrect.Site_Name, new ArrayList<>(Collections.singletonList(FieldDefinition.Site_Name)));
         messageFieldsMap.put(Incorrect.Value, new ArrayList<>(Collections.singletonList(FieldDefinition.Value)));
+        messageFieldsMap.put(Incorrect.Mon_Date, Collections.singletonList(FieldDefinition.Mon_Date));
         /*
          * Add the (atomic) missing errors to map
          */
-        messageFieldsMap.put(Missing.Unit, new ArrayList<>(Collections.emptyList()));
-        messageFieldsMap.put(Missing.EA_ID, new ArrayList<>(Collections.emptyList()));
-        messageFieldsMap.put(Missing.Mon_Point, new ArrayList<>(Collections.emptyList()));
-        messageFieldsMap.put(Missing.Parameter, new ArrayList<>(Collections.emptyList()));
-        messageFieldsMap.put(Missing.Rtn_Type, new ArrayList<>(Collections.emptyList()));
-        messageFieldsMap.put(Missing.Site_Name, Collections.emptyList());
+        messageFieldsMap.put(Missing.Unit, new ArrayList<>(Collections.singletonList(FieldDefinition.Unit)));
+        messageFieldsMap.put(Missing.EA_ID, new ArrayList<>(Collections.singletonList(FieldDefinition.EA_ID)));
+        messageFieldsMap.put(Missing.Mon_Point, new ArrayList<>(Collections.singletonList(FieldDefinition.Mon_Point)));
+        messageFieldsMap.put(Missing.Parameter, new ArrayList<>(Collections.singletonList(FieldDefinition.Parameter)));
+        messageFieldsMap.put(Missing.Rtn_Type, new ArrayList<>(Collections.singletonList(FieldDefinition.Rtn_Type)));
+        messageFieldsMap.put(Missing.Site_Name, Collections.singletonList(FieldDefinition.Site_Name));
+        messageFieldsMap.put(Missing.Mon_Date, Collections.singletonList(FieldDefinition.Mon_Date));
         /*
          * Add the (atomic) controlled list errors to the map
          */
@@ -133,7 +137,7 @@ public class MessageCodes {
         messageFieldsMap.put(Conflict.ProhibitUnitForTxtValue, Arrays.asList(FieldDefinition.Unit, FieldDefinition.Txt_Value));
         messageFieldsMap.put(Missing.RequireCommentsForTxtValue, Collections.singletonList(FieldDefinition.Txt_Value));
         messageFieldsMap.put(Missing.RequireUnitForValue, Collections.singletonList(FieldDefinition.Value));
-        messageFieldsMap.put(Missing.RequireUnitForValue, Collections.emptyList());
+        messageFieldsMap.put(Missing.RequireUnitForValue, Collections.singletonList(FieldDefinition.Unit));
         messageFieldsMap.put(Conflict.RequireValueOrTxtValue, Arrays.asList(FieldDefinition.Value, FieldDefinition.Txt_Value));
         messageFieldsMap.put(DependencyConflict.Parameter, new ArrayList<>(Arrays.asList(FieldDefinition.Parameter, FieldDefinition.Rtn_Type)));
         messageFieldsMap.put(DependencyConflict.Unit, new ArrayList<>(Arrays.asList(FieldDefinition.Unit, FieldDefinition.Parameter, FieldDefinition.Rtn_Type)));
