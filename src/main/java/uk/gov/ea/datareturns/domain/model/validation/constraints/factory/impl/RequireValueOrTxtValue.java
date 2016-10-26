@@ -22,7 +22,7 @@ public class RequireValueOrTxtValue implements RecordConstraintValidator<DataSam
         if (!hasValue && !hasTxtValue) {
             error = MessageCodes.Missing.RequireValueOrTxtValue;
         } else if (hasValue && hasTxtValue) {
-            error = MessageCodes.Conflict.RequireValueOrTxtValue;;
+            error = MessageCodes.Conflict.RequireValueOrTxtValue;
         }
 
         if (error != null) {
