@@ -114,6 +114,10 @@ public enum ControlledListsList {
         }
     }
 
+    private Integer getHierarchyLevel() {
+        return this.hierarchyLevel;
+    }
+
     public ControlledListsList next() {
         if (this.hierarchyLevel == null) {
             // Not on the hierarchy
@@ -152,10 +156,6 @@ public enum ControlledListsList {
 
     public String getDefaultSearch() {
         return defaultSearch;
-    }
-
-    public Integer getHierarchyLevel() {
-        return this.hierarchyLevel;
     }
 
     public FieldDefinition getFieldDefinition() {
