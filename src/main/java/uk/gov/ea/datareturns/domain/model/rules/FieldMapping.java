@@ -82,6 +82,22 @@ public class FieldMapping {
     }
 
     /**
+     * Gets the value the user input
+     * @param target
+     * @return
+     */
+    public String getInputValue(final Object target) {
+        Object o = null;
+        try {
+            o = descriptor.getReadMethod().invoke(target);
+            return ((FieldValue) o).getInputValue();
+        } catch (ReflectiveOperationException e) {
+            LOGGER.error("Unable to retrieve input value", e);
+            return Objects.toString(o, "");
+        }
+    }
+
+    /**
      * Sets value.
      *
      * @param target the target
@@ -145,4 +161,5 @@ public class FieldMapping {
         fieldNameToBeanMap.forEach((k, v) -> mappings.put(v.field.getName(), k));
         return mappings;
     }
+
 }

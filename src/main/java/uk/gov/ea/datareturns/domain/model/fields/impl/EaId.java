@@ -6,6 +6,7 @@ import org.hibernate.validator.constraints.NotBlank;
 import uk.gov.ea.datareturns.domain.jpa.dao.UniqueIdentifierDao;
 import uk.gov.ea.datareturns.domain.jpa.entities.UniqueIdentifier;
 import uk.gov.ea.datareturns.domain.model.DataSample;
+import uk.gov.ea.datareturns.domain.model.MessageCodes;
 import uk.gov.ea.datareturns.domain.model.fields.AbstractEntityValue;
 import uk.gov.ea.datareturns.domain.model.rules.EaIdType;
 import uk.gov.ea.datareturns.domain.model.validation.auditors.controlledlist.UniqueIdentifierAuditor;
@@ -19,9 +20,10 @@ import javax.validation.constraints.Pattern;
  * @author Sam Gardner-Dell
  */
 public class EaId extends AbstractEntityValue<DataSample, UniqueIdentifier> implements Comparable<EaId> {
-    @NotBlank(message = "{DR9000-Missing}")
-    @Pattern(regexp = "(^[A-Za-z]{2}[0-9]{4}[A-Za-z]{2}|^[0-9]{5,6}$)", message = "{DR9000-Incorrect}")
-    @ControlledList(auditor = UniqueIdentifierAuditor.class, message = "{DR9000-Incorrect}")
+
+    @NotBlank(message = MessageCodes.Missing.EA_ID)
+    @Pattern(regexp = "(^[A-Za-z]{2}[0-9]{4}[A-Za-z]{2}|^[0-9]{5,6}$)", message = MessageCodes.Incorrect.EA_ID)
+    @ControlledList(auditor = UniqueIdentifierAuditor.class, message = MessageCodes.ControlledList.EA_ID)
     private String identifier;
 
     private EaIdType type;

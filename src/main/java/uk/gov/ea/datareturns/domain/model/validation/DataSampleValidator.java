@@ -3,6 +3,7 @@ package uk.gov.ea.datareturns.domain.model.validation;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 import uk.gov.ea.datareturns.domain.model.DataSample;
+import uk.gov.ea.datareturns.domain.model.MessageCodes;
 import uk.gov.ea.datareturns.domain.model.fields.FieldValue;
 import uk.gov.ea.datareturns.domain.model.rules.FieldDefinition;
 import uk.gov.ea.datareturns.domain.model.rules.FieldMapping;
@@ -14,10 +15,7 @@ import javax.inject.Inject;
 import javax.validation.ConstraintViolation;
 import javax.validation.Path.Node;
 import javax.validation.Validator;
-import java.util.Collection;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -30,10 +28,10 @@ public class DataSampleValidator {
     private static final Pattern ERROR_KEY_PATTERN = Pattern.compile("^\\{DR(?<errorCode>\\d{4})-(?<errorType>\\w+)\\}$");
 
     private static final Map<String, String> FIELD_MAPPING = FieldMapping.getBeanToFieldNameMap(DataSample.class);
+    private static final Map<String, FieldMapping> BEAN_MAPPING = FieldMapping.getFieldNameToBeanMap(DataSample.class);
 
     /** hibernate validator instance */
     private final Validator validator;
-    private final String COMBINATION = "Combination"; //TODO - String constants class for error type?
 
     /**
      * Instantiates a new {@link DataSample} validator.
@@ -68,14 +66,17 @@ public class DataSampleValidator {
                     errorType = errorKeyMatcher.group("errorType");
                 }
 
+                List<FieldDefinition> fieldsForValidation = getFieldsForViolation(violation);
+                String xo = BEAN_MAPPING.get(fieldsForValidation.get(0).getName()).getOutputValue(record);
+                String xi = FieldMapping.getFieldNameToBeanMap(DataSample.class)
+                        .get(fieldsForValidation.get(0).getName()).getInputValue(record);
+
+
                 ValidationError error = null;
-                if (errorType.equals(COMBINATION)) {
-                    error = new DependencyValidationError(
-                            (record.getReturnType() != null) ? record.getReturnType().getEntity().getName() : null,
-                            null,
-                            (record.getParameter() != null) ? record.getParameter().getEntity().getName() : null,
-                            (record.getUnit() != null) ? record.getUnit().getEntity().getName() : null
-                    );
+
+
+                if (fieldsForValidation.size() != 0) {
+                    error = new DependencyValidationError();
                 } else {
                     error = new ValidationError();
                 }
@@ -104,6 +105,10 @@ public class DataSampleValidator {
             recordNumber++;
         }
         return validationErrors;
+    }
+
+    private List<FieldDefinition> getFieldsForViolation(final ConstraintViolation<DataSample> violation) {
+        return MessageCodes.getFieldDependencies(violation.getMessage());
     }
 
     /**

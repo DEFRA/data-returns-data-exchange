@@ -5,6 +5,7 @@ import org.springframework.stereotype.Component;
 import uk.gov.ea.datareturns.domain.jpa.entities.*;
 import uk.gov.ea.datareturns.domain.jpa.service.DependencyValidation;
 import uk.gov.ea.datareturns.domain.model.DataSample;
+import uk.gov.ea.datareturns.domain.model.MessageCodes;
 import uk.gov.ea.datareturns.domain.model.validation.constraints.factory.RecordConstraintValidator;
 import uk.gov.ea.datareturns.util.SpringApplicationContextProvider;
 
@@ -52,16 +53,16 @@ public class DependencyValidator implements RecordConstraintValidator<DataSample
             } else {
                 switch (level) {
                     case UNITS:
-                        message = "{DR9450-Combination}";
+                        message = MessageCodes.DependencyConflict.Unit;
                         break;
                     case PARAMETERS:
-                        message = "{DR9430-Combination}";
+                        message = MessageCodes.DependencyConflict.Parameter;
                         break;
                     case RELEASES_AND_TRANSFERS:
-                        message = "{DR9570-Combination}";
+                        message = null;
                         break;
                     case RETURN_TYPE:
-                        message = "{DR9410-Combination}";
+                        message = MessageCodes.DependencyConflict.Rtn_Type;
                         break;
                 }
             }
@@ -69,9 +70,7 @@ public class DependencyValidator implements RecordConstraintValidator<DataSample
 
         if (message != null) {
             context.disableDefaultConstraintViolation();
-            context.buildConstraintViolationWithTemplate(message)
-                    .addPropertyNode(level.getfieldDefinition().getName())
-                    .addConstraintViolation();
+            context.buildConstraintViolationWithTemplate(message).addConstraintViolation();
         }
 
         return false;

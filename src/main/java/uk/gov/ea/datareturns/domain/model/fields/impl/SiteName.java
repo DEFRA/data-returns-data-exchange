@@ -3,6 +3,7 @@ package uk.gov.ea.datareturns.domain.model.fields.impl;
 import org.hibernate.validator.constraints.Length;
 import org.hibernate.validator.constraints.NotBlank;
 import uk.gov.ea.datareturns.domain.model.DataSample;
+import uk.gov.ea.datareturns.domain.model.MessageCodes;
 import uk.gov.ea.datareturns.domain.model.fields.FieldValue;
 
 import javax.validation.constraints.Pattern;
@@ -13,13 +14,13 @@ import javax.validation.constraints.Pattern;
  * @author Sam Gardner-Dell
  */
 public class SiteName implements FieldValue<DataSample, String> {
-    @Pattern(regexp = REGEX_SIMPLE_TEXT, message = "{DR9110-Incorrect}")
-    @Length(max = 255, message = "{DR9110-Length}")
-    @NotBlank(message = "{DR9110-Missing}")
+    @Pattern(regexp = REGEX_SIMPLE_TEXT, message = MessageCodes.Incorrect.Site_Name)
+    @Length(max = 255, message = MessageCodes.Length.Site_Name)
+    @NotBlank(message = MessageCodes.Missing.Site_Name)
     private final String inputValue;
 
     /**
-     * Instantiates a new SiteName
+     * Instantiates a new Site_Name
      *
      * @param inputValue the input value
      */

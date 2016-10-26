@@ -638,14 +638,14 @@ public class ResourceIntegrationTests {
 
     @Test
     public void testReturnPeriodValid() {
-        final Client client = createClient("test ReturnPeriod valid");
+        final Client client = createClient("test Rtn_Period valid");
         final Response resp = performUploadStep(client, RETURN_PERIOD_VALID, MEDIA_TYPE_CSV);
         assertThat(resp.getStatus()).isEqualTo(Status.OK.getStatusCode());
     }
 
     @Test
     public void testReturnPeriodInvalid() {
-        final Client client = createClient("test ReturnPeriod invalid");
+        final Client client = createClient("test Rtn_Period invalid");
         final Response resp = performUploadStep(client, RETURN_PERIOD_INVALID, MEDIA_TYPE_CSV);
         assertThat(resp.getStatus()).isEqualTo(Status.BAD_REQUEST.getStatusCode());
         final DataExchangeResult result = getResultFromResponse(resp);

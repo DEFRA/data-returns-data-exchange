@@ -3,6 +3,7 @@ package uk.gov.ea.datareturns.domain.model.fields.impl;
 import uk.gov.ea.datareturns.domain.jpa.dao.TextValueDao;
 import uk.gov.ea.datareturns.domain.jpa.entities.TextValue;
 import uk.gov.ea.datareturns.domain.model.DataSample;
+import uk.gov.ea.datareturns.domain.model.MessageCodes;
 import uk.gov.ea.datareturns.domain.model.fields.AbstractAliasingEntityValue;
 import uk.gov.ea.datareturns.domain.model.validation.auditors.controlledlist.TxtValueAuditor;
 import uk.gov.ea.datareturns.domain.model.validation.constraints.controlledlist.ControlledList;
@@ -13,11 +14,11 @@ import uk.gov.ea.datareturns.domain.model.validation.constraints.controlledlist.
  * @author Sam Gardner-Dell
  */
 public class TxtValue extends AbstractAliasingEntityValue<DataSample, TextValue> {
-    @ControlledList(auditor = TxtValueAuditor.class, message = "{DR9080-Incorrect}")
+    @ControlledList(auditor = TxtValueAuditor.class, message = MessageCodes.ControlledList.Txt_Value)
     private final String inputValue;
 
     /**
-     * Instantiates a new TxtValue.
+     * Instantiates a new Txt_Value.
      *
      * @param inputValue the input value
      */

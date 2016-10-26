@@ -158,7 +158,7 @@ public enum ControlledListsList {
         return this.hierarchyLevel;
     }
 
-    public FieldDefinition getfieldDefinition() {
+    public FieldDefinition getFieldDefinition() {
         return this.fieldDefinition;
     }
 }

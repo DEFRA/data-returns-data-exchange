@@ -2,6 +2,7 @@ package uk.gov.ea.datareturns.domain.model.validation.constraints.factory.impl;
 
 import org.springframework.stereotype.Component;
 import uk.gov.ea.datareturns.domain.model.DataSample;
+import uk.gov.ea.datareturns.domain.model.MessageCodes;
 import uk.gov.ea.datareturns.domain.model.fields.FieldValue;
 import uk.gov.ea.datareturns.domain.model.validation.constraints.factory.RecordConstraintValidator;
 
@@ -19,9 +20,9 @@ public class RequireValueOrTxtValue implements RecordConstraintValidator<DataSam
 
         String error = null;
         if (!hasValue && !hasTxtValue) {
-            error = "{DR9999-Missing}";
+            error = MessageCodes.Missing.RequireValueOrTxtValue;
         } else if (hasValue && hasTxtValue) {
-            error = "{DR9999-Conflict}";
+            error = MessageCodes.Conflict.RequireValueOrTxtValue;;
         }
 
         if (error != null) {
