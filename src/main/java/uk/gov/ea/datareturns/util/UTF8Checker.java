@@ -1,7 +1,5 @@
 package uk.gov.ea.datareturns.util;
 
-import org.apache.commons.io.Charsets;
-
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
