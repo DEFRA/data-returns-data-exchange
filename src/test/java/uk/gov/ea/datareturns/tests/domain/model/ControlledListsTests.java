@@ -14,7 +14,7 @@ import javax.inject.Inject;
 import java.util.List;
 
 /**
- * Created by graham on 28/07/16.
+ * Unit tests for the controlled list functionality
  */
 @SpringBootTest(classes=App.class)
 @DirtiesContext
@@ -47,7 +47,7 @@ public class ControlledListsTests {
 
     @Test
     public void testMethodOrStandard() {
-        MethodOrStandard methodOrStandard0 = (MethodOrStandard) methodOrStandardDao.getByName(NAME);
+        MethodOrStandard methodOrStandard0 = methodOrStandardDao.getByName(NAME);
         if (methodOrStandard0 != null) {
             methodOrStandardDao.removeById(methodOrStandard0.getId());
         }
@@ -55,19 +55,19 @@ public class ControlledListsTests {
         MethodOrStandard methodOrStandard = new MethodOrStandard();
         methodOrStandard.setName(NAME);
         methodOrStandardDao.add(methodOrStandard);
-        MethodOrStandard retrieveMethodOrStandard = (MethodOrStandard) methodOrStandardDao.getByName(NAME);
+        MethodOrStandard retrieveMethodOrStandard = methodOrStandardDao.getByName(NAME);
         Assert.assertNotNull(retrieveMethodOrStandard.getId());
-        MethodOrStandard retrieveMethodOrStandard2 = (MethodOrStandard) methodOrStandardDao.getById(retrieveMethodOrStandard.getId());
+        MethodOrStandard retrieveMethodOrStandard2 = methodOrStandardDao.getById(retrieveMethodOrStandard.getId());
         Assert.assertNotNull(retrieveMethodOrStandard2);
         Assert.assertEquals(retrieveMethodOrStandard2.getId(), retrieveMethodOrStandard.getId());
         methodOrStandardDao.removeById(retrieveMethodOrStandard2.getId());
-        MethodOrStandard retrieveMethodOrStandard3 = (MethodOrStandard) methodOrStandardDao.getById(retrieveMethodOrStandard.getId());
+        MethodOrStandard retrieveMethodOrStandard3 = methodOrStandardDao.getById(retrieveMethodOrStandard.getId());
         Assert.assertNull(retrieveMethodOrStandard3);
     }
 
     @Test
     public void testParameter() {
-        Parameter retrieveParameter0 = (Parameter) parameterDao.getByName(NAME);
+        Parameter retrieveParameter0 = parameterDao.getByName(NAME);
         if (retrieveParameter0 != null) {
             parameterDao.removeById(retrieveParameter0.getId());
         }
@@ -76,10 +76,10 @@ public class ControlledListsTests {
         parameter.setName(NAME);
         parameterDao.add(parameter);
 
-        Parameter retrieveParameter = (Parameter) parameterDao.getByName(NAME);
+        Parameter retrieveParameter = parameterDao.getByName(NAME);
         Assert.assertNotNull(retrieveParameter.getId());
 
-        Parameter retrieveParameter2 = (Parameter) parameterDao.getById(retrieveParameter.getId());
+        Parameter retrieveParameter2 = parameterDao.getById(retrieveParameter.getId());
         Assert.assertNotNull(retrieveParameter2);
         Assert.assertEquals(retrieveParameter2.getId(), retrieveParameter.getId());
 
@@ -95,7 +95,7 @@ public class ControlledListsTests {
         Assert.assertEquals(parameterDao.nameExistsRelaxed(NAME_MASH), false);
         Assert.assertEquals(parameterDao.getStandardizedName(NAME_MASH), null);
 
-        Parameter retrieveParameter3 = (Parameter) parameterDao.getById(retrieveParameter.getId());
+        Parameter retrieveParameter3 = parameterDao.getById(retrieveParameter.getId());
         Assert.assertNull(retrieveParameter3);
     }
 
@@ -103,7 +103,7 @@ public class ControlledListsTests {
     public void testReturnType() {
         final String LANDFILL = "Landfill";
         // Make the test type is gone
-        ReturnType retrieveReturnType0 = (ReturnType) returnTypeDao.getByName(NAME);
+        ReturnType retrieveReturnType0 = returnTypeDao.getByName(NAME);
         if (retrieveReturnType0 != null) {
             returnTypeDao.removeById(retrieveReturnType0.getId());
         }
@@ -113,10 +113,10 @@ public class ControlledListsTests {
         returnType.setSector(LANDFILL);
         returnTypeDao.add(returnType);
 
-        ReturnType retrieveReturnType = (ReturnType) returnTypeDao.getByName(NAME);
+        ReturnType retrieveReturnType = returnTypeDao.getByName(NAME);
         Assert.assertNotNull(retrieveReturnType.getId());
 
-        ReturnType retrieveReturnType2 = (ReturnType) returnTypeDao.getById(retrieveReturnType.getId());
+        ReturnType retrieveReturnType2 = returnTypeDao.getById(retrieveReturnType.getId());
         Assert.assertNotNull(retrieveReturnType2);
         Assert.assertEquals(retrieveReturnType2.getId(), retrieveReturnType.getId());
 
@@ -133,14 +133,14 @@ public class ControlledListsTests {
         Assert.assertEquals(returnTypeDao.nameExistsRelaxed(NAME_MASH), false);
         Assert.assertEquals(returnTypeDao.getStandardizedName(NAME_MASH), null);
 
-        ReturnType retrieveReturnType3 = (ReturnType) returnTypeDao.getById(retrieveReturnType.getId());
+        ReturnType retrieveReturnType3 = returnTypeDao.getById(retrieveReturnType.getId());
         Assert.assertNull(retrieveReturnType3);
     }
 
     @Test
     public void testUnit() {
         // Make the test type is gone
-        Unit retrieveUnit0 = (Unit) unitDao.getByName(NAME);
+        Unit retrieveUnit0 = unitDao.getByName(NAME);
         if (retrieveUnit0 != null) {
             unitDao.removeById(retrieveUnit0.getId());
         }
@@ -154,26 +154,26 @@ public class ControlledListsTests {
 
         unitDao.add(unit);
 
-        Unit retrieveUnit = (Unit) unitDao.getByName(NAME);
+        Unit retrieveUnit = unitDao.getByName(NAME);
         Assert.assertNotNull(retrieveUnit.getId());
         Assert.assertEquals(retrieveUnit.getDescription(), NAME + NAME + NAME);
         Assert.assertEquals(retrieveUnit.getLongName(), NAME + NAME);
         Assert.assertEquals(retrieveUnit.getType(), "Type");
         Assert.assertEquals(retrieveUnit.getUnicode(), "UC");
 
-        Unit retrieveUnit2 = (Unit) unitDao.getById(retrieveUnit.getId());
+        Unit retrieveUnit2 = unitDao.getById(retrieveUnit.getId());
         Assert.assertNotNull(retrieveUnit2);
         Assert.assertEquals(retrieveUnit2.getId(), retrieveUnit.getId());
 
         unitDao.removeById(retrieveUnit2.getId());
-        Unit retrieveUnit3 = (Unit) unitDao.getById(retrieveUnit.getId());
+        Unit retrieveUnit3 = unitDao.getById(retrieveUnit.getId());
         Assert.assertNull(retrieveUnit3);
     }
 
     @Test
     public void testQualifier() {
         // Make the test type is gone
-        Qualifier retrieveQualifier0 = (Qualifier) qualifierDao.getByName(NAME);
+        Qualifier retrieveQualifier0 = qualifierDao.getByName(NAME);
         if (retrieveQualifier0 != null) {
             qualifierDao.removeById(retrieveQualifier0.getId());
         }
@@ -182,19 +182,19 @@ public class ControlledListsTests {
         Qualifier.setName(NAME);
         Qualifier.setNotes(NAME);
         qualifierDao.add(Qualifier);
-        Qualifier retrieveQualifier = (Qualifier) qualifierDao.getByName(NAME);
+        Qualifier retrieveQualifier = qualifierDao.getByName(NAME);
         Assert.assertNotNull(retrieveQualifier.getId());
-        Qualifier retrieveQualifier2 = (Qualifier) qualifierDao.getById(retrieveQualifier.getId());
+        Qualifier retrieveQualifier2 = qualifierDao.getById(retrieveQualifier.getId());
         Assert.assertNotNull(retrieveQualifier2);
         Assert.assertEquals(retrieveQualifier2.getId(), retrieveQualifier.getId());
         qualifierDao.removeById(retrieveQualifier2.getId());
-        Qualifier retrieveQualifier3 = (Qualifier) qualifierDao.getById(retrieveQualifier.getId());
+        Qualifier retrieveQualifier3 = qualifierDao.getById(retrieveQualifier.getId());
         Assert.assertNull(retrieveQualifier3);
     }
 
     @Test
     public void testTextValues() {
-        TextValue textValue0 = (TextValue) textValueDao.getByName(NAME);
+        TextValue textValue0 = textValueDao.getByName(NAME);
         if (textValue0 != null) {
             qualifierDao.removeById(textValue0.getId());
         }
@@ -202,15 +202,15 @@ public class ControlledListsTests {
         TextValue TextValue = new TextValue();
         TextValue.setName(NAME);
         textValueDao.add(TextValue);
-        TextValue retrieveTextValue = (TextValue) textValueDao.getByName(NAME);
+        TextValue retrieveTextValue = textValueDao.getByName(NAME);
         Assert.assertNotNull(retrieveTextValue.getId());
 
-        TextValue retrieveTextValue2 = (TextValue) textValueDao.getById(retrieveTextValue.getId());
+        TextValue retrieveTextValue2 = textValueDao.getById(retrieveTextValue.getId());
         Assert.assertNotNull(retrieveTextValue2);
         Assert.assertEquals(retrieveTextValue2.getId(), retrieveTextValue.getId());
 
         textValueDao.removeById(retrieveTextValue2.getId());
-        TextValue retrieveTextValue3 = (TextValue) textValueDao.getById(retrieveTextValue.getId());
+        TextValue retrieveTextValue3 = textValueDao.getById(retrieveTextValue.getId());
         Assert.assertNull(retrieveTextValue3);
     }
 
@@ -225,9 +225,9 @@ public class ControlledListsTests {
         final String PRIMARY_2_MASH = "PrImary 2";
         final String PRIMARY_3_MASH = "PriMary 3";
 
-        ReferencePeriod referencePeriod1 = (ReferencePeriod) referencePeriodDao.getByName(PRIMARY_1);
-        ReferencePeriod referencePeriod2 = (ReferencePeriod) referencePeriodDao.getByName(PRIMARY_2);
-        ReferencePeriod referencePeriod3 = (ReferencePeriod) referencePeriodDao.getByName(PRIMARY_3);
+        ReferencePeriod referencePeriod1 = referencePeriodDao.getByName(PRIMARY_1);
+        ReferencePeriod referencePeriod2 = referencePeriodDao.getByName(PRIMARY_2);
+        ReferencePeriod referencePeriod3 = referencePeriodDao.getByName(PRIMARY_3);
 
         // Have to remove 2 & 3 first in order not to violates foreign key constraint fk_reference_periods
         if (referencePeriod2 != null) {

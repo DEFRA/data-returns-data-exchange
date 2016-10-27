@@ -7,7 +7,6 @@ import com.univocity.parsers.csv.CsvWriterSettings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
-import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import uk.gov.ea.datareturns.domain.exceptions.*;
@@ -15,7 +14,6 @@ import uk.gov.ea.datareturns.domain.io.csv.generic.exceptions.InconsistentRowExc
 import uk.gov.ea.datareturns.domain.model.DataSample;
 import uk.gov.ea.datareturns.domain.model.rules.FieldDefinition;
 
-import javax.inject.Inject;
 import java.io.File;
 import java.util.*;
 

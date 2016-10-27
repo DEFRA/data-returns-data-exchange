@@ -14,6 +14,7 @@ import javax.validation.Valid;
  */
 @ValidRecord(DataSample.class)
 public class DataSample {
+
     /** The EA Unique Identifier (EA_ID) */
     @Valid @MappedField(FieldDefinition.EA_ID)
     private EaId eaId;

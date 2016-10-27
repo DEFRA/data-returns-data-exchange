@@ -1,7 +1,6 @@
 package uk.gov.ea.datareturns.domain.model.fields;
 
 import uk.gov.ea.datareturns.domain.jpa.dao.EntityDao;
-import uk.gov.ea.datareturns.domain.jpa.entities.AliasingEntity;
 import uk.gov.ea.datareturns.domain.jpa.entities.ControlledListEntity;
 /**
  * The {@link AbstractEntityValue} class provides the base {@link FieldValue} implementation for fields which are backed by

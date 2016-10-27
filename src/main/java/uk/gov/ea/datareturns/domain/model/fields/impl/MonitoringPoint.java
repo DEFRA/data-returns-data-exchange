@@ -3,6 +3,7 @@ package uk.gov.ea.datareturns.domain.model.fields.impl;
 import org.hibernate.validator.constraints.Length;
 import org.hibernate.validator.constraints.NotBlank;
 import uk.gov.ea.datareturns.domain.model.DataSample;
+import uk.gov.ea.datareturns.domain.model.MessageCodes;
 import uk.gov.ea.datareturns.domain.model.fields.FieldValue;
 
 import javax.validation.constraints.Pattern;
@@ -13,13 +14,13 @@ import javax.validation.constraints.Pattern;
  * @author Sam Gardner-Dell
  */
 public class MonitoringPoint implements FieldValue<DataSample, String> {
-    @NotBlank(message = "{DR9060-Missing}")
-    @Length(max = 30, message = "{DR9060-Length}")
-    @Pattern(regexp = REGEX_SIMPLE_TEXT, message = "{DR9060-Incorrect}")
+    @NotBlank(message = MessageCodes.Missing.Mon_Point)
+    @Length(max = 30, message = MessageCodes.Length.Mon_Point)
+    @Pattern(regexp = REGEX_SIMPLE_TEXT, message = MessageCodes.Incorrect.Mon_Point)
     private String monitoringPoint;
 
     /**
-     * Instantiates a new MonitoringPoint
+     * Instantiates a new Mon_Point
      *
      * @param monitoringPoint the monitoring point
      */

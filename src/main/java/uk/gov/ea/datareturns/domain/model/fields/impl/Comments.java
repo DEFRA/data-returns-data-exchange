@@ -3,6 +3,7 @@ package uk.gov.ea.datareturns.domain.model.fields.impl;
 import org.apache.commons.lang3.StringUtils;
 import org.hibernate.validator.constraints.Length;
 import uk.gov.ea.datareturns.domain.model.DataSample;
+import uk.gov.ea.datareturns.domain.model.MessageCodes;
 import uk.gov.ea.datareturns.domain.model.fields.FieldValue;
 
 /**
@@ -11,7 +12,7 @@ import uk.gov.ea.datareturns.domain.model.fields.FieldValue;
  * @author Sam Gardner-Dell
  */
 public class Comments implements FieldValue<DataSample, String> {
-    @Length(max = 255, message = "{DR9140-Length}")
+    @Length(max = 255, message = MessageCodes.Length.Comments)
     private final String inputValue;
 
     /**
