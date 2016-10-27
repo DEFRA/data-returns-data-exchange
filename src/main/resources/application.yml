@@ -93,8 +93,9 @@ processor:
     - Variable={{Parameter}}{{#Qualifier}} {#{{Qualifier}}}{{/Qualifier}}{{#Ref_Period}} {@{{Ref_Period}}}{{/Ref_Period}}
     - Value={{Value}}{{Txt_Value}}
     - Unit={{Unit}}
-    - Test method={{Meth_Stand}}
+    - Test Method={{Meth_Stand}}
     - Comment={{Comments}}
+    - Data Source=Data Returns
 
 test:
   testFilesLocation: /testfiles
@@ -110,7 +111,14 @@ monitorProEmail:
   subjectUpperNumericUniqueId: EA LFP 70 AB TEST LIST
   subjectLowerAlphaNumericUniqueId: EA LFP AA GZ TEST LIST
   subjectUpperAlphaNumericUniqueId: EA LFP HA ZZ TEST LIST
-  body: ${monpro.email.body}
+  # Email message body - note, use two linebreaks to generate a single linebreak in the output.
+  body: >
+    Data Returns received a submission for EA Identifier {{EA_ID}}.
+
+    The original file {{originatorFilename}} was uploaded to Data Returns by {{originatorEmail}} on {{currentDate}}.
+
+
+    Note that the original file may have contained additional data for different EA Identifiers which are submitted to Emma separately.
   useTLS: ${monpro.email.tls}
 # Use local storage when not running in a cluster  
 storage:

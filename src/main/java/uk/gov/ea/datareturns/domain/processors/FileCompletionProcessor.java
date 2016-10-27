@@ -79,7 +79,7 @@ public class FileCompletionProcessor extends AbstractReturnsProcessor<DataExchan
             stopwatch.startTask("Sending data to monitor pro");
             for (final File outputFile : zipModel.getOutputFiles()) {
                 final EaId eaId = zipModel.getOutputFileIdentifiers().get(outputFile.getName());
-                this.monitorProHandler.sendNotifications(eaId, outputFile);
+                this.monitorProHandler.sendNotifications(this.userEmail, this.originalFilename, eaId, outputFile);
             }
 
             stopwatch.startTask("Moving data to audit store");

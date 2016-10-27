@@ -4,7 +4,6 @@
 package uk.gov.ea.datareturns.tests.unittests;
 
 import org.apache.commons.mail.EmailException;
-import org.apache.commons.mail.MultiPartEmail;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -18,7 +17,6 @@ import uk.gov.ea.datareturns.config.email.MonitorProEmailConfiguration;
 import uk.gov.ea.datareturns.domain.model.fields.impl.EaId;
 import uk.gov.ea.datareturns.domain.monitorpro.MonitorProTransportException;
 import uk.gov.ea.datareturns.domain.monitorpro.MonitorProTransportHandler;
-import uk.gov.ea.datareturns.domain.monitorpro.MonitorProTransportHandler.EmailTransportHandler;
 
 import javax.mail.internet.MimeMultipart;
 import java.io.File;
@@ -32,7 +30,7 @@ import java.util.Objects;
  * @author Sam Gardner-Dell
  *
  */
-@SpringBootTest(classes=App.class)
+@SpringBootTest(classes = App.class)
 @DirtiesContext
 @RunWith(SpringRunner.class)
 public class MonitorProEmailerTests {
@@ -53,6 +51,10 @@ public class MonitorProEmailerTests {
     private static final String EMAIL_HOST = "unittest.localhost";
 
     private static final int EMAIL_PORT = 1234;
+
+    private static final String TEST_EMAIL = "unit-test@datareturns";
+
+    private static final String TEST_FILE = "unit-test.csv";
 
     private MonitorProEmailConfiguration emailSettings;
 
@@ -82,50 +84,44 @@ public class MonitorProEmailerTests {
     @Test
     public void testSuccessCase() throws Exception {
         final MonitorProTransportHandler emailer = new MonitorProTransportHandler(this.emailSettings);
-        emailer.sendNotifications(new EaId("EP3136GK"), testSuccessFile, new EmailTransportHandler() {
-            @Override
-            public String send(final MultiPartEmail email) throws EmailException {
-                email.buildMimeMessage();
+        emailer.sendNotifications(TEST_EMAIL, TEST_FILE, new EaId("EP3136GK"), testSuccessFile, (email) -> {
+            email.buildMimeMessage();
 
-                Assert.assertEquals(email.getHostName(), EMAIL_HOST);
-                Assert.assertEquals(Integer.parseInt(email.getSmtpPort()), EMAIL_PORT);
-                Assert.assertEquals(email.isStartTLSEnabled(), false);
-                Assert.assertEquals(email.getFromAddress().getAddress(), EMAIL_FROM);
-                Assert.assertEquals(email.getToAddresses().get(0).getAddress(), EMAIL_TO);
-                Assert.assertEquals(email.getSubject(), "LOWER_ALPHANUMERIC");
+            Assert.assertEquals(email.getHostName(), EMAIL_HOST);
+            Assert.assertEquals(Integer.parseInt(email.getSmtpPort()), EMAIL_PORT);
+            Assert.assertEquals(email.isStartTLSEnabled(), false);
+            Assert.assertEquals(email.getFromAddress().getAddress(), EMAIL_FROM);
+            Assert.assertEquals(email.getToAddresses().get(0).getAddress(), EMAIL_TO);
+            Assert.assertEquals(email.getSubject(), "LOWER_ALPHANUMERIC");
 
-                try {
-                    final Object msgBody = ((MimeMultipart) email.getMimeMessage().getContent()).getBodyPart(0).getDataHandler()
-                            .getContent();
-                    Assert.assertTrue(EMAIL_BODY_RESULT.equals(Objects.toString(msgBody)));
-                } catch (final Exception e) {
-                    throw new RuntimeException(e);
-                }
-                return "test";
+            try {
+                final Object msgBody = ((MimeMultipart) email.getMimeMessage().getContent()).getBodyPart(0).getDataHandler()
+                        .getContent();
+                Assert.assertTrue(EMAIL_BODY_RESULT.equals(Objects.toString(msgBody)));
+            } catch (final Exception e) {
+                throw new RuntimeException(e);
             }
+            return "test";
         });
     }
 
     @Test(expected = MonitorProTransportException.class)
     public void testEmptyFile() throws Exception {
         final MonitorProTransportHandler emailer = new MonitorProTransportHandler(this.emailSettings);
-        emailer.sendNotifications(new EaId("EP3136GK"), testEmptyFile);
+        emailer.sendNotifications(TEST_EMAIL, TEST_FILE, new EaId("EP3136GK"), testEmptyFile);
     }
 
     @Test(expected = MonitorProTransportException.class)
     public void testHeaderOnlyFile() throws Exception {
         final MonitorProTransportHandler emailer = new MonitorProTransportHandler(this.emailSettings);
-        emailer.sendNotifications(new EaId("EP3136GK"), testHeaderOnlyFile);
+        emailer.sendNotifications(TEST_EMAIL, TEST_FILE, new EaId("EP3136GK"), testHeaderOnlyFile);
     }
 
     @Test(expected = MonitorProTransportException.class)
     public void testEmailException() throws Exception {
         final MonitorProTransportHandler emailer = new MonitorProTransportHandler(this.emailSettings);
-        emailer.sendNotifications(new EaId("EP3136GK"), testSuccessFile, new EmailTransportHandler() {
-            @Override
-            public String send(final MultiPartEmail email) throws EmailException {
-                throw new EmailException("He's dead Jim");
-            }
+        emailer.sendNotifications(TEST_EMAIL, TEST_FILE, new EaId("EP3136GK"), testSuccessFile, (email) -> {
+            throw new EmailException("He's dead Jim");
         });
     }
 
