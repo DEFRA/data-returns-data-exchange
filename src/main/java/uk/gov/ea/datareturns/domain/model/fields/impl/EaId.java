@@ -22,7 +22,7 @@ import javax.validation.constraints.Pattern;
 public class EaId extends AbstractEntityValue<DataSample, UniqueIdentifier> implements Comparable<EaId> {
 
     @NotBlank(message = MessageCodes.Missing.EA_ID)
-    @Pattern(regexp = "(^[A-Za-z]{2}[0-9]{4}[A-Za-z]{2}|^[0-9]{5,6}$)", message = MessageCodes.Incorrect.EA_ID)
+    @Pattern(regexp = "(^[A-Za-z]{2}[0-9]{4}[A-Za-z]{2}|^[0-9]{5,6}$)", message = MessageCodes.ControlledList.EA_ID)
     @ControlledList(auditor = UniqueIdentifierAuditor.class, message = MessageCodes.ControlledList.EA_ID)
     private String identifier;
 

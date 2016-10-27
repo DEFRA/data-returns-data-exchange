@@ -1,5 +1,7 @@
 package uk.gov.ea.datareturns.domain.model;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import uk.gov.ea.datareturns.domain.model.rules.FieldDefinition;
 
 import java.util.*;
@@ -19,6 +21,8 @@ import java.util.*;
  */
 public class MessageCodes {
 
+    protected static final Logger LOGGER = LoggerFactory.getLogger(MessageCodes.class);
+
     /**
      * The errors categorized as length errors
      */
@@ -33,7 +37,6 @@ public class MessageCodes {
      * The errors categorized as Incorrect errors
      */
     public class Incorrect {
-        public final static String EA_ID = "{DR9000-Incorrect}";
         public final static String Mon_Point = "{DR9060-Incorrect}";
         public final static String Site_Name = "{DR9110-Incorrect}";
         public final static String Value = "{DR9040-Incorrect}";
@@ -51,7 +54,6 @@ public class MessageCodes {
         public final static String Rtn_Type = "{DR9010-Missing}";
         public final static String Site_Name = "{DR9110-Missing}";
         public final static String RequireCommentsForTxtValue = "{DR9140-Missing}";
-        public final static String RequireUnitForValue = "{DR9050-Missing}";
         public final static String RequireValueOrTxtValue = "{DR9999-Missing}";
         public final static String Mon_Date = "{DR9020-Missing}";
     }
@@ -91,56 +93,67 @@ public class MessageCodes {
 
     private final static Map<String, List<FieldDefinition>> messageFieldsMap = new HashMap<>();
 
+    /**
+     * Helper to check that the map keys are unique
+     * @param key
+     * @param value
+     */
+    private static void add(String key, List<FieldDefinition> value) {
+        if (messageFieldsMap.containsKey(key)) {
+            LOGGER.error("Initialization error: " + key + " already exists in messageFieldsMap");
+        } else {
+            messageFieldsMap.put(key, value);
+        }
+    }
+    
     static {
         /*
          * Add the (atomic) length errors to the map
          */
-        messageFieldsMap.put(Length.CiC, new ArrayList<>(Collections.singletonList(FieldDefinition.CiC)));
-        messageFieldsMap.put(Length.Comments, new ArrayList<>(Collections.singletonList(FieldDefinition.Comments)));
-        messageFieldsMap.put(Length.Mon_Point, new ArrayList<>(Collections.singletonList(FieldDefinition.Mon_Point)));
-        messageFieldsMap.put(Length.Site_Name, new ArrayList<>(Collections.singletonList(FieldDefinition.Site_Name)));
+        add(Length.CiC, new ArrayList<>(Collections.singletonList(FieldDefinition.CiC)));
+        add(Length.Comments, new ArrayList<>(Collections.singletonList(FieldDefinition.Comments)));
+        add(Length.Mon_Point, new ArrayList<>(Collections.singletonList(FieldDefinition.Mon_Point)));
+        add(Length.Site_Name, new ArrayList<>(Collections.singletonList(FieldDefinition.Site_Name)));
         /*
          * Add in the (atomic) Incorrect errors to the map
          */
-        messageFieldsMap.put(Incorrect.EA_ID, new ArrayList<>(Collections.singletonList(FieldDefinition.EA_ID)));
-        messageFieldsMap.put(Incorrect.Mon_Point, new ArrayList<>(Collections.singletonList(FieldDefinition.Mon_Point)));
-        messageFieldsMap.put(Incorrect.Site_Name, new ArrayList<>(Collections.singletonList(FieldDefinition.Site_Name)));
-        messageFieldsMap.put(Incorrect.Value, new ArrayList<>(Collections.singletonList(FieldDefinition.Value)));
-        messageFieldsMap.put(Incorrect.Mon_Date, Collections.singletonList(FieldDefinition.Mon_Date));
+        add(Incorrect.Mon_Point, new ArrayList<>(Collections.singletonList(FieldDefinition.Mon_Point)));
+        add(Incorrect.Site_Name, new ArrayList<>(Collections.singletonList(FieldDefinition.Site_Name)));
+        add(Incorrect.Value, new ArrayList<>(Collections.singletonList(FieldDefinition.Value)));
+        add(Incorrect.Mon_Date, Collections.singletonList(FieldDefinition.Mon_Date));
         /*
          * Add the (atomic) missing errors to map
          */
-        messageFieldsMap.put(Missing.Unit, new ArrayList<>(Collections.singletonList(FieldDefinition.Unit)));
-        messageFieldsMap.put(Missing.EA_ID, new ArrayList<>(Collections.singletonList(FieldDefinition.EA_ID)));
-        messageFieldsMap.put(Missing.Mon_Point, new ArrayList<>(Collections.singletonList(FieldDefinition.Mon_Point)));
-        messageFieldsMap.put(Missing.Parameter, new ArrayList<>(Collections.singletonList(FieldDefinition.Parameter)));
-        messageFieldsMap.put(Missing.Rtn_Type, new ArrayList<>(Collections.singletonList(FieldDefinition.Rtn_Type)));
-        messageFieldsMap.put(Missing.Site_Name, Collections.singletonList(FieldDefinition.Site_Name));
-        messageFieldsMap.put(Missing.Mon_Date, Collections.singletonList(FieldDefinition.Mon_Date));
+        add(Missing.Unit, new ArrayList<>(Collections.singletonList(FieldDefinition.Unit)));
+        add(Missing.EA_ID, new ArrayList<>(Collections.singletonList(FieldDefinition.EA_ID)));
+        add(Missing.Mon_Point, new ArrayList<>(Collections.singletonList(FieldDefinition.Mon_Point)));
+        add(Missing.Parameter, new ArrayList<>(Collections.singletonList(FieldDefinition.Parameter)));
+        add(Missing.Rtn_Type, new ArrayList<>(Collections.singletonList(FieldDefinition.Rtn_Type)));
+        add(Missing.Site_Name, Collections.singletonList(FieldDefinition.Site_Name));
+        add(Missing.Mon_Date, Collections.singletonList(FieldDefinition.Mon_Date));
         /*
          * Add the (atomic) controlled list errors to the map
          */
-        messageFieldsMap.put(ControlledList.MethodOrStandard, Collections.singletonList(FieldDefinition.Meth_Stand));
-        messageFieldsMap.put(ControlledList.EA_ID, Collections.singletonList(FieldDefinition.EA_ID));
-        messageFieldsMap.put(ControlledList.Parameter, Collections.singletonList(FieldDefinition.Parameter));
-        messageFieldsMap.put(ControlledList.Qualifier, Collections.singletonList(FieldDefinition.Qualifier));
-        messageFieldsMap.put(ControlledList.Ref_Period, Collections.singletonList(FieldDefinition.Ref_Period));
-        messageFieldsMap.put(ControlledList.Rtn_Period, Collections.singletonList(FieldDefinition.Rtn_Period));
-        messageFieldsMap.put(ControlledList.Rtn_Type, Collections.singletonList(FieldDefinition.Rtn_Type));
-        messageFieldsMap.put(ControlledList.Txt_Value, Collections.singletonList(FieldDefinition.Txt_Value));
-        messageFieldsMap.put(ControlledList.Unit, Collections.singletonList(FieldDefinition.Unit));
+        add(ControlledList.MethodOrStandard, Collections.singletonList(FieldDefinition.Meth_Stand));
+        add(ControlledList.EA_ID, Collections.singletonList(FieldDefinition.EA_ID));
+        add(ControlledList.Parameter, Collections.singletonList(FieldDefinition.Parameter));
+        add(ControlledList.Qualifier, Collections.singletonList(FieldDefinition.Qualifier));
+        add(ControlledList.Ref_Period, Collections.singletonList(FieldDefinition.Ref_Period));
+        add(ControlledList.Rtn_Period, Collections.singletonList(FieldDefinition.Rtn_Period));
+        add(ControlledList.Rtn_Type, Collections.singletonList(FieldDefinition.Rtn_Type));
+        add(ControlledList.Txt_Value, Collections.singletonList(FieldDefinition.Txt_Value));
+        add(ControlledList.Unit, Collections.singletonList(FieldDefinition.Unit));
         /*
          * Add in the conflicts, optionally missing and dependency validations etc. The convention being applied is to
          * add first the primary data item - the header the error is being reported on and then
          * items in descending order of relevance.
          */
-        messageFieldsMap.put(Conflict.ProhibitUnitForTxtValue, Arrays.asList(FieldDefinition.Unit, FieldDefinition.Txt_Value));
-        messageFieldsMap.put(Missing.RequireCommentsForTxtValue, Collections.singletonList(FieldDefinition.Txt_Value));
-        messageFieldsMap.put(Missing.RequireUnitForValue, Collections.singletonList(FieldDefinition.Value));
-        messageFieldsMap.put(Missing.RequireUnitForValue, Collections.singletonList(FieldDefinition.Unit));
-        messageFieldsMap.put(Conflict.RequireValueOrTxtValue, Arrays.asList(FieldDefinition.Value, FieldDefinition.Txt_Value));
-        messageFieldsMap.put(DependencyConflict.Parameter, new ArrayList<>(Arrays.asList(FieldDefinition.Parameter, FieldDefinition.Rtn_Type)));
-        messageFieldsMap.put(DependencyConflict.Unit, new ArrayList<>(Arrays.asList(FieldDefinition.Unit, FieldDefinition.Parameter, FieldDefinition.Rtn_Type)));
+        add(Conflict.ProhibitUnitForTxtValue, Collections.singletonList(FieldDefinition.Unit));
+        add(Missing.RequireCommentsForTxtValue, Collections.singletonList(FieldDefinition.Comments));
+        add(Conflict.RequireValueOrTxtValue, Arrays.asList(FieldDefinition.Value, FieldDefinition.Txt_Value));
+        add(Missing.RequireValueOrTxtValue, Arrays.asList(FieldDefinition.Value, FieldDefinition.Txt_Value));
+        add(DependencyConflict.Parameter, new ArrayList<>(Arrays.asList(FieldDefinition.Parameter, FieldDefinition.Rtn_Type)));
+        add(DependencyConflict.Unit, new ArrayList<>(Arrays.asList(FieldDefinition.Unit, FieldDefinition.Parameter, FieldDefinition.Rtn_Type)));
     }
 
     public static List<FieldDefinition> getFieldDependencies(String message) {

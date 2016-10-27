@@ -87,13 +87,16 @@ public class FieldMapping {
      * @return
      */
     public String getInputValue(final Object target) {
+        Object o = null;
         try {
-            Object o = descriptor.getReadMethod().invoke(target);
-            return ((FieldValue) o).getInputValue();
+            o = descriptor.getReadMethod().invoke(target);
+            if (o != null && FieldValue.class.isAssignableFrom(getType())) {
+                return ((FieldValue) o).getInputValue();
+            }
         } catch (ReflectiveOperationException e) {
             LOGGER.error("Unable to retrieve input value", e);
-            return "";
         }
+        return Objects.toString(o, "");
     }
 
     /**

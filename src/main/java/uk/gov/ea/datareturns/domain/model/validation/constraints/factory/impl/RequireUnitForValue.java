@@ -20,7 +20,7 @@ public class RequireUnitForValue implements RecordConstraintValidator<DataSample
         boolean hasUnit = FieldValue.isNotEmpty(record.getUnit());
         if (hasValue && !hasUnit) {
             context.disableDefaultConstraintViolation();
-            context.buildConstraintViolationWithTemplate(MessageCodes.Missing.RequireUnitForValue).addPropertyNode(FieldDefinition.Unit.toString()).addConstraintViolation();
+            context.buildConstraintViolationWithTemplate(MessageCodes.Missing.Unit).addPropertyNode(FieldDefinition.Unit.toString()).addConstraintViolation();
             return false;
         }
         return true;
