@@ -99,13 +99,9 @@ public enum ControlledListsList {
 
     ControlledListsList(String description, Class<? extends EntityDao> dao,
                         String path, List<DisplayHeaderDto> displayHeaders, String defaultSearch, FieldDefinition fieldDefinition, Integer hierarchyLevel) {
-        this.description = description;
-        this.path = path;
-        this.dao = dao;
-        this.displayHeaders = displayHeaders;
-        this.defaultSearch = defaultSearch;
+
+        this(description, dao, path, displayHeaders, defaultSearch, fieldDefinition);
         this.hierarchyLevel = hierarchyLevel;
-        this.fieldDefinition = fieldDefinition;
     }
 
     static {

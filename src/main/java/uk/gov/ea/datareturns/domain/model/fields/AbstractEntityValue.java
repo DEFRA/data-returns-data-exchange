@@ -49,4 +49,8 @@ public abstract class AbstractEntityValue<R, E extends ControlledListEntity> imp
     @Override public String transform(R record) {
         return this.entity != null ? this.entity.getName() : null;
     }
+
+    public static <E extends ControlledListEntity> E getEntity(FieldValue<? , E> fv) {
+        return fv != null ? fv.getValue() : null;
+    }
 }

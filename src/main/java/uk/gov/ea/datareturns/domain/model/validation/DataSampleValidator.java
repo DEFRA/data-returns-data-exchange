@@ -25,8 +25,6 @@ import java.util.regex.Pattern;
 @Component
 public class DataSampleValidator {
     private static final Pattern ERROR_KEY_PATTERN = Pattern.compile("^\\{DR(?<errorCode>\\d{4})-(?<errorType>\\w+)\\}$");
-
-    //private static final Map<String, String> FIELD_MAPPING = FieldMapping.getBeanToFieldNameMap(DataSample.class);
     private static final Map<String, FieldMapping> BEAN_MAPPING = FieldMapping.getFieldNameToBeanMap(DataSample.class);
 
     /** hibernate validator instance */

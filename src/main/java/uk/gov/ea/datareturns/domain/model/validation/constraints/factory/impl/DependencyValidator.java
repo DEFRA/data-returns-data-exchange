@@ -6,6 +6,7 @@ import uk.gov.ea.datareturns.domain.jpa.entities.*;
 import uk.gov.ea.datareturns.domain.jpa.service.DependencyValidation;
 import uk.gov.ea.datareturns.domain.model.DataSample;
 import uk.gov.ea.datareturns.domain.model.MessageCodes;
+import uk.gov.ea.datareturns.domain.model.fields.AbstractEntityValue;
 import uk.gov.ea.datareturns.domain.model.validation.constraints.factory.RecordConstraintValidator;
 import uk.gov.ea.datareturns.util.SpringApplicationContextProvider;
 
@@ -19,17 +20,14 @@ import javax.validation.ConstraintValidatorContext;
 @Component
 public class DependencyValidator implements RecordConstraintValidator<DataSample> {
 
+    //private (Disposer.Record recordAbstractEntityValue value)
+
     @Override
     public boolean isValid(DataSample record, ConstraintValidatorContext context) {
-        uk.gov.ea.datareturns.domain.model.fields.impl.ReturnType returnType = record.getReturnType();
-        //uk.gov.ea.datareturns.domain.model.fields.impl.ReleasesAndTransfers releasesAndTransfers = null;
-        uk.gov.ea.datareturns.domain.model.fields.impl.Parameter parameter = record.getParameter();
-        uk.gov.ea.datareturns.domain.model.fields.impl.Unit unit = record.getUnit();
-
-        ReturnType returnTypeEntity = (returnType != null) ? returnType.getEntity() : null;
+        ReturnType returnTypeEntity = AbstractEntityValue.getEntity(record.getReturnType());
         ReleasesAndTransfers releasesAndTransfersEntity = null;
-        Parameter parameterEntity = (parameter != null) ? parameter.getEntity() : null;
-        Unit unitEntity = (unit != null) ? unit.getEntity() : null;
+        Parameter parameterEntity = AbstractEntityValue.getEntity(record.getParameter());
+        Unit unitEntity = AbstractEntityValue.getEntity(record.getUnit());
 
         // We are instantiated through reflection so we need to get the validation engine via the spring application context
         DependencyValidation dependencyValidation = SpringApplicationContextProvider.getApplicationContext().getBean(DependencyValidation.class);

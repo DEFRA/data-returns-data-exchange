@@ -45,7 +45,6 @@ public class DependenciesDao {
         return entityManager.find(Dependencies.class, id);
     }
 
-    //HashMap<Rtn_Type, HashMap<ReleasesAndTransfers, HashMap<Parameters, HashSet<Unit>>>>;
     private volatile Map<String, Map<String, Map<String, Set<String>>>> cache = null;
 
     /*
