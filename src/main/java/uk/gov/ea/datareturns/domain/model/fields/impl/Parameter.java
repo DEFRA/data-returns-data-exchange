@@ -3,6 +3,7 @@ package uk.gov.ea.datareturns.domain.model.fields.impl;
 import org.hibernate.validator.constraints.NotBlank;
 import uk.gov.ea.datareturns.domain.jpa.dao.ParameterDao;
 import uk.gov.ea.datareturns.domain.model.DataSample;
+import uk.gov.ea.datareturns.domain.model.MessageCodes;
 import uk.gov.ea.datareturns.domain.model.fields.AbstractAliasingEntityValue;
 import uk.gov.ea.datareturns.domain.model.validation.auditors.controlledlist.ParameterAuditor;
 import uk.gov.ea.datareturns.domain.model.validation.constraints.controlledlist.ControlledList;
@@ -13,8 +14,8 @@ import uk.gov.ea.datareturns.domain.model.validation.constraints.controlledlist.
  * @author Sam Gardner-Dell
  */
 public class Parameter extends AbstractAliasingEntityValue<DataSample, uk.gov.ea.datareturns.domain.jpa.entities.Parameter> {
-    @NotBlank(message = "{DR9030-Missing}")
-    @ControlledList(auditor = ParameterAuditor.class, message = "{DR9030-Incorrect}")
+    @NotBlank(message = MessageCodes.Missing.Parameter)
+    @ControlledList(auditor = ParameterAuditor.class, message = MessageCodes.ControlledList.Parameter)
     private final String inputValue;
 
     /**

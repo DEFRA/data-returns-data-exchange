@@ -30,7 +30,7 @@ public class DataReturnsZipFileModel {
 
     /** The original fileName uploaded by the user */
     private File inputFile;
-    /** Mapping of output fileName to EaId */
+    /** Mapping of output fileName to EA_ID */
     private Map<String, EaId> outputFileIdentifiers;
     /** The output files (one per unique identifier) */
     private Collection<File> outputFiles;
@@ -119,7 +119,7 @@ public class DataReturnsZipFileModel {
 
                 entry = new ZipEntry(FILE_OUTPUT_IDENTIFIERS);
                 zos.putNextEntry(entry);
-                outputFileIdProperties.store(zos, "Mapping from output fileName to EaId");
+                outputFileIdProperties.store(zos, "Mapping from output fileName to EA_ID");
                 zos.closeEntry();
             }
 

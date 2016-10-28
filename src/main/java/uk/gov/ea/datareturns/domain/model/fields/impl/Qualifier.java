@@ -2,6 +2,7 @@ package uk.gov.ea.datareturns.domain.model.fields.impl;
 
 import uk.gov.ea.datareturns.domain.jpa.dao.QualifierDao;
 import uk.gov.ea.datareturns.domain.model.DataSample;
+import uk.gov.ea.datareturns.domain.model.MessageCodes;
 import uk.gov.ea.datareturns.domain.model.fields.AbstractEntityValue;
 import uk.gov.ea.datareturns.domain.model.validation.auditors.controlledlist.QualifierAuditor;
 import uk.gov.ea.datareturns.domain.model.validation.constraints.controlledlist.ControlledList;
@@ -12,7 +13,7 @@ import uk.gov.ea.datareturns.domain.model.validation.constraints.controlledlist.
  * @author Sam Gardner-Dell
  */
 public class Qualifier extends AbstractEntityValue<DataSample, uk.gov.ea.datareturns.domain.jpa.entities.Qualifier> {
-    @ControlledList(auditor = QualifierAuditor.class, message = "{DR9180-Incorrect}")
+    @ControlledList(auditor = QualifierAuditor.class, message = MessageCodes.ControlledList.Qualifier)
     private final String inputValue;
 
     /**

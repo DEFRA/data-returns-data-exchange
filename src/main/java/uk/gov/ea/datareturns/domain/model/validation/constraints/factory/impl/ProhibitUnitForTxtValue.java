@@ -2,6 +2,7 @@ package uk.gov.ea.datareturns.domain.model.validation.constraints.factory.impl;
 
 import org.springframework.stereotype.Component;
 import uk.gov.ea.datareturns.domain.model.DataSample;
+import uk.gov.ea.datareturns.domain.model.MessageCodes;
 import uk.gov.ea.datareturns.domain.model.fields.FieldValue;
 import uk.gov.ea.datareturns.domain.model.validation.constraints.factory.RecordConstraintValidator;
 
@@ -18,7 +19,7 @@ public class ProhibitUnitForTxtValue implements RecordConstraintValidator<DataSa
         boolean hasUnit = FieldValue.isNotEmpty(record.getUnit());
         if (hasTxtValue && hasUnit) {
             context.disableDefaultConstraintViolation();
-            context.buildConstraintViolationWithTemplate("{DR9050-Conflict}").addPropertyNode("unit").addConstraintViolation();
+            context.buildConstraintViolationWithTemplate(MessageCodes.Conflict.ProhibitUnitForTxtValue).addConstraintViolation();
             return false;
         }
         return true;

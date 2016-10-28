@@ -2,7 +2,9 @@ package uk.gov.ea.datareturns.domain.model.validation.constraints.factory.impl;
 
 import org.springframework.stereotype.Component;
 import uk.gov.ea.datareturns.domain.model.DataSample;
+import uk.gov.ea.datareturns.domain.model.MessageCodes;
 import uk.gov.ea.datareturns.domain.model.fields.FieldValue;
+import uk.gov.ea.datareturns.domain.model.rules.FieldDefinition;
 import uk.gov.ea.datareturns.domain.model.validation.constraints.factory.RecordConstraintValidator;
 
 import javax.validation.ConstraintValidatorContext;
@@ -18,7 +20,7 @@ public class RequireUnitForValue implements RecordConstraintValidator<DataSample
         boolean hasUnit = FieldValue.isNotEmpty(record.getUnit());
         if (hasValue && !hasUnit) {
             context.disableDefaultConstraintViolation();
-            context.buildConstraintViolationWithTemplate("{DR9050-Missing}").addPropertyNode("unit").addConstraintViolation();
+            context.buildConstraintViolationWithTemplate(MessageCodes.Missing.Unit).addPropertyNode(FieldDefinition.Unit.toString()).addConstraintViolation();
             return false;
         }
         return true;

@@ -1,7 +1,6 @@
 package uk.gov.ea.datareturns.domain.model.fields;
 
 import uk.gov.ea.datareturns.domain.jpa.dao.EntityDao;
-import uk.gov.ea.datareturns.domain.jpa.entities.AliasingEntity;
 import uk.gov.ea.datareturns.domain.jpa.entities.ControlledListEntity;
 /**
  * The {@link AbstractEntityValue} class provides the base {@link FieldValue} implementation for fields which are backed by
@@ -49,5 +48,9 @@ public abstract class AbstractEntityValue<R, E extends ControlledListEntity> imp
      */
     @Override public String transform(R record) {
         return this.entity != null ? this.entity.getName() : null;
+    }
+
+    public static <E extends ControlledListEntity> E getEntity(FieldValue<? , E> fv) {
+        return fv != null ? fv.getValue() : null;
     }
 }
