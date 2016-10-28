@@ -7,9 +7,8 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  *
  * @author Sam Gardner-Dell
  */
+@SuppressWarnings("unused")
 public class ValidationError {
-    @JsonProperty("fieldName")
-    private String fieldName;
 
     @JsonProperty("definition")
     private String definition;
@@ -23,30 +22,58 @@ public class ValidationError {
     @JsonProperty("errorCode")
     private int errorCode;
 
-    @JsonProperty("errorValue")
-    private String errorValue;
-
     @JsonProperty("errorMessage")
     private String errorMessage;
+
+    @JsonProperty("errorData")
+    private ErrorData[] errorData;
+
+    /**
+     * Used to transmit the error value (the user input value),
+     * and the resolved value (where there is an input that is mutated, for instanced aliases,
+     * but where the resolved value is still invalid (for dependencies for example),
+     * for each field name required by the front end for error reporting
+     */
+    @SuppressWarnings("unused")
+    public static class ErrorData {
+        @JsonProperty("fieldName")
+        private String fieldName;
+
+        @JsonProperty("errorValue")
+        private String errorValue;
+
+        @JsonProperty("resolvedValue")
+        private String resolvedValue;
+
+        public String getFieldName() {
+            return fieldName;
+        }
+
+        public void setFieldName(String fieldName) {
+            this.fieldName = fieldName;
+        }
+
+        public String getErrorValue() {
+            return errorValue;
+        }
+
+        public void setErrorValue(String errorValue) {
+            this.errorValue = errorValue;
+        }
+
+        public String getResolvedValue() {
+            return resolvedValue;
+        }
+
+        public void setResolvedValue(String resolvedValue) {
+            this.resolvedValue = resolvedValue;
+        }
+    }
 
     /**
      * Create a new ValidationError instance
      */
     public ValidationError() {
-    }
-
-    /**
-     * @return the fieldName
-     */
-    public String getFieldName() {
-        return this.fieldName;
-    }
-
-    /**
-     * @param fieldName the fieldName to set
-     */
-    public void setFieldName(final String fieldName) {
-        this.fieldName = fieldName;
     }
 
     /**
@@ -106,20 +133,6 @@ public class ValidationError {
     }
 
     /**
-     * @return the errorValue
-     */
-    public String getErrorValue() {
-        return this.errorValue;
-    }
-
-    /**
-     * @param errorValue the errorValue to set
-     */
-    public void setErrorValue(final String errorValue) {
-        this.errorValue = errorValue;
-    }
-
-    /**
      * @return the errorMessage
      */
     public String getErrorMessage() {
@@ -133,16 +146,12 @@ public class ValidationError {
         this.errorMessage = errorMessage;
     }
 
-    @Override
-    public String toString() {
-        return "ValidationError{" +
-                "fieldName='" + fieldName + '\'' +
-                ", definition='" + definition + '\'' +
-                ", lineNumber=" + lineNumber +
-                ", errorType='" + errorType + '\'' +
-                ", errorCode=" + errorCode +
-                ", errorValue='" + errorValue + '\'' +
-                ", errorMessage='" + errorMessage + '\'' +
-                '}';
+    public ErrorData[] getErrorData() {
+        return errorData;
     }
+
+    public void setErrorData(ErrorData[] errorData) {
+        this.errorData = errorData;
+    }
+
 }

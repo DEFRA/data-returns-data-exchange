@@ -3,8 +3,6 @@ package uk.gov.ea.datareturns.util;
 import com.samskivert.mustache.Mustache;
 import com.samskivert.mustache.Template;
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang3.CharSet;
-import org.apache.commons.lang3.CharSetUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

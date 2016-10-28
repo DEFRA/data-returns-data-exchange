@@ -4,7 +4,6 @@ import org.glassfish.jersey.server.ParamException;
 import uk.gov.ea.datareturns.domain.exceptions.ApplicationExceptionType;
 import uk.gov.ea.datareturns.domain.result.ExceptionMessageContainer;
 
-import javax.ws.rs.ClientErrorException;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.ExceptionMapper;

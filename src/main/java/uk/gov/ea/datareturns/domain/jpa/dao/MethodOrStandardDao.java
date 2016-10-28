@@ -1,6 +1,5 @@
 package uk.gov.ea.datareturns.domain.jpa.dao;
 
-import com.amazonaws.util.StringUtils;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Repository;
