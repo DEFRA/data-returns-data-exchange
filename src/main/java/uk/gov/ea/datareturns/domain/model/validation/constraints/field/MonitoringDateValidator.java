@@ -5,8 +5,7 @@ import uk.gov.ea.datareturns.domain.model.fields.impl.MonitoringDate;
 
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
-import java.time.Clock;
-import java.time.Instant;
+import java.time.*;
 
 /**
  * Validates Monitoring Date values
@@ -35,8 +34,10 @@ public class MonitoringDateValidator implements ConstraintValidator<ValidMonitor
             isValid = monitoringDate.isParsed();
 
             if (isValid) {
+                // The DEP makes no provision for timezone and the agreed assumption is that data is reported using the local time at
+                // the time of measurement.
                 final Instant instant = monitoringDate.getInstant();
-                final Instant now = Instant.now(Clock.systemUTC());
+                final Instant now = LocalDateTime.now().toInstant(ZoneOffset.ofHours(0));
                 isValid = instant.equals(now) || instant.isBefore(now);
 
                 // TODO: Future release - extend validation to check for dates too far in the past (should be configurable)
