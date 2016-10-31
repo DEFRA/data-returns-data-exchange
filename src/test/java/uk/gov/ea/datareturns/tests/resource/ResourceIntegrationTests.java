@@ -140,6 +140,9 @@ public class ResourceIntegrationTests {
     public final static String REM_INVALID_PARAMETER = "validation/testDependencyREMInvalid.csv";
     public final static String REM_INVALID_UNIT = "validation/testDependencyREMInvalidUnit.csv";
 
+    public final static String PI_VALID = "validation/testDependencyPIValid.csv";
+    public final static String PI_INVALID_NO_TRANSFER = "validation/testDependencyPINoTransfers.csv";
+
     @Inject
     private TestSettings testSettings;
 
@@ -448,6 +451,20 @@ public class ResourceIntegrationTests {
     public void testREMInvalidUnit() {
         Client client = createClient("Nav: REM invalid unit");
         final Response response = performUploadStep(client, REM_INVALID_UNIT, MEDIA_TYPE_CSV);
+        assertThat(response.getStatus()).isEqualTo(Status.BAD_REQUEST.getStatusCode());
+    }
+
+    @Test
+    public void testPIValid() {
+        Client client = createClient("Nav: PI valid");
+        final Response response = performUploadStep(client, PI_VALID, MEDIA_TYPE_CSV);
+        assertThat(response.getStatus()).isEqualTo(Status.OK.getStatusCode());
+    }
+
+    @Test
+    public void testPIInvalidNoTransfer() {
+        Client client = createClient("Nav: PI invalid");
+        final Response response = performUploadStep(client, PI_INVALID_NO_TRANSFER, MEDIA_TYPE_CSV);
         assertThat(response.getStatus()).isEqualTo(Status.BAD_REQUEST.getStatusCode());
     }
 

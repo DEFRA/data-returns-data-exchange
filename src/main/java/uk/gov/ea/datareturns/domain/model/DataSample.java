@@ -75,6 +75,11 @@ public class DataSample {
     @Valid @MappedField(FieldDefinition.CiC)
     private Cic cic;
 
+    /** Pollution inventory releases and transfers */
+    @Valid @MappedField(FieldDefinition.Rel_Trans)
+    private ReleasesAndTransfers releasesAndTransfers;
+
+
     //    /** Sample reference (Smpl_Ref) */
     //    @Length(max = 255, message = "{DR9120-Length}")
     //    @Pattern(regexp = FieldValue.REGEX_SIMPLE_TEXT, message = "{DR9120-Incorrect}")
@@ -371,5 +376,23 @@ public class DataSample {
      */
     public void setCic(Cic cic) {
         this.cic = cic;
+    }
+
+    /**
+     * Gets releases and releasesAndTransfers
+     *
+     * @return the releasesAndTransfers
+     */
+    public ReleasesAndTransfers getReleasesAndTransfers() {
+        return releasesAndTransfers;
+    }
+
+    /**
+     * Sets releasesAndTransfers
+     *
+     * @param releasesAndTransfers the releasesAndTransfers
+     */
+    public void setReleasesAndTransfers(ReleasesAndTransfers releasesAndTransfers) {
+        this.releasesAndTransfers = releasesAndTransfers;
     }
 }

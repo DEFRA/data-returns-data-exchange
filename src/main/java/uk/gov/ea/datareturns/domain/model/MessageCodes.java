@@ -56,6 +56,7 @@ public class MessageCodes {
         public final static String RequireCommentsForTxtValue = "{DR9140-Missing}";
         public final static String RequireValueOrTxtValue = "{DR9999-Missing}";
         public final static String Mon_Date = "{DR9020-Missing}";
+        public final static String Rel_Trans = "{DR9170-Missing}";
     }
 
     /**
@@ -71,6 +72,7 @@ public class MessageCodes {
         public final static String Rtn_Type = "{DR9010-Incorrect}";
         public final static String Txt_Value = "{DR9080-Incorrect}";
         public final static String Unit = "{DR9050-Incorrect}";
+        public final static String Rel_Trans = "{DR9170-Incorrect}";
     }
 
     /**
@@ -89,6 +91,7 @@ public class MessageCodes {
         public final static String Unit = "{DR9051-Conflict}";
         public final static String Rtn_Type = "{DR9051-Conflict}";
         public final static String Parameter = "{DR9031-Conflict}";
+        public final static String Rel_Trans = "{DR9170-Conflict}";
     }
 
     private final static Map<String, List<FieldDefinition>> messageFieldsMap = new HashMap<>();
@@ -131,6 +134,7 @@ public class MessageCodes {
         add(Missing.Rtn_Type, new ArrayList<>(Collections.singletonList(FieldDefinition.Rtn_Type)));
         add(Missing.Site_Name, Collections.singletonList(FieldDefinition.Site_Name));
         add(Missing.Mon_Date, Collections.singletonList(FieldDefinition.Mon_Date));
+        add(Missing.Rel_Trans, Collections.singletonList(FieldDefinition.Rel_Trans));
         /*
          * Add the (atomic) controlled list errors to the map
          */
@@ -152,6 +156,7 @@ public class MessageCodes {
         add(Missing.RequireCommentsForTxtValue, Collections.singletonList(FieldDefinition.Comments));
         add(Conflict.RequireValueOrTxtValue, Arrays.asList(FieldDefinition.Value, FieldDefinition.Txt_Value));
         add(Missing.RequireValueOrTxtValue, Arrays.asList(FieldDefinition.Value, FieldDefinition.Txt_Value));
+        add(DependencyConflict.Rel_Trans, Collections.singletonList(FieldDefinition.Rel_Trans));
         add(DependencyConflict.Parameter, new ArrayList<>(Arrays.asList(FieldDefinition.Parameter, FieldDefinition.Rtn_Type)));
         add(DependencyConflict.Unit, new ArrayList<>(Arrays.asList(FieldDefinition.Unit, FieldDefinition.Parameter, FieldDefinition.Rtn_Type)));
     }

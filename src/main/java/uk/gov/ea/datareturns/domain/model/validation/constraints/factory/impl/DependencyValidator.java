@@ -25,7 +25,7 @@ public class DependencyValidator implements RecordConstraintValidator<DataSample
     @Override
     public boolean isValid(DataSample record, ConstraintValidatorContext context) {
         ReturnType returnTypeEntity = AbstractEntityValue.getEntity(record.getReturnType());
-        ReleasesAndTransfers releasesAndTransfersEntity = null;
+        ReleasesAndTransfers releasesAndTransfersEntity = AbstractEntityValue.getEntity(record.getReleasesAndTransfers());
         Parameter parameterEntity = AbstractEntityValue.getEntity(record.getParameter());
         Unit unitEntity = AbstractEntityValue.getEntity(record.getUnit());
 
@@ -57,7 +57,7 @@ public class DependencyValidator implements RecordConstraintValidator<DataSample
                         message = MessageCodes.DependencyConflict.Parameter;
                         break;
                     case RELEASES_AND_TRANSFERS:
-                        message = null;
+                        message = MessageCodes.DependencyConflict.Rel_Trans;
                         break;
                     case RETURN_TYPE:
                         message = MessageCodes.DependencyConflict.Rtn_Type;

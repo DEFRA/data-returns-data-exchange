@@ -50,7 +50,14 @@ public abstract class AbstractEntityValue<R, E extends ControlledListEntity> imp
         return this.entity != null ? this.entity.getName() : null;
     }
 
-    public static <E extends ControlledListEntity> E getEntity(FieldValue<? , E> fv) {
-        return fv != null ? fv.getValue() : null;
+    /**
+     * Helper function to provide null checking getting entity from field value from a static reference
+     * @param fv The field Value
+     * @param <E> The entity type
+     * @return The entity
+     */
+    public static <E extends ControlledListEntity> E getEntity(AbstractEntityValue<? , E> fv) {
+        return fv != null ? fv.getEntity() : null;
     }
+
 }

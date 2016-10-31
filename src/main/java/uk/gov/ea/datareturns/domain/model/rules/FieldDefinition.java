@@ -73,7 +73,10 @@ public enum FieldDefinition {
     Comments("Comments", uk.gov.ea.datareturns.domain.model.fields.impl.Comments.class, "Free-text comments about the row of data"),
 
     /** Commercial in confidence data (CiC) */
-    CiC("CiC", Cic.class, "Commercial in confidence");
+    CiC("CiC", Cic.class, "Commercial in confidence"),
+
+    /** Releases and transfers */
+    Rel_Trans("Rel_Trans", ReleasesAndTransfers.class, "Releases and Transfers");
 
     //    /** Chemical Abstracts Service value (CAS) */
     //    CAS("CAS", null, "Chemical Abstracts Service number"),
