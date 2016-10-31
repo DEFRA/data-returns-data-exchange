@@ -64,9 +64,9 @@ public enum ControlledListsList {
         add(new DisplayHeaderDto("aliases", "Alternatives"));
     }}), "name", FieldDefinition.Txt_Value),
 
-    RELEASES_AND_TRANSFERS("Releases and transfers", ReleasesAndTransfersDao.class, "mon_point", Collections.unmodifiableList(new ArrayList<DisplayHeaderDto>() {{
-        add(new DisplayHeaderDto("name", "Mon_point"));
-    }}), "name", null, 1), //TODO - add in the whatever here.
+    RELEASES_AND_TRANSFERS("Releases and transfers", ReleasesAndTransfersDao.class, "rel_trans", Collections.unmodifiableList(new ArrayList<DisplayHeaderDto>() {{
+        add(new DisplayHeaderDto("name", "Rel_trans"));
+    }}), "name", FieldDefinition.Rel_Trans, 1),
 
     UNIQUE_IDENTIFIER("Releases and transfers", UniqueIdentifierDao.class, "ea_id", Collections.unmodifiableList(new ArrayList<DisplayHeaderDto>() {{
         add(new DisplayHeaderDto("name", "EA_ID"));
