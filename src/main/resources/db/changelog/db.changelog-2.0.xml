@@ -6,6 +6,9 @@
 
 	<property name="releasesAndTransfersFile" value="/db/data/ReleasesAndTransfers.csv"/>
 	<property name="dependenciesFile" value="/db/data/Dependencies.csv"/>
+	<property name="pasRegisLicHoldStageFile" value="/db/data/stage_data_initialization/lichold.csv"/>
+	<property name="pasRegisLicStatsStageFile" value="/db/data/stage_data_initialization/licstats.csv"/>
+	<property name="emmaStageFile" value="/db/data/stage_data_initialization/emma.csv"/>
 
 	<preConditions>
 		<dbms type="${db.type}"/>
@@ -100,5 +103,114 @@
 			<dropIndex tableName="releases_and_transfers" indexName="idx_releases_and_transfers_name"/>
 		</rollback>
 	</changeSet>
+
+	<!--
+	****************************************************************
+	Regis/PAS LICSTATS table holds status information
+	****************************************************************
+	-->
+	<changeSet id="create-table: stage_licstats" author="Environment Agency">
+		<createTable tableName="stage_licstats">
+			<column name="stat_num" type="smallint"/>
+			<column name="stat_sub" type="smallint"/>
+			<column name="stat_sdesc" type="varchar(30)"/>
+			<column name="stat_ldesc" type="varchar(50)"/>
+		</createTable>
+		<rollback>
+			<dropTable tableName="stage_licstats"/>
+		</rollback>
+	</changeSet>
+
+	<changeSet id="load-data: stage_licstats" author="Environment Agency">
+		<preConditions onFail="HALT">
+			<tableExists tableName="stage_licstats"/>
+			<sqlCheck expectedResult="0">select count(*) from stage_licstats</sqlCheck>
+		</preConditions>
+		<loadData file="${pasRegisLicStatsStageFile}" tableName="stage_licstats">
+		</loadData>
+		<rollback>
+			<delete tableName="stage_licstats"></delete>
+		</rollback>
+	</changeSet>
+
+	<!--
+	****************************************************************
+	Regis/PAS LICHOLD table holds status information
+	****************************************************************
+	-->
+	<changeSet id="create-table: stage_lichold" author="Environment Agency">
+		<createTable tableName="stage_lichold">
+			<column name="lic_aref" type="bigserial">
+				<constraints primaryKey="true" nullable="false"/>
+			</column>
+			<column name="lic_stat" type="smallint"/>
+			<column name="lic_subs" type="smallint"/>
+			<column name="lic_name" type="varchar(80)"/>
+			<column name="lic_site" type="varchar(80)"/>
+			<column name="lic_epr" type="varchar(18)"/>
+			<column name="lic_wml" type="varchar(18)"/>
+			<column name="lic_othid" type="varchar(18)"/>
+			<column name="date_created" type="timestamp"/>
+			<column name="date_modified" type="timestamp" valueDate="CURRENT_TIMESTAMP"/>
+		</createTable>
+		<rollback>
+			<dropTable tableName="stage_lichold"/>
+		</rollback>
+	</changeSet>
+
+	<changeSet id="load-data: stage_lichold" author="Environment Agency">
+		<preConditions onFail="HALT">
+			<tableExists tableName="stage_lichold"/>
+			<sqlCheck expectedResult="0">select count(*) from stage_lichold</sqlCheck>
+		</preConditions>
+		<loadData file="${pasRegisLicHoldStageFile}" tableName="stage_lichold">
+		</loadData>
+		<rollback>
+			<delete tableName="stage_lichold"></delete>
+		</rollback>
+	</changeSet>
+
+	<!--
+	****************************************************************
+	EMMA extract table holds emma staging data
+	****************************************************************
+	-->
+	<changeSet id="create-table: stage_emma" author="Environment Agency">
+		<createTable tableName="stage_emma">
+			<column name="permit" type="varchar(18)"/>
+			<column name="long_name" type="varchar(100)"/>
+			<column name="date_created" type="timestamp"/>
+			<column name="date_modified" type="timestamp"/>
+		</createTable>
+		<rollback>
+			<dropTable tableName="stage_emma"/>
+		</rollback>
+	</changeSet>
+
+	<changeSet id="load-data: stage_emma" author="Environment Agency">
+		<preConditions onFail="HALT">
+			<tableExists tableName="stage_emma"/>
+			<sqlCheck expectedResult="0">select count(*) from stage_emma</sqlCheck>
+		</preConditions>
+		<loadData file="${emmaStageFile}" tableName="stage_emma">
+		</loadData>
+		<rollback>
+			<delete tableName="stage_emma"></delete>
+		</rollback>
+	</changeSet>
+
+	<!--
+	****************************************************************
+	Read the permit/site data from the stage tables and merge into
+	the main tables
+	****************************************************************
+	-->
+	<changeSet id="prepare: site-permit" author="Environment Agency">
+		<sqlFile path="../sql/prepare-permit-data.sql"
+						 relativeToChangelogFile="true"
+						 splitStatements="true"
+						 stripComments="true"/>
+	</changeSet>
+
 
 </databaseChangeLog>

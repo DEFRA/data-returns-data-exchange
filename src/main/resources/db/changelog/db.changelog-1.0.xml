@@ -19,7 +19,35 @@
 		<runningAs username="${db.username}"/>
 	</preConditions>
 
-	<!-- 
+	<!--
+	****************************************************************
+  Sites
+  ****************************************************************
+  -->
+	<changeSet id="create-table: sites" author="Environment Agency">
+		<createTable tableName="sites">
+			<column name="id" type="bigserial">
+				<constraints primaryKey="true" nullable="false"/>
+			</column>
+			<column name="name" type="varchar(80)">
+				<constraints nullable="false" unique="true"/>
+			</column>
+		</createTable>
+		<rollback>
+			<dropTable tableName="sites"/>
+		</rollback>
+	</changeSet>
+
+	<changeSet id="create-index: sites" author="Environment Agency">
+		<createIndex indexName="idx_site_name" tableName="sites" unique="true">
+			<column name="name"/>
+		</createIndex>
+		<rollback>
+			<dropIndex tableName="sites" indexName="idx_site_name"/>
+		</rollback>
+	</changeSet>
+
+	<!--
 	****************************************************************
 	Unique Identifiers
 	****************************************************************
@@ -30,24 +58,16 @@
 			<column name="id" type="bigserial">
 				<constraints primaryKey="true" nullable="false"/>
 			</column>
-			<column name="name" type="varchar(10)">
+			<column name="site_id" type="bigserial">
+				<constraints nullable="false" foreignKeyName="fk_site" references="sites(id)"/>
+			</column>
+			<column name="name" type="varchar(18)">
 				<constraints nullable="false" unique="true"/>
 			</column>
+			<column name="preferred" type="varchar(18)"/>
 		</createTable>
 		<rollback>
 			<dropTable tableName="unique_identifiers"/>
-		</rollback>
-	</changeSet>
-
-	<changeSet id="load-data: unique_identifiers" author="Environment Agency">
-		<preConditions onFail="HALT">
-			<tableExists tableName="unique_identifiers"/>
-			<columnExists tableName="unique_identifiers" columnName="name"/>
-			<sqlCheck expectedResult="0">select count(id) from unique_identifiers</sqlCheck>
-		</preConditions>
-		<loadData file="${uniqueIdentifiersFile}" tableName="unique_identifiers"/>
-		<rollback>
-			<delete tableName="unique_identifiers"></delete>
 		</rollback>
 	</changeSet>
 
@@ -65,7 +85,6 @@
 	Return Types
 	****************************************************************
 	-->
-
 	<changeSet id="create-table: return_types" author="Environment Agency">
 		<createTable tableName="return_types">
 			<column name="id" type="bigserial">
