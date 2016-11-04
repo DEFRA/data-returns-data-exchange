@@ -70,7 +70,9 @@ public enum ControlledListsList {
 
     UNIQUE_IDENTIFIER("Releases and transfers", UniqueIdentifierDao.class, "ea_id", Collections.unmodifiableList(new ArrayList<DisplayHeaderDto>() {{
         add(new DisplayHeaderDto("name", "EA_ID"));
-    }}), "name", FieldDefinition.EA_ID);
+    }}), "name", FieldDefinition.EA_ID),
+
+    SITE(null, null, null, null, null, null);
 
     private final String path;
 
