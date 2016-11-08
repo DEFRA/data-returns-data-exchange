@@ -52,12 +52,6 @@ public class ReturnType implements ControlledListEntity, DependentEntity {
     }
 
     @Override
-    @JsonIgnore
-    public ControlledListsList getControlledListType() {
-        return ControlledListsList.RETURN_TYPE;
-    }
-
-    @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;

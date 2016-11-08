@@ -77,12 +77,6 @@ public class Qualifier implements ControlledListEntity {
     }
 
     @Override
-    @JsonIgnore
-    public ControlledListsList getControlledListType() {
-        return ControlledListsList.QUALIFIERS;
-    }
-
-    @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;

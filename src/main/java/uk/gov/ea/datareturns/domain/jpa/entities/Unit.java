@@ -6,6 +6,7 @@ import javax.persistence.*;
 import java.util.Set;
 
 /**
+ * @author Sam Gardner-Dell
  * The persistent class for the units database table.
  *
  */
@@ -112,12 +113,6 @@ public class Unit implements AliasingEntity, DependentEntity {
     @Override
     public void setAliases(Set<String> aliases) {
         this.aliases = aliases;
-    }
-
-    @Override
-    @JsonIgnore
-    public ControlledListsList getControlledListType() {
-        return ControlledListsList.UNITS;
     }
 
     @Override

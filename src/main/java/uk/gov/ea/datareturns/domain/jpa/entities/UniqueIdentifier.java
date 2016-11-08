@@ -1,10 +1,9 @@
 package uk.gov.ea.datareturns.domain.jpa.entities;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-
 import javax.persistence.*;
 
 /**
+ * @author Graham Willis
  * The persistent class for the unique_identifiers database table.
  *
  */
@@ -22,6 +21,10 @@ public class UniqueIdentifier implements ControlledListEntity {
     @Column(name = "name", nullable = false, length = 10)
     private String name;
 
+    @ManyToOne
+    @JoinColumn(name="site_id")
+    private Site site;
+
     public Long getId() {
         return this.id;
     }
@@ -38,10 +41,12 @@ public class UniqueIdentifier implements ControlledListEntity {
         this.name = name;
     }
 
-    @Override
-    @JsonIgnore
-    public ControlledListsList getControlledListType() {
-        return ControlledListsList.UNIQUE_IDENTIFIER;
+    public Site getSite() {
+        return site;
+    }
+
+    public void setSite(Site site) {
+        this.site = site;
     }
 
     @Override
@@ -59,4 +64,12 @@ public class UniqueIdentifier implements ControlledListEntity {
         return name.hashCode();
     }
 
+    @Override
+    public String toString() {
+        return "UniqueIdentifier{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", site=" + site +
+                '}';
+    }
 }

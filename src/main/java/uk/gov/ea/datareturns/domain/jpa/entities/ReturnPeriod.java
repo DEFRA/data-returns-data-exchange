@@ -63,12 +63,6 @@ public class ReturnPeriod implements ControlledListEntity {
     }
 
     @Override
-    @JsonIgnore
-    public ControlledListsList getControlledListType() {
-        return ControlledListsList.RETURN_PERIOD;
-    }
-
-    @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;

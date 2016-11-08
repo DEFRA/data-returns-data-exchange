@@ -40,12 +40,6 @@ public class ReleasesAndTransfers implements ControlledListEntity, DependentEnti
     }
 
     @Override
-    @JsonIgnore
-    public ControlledListsList getControlledListType() {
-        return ControlledListsList.RELEASES_AND_TRANSFERS;
-    }
-
-    @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;

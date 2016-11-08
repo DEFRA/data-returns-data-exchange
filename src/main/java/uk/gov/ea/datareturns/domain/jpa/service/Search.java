@@ -24,7 +24,8 @@ import javax.inject.Inject;
 import java.io.IOException;
 
 /**
- * Created by graham on 04/11/16.
+ * The service class to support permit lookup (search functionality)
+ * @author Graham Willis
  */
 @Component
 public class Search {

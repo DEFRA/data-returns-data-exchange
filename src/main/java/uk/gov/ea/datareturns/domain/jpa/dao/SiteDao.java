@@ -16,4 +16,15 @@ public class SiteDao extends EntityDao<Site> {
     public SiteDao() {
         super(Site.class);
     }
+
+    // Site names are exact and cases sensitive
+    public String getKeyFromRelaxedName(String name) {
+        return name;
+    }
+
+    // Just hit the base cache
+    public Site getByNameRelaxed(String name) {
+        return getKeyCache().get(name);
+    }
+
 }

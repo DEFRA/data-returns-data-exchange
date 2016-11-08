@@ -3,16 +3,15 @@ package uk.gov.ea.datareturns.domain.model.fields.impl;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.hibernate.validator.constraints.NotBlank;
-import uk.gov.ea.datareturns.domain.jpa.dao.UniqueIdentifierDao;
 import uk.gov.ea.datareturns.domain.jpa.entities.UniqueIdentifier;
+import uk.gov.ea.datareturns.domain.jpa.service.UniqueIdentifierService;
 import uk.gov.ea.datareturns.domain.model.DataSample;
 import uk.gov.ea.datareturns.domain.model.MessageCodes;
 import uk.gov.ea.datareturns.domain.model.fields.AbstractEntityValue;
 import uk.gov.ea.datareturns.domain.model.rules.EaIdType;
 import uk.gov.ea.datareturns.domain.model.validation.auditors.controlledlist.UniqueIdentifierAuditor;
 import uk.gov.ea.datareturns.domain.model.validation.constraints.controlledlist.ControlledList;
-
-import javax.validation.constraints.Pattern;
+import uk.gov.ea.datareturns.util.SpringApplicationContextProvider;
 
 /**
  * Models details about an EA Unique Identifier (EA_ID)
@@ -22,7 +21,6 @@ import javax.validation.constraints.Pattern;
 public class EaId extends AbstractEntityValue<DataSample, UniqueIdentifier> implements Comparable<EaId> {
 
     @NotBlank(message = MessageCodes.Missing.EA_ID)
-    @Pattern(regexp = "(^[A-Za-z]{2}[0-9]{4}[A-Za-z]{2}|^[0-9]{5,6}$)", message = MessageCodes.ControlledList.EA_ID)
     @ControlledList(auditor = UniqueIdentifierAuditor.class, message = MessageCodes.ControlledList.EA_ID)
     private String identifier;
 
@@ -34,7 +32,11 @@ public class EaId extends AbstractEntityValue<DataSample, UniqueIdentifier> impl
      * @param identifier the String representation of the unique identifier.
      */
     public EaId(final String identifier) {
-        super(UniqueIdentifierDao.class, identifier);
+        super();
+        UniqueIdentifierService uniqueIdentifierService =
+                SpringApplicationContextProvider.getApplicationContext().getBean(UniqueIdentifierService.class);
+        UniqueIdentifier uniqueIdentifier = uniqueIdentifierService.getUniqueIdentifier(identifier);
+        super.setEntity(uniqueIdentifier);
         this.identifier = identifier;
         if (getEntity() != null) {
             this.type = EaIdType.forUniqueId(getEntity().getName());
@@ -119,7 +121,12 @@ public class EaId extends AbstractEntityValue<DataSample, UniqueIdentifier> impl
         if (o == null || getClass() != o.getClass())
             return false;
         EaId eaId = (EaId) o;
-        return identifier != null ? identifier.equals(eaId.identifier) : eaId.identifier == null;
+
+        if (getEntity() != null) {
+            return getEntity().equals(eaId.getEntity());
+        } else {
+            return identifier != null ? identifier.equals(eaId.identifier) : eaId.identifier == null;
+        }
     }
 
     /**
@@ -129,6 +136,11 @@ public class EaId extends AbstractEntityValue<DataSample, UniqueIdentifier> impl
      */
     @Override
     public int hashCode() {
-        return identifier != null ? identifier.hashCode() : 0;
+        if (getEntity() != null) {
+            return getEntity().getName().hashCode();
+        } else {
+            return identifier != null ? identifier.hashCode() : 0;
+        }
     }
+
 }

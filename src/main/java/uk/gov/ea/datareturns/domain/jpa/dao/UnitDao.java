@@ -17,7 +17,6 @@ public class UnitDao extends AliasingEntityDao<Unit> {
         super(Unit.class);
     }
 
-    // Allow for no spaces in the method or standard
     public String getKeyFromRelaxedName(String name) {
         return name == null ? null : name.trim();
     }
