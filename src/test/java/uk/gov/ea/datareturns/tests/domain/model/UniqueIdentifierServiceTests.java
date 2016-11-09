@@ -13,8 +13,10 @@ import uk.gov.ea.datareturns.domain.jpa.entities.UniqueIdentifier;
 import uk.gov.ea.datareturns.domain.jpa.service.UniqueIdentifierService;
 
 import javax.inject.Inject;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * Created by graham on 08/11/16.
@@ -117,5 +119,16 @@ public class UniqueIdentifierServiceTests {
     public void getNamesFromUniqueIdentifierAliasName() {
         Set<String> names = uniqueIdentifierService.getAllUniqueIdentifierNames("ZP3134NK");
         Assert.assertTrue(names.containsAll(permitSet) && permitSet.containsAll(names));
+    }
+
+    /**
+     * Test the site name cache
+     */
+    @Test
+    public void uniqueIdentifierBySiteName() {
+        Set<UniqueIdentifier> uniqueIdentifiers = uniqueIdentifierService.getUniqueIdentifierBySiteName("CANDLES LANDFILL");
+        Assert.assertNotNull(uniqueIdentifiers);
+        Set<String> names = uniqueIdentifiers.stream().map(UniqueIdentifier::getName).collect(Collectors.toSet());
+        Assert.assertTrue(names.containsAll(Arrays.asList("BU9084IJ", "KP3238PU")));
     }
 }
