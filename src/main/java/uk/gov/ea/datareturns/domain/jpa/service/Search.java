@@ -22,9 +22,12 @@ import uk.gov.ea.datareturns.domain.jpa.entities.Site;
 
 import javax.inject.Inject;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
- * The service class to support permit lookup (search functionality)
+ * The service class to support inverted-index search functionality for site
+ * using the apache lucene libraries
  * @author Graham Willis
  */
 @Component
@@ -32,7 +35,15 @@ public class Search {
 
     private final Directory INDEX = new RAMDirectory();
     private final StandardAnalyzer STANDARD_ANALYZER = new StandardAnalyzer();
+    private IndexReader reader = null;
+    private IndexSearcher searcher = null;
 
+    /**
+     * Initialize the site search index. For now a minimal configuration
+     * treating the site name as a document.
+     * @param siteDao
+     * @throws IOException
+     */
     @Inject
     public Search(SiteDao siteDao) throws IOException {
         IndexWriterConfig config = new IndexWriterConfig(STANDARD_ANALYZER);
@@ -44,32 +55,36 @@ public class Search {
             writer.addDocument(document);
         }
         writer.close();
+
+        // For performance the searcher is shared across multiple searches -
+        // because the index does not change. The index reader will be left open
+        reader = DirectoryReader.open(INDEX);
+        searcher = new IndexSearcher(reader);
     }
 
-    public void searchSite(String search)  {
+    /**
+     * Search for site
+     * @param search
+     * @return List of searched sites
+     */
+    public List<String> searchSite(String search)  {
         try {
             Query query = new QueryParser("site", STANDARD_ANALYZER).parse(search);
             int hitsPerPage = 10;
 
-            IndexReader reader = DirectoryReader.open(INDEX);
-            IndexSearcher searcher = new IndexSearcher(reader);
             TopDocs docs = searcher.search(query, hitsPerPage);
             ScoreDoc[] hits = docs.scoreDocs;
 
-            // 4. display results
-            System.out.println("Found " + hits.length + " hits.");
-            for(int i=0;i<hits.length;++i) {
+            List<String> results = new ArrayList<>();
+            for(int i=0; i<hits.length; ++i) {
                 int docId = hits[i].doc;
                 Document d = searcher.doc(docId);
-                System.out.println((i + 1) + ". " + d.get("site"));
+                results.add(d.get("site"));
             }
-
-            // reader can only be closed when there
-            // is no need to access the documents any more.
-            reader.close();
-
+            return results;
         } catch (ParseException|IOException e) {
             e.printStackTrace();
+            return null;
         }
     }
 }

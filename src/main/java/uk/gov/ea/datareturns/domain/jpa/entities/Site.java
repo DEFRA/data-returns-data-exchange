@@ -1,5 +1,7 @@
 package uk.gov.ea.datareturns.domain.jpa.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import javax.persistence.*;
 
 /**
@@ -14,6 +16,7 @@ public class Site implements ControlledListEntity {
     @Id
     @SequenceGenerator(name = "sites_id_seq", sequenceName = "sites_id_seq", allocationSize = 1)
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "sites_id_seq")
+    @JsonIgnore
     private Long id;
 
     @Basic

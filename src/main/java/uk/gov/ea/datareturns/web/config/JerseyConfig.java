@@ -14,6 +14,7 @@ import uk.gov.ea.datareturns.web.filters.AuthorizationFilterFileUpload;
 import uk.gov.ea.datareturns.web.resource.ControlledListResource;
 import uk.gov.ea.datareturns.web.resource.DataExchangeResource;
 import uk.gov.ea.datareturns.web.resource.LoggingTestResource;
+import uk.gov.ea.datareturns.web.resource.PermitLookupResource;
 
 import javax.inject.Inject;
 import javax.ws.rs.ext.ExceptionMapper;
@@ -56,6 +57,7 @@ public class JerseyConfig extends ResourceConfig {
         register(context.getBean(DataExchangeResource.class));
         register(context.getBean(ControlledListResource.class));
         register(context.getBean(LoggingTestResource.class));
+        register(context.getBean(PermitLookupResource.class));
 
         // Register features
         register(new MultiPartFeature());

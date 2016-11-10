@@ -1,5 +1,7 @@
 package uk.gov.ea.datareturns.domain.jpa.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import javax.persistence.*;
 
 /**
@@ -15,6 +17,7 @@ public class UniqueIdentifier implements ControlledListEntity {
     @Id
     @SequenceGenerator(name = "unique_identifiers_id_seq", sequenceName = "unique_identifiers_id_seq", allocationSize = 1)
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "unique_identifiers_id_seq")
+    @JsonIgnore
     private Long id;
 
     @Basic

@@ -57,8 +57,12 @@ public class SearchTests {
 
     @Test
     public void siteSearch() {
-        search.searchSite("Lindey Oil");
-        Assert.assertEquals(1, 1);
+        search.searchSite("Aycliffe Quarry");
+        search.searchSite("Weights Landfill Farm ");
+        search.searchSite("Aycliffe Quary");
+        search.searchSite("Weight Landfill Farm ");
+        search.searchSite("Aycliffe");
+        search.searchSite("Weight Landfill");        Assert.assertEquals(1, 1);
     }
 
 }
