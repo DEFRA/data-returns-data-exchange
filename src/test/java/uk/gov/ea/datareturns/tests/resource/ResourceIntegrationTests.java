@@ -111,6 +111,7 @@ public class ResourceIntegrationTests {
 
     public final static String CONTROLLED_LISTS = "controlled-list/lists";
     public final static String CONTROLLED_LISTS_NAVIGATION = "controlled-list/nav";
+    public final static String TEST_SEARCH = "lookup/permit?term=Dogsthorpe";
 
     public final static String METH_STAND_VALID = "validation/testMethStand.csv";
     public final static String METH_STAND_INVALID = "validation/testMethStandInvalid.csv";
@@ -791,6 +792,18 @@ public class ResourceIntegrationTests {
     /////////////////////////////// End Content Validation tests
     /////////////////////////////////////////////////////////////////////////////////////////// //////////////////////////////
     ///////////////////////////////////////////////////////////////////////////////////////////
+
+    ///////////////////////////////////////////////////////////////////////////////////////////
+    //////////////////////////////// Tests for the permit lookup tool
+    ///////////////////////////////////////////////////////////////////////////////////////////
+
+    @Test
+    public void testSearch() {
+        final Client client = createClient("test Search");
+        final String uri = createURIForStep(TEST_SEARCH);
+        final Response response = client.target(uri).request(MediaType.APPLICATION_JSON_TYPE).get();
+        assertThat(response.getStatus()).isEqualTo(Status.OK.getStatusCode());
+    }
 
     ///////////////////////////////////////////////////////////////////////////////////////////
     ///////////////////////////////////////////////////////////////////////////////////////////

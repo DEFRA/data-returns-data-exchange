@@ -1,5 +1,6 @@
 package uk.gov.ea.datareturns.domain.processors;
 
+import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.stereotype.Component;
 import uk.gov.ea.datareturns.domain.dto.PermitLookupDto;
 import uk.gov.ea.datareturns.domain.jpa.dao.SiteDao;
@@ -9,10 +10,8 @@ import uk.gov.ea.datareturns.domain.jpa.service.Search;
 import uk.gov.ea.datareturns.domain.jpa.service.UniqueIdentifierService;
 
 import javax.inject.Inject;
-import java.util.Collections;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * @Author Graham Willis
@@ -37,36 +36,43 @@ public class SearchProcessor {
      * @return the data transfer object carrying the search results
      */
     public PermitLookupDto getBySiteOrPermit(String term) {
-        // Look for an exact match on the permit. If found retrieve the site and
+        Set<PermitLookupDto.Results> results = new LinkedHashSet<>();
+        // Look for an exact match on the permit. If found retrieve the
         // alternatives and populate and return the search dto object
-        UniqueIdentifier basePermit = uniqueIdentifierService.getUniqueIdentifier(term.trim());
-        if (basePermit == null) {
-            // No permit number has not been found perform site search
-            List<String> siteResults = search.searchSite(term);
-            Set<PermitLookupDto.Results> results = new LinkedHashSet<>();
-            for (String siteResult : siteResults) {
-                // Lookup the site
-                Site site = siteDao.getByName(siteResult);
-                // From the site search results lookup the permit
-                Set<UniqueIdentifier> siteBasePermits = uniqueIdentifierService.getUniqueIdentifierBySiteName(siteResult);
-                // Loop through the multiple permits on the site
-                for (UniqueIdentifier siteBasePermit : siteBasePermits) {
-                    // Get the alternative permits
-                    Set<String> alternatives = uniqueIdentifierService.getAliasNames(siteBasePermit);
-                    results.add(new PermitLookupDto.Results(siteBasePermit, site, alternatives));
+        StringTokenizer tokenizer = new StringTokenizer(term, " ,.:;?!'");
+        while(tokenizer.hasMoreTokens()) {
+            String word = tokenizer.nextToken();
+            if (uniqueIdentifierService.uniqueIdentifierExists(word)) {
+                UniqueIdentifier basePermit = uniqueIdentifierService.getUniqueIdentifier(word);
+                // Get the set of alternatives using the base identifier
+                Set<String> alternatives = uniqueIdentifierService.getAliasNames(basePermit);
+                // Check that the search result is not previously found
+                if (!results.stream().map(PermitLookupDto.Results::getUniqueIdentifier)
+                        .collect(Collectors.toSet()).contains(basePermit)) {
+                    results.add(new PermitLookupDto.Results(basePermit, alternatives, new String[]{word}));
                 }
             }
-            return new PermitLookupDto(term, null, results);
-        } else {
-            // Get the set of alternatives using the base identifier
-            Set<String> alternatives = uniqueIdentifierService.getAliasNames(basePermit);
-
-            // Get the site
-            Site site = uniqueIdentifierService.getSite(basePermit);
-            //UniqueIdentifier basePermit, Site site, Set<String> alternatives
-            PermitLookupDto.Results singleResult = new PermitLookupDto.Results(basePermit, site, alternatives);
-            PermitLookupDto permitLookupDto = new PermitLookupDto(term, null, Collections.singleton(singleResult));
-            return permitLookupDto;
         }
+        // If we have no results se lucene to try and find the site
+        List<Pair<String, String[]>> siteResults = search.searchSite(term);
+        for (Pair<String, String[]> siteResult : siteResults) {
+            // Lookup the site
+            Site site = siteDao.getByName(siteResult.getLeft());
+            // From the site search results lookup the permit
+            Set<UniqueIdentifier> siteBasePermits = uniqueIdentifierService.getUniqueIdentifierBySiteName(siteResult.getLeft());
+            // Loop through the multiple permits on the site
+            if (siteBasePermits != null) {
+                for (UniqueIdentifier siteBasePermit : siteBasePermits) {
+                    // Check that the search result is not previously found
+                    if (!results.stream().map(PermitLookupDto.Results::getUniqueIdentifier)
+                            .collect(Collectors.toSet()).contains(siteBasePermit)) {
+                        // Get the alternative permits
+                        Set<String> alternatives = uniqueIdentifierService.getAliasNames(siteBasePermit);
+                        results.add(new PermitLookupDto.Results(siteBasePermit, alternatives, siteResult.getRight()));
+                    }
+                }
+            }
+        }
+        return new PermitLookupDto(term, results);
     }
 }
