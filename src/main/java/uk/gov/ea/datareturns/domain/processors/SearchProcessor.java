@@ -58,20 +58,22 @@ public class SearchProcessor {
         }
         // If we have no results se lucene to try and find the site
         List<Pair<String, String[]>> siteResults = search.searchSite(term);
-        for (Pair<String, String[]> siteResult : siteResults) {
-            // Lookup the site
-            Site site = siteDao.getByName(siteResult.getLeft());
-            // From the site search results lookup the permit
-            Set<UniqueIdentifier> siteBasePermits = uniqueIdentifierDao.getUniqueIdentifierBySiteName(siteResult.getLeft());
-            // Loop through the multiple permits on the site
-            if (siteBasePermits != null) {
-                for (UniqueIdentifier siteBasePermit : siteBasePermits) {
-                    // Check that the search result is not previously found
-                    if (!results.stream().map(PermitLookupDto.Results::getUniqueIdentifier)
-                            .collect(Collectors.toSet()).contains(siteBasePermit)) {
-                        // Get the alternative permits
-                        Set<String> alternatives = uniqueIdentifierDao.getAliasNames(siteBasePermit);
-                        results.add(new PermitLookupDto.Results(siteBasePermit, alternatives, siteResult.getRight()));
+        if (siteResults != null) {
+            for (Pair<String, String[]> siteResult : siteResults) {
+                // Lookup the site
+                Site site = siteDao.getByName(siteResult.getLeft());
+                // From the site search results lookup the permit
+                Set<UniqueIdentifier> siteBasePermits = uniqueIdentifierDao.getUniqueIdentifierBySiteName(siteResult.getLeft());
+                // Loop through the multiple permits on the site
+                if (siteBasePermits != null) {
+                    for (UniqueIdentifier siteBasePermit : siteBasePermits) {
+                        // Check that the search result is not previously found
+                        if (!results.stream().map(PermitLookupDto.Results::getUniqueIdentifier)
+                                .collect(Collectors.toSet()).contains(siteBasePermit)) {
+                            // Get the alternative permits
+                            Set<String> alternatives = uniqueIdentifierDao.getAliasNames(siteBasePermit);
+                            results.add(new PermitLookupDto.Results(siteBasePermit, alternatives, siteResult.getRight()));
+                        }
                     }
                 }
             }
