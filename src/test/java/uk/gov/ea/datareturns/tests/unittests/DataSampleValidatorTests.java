@@ -62,8 +62,8 @@ public class DataSampleValidatorTests {
         final DataSample record = createValidNumericRecord();
         record.setEaId(new EaId(""));
         final Set<ConstraintViolation<DataSample>> violations = this.validator.validate(record);
-        // one violation for the field being blank, one for the regex format validation
-        Assert.assertEquals(2, violations.size());
+        // one violation for the field being blank
+        Assert.assertEquals(1, violations.size());
     }
 
     /*=================================================================================================================
