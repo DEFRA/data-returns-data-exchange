@@ -24,7 +24,7 @@ import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 /**
  * The {@link ControlledListResource} RESTful service to server controlled list definitions
  *
- * @author Sam Gardner-Dell
+ * @author Graham Willis
  */
 @Component
 @Path("/controlled-list/")

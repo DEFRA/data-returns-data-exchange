@@ -83,6 +83,8 @@ public class ResourceIntegrationTests {
 
     public final static String FILE_INVALID_PERMIT_NO = "invalid-permit-no.csv";
 
+    public final static String FILE_PERMIT_SITE_MISMATCH = "permit-site-mismatch.csv";
+
     public final static String FILE_CSV_FAILURES = "failures.csv";
 
     public final static String FILE_CSV_SUCCESS = "success.csv";
@@ -277,6 +279,16 @@ public class ResourceIntegrationTests {
     public void testInvalidPermitNumber() {
         final Client client = createClient("test Invalid UniqueIdentifier Number");
         final Response resp = performUploadStep(client, FILE_INVALID_PERMIT_NO, MEDIA_TYPE_CSV);
+        assertThat(resp.getStatus()).isEqualTo(Status.BAD_REQUEST.getStatusCode());
+
+        final DataExchangeResult result = getResultFromResponse(resp);
+        assertThat(result.getAppStatusCode())
+                .isEqualTo(ApplicationExceptionType.VALIDATION_ERRORS.getAppStatusCode());
+    }
+    @Test
+    public void testPermitSiteMismatch() {
+        final Client client = createClient("test EA_ID and Site_Name mismatch.");
+        final Response resp = performUploadStep(client, FILE_PERMIT_SITE_MISMATCH, MEDIA_TYPE_CSV);
         assertThat(resp.getStatus()).isEqualTo(Status.BAD_REQUEST.getStatusCode());
 
         final DataExchangeResult result = getResultFromResponse(resp);

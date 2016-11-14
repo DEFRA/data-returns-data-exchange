@@ -70,7 +70,7 @@ public class Search {
     public List<String> searchSite(String search)  {
         try {
             Query query = new QueryParser("site", STANDARD_ANALYZER).parse(search);
-            int hitsPerPage = 10;
+            int hitsPerPage = 150;
 
             TopDocs docs = searcher.search(query, hitsPerPage);
             ScoreDoc[] hits = docs.scoreDocs;
