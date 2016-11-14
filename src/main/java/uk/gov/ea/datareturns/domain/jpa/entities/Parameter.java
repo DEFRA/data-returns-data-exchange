@@ -97,12 +97,6 @@ public class Parameter implements AliasingEntity, DependentEntity {
     }
 
     @Override
-    @JsonIgnore
-    public ControlledListsList getControlledListType() {
-        return ControlledListsList.PARAMETERS;
-    }
-
-    @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;

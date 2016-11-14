@@ -33,6 +33,7 @@ import static java.util.Comparator.comparing;
 public abstract class EntityDao<E extends ControlledListEntity> {
     protected static final Logger LOGGER = LoggerFactory.getLogger(EntityDao.class);
     private final String regex = "\\s+";
+    protected final Pattern removeSpaces = Pattern.compile("\\s");
 
     @PersistenceContext
     protected EntityManager entityManager;
@@ -43,7 +44,6 @@ public abstract class EntityDao<E extends ControlledListEntity> {
     protected volatile Map<String, E> cacheByNameKey = null;
 
     private final Pattern removeMultipleSpaces = Pattern.compile("\\s{2,}");
-    private final Pattern removeSpaces = Pattern.compile("\\s+");
 
     /**
      * Let the Dao class know the type of entity in order that type-safe

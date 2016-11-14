@@ -83,6 +83,8 @@ public class ResourceIntegrationTests {
 
     public final static String FILE_INVALID_PERMIT_NO = "invalid-permit-no.csv";
 
+    public final static String FILE_PERMIT_SITE_MISMATCH = "permit-site-mismatch.csv";
+
     public final static String FILE_CSV_FAILURES = "failures.csv";
 
     public final static String FILE_CSV_SUCCESS = "success.csv";
@@ -111,6 +113,7 @@ public class ResourceIntegrationTests {
 
     public final static String CONTROLLED_LISTS = "controlled-list/lists";
     public final static String CONTROLLED_LISTS_NAVIGATION = "controlled-list/nav";
+    public final static String TEST_SEARCH = "lookup/permit?term=Dogsthorpe";
 
     public final static String METH_STAND_VALID = "validation/testMethStand.csv";
     public final static String METH_STAND_INVALID = "validation/testMethStandInvalid.csv";
@@ -277,6 +280,16 @@ public class ResourceIntegrationTests {
     public void testInvalidPermitNumber() {
         final Client client = createClient("test Invalid UniqueIdentifier Number");
         final Response resp = performUploadStep(client, FILE_INVALID_PERMIT_NO, MEDIA_TYPE_CSV);
+        assertThat(resp.getStatus()).isEqualTo(Status.BAD_REQUEST.getStatusCode());
+
+        final DataExchangeResult result = getResultFromResponse(resp);
+        assertThat(result.getAppStatusCode())
+                .isEqualTo(ApplicationExceptionType.VALIDATION_ERRORS.getAppStatusCode());
+    }
+    @Test
+    public void testPermitSiteMismatch() {
+        final Client client = createClient("test EA_ID and Site_Name mismatch.");
+        final Response resp = performUploadStep(client, FILE_PERMIT_SITE_MISMATCH, MEDIA_TYPE_CSV);
         assertThat(resp.getStatus()).isEqualTo(Status.BAD_REQUEST.getStatusCode());
 
         final DataExchangeResult result = getResultFromResponse(resp);
@@ -791,6 +804,18 @@ public class ResourceIntegrationTests {
     /////////////////////////////// End Content Validation tests
     /////////////////////////////////////////////////////////////////////////////////////////// //////////////////////////////
     ///////////////////////////////////////////////////////////////////////////////////////////
+
+    ///////////////////////////////////////////////////////////////////////////////////////////
+    //////////////////////////////// Tests for the permit lookup tool
+    ///////////////////////////////////////////////////////////////////////////////////////////
+
+    @Test
+    public void testSearch() {
+        final Client client = createClient("test Search");
+        final String uri = createURIForStep(TEST_SEARCH);
+        final Response response = client.target(uri).request(MediaType.APPLICATION_JSON_TYPE).get();
+        assertThat(response.getStatus()).isEqualTo(Status.OK.getStatusCode());
+    }
 
     ///////////////////////////////////////////////////////////////////////////////////////////
     ///////////////////////////////////////////////////////////////////////////////////////////

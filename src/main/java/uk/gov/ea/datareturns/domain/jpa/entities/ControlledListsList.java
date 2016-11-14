@@ -9,7 +9,12 @@ import uk.gov.ea.datareturns.domain.model.rules.FieldDefinition;
 import java.util.*;
 
 /**
- * Created by graham on 26/07/16.
+ * @Author Graham Willis
+ * This is an enum which is used for generic functionality around the controlled lists
+ * - those entities which are controlled lists in the DEP and have the associated
+ * functionality in the front end. EA_ID and sites are also treated as controlled lists
+ * but only to piggy back the cache search functionality. They are not listed here as they
+ * do not form part of the DEP
  */
 public enum ControlledListsList {
 
@@ -65,12 +70,8 @@ public enum ControlledListsList {
     }}), "name", FieldDefinition.Txt_Value),
 
     RELEASES_AND_TRANSFERS("Releases and transfers", ReleasesAndTransfersDao.class, "rel_trans", Collections.unmodifiableList(new ArrayList<DisplayHeaderDto>() {{
-        add(new DisplayHeaderDto("name", "Rel_trans"));
-    }}), "name", FieldDefinition.Rel_Trans, 1),
-
-    UNIQUE_IDENTIFIER("Releases and transfers", UniqueIdentifierDao.class, "ea_id", Collections.unmodifiableList(new ArrayList<DisplayHeaderDto>() {{
-        add(new DisplayHeaderDto("name", "EA_ID"));
-    }}), "name", FieldDefinition.EA_ID);
+        add(new DisplayHeaderDto("name", "Rel_Trans"));
+    }}), "name", FieldDefinition.Rel_Trans, 1);
 
     private final String path;
 
@@ -81,7 +82,6 @@ public enum ControlledListsList {
     private static final Map<String, ControlledListsList> byPath = new HashMap<>();
     private final List<DisplayHeaderDto> displayHeaders; // Column name to column heading
     private Integer hierarchyLevel = null;
-    private final FieldDefinition fieldDefinition;
 
     public static Comparator<ControlledListsList> hierarchyOrder = Comparator
             .comparing(ControlledListsList::getHierarchyLevel);
@@ -94,7 +94,6 @@ public enum ControlledListsList {
         this.displayHeaders = displayHeaders;
         this.defaultSearch = defaultSearch;
         this.hierarchyLevel = null;
-        this.fieldDefinition = fieldDefinition;
     }
 
     ControlledListsList(String description, Class<? extends EntityDao> dao,
@@ -154,7 +153,4 @@ public enum ControlledListsList {
         return defaultSearch;
     }
 
-    public FieldDefinition getFieldDefinition() {
-        return this.fieldDefinition;
-    }
 }

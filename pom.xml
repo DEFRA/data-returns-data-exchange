@@ -211,7 +211,6 @@
 			<version>${airbrake-logback.version}</version>
 		</dependency>
 
-
 		<!-- CSV Parsing -->
 		<dependency>
 			<groupId>com.univocity</groupId>
@@ -219,9 +218,7 @@
 			<version>${univocity.parsers.version}</version>
 		</dependency>
 
-
 		<!-- Mustache support -->
-
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-mustache</artifactId>
@@ -232,6 +229,23 @@
 			<groupId>com.amazonaws</groupId>
 			<artifactId>aws-java-sdk-s3</artifactId>
 			<version>${aws.java.sdk.version}</version>
+		</dependency>
+
+		<!-- Lucene -->
+		<dependency>
+			<groupId>org.apache.lucene</groupId>
+			<artifactId>lucene-core</artifactId>
+			<version>6.2.1</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.lucene</groupId>
+			<artifactId>lucene-queries</artifactId>
+			<version>6.2.1</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.lucene</groupId>
+			<artifactId>lucene-queryparser</artifactId>
+			<version>6.2.1</version>
 		</dependency>
 
 		<!-- Apache commons -->

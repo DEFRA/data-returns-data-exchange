@@ -3,6 +3,7 @@ package uk.gov.ea.datareturns.domain.result;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import org.apache.commons.collections4.ComparatorUtils;
+import org.apache.commons.lang3.StringUtils;
 import uk.gov.ea.datareturns.domain.model.DataSample;
 import uk.gov.ea.datareturns.domain.model.fields.impl.EaId;
 
@@ -120,8 +121,23 @@ public class ParseResult {
         @JsonIgnore
         private EaId eaId;
 
+        /**
+         * The EA_ID UniqueIdentifier exactly as entered by the user
+         */
         @JsonProperty @SuppressWarnings("unused")
-        private String identifier;
+        private String submittedUniqueIdentifier;
+
+        /**
+         * The EA_ID UniqueIdentifier value which should be used
+         */
+        @JsonProperty @SuppressWarnings("unused")
+        private String resolvedUniqueIdentifier;
+
+        /**
+         * Flag to indicate if the EA_ID entered by the user was substituted
+         */
+        @JsonProperty @SuppressWarnings("unused")
+        private boolean substituted;
 
         @JsonProperty @SuppressWarnings("unused")
         private long count;
@@ -140,7 +156,9 @@ public class ParseResult {
          */
         public EaIdSummary(final EaId eaId) {
             this.eaId = eaId;
-            this.identifier = eaId.getEntity().getName();
+            this.submittedUniqueIdentifier = eaId.getInputValue();
+            this.resolvedUniqueIdentifier = eaId.getEntity().getName();
+            this.substituted = !StringUtils.equalsIgnoreCase(eaId.getInputValue(), eaId.getEntity().getName());
             this.count = 0;
         }
 

@@ -81,6 +81,7 @@ public class MessageCodes {
     public class Conflict {
         public final static String ProhibitUnitForTxtValue = "{DR9050-Conflict}";
         public final static String RequireValueOrTxtValue = "{DR9999-Conflict}";
+        public final static String UniqueIdentifierSiteConflict = "{DR9000-Conflict}";
     }
 
     /**
@@ -156,6 +157,7 @@ public class MessageCodes {
         add(Missing.RequireCommentsForTxtValue, Collections.singletonList(FieldDefinition.Comments));
         add(Conflict.RequireValueOrTxtValue, Arrays.asList(FieldDefinition.Value, FieldDefinition.Txt_Value));
         add(Missing.RequireValueOrTxtValue, Arrays.asList(FieldDefinition.Value, FieldDefinition.Txt_Value));
+        add(Conflict.UniqueIdentifierSiteConflict, Arrays.asList(FieldDefinition.EA_ID, FieldDefinition.Site_Name));
         add(DependencyConflict.Rel_Trans, Collections.singletonList(FieldDefinition.Rel_Trans));
         add(DependencyConflict.Parameter, new ArrayList<>(Arrays.asList(FieldDefinition.Parameter, FieldDefinition.Rtn_Type)));
         add(DependencyConflict.Unit, new ArrayList<>(Arrays.asList(FieldDefinition.Unit, FieldDefinition.Parameter, FieldDefinition.Rtn_Type)));
