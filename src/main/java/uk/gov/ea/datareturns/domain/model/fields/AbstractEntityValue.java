@@ -23,20 +23,6 @@ public abstract class AbstractEntityValue<R, E extends ControlledListEntity> imp
     }
 
     /**
-     * InstantiatesAbstractEntityValue
-     * @param
-     */
-    public AbstractEntityValue() {}
-
-    /**
-     * Set entity - in the circumstances where it cannot be set via the constructor above
-     * @param entity
-     */
-    public void setEntity(E entity) {
-        this.entity = entity;
-    }
-
-    /**
      * Retrieve the backing entity for this {@link FieldValue}.  May be null if no entity could be found for the input value
      *
      * @return the backing entity for this {@link FieldValue}.  May be null if no entity could be found for the input value
@@ -73,7 +59,5 @@ public abstract class AbstractEntityValue<R, E extends ControlledListEntity> imp
     public static <E extends ControlledListEntity> E getEntity(AbstractEntityValue<? , E> fv) {
         return fv != null ? fv.getEntity() : null;
     }
-
-
 
 }

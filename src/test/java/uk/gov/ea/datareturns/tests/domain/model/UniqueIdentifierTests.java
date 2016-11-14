@@ -8,9 +8,9 @@ import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.junit4.SpringRunner;
 import uk.gov.ea.datareturns.App;
 import uk.gov.ea.datareturns.domain.jpa.dao.SiteDao;
+import uk.gov.ea.datareturns.domain.jpa.dao.UniqueIdentifierDao;
 import uk.gov.ea.datareturns.domain.jpa.entities.Site;
 import uk.gov.ea.datareturns.domain.jpa.entities.UniqueIdentifier;
-import uk.gov.ea.datareturns.domain.jpa.service.UniqueIdentifierService;
 
 import javax.inject.Inject;
 import java.util.Arrays;
@@ -24,12 +24,12 @@ import java.util.stream.Collectors;
 @SpringBootTest(classes=App.class)
 @DirtiesContext
 @RunWith(SpringRunner.class)
-public class UniqueIdentifierServiceTests {
+public class UniqueIdentifierTests {
     @Inject
     SiteDao siteDao;
 
     @Inject
-    UniqueIdentifierService uniqueIdentifierService;
+    UniqueIdentifierDao uniqueIdentifierDao;
 
     /**
      * Test the retrieval of a UniqueIdentifier from its name.
@@ -37,9 +37,9 @@ public class UniqueIdentifierServiceTests {
      */
     @Test
     public void getUniqueIdentifierFromName() {
-        UniqueIdentifier uniqueIdentifier = uniqueIdentifierService.getUniqueIdentifier("ZP3933LD");
+        UniqueIdentifier uniqueIdentifier = uniqueIdentifierDao.getByName("ZP3933LD");
         Assert.assertEquals(uniqueIdentifier.getName(), "ZP3933LD");
-        uniqueIdentifier = uniqueIdentifierService.getUniqueIdentifier("BL9500IJ");
+        uniqueIdentifier = uniqueIdentifierDao.getByName("BL9500IJ");
         Assert.assertEquals(uniqueIdentifier.getName(), "BL9500IJ");
     }
 
@@ -48,9 +48,9 @@ public class UniqueIdentifierServiceTests {
      */
     @Test
     public void getUniqueIdentifierFromAliasName() {
-        UniqueIdentifier uniqueIdentifier = uniqueIdentifierService.getUniqueIdentifier("KP3030NG");
+        UniqueIdentifier uniqueIdentifier = uniqueIdentifierDao.getByName("KP3030NG");
         Assert.assertEquals(uniqueIdentifier.getName(), "BS7722ID");
-        uniqueIdentifier = uniqueIdentifierService.getUniqueIdentifier("JB3937RN");
+        uniqueIdentifier = uniqueIdentifierDao.getByName("JB3937RN");
         Assert.assertEquals(uniqueIdentifier.getName(), "104554");
     }
 
@@ -59,7 +59,7 @@ public class UniqueIdentifierServiceTests {
      */
     @Test
     public void getNullUniqueIdentifier() {
-        UniqueIdentifier uniqueIdentifier = uniqueIdentifierService.getUniqueIdentifier("jdghasfcighwfv");
+        UniqueIdentifier uniqueIdentifier = uniqueIdentifierDao.getByName("jdghasfcighwfv");
         Assert.assertNull(uniqueIdentifier);
     }
 
@@ -68,7 +68,7 @@ public class UniqueIdentifierServiceTests {
      */
     @Test
     public void getUniqueIdentifierFound() {
-        boolean found = uniqueIdentifierService.uniqueIdentifierExists("KP3030NG");
+        boolean found = uniqueIdentifierDao.uniqueIdentifierExists("KP3030NG");
         Assert.assertTrue(found);
     }
 
@@ -77,7 +77,7 @@ public class UniqueIdentifierServiceTests {
      */
     @Test
     public void getUniqueIdentifierNotFound() {
-        boolean found = uniqueIdentifierService.uniqueIdentifierExists("jdghasfcighwfv");
+        boolean found = uniqueIdentifierDao.uniqueIdentifierExists("jdghasfcighwfv");
         Assert.assertNotNull(found);
     }
 
@@ -108,7 +108,7 @@ public class UniqueIdentifierServiceTests {
      */
     @Test
     public void getNamesFromUniqueIdentifierName() {
-        Set<String> names = uniqueIdentifierService.getAllUniqueIdentifierNames("YP3638SX");
+        Set<String> names = uniqueIdentifierDao.getAllUniqueIdentifierNames("YP3638SX");
         Assert.assertTrue(names.containsAll(permitSet) && permitSet.containsAll(names));
     }
 
@@ -117,7 +117,7 @@ public class UniqueIdentifierServiceTests {
      */
     @Test
     public void getNamesFromUniqueIdentifierAliasName() {
-        Set<String> names = uniqueIdentifierService.getAllUniqueIdentifierNames("ZP3134NK");
+        Set<String> names = uniqueIdentifierDao.getAllUniqueIdentifierNames("ZP3134NK");
         Assert.assertTrue(names.containsAll(permitSet) && permitSet.containsAll(names));
     }
 
@@ -126,7 +126,7 @@ public class UniqueIdentifierServiceTests {
      */
     @Test
     public void uniqueIdentifierBySiteName() {
-        Set<UniqueIdentifier> uniqueIdentifiers = uniqueIdentifierService.getUniqueIdentifierBySiteName("CANDLES LANDFILL");
+        Set<UniqueIdentifier> uniqueIdentifiers = uniqueIdentifierDao.getUniqueIdentifierBySiteName("CANDLES LANDFILL");
         Assert.assertNotNull(uniqueIdentifiers);
         Set<String> names = uniqueIdentifiers.stream().map(UniqueIdentifier::getName).collect(Collectors.toSet());
         Assert.assertTrue(names.containsAll(Arrays.asList("BU9084IJ", "KP3238PU")));

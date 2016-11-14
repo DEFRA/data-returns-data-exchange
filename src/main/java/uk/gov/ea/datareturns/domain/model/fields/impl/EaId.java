@@ -3,15 +3,14 @@ package uk.gov.ea.datareturns.domain.model.fields.impl;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.hibernate.validator.constraints.NotBlank;
+import uk.gov.ea.datareturns.domain.jpa.dao.UniqueIdentifierDao;
 import uk.gov.ea.datareturns.domain.jpa.entities.UniqueIdentifier;
-import uk.gov.ea.datareturns.domain.jpa.service.UniqueIdentifierService;
 import uk.gov.ea.datareturns.domain.model.DataSample;
 import uk.gov.ea.datareturns.domain.model.MessageCodes;
 import uk.gov.ea.datareturns.domain.model.fields.AbstractEntityValue;
 import uk.gov.ea.datareturns.domain.model.rules.EaIdType;
 import uk.gov.ea.datareturns.domain.model.validation.auditors.controlledlist.UniqueIdentifierAuditor;
 import uk.gov.ea.datareturns.domain.model.validation.constraints.controlledlist.ControlledList;
-import uk.gov.ea.datareturns.util.SpringApplicationContextProvider;
 
 /**
  * Models details about an EA Unique Identifier (EA_ID)
@@ -32,11 +31,7 @@ public class EaId extends AbstractEntityValue<DataSample, UniqueIdentifier> impl
      * @param identifier the String representation of the unique identifier.
      */
     public EaId(final String identifier) {
-        super();
-        UniqueIdentifierService uniqueIdentifierService =
-                SpringApplicationContextProvider.getApplicationContext().getBean(UniqueIdentifierService.class);
-        UniqueIdentifier uniqueIdentifier = uniqueIdentifierService.getUniqueIdentifier(identifier);
-        super.setEntity(uniqueIdentifier);
+        super(UniqueIdentifierDao.class, identifier);
         this.identifier = identifier;
         if (getEntity() != null) {
             this.type = EaIdType.forUniqueId(getEntity().getName());

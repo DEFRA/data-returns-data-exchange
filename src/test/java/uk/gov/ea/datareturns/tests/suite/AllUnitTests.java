@@ -6,7 +6,7 @@ import org.junit.runners.Suite.SuiteClasses;
 import uk.gov.ea.datareturns.tests.domain.model.ControlledListsTests;
 import uk.gov.ea.datareturns.tests.domain.model.DependenciesTests;
 import uk.gov.ea.datareturns.tests.domain.model.SearchTests;
-import uk.gov.ea.datareturns.tests.domain.model.UniqueIdentifierServiceTests;
+import uk.gov.ea.datareturns.tests.domain.model.UniqueIdentifierTests;
 import uk.gov.ea.datareturns.tests.type.FileTypeTests;
 import uk.gov.ea.datareturns.tests.unittests.*;
 
@@ -15,7 +15,7 @@ import uk.gov.ea.datareturns.tests.unittests.*;
         ControlledListsTests.class,
         DependenciesTests.class,
         SearchTests.class,
-        UniqueIdentifierServiceTests.class,
+        UniqueIdentifierTests.class,
 
         DataQualityTests.class,
         DataReturnsHeadersTests.class,
