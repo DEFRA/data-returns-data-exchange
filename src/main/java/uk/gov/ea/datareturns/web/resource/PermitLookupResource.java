@@ -40,7 +40,7 @@ public class PermitLookupResource {
     public Response searchBySiteOrPermit(@QueryParam("term") final String term) throws Exception {
         LOGGER.debug("Request for /search/site-permit/");
         LOGGER.debug("Requested search term: " + term == null ? "" : term);
-        if (term == null) {
+        if (term == null || term.isEmpty()) {
             LOGGER.error("Site/Permit lookup requires search term");
             return Response.status(Response.Status.BAD_REQUEST).build();
         } else {
