@@ -32,8 +32,13 @@ insert into unique_identifier_aliases(unique_id, name)
       join stage_lichold l on l.lic_wml = e.permit
     where l.pas_permit != ''
   ), q as (
-      select max(lic_wml) as permit, name from p
-      group by name having count(lic_wml) = 1
+      select max(p.lic_wml) as permit, p.name
+      from p
+        where not exists(
+            select null from unique_identifiers u2
+              where p.name = u2.name
+        )
+      group by p.name having count(lic_wml) = 1
   )
   select u.id, q.name
   from q
