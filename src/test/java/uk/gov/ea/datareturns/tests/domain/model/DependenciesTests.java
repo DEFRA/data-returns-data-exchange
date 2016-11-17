@@ -61,11 +61,6 @@ public class DependenciesTests {
         //}
     }
 
-    @Test
-    public void buildCache() {
-        Assert.assertNotNull(dao.buildCache());
-    }
-
     /*
      * Test landfill happy paths - no unit
      */
