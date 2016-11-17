@@ -1,6 +1,7 @@
 package uk.gov.ea.datareturns.domain.jpa.entities;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import uk.gov.ea.datareturns.domain.jpa.entities.hierarchy.Hierarchy;
 
 import javax.persistence.*;
 import java.util.Set;
@@ -13,7 +14,7 @@ import java.util.Set;
 @SuppressWarnings({ "JavaDoc", "unused" })
 @Entity
 @Table(name = "units")
-public class Unit implements AliasingEntity, DependentEntity {
+public class Unit implements AliasingEntity, Hierarchy.HierarchyEntity, Hierarchy.HierarchyEntity {
     @Id
     @SequenceGenerator(name = "units_id_seq", sequenceName = "units_id_seq", allocationSize = 1)
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "units_id_seq")

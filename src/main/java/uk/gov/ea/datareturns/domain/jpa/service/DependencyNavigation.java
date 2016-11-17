@@ -9,6 +9,7 @@ import org.springframework.context.ApplicationContextAware;
 import org.springframework.stereotype.Component;
 import uk.gov.ea.datareturns.domain.jpa.dao.*;
 import uk.gov.ea.datareturns.domain.jpa.entities.*;
+import uk.gov.ea.datareturns.domain.jpa.entities.hierarchy.Hierarchy;
 
 import javax.inject.Inject;
 import java.util.*;
@@ -48,26 +49,26 @@ public class DependencyNavigation implements ApplicationContextAware  {
     /*
          * These other signatures are for convenience
          */
-    public Pair<ControlledListsList, List<? extends DependentEntity>> traverseHierarchy(ReturnType returnType) {
+    public Pair<ControlledListsList, List<? extends Hierarchy.HierarchyEntity>> traverseHierarchy(ReturnType returnType) {
         return traverseHierarchy(returnType, null, null, null);
     }
 
-    public Pair<ControlledListsList, List<? extends DependentEntity>> traverseHierarchy(ReturnType returnType, Parameter parameter) {
+    public Pair<ControlledListsList, List<? extends Hierarchy.HierarchyEntity>> traverseHierarchy(ReturnType returnType, Parameter parameter) {
         return traverseHierarchy(returnType, null, parameter, null);
     }
 
-    public Pair<ControlledListsList, List<? extends DependentEntity>> traverseHierarchy(ReturnType returnType, ReleasesAndTransfers releasesAndTransfers) {
+    public Pair<ControlledListsList, List<? extends Hierarchy.HierarchyEntity>> traverseHierarchy(ReturnType returnType, ReleasesAndTransfers releasesAndTransfers) {
         return traverseHierarchy(returnType, releasesAndTransfers, null, null);
     }
 
-    public Pair<ControlledListsList, List<? extends DependentEntity>> traverseHierarchy(ReturnType returnType, ReleasesAndTransfers releasesAndTransfers, Parameter parameter) {
+    public Pair<ControlledListsList, List<? extends Hierarchy.HierarchyEntity>> traverseHierarchy(ReturnType returnType, ReleasesAndTransfers releasesAndTransfers, Parameter parameter) {
         return traverseHierarchy(returnType, releasesAndTransfers, parameter, null);
     }
 
-    public Pair<ControlledListsList, List<? extends DependentEntity>> traverseHierarchy(ReturnType returnType,
-                                                                              ReleasesAndTransfers releasesAndTransfers,
-                                                                              Parameter parameter,
-                                                                              Unit unit) {
+    public Pair<ControlledListsList, List<? extends Hierarchy.HierarchyEntity>> traverseHierarchy(ReturnType returnType,
+                                                                                                  ReleasesAndTransfers releasesAndTransfers,
+                                                                                                  Parameter parameter,
+                                                                                                  Unit unit) {
 
         // We need to traverse the cache using the components we are given and substituting
         // wildcards and processing exclusions where necessary
@@ -89,7 +90,7 @@ public class DependencyNavigation implements ApplicationContextAware  {
         return doTraverse(ControlledListsList.RETURN_TYPE, cache, entityNames, new HashMap<>());
     }
 
-    private Pair<ControlledListsList,List<? extends DependentEntity>> shim(ControlledListsList level, Map cache, String cacheKey, Map<ControlledListsList, String> entityNames, Map<ControlledListsList, String> keys) {
+    private Pair<ControlledListsList,List<? extends Hierarchy.HierarchyEntity>> shim(ControlledListsList level, Map cache, String cacheKey, Map<ControlledListsList, String> entityNames, Map<ControlledListsList, String> keys) {
         // Move the key between the traversing array to the traversed array
         keys.put(level, entityNames.remove(level));
         if (cache.get(cacheKey) instanceof Set) {
@@ -99,7 +100,7 @@ public class DependencyNavigation implements ApplicationContextAware  {
         }
     }
 
-    private Pair<ControlledListsList, List<? extends DependentEntity>> doTraverse(ControlledListsList level, Map cache, Map<ControlledListsList, String> entityNames, Map<ControlledListsList, String> keys) {
+    private Pair<ControlledListsList, List<? extends Hierarchy.HierarchyEntity>> doTraverse(ControlledListsList level, Map cache, Map<ControlledListsList, String> entityNames, Map<ControlledListsList, String> keys) {
         if (entityNames.get(level) != null) {
             /*
              * If the entity name is supplied (not null)
@@ -135,14 +136,14 @@ public class DependencyNavigation implements ApplicationContextAware  {
         }
     }
 
-    public Pair<ControlledListsList, List<? extends DependentEntity>> getFilteredList(ControlledListsList level, Map cache) {
+    public Pair<ControlledListsList, List<? extends Hierarchy.HierarchyEntity>> getFilteredList(ControlledListsList level, Map cache) {
         // Get the Dao from the level
         Class<? extends EntityDao> listItemDaoClass = level.getDao();
 
         // Get the DAO from spring
-        EntityDao<? extends DependentEntity> listItemDao = applicationContext.getBean(listItemDaoClass);
-        List<? extends DependentEntity> itemList = listItemDao.list();
-        List<DependentEntity> resultList = new ArrayList();
+        EntityDao<? extends Hierarchy.HierarchyEntity> listItemDao = applicationContext.getBean(listItemDaoClass);
+        List<? extends Hierarchy.HierarchyEntity> itemList = listItemDao.list();
+        List<Hierarchy.HierarchyEntity> resultList = new ArrayList();
 
         if (cache.containsKey(DependencyValidationSymbols.EXCLUDE_ALL)) {
             // If we have the inverse wildcard we are not expecting anything item which is an error
@@ -152,7 +153,7 @@ public class DependencyNavigation implements ApplicationContextAware  {
             return Pair.of(level, null);
         } else {
             // Test the items individually with the cache.
-            for (DependentEntity e : itemList) {
+            for (Hierarchy.HierarchyEntity e : itemList) {
                 String name = listItemDao.getKeyFromRelaxedName(e.getName());
                 if (cache.containsKey(DependencyValidationSymbols.EXCLUDE + name)) {
                     // Explicitly excluded - do nothing
@@ -171,14 +172,14 @@ public class DependencyNavigation implements ApplicationContextAware  {
         return Pair.of(level, resultList);
     }
 
-    public Pair<ControlledListsList, List<? extends DependentEntity>> getFilteredList(ControlledListsList level, Set cache) {
+    public Pair<ControlledListsList, List<? extends Hierarchy.HierarchyEntity>> getFilteredList(ControlledListsList level, Set cache) {
         // Get the Dao from the level
         Class<? extends EntityDao> listItemDaoClass = level.getDao();
 
         // Get the DAO from spring
-        EntityDao<? extends DependentEntity> listItemDao = applicationContext.getBean(listItemDaoClass);
-        List<? extends DependentEntity> itemList = listItemDao.list();
-        List<DependentEntity> resultList = new ArrayList();
+        EntityDao<? extends Hierarchy.HierarchyEntity> listItemDao = applicationContext.getBean(listItemDaoClass);
+        List<? extends Hierarchy.HierarchyEntity> itemList = listItemDao.list();
+        List<Hierarchy.HierarchyEntity> resultList = new ArrayList();
 
         if (cache.contains(DependencyValidationSymbols.EXCLUDE_ALL)) {
             // If we have the inverse wildcard we are not expecting anything item which is an error
@@ -189,7 +190,7 @@ public class DependencyNavigation implements ApplicationContextAware  {
         } else {
             // Test the items individually with the cache.
             // I have split out the branching for clarity
-            for (DependentEntity e : itemList) {
+            for (Hierarchy.HierarchyEntity e : itemList) {
                 String name = listItemDao.getKeyFromRelaxedName(e.getName());
                 if (cache.contains(DependencyValidationSymbols.EXCLUDE + name)) {
                     // Explicitly excluded - do nothing

@@ -1,7 +1,7 @@
 package uk.gov.ea.datareturns.domain.dto;
 
 import uk.gov.ea.datareturns.domain.jpa.entities.ControlledListEntity;
-import uk.gov.ea.datareturns.domain.jpa.entities.DependentEntity;
+import uk.gov.ea.datareturns.domain.jpa.entities.hierarchy.Hierarchy;
 
 import java.util.List;
 
@@ -40,7 +40,7 @@ public class NavigationDto {
         return list;
     }
 
-    public void setList(List<? extends DependentEntity> list) {
+    public void setList(List<? extends Hierarchy.HierarchyEntity> list) {
         this.list = list;
     }
 }

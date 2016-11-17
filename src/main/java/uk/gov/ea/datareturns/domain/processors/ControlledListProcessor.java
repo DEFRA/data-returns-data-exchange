@@ -14,6 +14,7 @@ import uk.gov.ea.datareturns.domain.jpa.dao.ParameterDao;
 import uk.gov.ea.datareturns.domain.jpa.dao.ReleasesAndTransfersDao;
 import uk.gov.ea.datareturns.domain.jpa.dao.ReturnTypeDao;
 import uk.gov.ea.datareturns.domain.jpa.entities.*;
+import uk.gov.ea.datareturns.domain.jpa.entities.hierarchy.Hierarchy;
 import uk.gov.ea.datareturns.domain.jpa.service.DependencyNavigation;
 
 import javax.inject.Inject;
@@ -108,7 +109,7 @@ public class ControlledListProcessor implements ApplicationContextAware {
         ReturnType returnType = returnTypeName == null ? null : returnTypeDao.getByName(returnTypeName);
         ReleasesAndTransfers releasesAndTransfers = releaseTypeName == null ? null : releasesAndTransfersDao.getByName(releaseTypeName);
         Parameter parameter = parameterName == null ? null : parameterDao.getByName(parameterName);
-        Pair<ControlledListsList, List<? extends DependentEntity>> result = dependencyNavigation.traverseHierarchy(returnType, releasesAndTransfers, parameter);
+        Pair<ControlledListsList, List<? extends Hierarchy.HierarchyEntity>> result = dependencyNavigation.traverseHierarchy(returnType, releasesAndTransfers, parameter);
         ControlledListsList controlledList = result.getLeft();
         List returnedList = result.getRight();
 

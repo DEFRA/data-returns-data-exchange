@@ -1,6 +1,7 @@
 package uk.gov.ea.datareturns.domain.jpa.entities;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import uk.gov.ea.datareturns.domain.jpa.entities.hierarchy.Hierarchy;
 
 import javax.persistence.*;
 import java.util.Set;
@@ -12,7 +13,7 @@ import java.util.Set;
 @SuppressWarnings({ "JavaDoc", "unused" })
 @Entity
 @Table(name = "parameters")
-public class Parameter implements AliasingEntity, DependentEntity {
+public class Parameter implements AliasingEntity, Hierarchy.HierarchyEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
