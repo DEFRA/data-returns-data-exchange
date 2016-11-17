@@ -1,6 +1,8 @@
 package uk.gov.ea.datareturns.domain.jpa.entities;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import uk.gov.ea.datareturns.domain.jpa.dao.EntityDao;
+import uk.gov.ea.datareturns.domain.jpa.dao.UnitDao;
 import uk.gov.ea.datareturns.domain.jpa.entities.hierarchy.Hierarchy;
 
 import javax.persistence.*;
@@ -14,7 +16,7 @@ import java.util.Set;
 @SuppressWarnings({ "JavaDoc", "unused" })
 @Entity
 @Table(name = "units")
-public class Unit implements AliasingEntity, Hierarchy.HierarchyEntity, Hierarchy.HierarchyEntity {
+public class Unit implements AliasingEntity, Hierarchy.HierarchyEntity {
     @Id
     @SequenceGenerator(name = "units_id_seq", sequenceName = "units_id_seq", allocationSize = 1)
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "units_id_seq")
@@ -130,4 +132,10 @@ public class Unit implements AliasingEntity, Hierarchy.HierarchyEntity, Hierarch
     public int hashCode() {
         return name.hashCode();
     }
+
+    @Override
+    public Class<? extends EntityDao> getEntityDao() {
+        return UnitDao.class;
+    }
+
 }

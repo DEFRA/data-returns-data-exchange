@@ -47,8 +47,8 @@ public class DependencyNavigation implements ApplicationContextAware  {
     }
 
     /*
-         * These other signatures are for convenience
-         */
+     * These other signatures are for convenience
+     */
     public Pair<ControlledListsList, List<? extends Hierarchy.HierarchyEntity>> traverseHierarchy(ReturnType returnType) {
         return traverseHierarchy(returnType, null, null, null);
     }

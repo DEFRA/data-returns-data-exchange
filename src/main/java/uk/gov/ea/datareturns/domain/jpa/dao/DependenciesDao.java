@@ -1,17 +1,14 @@
 package uk.gov.ea.datareturns.domain.jpa.dao;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Repository;
 import uk.gov.ea.datareturns.domain.exceptions.ProcessingException;
 import uk.gov.ea.datareturns.domain.jpa.entities.Dependencies;
 import uk.gov.ea.datareturns.domain.jpa.entities.DependenciesId;
+import uk.gov.ea.datareturns.domain.jpa.entities.hierarchy.CacheProvider;
 import uk.gov.ea.datareturns.domain.jpa.service.DependencyValidationSymbols;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
@@ -23,11 +20,7 @@ import java.util.stream.Collectors;
  * Created by graham on 03/10/16.
  */
 @Repository
-public class DependenciesDao {
-    protected static final Logger LOGGER = LoggerFactory.getLogger(DependenciesDao.class);
-
-    @PersistenceContext
-    protected EntityManager entityManager;
+public class DependenciesDao extends CacheProvider<Map<String, Map<String, Map<String, Set<String>>>>> {
 
     @Inject
     private ParameterDao parameterDao;
@@ -61,7 +54,7 @@ public class DependenciesDao {
      * It pretty much explains itself. Note the doublic check locking
      * on the cache and the volatile keyword
      */
-    public Map<String, Map<String, Map<String, Set<String>>>> buildCache() {
+    private Map<String, Map<String, Map<String, Set<String>>>> buildCache() {
         if (cache == null) {
             synchronized (this) {
                 if (cache == null) {
@@ -98,21 +91,6 @@ public class DependenciesDao {
         List<Dependencies> results = query.getResultList();
         results.sort(groupByComparator);
         return results;
-    }
-
-    /*
-     * Detect the exclusion^ character at the beginning of a string
-     */
-    public static boolean IsExclusion(String s) {
-        return s.charAt(0) == '^' ? true : false;
-    }
-
-    /*
-     * Return a string with any exclusion characters removed
-     * or return the unmutated string
-     */
-    public static String removeExclusion(String s) {
-        return !IsExclusion(s) ? s : s.substring(1);
     }
 
     /**
