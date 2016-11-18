@@ -9,7 +9,8 @@ import org.springframework.context.ApplicationContextAware;
 import org.springframework.stereotype.Component;
 import uk.gov.ea.datareturns.domain.jpa.dao.*;
 import uk.gov.ea.datareturns.domain.jpa.entities.*;
-import uk.gov.ea.datareturns.domain.jpa.entities.hierarchy.Hierarchy;
+import uk.gov.ea.datareturns.domain.jpa.hierarchy.HierarchySymbols;
+import uk.gov.ea.datareturns.domain.jpa.hierarchy.Hierarchy;
 
 import javax.inject.Inject;
 import java.util.*;
@@ -105,30 +106,30 @@ public class DependencyNavigation implements ApplicationContextAware  {
             /*
              * If the entity name is supplied (not null)
              */
-            if (cache.containsKey(DependencyValidationSymbols.EXCLUDE + entityNames.get(level))) {
+            if (cache.containsKey(HierarchySymbols.EXCLUDE + entityNames.get(level))) {
                 // If we have supplied an explicitly excluded item then return null
                 return Pair.of(level, null);
-            } else if (cache.containsKey(DependencyValidationSymbols.EXCLUDE_ALL)) {
+            } else if (cache.containsKey(HierarchySymbols.EXCLUDE_ALL)) {
                 // If we have the inverse wildcard we are not expecting an item so carry error
                 return Pair.of(level, null);
             } else if (cache.containsKey(entityNames.get(level))) {
                 // Item explicitly listed - Proceed
                 return shim(level, cache, entityNames.get(level), entityNames, keys);
-            } else if (cache.containsKey(DependencyValidationSymbols.INCLUDE_ALL_OPTIONALLY)) {
+            } else if (cache.containsKey(HierarchySymbols.INCLUDE_ALL_OPTIONALLY)) {
                 // if the item is optionally supplied with a wildcard - proceed
-                return shim(level, cache, DependencyValidationSymbols.INCLUDE_ALL_OPTIONALLY, entityNames, keys);
-            } else if (cache.containsKey(DependencyValidationSymbols.INCLUDE_ALL)) {
+                return shim(level, cache, HierarchySymbols.INCLUDE_ALL_OPTIONALLY, entityNames, keys);
+            } else if (cache.containsKey(HierarchySymbols.INCLUDE_ALL)) {
                 // if the item is on a wildcard - proceed
-                return shim(level, cache, DependencyValidationSymbols.INCLUDE_ALL, entityNames, keys);
-            } else if (cache.containsKey(DependencyValidationSymbols.NOT_APPLICABLE)) {
+                return shim(level, cache, HierarchySymbols.INCLUDE_ALL, entityNames, keys);
+            } else if (cache.containsKey(HierarchySymbols.NOT_APPLICABLE)) {
                 // We should not be here
                 return Pair.of(level, null);
             } else {
                 // We didn't find what we were looking for
                 return Pair.of(level, null);
             }
-        } else if (entityNames.get(level) == null && cache.containsKey(DependencyValidationSymbols.EXCLUDE_ALL)) {
-            return shim(level, cache, DependencyValidationSymbols.EXCLUDE_ALL, entityNames, keys);
+        } else if (entityNames.get(level) == null && cache.containsKey(HierarchySymbols.EXCLUDE_ALL)) {
+            return shim(level, cache, HierarchySymbols.EXCLUDE_ALL, entityNames, keys);
         } else if (allNulls(entityNames)) {
             return getFilteredList(level, cache);
         } else {
@@ -145,22 +146,22 @@ public class DependencyNavigation implements ApplicationContextAware  {
         List<? extends Hierarchy.HierarchyEntity> itemList = listItemDao.list();
         List<Hierarchy.HierarchyEntity> resultList = new ArrayList();
 
-        if (cache.containsKey(DependencyValidationSymbols.EXCLUDE_ALL)) {
+        if (cache.containsKey(HierarchySymbols.EXCLUDE_ALL)) {
             // If we have the inverse wildcard we are not expecting anything item which is an error
             return Pair.of(level, null);
-        } else if (cache.containsKey(DependencyValidationSymbols.NOT_APPLICABLE)) {
+        } else if (cache.containsKey(HierarchySymbols.NOT_APPLICABLE)) {
             // No applicable output
             return Pair.of(level, null);
         } else {
             // Test the items individually with the cache.
             for (Hierarchy.HierarchyEntity e : itemList) {
                 String name = listItemDao.getKeyFromRelaxedName(e.getName());
-                if (cache.containsKey(DependencyValidationSymbols.EXCLUDE + name)) {
+                if (cache.containsKey(HierarchySymbols.EXCLUDE + name)) {
                     // Explicitly excluded - do nothing
-                } else if (cache.containsKey(DependencyValidationSymbols.INCLUDE_ALL)) {
+                } else if (cache.containsKey(HierarchySymbols.INCLUDE_ALL)) {
                     // Item included via wildcard
                     resultList.add(e);
-                } else if (cache.containsKey(DependencyValidationSymbols.INCLUDE_ALL_OPTIONALLY)) {
+                } else if (cache.containsKey(HierarchySymbols.INCLUDE_ALL_OPTIONALLY)) {
                     // Item included via optional wildcard
                     resultList.add(e);
                 } else if (cache.containsKey(name)) {
@@ -181,10 +182,10 @@ public class DependencyNavigation implements ApplicationContextAware  {
         List<? extends Hierarchy.HierarchyEntity> itemList = listItemDao.list();
         List<Hierarchy.HierarchyEntity> resultList = new ArrayList();
 
-        if (cache.contains(DependencyValidationSymbols.EXCLUDE_ALL)) {
+        if (cache.contains(HierarchySymbols.EXCLUDE_ALL)) {
             // If we have the inverse wildcard we are not expecting anything item which is an error
             return Pair.of(level, null);
-        } else if (cache.contains(DependencyValidationSymbols.NOT_APPLICABLE)) {
+        } else if (cache.contains(HierarchySymbols.NOT_APPLICABLE)) {
             // No applicable output
             return Pair.of(level, null);
         } else {
@@ -192,12 +193,12 @@ public class DependencyNavigation implements ApplicationContextAware  {
             // I have split out the branching for clarity
             for (Hierarchy.HierarchyEntity e : itemList) {
                 String name = listItemDao.getKeyFromRelaxedName(e.getName());
-                if (cache.contains(DependencyValidationSymbols.EXCLUDE + name)) {
+                if (cache.contains(HierarchySymbols.EXCLUDE + name)) {
                     // Explicitly excluded - do nothing
-                } else if (cache.contains(DependencyValidationSymbols.INCLUDE_ALL)) {
+                } else if (cache.contains(HierarchySymbols.INCLUDE_ALL)) {
                     // Item included via wildcard
                     resultList.add(e);
-                } else if (cache.contains(DependencyValidationSymbols.INCLUDE_ALL_OPTIONALLY)) {
+                } else if (cache.contains(HierarchySymbols.INCLUDE_ALL_OPTIONALLY)) {
                     // Item included via optional wildcard
                     resultList.add(e);
                 } else if (cache.contains(name)) {

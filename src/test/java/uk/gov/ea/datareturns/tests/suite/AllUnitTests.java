@@ -4,7 +4,7 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 import org.junit.runners.Suite.SuiteClasses;
 import uk.gov.ea.datareturns.tests.domain.model.ControlledListsTests;
-import uk.gov.ea.datareturns.tests.domain.model.DependenciesTests;
+import uk.gov.ea.datareturns.tests.domain.model.ParameterHierarchyValidationTests;
 import uk.gov.ea.datareturns.tests.domain.model.SearchTests;
 import uk.gov.ea.datareturns.tests.domain.model.UniqueIdentifierTests;
 import uk.gov.ea.datareturns.tests.type.FileTypeTests;
@@ -13,7 +13,7 @@ import uk.gov.ea.datareturns.tests.unittests.*;
 @RunWith(Suite.class)
 @SuiteClasses({
         ControlledListsTests.class,
-        DependenciesTests.class,
+        ParameterHierarchyValidationTests.class,
         SearchTests.class,
         UniqueIdentifierTests.class,
 

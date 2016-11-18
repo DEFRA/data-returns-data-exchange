@@ -1,4 +1,4 @@
-package uk.gov.ea.datareturns.domain.jpa.entities.hierarchy;
+package uk.gov.ea.datareturns.domain.jpa.hierarchy;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -8,7 +8,9 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 
 /**
- * The provider of the validation rules cache
+ * @author Graham Willis
+ * The provider of the validation rules cache. The cache must be of the form of nested maps
+ * terminated by a set.
  */
 public abstract class CacheProvider<T> {
      protected static final Logger LOGGER = LoggerFactory.getLogger(DependenciesDao.class);

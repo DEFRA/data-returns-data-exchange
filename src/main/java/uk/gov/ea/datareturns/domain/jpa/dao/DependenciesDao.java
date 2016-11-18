@@ -4,8 +4,8 @@ import org.springframework.stereotype.Repository;
 import uk.gov.ea.datareturns.domain.exceptions.ProcessingException;
 import uk.gov.ea.datareturns.domain.jpa.entities.Dependencies;
 import uk.gov.ea.datareturns.domain.jpa.entities.DependenciesId;
-import uk.gov.ea.datareturns.domain.jpa.entities.hierarchy.CacheProvider;
-import uk.gov.ea.datareturns.domain.jpa.service.DependencyValidationSymbols;
+import uk.gov.ea.datareturns.domain.jpa.hierarchy.CacheProvider;
+import uk.gov.ea.datareturns.domain.jpa.hierarchy.HierarchySymbols;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
@@ -107,11 +107,11 @@ public class DependenciesDao extends CacheProvider<Map<String, Map<String, Map<S
             .stream()
                 .map(Dependencies::getParameter)
                 .map(p -> removeExclusion(p))
-                .filter(p -> !p.trim().equals(DependencyValidationSymbols.INCLUDE_ALL))
-                .filter(p -> !p.trim().equals(DependencyValidationSymbols.EXCLUDE_ALL))
-                .filter(p -> !p.trim().equals(DependencyValidationSymbols.EXCLUDE))
-                .filter(p -> !p.trim().equals(DependencyValidationSymbols.INCLUDE_ALL_OPTIONALLY))
-                .filter(p -> !p.trim().equals(DependencyValidationSymbols.NOT_APPLICABLE))
+                .filter(p -> !p.trim().equals(HierarchySymbols.INCLUDE_ALL))
+                .filter(p -> !p.trim().equals(HierarchySymbols.EXCLUDE_ALL))
+                .filter(p -> !p.trim().equals(HierarchySymbols.EXCLUDE))
+                .filter(p -> !p.trim().equals(HierarchySymbols.INCLUDE_ALL_OPTIONALLY))
+                .filter(p -> !p.trim().equals(HierarchySymbols.NOT_APPLICABLE))
                 .filter(p -> !parameterDao.nameExists(p))
                 .collect(Collectors.toList());
 
@@ -127,11 +127,11 @@ public class DependenciesDao extends CacheProvider<Map<String, Map<String, Map<S
                 .stream()
                 .map(Dependencies::getReturnType)
                 .map(p -> removeExclusion(p))
-                .filter(p -> !p.trim().equals(DependencyValidationSymbols.INCLUDE_ALL))
-                .filter(p -> !p.trim().equals(DependencyValidationSymbols.EXCLUDE_ALL))
-                .filter(p -> !p.trim().equals(DependencyValidationSymbols.EXCLUDE))
-                .filter(p -> !p.trim().equals(DependencyValidationSymbols.INCLUDE_ALL_OPTIONALLY))
-                .filter(p -> !p.trim().equals(DependencyValidationSymbols.NOT_APPLICABLE))
+                .filter(p -> !p.trim().equals(HierarchySymbols.INCLUDE_ALL))
+                .filter(p -> !p.trim().equals(HierarchySymbols.EXCLUDE_ALL))
+                .filter(p -> !p.trim().equals(HierarchySymbols.EXCLUDE))
+                .filter(p -> !p.trim().equals(HierarchySymbols.INCLUDE_ALL_OPTIONALLY))
+                .filter(p -> !p.trim().equals(HierarchySymbols.NOT_APPLICABLE))
                 .filter(p -> !returnTypeDao.nameExists(p))
                 .collect(Collectors.toList());
 
@@ -147,11 +147,11 @@ public class DependenciesDao extends CacheProvider<Map<String, Map<String, Map<S
                 .stream()
                 .map(Dependencies::getReleasesAndTransfers)
                 .map(p -> removeExclusion(p))
-                .filter(p -> !p.trim().equals(DependencyValidationSymbols.INCLUDE_ALL))
-                .filter(p -> !p.trim().equals(DependencyValidationSymbols.EXCLUDE_ALL))
-                .filter(p -> !p.trim().equals(DependencyValidationSymbols.EXCLUDE))
-                .filter(p -> !p.trim().equals(DependencyValidationSymbols.INCLUDE_ALL_OPTIONALLY))
-                .filter(p -> !p.trim().equals(DependencyValidationSymbols.NOT_APPLICABLE))
+                .filter(p -> !p.trim().equals(HierarchySymbols.INCLUDE_ALL))
+                .filter(p -> !p.trim().equals(HierarchySymbols.EXCLUDE_ALL))
+                .filter(p -> !p.trim().equals(HierarchySymbols.EXCLUDE))
+                .filter(p -> !p.trim().equals(HierarchySymbols.INCLUDE_ALL_OPTIONALLY))
+                .filter(p -> !p.trim().equals(HierarchySymbols.NOT_APPLICABLE))
                 .filter(p -> !releasesAndTransfersDao.nameExists(p))
                 .collect(Collectors.toList());
 
@@ -167,11 +167,11 @@ public class DependenciesDao extends CacheProvider<Map<String, Map<String, Map<S
                 .stream()
                 .map(Dependencies::getUnits)
                 .map(p -> removeExclusion(p))
-                .filter(p -> !p.trim().equals(DependencyValidationSymbols.INCLUDE_ALL))
-                .filter(p -> !p.trim().equals(DependencyValidationSymbols.EXCLUDE_ALL))
-                .filter(p -> !p.trim().equals(DependencyValidationSymbols.EXCLUDE))
-                .filter(p -> !p.trim().equals(DependencyValidationSymbols.INCLUDE_ALL_OPTIONALLY))
-                .filter(p -> !p.trim().equals(DependencyValidationSymbols.NOT_APPLICABLE))
+                .filter(p -> !p.trim().equals(HierarchySymbols.INCLUDE_ALL))
+                .filter(p -> !p.trim().equals(HierarchySymbols.EXCLUDE_ALL))
+                .filter(p -> !p.trim().equals(HierarchySymbols.EXCLUDE))
+                .filter(p -> !p.trim().equals(HierarchySymbols.INCLUDE_ALL_OPTIONALLY))
+                .filter(p -> !p.trim().equals(HierarchySymbols.NOT_APPLICABLE))
                 .filter(p -> !unitDao.nameExists(p))
                 .collect(Collectors.toList());
 

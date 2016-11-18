@@ -3,7 +3,7 @@ package uk.gov.ea.datareturns.domain.jpa.entities;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import uk.gov.ea.datareturns.domain.jpa.dao.EntityDao;
 import uk.gov.ea.datareturns.domain.jpa.dao.ParameterDao;
-import uk.gov.ea.datareturns.domain.jpa.entities.hierarchy.Hierarchy;
+import uk.gov.ea.datareturns.domain.jpa.hierarchy.Hierarchy;
 
 import javax.persistence.*;
 import java.util.Set;
@@ -112,11 +112,6 @@ public class Parameter implements AliasingEntity, Hierarchy.HierarchyEntity {
     @Override
     public int hashCode() {
         return name.hashCode();
-    }
-
-    @Override
-    public Class<? extends EntityDao> getEntityDao() {
-        return ParameterDao.class;
     }
 
 }

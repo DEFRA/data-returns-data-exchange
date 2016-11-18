@@ -4,6 +4,7 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.stereotype.Service;
 import uk.gov.ea.datareturns.domain.jpa.dao.*;
 import uk.gov.ea.datareturns.domain.jpa.entities.*;
+import uk.gov.ea.datareturns.domain.jpa.hierarchy.HierarchySymbols;
 
 import javax.inject.Inject;
 import java.util.Arrays;
@@ -107,22 +108,22 @@ public class DependencyValidation {
             /*
              * If the entity name is supplied (not null)
              */
-            if (cache.containsKey(DependencyValidationSymbols.EXCLUDE + entityName[0])) {
+            if (cache.containsKey(HierarchySymbols.EXCLUDE + entityName[0])) {
                 // If we have supplied an explicitly excluded item then report an error
                 return Pair.of(level, Result.EXCLUDED);
-            } else if (cache.containsKey(DependencyValidationSymbols.EXCLUDE_ALL)) {
+            } else if (cache.containsKey(HierarchySymbols.EXCLUDE_ALL)) {
                 // If we have the inverse wildcard we are not expecting an item so error
                 return Pair.of(level, Result.NOT_EXPECTED);
             } else if (cache.containsKey(entityName[0])) {
                 // Item explicitly listed - Proceed
                 return getDependencyValidationResult(level, cache, entityName[0], entityName);
-            } else if(cache.containsKey(DependencyValidationSymbols.INCLUDE_ALL_OPTIONALLY)) {
+            } else if(cache.containsKey(HierarchySymbols.INCLUDE_ALL_OPTIONALLY)) {
                 // if the item is optionally supplied with a wildcard - proceed
-                return getDependencyValidationResult(level, cache, DependencyValidationSymbols.INCLUDE_ALL_OPTIONALLY, entityName);
-            } else if (cache.containsKey(DependencyValidationSymbols.INCLUDE_ALL)) {
+                return getDependencyValidationResult(level, cache, HierarchySymbols.INCLUDE_ALL_OPTIONALLY, entityName);
+            } else if (cache.containsKey(HierarchySymbols.INCLUDE_ALL)) {
                 // if the item is on a wildcard - proceed
-                return getDependencyValidationResult(level, cache, DependencyValidationSymbols.INCLUDE_ALL, entityName);
-            } else if (cache.containsKey(DependencyValidationSymbols.NOT_APPLICABLE)) {
+                return getDependencyValidationResult(level, cache, HierarchySymbols.INCLUDE_ALL, entityName);
+            } else if (cache.containsKey(HierarchySymbols.NOT_APPLICABLE)) {
                 // We don't care - OK
                 return Pair.of(level, Result.OK);
             } else {
@@ -133,16 +134,16 @@ public class DependencyValidation {
             /*
              * If the entity name is not supplied (null)
              */
-            if (cache.containsKey(DependencyValidationSymbols.EXCLUDE_ALL)) {
+            if (cache.containsKey(HierarchySymbols.EXCLUDE_ALL)) {
                 // If we have the inverse wildcard we are not expecting an item so no error - proceed
-                return getDependencyValidationResult(level, cache, DependencyValidationSymbols.EXCLUDE_ALL, entityName);
-            } else if(cache.containsKey(DependencyValidationSymbols.INCLUDE_ALL_OPTIONALLY)) {
+                return getDependencyValidationResult(level, cache, HierarchySymbols.EXCLUDE_ALL, entityName);
+            } else if(cache.containsKey(HierarchySymbols.INCLUDE_ALL_OPTIONALLY)) {
                 // if the item is optionally supplied with a wildcard we are good - proceed
-                return getDependencyValidationResult(level, cache, DependencyValidationSymbols.INCLUDE_ALL_OPTIONALLY, entityName);
-            } else if (cache.containsKey(DependencyValidationSymbols.INCLUDE_ALL)) {
+                return getDependencyValidationResult(level, cache, HierarchySymbols.INCLUDE_ALL_OPTIONALLY, entityName);
+            } else if (cache.containsKey(HierarchySymbols.INCLUDE_ALL)) {
                 // if the item is on a wildcard its an error
                 return Pair.of(level, Result.EXPECTED);
-            } else if (cache.containsKey(DependencyValidationSymbols.NOT_APPLICABLE)) {
+            } else if (cache.containsKey(HierarchySymbols.NOT_APPLICABLE)) {
                 // We don't care - OK
                 return Pair.of(level, Result.OK);
             } else {
@@ -161,22 +162,22 @@ public class DependencyValidation {
             /*
              * If the entity name is supplied (not null)
              */
-            if (cache.contains(DependencyValidationSymbols.EXCLUDE + entityName[0])) {
+            if (cache.contains(HierarchySymbols.EXCLUDE + entityName[0])) {
                 // If we have supplied an explicitly excluded item then report an error
                 return Pair.of(level, Result.EXCLUDED);
-            } else if (cache.contains(DependencyValidationSymbols.EXCLUDE_ALL)) {
+            } else if (cache.contains(HierarchySymbols.EXCLUDE_ALL)) {
                 // If we have the inverse wildcard we are not expecting an item so error
                 return Pair.of(level, Result.NOT_EXPECTED);
             } else if (cache.contains(entityName[0])) {
                 // Item explicitly listed - Proceed
                 return Pair.of(level, Result.OK);
-            } else if(cache.contains(DependencyValidationSymbols.INCLUDE_ALL_OPTIONALLY)) {
+            } else if(cache.contains(HierarchySymbols.INCLUDE_ALL_OPTIONALLY)) {
                 // if the item is optionally supplied with a wildcard - OK
                 return Pair.of(level, Result.OK);
-            } else if (cache.contains(DependencyValidationSymbols.INCLUDE_ALL)) {
+            } else if (cache.contains(HierarchySymbols.INCLUDE_ALL)) {
                 // if the item is on a wildcard - OK
                 return Pair.of(level, Result.OK);
-            } else if (cache.contains(DependencyValidationSymbols.NOT_APPLICABLE)) {
+            } else if (cache.contains(HierarchySymbols.NOT_APPLICABLE)) {
                 // We don't care - OK
                 return Pair.of(level, Result.OK);
             } else {
@@ -187,16 +188,16 @@ public class DependencyValidation {
             /*
              * If the entity name is not supplied (null)
              */
-            if (cache.contains(DependencyValidationSymbols.EXCLUDE_ALL)) {
+            if (cache.contains(HierarchySymbols.EXCLUDE_ALL)) {
                 // If we have the inverse wildcard we are not expecting an item so no error - ok
                 return Pair.of(level, Result.OK);
-            } else if(cache.contains(DependencyValidationSymbols.INCLUDE_ALL_OPTIONALLY)) {
+            } else if(cache.contains(HierarchySymbols.INCLUDE_ALL_OPTIONALLY)) {
                 // if the item is optionally supplied with a wildcard we are good
                 return Pair.of(level, Result.OK);
-            } else if (cache.contains(DependencyValidationSymbols.INCLUDE_ALL)) {
+            } else if (cache.contains(HierarchySymbols.INCLUDE_ALL)) {
                 // if the item is on a plain wildcard its an error
                 return Pair.of(level, Result.EXPECTED);
-            } else if (cache.contains(DependencyValidationSymbols.NOT_APPLICABLE)) {
+            } else if (cache.contains(HierarchySymbols.NOT_APPLICABLE)) {
                 // We don't care - OK
                 return Pair.of(level, Result.OK);
             } else {

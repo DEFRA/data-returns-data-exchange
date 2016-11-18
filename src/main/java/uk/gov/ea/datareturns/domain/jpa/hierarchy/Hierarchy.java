@@ -1,48 +1,47 @@
-package uk.gov.ea.datareturns.domain.jpa.entities.hierarchy;
+package uk.gov.ea.datareturns.domain.jpa.hierarchy;
 
 import org.apache.commons.lang3.tuple.Pair;
 import uk.gov.ea.datareturns.domain.jpa.dao.EntityDao;
 import uk.gov.ea.datareturns.domain.jpa.entities.ControlledListEntity;
-import uk.gov.ea.datareturns.domain.jpa.entities.ControlledListsList;
-import uk.gov.ea.datareturns.domain.jpa.service.DependencyValidation;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
+ * @author Graham Willis
  * A class describing the hierarchical relationships between a set of entities used for the validation
  * of input data and providing an interface for navigating
  */
-
 public class Hierarchy<C extends CacheProvider> {
-    private HierarchyNode[] hierarchyNodes = null;
-    private int hierarchyLevel = 0;
-    private C cacheProvider = null;
+    private final Set<HierarchyNode> hierarchyNodes;
+    private final C cacheProvider;
+    private final HierarchyNavigator hierarchyNavigator;
+    private final HierarchyValidator hierarchyValidator;
+    Map<Class<? extends HierarchyEntity>, HierarchyNode> hierarchyNodesByHierarchyEntity;
 
     /**
-     * Initialize the hierarchy with the entity nodes
+     * Initialize the hierarchy with the entity nodes and a cache provider
      * @param hierarchyNodes
+     * @param hierarchyNavigator
+     * @param hierarchyValidator
      */
-    Hierarchy(HierarchyNode[] hierarchyNodes, C cacheProvider) {
+    Hierarchy(Set<HierarchyNode> hierarchyNodes, C cacheProvider, HierarchyNavigator hierarchyNavigator, HierarchyValidator hierarchyValidator) {
         this.hierarchyNodes = hierarchyNodes;
         this.cacheProvider = cacheProvider;
-    }
-
-    public HierarchyNode root() {
-        hierarchyLevel = 0;
-        return hierarchyNodes[hierarchyLevel];
-    }
-
-    public HierarchyNode next() {
-        return hierarchyNodes[++hierarchyLevel];
+        this.hierarchyNavigator = hierarchyNavigator;
+        this.hierarchyValidator = hierarchyValidator;
+        this.hierarchyNodesByHierarchyEntity = hierarchyNodes
+                .stream()
+                .collect(Collectors.toMap(HierarchyNode::getHierarchyEntityClass, v -> v));
     }
 
     /*
      * Public interface used by the entities participating in the hierarchy
      */
     public interface HierarchyEntity extends ControlledListEntity {
-        Class<? extends EntityDao> getEntityDao();
     }
 
     /**
@@ -63,16 +62,25 @@ public class Hierarchy<C extends CacheProvider> {
         return null;
     }
 
-    public Pair<ControlledListsList, DependencyValidation.Result> validate(HierarchyEntity... entities) {
-        return null;
+    public Pair<HierarchyNode, Hierarchy.Result> validate(HierarchyEntity... entities) {
+        return hierarchyValidator.validate((Map)cacheProvider.getCache(), hierarchyNodes, processInputs(entities));
     }
 
-    Map<HierarchyNode, String> processInputs(HierarchyEntity... entities) {
+    /**
+     * Sets the string value on each node
+     * @param entities
+     */
+    private Map<HierarchyNode, String> processInputs(HierarchyEntity... entities) {
         Map<HierarchyNode, String> result = new HashMap<>();
-        for (HierarchyEntity entity : entities) {
-            //Class<? extends EntityDao> daoClass = entity.getEntityDao();
-            //EntityDao daoBean = SpringApplicationContextProvider.getApplicationContext().getBean(daoClass);
-            //daoBean.getByName()
+        for (HierarchyNode hierarchyNode : hierarchyNodes) {
+            result.put(hierarchyNode, null);
+            Class<? extends Hierarchy.HierarchyEntity> hierarchyEntityClass = hierarchyNode.getHierarchyEntityClass();
+            for (HierarchyEntity entity : entities) {
+                if (entity != null && entity.getClass().equals(hierarchyEntityClass)) {
+                    EntityDao dao = EntityDao.getDao(hierarchyNode.getDaoClass());
+                    result.put(hierarchyNode, dao.getKeyFromRelaxedName(entity.getName()));
+                }
+            }
         }
         return result;
     }
