@@ -14,7 +14,7 @@ import uk.gov.ea.datareturns.domain.jpa.dao.ParameterDao;
 import uk.gov.ea.datareturns.domain.jpa.dao.ReleasesAndTransfersDao;
 import uk.gov.ea.datareturns.domain.jpa.dao.ReturnTypeDao;
 import uk.gov.ea.datareturns.domain.jpa.entities.*;
-import uk.gov.ea.datareturns.domain.jpa.entities.hierarchy.Hierarchy;
+import uk.gov.ea.datareturns.domain.jpa.hierarchy.Hierarchy;
 import uk.gov.ea.datareturns.domain.jpa.service.DependencyNavigation;
 
 import javax.inject.Inject;

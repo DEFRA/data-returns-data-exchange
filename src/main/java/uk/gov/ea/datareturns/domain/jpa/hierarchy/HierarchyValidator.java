@@ -1,7 +1,151 @@
 package uk.gov.ea.datareturns.domain.jpa.hierarchy;
 
+import org.apache.commons.lang3.tuple.Pair;
+import org.springframework.stereotype.Component;
+
+import java.util.*;
+
 /**
- * Created by graham on 18/11/16.
+ * @author Graham Willis
+ * Validate a set of entities against a specific hierarchy the result of the validation
+ * and the lowest level in the hierarch reached to obtain the result
  */
+@Component
 public class HierarchyValidator {
+    private Iterator<HierarchyNode> hierarchyNodesIttr;
+
+    Pair<HierarchyNode, Hierarchy.Result> validate(Map cache, Set<HierarchyNode> hierarchyNodes, Map<HierarchyNode, String> entityNames) {
+        hierarchyNodesIttr = hierarchyNodes.iterator();
+        HierarchyNode rootNode = hierarchyNodesIttr.next();
+        return evaluate(rootNode, cache, entityNames);
+    }
+
+    /*
+     * Main evaluating function which is recursive as the rules are the same for each entity
+     */
+    private Pair<HierarchyNode, Hierarchy.Result> evaluate(HierarchyNode node, Map cache, Map<HierarchyNode, String> entityNames) {
+        if (entityNames.get(node) != null) {
+            /*
+             * If the entity name is supplied (not null)
+             */
+            if (cache.containsKey(HierarchySymbols.EXCLUDE + entityNames.get(node))) {
+                // If we have supplied an explicitly excluded item then report an error
+                return Pair.of(node, Hierarchy.Result.EXCLUDED);
+            } else if (cache.containsKey(HierarchySymbols.EXCLUDE_ALL)) {
+                // If we have the inverse wildcard we are not expecting an item so error
+                return Pair.of(node, Hierarchy.Result.NOT_EXPECTED);
+            } else if (cache.containsKey(entityNames.get(node))) {
+                // Item explicitly listed - Proceed
+                return shim(node, cache, entityNames.get(node), entityNames);
+            } else if(cache.containsKey(HierarchySymbols.INCLUDE_ALL_OPTIONALLY)) {
+                // if the item is optionally supplied with a wildcard - proceed
+                return shim(node, cache, HierarchySymbols.INCLUDE_ALL_OPTIONALLY, entityNames);
+            } else if (cache.containsKey(HierarchySymbols.INCLUDE_ALL)) {
+                // if the item is on a wildcard - proceed
+                return shim(node, cache, HierarchySymbols.INCLUDE_ALL, entityNames);
+            } else if (cache.containsKey(HierarchySymbols.NOT_APPLICABLE)) {
+                // We don't care - OK
+                return Pair.of(node, Hierarchy.Result.OK);
+            } else {
+                // We didn't find what we were looking for
+                return Pair.of(node, Hierarchy.Result.NOT_FOUND);
+            }
+        } else {
+            /*
+             * If the entity name is not supplied (null)
+             */
+            if (cache.containsKey(HierarchySymbols.EXCLUDE_ALL)) {
+                // If we have the inverse wildcard we are not expecting an item so no error - proceed
+                return shim(node, cache, HierarchySymbols.EXCLUDE_ALL, entityNames);
+            } else if(cache.containsKey(HierarchySymbols.INCLUDE_ALL_OPTIONALLY)) {
+                // if the item is optionally supplied with a wildcard we are good - proceed
+                return shim(node, cache, HierarchySymbols.INCLUDE_ALL_OPTIONALLY, entityNames);
+            } else if (cache.containsKey(HierarchySymbols.INCLUDE_ALL)) {
+                // if the item is on a wildcard its an error
+                return Pair.of(node, Hierarchy.Result.EXPECTED);
+            } else if (cache.containsKey(HierarchySymbols.NOT_APPLICABLE)) {
+                // We don't care - OK
+                return Pair.of(node, Hierarchy.Result.OK);
+            } else {
+                // This is wrong - nothing is given but we are expecting something
+                return Pair.of(node, Hierarchy.Result.EXPECTED);
+            }
+        }
+    }
+
+    /*
+     * If the validation is not already complete and returned out of the above
+     * recursive method it is terminated by this operation with a set lookup
+     */
+    private Pair<HierarchyNode, Hierarchy.Result> evaluate(HierarchyNode node, Set cache, Map<HierarchyNode, String> entityNames) {
+        if (entityNames.get(node) != null) {
+            /*
+             * If the entity name is supplied (not null)
+             */
+            if (cache.contains(HierarchySymbols.EXCLUDE + entityNames.get(node))) {
+                // If we have supplied an explicitly excluded item then report an error
+                return Pair.of(node, Hierarchy.Result.EXCLUDED);
+            } else if (cache.contains(HierarchySymbols.EXCLUDE_ALL)) {
+                // If we have the inverse wildcard we are not expecting an item so error
+                return Pair.of(node, Hierarchy.Result.NOT_EXPECTED);
+            } else if (cache.contains(entityNames.get(node))) {
+                // Item explicitly listed - Proceed
+                return Pair.of(node, Hierarchy.Result.OK);
+            } else if(cache.contains(HierarchySymbols.INCLUDE_ALL_OPTIONALLY)) {
+                // if the item is optionally supplied with a wildcard - OK
+                return Pair.of(node, Hierarchy.Result.OK);
+            } else if (cache.contains(HierarchySymbols.INCLUDE_ALL)) {
+                // if the item is on a wildcard - OK
+                return Pair.of(node, Hierarchy.Result.OK);
+            } else if (cache.contains(HierarchySymbols.NOT_APPLICABLE)) {
+                // We don't care - OK
+                return Pair.of(node, Hierarchy.Result.OK);
+            } else {
+                // We have not found the item
+                return Pair.of(node, Hierarchy.Result.NOT_FOUND);
+            }
+        } else {
+            /*
+             * If the entity name is not supplied (null)
+             */
+            if (cache.contains(HierarchySymbols.EXCLUDE_ALL)) {
+                // If we have the inverse wildcard we are not expecting an item so no error - ok
+                return Pair.of(node, Hierarchy.Result.OK);
+            } else if(cache.contains(HierarchySymbols.INCLUDE_ALL_OPTIONALLY)) {
+                // if the item is optionally supplied with a wildcard we are good
+                return Pair.of(node, Hierarchy.Result.OK);
+            } else if (cache.contains(HierarchySymbols.INCLUDE_ALL)) {
+                // if the item is on a plain wildcard its an error
+                return Pair.of(node, Hierarchy.Result.EXPECTED);
+            } else if (cache.contains(HierarchySymbols.NOT_APPLICABLE)) {
+                // We don't care - OK
+                return Pair.of(node, Hierarchy.Result.OK);
+            } else {
+                // This is wrong - nothing is given but we are expecting something.
+                return Pair.of(node, Hierarchy.Result.EXPECTED);
+            }
+        }
+    }
+
+    /*
+     * Helper function to direct to the map or set evaluator - the hierarchy is terminated by a set
+     * So the system has been set up so that initial cache is
+     * Map<String, Map<String, Map<String, Set<String>>>>
+     * Then as each entity is validated the cache is drilled into so that we get the following
+     * sequence
+     *
+     * Map<String, Map<String, Map<String, Set<String>>>> - Cache by Return type
+     * Map<String, Map<String, Set<String>>> - cache by releases and transfers
+     * Map<String, Set<String>> - cache by parameters
+     * Set<String> - a hash-set of units
+     */
+    private Pair<HierarchyNode, Hierarchy.Result> shim(HierarchyNode node, Map cache, String cacheKey, Map<HierarchyNode, String> entityNames) {
+        entityNames.remove(node);
+        if (cache.get(cacheKey) instanceof Set) {
+            return evaluate(hierarchyNodesIttr.next(), (Set)cache.get(cacheKey), entityNames);
+        } else {
+            return evaluate(hierarchyNodesIttr.next(), (Map)cache.get(cacheKey), entityNames);
+        }
+    }
+
 }

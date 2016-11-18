@@ -1,4 +1,4 @@
-package uk.gov.ea.datareturns.domain.jpa.service;
+package uk.gov.ea.datareturns.domain.jpa.hierarchy;
 
 /**********************************************************************
 
@@ -49,7 +49,7 @@ package uk.gov.ea.datareturns.domain.jpa.service;
  *-
 
  **************************************************************/
-public class DependencyValidationSymbols {
+public class HierarchySymbols {
     public static final String EXCLUDE = "^";
     public static final String EXCLUDE_ALL = "^*";
     public static final String INCLUDE_ALL_OPTIONALLY = "*-";
