@@ -3,7 +3,9 @@ package uk.gov.ea.datareturns.domain.model.validation.constraints.factory.impl;
 import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.stereotype.Component;
 import uk.gov.ea.datareturns.domain.jpa.entities.*;
-import uk.gov.ea.datareturns.domain.jpa.service.DependencyValidation;
+import uk.gov.ea.datareturns.domain.jpa.hierarchy.Hierarchy;
+import uk.gov.ea.datareturns.domain.jpa.hierarchy.HierarchyLevel;
+import uk.gov.ea.datareturns.domain.jpa.hierarchy.implementations.ParameterHierarchy;
 import uk.gov.ea.datareturns.domain.model.DataSample;
 import uk.gov.ea.datareturns.domain.model.MessageCodes;
 import uk.gov.ea.datareturns.domain.model.fields.AbstractEntityValue;
@@ -30,33 +32,31 @@ public class DependencyValidator implements RecordConstraintValidator<DataSample
         Unit unitEntity = AbstractEntityValue.getEntity(record.getUnit());
 
         // We are instantiated through reflection so we need to get the validation engine via the spring application context
-        DependencyValidation dependencyValidation = SpringApplicationContextProvider.getApplicationContext().getBean(DependencyValidation.class);
+        ParameterHierarchy parameterHierarchy = SpringApplicationContextProvider.getApplicationContext().getBean(ParameterHierarchy.class);
 
         // Call the dependency validation engine
-        Pair<ControlledListsList, DependencyValidation.Result> validation
-                = dependencyValidation.validate(returnTypeEntity, releasesAndTransfersEntity, parameterEntity, unitEntity);
+        Pair<HierarchyLevel, Hierarchy.Result> validation
+                = parameterHierarchy.validate(returnTypeEntity, releasesAndTransfersEntity, parameterEntity, unitEntity);
 
         String message = null;
-        DependencyValidation.Result result = validation.getRight();
-        ControlledListsList level = validation.getLeft();
+        Hierarchy.Result result = validation.getRight();
+        ControlledListsList level = validation.getLeft().getControlledList();
 
-        if (result == DependencyValidation.Result.OK) {
+        if (result == Hierarchy.Result.OK) {
             return true;
         } else {
-            // We will disregard 'missing' because this
-            // is detected by the straight forward controlled lists check
-            // (Except in the case of releases)
-            if (result == DependencyValidation.Result.EXPECTED && level != ControlledListsList.RELEASES_AND_TRANSFERS) {
+            // TO DO - remove this kludge - the validations need to be tiered
+            if (result == Hierarchy.Result.EXPECTED && level != ControlledListsList.RELEASES_AND_TRANSFER) {
                 return true;
             } else {
                 switch (level) {
-                    case UNITS:
+                    case UNIT:
                         message = MessageCodes.DependencyConflict.Unit;
                         break;
-                    case PARAMETERS:
+                    case PARAMETER:
                         message = MessageCodes.DependencyConflict.Parameter;
                         break;
-                    case RELEASES_AND_TRANSFERS:
+                    case RELEASES_AND_TRANSFER:
                         message = MessageCodes.DependencyConflict.Rel_Trans;
                         break;
                     case RETURN_TYPE:
@@ -64,6 +64,7 @@ public class DependencyValidator implements RecordConstraintValidator<DataSample
                         break;
                 }
             }
+
         }
 
         if (message != null) {

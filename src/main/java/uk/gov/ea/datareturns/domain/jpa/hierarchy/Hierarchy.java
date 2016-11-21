@@ -16,26 +16,26 @@ import java.util.stream.Collectors;
  * of input data and providing an interface for navigating
  */
 public class Hierarchy<C extends CacheProvider> {
-    private final Set<HierarchyNode> hierarchyNodes;
+    private final Set<HierarchyLevel> hierarchyLevels;
     private final C cacheProvider;
     private final HierarchyNavigator hierarchyNavigator;
     private final HierarchyValidator hierarchyValidator;
-    Map<Class<? extends HierarchyEntity>, HierarchyNode> hierarchyNodesByHierarchyEntity;
+    Map<Class<? extends HierarchyEntity>, HierarchyLevel> hierarchyNodesByHierarchyEntity;
 
     /**
      * Initialize the hierarchy with the entity nodes and a cache provider
-     * @param hierarchyNodes
+     * @param hierarchyLevels
      * @param hierarchyNavigator
      * @param hierarchyValidator
      */
-    Hierarchy(Set<HierarchyNode> hierarchyNodes, C cacheProvider, HierarchyNavigator hierarchyNavigator, HierarchyValidator hierarchyValidator) {
-        this.hierarchyNodes = hierarchyNodes;
+    public Hierarchy(Set<HierarchyLevel> hierarchyLevels, C cacheProvider, HierarchyNavigator hierarchyNavigator, HierarchyValidator hierarchyValidator) {
+        this.hierarchyLevels = hierarchyLevels;
         this.cacheProvider = cacheProvider;
         this.hierarchyNavigator = hierarchyNavigator;
         this.hierarchyValidator = hierarchyValidator;
-        this.hierarchyNodesByHierarchyEntity = hierarchyNodes
+        this.hierarchyNodesByHierarchyEntity = hierarchyLevels
                 .stream()
-                .collect(Collectors.toMap(HierarchyNode::getHierarchyEntityClass, v -> v));
+                .collect(Collectors.toMap(HierarchyLevel::getHierarchyEntityClass, v -> v));
     }
 
     /*
@@ -58,27 +58,32 @@ public class Hierarchy<C extends CacheProvider> {
      * List the children of a given set of parents. The parents must form a complete and proper path
      * to be able to calculate the hierarchy
      */
-    public Pair<HierarchyNode, List<? extends HierarchyEntity>> getChildren(HierarchyEntity... entities) {
-        return null;
-    }
-
-    public Pair<HierarchyNode, Hierarchy.Result> validate(HierarchyEntity... entities) {
-        return hierarchyValidator.validate((Map)cacheProvider.getCache(), hierarchyNodes, processInputs(entities));
+    public Pair<HierarchyLevel, List<? extends HierarchyEntity>> children(HierarchyEntity... entities) {
+        return hierarchyNavigator.children((Map)cacheProvider.getCache(), hierarchyLevels, processInputs(entities));
     }
 
     /**
-     * Sets the string value on each node
+     * Validate that a given set of entities is a member of the hierarchy
+     * @param entities
+     * @return
+     */
+    public Pair<HierarchyLevel, Hierarchy.Result> validate(HierarchyEntity... entities) {
+        return hierarchyValidator.validate((Map)cacheProvider.getCache(), hierarchyLevels, processInputs(entities));
+    }
+
+    /**
+     * Sets the string value on each given entity - the cache key is derived by the entity relaxed name
      * @param entities
      */
-    private Map<HierarchyNode, String> processInputs(HierarchyEntity... entities) {
-        Map<HierarchyNode, String> result = new HashMap<>();
-        for (HierarchyNode hierarchyNode : hierarchyNodes) {
-            result.put(hierarchyNode, null);
-            Class<? extends Hierarchy.HierarchyEntity> hierarchyEntityClass = hierarchyNode.getHierarchyEntityClass();
+    private Map<HierarchyLevel, String> processInputs(HierarchyEntity... entities) {
+        Map<HierarchyLevel, String> result = new HashMap<>();
+        for (HierarchyLevel hierarchyLevel : hierarchyLevels) {
+            result.put(hierarchyLevel, null);
+            Class<? extends Hierarchy.HierarchyEntity> hierarchyEntityClass = hierarchyLevel.getHierarchyEntityClass();
             for (HierarchyEntity entity : entities) {
                 if (entity != null && entity.getClass().equals(hierarchyEntityClass)) {
-                    EntityDao dao = EntityDao.getDao(hierarchyNode.getDaoClass());
-                    result.put(hierarchyNode, dao.getKeyFromRelaxedName(entity.getName()));
+                    EntityDao dao = EntityDao.getDao(hierarchyLevel.getDaoClass());
+                    result.put(hierarchyLevel, dao.getKeyFromRelaxedName(entity.getName()));
                 }
             }
         }

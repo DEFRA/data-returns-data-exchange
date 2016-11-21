@@ -2,7 +2,7 @@ package uk.gov.ea.datareturns.domain.jpa.hierarchy;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import uk.gov.ea.datareturns.domain.jpa.dao.DependenciesDao;
+import uk.gov.ea.datareturns.domain.jpa.dao.ParameterHierarchyDao;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -13,23 +13,23 @@ import javax.persistence.PersistenceContext;
  * terminated by a set.
  */
 public abstract class CacheProvider<T> {
-     protected static final Logger LOGGER = LoggerFactory.getLogger(DependenciesDao.class);
+     protected static final Logger LOGGER = LoggerFactory.getLogger(ParameterHierarchyDao.class);
      @PersistenceContext
      protected EntityManager entityManager;
 
      /*
-           * Detect the exclusion^ character at the beginning of a string
-           */
+      * Detect the exclusion^ character at the beginning of a string
+      */
      public static boolean IsExclusion(String s) {
-         return s.charAt(0) == '^' ? true : false;
+          return s.charAt(0) == HierarchySymbols.EXCLUDE.charAt(0) ? true : false;
      }
 
      /*
-           * Return a string with any exclusion characters removed
-           * or return the unmutated string
-           */
+      * Return a string with any exclusion characters removed
+      * or return the string
+      */
      public static String removeExclusion(String s) {
-         return !IsExclusion(s) ? s : s.substring(1);
+          return !IsExclusion(s) ? s : s.substring(1);
      }
 
      public abstract T getCache();

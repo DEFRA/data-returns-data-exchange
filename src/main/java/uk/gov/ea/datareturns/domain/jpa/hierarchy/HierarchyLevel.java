@@ -5,17 +5,17 @@ import uk.gov.ea.datareturns.domain.jpa.entities.ControlledListEntity;
 import uk.gov.ea.datareturns.domain.jpa.entities.ControlledListsList;
 
 /**
- * Represents a node in a hierarchy
+ * Represents a level in a hierarchy
  * Essentially a wrapper function for the hierarchy entity which will also allow
  * for hierarchy meta-data to be held apart from the entity object
  * @Author Graham Willis
  */
-public class HierarchyNode<E extends ControlledListEntity> {
+public class HierarchyLevel<E extends ControlledListEntity> {
     private final ControlledListsList controlledList;
     private final Class<? extends Hierarchy.HierarchyEntity> hierarchyEntityClass;
     private final Class<? extends EntityDao<E>> daoClass;
 
-    public HierarchyNode(Class<? extends Hierarchy.HierarchyEntity> hierarchyEntity, Class<? extends EntityDao<E>> daoClass, ControlledListsList controlledList) {
+    public HierarchyLevel(Class<? extends Hierarchy.HierarchyEntity> hierarchyEntity, Class<? extends EntityDao<E>> daoClass, ControlledListsList controlledList) {
         this.hierarchyEntityClass = hierarchyEntity;
         this.daoClass = daoClass;
         this.controlledList = controlledList;

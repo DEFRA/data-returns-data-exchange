@@ -20,7 +20,7 @@ import java.util.stream.Collectors;
  * Created by graham on 03/10/16.
  */
 @Repository
-public class DependenciesDao extends CacheProvider<Map<String, Map<String, Map<String, Set<String>>>>> {
+public class ParameterHierarchyDao extends CacheProvider<Map<String, Map<String, Map<String, Set<String>>>>> {
 
     @Inject
     private ParameterDao parameterDao;
