@@ -10,28 +10,29 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.junit4.SpringRunner;
 import uk.gov.ea.datareturns.App;
-import uk.gov.ea.datareturns.domain.jpa.dao.*;
-import uk.gov.ea.datareturns.domain.jpa.entities.*;
+import uk.gov.ea.datareturns.domain.jpa.dao.ParameterDao;
+import uk.gov.ea.datareturns.domain.jpa.dao.ReleasesAndTransfersDao;
+import uk.gov.ea.datareturns.domain.jpa.dao.ReturnTypeDao;
+import uk.gov.ea.datareturns.domain.jpa.dao.UnitDao;
+import uk.gov.ea.datareturns.domain.jpa.entities.ControlledListsList;
+import uk.gov.ea.datareturns.domain.jpa.entities.Parameter;
+import uk.gov.ea.datareturns.domain.jpa.entities.ReleasesAndTransfers;
+import uk.gov.ea.datareturns.domain.jpa.entities.ReturnType;
 import uk.gov.ea.datareturns.domain.jpa.hierarchy.Hierarchy;
-import uk.gov.ea.datareturns.domain.jpa.service.DependencyNavigation;
-import uk.gov.ea.datareturns.domain.jpa.service.DependencyValidation;
-import uk.gov.ea.datareturns.domain.jpa.service.DependencyValidation.Result;
+import uk.gov.ea.datareturns.domain.jpa.hierarchy.HierarchyLevel;
+import uk.gov.ea.datareturns.domain.jpa.hierarchy.implementations.ParameterHierarchy;
 
 import javax.inject.Inject;
 import java.util.List;
 
 /**
- * Created by graham on 03/10/16.
+ * Created by graham on 17/11/16.
  */
 @SpringBootTest(classes=App.class)
 @DirtiesContext
 @RunWith(SpringRunner.class)
-public class DependenciesTests {
-
-    protected static final Logger LOGGER = LoggerFactory.getLogger(DependenciesTests.class);
-
-    @Inject
-    DependenciesDao dao;
+public class ParameterHierarchyNavigationTests {
+    protected static final Logger LOGGER = LoggerFactory.getLogger(ParameterHierarchyNavigationTests.class);
 
     @Inject
     private ParameterDao parameterDao;
@@ -46,48 +47,32 @@ public class DependenciesTests {
     private UnitDao unitDao;
 
     @Inject
-    private DependencyValidation dependencyValidation;
+    ParameterHierarchy parameterHierarchy;
 
-    @Inject
-    private DependencyNavigation dependencyNavigation;
-
-    @Test
-    public void listDependencies() {
-        List<Dependencies> dependencies = dao.list();
-        Assert.assertNotNull(dependencies);
-        Assert.assertNotEquals(dependencies.size(), 0);
-        //for (Dependencies d : dependencies) {
-        //    System.out.println(d.toString());
-        //}
-    }
-
-
-    /*
-     * Test the hierarchy traverse and listing
-     */
     @Test
     public void traverseReturningNullNoReleasesAndTransfers() {
         ReturnType returnType = returnTypeDao.getByName("Pollution Inventory");
         Assert.assertNotNull(returnType);
 
-        Parameter parameter = parameterDao.getByName("Alachlor");
-        Assert.assertNotNull(parameter);
+        ReleasesAndTransfers releasesAndTransfers = releasesAndTransfersDao.getByName("Air");
+        Assert.assertNotNull(releasesAndTransfers);
 
-        Pair<ControlledListsList, List<? extends Hierarchy.HierarchyEntity>> result = dependencyNavigation.traverseHierarchy(returnType, parameter);
+        Pair<HierarchyLevel, List<? extends Hierarchy.HierarchyEntity>> result = parameterHierarchy.children(returnType, releasesAndTransfers);
 
-        Assert.assertNull(result.getRight());
-        Assert.assertEquals(ControlledListsList.RELEASES_AND_TRANSFERS, result.getLeft());
+        Assert.assertNotNull(result.getRight());
+        Assert.assertEquals(result.getRight().get(1).getClass(), Parameter.class);
+        Assert.assertEquals(ControlledListsList.PARAMETER, result.getLeft().getControlledList());
     }
-
+    
     @Test
     public void traverseReturningReleasesAndTransfersDao() {
         ReturnType returnType = returnTypeDao.getByName("Pollution Inventory");
         Assert.assertNotNull(returnType);
 
-        Pair<ControlledListsList, List<? extends Hierarchy.HierarchyEntity>> result = dependencyNavigation.traverseHierarchy(returnType);
+        Pair<HierarchyLevel, List<? extends Hierarchy.HierarchyEntity>> result = parameterHierarchy.children(returnType);
 
-        Assert.assertNotNull(result.getRight().size());
-        Assert.assertEquals(ControlledListsList.RELEASES_AND_TRANSFERS, result.getLeft());
+        Assert.assertNotNull(result.getRight());
+        Assert.assertEquals(ControlledListsList.RELEASES_AND_TRANSFER, result.getLeft().getControlledList());
 
         printList(result.getRight());
     }
@@ -100,10 +85,10 @@ public class DependenciesTests {
         ReleasesAndTransfers releasesAndTransfers = releasesAndTransfersDao.getByName("Air");
         Assert.assertNotNull(releasesAndTransfers);
 
-        Pair<ControlledListsList, List<? extends Hierarchy.HierarchyEntity>> result = dependencyNavigation.traverseHierarchy(returnType, releasesAndTransfers);
+        Pair<HierarchyLevel, List<? extends Hierarchy.HierarchyEntity>> result = parameterHierarchy.children(returnType, releasesAndTransfers);
 
-        Assert.assertNotNull(result.getRight().size());
-        Assert.assertEquals(ControlledListsList.PARAMETERS, result.getLeft());
+        Assert.assertNotNull(result.getRight());
+        Assert.assertEquals(ControlledListsList.PARAMETER, result.getLeft().getControlledList());
 
         printList(result.getRight());
     }
@@ -113,10 +98,10 @@ public class DependenciesTests {
         ReturnType returnType = returnTypeDao.getByName("Emissions to sewer");
         Assert.assertNotNull(returnType);
 
-        Pair<ControlledListsList, List<? extends Hierarchy.HierarchyEntity>> result = dependencyNavigation.traverseHierarchy(returnType);
+        Pair<HierarchyLevel, List<? extends Hierarchy.HierarchyEntity>> result = parameterHierarchy.children(returnType);
 
-        Assert.assertNotNull(result.getRight().size());
-        Assert.assertEquals(ControlledListsList.PARAMETERS, result.getLeft());
+        Assert.assertNotNull(result.getRight());
+        Assert.assertEquals(ControlledListsList.PARAMETER, result.getLeft().getControlledList());
 
         printList(result.getRight());
     }
@@ -129,10 +114,10 @@ public class DependenciesTests {
         Parameter parameter = parameterDao.getByName("Ziram");
         Assert.assertNotNull(parameter);
 
-        Pair<ControlledListsList, List<? extends Hierarchy.HierarchyEntity>> result = dependencyNavigation.traverseHierarchy(returnType, parameter);
+        Pair<HierarchyLevel, List<? extends Hierarchy.HierarchyEntity>> result = parameterHierarchy.children(returnType, parameter);
 
-        Assert.assertNotNull(result.getRight().size());
-        Assert.assertEquals(ControlledListsList.UNITS, result.getLeft());
+        Assert.assertNotNull(result.getRight());
+        Assert.assertEquals(ControlledListsList.UNIT, result.getLeft().getControlledList());
 
         printList(result.getRight());
     }
@@ -148,10 +133,10 @@ public class DependenciesTests {
         Parameter parameter = parameterDao.getByName("Tritium");
         Assert.assertNotNull(parameter);
 
-        Pair<ControlledListsList, List<? extends Hierarchy.HierarchyEntity>> result = dependencyNavigation.traverseHierarchy(returnType, releasesAndTransfers, parameter);
+        Pair<HierarchyLevel, List<? extends Hierarchy.HierarchyEntity>> result = parameterHierarchy.children(returnType, releasesAndTransfers, parameter);
 
-        Assert.assertNotNull(result.getRight().size());
-        Assert.assertEquals(ControlledListsList.UNITS, result.getLeft());
+        Assert.assertNotNull(result.getRight());
+        Assert.assertEquals(ControlledListsList.UNIT, result.getLeft().getControlledList());
 
         printList(result.getRight());
     }
@@ -164,10 +149,10 @@ public class DependenciesTests {
         ReleasesAndTransfers releasesAndTransfers = releasesAndTransfersDao.getByName("Air");
         Assert.assertNotNull(releasesAndTransfers);
 
-        Pair<ControlledListsList, List<? extends Hierarchy.HierarchyEntity>> result = dependencyNavigation.traverseHierarchy(returnType, releasesAndTransfers);
+        Pair<HierarchyLevel, List<? extends Hierarchy.HierarchyEntity>> result = parameterHierarchy.children(returnType, releasesAndTransfers);
 
         Assert.assertNull(result.getRight());
-        Assert.assertEquals(result.getLeft(), ControlledListsList.RELEASES_AND_TRANSFERS);
+        Assert.assertEquals(ControlledListsList.RELEASES_AND_TRANSFER, result.getLeft().getControlledList());
     }
 
     @Test
@@ -181,10 +166,10 @@ public class DependenciesTests {
         Parameter parameter = parameterDao.getByName("Dichlorvos");
         Assert.assertNotNull(parameter);
 
-        Pair<ControlledListsList, List<? extends Hierarchy.HierarchyEntity>> result = dependencyNavigation.traverseHierarchy(returnType, releasesAndTransfers, parameter);
+        Pair<HierarchyLevel, List<? extends Hierarchy.HierarchyEntity>> result = parameterHierarchy.children(returnType, releasesAndTransfers, parameter);
 
         Assert.assertNull(result.getRight());
-        Assert.assertEquals(ControlledListsList.RELEASES_AND_TRANSFERS, result.getLeft());
+        Assert.assertEquals(ControlledListsList.RELEASES_AND_TRANSFER, result.getLeft().getControlledList());
     }
 
     @Test
@@ -195,10 +180,10 @@ public class DependenciesTests {
         Parameter parameter = parameterDao.getByName("Dichlorvos");
         Assert.assertNotNull(parameter);
 
-        Pair<ControlledListsList, List<? extends Hierarchy.HierarchyEntity>> result = dependencyNavigation.traverseHierarchy(returnType, parameter);
+        Pair<HierarchyLevel, List<? extends Hierarchy.HierarchyEntity>> result = parameterHierarchy.children(returnType, parameter);
 
         Assert.assertNull(result.getRight());
-        Assert.assertEquals(ControlledListsList.PARAMETERS, result.getLeft());
+        Assert.assertEquals(ControlledListsList.PARAMETER, result.getLeft().getControlledList());
     }
 
     @Test
@@ -206,10 +191,10 @@ public class DependenciesTests {
         ReturnType returnType = returnTypeDao.getByName("REM Return");
         Assert.assertNotNull(returnType);
 
-        Pair<ControlledListsList, List<? extends Hierarchy.HierarchyEntity>> result = dependencyNavigation.traverseHierarchy(returnType);
+        Pair<HierarchyLevel, List<? extends Hierarchy.HierarchyEntity>> result = parameterHierarchy.children(returnType);
 
-        Assert.assertNotNull(result.getRight().size());
-        Assert.assertEquals(ControlledListsList.PARAMETERS, result.getLeft());
+        Assert.assertNotNull(result.getRight());
+        Assert.assertEquals(ControlledListsList.PARAMETER, result.getLeft().getControlledList());
 
         printList(result.getRight());
     }
@@ -219,15 +204,15 @@ public class DependenciesTests {
         ReturnType returnType = returnTypeDao.getByName("REM Return");
         Assert.assertNotNull(returnType);
 
-        Pair<ControlledListsList, List<? extends Hierarchy.HierarchyEntity>> result = dependencyNavigation.traverseHierarchy(returnType);
+        Pair<HierarchyLevel, List<? extends Hierarchy.HierarchyEntity>> result = parameterHierarchy.children(returnType);
 
-        Assert.assertNotNull(result.getRight().size());
-        Assert.assertEquals(ControlledListsList.PARAMETERS, result.getLeft());
+        Assert.assertNotNull(result.getRight());
+        Assert.assertEquals(ControlledListsList.PARAMETER, result.getLeft().getControlledList());
 
         for (Hierarchy.HierarchyEntity item : result.getRight()) {
             if (item instanceof Parameter) {
-                Pair<ControlledListsList, List<? extends Hierarchy.HierarchyEntity>> result2 = dependencyNavigation.traverseHierarchy(returnType, (Parameter)item);
-                Assert.assertEquals(ControlledListsList.UNITS, result2.getLeft());
+                Pair<HierarchyLevel, List<? extends Hierarchy.HierarchyEntity>> result2 = parameterHierarchy.children(returnType, (Parameter)item);
+                Assert.assertEquals(ControlledListsList.UNIT, result2.getLeft().getControlledList());
                 Assert.assertEquals(1, result2.getRight().size());
                 LOGGER.info(item.getName() + " " + result2.getRight().get(0).getName());
             }
@@ -244,7 +229,7 @@ public class DependenciesTests {
         Parameter parameter = parameterDao.getByName("Methylparathion");
         Assert.assertNotNull(parameter);
 
-        Pair<ControlledListsList, List<? extends Hierarchy.HierarchyEntity>> result = dependencyNavigation.traverseHierarchy(returnType, parameter);
+        Pair<HierarchyLevel, List<? extends Hierarchy.HierarchyEntity>> result = parameterHierarchy.children(returnType, parameter);
 
         // It might be expected that we return the null list at the units level
         // as this is what we have asked for. However because of the way the dependencies
@@ -252,16 +237,16 @@ public class DependenciesTests {
         // wildcard or an explicit item. Here we find no route to let us search the
         // units cache hence the null cache is displayed at the parameter level.
         Assert.assertNull(result.getRight());
-        Assert.assertEquals(ControlledListsList.PARAMETERS, result.getLeft());
+        Assert.assertEquals(ControlledListsList.PARAMETER, result.getLeft().getControlledList());
 
     }
 
     @Test
     public void traverseAllNullsReturnsReturnTypes() {
-        Pair<ControlledListsList, List<? extends Hierarchy.HierarchyEntity>> result = dependencyNavigation.traverseHierarchy(null);
+        Pair<HierarchyLevel, List<? extends Hierarchy.HierarchyEntity>> result = parameterHierarchy.children((Hierarchy.HierarchyEntity)null);
 
-        Assert.assertNotNull(result.getRight().size());
-        Assert.assertEquals(ControlledListsList.RETURN_TYPE, result.getLeft());
+        Assert.assertNotNull(result.getRight());
+        Assert.assertEquals(ControlledListsList.RETURN_TYPE, result.getLeft().getControlledList());
 
         printList(result.getRight());
     }
@@ -271,4 +256,6 @@ public class DependenciesTests {
             LOGGER.info(e.getName());
         }
     }
+
+
 }

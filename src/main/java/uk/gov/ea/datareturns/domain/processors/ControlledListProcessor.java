@@ -15,7 +15,8 @@ import uk.gov.ea.datareturns.domain.jpa.dao.ReleasesAndTransfersDao;
 import uk.gov.ea.datareturns.domain.jpa.dao.ReturnTypeDao;
 import uk.gov.ea.datareturns.domain.jpa.entities.*;
 import uk.gov.ea.datareturns.domain.jpa.hierarchy.Hierarchy;
-import uk.gov.ea.datareturns.domain.jpa.service.DependencyNavigation;
+import uk.gov.ea.datareturns.domain.jpa.hierarchy.HierarchyLevel;
+import uk.gov.ea.datareturns.domain.jpa.hierarchy.implementations.ParameterHierarchy;
 
 import javax.inject.Inject;
 import java.time.LocalDate;
@@ -35,17 +36,17 @@ public class ControlledListProcessor implements ApplicationContextAware {
     private ParameterDao parameterDao;
     private ReturnTypeDao returnTypeDao;
     private ReleasesAndTransfersDao releasesAndTransfersDao;
-    private DependencyNavigation dependencyNavigation;
+    private ParameterHierarchy parameterHierarchy;
 
     @Inject
     public ControlledListProcessor(ParameterDao parameterDao, ReturnTypeDao returnTypeDao,
                                    ReleasesAndTransfersDao releasesAndTransfersDao,
-                                   DependencyNavigation dependencyNavigation) {
+                                   ParameterHierarchy parameterHierarchy) {
 
         this.parameterDao = parameterDao;
         this.returnTypeDao = returnTypeDao;
         this.releasesAndTransfersDao = releasesAndTransfersDao;
-        this.dependencyNavigation = dependencyNavigation;
+        this.parameterHierarchy = parameterHierarchy;
     }
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ControlledListProcessor.class);
@@ -109,8 +110,8 @@ public class ControlledListProcessor implements ApplicationContextAware {
         ReturnType returnType = returnTypeName == null ? null : returnTypeDao.getByName(returnTypeName);
         ReleasesAndTransfers releasesAndTransfers = releaseTypeName == null ? null : releasesAndTransfersDao.getByName(releaseTypeName);
         Parameter parameter = parameterName == null ? null : parameterDao.getByName(parameterName);
-        Pair<ControlledListsList, List<? extends Hierarchy.HierarchyEntity>> result = dependencyNavigation.traverseHierarchy(returnType, releasesAndTransfers, parameter);
-        ControlledListsList controlledList = result.getLeft();
+        Pair<HierarchyLevel, List<? extends Hierarchy.HierarchyEntity>> result = parameterHierarchy.children(returnType, releasesAndTransfers, parameter);
+        ControlledListsList controlledList = result.getLeft().getControlledList();
         List returnedList = result.getRight();
 
         if (contains != null) {

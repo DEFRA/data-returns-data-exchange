@@ -1,10 +1,7 @@
 package uk.gov.ea.datareturns.domain.jpa.entities;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import uk.gov.ea.datareturns.domain.dto.DisplayHeaderDto;
 import uk.gov.ea.datareturns.domain.jpa.dao.*;
-import uk.gov.ea.datareturns.domain.model.rules.FieldDefinition;
 
 import java.util.*;
 
@@ -18,114 +15,81 @@ import java.util.*;
  */
 public enum ControlledListsList {
 
-    RETURN_TYPE("Return type", ReturnTypeDao.class, "rtn_type", Collections.unmodifiableList(new ArrayList<DisplayHeaderDto>() {{
+    RETURN_TYPE("Return type", ReturnTypeDao.class, "Rtn_Type", Collections.unmodifiableList(new ArrayList<DisplayHeaderDto>() {{
         add(new DisplayHeaderDto("name", "Rtn_Type"));
-    }}), "name", FieldDefinition.Rtn_Type,  0),
+    }}), "name"),
 
-    REFERENCE_PERIOD("Reference period", ReferencePeriodDao.class, "ref_period",
+    REFERENCE_PERIOD("Reference period", ReferencePeriodDao.class, "Ref_Period",
             Collections.unmodifiableList(new ArrayList<DisplayHeaderDto>() {{
                 add(new DisplayHeaderDto("name", "Ref_Period"));
                 add(new DisplayHeaderDto("aliases", "Alternatives"));
                 add(new DisplayHeaderDto("notes", "Notes"));
-            }}), "name", FieldDefinition.Ref_Period),
+            }}), "name"),
 
-    RETURN_PERIOD("Return period", ReturnPeriodDao.class, "rtn_period", Collections.unmodifiableList(new ArrayList<DisplayHeaderDto>() {{
+    RETURN_PERIOD("Return period", ReturnPeriodDao.class, "Rtn_Period", Collections.unmodifiableList(new ArrayList<DisplayHeaderDto>() {{
         add(new DisplayHeaderDto("name", "Rtn_Period"));
         add(new DisplayHeaderDto("definition", "Definition"));
         add(new DisplayHeaderDto("example", "Example"));
-    }}), "name", FieldDefinition.Rtn_Period),
+    }}), "name"),
 
-    PARAMETERS("Parameter (substance name)", ParameterDao.class, "parameters",
+    PARAMETER("Parameter (substance name)", ParameterDao.class, "Parameter",
             Collections.unmodifiableList(new ArrayList<DisplayHeaderDto>() {{
                 add(new DisplayHeaderDto("name", "Parameter"));
                 add(new DisplayHeaderDto("aliases", "Alternatives"));
                 add(new DisplayHeaderDto("cas", "CAS"));
-            }}), "name", FieldDefinition.Parameter, 2),
+            }}), "name"),
 
-    UNITS("Unit or measure", UnitDao.class, "units", Collections.unmodifiableList(new ArrayList<DisplayHeaderDto>() {{
+    UNIT("Unit or measure", UnitDao.class, "Unit", Collections.unmodifiableList(new ArrayList<DisplayHeaderDto>() {{
         add(new DisplayHeaderDto("name", "Unit"));
         add(new DisplayHeaderDto("aliases", "Alternatives"));
         add(new DisplayHeaderDto("longName", "Long Name"));
         add(new DisplayHeaderDto("type", "Measurement Type"));
         add(new DisplayHeaderDto("unicode", "Unicode"));
         add(new DisplayHeaderDto("description", "Definition"));
-    }}), "name", FieldDefinition.Unit, 3),
+    }}), "name"),
 
-    QUALIFIERS("Qualifier", QualifierDao.class, "qualifier", Collections.unmodifiableList(new ArrayList<DisplayHeaderDto>() {{
+    QUALIFIER("Qualifier", QualifierDao.class, "Qualifier", Collections.unmodifiableList(new ArrayList<DisplayHeaderDto>() {{
         add(new DisplayHeaderDto("name", "Qualifier"));
         add(new DisplayHeaderDto("notes", "Notes"));
         add(new DisplayHeaderDto("type", "Type"));
         add(new DisplayHeaderDto("singleOrMultiple", "Single or multiple"));
-    }}), "name", FieldDefinition.Qualifier),
+    }}), "name"),
 
-    METHOD_OR_STANDARD("Monitoring standard or method", MethodOrStandardDao.class, "method",
+    METHOD_OR_STANDARD("Monitoring standard or method", MethodOrStandardDao.class, "Meth_Stand",
             Collections.unmodifiableList(new ArrayList<DisplayHeaderDto>() {{
                 add(new DisplayHeaderDto("name", "Meth_Stand"));
                 add(new DisplayHeaderDto("notes", "Notes"));
-            }}), "name", FieldDefinition.Meth_Stand),
+            }}), "name"),
 
-    TEXT_VALUES("Text value", TextValueDao.class, "txt_value", Collections.unmodifiableList(new ArrayList<DisplayHeaderDto>() {{
+    TEXT_VALUES("Text value", TextValueDao.class, "Txt_Value", Collections.unmodifiableList(new ArrayList<DisplayHeaderDto>() {{
         add(new DisplayHeaderDto("name", "Txt_Value"));
         add(new DisplayHeaderDto("aliases", "Alternatives"));
-    }}), "name", FieldDefinition.Txt_Value),
+    }}), "name"),
 
-    RELEASES_AND_TRANSFERS("Releases and transfers", ReleasesAndTransfersDao.class, "rel_trans", Collections.unmodifiableList(new ArrayList<DisplayHeaderDto>() {{
+    RELEASES_AND_TRANSFER("Releases and transfers", ReleasesAndTransfersDao.class, "Rel_Trans", Collections.unmodifiableList(new ArrayList<DisplayHeaderDto>() {{
         add(new DisplayHeaderDto("name", "Rel_Trans"));
-    }}), "name", FieldDefinition.Rel_Trans, 1);
+    }}), "name");
 
     private final String path;
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(ControlledListsList.class);
     private final Class<? extends EntityDao> dao;
     private final String defaultSearch;
     private final String description;
     private static final Map<String, ControlledListsList> byPath = new HashMap<>();
     private final List<DisplayHeaderDto> displayHeaders; // Column name to column heading
-    private Integer hierarchyLevel = null;
-
-    public static Comparator<ControlledListsList> hierarchyOrder = Comparator
-            .comparing(ControlledListsList::getHierarchyLevel);
 
     ControlledListsList(String description, Class<? extends EntityDao> dao,
-                        String path, List<DisplayHeaderDto> displayHeaders, String defaultSearch, FieldDefinition fieldDefinition) {
+                        String path, List<DisplayHeaderDto> displayHeaders, String defaultSearch) {
         this.description = description;
         this.path = path;
         this.dao = dao;
         this.displayHeaders = displayHeaders;
         this.defaultSearch = defaultSearch;
-        this.hierarchyLevel = null;
-    }
-
-    ControlledListsList(String description, Class<? extends EntityDao> dao,
-                        String path, List<DisplayHeaderDto> displayHeaders, String defaultSearch, FieldDefinition fieldDefinition, Integer hierarchyLevel) {
-
-        this(description, dao, path, displayHeaders, defaultSearch, fieldDefinition);
-        this.hierarchyLevel = hierarchyLevel;
     }
 
     static {
         for (ControlledListsList c : ControlledListsList.values()) {
             byPath.put(c.path, c);
-        }
-    }
-
-    private Integer getHierarchyLevel() {
-        return this.hierarchyLevel;
-    }
-
-    public ControlledListsList next() {
-        if (this.hierarchyLevel == null) {
-            // Not on the hierarchy
-            return null;
-        } else {
-            ControlledListsList[] arr = values();
-            for (ControlledListsList cl : arr) {
-                if (cl.hierarchyLevel != null && cl.hierarchyLevel == this.hierarchyLevel + 1) {
-                    return cl;
-                }
-            }
-            // Probably iterated off the end of the array.
-            return null;
         }
     }
 

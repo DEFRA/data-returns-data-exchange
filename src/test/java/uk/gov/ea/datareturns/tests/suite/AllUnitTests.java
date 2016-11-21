@@ -3,10 +3,7 @@ package uk.gov.ea.datareturns.tests.suite;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 import org.junit.runners.Suite.SuiteClasses;
-import uk.gov.ea.datareturns.tests.domain.model.ControlledListsTests;
-import uk.gov.ea.datareturns.tests.domain.model.ParameterHierarchyValidationTests;
-import uk.gov.ea.datareturns.tests.domain.model.SearchTests;
-import uk.gov.ea.datareturns.tests.domain.model.UniqueIdentifierTests;
+import uk.gov.ea.datareturns.tests.domain.model.*;
 import uk.gov.ea.datareturns.tests.type.FileTypeTests;
 import uk.gov.ea.datareturns.tests.unittests.*;
 
@@ -14,6 +11,7 @@ import uk.gov.ea.datareturns.tests.unittests.*;
 @SuiteClasses({
         ControlledListsTests.class,
         ParameterHierarchyValidationTests.class,
+        ParameterHierarchyNavigationTests.class,
         SearchTests.class,
         UniqueIdentifierTests.class,
 
