@@ -18,6 +18,7 @@ import uk.gov.ea.datareturns.tests.unittests.*;
         UniqueIdentifierTests.class,
 
         DataQualityTests.class,
+        DataSampleValidatorTests.class,
         DataReturnsHeadersTests.class,
         DataReturnsZipFileModelTests.class,
         DateFormatTests.class,
