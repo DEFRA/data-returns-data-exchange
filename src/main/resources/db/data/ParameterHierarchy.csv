@@ -23,6 +23,7 @@ Pollution Inventory,Air,Alachlor,kg
 Pollution Inventory,Air,Alachlor,kt
 Pollution Inventory,Air,Alachlor,mg
 Pollution Inventory,Air,Alachlor,t
+Pollution Inventory,Air,Xenon 133,[Radioactivity]
 Pollution Inventory,Controlled Water,Alachlor,g
 Pollution Inventory,Controlled Water,Alachlor,kg
 Pollution Inventory,Controlled Water,Alachlor,kt
@@ -88,11 +89,8 @@ Pollution Inventory,Waste Water,Aldrin,kg
 Pollution Inventory,Waste Water,Aldrin,kt
 Pollution Inventory,Waste Water,Aldrin,mg
 Pollution Inventory,Waste Water,Aldrin,t
-Pollution Inventory,Air,Americium 241,g
-Pollution Inventory,Air,Americium 241,kg
-Pollution Inventory,Air,Americium 241,kt
-Pollution Inventory,Air,Americium 241,mg
-Pollution Inventory,Air,Americium 241,t
+Pollution Inventory,Air,Americium 241,[Mass]
+Pollution Inventory,Air,Americium 241,^mol
 Pollution Inventory,Controlled Water,Americium 241,g
 Pollution Inventory,Controlled Water,Americium 241,kg
 Pollution Inventory,Controlled Water,Americium 241,kt

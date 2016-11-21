@@ -44,6 +44,12 @@ public class Hierarchy<C extends CacheProvider> {
     public interface HierarchyEntity extends ControlledListEntity {
     }
 
+    /*
+     * Public interface used by the entities participating in the hierarchy
+     */
+    public interface GroupedHierarchyEntity extends HierarchyEntity {
+    }
+
     /**
      * The result of the validation. Excluded entities are distinguished from
      * not found. From an end user perspective the two things are the same.
@@ -51,7 +57,7 @@ public class Hierarchy<C extends CacheProvider> {
      * NOT_EXPECTED indicates that an entity which is explicitly not required was supplied
      */
     public enum Result {
-        OK, EXPECTED, NOT_EXPECTED, NOT_FOUND, EXCLUDED
+        OK, EXPECTED, NOT_EXPECTED, NOT_FOUND, NOT_IN_GROUP, EXCLUDED
     }
 
     /**

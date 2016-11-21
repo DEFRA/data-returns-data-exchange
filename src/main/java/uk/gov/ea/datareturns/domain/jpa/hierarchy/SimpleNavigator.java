@@ -1,12 +1,8 @@
-package uk.gov.ea.datareturns.domain.jpa.hierarchy.implementations;
+package uk.gov.ea.datareturns.domain.jpa.hierarchy;
 
 import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.stereotype.Component;
 import uk.gov.ea.datareturns.domain.jpa.dao.EntityDao;
-import uk.gov.ea.datareturns.domain.jpa.hierarchy.Hierarchy;
-import uk.gov.ea.datareturns.domain.jpa.hierarchy.HierarchyLevel;
-import uk.gov.ea.datareturns.domain.jpa.hierarchy.HierarchyNavigator;
-import uk.gov.ea.datareturns.domain.jpa.hierarchy.HierarchySymbols;
 import uk.gov.ea.datareturns.util.SpringApplicationContextProvider;
 
 import java.util.*;

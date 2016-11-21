@@ -6,56 +6,56 @@ import javax.persistence.*;
  * Created by graham on 03/10/16.
  */
 @Entity
-@Table(name = "dependencies")
-public class Dependencies {
+@Table(name = "parameter_hierarchy")
+public class ParameterHierarchy {
 
     @EmbeddedId
-    private DependenciesId dependenciesId;
+    private ParameterHierarchyId parameterHierarchyId;
 
     @Basic
     @Column(name = "return_type", nullable = false, length = 80)
     public String getReturnType() {
-        return dependenciesId.returnType;
+        return parameterHierarchyId.returnType;
     }
 
     public void setReturnType(String returnType) {
-        dependenciesId.returnType = returnType;
+        parameterHierarchyId.returnType = returnType;
     }
 
     @Basic
     @Column(name = "parameter", nullable = false, length = 150)
     public String getParameter() {
-        return dependenciesId.parameter;
+        return parameterHierarchyId.parameter;
     }
 
     public void setParameter(String parameter) {
-        dependenciesId.parameter = parameter;
+        parameterHierarchyId.parameter = parameter;
     }
 
     @Basic
     @Column(name = "releases_and_transfers", nullable = false, length = 50)
     public String getReleasesAndTransfers() {
-        return dependenciesId.releasesAndTransfers;
+        return parameterHierarchyId.releasesAndTransfers;
     }
 
     public void setReleasesAndTransfers(String releasesAndTransfers) {
-        dependenciesId.releasesAndTransfers = releasesAndTransfers;
+        parameterHierarchyId.releasesAndTransfers = releasesAndTransfers;
     }
 
     @Basic
-    @Column(name = "units", nullable = false, length = 10)
+    @Column(name = "units", nullable = false, length = 50)
     public String getUnits() {
-        return dependenciesId.units;
+        return parameterHierarchyId.units;
     }
 
     public void setUnits(String units) {
-        dependenciesId.units = units;
+        parameterHierarchyId.units = units;
     }
 
     @Override
     public String toString() {
-        return "Dependencies{" +
-                "dependenciesId=" + dependenciesId +
+        return "ParameterHierarchy{" +
+                "parameterHierarchyId=" + parameterHierarchyId +
                 '}';
     }
 }

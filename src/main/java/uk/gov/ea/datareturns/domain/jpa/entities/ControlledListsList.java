@@ -66,8 +66,9 @@ public enum ControlledListsList {
         add(new DisplayHeaderDto("aliases", "Alternatives"));
     }}), "name"),
 
-    RELEASES_AND_TRANSFER("Releases and transfers", ReleasesAndTransfersDao.class, "Rel_Trans", Collections.unmodifiableList(new ArrayList<DisplayHeaderDto>() {{
-        add(new DisplayHeaderDto("name", "Rel_Trans"));
+    RELEASES_AND_TRANSFER("Releases and transfers", ReleasesAndTransfersDao.class, "Rel_Trans",
+            Collections.unmodifiableList(new ArrayList<DisplayHeaderDto>() {{
+                add(new DisplayHeaderDto("name", "Rel_Trans"));
     }}), "name");
 
     private final String path;

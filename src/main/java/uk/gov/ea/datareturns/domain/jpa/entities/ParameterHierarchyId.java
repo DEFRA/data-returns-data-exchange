@@ -8,7 +8,7 @@ import java.io.Serializable;
  * Compound primary key for dependencies
  */
 @Embeddable
-public class DependenciesId implements Serializable {
+public class ParameterHierarchyId implements Serializable {
 
     @Column(name = "return_type", nullable = false, length = 80)
     protected String returnType;
@@ -22,9 +22,9 @@ public class DependenciesId implements Serializable {
     @Column(name = "units", nullable = false, length = 10)
     protected String units;
 
-    public DependenciesId() {}
+    public ParameterHierarchyId() {}
 
-    public DependenciesId(String returnType, String parameter, String releasesAndTransfers, String units) {
+    public ParameterHierarchyId(String returnType, String parameter, String releasesAndTransfers, String units) {
         this.returnType = returnType;
         this.parameter = parameter;
         this.releasesAndTransfers = releasesAndTransfers;
@@ -36,7 +36,7 @@ public class DependenciesId implements Serializable {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
-        DependenciesId that = (DependenciesId) o;
+        ParameterHierarchyId that = (ParameterHierarchyId) o;
 
         if (returnType != null ? !returnType.equals(that.returnType) : that.returnType != null) return false;
         if (parameter != null ? !parameter.equals(that.parameter) : that.parameter != null) return false;
@@ -58,7 +58,7 @@ public class DependenciesId implements Serializable {
 
     @Override
     public String toString() {
-        return "DependenciesId{" +
+        return "ParameterHierarchyId{" +
                 "returnType='" + returnType + '\'' +
                 ", parameter='" + parameter + '\'' +
                 ", releasesAndTransfers='" + releasesAndTransfers + '\'' +

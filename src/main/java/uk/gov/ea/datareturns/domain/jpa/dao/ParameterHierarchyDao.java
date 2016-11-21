@@ -1,14 +1,19 @@
 package uk.gov.ea.datareturns.domain.jpa.dao;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Repository;
 import uk.gov.ea.datareturns.domain.exceptions.ProcessingException;
-import uk.gov.ea.datareturns.domain.jpa.entities.Dependencies;
-import uk.gov.ea.datareturns.domain.jpa.entities.DependenciesId;
+import uk.gov.ea.datareturns.domain.jpa.entities.ParameterHierarchy;
+import uk.gov.ea.datareturns.domain.jpa.entities.ParameterHierarchyId;
 import uk.gov.ea.datareturns.domain.jpa.hierarchy.CacheProvider;
+import uk.gov.ea.datareturns.domain.jpa.hierarchy.GroupSymbols;
 import uk.gov.ea.datareturns.domain.jpa.hierarchy.HierarchySymbols;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
@@ -21,6 +26,10 @@ import java.util.stream.Collectors;
  */
 @Repository
 public class ParameterHierarchyDao extends CacheProvider<Map<String, Map<String, Map<String, Set<String>>>>> {
+    protected static final Logger LOGGER = LoggerFactory.getLogger(ParameterHierarchyDao.class);
+
+    @PersistenceContext
+    protected EntityManager entityManager;
 
     @Inject
     private ParameterDao parameterDao;
@@ -34,8 +43,8 @@ public class ParameterHierarchyDao extends CacheProvider<Map<String, Map<String,
     @Inject
     private UnitDao unitDao;
 
-    public Dependencies getById(DependenciesId id) {
-        return entityManager.find(Dependencies.class, id);
+    public ParameterHierarchy getById(ParameterHierarchyId id) {
+        return entityManager.find(ParameterHierarchy.class, id);
     }
 
     private volatile Map<String, Map<String, Map<String, Set<String>>>> cache = null;
@@ -43,11 +52,11 @@ public class ParameterHierarchyDao extends CacheProvider<Map<String, Map<String,
     /*
      * Use to sort the results of the query, strictly unnecessary
      */
-    private Comparator<Dependencies> groupByComparator = Comparator
-            .comparing(Dependencies::getReturnType)
-            .thenComparing(Dependencies::getReleasesAndTransfers)
-            .thenComparing(Dependencies::getParameter)
-            .thenComparing(Dependencies::getUnits);
+    private Comparator<ParameterHierarchy> groupByComparator = Comparator
+            .comparing(ParameterHierarchy::getReturnType)
+            .thenComparing(ParameterHierarchy::getReleasesAndTransfers)
+            .thenComparing(ParameterHierarchy::getParameter)
+            .thenComparing(ParameterHierarchy::getUnits);
 
     /**
      * Builds the dependencies cache.
@@ -58,7 +67,7 @@ public class ParameterHierarchyDao extends CacheProvider<Map<String, Map<String,
         if (cache == null) {
             synchronized (this) {
                 if (cache == null) {
-                    LOGGER.info("Build name cache of: Dependencies");
+                    LOGGER.info("Build name cache of: ParameterHierarchy");
                     cache = list().stream().collect(
                             Collectors.groupingBy(t -> returnTypeDao.getKeyFromRelaxedName(t.getReturnType()),
                                     Collectors.groupingBy(r -> releasesAndTransfersDao.getKeyFromRelaxedName(r.getReleasesAndTransfers()),
@@ -82,13 +91,13 @@ public class ParameterHierarchyDao extends CacheProvider<Map<String, Map<String,
     /**
      * List all the dependencies
      */
-    public List<Dependencies> list() {
+    public List<ParameterHierarchy> list() {
         CriteriaBuilder cb = entityManager.getCriteriaBuilder();
-        CriteriaQuery<Dependencies> q = cb.createQuery(Dependencies.class);
-        Root<Dependencies> c = q.from(Dependencies.class);
+        CriteriaQuery<ParameterHierarchy> q = cb.createQuery(ParameterHierarchy.class);
+        Root<ParameterHierarchy> c = q.from(ParameterHierarchy.class);
         q.select(c);
-        TypedQuery<Dependencies> query = entityManager.createQuery(q);
-        List<Dependencies> results = query.getResultList();
+        TypedQuery<ParameterHierarchy> query = entityManager.createQuery(q);
+        List<ParameterHierarchy> results = query.getResultList();
         results.sort(groupByComparator);
         return results;
     }
@@ -105,13 +114,13 @@ public class ParameterHierarchyDao extends CacheProvider<Map<String, Map<String,
         // Test parameters
         List<String> missingParameters = list()
             .stream()
-                .map(Dependencies::getParameter)
-                .map(p -> removeExclusion(p))
-                .filter(p -> !p.trim().equals(HierarchySymbols.INCLUDE_ALL))
-                .filter(p -> !p.trim().equals(HierarchySymbols.EXCLUDE_ALL))
-                .filter(p -> !p.trim().equals(HierarchySymbols.EXCLUDE))
-                .filter(p -> !p.trim().equals(HierarchySymbols.INCLUDE_ALL_OPTIONALLY))
-                .filter(p -> !p.trim().equals(HierarchySymbols.NOT_APPLICABLE))
+                .map(ParameterHierarchy::getParameter)
+                .map(p -> HierarchySymbols.removeExclusion(p))
+                .filter(p -> !p.trim().equals(GroupSymbols.INCLUDE_ALL))
+                .filter(p -> !p.trim().equals(GroupSymbols.EXCLUDE_ALL))
+                .filter(p -> !p.trim().equals(GroupSymbols.EXCLUDE))
+                .filter(p -> !p.trim().equals(GroupSymbols.INCLUDE_ALL_OPTIONALLY))
+                .filter(p -> !p.trim().equals(GroupSymbols.NOT_APPLICABLE))
                 .filter(p -> !parameterDao.nameExists(p))
                 .collect(Collectors.toList());
 
@@ -125,13 +134,13 @@ public class ParameterHierarchyDao extends CacheProvider<Map<String, Map<String,
         // Test return types
         List<String> missingReturnTypes = list()
                 .stream()
-                .map(Dependencies::getReturnType)
-                .map(p -> removeExclusion(p))
-                .filter(p -> !p.trim().equals(HierarchySymbols.INCLUDE_ALL))
-                .filter(p -> !p.trim().equals(HierarchySymbols.EXCLUDE_ALL))
-                .filter(p -> !p.trim().equals(HierarchySymbols.EXCLUDE))
-                .filter(p -> !p.trim().equals(HierarchySymbols.INCLUDE_ALL_OPTIONALLY))
-                .filter(p -> !p.trim().equals(HierarchySymbols.NOT_APPLICABLE))
+                .map(ParameterHierarchy::getReturnType)
+                .map(p -> HierarchySymbols.removeExclusion(p))
+                .filter(p -> !p.trim().equals(GroupSymbols.INCLUDE_ALL))
+                .filter(p -> !p.trim().equals(GroupSymbols.EXCLUDE_ALL))
+                .filter(p -> !p.trim().equals(GroupSymbols.EXCLUDE))
+                .filter(p -> !p.trim().equals(GroupSymbols.INCLUDE_ALL_OPTIONALLY))
+                .filter(p -> !p.trim().equals(GroupSymbols.NOT_APPLICABLE))
                 .filter(p -> !returnTypeDao.nameExists(p))
                 .collect(Collectors.toList());
 
@@ -145,13 +154,13 @@ public class ParameterHierarchyDao extends CacheProvider<Map<String, Map<String,
         // Test releases and transfers
         List<String> missingReleasesAndTransfers = list()
                 .stream()
-                .map(Dependencies::getReleasesAndTransfers)
-                .map(p -> removeExclusion(p))
-                .filter(p -> !p.trim().equals(HierarchySymbols.INCLUDE_ALL))
-                .filter(p -> !p.trim().equals(HierarchySymbols.EXCLUDE_ALL))
-                .filter(p -> !p.trim().equals(HierarchySymbols.EXCLUDE))
-                .filter(p -> !p.trim().equals(HierarchySymbols.INCLUDE_ALL_OPTIONALLY))
-                .filter(p -> !p.trim().equals(HierarchySymbols.NOT_APPLICABLE))
+                .map(ParameterHierarchy::getReleasesAndTransfers)
+                .map(p -> HierarchySymbols.removeExclusion(p))
+                .filter(p -> !p.trim().equals(GroupSymbols.INCLUDE_ALL))
+                .filter(p -> !p.trim().equals(GroupSymbols.EXCLUDE_ALL))
+                .filter(p -> !p.trim().equals(GroupSymbols.EXCLUDE))
+                .filter(p -> !p.trim().equals(GroupSymbols.INCLUDE_ALL_OPTIONALLY))
+                .filter(p -> !p.trim().equals(GroupSymbols.NOT_APPLICABLE))
                 .filter(p -> !releasesAndTransfersDao.nameExists(p))
                 .collect(Collectors.toList());
 
@@ -165,13 +174,14 @@ public class ParameterHierarchyDao extends CacheProvider<Map<String, Map<String,
         // Test units
         List<String> missingUnits = list()
                 .stream()
-                .map(Dependencies::getUnits)
-                .map(p -> removeExclusion(p))
-                .filter(p -> !p.trim().equals(HierarchySymbols.INCLUDE_ALL))
-                .filter(p -> !p.trim().equals(HierarchySymbols.EXCLUDE_ALL))
-                .filter(p -> !p.trim().equals(HierarchySymbols.EXCLUDE))
-                .filter(p -> !p.trim().equals(HierarchySymbols.INCLUDE_ALL_OPTIONALLY))
-                .filter(p -> !p.trim().equals(HierarchySymbols.NOT_APPLICABLE))
+                .map(ParameterHierarchy::getUnits)
+                .map(p -> HierarchySymbols.removeExclusion(p))
+                .filter(p -> !p.trim().equals(GroupSymbols.INCLUDE_ALL))
+                .filter(p -> !p.trim().equals(GroupSymbols.EXCLUDE_ALL))
+                .filter(p -> !p.trim().equals(GroupSymbols.EXCLUDE))
+                .filter(p -> !p.trim().equals(GroupSymbols.INCLUDE_ALL_OPTIONALLY))
+                .filter(p -> !p.trim().equals(GroupSymbols.NOT_APPLICABLE))
+                .filter(p -> !GroupSymbols.isGroup(p))
                 .filter(p -> !unitDao.nameExists(p))
                 .collect(Collectors.toList());
 
@@ -183,7 +193,7 @@ public class ParameterHierarchyDao extends CacheProvider<Map<String, Map<String,
         }
 
         if (!hasIntegrity) {
-            throw new ProcessingException("Dependencies data has errors");
+            throw new ProcessingException("Parameter Hierarchy data has errors");
         }
     }
 }

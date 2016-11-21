@@ -1,9 +1,13 @@
 package uk.gov.ea.datareturns.domain.jpa.dao;
 
-import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Scope;
+import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.stereotype.Repository;
 import uk.gov.ea.datareturns.domain.jpa.entities.Unit;
+
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 /**
  * DAO for units of measure.
@@ -11,8 +15,8 @@ import uk.gov.ea.datareturns.domain.jpa.entities.Unit;
  * @author Sam Gardner-Dell
  */
 @Repository
-@Scope(ConfigurableBeanFactory.SCOPE_SINGLETON)
-public class UnitDao extends AliasingEntityDao<Unit> {
+@Scope(proxyMode = ScopedProxyMode.TARGET_CLASS)
+public class UnitDao extends AliasingEntityDao<Unit> implements GroupingEntityDao<Unit> {
     public UnitDao() {
         super(Unit.class);
     }
@@ -35,5 +39,26 @@ public class UnitDao extends AliasingEntityDao<Unit> {
                 return null;
             }
         }
+    }
+
+    @Override
+    public Set<String> listGroups() {
+        // TODO
+        Set<String> result = new HashSet<>();
+        result.add("Radioactive");
+        result.add("Mass");
+        return result;
+    }
+
+    @Override
+    public List<Unit> listGroupMembers(String group) {
+        // TODO
+        return list();
+    }
+
+    @Override
+    public boolean testGroupMember(String group, Unit item) {
+        // TODO
+        return false;
     }
 }

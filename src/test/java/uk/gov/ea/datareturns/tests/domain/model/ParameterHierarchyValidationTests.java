@@ -481,4 +481,34 @@ public class ParameterHierarchyValidationTests {
         Assert.assertEquals(Hierarchy.Result.EXPECTED, result.getRight());
     }
 
+    /*
+     * Group validator tests
+     * Pollution Inventory,Air,Xenon 133,[Radioactivity]
+     * Pollution Inventory,Air,Americium 241,[Mass]
+     * Pollution Inventory,Air,Americium 241,^Mol
+     */
+    @Test
+    public void dependencyTestGroupRadioactivityHappy() {
+        ReturnType returnType = returnTypeDao.getByName("Pollution Inventory");
+        Assert.assertNotNull(returnType);
+
+        ReleasesAndTransfers releasesAndTransfers = releasesAndTransfersDao.getByName("Air");
+        Assert.assertNotNull(releasesAndTransfers);
+
+        Parameter parameter = parameterDao.getByName("Xenon 133");
+        Assert.assertNotNull(parameter);
+
+        Unit unit = unitDao.getByName("Bq/m2");
+        Assert.assertNotNull(unit);
+
+        Pair<HierarchyLevel, Hierarchy.Result> result
+                = parameterHierarchy.validate(returnType, releasesAndTransfers, parameter, unit);
+
+        //Assert.assertEquals(Hierarchy.Result.OK, result.getRight());
+
+    }
+
+
+
+
 }
