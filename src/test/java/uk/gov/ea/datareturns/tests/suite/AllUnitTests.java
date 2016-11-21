@@ -27,7 +27,8 @@ import uk.gov.ea.datareturns.tests.unittests.*;
         MonitorProEmailerTests.class,
         S3StorageConfigurationTests.class,
         StorageHealthCheckTests.class,
-        FileTypeTests.class
+        FileTypeTests.class,
+        TextUtilsTest.class
 })
 public class AllUnitTests {
 }
