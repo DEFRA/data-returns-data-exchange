@@ -19,10 +19,14 @@ public class DataQualityTests {
         File dbDataDir = new File(DataQualityTests.class.getResource("/db/data/").toURI());
         int count = 0;
         for (File f : dbDataDir.listFiles()) {
-            count += UTF8Checker.checkFile(f, UTF8Checker.MAX_ASCII_EXTENDED).size();
+            if (f.isFile()) {
+                count += UTF8Checker.checkFile(f, UTF8Checker.MAX_ASCII_EXTENDED).size();
+            }
         }
         if (VALID_UTF8_CHAR_COUNT != count) {
-            Assert.fail("Mismatch between expected UTF-8 character count in controlled lists and actual count, the lists must be checked!");
+            Assert.fail("Mismatch between expected UTF-8 character count ("
+                    + VALID_UTF8_CHAR_COUNT + ") in controlled lists and actual count ("
+                    + count + "), the lists must be checked!");
         }
     }
 }
