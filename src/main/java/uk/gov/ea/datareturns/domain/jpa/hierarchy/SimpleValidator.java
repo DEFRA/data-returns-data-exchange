@@ -1,13 +1,11 @@
-package uk.gov.ea.datareturns.domain.jpa.hierarchy.implementations;
+package uk.gov.ea.datareturns.domain.jpa.hierarchy;
 
 import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.stereotype.Component;
-import uk.gov.ea.datareturns.domain.jpa.hierarchy.Hierarchy;
-import uk.gov.ea.datareturns.domain.jpa.hierarchy.HierarchyLevel;
-import uk.gov.ea.datareturns.domain.jpa.hierarchy.HierarchySymbols;
-import uk.gov.ea.datareturns.domain.jpa.hierarchy.HierarchyValidator;
 
-import java.util.*;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * @author Graham Willis

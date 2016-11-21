@@ -55,4 +55,19 @@ public class HierarchySymbols {
     public static final String INCLUDE_ALL_OPTIONALLY = "*-";
     public static final String INCLUDE_ALL = "*";
     public static final String NOT_APPLICABLE = "...";
+
+    /*
+     * Detect the exclusion^ character at the beginning of a string
+     */
+    public static boolean IsExclusion(String s) {
+         return s.charAt(0) == EXCLUDE.charAt(0) ? true : false;
+    }
+
+    /*
+     * Return a string with any exclusion characters removed
+     * or return the string
+     */
+    public static String removeExclusion(String s) {
+         return !IsExclusion(s) ? s : s.substring(1);
+    }
 }

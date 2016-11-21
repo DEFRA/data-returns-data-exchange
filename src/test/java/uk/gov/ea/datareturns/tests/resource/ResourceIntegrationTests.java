@@ -354,7 +354,7 @@ public class ResourceIntegrationTests {
     @Test
     public void testControlledListParameters() {
         Client client = createClient("test Controlled List Parameters");
-        final String uri = createURIForStep(CONTROLLED_LISTS) + "/parameters";
+        final String uri = createURIForStep(CONTROLLED_LISTS) + "/Parameter";
         Response response = client.target(uri).request(MediaType.APPLICATION_JSON_TYPE).get();
         assertThat(response.getStatus()).isEqualTo(Status.OK.getStatusCode());
     }
@@ -362,7 +362,7 @@ public class ResourceIntegrationTests {
     @Test
     public void testControlledListUnits() {
         Client client = createClient("test Controlled List Units");
-        final String uri = createURIForStep(CONTROLLED_LISTS) + "/units";
+        final String uri = createURIForStep(CONTROLLED_LISTS) + "/Unit";
         Response response = client.target(uri).request(MediaType.APPLICATION_JSON_TYPE).get();
         assertThat(response.getStatus()).isEqualTo(Status.OK.getStatusCode());
     }
@@ -370,7 +370,7 @@ public class ResourceIntegrationTests {
     @Test
     public void testControlledListRefPeriod() {
         Client client = createClient("test Controlled List Reference Period");
-        final String uri = createURIForStep(CONTROLLED_LISTS) + "/ref_period";
+        final String uri = createURIForStep(CONTROLLED_LISTS) + "/Ref_Period";
         Response response = client.target(uri).request(MediaType.APPLICATION_JSON_TYPE).get();
         assertThat(response.getStatus()).isEqualTo(Status.OK.getStatusCode());
     }
@@ -378,7 +378,7 @@ public class ResourceIntegrationTests {
     @Test
     public void testControlledListMethodOrStandard() {
         Client client = createClient("test Controlled List Method Or Standard");
-        final String uri = createURIForStep(CONTROLLED_LISTS) + "/method";
+        final String uri = createURIForStep(CONTROLLED_LISTS) + "/Meth_Stand";
         Response response = client.target(uri).request(MediaType.APPLICATION_JSON_TYPE).get();
         assertThat(response.getStatus()).isEqualTo(Status.OK.getStatusCode());
     }
@@ -386,7 +386,7 @@ public class ResourceIntegrationTests {
     @Test
     public void testControlledListReturnType() {
         Client client = createClient("test Controlled List Return Type");
-        final String uri = createURIForStep(CONTROLLED_LISTS) + "/rtn_type";
+        final String uri = createURIForStep(CONTROLLED_LISTS) + "/Rtn_Type";
         Response response = client.target(uri).request(MediaType.APPLICATION_JSON_TYPE).get();
         assertThat(response.getStatus()).isEqualTo(Status.OK.getStatusCode());
     }
@@ -397,7 +397,7 @@ public class ResourceIntegrationTests {
     @Test
     public void testControlledListParameters2() {
         Client client = createClient("test Controlled List Parameters2");
-        final String uri = createURIForStep(CONTROLLED_LISTS) + "/parameters";
+        final String uri = createURIForStep(CONTROLLED_LISTS) + "/Parameter";
         Response response = client.target(uri).request(MediaType.APPLICATION_JSON_TYPE).get();
         assertThat(response.getStatus()).isEqualTo(Status.OK.getStatusCode());
     }
@@ -405,7 +405,7 @@ public class ResourceIntegrationTests {
     @Test
     public void testControlledListUnits2() {
         Client client = createClient("test Controlled List Units2");
-        final String uri = createURIForStep(CONTROLLED_LISTS) + "/units";
+        final String uri = createURIForStep(CONTROLLED_LISTS) + "/Unit";
         Response response = client.target(uri).request(MediaType.APPLICATION_JSON_TYPE).get();
         assertThat(response.getStatus()).isEqualTo(Status.OK.getStatusCode());
     }
@@ -413,7 +413,7 @@ public class ResourceIntegrationTests {
     @Test
     public void testControlledListRefPeriod2() {
         Client client = createClient("test Controlled List Reference Period2");
-        final String uri = createURIForStep(CONTROLLED_LISTS) + "/ref_period";
+        final String uri = createURIForStep(CONTROLLED_LISTS) + "/Ref_Period";
         Response response = client.target(uri).request(MediaType.APPLICATION_JSON_TYPE).get();
         assertThat(response.getStatus()).isEqualTo(Status.OK.getStatusCode());
     }
@@ -421,7 +421,7 @@ public class ResourceIntegrationTests {
     @Test
     public void testControlledListMethodOrStandard2() {
         Client client = createClient("test Controlled List Method Or Standard2");
-        final String uri = createURIForStep(CONTROLLED_LISTS) + "/method";
+        final String uri = createURIForStep(CONTROLLED_LISTS) + "/Meth_Stand";
         Response response = client.target(uri).request(MediaType.APPLICATION_JSON_TYPE).get();
         assertThat(response.getStatus()).isEqualTo(Status.OK.getStatusCode());
     }
@@ -429,7 +429,7 @@ public class ResourceIntegrationTests {
     @Test
     public void testControlledListReturnType2() {
         Client client = createClient("test Controlled List Return Type2");
-        final String uri = createURIForStep(CONTROLLED_LISTS) + "/rtn_type";
+        final String uri = createURIForStep(CONTROLLED_LISTS) + "/Rtn_Type";
         Response response = client.target(uri).request(MediaType.APPLICATION_JSON_TYPE).get();
         assertThat(response.getStatus()).isEqualTo(Status.OK.getStatusCode());
     }
