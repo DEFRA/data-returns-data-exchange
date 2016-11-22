@@ -16,8 +16,10 @@ public class TextUtilsTest {
         String inputString = "";
         String expectedResult = "";
         for (Map.Entry<Character, Character> entry : TextUtils.CharacterSubstitution.SUBSTITUTIONS.entrySet()) {
-            inputString += entry.getKey();
-            expectedResult += entry.getValue();
+            if (!TextUtils.CharacterSubstitution.isSpace(entry.getKey())) {
+                inputString += entry.getKey();
+                expectedResult += entry.getValue();
+            }
         }
         assertThat(TextUtils.normalize(inputString)).isEqualTo(expectedResult);
     }
