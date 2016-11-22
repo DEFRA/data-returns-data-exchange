@@ -2,22 +2,32 @@ package uk.gov.ea.datareturns.web.resource;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import uk.gov.ea.datareturns.domain.dto.ControlledListsDto;
-import uk.gov.ea.datareturns.domain.dto.NavigationDto;
 import uk.gov.ea.datareturns.domain.exceptions.ApplicationExceptionType;
+import uk.gov.ea.datareturns.domain.jpa.dao.EntityDao;
 import uk.gov.ea.datareturns.domain.jpa.entities.ControlledListEntity;
 import uk.gov.ea.datareturns.domain.jpa.entities.ControlledListsList;
+import uk.gov.ea.datareturns.domain.jpa.hierarchy.Hierarchy;
+import uk.gov.ea.datareturns.domain.jpa.hierarchy.HierarchyLevel;
 import uk.gov.ea.datareturns.domain.processors.ControlledListProcessor;
 import uk.gov.ea.datareturns.domain.result.ExceptionMessageContainer;
+import uk.gov.ea.datareturns.util.SpringApplicationContextProvider;
 
 import javax.inject.Inject;
 import javax.ws.rs.*;
+import javax.ws.rs.core.Context;
+import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.UriInfo;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 
@@ -87,22 +97,64 @@ public class ControlledListResource {
         }
     }
 
+//    @GET
+//    @Path("/nav/")
+//    @Produces(APPLICATION_JSON)
+//    public Response getNavigatedList(
+//            @QueryParam("rtn_type") final String returnTypeName,
+//            @QueryParam("mon_point") final String releaseTypeName,
+//            @QueryParam("parameters") final String parameterName,
+//            @QueryParam("contains") final String contains) throws Exception {
+//
+//        LOGGER.debug("Request for /controlled-list/nav/");
+//        LOGGER.debug("Requested return type: " + returnTypeName == null ? "" : returnTypeName);
+//        LOGGER.debug("Requested releases and transfers (mon_point): " + releaseTypeName == null ? "" : releaseTypeName);
+//        LOGGER.debug("Requested parameters: " + parameterName == null ? "" : parameterName);
+//
+//        NavigationDto navigationDto = controlledListProcessor.getNavigatedListData(returnTypeName, releaseTypeName, parameterName, contains);
+//        return Response.status(Response.Status.OK).entity(navigationDto).build();
+//    }
+
+    /**
+     * Generic endpoint to return the list of entities given by the validation rules at any given level in
+     * a hierarchy
+     *
+     * The name of the hierarchy is specified in the path parameter hierarchy and is identified in the spring
+     * context by appending the string -hierarchy
+     * @param ui
+     * @return
+     */
     @GET
-    @Path("/nav/")
+    @Path("/hierarchy/{name}")
     @Produces(APPLICATION_JSON)
-    public Response getNavigatedList(
-            @QueryParam("rtn_type") final String returnTypeName,
-            @QueryParam("mon_point") final String releaseTypeName,
-            @QueryParam("parameters") final String parameterName,
-            @QueryParam("contains") final String contains) throws Exception {
-
-        LOGGER.debug("Request for /controlled-list/nav/");
-        LOGGER.debug("Requested return type: " + returnTypeName == null ? "" : returnTypeName);
-        LOGGER.debug("Requested releases and transfers (mon_point): " + releaseTypeName == null ? "" : releaseTypeName);
-        LOGGER.debug("Requested parameters: " + parameterName == null ? "" : parameterName);
-
-        NavigationDto navigationDto = controlledListProcessor.getNavigatedListData(returnTypeName, releaseTypeName, parameterName, contains);
-        return Response.status(Response.Status.OK).entity(navigationDto).build();
+    public <E> Response getHierarchyLevel(@Context UriInfo ui) {
+        MultivaluedMap<String, String> queryParams = ui.getQueryParameters();
+        MultivaluedMap<String, String> pathParams = ui.getPathParameters();
+        Hierarchy hierachy = null;
+        try {
+            ApplicationContext context = SpringApplicationContextProvider.getApplicationContext();
+            List<String> hierachyNames = pathParams.get("name");
+            hierachy = (Hierarchy) context.getBean(hierachyNames.get(0) + "-hierarchy");
+            Set<HierarchyLevel> levels = hierachy.getHierarchyLevels();
+            // The query params should correspond to the path variable stored against
+            // the controlled list
+            Set<Hierarchy.HierarchyEntity> entities = new HashSet<>();
+            for (HierarchyLevel level : levels) {
+                String path = level.getControlledList().getPath();
+                if (queryParams.containsKey(path)) {
+                    Class<? extends EntityDao<? extends Hierarchy.HierarchyEntity>> daoClass = level.getDaoClass();
+                    EntityDao<? extends Hierarchy.HierarchyEntity> dao = context.getBean(daoClass);
+                    Hierarchy.HierarchyEntity entity = dao.getByNameRelaxed(queryParams.getFirst(path));
+                    if (entity != null) {
+                        entities.add(entity);
+                    }
+                }
+            }
+        } catch (NoSuchBeanDefinitionException|ClassCastException e) {
+            return Response.status(Response.Status.BAD_REQUEST).entity(new ExceptionMessageContainer(
+                    ApplicationExceptionType.UNKNOWN_LIST_TYPE,
+                    "No hierarchy: you must specify a known hierarchy in the path parameter /controlled-list/hierarchy/{name}")).build();
+        }
+        return Response.status(Response.Status.OK).build();
     }
-
 }

@@ -3,7 +3,7 @@ package uk.gov.ea.datareturns.domain.jpa.hierarchy;
 /**
  * Created by graham on 21/11/16.
  */
-public final class GroupSymbols extends HierarchySymbols {
+public final class HierarchyGroupSymbols extends HierarchySymbols {
     public static final char GROUP_OPEN = '[';
     public static final char GROUP_CLOSE = ']';
 

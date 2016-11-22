@@ -3,12 +3,13 @@ package uk.gov.ea.datareturns.domain.jpa.hierarchy;
 import org.apache.commons.lang3.tuple.Pair;
 import uk.gov.ea.datareturns.domain.jpa.dao.EntityDao;
 import uk.gov.ea.datareturns.domain.jpa.entities.ControlledListEntity;
+import uk.gov.ea.datareturns.domain.jpa.hierarchy.processors.Navigator;
+import uk.gov.ea.datareturns.domain.jpa.hierarchy.processors.Validator;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 /**
  * @author Graham Willis
@@ -18,9 +19,8 @@ import java.util.stream.Collectors;
 public class Hierarchy<C extends CacheProvider> {
     private final Set<HierarchyLevel> hierarchyLevels;
     private final C cacheProvider;
-    private final HierarchyNavigator hierarchyNavigator;
-    private final HierarchyValidator hierarchyValidator;
-    Map<Class<? extends HierarchyEntity>, HierarchyLevel> hierarchyNodesByHierarchyEntity;
+    private final Navigator hierarchyNavigator;
+    private final Validator hierarchyValidator;
 
     /**
      * Initialize the hierarchy with the entity nodes and a cache provider
@@ -28,14 +28,11 @@ public class Hierarchy<C extends CacheProvider> {
      * @param hierarchyNavigator
      * @param hierarchyValidator
      */
-    public Hierarchy(Set<HierarchyLevel> hierarchyLevels, C cacheProvider, HierarchyNavigator hierarchyNavigator, HierarchyValidator hierarchyValidator) {
+    public Hierarchy(Set<HierarchyLevel> hierarchyLevels, C cacheProvider, Navigator hierarchyNavigator, Validator hierarchyValidator) {
         this.hierarchyLevels = hierarchyLevels;
         this.cacheProvider = cacheProvider;
         this.hierarchyNavigator = hierarchyNavigator;
         this.hierarchyValidator = hierarchyValidator;
-        this.hierarchyNodesByHierarchyEntity = hierarchyLevels
-                .stream()
-                .collect(Collectors.toMap(HierarchyLevel::getHierarchyEntityClass, v -> v));
     }
 
     /*
@@ -94,6 +91,10 @@ public class Hierarchy<C extends CacheProvider> {
             }
         }
         return result;
+    }
+
+    public Set<HierarchyLevel> getHierarchyLevels() {
+        return hierarchyLevels;
     }
 }
 

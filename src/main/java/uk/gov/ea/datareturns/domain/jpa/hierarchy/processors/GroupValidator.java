@@ -1,7 +1,8 @@
-package uk.gov.ea.datareturns.domain.jpa.hierarchy;
+package uk.gov.ea.datareturns.domain.jpa.hierarchy.processors;
 
 import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.stereotype.Component;
+import uk.gov.ea.datareturns.domain.jpa.hierarchy.*;
 
 import java.util.Iterator;
 import java.util.Map;
@@ -15,7 +16,7 @@ import java.util.Set;
  * This variant will operate on groups - enclosed by []
  */
 @Component
-public class GroupValidator implements HierarchyValidator {
+public class GroupValidator implements Validator {
     private Iterator<HierarchyLevel> hierarchyNodesIttr;
 
     public Pair<HierarchyLevel, Hierarchy.Result> validate(Map cache, Set<HierarchyLevel> hierarchyLevels, Map<HierarchyLevel, String> entityNames) {
@@ -32,29 +33,29 @@ public class GroupValidator implements HierarchyValidator {
             /*
              * If the entity name is supplied (not null)
              */
-            if (cache.containsKey(GroupSymbols.EXCLUDE + entityNames.get(level))) {
+            if (cache.containsKey(HierarchyGroupSymbols.EXCLUDE + entityNames.get(level))) {
                 // If we have supplied an explicitly excluded item then report an error
                 return Pair.of(level, Hierarchy.Result.EXCLUDED);
-            } else if (cache.containsKey(GroupSymbols.EXCLUDE_ALL)) {
+            } else if (cache.containsKey(HierarchyGroupSymbols.EXCLUDE_ALL)) {
                 // If we have the inverse wildcard we are not expecting an item so error
                 return Pair.of(level, Hierarchy.Result.NOT_EXPECTED);
             } else if (cache.containsKey(entityNames.get(level))) {
                 // Item explicitly listed - Proceed
                 return shim(level, cache, entityNames.get(level), entityNames);
-            } else if(cache.containsKey(GroupSymbols.INCLUDE_ALL_OPTIONALLY)) {
+            } else if(cache.containsKey(HierarchyGroupSymbols.INCLUDE_ALL_OPTIONALLY)) {
                 // if the item is optionally supplied with a wildcard - proceed
                 return shim(level, cache, HierarchySymbols.INCLUDE_ALL_OPTIONALLY, entityNames);
-            } else if (cache.containsKey(GroupSymbols.INCLUDE_ALL)) {
+            } else if (cache.containsKey(HierarchyGroupSymbols.INCLUDE_ALL)) {
                 // if the item is on a wildcard - proceed
-                return shim(level, cache, GroupSymbols.INCLUDE_ALL, entityNames);
-            } else if (level instanceof GroupedHierarchyLevel) {
+                return shim(level, cache, HierarchyGroupSymbols.INCLUDE_ALL, entityNames);
+            } else if (level instanceof HierarchyGroupLevel) {
                 // For a group level search for the group
-                if (cacheContainsGroupContainsName((GroupedHierarchyLevel)level, cache, entityNames.get(level))) {
+                if (GroupCommon.cacheContainsGroupContainsName((HierarchyGroupLevel)level, cache, entityNames.get(level))) {
                     return shim(level, cache, entityNames.get(level), entityNames);
                 } else {
                     return Pair.of(level, Hierarchy.Result.NOT_IN_GROUP);
                 }
-            } else if (cache.containsKey(GroupSymbols.NOT_APPLICABLE)) {
+            } else if (cache.containsKey(HierarchyGroupSymbols.NOT_APPLICABLE)) {
                 // We don't care - OK
                 return Pair.of(level, Hierarchy.Result.OK);
             } else {
@@ -67,17 +68,17 @@ public class GroupValidator implements HierarchyValidator {
              */
             if (cache.containsKey(HierarchySymbols.EXCLUDE_ALL)) {
                 // If we have the inverse wildcard we are not expecting an item so no error - proceed
-                return shim(level, cache, GroupSymbols.EXCLUDE_ALL, entityNames);
-            } else if(cache.containsKey(GroupSymbols.INCLUDE_ALL_OPTIONALLY)) {
+                return shim(level, cache, HierarchyGroupSymbols.EXCLUDE_ALL, entityNames);
+            } else if(cache.containsKey(HierarchyGroupSymbols.INCLUDE_ALL_OPTIONALLY)) {
                 // if the item is optionally supplied with a wildcard we are good - proceed
-                return shim(level, cache, GroupSymbols.INCLUDE_ALL_OPTIONALLY, entityNames);
-            } else if (cache.containsKey(GroupSymbols.INCLUDE_ALL)) {
+                return shim(level, cache, HierarchyGroupSymbols.INCLUDE_ALL_OPTIONALLY, entityNames);
+            } else if (cache.containsKey(HierarchyGroupSymbols.INCLUDE_ALL)) {
                 // if the item is on a wildcard its an error
                 return Pair.of(level, Hierarchy.Result.EXPECTED);
-            } else if (level instanceof GroupedHierarchyLevel) {
+            } else if (level instanceof HierarchyGroupLevel) {
                 // It cannot be null if we expect a group
                 return Pair.of(level, Hierarchy.Result.NOT_IN_GROUP);
-            } else if (cache.containsKey(GroupSymbols.NOT_APPLICABLE)) {
+            } else if (cache.containsKey(HierarchyGroupSymbols.NOT_APPLICABLE)) {
                 // We don't care - OK
                 return Pair.of(level, Hierarchy.Result.OK);
             } else {
@@ -99,25 +100,25 @@ public class GroupValidator implements HierarchyValidator {
             if (cache.contains(HierarchySymbols.EXCLUDE + entityNames.get(level))) {
                 // If we have supplied an explicitly excluded item then report an error
                 return Pair.of(level, Hierarchy.Result.EXCLUDED);
-            } else if (cache.contains(GroupSymbols.EXCLUDE_ALL)) {
+            } else if (cache.contains(HierarchyGroupSymbols.EXCLUDE_ALL)) {
                 // If we have the inverse wildcard we are not expecting an item so error
                 return Pair.of(level, Hierarchy.Result.NOT_EXPECTED);
             } else if (cache.contains(entityNames.get(level))) {
                 // Item explicitly listed - Proceed
                 return Pair.of(level, Hierarchy.Result.OK);
-            } else if(cache.contains(GroupSymbols.INCLUDE_ALL_OPTIONALLY)) {
+            } else if(cache.contains(HierarchyGroupSymbols.INCLUDE_ALL_OPTIONALLY)) {
                 // if the item is optionally supplied with a wildcard - OK
                 return Pair.of(level, Hierarchy.Result.OK);
-            } else if (cache.contains(GroupSymbols.INCLUDE_ALL)) {
+            } else if (cache.contains(HierarchyGroupSymbols.INCLUDE_ALL)) {
                 // if the item is on a wildcard - OK
                 return Pair.of(level, Hierarchy.Result.OK);
-            } else if (level instanceof GroupedHierarchyLevel) {
-                if (cacheContainsGroupContainsName((GroupedHierarchyLevel)level, cache, entityNames.get(level))) {
+            } else if (level instanceof HierarchyGroupLevel) {
+                if (GroupCommon.cacheContainsGroupContainsName((HierarchyGroupLevel)level, cache, entityNames.get(level))) {
                     return Pair.of(level, Hierarchy.Result.OK);
                 } else {
                     return Pair.of(level, Hierarchy.Result.NOT_IN_GROUP);
                 }
-            } else if (cache.contains(GroupSymbols.NOT_APPLICABLE)) {
+            } else if (cache.contains(HierarchyGroupSymbols.NOT_APPLICABLE)) {
                 // We don't care - OK
                 return Pair.of(level, Hierarchy.Result.OK);
             } else {
@@ -131,16 +132,16 @@ public class GroupValidator implements HierarchyValidator {
             if (cache.contains(HierarchySymbols.EXCLUDE_ALL)) {
                 // If we have the inverse wildcard we are not expecting an item so no error - ok
                 return Pair.of(level, Hierarchy.Result.OK);
-            } else if(cache.contains(GroupSymbols.INCLUDE_ALL_OPTIONALLY)) {
+            } else if(cache.contains(HierarchyGroupSymbols.INCLUDE_ALL_OPTIONALLY)) {
                 // if the item is optionally supplied with a wildcard we are good
                 return Pair.of(level, Hierarchy.Result.OK);
-            } else if (cache.contains(GroupSymbols.INCLUDE_ALL)) {
+            } else if (cache.contains(HierarchyGroupSymbols.INCLUDE_ALL)) {
                 // if the item is on a plain wildcard its an error
                 return Pair.of(level, Hierarchy.Result.EXPECTED);
-            } else if (level instanceof GroupedHierarchyLevel) {
+            } else if (level instanceof HierarchyGroupLevel) {
                 // It cannot be null if we expect a group
                 return Pair.of(level, Hierarchy.Result.NOT_IN_GROUP);
-            } else if (cache.contains(GroupSymbols.NOT_APPLICABLE)) {
+            } else if (cache.contains(HierarchyGroupSymbols.NOT_APPLICABLE)) {
                 // We don't care - OK
                 return Pair.of(level, Hierarchy.Result.OK);
             } else {
@@ -169,24 +170,6 @@ public class GroupValidator implements HierarchyValidator {
         } else {
             return evaluate(hierarchyNodesIttr.next(), (Map)cache.get(cacheKey), entityNames);
         }
-    }
-
-    /**
-     * For grouped levels we need to test if the cache contains a group and for which the
-     * entity name is a member of the group
-     * @param level The grouped hierarchy level
-     * @param cache The cache
-     * @param entityName The given enity name
-     * @return true if entity name is found
-     */
-    private boolean cacheContainsGroupContainsName(GroupedHierarchyLevel level, Set cache, String entityName) {
-        // TODO
-        return false;
-    }
-
-    private boolean cacheContainsGroupContainsName(GroupedHierarchyLevel level, Map cache, String entityName) {
-        // TODO
-        return false;
     }
 
 }
