@@ -12,7 +12,7 @@ import uk.gov.ea.datareturns.domain.jpa.entities.ControlledListsList;
 public class HierarchyLevel<E extends Hierarchy.HierarchyEntity> {
     private final ControlledListsList controlledList;
     private final Class<E> hierarchyEntityClass;
-    private final Class<? extends EntityDao<E>> daoClass;
+    protected final Class<? extends EntityDao<E>> daoClass;
 
     public HierarchyLevel(Class<E> hierarchyEntity,
                           Class<? extends EntityDao<E>> daoClass,
@@ -23,7 +23,7 @@ public class HierarchyLevel<E extends Hierarchy.HierarchyEntity> {
         this.controlledList = controlledList;
     }
 
-    public Class<? extends Hierarchy.HierarchyEntity> getHierarchyEntityClass() {
+    public Class<E> getHierarchyEntityClass() {
         return hierarchyEntityClass;
     }
     public ControlledListsList getControlledList() {

@@ -1,8 +1,11 @@
-package uk.gov.ea.datareturns.domain.jpa.hierarchy;
+package uk.gov.ea.datareturns.domain.jpa.hierarchy.processors;
 
 import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.stereotype.Component;
 import uk.gov.ea.datareturns.domain.jpa.dao.EntityDao;
+import uk.gov.ea.datareturns.domain.jpa.hierarchy.Hierarchy;
+import uk.gov.ea.datareturns.domain.jpa.hierarchy.HierarchyLevel;
+import uk.gov.ea.datareturns.domain.jpa.hierarchy.HierarchySymbols;
 import uk.gov.ea.datareturns.util.SpringApplicationContextProvider;
 
 import java.util.*;
@@ -13,7 +16,7 @@ import java.util.*;
  * any levels where there is no node
  */
 @Component
-public class SimpleNavigator implements HierarchyNavigator {
+public class SimpleNavigator implements Navigator {
     private Iterator<HierarchyLevel> hierarchyNodesIttr;
 
     @Override
@@ -73,7 +76,7 @@ public class SimpleNavigator implements HierarchyNavigator {
             }
         } else if (entityNames.get(level) == null && cache.containsKey(HierarchySymbols.EXCLUDE_ALL)) {
             return shim(level, cache, HierarchySymbols.EXCLUDE_ALL, entityNames, keys);
-        } else if (allNulls(entityNames)) {
+        } else if (GroupCommon.allNulls(entityNames)) {
             return list(level, cache);
         } else {
             return Pair.of(level, null);
@@ -160,15 +163,4 @@ public class SimpleNavigator implements HierarchyNavigator {
         }
         return Pair.of(level, resultList);
     }
-
-    private boolean allNulls(Map m) {
-        Set ks = m.keySet();
-        for (Object key: ks) {
-            if (m.get(key) != null) {
-                return false;
-            }
-        }
-        return true;
-    }
-
 }

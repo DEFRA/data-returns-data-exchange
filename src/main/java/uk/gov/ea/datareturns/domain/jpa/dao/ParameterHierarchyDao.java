@@ -7,7 +7,7 @@ import uk.gov.ea.datareturns.domain.exceptions.ProcessingException;
 import uk.gov.ea.datareturns.domain.jpa.entities.ParameterHierarchy;
 import uk.gov.ea.datareturns.domain.jpa.entities.ParameterHierarchyId;
 import uk.gov.ea.datareturns.domain.jpa.hierarchy.CacheProvider;
-import uk.gov.ea.datareturns.domain.jpa.hierarchy.GroupSymbols;
+import uk.gov.ea.datareturns.domain.jpa.hierarchy.HierarchyGroupSymbols;
 import uk.gov.ea.datareturns.domain.jpa.hierarchy.HierarchySymbols;
 
 import javax.annotation.PostConstruct;
@@ -22,7 +22,17 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 /**
- * Created by graham on 03/10/16.
+ * @Author Graham Willis
+ * responsible for reading and caching the parameter hierarchy
+ *
+ * The parameter hierarchy cache takes the form:
+ * Map<String1, Map<String2, Map<String3, Set<String4>>>>
+ * where:
+ *      String1 is the return type name
+ *      String2 is the releases and transfers name
+ *      String3 is the parameter name
+ *      String4 is the unit or unit group name
+ *
  */
 @Repository
 public class ParameterHierarchyDao extends CacheProvider<Map<String, Map<String, Map<String, Set<String>>>>> {
@@ -80,7 +90,6 @@ public class ParameterHierarchyDao extends CacheProvider<Map<String, Map<String,
                 }
             }
         }
-
         return cache;
     }
 
@@ -116,11 +125,11 @@ public class ParameterHierarchyDao extends CacheProvider<Map<String, Map<String,
             .stream()
                 .map(ParameterHierarchy::getParameter)
                 .map(p -> HierarchySymbols.removeExclusion(p))
-                .filter(p -> !p.trim().equals(GroupSymbols.INCLUDE_ALL))
-                .filter(p -> !p.trim().equals(GroupSymbols.EXCLUDE_ALL))
-                .filter(p -> !p.trim().equals(GroupSymbols.EXCLUDE))
-                .filter(p -> !p.trim().equals(GroupSymbols.INCLUDE_ALL_OPTIONALLY))
-                .filter(p -> !p.trim().equals(GroupSymbols.NOT_APPLICABLE))
+                .filter(p -> !p.trim().equals(HierarchyGroupSymbols.INCLUDE_ALL))
+                .filter(p -> !p.trim().equals(HierarchyGroupSymbols.EXCLUDE_ALL))
+                .filter(p -> !p.trim().equals(HierarchyGroupSymbols.EXCLUDE))
+                .filter(p -> !p.trim().equals(HierarchyGroupSymbols.INCLUDE_ALL_OPTIONALLY))
+                .filter(p -> !p.trim().equals(HierarchyGroupSymbols.NOT_APPLICABLE))
                 .filter(p -> !parameterDao.nameExists(p))
                 .collect(Collectors.toList());
 
@@ -136,11 +145,11 @@ public class ParameterHierarchyDao extends CacheProvider<Map<String, Map<String,
                 .stream()
                 .map(ParameterHierarchy::getReturnType)
                 .map(p -> HierarchySymbols.removeExclusion(p))
-                .filter(p -> !p.trim().equals(GroupSymbols.INCLUDE_ALL))
-                .filter(p -> !p.trim().equals(GroupSymbols.EXCLUDE_ALL))
-                .filter(p -> !p.trim().equals(GroupSymbols.EXCLUDE))
-                .filter(p -> !p.trim().equals(GroupSymbols.INCLUDE_ALL_OPTIONALLY))
-                .filter(p -> !p.trim().equals(GroupSymbols.NOT_APPLICABLE))
+                .filter(p -> !p.trim().equals(HierarchyGroupSymbols.INCLUDE_ALL))
+                .filter(p -> !p.trim().equals(HierarchyGroupSymbols.EXCLUDE_ALL))
+                .filter(p -> !p.trim().equals(HierarchyGroupSymbols.EXCLUDE))
+                .filter(p -> !p.trim().equals(HierarchyGroupSymbols.INCLUDE_ALL_OPTIONALLY))
+                .filter(p -> !p.trim().equals(HierarchyGroupSymbols.NOT_APPLICABLE))
                 .filter(p -> !returnTypeDao.nameExists(p))
                 .collect(Collectors.toList());
 
@@ -156,11 +165,11 @@ public class ParameterHierarchyDao extends CacheProvider<Map<String, Map<String,
                 .stream()
                 .map(ParameterHierarchy::getReleasesAndTransfers)
                 .map(p -> HierarchySymbols.removeExclusion(p))
-                .filter(p -> !p.trim().equals(GroupSymbols.INCLUDE_ALL))
-                .filter(p -> !p.trim().equals(GroupSymbols.EXCLUDE_ALL))
-                .filter(p -> !p.trim().equals(GroupSymbols.EXCLUDE))
-                .filter(p -> !p.trim().equals(GroupSymbols.INCLUDE_ALL_OPTIONALLY))
-                .filter(p -> !p.trim().equals(GroupSymbols.NOT_APPLICABLE))
+                .filter(p -> !p.trim().equals(HierarchyGroupSymbols.INCLUDE_ALL))
+                .filter(p -> !p.trim().equals(HierarchyGroupSymbols.EXCLUDE_ALL))
+                .filter(p -> !p.trim().equals(HierarchyGroupSymbols.EXCLUDE))
+                .filter(p -> !p.trim().equals(HierarchyGroupSymbols.INCLUDE_ALL_OPTIONALLY))
+                .filter(p -> !p.trim().equals(HierarchyGroupSymbols.NOT_APPLICABLE))
                 .filter(p -> !releasesAndTransfersDao.nameExists(p))
                 .collect(Collectors.toList());
 
@@ -176,12 +185,12 @@ public class ParameterHierarchyDao extends CacheProvider<Map<String, Map<String,
                 .stream()
                 .map(ParameterHierarchy::getUnits)
                 .map(p -> HierarchySymbols.removeExclusion(p))
-                .filter(p -> !p.trim().equals(GroupSymbols.INCLUDE_ALL))
-                .filter(p -> !p.trim().equals(GroupSymbols.EXCLUDE_ALL))
-                .filter(p -> !p.trim().equals(GroupSymbols.EXCLUDE))
-                .filter(p -> !p.trim().equals(GroupSymbols.INCLUDE_ALL_OPTIONALLY))
-                .filter(p -> !p.trim().equals(GroupSymbols.NOT_APPLICABLE))
-                .filter(p -> !GroupSymbols.isGroup(p))
+                .filter(p -> !p.trim().equals(HierarchyGroupSymbols.INCLUDE_ALL))
+                .filter(p -> !p.trim().equals(HierarchyGroupSymbols.EXCLUDE_ALL))
+                .filter(p -> !p.trim().equals(HierarchyGroupSymbols.EXCLUDE))
+                .filter(p -> !p.trim().equals(HierarchyGroupSymbols.INCLUDE_ALL_OPTIONALLY))
+                .filter(p -> !p.trim().equals(HierarchyGroupSymbols.NOT_APPLICABLE))
+                .filter(p -> !HierarchyGroupSymbols.isGroup(p))
                 .filter(p -> !unitDao.nameExists(p))
                 .collect(Collectors.toList());
 

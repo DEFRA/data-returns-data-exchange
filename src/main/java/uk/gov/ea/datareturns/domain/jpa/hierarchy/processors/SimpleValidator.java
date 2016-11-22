@@ -1,7 +1,10 @@
-package uk.gov.ea.datareturns.domain.jpa.hierarchy;
+package uk.gov.ea.datareturns.domain.jpa.hierarchy.processors;
 
 import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.stereotype.Component;
+import uk.gov.ea.datareturns.domain.jpa.hierarchy.Hierarchy;
+import uk.gov.ea.datareturns.domain.jpa.hierarchy.HierarchyLevel;
+import uk.gov.ea.datareturns.domain.jpa.hierarchy.HierarchySymbols;
 
 import java.util.Iterator;
 import java.util.Map;
@@ -13,7 +16,7 @@ import java.util.Set;
  * and the lowest level in the hierarch reached to obtain the result
  */
 @Component
-public class SimpleValidator implements HierarchyValidator {
+public class SimpleValidator implements Validator {
     private Iterator<HierarchyLevel> hierarchyNodesIttr;
 
     public Pair<HierarchyLevel, Hierarchy.Result> validate(Map cache, Set<HierarchyLevel> hierarchyLevels, Map<HierarchyLevel, String> entityNames) {

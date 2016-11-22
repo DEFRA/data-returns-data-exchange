@@ -485,7 +485,7 @@ public class ParameterHierarchyValidationTests {
      * Group validator tests
      * Pollution Inventory,Air,Xenon 133,[Radioactivity]
      * Pollution Inventory,Air,Americium 241,[Mass]
-     * Pollution Inventory,Air,Americium 241,^Mol
+     * Pollution Inventory,Air,Americium 241,^mol
      */
     @Test
     public void dependencyTestGroupRadioactivityHappy() {
@@ -504,10 +504,70 @@ public class ParameterHierarchyValidationTests {
         Pair<HierarchyLevel, Hierarchy.Result> result
                 = parameterHierarchy.validate(returnType, releasesAndTransfers, parameter, unit);
 
-        //Assert.assertEquals(Hierarchy.Result.OK, result.getRight());
-
+        Assert.assertEquals(Hierarchy.Result.OK, result.getRight());
     }
 
+    @Test
+    public void dependencyTestGroupMassHappy() {
+        ReturnType returnType = returnTypeDao.getByName("Pollution Inventory");
+        Assert.assertNotNull(returnType);
+
+        ReleasesAndTransfers releasesAndTransfers = releasesAndTransfersDao.getByName("Air");
+        Assert.assertNotNull(releasesAndTransfers);
+
+        Parameter parameter = parameterDao.getByName("Americium 241");
+        Assert.assertNotNull(parameter);
+
+        Unit unit = unitDao.getByName("g");
+        Assert.assertNotNull(unit);
+
+        Pair<HierarchyLevel, Hierarchy.Result> result
+                = parameterHierarchy.validate(returnType, releasesAndTransfers, parameter, unit);
+
+        Assert.assertEquals(Hierarchy.Result.OK, result.getRight());
+    }
+
+    @Test
+    public void dependencyTestGroupMassInvalid1() {
+        ReturnType returnType = returnTypeDao.getByName("Pollution Inventory");
+        Assert.assertNotNull(returnType);
+
+        ReleasesAndTransfers releasesAndTransfers = releasesAndTransfersDao.getByName("Air");
+        Assert.assertNotNull(releasesAndTransfers);
+
+        Parameter parameter = parameterDao.getByName("Americium 241");
+        Assert.assertNotNull(parameter);
+
+        Unit unit = unitDao.getByName("mol");
+        Assert.assertNotNull(unit);
+
+        Pair<HierarchyLevel, Hierarchy.Result> result
+                = parameterHierarchy.validate(returnType, releasesAndTransfers, parameter, unit);
+
+        Assert.assertEquals(Hierarchy.Result.EXCLUDED, result.getRight());
+        Assert.assertEquals(ControlledListsList.UNIT, result.getLeft().getControlledList());
+    }
+
+    @Test
+    public void dependencyTestGroupMassInvalid2() {
+        ReturnType returnType = returnTypeDao.getByName("Pollution Inventory");
+        Assert.assertNotNull(returnType);
+
+        ReleasesAndTransfers releasesAndTransfers = releasesAndTransfersDao.getByName("Air");
+        Assert.assertNotNull(releasesAndTransfers);
+
+        Parameter parameter = parameterDao.getByName("Americium 241");
+        Assert.assertNotNull(parameter);
+
+        Unit unit = unitDao.getByName("g/m²");
+        Assert.assertNotNull(unit);
+
+        Pair<HierarchyLevel, Hierarchy.Result> result
+                = parameterHierarchy.validate(returnType, releasesAndTransfers, parameter, unit);
+
+        Assert.assertEquals(Hierarchy.Result.NOT_IN_GROUP, result.getRight());
+        Assert.assertEquals(ControlledListsList.UNIT, result.getLeft().getControlledList());
+    }
 
 
 
