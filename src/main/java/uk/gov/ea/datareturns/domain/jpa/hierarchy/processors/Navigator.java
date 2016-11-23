@@ -9,8 +9,10 @@ import java.util.Map;
 import java.util.Set;
 
 /**
- * Created by graham on 21/11/16.
+ * Interface describing the methods required for hierarchy navigation
+ * @Author Graham Willis
  */
 public interface Navigator {
-    public Pair<HierarchyLevel, List<? extends Hierarchy.HierarchyEntity>> children(Map cache, Set<HierarchyLevel> hierarchyLevels, Map<HierarchyLevel, String> hierarchyNodeStringMap);
+    Pair<HierarchyLevel, List<? extends Hierarchy.HierarchyEntity>> children(Map cache, Set<HierarchyLevel> hierarchyLevels, Map<HierarchyLevel, String> hierarchyNodeStringMap);
+    Pair<HierarchyLevel, List<? extends Hierarchy.HierarchyEntity>> children(Map cache, Set<HierarchyLevel> hierarchyLevels, Map<HierarchyLevel, String> hierarchyNodeStringMap, String field, String contains);
 }

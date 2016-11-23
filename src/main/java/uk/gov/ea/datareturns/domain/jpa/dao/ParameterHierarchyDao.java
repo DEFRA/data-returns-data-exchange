@@ -6,7 +6,7 @@ import org.springframework.stereotype.Repository;
 import uk.gov.ea.datareturns.domain.exceptions.ProcessingException;
 import uk.gov.ea.datareturns.domain.jpa.entities.ParameterHierarchy;
 import uk.gov.ea.datareturns.domain.jpa.entities.ParameterHierarchyId;
-import uk.gov.ea.datareturns.domain.jpa.hierarchy.CacheProvider;
+import uk.gov.ea.datareturns.domain.jpa.hierarchy.HierarchyCacheProvider;
 import uk.gov.ea.datareturns.domain.jpa.hierarchy.HierarchyGroupSymbols;
 import uk.gov.ea.datareturns.domain.jpa.hierarchy.HierarchySymbols;
 
@@ -35,7 +35,7 @@ import java.util.stream.Collectors;
  *
  */
 @Repository
-public class ParameterHierarchyDao extends CacheProvider<Map<String, Map<String, Map<String, Set<String>>>>> {
+public class ParameterHierarchyDao extends HierarchyCacheProvider<Map<String, Map<String, Map<String, Set<String>>>>> {
     protected static final Logger LOGGER = LoggerFactory.getLogger(ParameterHierarchyDao.class);
 
     @PersistenceContext
@@ -58,6 +58,10 @@ public class ParameterHierarchyDao extends CacheProvider<Map<String, Map<String,
     }
 
     private volatile Map<String, Map<String, Map<String, Set<String>>>> cache = null;
+
+    public Map<String, Map<String, Map<String, Set<String>>>> getCache() {
+        return buildCache();
+    }
 
     /*
      * Use to sort the results of the query, strictly unnecessary
@@ -91,10 +95,6 @@ public class ParameterHierarchyDao extends CacheProvider<Map<String, Map<String,
             }
         }
         return cache;
-    }
-
-    public Map<String, Map<String, Map<String, Set<String>>>> getCache() {
-        return buildCache();
     }
 
     /**
