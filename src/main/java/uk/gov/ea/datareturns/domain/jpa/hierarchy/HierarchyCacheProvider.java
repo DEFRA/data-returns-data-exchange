@@ -5,6 +5,6 @@ package uk.gov.ea.datareturns.domain.jpa.hierarchy;
  * The provider of the validation rules cache. The cache must be of the form of nested maps
  * terminated by a set.
  */
-public abstract class CacheProvider<T> {
+public abstract class HierarchyCacheProvider<T> {
      public abstract T getCache();
 }
