@@ -1,5 +1,6 @@
 package uk.gov.ea.datareturns.web.resource;
 
+import org.apache.commons.lang3.tuple.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
@@ -41,6 +42,7 @@ import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 @Scope(ConfigurableBeanFactory.SCOPE_SINGLETON)
 public class ControlledListResource {
     private static final Logger LOGGER = LoggerFactory.getLogger(ControlledListResource.class);
+
     /** controlled list processor */
     private final ControlledListProcessor controlledListProcessor;
 
@@ -55,7 +57,7 @@ public class ControlledListResource {
     }
 
     /**
-     * Returns a list of the controlled lists
+     * Returns a list of the controlled lists - the list metadata
      * @return
      */
     @GET
@@ -63,12 +65,12 @@ public class ControlledListResource {
     @Path("/lists/")
     public Response listControlledLists() {
         LOGGER.debug("Request for /controlled-list");
-        Map<String, ControlledListsDto> listData = controlledListProcessor.getListData();
+        Map<String, ControlledListsDto> listData = controlledListProcessor.getListMetaData();
         return Response.status(Response.Status.OK).entity(listData).build();
     }
 
     /**
-     * Returns any given controlled lists and searched by a given field
+     * Returns any given controlled list searched by a given field
      * @param listName
      * @param field
      * @param contains
@@ -92,31 +94,13 @@ public class ControlledListResource {
                     ApplicationExceptionType.UNKNOWN_LIST_TYPE, "Request for unknown controlled list: " + listName
             )).build();
         } else {
-            List<? extends ControlledListEntity> listData = controlledListProcessor.getListData(controlledList, field, contains);
+            Pair<String, List<? extends ControlledListEntity>> listData = controlledListProcessor.getListData(controlledList, field, contains);
             return Response.status(Response.Status.OK).entity(listData).build();
         }
     }
 
-//    @GET
-//    @Path("/nav/")
-//    @Produces(APPLICATION_JSON)
-//    public Response getNavigatedList(
-//            @QueryParam("rtn_type") final String returnTypeName,
-//            @QueryParam("mon_point") final String releaseTypeName,
-//            @QueryParam("parameters") final String parameterName,
-//            @QueryParam("contains") final String contains) throws Exception {
-//
-//        LOGGER.debug("Request for /controlled-list/nav/");
-//        LOGGER.debug("Requested return type: " + returnTypeName == null ? "" : returnTypeName);
-//        LOGGER.debug("Requested releases and transfers (mon_point): " + releaseTypeName == null ? "" : releaseTypeName);
-//        LOGGER.debug("Requested parameters: " + parameterName == null ? "" : parameterName);
-//
-//        NavigationDto navigationDto = controlledListProcessor.getNavigatedListData(returnTypeName, releaseTypeName, parameterName, contains);
-//        return Response.status(Response.Status.OK).entity(navigationDto).build();
-//    }
-
     /**
-     * Generic endpoint to return the list of entities given by the validation rules at any given level in
+     * Returns the list of entities given by the validation rules at any given level in
      * a hierarchy
      *
      * The name of the hierarchy is specified in the path parameter hierarchy and is identified in the spring
@@ -127,7 +111,7 @@ public class ControlledListResource {
     @GET
     @Path("/hierarchy/{name}")
     @Produces(APPLICATION_JSON)
-    public <E> Response getHierarchyLevel(@Context UriInfo ui) {
+    public Response getHierarchyLevel(@Context UriInfo ui) {
         MultivaluedMap<String, String> queryParams = ui.getQueryParameters();
         MultivaluedMap<String, String> pathParams = ui.getPathParameters();
         Hierarchy hierachy = null;
@@ -136,6 +120,8 @@ public class ControlledListResource {
             List<String> hierachyNames = pathParams.get("name");
             hierachy = (Hierarchy) context.getBean(hierachyNames.get(0) + "-hierarchy");
             Set<HierarchyLevel> levels = hierachy.getHierarchyLevels();
+            String field = queryParams.containsKey("field") ? ((List<String>)queryParams.get("field")).get(0) : null;
+            String contains = queryParams.containsKey("contains") ? ((List<String>)queryParams.get("contains")).get(0) : null;
             // The query params should correspond to the path variable stored against
             // the controlled list
             Set<Hierarchy.HierarchyEntity> entities = new HashSet<>();
@@ -150,11 +136,12 @@ public class ControlledListResource {
                     }
                 }
             }
+            Pair<String, List<? extends Hierarchy.HierarchyEntity>> controlledList = controlledListProcessor.getListData(hierachy, entities, field, contains);
+            return Response.status(Response.Status.OK).entity(controlledList).build();
         } catch (NoSuchBeanDefinitionException|ClassCastException e) {
             return Response.status(Response.Status.BAD_REQUEST).entity(new ExceptionMessageContainer(
                     ApplicationExceptionType.UNKNOWN_LIST_TYPE,
                     "No hierarchy: you must specify a known hierarchy in the path parameter /controlled-list/hierarchy/{name}")).build();
         }
-        return Response.status(Response.Status.OK).build();
     }
 }

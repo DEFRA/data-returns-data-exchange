@@ -288,20 +288,13 @@ public abstract class EntityDao<E extends ControlledListEntity> {
     }
 
     /**
-     * Helper function to compare two strings cases insensitively ignoring whilespace
-     * @param a
+     * Helper function calculate if string a contains string b ignoring case and ignoring whitespace
+     * @param a String
      * @param b
-     * @return
+     * @return true if string a contains string b
      */
     private boolean containsIgnoreCaseIgnoreSpaces(String a, String b) {
-        return removeSpaces.matcher(a).replaceAll("").contains(removeSpaces.matcher(b).replaceAll(""));
-    }
-
-    /**
-     * Get the class of the entity being operated on
-     */
-    public Class<E> getEntityClass() {
-        return entityClass;
+        return removeSpaces.matcher(a).replaceAll("").toLowerCase().contains(removeSpaces.matcher(b).replaceAll("").toLowerCase());
     }
 
     /**

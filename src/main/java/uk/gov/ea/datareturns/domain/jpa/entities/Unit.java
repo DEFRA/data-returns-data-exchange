@@ -26,6 +26,7 @@ public class Unit implements AliasingEntity, Hierarchy.GroupedHierarchyEntity {
     private String name;
 
     @Basic
+    @JsonIgnore
     @Column(name = "preferred", length = 10)
     private String preferred;
 

@@ -8,7 +8,8 @@ import java.util.Map;
 import java.util.Set;
 
 /**
- * Created by graham on 21/11/16.
+ * Interface describing the methods required for hierarchy validation
+ * @Author Graham Willis
  */
 public interface Validator {
     Pair<HierarchyLevel, Hierarchy.Result> validate(Map cache, Set<HierarchyLevel> hierarchyLevels, Map<HierarchyLevel, String> entityNames);

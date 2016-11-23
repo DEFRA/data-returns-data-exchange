@@ -6,17 +6,14 @@ import uk.gov.ea.datareturns.domain.jpa.entities.ControlledListEntity;
 import uk.gov.ea.datareturns.domain.jpa.hierarchy.processors.Navigator;
 import uk.gov.ea.datareturns.domain.jpa.hierarchy.processors.Validator;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 /**
  * @author Graham Willis
  * A class describing the hierarchical relationships between a set of entities used for the validation
  * of input data and providing an interface for navigating
  */
-public class Hierarchy<C extends CacheProvider> {
+public class Hierarchy<C extends HierarchyCacheProvider> {
     private final Set<HierarchyLevel> hierarchyLevels;
     private final C cacheProvider;
     private final Navigator hierarchyNavigator;
@@ -61,8 +58,23 @@ public class Hierarchy<C extends CacheProvider> {
      * List the children of a given set of parents. The parents must form a complete and proper path
      * to be able to calculate the hierarchy
      */
-    public Pair<HierarchyLevel, List<? extends HierarchyEntity>> children(HierarchyEntity... entities) {
+    public Pair<HierarchyLevel, List<? extends HierarchyEntity>> children(Set<HierarchyEntity> entities) {
         return hierarchyNavigator.children((Map)cacheProvider.getCache(), hierarchyLevels, processInputs(entities));
+    }
+
+    /**
+     * List the children of a given set of parents. The parents must form a complete and proper path
+     * to be able to calculate the hierarchy. This overdide causes the list to be filtered
+     */
+    public Pair<HierarchyLevel, List<? extends HierarchyEntity>> children(Set<HierarchyEntity> entities, String field, String contains) {
+        return hierarchyNavigator.children((Map)cacheProvider.getCache(), hierarchyLevels, processInputs(entities), field, contains);
+    }
+
+    /**
+     * Helper - especially for unit tests
+     */
+    public Pair<HierarchyLevel, List<? extends HierarchyEntity>> children(HierarchyEntity... entities) {
+        return hierarchyNavigator.children((Map)cacheProvider.getCache(), hierarchyLevels, processInputs(new HashSet<>(Arrays.asList(entities))));
     }
 
     /**
@@ -70,15 +82,23 @@ public class Hierarchy<C extends CacheProvider> {
      * @param entities
      * @return
      */
-    public Pair<HierarchyLevel, Hierarchy.Result> validate(HierarchyEntity... entities) {
+    public Pair<HierarchyLevel, Hierarchy.Result> validate(Set<HierarchyEntity> entities) {
         return hierarchyValidator.validate((Map)cacheProvider.getCache(), hierarchyLevels, processInputs(entities));
+    }
+
+    /**
+     * Helper - especially for unit tests
+     */
+    public Pair<HierarchyLevel, Hierarchy.Result> validate(HierarchyEntity... entities) {
+        return hierarchyValidator.validate((Map)cacheProvider.getCache(),
+                hierarchyLevels, processInputs(new HashSet<>(Arrays.asList(entities))));
     }
 
     /**
      * Sets the string value on each given entity - the cache key is derived by the entity relaxed name
      * @param entities
      */
-    private Map<HierarchyLevel, String> processInputs(HierarchyEntity... entities) {
+    private Map<HierarchyLevel, String> processInputs(Set<HierarchyEntity> entities) {
         Map<HierarchyLevel, String> result = new HashMap<>();
         for (HierarchyLevel hierarchyLevel : hierarchyLevels) {
             result.put(hierarchyLevel, null);

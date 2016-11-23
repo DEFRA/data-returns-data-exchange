@@ -13,6 +13,8 @@ import uk.gov.ea.datareturns.domain.model.validation.constraints.factory.RecordC
 import uk.gov.ea.datareturns.util.SpringApplicationContextProvider;
 
 import javax.validation.ConstraintValidatorContext;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * Validate that all entries meet the dependency validation requirements
@@ -34,9 +36,15 @@ public class DependencyValidator implements RecordConstraintValidator<DataSample
         // We are instantiated through reflection so we need to get the validation engine via the spring application context
         ParameterHierarchy parameterHierarchy = SpringApplicationContextProvider.getApplicationContext().getBean(ParameterHierarchy.class);
 
+        Set<Hierarchy.HierarchyEntity> entities = new HashSet<>();
+        entities.add(returnTypeEntity);
+        entities.add(releasesAndTransfersEntity);
+        entities.add(parameterEntity);
+        entities.add(unitEntity);
+
         // Call the dependency validation engine
         Pair<HierarchyLevel, Hierarchy.Result> validation
-                = parameterHierarchy.validate(returnTypeEntity, releasesAndTransfersEntity, parameterEntity, unitEntity);
+                = parameterHierarchy.validate(entities);
 
         String message = null;
         Hierarchy.Result result = validation.getRight();
@@ -45,7 +53,7 @@ public class DependencyValidator implements RecordConstraintValidator<DataSample
         if (result == Hierarchy.Result.OK) {
             return true;
         } else {
-            // TO DO - remove this kludge - the validations need to be tiered
+            // TODO - remove this kludge - the validations need to be tiered
             if (result == Hierarchy.Result.EXPECTED && level != ControlledListsList.RELEASES_AND_TRANSFER) {
                 return true;
             } else {
