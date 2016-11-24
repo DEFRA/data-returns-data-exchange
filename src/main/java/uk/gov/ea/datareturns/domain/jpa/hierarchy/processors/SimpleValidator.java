@@ -17,18 +17,23 @@ import java.util.Set;
  */
 @Component
 public class SimpleValidator implements Validator {
-    private Iterator<HierarchyLevel> hierarchyNodesIttr;
+    private Iterator<HierarchyLevel<? extends Hierarchy.HierarchyEntity>> hierarchyNodesIttr;
 
-    public Pair<HierarchyLevel, Hierarchy.Result> validate(Map cache, Set<HierarchyLevel> hierarchyLevels, Map<HierarchyLevel, String> entityNames) {
+    public Pair<HierarchyLevel<? extends Hierarchy.HierarchyEntity>, Hierarchy.Result> validate(
+            Map cache, Set<HierarchyLevel<? extends Hierarchy.HierarchyEntity>> hierarchyLevels,
+            Map<HierarchyLevel<? extends Hierarchy.HierarchyEntity>, String> entityNames) {
+
         hierarchyNodesIttr = hierarchyLevels.iterator();
-        HierarchyLevel rootNode = hierarchyNodesIttr.next();
+        HierarchyLevel<? extends Hierarchy.HierarchyEntity> rootNode = hierarchyNodesIttr.next();
         return evaluate(rootNode, cache, entityNames);
     }
 
     /*
      * Main evaluating function which is recursive as the rules are the same for each entity
      */
-    private Pair<HierarchyLevel, Hierarchy.Result> evaluate(HierarchyLevel level, Map cache, Map<HierarchyLevel, String> entityNames) {
+    private Pair<HierarchyLevel<? extends Hierarchy.HierarchyEntity>, Hierarchy.Result> evaluate(
+            HierarchyLevel<? extends Hierarchy.HierarchyEntity> level,
+            Map cache, Map<HierarchyLevel<? extends Hierarchy.HierarchyEntity>, String> entityNames) {
         if (entityNames.get(level) != null) {
             /*
              * If the entity name is supplied (not null)
@@ -82,7 +87,11 @@ public class SimpleValidator implements Validator {
      * If the validation is not already complete and returned out of the above
      * recursive method it is terminated by this operation with a set lookup
      */
-    private Pair<HierarchyLevel, Hierarchy.Result> evaluate(HierarchyLevel level, Set cache, Map<HierarchyLevel, String> entityNames) {
+    private Pair<HierarchyLevel<? extends Hierarchy.HierarchyEntity>, Hierarchy.Result> evaluate(
+            HierarchyLevel<? extends Hierarchy.HierarchyEntity> level,
+            Set cache,
+            Map<HierarchyLevel<? extends Hierarchy.HierarchyEntity>, String> entityNames) {
+
         if (entityNames.get(level) != null) {
             /*
              * If the entity name is supplied (not null)
@@ -144,13 +153,19 @@ public class SimpleValidator implements Validator {
      * Map<String, Set<String>> - cache by parameters
      * Set<String> - a hash-set of units
      */
-    private Pair<HierarchyLevel, Hierarchy.Result> shim(HierarchyLevel level, Map cache, String cacheKey, Map<HierarchyLevel, String> entityNames) {
+    private Pair<HierarchyLevel<? extends Hierarchy.HierarchyEntity>, Hierarchy.Result> shim(
+            HierarchyLevel<? extends Hierarchy.HierarchyEntity> level,
+            Map cache, String cacheKey,
+            Map<HierarchyLevel<? extends Hierarchy.HierarchyEntity>, String> entityNames) {
+
         entityNames.remove(level);
+
         if (cache.get(cacheKey) instanceof Set) {
             return evaluate(hierarchyNodesIttr.next(), (Set)cache.get(cacheKey), entityNames);
         } else {
             return evaluate(hierarchyNodesIttr.next(), (Map)cache.get(cacheKey), entityNames);
         }
     }
+
 
 }

@@ -10,10 +10,12 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
- * Created by graham on 24/11/16.
+ * Functionality for classes implementing GroupingEntityDao - collects the functions in a single place
+ * @param <E>
+ * @param <F>
  */
-public class GroupingEntityCommon<E extends Hierarchy.GroupedHierarchyEntity, F extends EntityDao<E>> {
-    protected static final Logger LOGGER = LoggerFactory.getLogger(GroupingEntityCommon.class);
+class GroupingEntityCommon<E extends Hierarchy.GroupedHierarchyEntity, F extends EntityDao<E>> {
+    private static final Logger LOGGER = LoggerFactory.getLogger(GroupingEntityCommon.class);
     private final F dao;
     private volatile Map<String, Set<E>> cacheByGroup = null;
 
@@ -40,15 +42,8 @@ public class GroupingEntityCommon<E extends Hierarchy.GroupedHierarchyEntity, F 
         return getCacheByGroup().entrySet().stream().map(Map.Entry::getKey).collect(Collectors.toSet());
     }
 
-    public Set<E> getGroupMembers(String group) {
-        return getCacheByGroup().get(group);
-    }
-
     public boolean isGroupMember(String group, String item) {
         E e = dao.getByNameRelaxed(item);
-        if (e == null || e.getGroup() == null) {
-            return false;
-        }
-        return dao.getKeyFromRelaxedName(e.getGroup()).equals(group);
+        return !(e == null || e.getGroup() == null) && dao.getKeyFromRelaxedName(e.getGroup()).equals(group);
     }
 }

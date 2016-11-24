@@ -13,6 +13,15 @@ import java.util.Set;
  * @Author Graham Willis
  */
 public interface Navigator {
-    Pair<HierarchyLevel, List<? extends Hierarchy.HierarchyEntity>> children(Map cache, Set<HierarchyLevel> hierarchyLevels, Map<HierarchyLevel, String> hierarchyNodeStringMap);
-    Pair<HierarchyLevel, List<? extends Hierarchy.HierarchyEntity>> children(Map cache, Set<HierarchyLevel> hierarchyLevels, Map<HierarchyLevel, String> hierarchyNodeStringMap, String field, String contains);
+    Pair<HierarchyLevel<? extends Hierarchy.HierarchyEntity>, List<? extends Hierarchy.HierarchyEntity>> children(
+            Map cache,
+            Set<HierarchyLevel<? extends Hierarchy.HierarchyEntity>> hierarchyLevels,
+            Map<HierarchyLevel<? extends Hierarchy.HierarchyEntity>, String> hierarchyNodeStringMap);
+
+    Pair<HierarchyLevel<? extends Hierarchy.HierarchyEntity>, List<? extends Hierarchy.HierarchyEntity>> children(
+            Map cache, Set<HierarchyLevel<? extends Hierarchy.HierarchyEntity>> hierarchyLevels,
+            Map<HierarchyLevel<? extends Hierarchy.HierarchyEntity>, String> hierarchyNodeStringMap,
+            String field, String contains);
+
+
 }
