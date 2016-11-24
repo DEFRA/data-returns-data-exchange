@@ -1,6 +1,7 @@
 package uk.gov.ea.datareturns.domain.jpa.hierarchy.processors;
 
 import uk.gov.ea.datareturns.domain.jpa.dao.hierarchies.GroupingEntityDao;
+import uk.gov.ea.datareturns.domain.jpa.hierarchy.Hierarchy;
 import uk.gov.ea.datareturns.domain.jpa.hierarchy.HierarchyGroupLevel;
 import uk.gov.ea.datareturns.domain.jpa.hierarchy.HierarchyGroupSymbols;
 import uk.gov.ea.datareturns.util.SpringApplicationContextProvider;
@@ -22,12 +23,11 @@ public class GroupCommon {
      * @param entityName The given enity name
      * @return true if entity name is found
      */
-    static boolean cacheContainsGroupContainsName(HierarchyGroupLevel level, Set<String> cache, String entityName) {
-        Class<? extends GroupingEntityDao> listItemDaoClass = level.getDaoClass();
-        GroupingEntityDao dao = SpringApplicationContextProvider.getApplicationContext().getBean(listItemDaoClass);
-        Set<String> groups = findGroups(level, cache, dao);
+    static <E extends Hierarchy.GroupedHierarchyEntity> boolean cacheContainsGroupContainsName(HierarchyGroupLevel<E> level, Set<String> cache, String entityName) {
+        Class<? extends GroupingEntityDao<E>> listItemDaoClass = level.getDaoClass();
+        GroupingEntityDao<E> dao = SpringApplicationContextProvider.getApplicationContext().getBean(listItemDaoClass);
+        Set<String> groups = findGroups(cache, dao);
         if (groups.size() == 0) {
-            // There are no intersecting sets
             return false;
         } else {
             for (String group : groups) {
@@ -39,7 +39,7 @@ public class GroupCommon {
         }
     }
 
-    static boolean cacheContainsGroupContainsName(HierarchyGroupLevel level, Map<String, String> cache, String entityName) {
+    static <E extends Hierarchy.GroupedHierarchyEntity> boolean cacheContainsGroupContainsName(HierarchyGroupLevel<E> level, Map<String, String> cache, String entityName) {
         Set<String> cacheSet = cache.entrySet().stream().map(Map.Entry::getKey).collect(Collectors.toSet());
         return cacheContainsGroupContainsName(level, cacheSet, entityName);
     }
@@ -51,10 +51,10 @@ public class GroupCommon {
      * @param entityName
      * @return
      */
-    public static String getGroupInCacheFromName(HierarchyGroupLevel level, Set<String> cache, String entityName) {
+    public static <E extends Hierarchy.GroupedHierarchyEntity> String getGroupInCacheFromName(HierarchyGroupLevel<E> level, Set<String> cache, String entityName) {
         Class<? extends GroupingEntityDao> listItemDaoClass = level.getDaoClass();
-        GroupingEntityDao dao = SpringApplicationContextProvider.getApplicationContext().getBean(listItemDaoClass);
-        Set<String> groups = findGroups(level, cache, dao);
+        GroupingEntityDao<E> dao = SpringApplicationContextProvider.getApplicationContext().getBean(listItemDaoClass);
+        Set<String> groups = findGroups(cache, dao);
         if (groups.size() == 0) {
             return null;
         } else {
@@ -69,11 +69,10 @@ public class GroupCommon {
 
     /**
      * Find the groups on the hierarchy level
-     * @param level
      * @param cache
      * @return
      */
-    static private Set<String> findGroups(HierarchyGroupLevel level, Set<String> cache, GroupingEntityDao dao) {
+    static private <E extends Hierarchy.GroupedHierarchyEntity> Set<String> findGroups(Set<String> cache, GroupingEntityDao<E> dao) {
         // Get the list of groups associated with the entity at this level
         Set<String> levelGroups = dao.listGroups();
 

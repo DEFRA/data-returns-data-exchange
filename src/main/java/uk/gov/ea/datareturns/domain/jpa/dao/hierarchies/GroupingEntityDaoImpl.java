@@ -7,10 +7,11 @@ import java.util.Map;
 import java.util.Set;
 
 /**
- * Created by graham on 24/11/16.
+ * @author Graham Willis
+ * Abstract class for data access objects dao's where the entity is an aliasing entity and a hierarchy group entity
  */
 public abstract class GroupingEntityDaoImpl<E extends Hierarchy.GroupedHierarchyEntity> extends EntityDao<E> implements GroupingEntityDao<E> {
-    private GroupingEntityCommon common;
+    private final GroupingEntityCommon<E, ? extends EntityDao<E>> common;
     /**
      * Data access objects and caching for which the entity is both aliasing and in a hierarchy
      * with a group level
@@ -18,7 +19,7 @@ public abstract class GroupingEntityDaoImpl<E extends Hierarchy.GroupedHierarchy
      */
     public GroupingEntityDaoImpl(Class<E> entityClass) {
         super(entityClass);
-        this.common = new GroupingEntityCommon(this);
+        this.common = new GroupingEntityCommon<>(this);
     }
 
     private Map<String, Set<E>> getCacheByGroup() {
@@ -27,10 +28,6 @@ public abstract class GroupingEntityDaoImpl<E extends Hierarchy.GroupedHierarchy
 
     public Set<String> listGroups() {
         return common.listGroups();
-    }
-
-    public Set<E> getGroupMembers(String group) {
-        return common.getGroupMembers(group);
     }
 
     public boolean isGroupMember(String group, String item) {

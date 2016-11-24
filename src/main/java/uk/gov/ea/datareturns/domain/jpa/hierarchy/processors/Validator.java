@@ -12,5 +12,7 @@ import java.util.Set;
  * @Author Graham Willis
  */
 public interface Validator {
-    Pair<HierarchyLevel, Hierarchy.Result> validate(Map cache, Set<HierarchyLevel> hierarchyLevels, Map<HierarchyLevel, String> entityNames);
+    Pair<HierarchyLevel<? extends Hierarchy.HierarchyEntity>, Hierarchy.Result> validate(
+            Map cache, Set<HierarchyLevel<? extends Hierarchy.HierarchyEntity>> hierarchyLevels,
+            Map<HierarchyLevel<? extends Hierarchy.HierarchyEntity>, String> entityNames);
 }

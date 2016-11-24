@@ -17,18 +17,23 @@ import java.util.*;
  */
 @Component
 public class GroupNavigator implements Navigator {
-    private Iterator<HierarchyLevel> hierarchyNodesIttr;
+    private Iterator<HierarchyLevel<? extends Hierarchy.HierarchyEntity>> hierarchyNodesIttr;
 
     /**
      * Navigate to the next level down in the hierarchy
      */
-    @Override
-    public Pair<HierarchyLevel, List<? extends Hierarchy.HierarchyEntity>> children(Map cache, Set<HierarchyLevel> hierarchyLevels, Map<HierarchyLevel, String> hierarchyNodeStringMap) {
+    public Pair<HierarchyLevel<? extends Hierarchy.HierarchyEntity>, List<? extends Hierarchy.HierarchyEntity>> children(
+            Map cache, Set<HierarchyLevel<? extends Hierarchy.HierarchyEntity>> hierarchyLevels,
+            Map<HierarchyLevel<? extends Hierarchy.HierarchyEntity>, String> hierarchyNodeStringMap) {
+
         return children(cache, hierarchyLevels, hierarchyNodeStringMap, null, null);
     }
 
-    @Override
-    public Pair<HierarchyLevel, List<? extends Hierarchy.HierarchyEntity>> children(Map cache, Set<HierarchyLevel> hierarchyLevels, Map<HierarchyLevel, String> entityNames, String field, String contains) {
+    public Pair<HierarchyLevel<? extends Hierarchy.HierarchyEntity>, List<? extends Hierarchy.HierarchyEntity>> children(
+            Map cache, Set<HierarchyLevel<? extends Hierarchy.HierarchyEntity>> hierarchyLevels,
+            Map<HierarchyLevel<? extends Hierarchy.HierarchyEntity>, String> entityNames,
+            String field, String contains) {
+
         hierarchyNodesIttr = hierarchyLevels.iterator();
         HierarchyLevel rootNode = hierarchyNodesIttr.next();
         return down(rootNode, cache, entityNames, new HashMap<>(), field, contains);
@@ -46,13 +51,16 @@ public class GroupNavigator implements Navigator {
      * Map<String, Set<String>> - cache by parameters
      * Set<String> - a hash-set of units
      */
-    private Pair<HierarchyLevel, List<? extends Hierarchy.HierarchyEntity>> shim(HierarchyLevel node,
-                                                                                 Map cache,
-                                                                                 String cacheKey,
-                                                                                 Map<HierarchyLevel, String> entityNames,
-                                                                                 Map<HierarchyLevel, String> keys,
-                                                                                 String field, String contains) {
+    private Pair<HierarchyLevel<? extends Hierarchy.HierarchyEntity>, List<? extends Hierarchy.HierarchyEntity>> shim(
+            HierarchyLevel<? extends Hierarchy.HierarchyEntity> node,
+            Map cache,
+            String cacheKey,
+            Map<HierarchyLevel<? extends Hierarchy.HierarchyEntity>, String> entityNames,
+            Map<HierarchyLevel<? extends Hierarchy.HierarchyEntity>, String> keys,
+            String field, String contains) {
+
         keys.put(node, entityNames.remove(node));
+
         if (cache.get(cacheKey) instanceof Set) {
             return list(hierarchyNodesIttr.next(), (Set)cache.get(cacheKey), field, contains);
         } else {
@@ -60,11 +68,13 @@ public class GroupNavigator implements Navigator {
         }
     }
 
-    private Pair<HierarchyLevel, List<? extends Hierarchy.HierarchyEntity>> down(HierarchyLevel level,
-                                                                                 Map cache,
-                                                                                 Map<HierarchyLevel, String> entityNames,
-                                                                                 Map<HierarchyLevel, String> keys,
-                                                                                 String field, String contains) {
+    private Pair<HierarchyLevel<? extends Hierarchy.HierarchyEntity>, List<? extends Hierarchy.HierarchyEntity>> down(
+            HierarchyLevel<? extends Hierarchy.HierarchyEntity> level,
+            Map cache,
+            Map<HierarchyLevel<? extends Hierarchy.HierarchyEntity>, String> entityNames,
+            Map<HierarchyLevel<? extends Hierarchy.HierarchyEntity>, String> keys,
+            String field, String contains) {
+
         if (entityNames.get(level) != null) {
             /*
              * If the entity name is supplied (not null)
@@ -108,7 +118,10 @@ public class GroupNavigator implements Navigator {
         }
     }
 
-    private Pair<HierarchyLevel, List<? extends Hierarchy.HierarchyEntity>> list(HierarchyLevel level, Set cache, String field, String contains) {
+    private Pair<HierarchyLevel<? extends Hierarchy.HierarchyEntity>, List<? extends Hierarchy.HierarchyEntity>> list(
+            HierarchyLevel<? extends Hierarchy.HierarchyEntity> level,
+            Set cache, String field, String contains) {
+
         // Get the Dao from the level
         Class<? extends EntityDao> listItemDaoClass = level.getDaoClass();
 
@@ -154,7 +167,7 @@ public class GroupNavigator implements Navigator {
      * @param cache
      * @return A pair giving the level and the list
      */
-    private Pair<HierarchyLevel, List<? extends Hierarchy.HierarchyEntity>> list(HierarchyLevel level,
+    private Pair<HierarchyLevel<? extends Hierarchy.HierarchyEntity>, List<? extends Hierarchy.HierarchyEntity>> list(HierarchyLevel<? extends Hierarchy.HierarchyEntity> level,
                                                                                  Map cache, String field, String contains) {
         // Get the Dao from the level
         Class<? extends EntityDao> listItemDaoClass = level.getDaoClass();

@@ -22,7 +22,7 @@ public interface GroupingEntityDao<E extends Hierarchy.GroupedHierarchyEntity> {
      * @param group The group
      * @return
      */
-    Set<E> getGroupMembers(String group);
+    //Set<E> getGroupMembers(String group);
 
     /**
      * Test if a given entity is a member of a group

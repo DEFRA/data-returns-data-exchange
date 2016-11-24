@@ -7,10 +7,11 @@ import uk.gov.ea.datareturns.domain.jpa.hierarchy.Hierarchy;
 import java.util.Set;
 
 /**
- * Created by graham on 24/11/16.
+ * Abstract class for data access objects dao's where the entity is an aliasing entity and a hierarchy group entity
+ * @param <E>
  */
 public abstract class GroupingAliasingEntityDaoImpl<E extends AliasingEntity & Hierarchy.GroupedHierarchyEntity> extends AliasingEntityDao<E> implements GroupingEntityDao<E> {
-    private GroupingEntityCommon common;
+    private final GroupingEntityCommon<E, ? extends AliasingEntityDao<E>> common;
 
     /**
      * Data access objects and caching for which the entity is both aliasing and in a hierarchy and
@@ -19,15 +20,11 @@ public abstract class GroupingAliasingEntityDaoImpl<E extends AliasingEntity & H
      */
     public GroupingAliasingEntityDaoImpl(Class<E> entityClass) {
         super(entityClass);
-        this.common = new GroupingEntityCommon(this);
+        this.common = new GroupingEntityCommon<>(this);
     }
 
     public Set<String> listGroups() {
         return common.listGroups();
-    }
-
-    public Set<E> getGroupMembers(String group) {
-        return common.getGroupMembers(group);
     }
 
     public boolean isGroupMember(String group, String item) {
