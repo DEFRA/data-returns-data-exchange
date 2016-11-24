@@ -14,4 +14,8 @@ public final class HierarchyGroupSymbols extends HierarchySymbols {
     public static String extractGroup(String item) {
         return item.substring(1, item.length() - 1);
     }
+
+    public static String injectGroup(String item) {
+        return "[" + item.trim() + "]";
+    }
 }

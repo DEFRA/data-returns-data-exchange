@@ -38,7 +38,7 @@ public abstract class EntityDao<E extends ControlledListEntity> {
     @PersistenceContext
     protected EntityManager entityManager;
 
-    protected final Class<E> entityClass;
+    public final Class<E> entityClass;
 
     protected volatile Map<String, E> cacheByName = null;
     protected volatile Map<String, E> cacheByNameKey = null;
@@ -49,7 +49,7 @@ public abstract class EntityDao<E extends ControlledListEntity> {
      * Let the Dao class know the type of entity in order that type-safe
      * hibernate operations can be performed
      */
-    protected EntityDao(Class<E> entityClass) {
+    public EntityDao(Class<E> entityClass) {
         this.entityClass = entityClass;
     }
 

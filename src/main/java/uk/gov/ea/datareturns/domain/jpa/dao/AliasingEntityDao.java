@@ -14,7 +14,7 @@ import java.util.stream.Collectors;
  *
  * @author Graham Willis
  */
-public class AliasingEntityDao<E extends AliasingEntity> extends EntityDao<E> {
+public abstract class AliasingEntityDao<E extends AliasingEntity> extends EntityDao<E> {
 
     private volatile Map<String, E> cacheByAlias = null;
     private volatile Map<String, E> cacheByAliasKey = null;
@@ -25,7 +25,7 @@ public class AliasingEntityDao<E extends AliasingEntity> extends EntityDao<E> {
      *
      * @param entityClass
      */
-    AliasingEntityDao(Class<E> entityClass) {
+    public AliasingEntityDao(Class<E> entityClass) {
         super(entityClass);
     }
 

@@ -1,7 +1,6 @@
 package uk.gov.ea.datareturns.domain.jpa.hierarchy.processors;
 
-import uk.gov.ea.datareturns.domain.jpa.dao.GroupingEntityDao;
-import uk.gov.ea.datareturns.domain.jpa.hierarchy.Hierarchy;
+import uk.gov.ea.datareturns.domain.jpa.dao.hierarchies.GroupingEntityDao;
 import uk.gov.ea.datareturns.domain.jpa.hierarchy.HierarchyGroupLevel;
 import uk.gov.ea.datareturns.domain.jpa.hierarchy.HierarchyGroupSymbols;
 import uk.gov.ea.datareturns.util.SpringApplicationContextProvider;
@@ -23,26 +22,10 @@ public class GroupCommon {
      * @param entityName The given enity name
      * @return true if entity name is found
      */
-     static boolean cacheContainsGroupContainsName(HierarchyGroupLevel level, Set<String> cache, String entityName) {
-        // Get the Dao from the level
-        Class<? extends GroupingEntityDao<? extends Hierarchy.GroupedHierarchyEntity>> listItemDaoClass = level.getDaoClass();
-
-        // Get the DAO from spring
-        GroupingEntityDao<? extends Hierarchy.GroupedHierarchyEntity> dao = SpringApplicationContextProvider.getApplicationContext().getBean(listItemDaoClass);
-
-        // Get the list of groups associated with the entity at this level
-        Set<String> levelGroups = dao.listGroups();
-
-        // Get the list of groups at this level in the cache
-        Set<String> cacheGroups = cache.stream()
-                .filter(c -> HierarchyGroupSymbols.isGroup(c))
-                .map(c -> HierarchyGroupSymbols.extractGroup(c))
-                .collect(Collectors.toSet());
-
-        // Get the groups appearing in both sets.
-        Set<String> groups = new HashSet<>(levelGroups);
-        groups.retainAll(cacheGroups);
-
+    static boolean cacheContainsGroupContainsName(HierarchyGroupLevel level, Set<String> cache, String entityName) {
+        Class<? extends GroupingEntityDao> listItemDaoClass = level.getDaoClass();
+        GroupingEntityDao dao = SpringApplicationContextProvider.getApplicationContext().getBean(listItemDaoClass);
+        Set<String> groups = findGroups(level, cache, dao);
         if (groups.size() == 0) {
             // There are no intersecting sets
             return false;
@@ -59,6 +42,57 @@ public class GroupCommon {
     static boolean cacheContainsGroupContainsName(HierarchyGroupLevel level, Map<String, String> cache, String entityName) {
         Set<String> cacheSet = cache.entrySet().stream().map(Map.Entry::getKey).collect(Collectors.toSet());
         return cacheContainsGroupContainsName(level, cacheSet, entityName);
+    }
+
+    /**
+     * Find the group in the cache that corresponds to the supplied entity name
+     * @param level
+     * @param cache
+     * @param entityName
+     * @return
+     */
+    public static String getGroupInCacheFromName(HierarchyGroupLevel level, Set<String> cache, String entityName) {
+        Class<? extends GroupingEntityDao> listItemDaoClass = level.getDaoClass();
+        GroupingEntityDao dao = SpringApplicationContextProvider.getApplicationContext().getBean(listItemDaoClass);
+        Set<String> groups = findGroups(level, cache, dao);
+        if (groups.size() == 0) {
+            return null;
+        } else {
+            for (String group : groups) {
+                if (dao.isGroupMember(group, entityName)) {
+                    return group;
+                }
+            }
+            return null;
+        }
+    }
+
+    /**
+     * Find the groups on the hierarchy level
+     * @param level
+     * @param cache
+     * @return
+     */
+    static private Set<String> findGroups(HierarchyGroupLevel level, Set<String> cache, GroupingEntityDao dao) {
+        // Get the list of groups associated with the entity at this level
+        Set<String> levelGroups = dao.listGroups();
+
+        // Get the list of groups at this level in the cache
+        Set<String> cacheGroups = cache.stream()
+                .filter(c -> HierarchyGroupSymbols.isGroup(c))
+                .map(c -> HierarchyGroupSymbols.extractGroup(c))
+                .collect(Collectors.toSet());
+
+        // Get the groups appearing in both sets.
+        Set<String> groups = new HashSet<>(levelGroups);
+        groups.retainAll(cacheGroups);
+
+        return groups;
+    }
+
+    public static String getGroupInCacheFromName(HierarchyGroupLevel level, Map<String, String> cache, String entityName) {
+        Set<String> cacheSet = cache.entrySet().stream().map(Map.Entry::getKey).collect(Collectors.toSet());
+        return getGroupInCacheFromName(level, cacheSet, entityName);
     }
 
     static boolean allNulls(Map m) {

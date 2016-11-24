@@ -1,15 +1,16 @@
-package uk.gov.ea.datareturns.domain.jpa.dao;
+package uk.gov.ea.datareturns.domain.jpa.dao.hierarchies;
 
-import uk.gov.ea.datareturns.domain.jpa.entities.ControlledListEntity;
+import uk.gov.ea.datareturns.domain.jpa.hierarchy.Hierarchy;
 
 import java.util.Set;
 
 /**
- * DAO for monitoring methods and standards.
- *
- * @author Graham Willis
+ * @Author Graham Willis
+ * Interface for the Dao which use groups on the hierarchy. Because Java does not support multiple
+ * inheritance it is necessary to have two implementing subclasses one for aliasing entities
+ * and one for not aliasing entities.
  */
-public interface GroupingEntityDao<E extends ControlledListEntity> {
+public interface GroupingEntityDao<E extends Hierarchy.GroupedHierarchyEntity> {
     /**
      * List the set of groups allowed for this entity
      * @return
@@ -30,4 +31,5 @@ public interface GroupingEntityDao<E extends ControlledListEntity> {
      * @return true if the entity is a member of the group
      */
     boolean isGroupMember(String group, String item);
-}
+
+ }

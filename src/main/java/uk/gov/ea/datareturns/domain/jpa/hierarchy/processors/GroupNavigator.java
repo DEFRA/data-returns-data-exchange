@@ -3,10 +3,7 @@ package uk.gov.ea.datareturns.domain.jpa.hierarchy.processors;
 import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.stereotype.Component;
 import uk.gov.ea.datareturns.domain.jpa.dao.EntityDao;
-import uk.gov.ea.datareturns.domain.jpa.hierarchy.Hierarchy;
-import uk.gov.ea.datareturns.domain.jpa.hierarchy.HierarchyGroupLevel;
-import uk.gov.ea.datareturns.domain.jpa.hierarchy.HierarchyLevel;
-import uk.gov.ea.datareturns.domain.jpa.hierarchy.HierarchySymbols;
+import uk.gov.ea.datareturns.domain.jpa.hierarchy.*;
 import uk.gov.ea.datareturns.util.SpringApplicationContextProvider;
 
 import java.util.*;
@@ -90,7 +87,8 @@ public class GroupNavigator implements Navigator {
             } else if (level instanceof HierarchyGroupLevel) {
                 // For a group level search for the group
                 if (GroupCommon.cacheContainsGroupContainsName((HierarchyGroupLevel)level, cache, entityNames.get(level))) {
-                    return shim(level, cache, entityNames.get(level), entityNames, keys, field, contains);
+                    String foundGroup = GroupCommon.getGroupInCacheFromName((HierarchyGroupLevel)level, cache, entityNames.get(level));
+                    return shim(level, cache, HierarchyGroupSymbols.injectGroup(foundGroup), entityNames, keys, field, contains);
                 } else {
                     return Pair.of(level, null);
                 }
