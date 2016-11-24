@@ -51,7 +51,8 @@ public class GroupValidator implements Validator {
             } else if (level instanceof HierarchyGroupLevel) {
                 // For a group level search for the group
                 if (GroupCommon.cacheContainsGroupContainsName((HierarchyGroupLevel)level, cache, entityNames.get(level))) {
-                    return shim(level, cache, entityNames.get(level), entityNames);
+                    String foundGroup = GroupCommon.getGroupInCacheFromName((HierarchyGroupLevel)level, cache, entityNames.get(level));
+                    return shim(level, cache, HierarchyGroupSymbols.injectGroup(foundGroup), entityNames);
                 } else {
                     return Pair.of(level, Hierarchy.Result.NOT_IN_GROUP);
                 }
@@ -77,7 +78,7 @@ public class GroupValidator implements Validator {
                 return Pair.of(level, Hierarchy.Result.EXPECTED);
             } else if (level instanceof HierarchyGroupLevel) {
                 // It cannot be null if we expect a group
-                return Pair.of(level, Hierarchy.Result.NOT_IN_GROUP);
+                return Pair.of(level, Hierarchy.Result.EXPECTED);
             } else if (cache.containsKey(HierarchyGroupSymbols.NOT_APPLICABLE)) {
                 // We don't care - OK
                 return Pair.of(level, Hierarchy.Result.OK);
@@ -140,7 +141,7 @@ public class GroupValidator implements Validator {
                 return Pair.of(level, Hierarchy.Result.EXPECTED);
             } else if (level instanceof HierarchyGroupLevel) {
                 // It cannot be null if we expect a group
-                return Pair.of(level, Hierarchy.Result.NOT_IN_GROUP);
+                return Pair.of(level, Hierarchy.Result.EXPECTED);
             } else if (cache.contains(HierarchyGroupSymbols.NOT_APPLICABLE)) {
                 // We don't care - OK
                 return Pair.of(level, Hierarchy.Result.OK);

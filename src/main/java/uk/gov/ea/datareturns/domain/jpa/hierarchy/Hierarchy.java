@@ -42,6 +42,7 @@ public class Hierarchy<C extends HierarchyCacheProvider> {
      * Public interface used by the entities participating in the hierarchy
      */
     public interface GroupedHierarchyEntity extends HierarchyEntity {
+        String getGroup();
     }
 
     /**

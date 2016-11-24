@@ -114,29 +114,15 @@ public class ControlledListResource {
     public Response getHierarchyLevel(@Context UriInfo ui) {
         MultivaluedMap<String, String> queryParams = ui.getQueryParameters();
         MultivaluedMap<String, String> pathParams = ui.getPathParameters();
-        Hierarchy hierachy = null;
         try {
             ApplicationContext context = SpringApplicationContextProvider.getApplicationContext();
             List<String> hierachyNames = pathParams.get("name");
-            hierachy = (Hierarchy) context.getBean(hierachyNames.get(0) + "-hierarchy");
-            Set<HierarchyLevel> levels = hierachy.getHierarchyLevels();
+            Hierarchy hierarchy = (Hierarchy) context.getBean(hierachyNames.get(0) + "-hierarchy");
+            Set<HierarchyLevel> levels = hierarchy.getHierarchyLevels();
             String field = queryParams.containsKey("field") ? ((List<String>)queryParams.get("field")).get(0) : null;
             String contains = queryParams.containsKey("contains") ? ((List<String>)queryParams.get("contains")).get(0) : null;
-            // The query params should correspond to the path variable stored against
-            // the controlled list
-            Set<Hierarchy.HierarchyEntity> entities = new HashSet<>();
-            for (HierarchyLevel level : levels) {
-                String path = level.getControlledList().getPath();
-                if (queryParams.containsKey(path)) {
-                    Class<? extends EntityDao<? extends Hierarchy.HierarchyEntity>> daoClass = level.getDaoClass();
-                    EntityDao<? extends Hierarchy.HierarchyEntity> dao = context.getBean(daoClass);
-                    Hierarchy.HierarchyEntity entity = dao.getByNameRelaxed(queryParams.getFirst(path));
-                    if (entity != null) {
-                        entities.add(entity);
-                    }
-                }
-            }
-            Pair<String, List<? extends Hierarchy.HierarchyEntity>> controlledList = controlledListProcessor.getListData(hierachy, entities, field, contains);
+            Set<Hierarchy.HierarchyEntity> entities = getHierarchyEntitiesFromParameters(queryParams, context, levels);
+            Pair<String, List<? extends Hierarchy.HierarchyEntity>> controlledList = controlledListProcessor.getListData(hierarchy, entities, field, contains);
             return Response.status(Response.Status.OK).entity(controlledList).build();
         } catch (NoSuchBeanDefinitionException|ClassCastException e) {
             return Response.status(Response.Status.BAD_REQUEST).entity(new ExceptionMessageContainer(
@@ -144,4 +130,58 @@ public class ControlledListResource {
                     "No hierarchy: you must specify a known hierarchy in the path parameter /controlled-list/hierarchy/{name}")).build();
         }
     }
-}
+
+    /**
+     * This end point provides a service to test the validation of a given hierarchy level
+     *
+     * The name of the hierarchy is specified in the path parameter hierarchy and is identified in the spring
+     * context by appending the string -hierarchy
+     * @param ui
+     * @return
+     */
+    @GET
+    @Path("/hierarchy/{name}/validate")
+    @Produces(APPLICATION_JSON)
+    public Response testHierarchyLevel
+    (@Context UriInfo ui) {
+        MultivaluedMap<String, String> queryParams = ui.getQueryParameters();
+        MultivaluedMap<String, String> pathParams = ui.getPathParameters();
+        try {
+            ApplicationContext context = SpringApplicationContextProvider.getApplicationContext();
+            List<String> hierarchyNames = pathParams.get("name");
+            Hierarchy hierarchy = (Hierarchy) context.getBean(hierarchyNames.get(0) + "-hierarchy");
+            Set<HierarchyLevel> levels = hierarchy.getHierarchyLevels();
+            Set<Hierarchy.HierarchyEntity> entities = getHierarchyEntitiesFromParameters(queryParams, context, levels);
+            Pair<String, Hierarchy.Result> validationResult = controlledListProcessor.validate(hierarchy, entities);
+            return Response.status(Response.Status.OK).entity(validationResult).build();
+        } catch (NoSuchBeanDefinitionException|ClassCastException e) {
+            return Response.status(Response.Status.BAD_REQUEST).entity(new ExceptionMessageContainer(
+                    ApplicationExceptionType.UNKNOWN_LIST_TYPE,
+                    "No hierarchy: you must specify a known hierarchy in the path parameter /controlled-list/hierarchy/{name}")).build();
+        }
+    }
+
+    /**
+     * The query params should correspond to the path variable stored against the controlled list
+     * @param queryParams
+     * @param context
+     * @param levels
+     * @return
+     */
+    private Set<Hierarchy.HierarchyEntity> getHierarchyEntitiesFromParameters(MultivaluedMap<String, String> queryParams, ApplicationContext context, Set<HierarchyLevel> levels) {
+        Set<Hierarchy.HierarchyEntity> entities = new HashSet<>();
+        for (HierarchyLevel level : levels) {
+            String path = level.getControlledList().getPath();
+            if (queryParams.containsKey(path)) {
+                Class<? extends EntityDao<? extends Hierarchy.HierarchyEntity>> daoClass = level.getDaoClass();
+                EntityDao<? extends Hierarchy.HierarchyEntity> dao = context.getBean(daoClass);
+                Hierarchy.HierarchyEntity entity = dao.getByNameRelaxed(queryParams.getFirst(path));
+                if (entity != null) {
+                    entities.add(entity);
+                }
+            }
+        }
+        return entities;
+    }
+
+ }

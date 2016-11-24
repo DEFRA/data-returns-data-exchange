@@ -107,4 +107,15 @@ public class ControlledListProcessor implements ApplicationContextAware {
         }
         return new ImmutablePair<>(results.getLeft().getControlledList().getPath(), results.getRight());
     }
+
+    /**
+     * return the validation for a group of entities against a hierarchy
+     * @param hierarchy The hierarchy to interrogate
+     * @param entities The list of entities implying the route to the require level
+     */
+    public Pair<String, Hierarchy.Result> validate(Hierarchy hierarchy, Set<Hierarchy.HierarchyEntity> entities) {
+        Pair<HierarchyLevel, Hierarchy.Result> result = hierarchy.validate(entities);
+        return new ImmutablePair<>(result.getLeft().getControlledList().getPath(), result.getRight());
+    }
+
 }

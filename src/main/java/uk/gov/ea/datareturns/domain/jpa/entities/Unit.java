@@ -132,4 +132,8 @@ public class Unit implements AliasingEntity, Hierarchy.GroupedHierarchyEntity {
         return name.hashCode();
     }
 
+    @Override
+    public String getGroup() {
+        return type;
+    }
 }
