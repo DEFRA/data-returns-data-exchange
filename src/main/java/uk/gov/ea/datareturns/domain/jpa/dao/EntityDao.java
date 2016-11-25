@@ -3,10 +3,11 @@ package uk.gov.ea.datareturns.domain.jpa.dao;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.transaction.annotation.Transactional;
-import uk.gov.ea.datareturns.domain.jpa.hierarchy.processors.GroupingEntityCommon;
 import uk.gov.ea.datareturns.domain.jpa.entities.ControlledListEntity;
 import uk.gov.ea.datareturns.domain.jpa.hierarchy.Hierarchy;
+import uk.gov.ea.datareturns.domain.jpa.hierarchy.processors.GroupingEntityCommon;
 import uk.gov.ea.datareturns.util.SpringApplicationContextProvider;
+import uk.gov.ea.datareturns.util.TextUtils;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -46,8 +47,6 @@ public abstract class EntityDao<E extends ControlledListEntity> {
 
     protected volatile Map<String, E> cacheByName = null;
     protected volatile Map<String, E> cacheByNameKey = null;
-
-    private final Pattern removeMultipleSpaces = Pattern.compile("\\s{2,}");
 
     /**
      * Let the Dao class know the type of entity in order that type-safe
