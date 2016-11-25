@@ -12,7 +12,7 @@ import javax.persistence.*;
 @SuppressWarnings({ "JavaDoc", "unused" })
 @Entity
 @Table(name = "return_types")
-public class ReturnType implements ControlledListEntity, Hierarchy.HierarchyEntity {
+public class ReturnType implements ControlledListEntity, Hierarchy.GroupedHierarchyEntity {
 
     @Id
     @SequenceGenerator(name = "return_types_id_seq", sequenceName = "return_types_id_seq", allocationSize = 1)
@@ -67,4 +67,12 @@ public class ReturnType implements ControlledListEntity, Hierarchy.HierarchyEnti
         return name.hashCode();
     }
 
+    /**
+     * Group by sector
+     * @return Group
+     */
+    @Override
+    public String getGroup() {
+        return sector;
+    }
 }

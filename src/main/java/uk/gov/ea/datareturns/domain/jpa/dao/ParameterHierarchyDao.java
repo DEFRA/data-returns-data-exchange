@@ -151,6 +151,7 @@ public class ParameterHierarchyDao extends HierarchyCacheProvider<Map<String, Ma
                 .filter(p -> !p.trim().equals(HierarchyGroupSymbols.EXCLUDE))
                 .filter(p -> !p.trim().equals(HierarchyGroupSymbols.INCLUDE_ALL_OPTIONALLY))
                 .filter(p -> !p.trim().equals(HierarchyGroupSymbols.NOT_APPLICABLE))
+                .filter(p -> !HierarchyGroupSymbols.isGroup(p))
                 .filter(p -> !returnTypeDao.nameExists(p))
                 .collect(Collectors.toList());
 
@@ -171,6 +172,7 @@ public class ParameterHierarchyDao extends HierarchyCacheProvider<Map<String, Ma
                 .filter(p -> !p.trim().equals(HierarchyGroupSymbols.EXCLUDE))
                 .filter(p -> !p.trim().equals(HierarchyGroupSymbols.INCLUDE_ALL_OPTIONALLY))
                 .filter(p -> !p.trim().equals(HierarchyGroupSymbols.NOT_APPLICABLE))
+                .filter(p -> !HierarchyGroupSymbols.isGroup(p))
                 .filter(p -> !releasesAndTransfersDao.nameExists(p))
                 .collect(Collectors.toList());
 

@@ -41,23 +41,6 @@ public class ParameterHierarchyValidationTests {
     @Inject
     ParameterHierarchy parameterHierarchy;
 
-    /*
-     * Test landfill happy paths - no unit
-     */
-    @Test
-    public void dependencyLandfillHappy1() {
-        ReturnType returnType = returnTypeDao.getByName("Emissions to groundwater");
-        Assert.assertNotNull(returnType);
-
-        Parameter parameter = parameterDao.getByName("Trichlorobenzene");
-        Assert.assertNotNull(parameter);
-
-        Pair<HierarchyLevel<? extends Hierarchy.HierarchyEntity>, Hierarchy.Result> result
-                = parameterHierarchy.validate(returnType, parameter);
-
-        // We don't need to check the level (terminating entity for the happy path
-        Assert.assertEquals(Hierarchy.Result.OK, result.getRight());
-    }
 
     /*
      * Test landfill happy paths - with unit
@@ -209,7 +192,7 @@ public class ParameterHierarchyValidationTests {
                 = parameterHierarchy.validate(returnType, releasesAndTransfers, parameter, unit);
 
         Assert.assertEquals(ControlledListsList.UNIT, result.getLeft().getControlledList());
-        Assert.assertEquals(Hierarchy.Result.NOT_FOUND, result.getRight());
+        Assert.assertEquals(Hierarchy.Result.NOT_IN_GROUP, result.getRight());
     }
 
     @Test
@@ -269,207 +252,6 @@ public class ParameterHierarchyValidationTests {
         Assert.assertEquals(Hierarchy.Result.EXPECTED, result.getRight());
     }
 
-    @Test
-    public void dependencyREMHappyPath1() {
-        ReturnType returnType = returnTypeDao.getByName("REM Return");
-        Assert.assertNotNull(returnType);
-
-        Parameter parameter = parameterDao.getByName("Net Water Used");
-        Assert.assertNotNull(parameter);
-
-        Unit unit = unitDao.getByName("m3");
-        Assert.assertNotNull(unit);
-
-        Pair<HierarchyLevel<? extends Hierarchy.HierarchyEntity>, Hierarchy.Result> result
-                = parameterHierarchy.validate(returnType, parameter, unit);
-
-        Assert.assertEquals(Hierarchy.Result.OK, result.getRight());
-    }
-
-    @Test
-    public void dependencyREMWrongUnit() {
-        ReturnType returnType = returnTypeDao.getByName("REM Return");
-        Assert.assertNotNull(returnType);
-
-        Parameter parameter = parameterDao.getByName("Net Water Used");
-        Assert.assertNotNull(parameter);
-
-        Unit unit = unitDao.getByName("t");
-        Assert.assertNotNull(unit);
-
-        Pair<HierarchyLevel<? extends Hierarchy.HierarchyEntity>, Hierarchy.Result> result
-                = parameterHierarchy.validate(returnType, parameter, unit);
-
-        Assert.assertEquals(ControlledListsList.UNIT, result.getLeft().getControlledList());
-        Assert.assertEquals(Hierarchy.Result.NOT_FOUND, result.getRight());
-    }
-
-    @Test
-    public void dependencyREMNoUnit() {
-        ReturnType returnType = returnTypeDao.getByName("REM Return");
-        Assert.assertNotNull(returnType);
-
-        Parameter parameter = parameterDao.getByName("Net Water Used");
-        Assert.assertNotNull(parameter);
-
-        Pair<HierarchyLevel<? extends Hierarchy.HierarchyEntity>, Hierarchy.Result> result
-                = parameterHierarchy.validate(returnType, parameter, null);
-
-        Assert.assertEquals(ControlledListsList.UNIT, result.getLeft().getControlledList());
-        Assert.assertEquals(Hierarchy.Result.EXPECTED, result.getRight());
-    }
-
-    @Test
-    public void dependencyREMWrongParameter() {
-        ReturnType returnType = returnTypeDao.getByName("REM Return");
-        Assert.assertNotNull(returnType);
-
-        Parameter parameter = parameterDao.getByName("Diethylenetriamine");
-        Assert.assertNotNull(parameter);
-
-        Pair<HierarchyLevel<? extends Hierarchy.HierarchyEntity>, Hierarchy.Result> result
-                = parameterHierarchy.validate(returnType, parameter, null);
-
-        Assert.assertEquals(ControlledListsList.PARAMETER, result.getLeft().getControlledList());
-        Assert.assertEquals(Hierarchy.Result.NOT_FOUND, result.getRight());
-    }
-
-    @Test
-    public void dependencyREMNoParameter() {
-        ReturnType returnType = returnTypeDao.getByName("REM Return");
-        Assert.assertNotNull(returnType);
-
-        Pair<HierarchyLevel<? extends Hierarchy.HierarchyEntity>, Hierarchy.Result> result
-                = parameterHierarchy.validate(returnType, null, null);
-
-        Assert.assertEquals(ControlledListsList.PARAMETER, result.getLeft().getControlledList());
-        Assert.assertEquals(Hierarchy.Result.EXPECTED, result.getRight());
-    }
-
-    @Test
-    public void dependencyREMUnexpectedRelease() {
-        ReturnType returnType = returnTypeDao.getByName("REM Return");
-        Assert.assertNotNull(returnType);
-
-        ReleasesAndTransfers releasesAndTransfers = releasesAndTransfersDao.getByName("Controlled Water");
-        Assert.assertNotNull(releasesAndTransfers);
-
-        Parameter parameter = parameterDao.getByName("Net Water Used");
-        Assert.assertNotNull(parameter);
-
-        Unit unit = unitDao.getByName("t");
-        Assert.assertNotNull(unit);
-
-        Pair<HierarchyLevel<? extends Hierarchy.HierarchyEntity>, Hierarchy.Result> result
-                = parameterHierarchy.validate(returnType, releasesAndTransfers, parameter, unit);
-
-        Assert.assertEquals(ControlledListsList.RELEASES_AND_TRANSFER, result.getLeft().getControlledList());
-        Assert.assertEquals(Hierarchy.Result.NOT_EXPECTED, result.getRight());
-    }
-
-    @Test
-    public void dependencyLCPHappy() {
-        ReturnType returnType = returnTypeDao.getByName("IED Chap 3 Inventory");
-        Assert.assertNotNull(returnType);
-
-        Parameter parameter = parameterDao.getByName("Net Energy Input Other solid fuels");
-        Assert.assertNotNull(parameter);
-
-        Unit unit = unitDao.getByName("TJ");
-        Assert.assertNotNull(unit);
-
-        Pair<HierarchyLevel<? extends Hierarchy.HierarchyEntity>, Hierarchy.Result> result
-                = parameterHierarchy.validate(returnType, parameter, unit);
-
-        Assert.assertEquals(Hierarchy.Result.OK, result.getRight());
-   }
-
-    @Test
-    public void dependencyLCPWrongUnit() {
-        ReturnType returnType = returnTypeDao.getByName("IED Chap 3 Inventory");
-        Assert.assertNotNull(returnType);
-
-        Parameter parameter = parameterDao.getByName("Net Energy Input Other solid fuels");
-        Assert.assertNotNull(parameter);
-
-        Unit unit = unitDao.getByName("g");
-        Assert.assertNotNull(unit);
-
-        Pair<HierarchyLevel<? extends Hierarchy.HierarchyEntity>, Hierarchy.Result> result
-                = parameterHierarchy.validate(returnType, parameter, unit);
-
-        Assert.assertEquals(ControlledListsList.UNIT, result.getLeft().getControlledList());
-        Assert.assertEquals(Hierarchy.Result.NOT_FOUND, result.getRight());
-    }
-
-    @Test
-    public void dependencyLCPNoUnit() {
-        ReturnType returnType = returnTypeDao.getByName("IED Chap 3 Inventory");
-        Assert.assertNotNull(returnType);
-
-        Parameter parameter = parameterDao.getByName("Net Energy Input Other solid fuels");
-        Assert.assertNotNull(parameter);
-
-        Pair<HierarchyLevel<? extends Hierarchy.HierarchyEntity>, Hierarchy.Result> result
-                = parameterHierarchy.validate(returnType, parameter, null);
-
-        Assert.assertEquals(ControlledListsList.UNIT, result.getLeft().getControlledList());
-        Assert.assertEquals(Hierarchy.Result.EXPECTED, result.getRight());
-    }
-
-    @Test
-    public void dependencyLCPWrongParameter() {
-        ReturnType returnType = returnTypeDao.getByName("IED Chap 3 Inventory");
-        Assert.assertNotNull(returnType);
-
-        Parameter parameter = parameterDao.getByName("Diethylenetriamine");
-        Assert.assertNotNull(parameter);
-
-        Unit unit = unitDao.getByName("TJ");
-        Assert.assertNotNull(unit);
-
-        Pair<HierarchyLevel<? extends Hierarchy.HierarchyEntity>, Hierarchy.Result> result
-                = parameterHierarchy.validate(returnType, parameter, unit);
-
-        Assert.assertEquals(ControlledListsList.PARAMETER, result.getLeft().getControlledList());
-        Assert.assertEquals(Hierarchy.Result.NOT_FOUND, result.getRight());
-    }
-
-    @Test
-    public void dependencyLCPNoParameter() {
-        ReturnType returnType = returnTypeDao.getByName("IED Chap 3 Inventory");
-        Assert.assertNotNull(returnType);
-
-        Unit unit = unitDao.getByName("TJ");
-        Assert.assertNotNull(unit);
-
-        Pair<HierarchyLevel<? extends Hierarchy.HierarchyEntity>, Hierarchy.Result> result
-                = parameterHierarchy.validate(returnType, null, unit);
-
-        Assert.assertEquals(ControlledListsList.PARAMETER, result.getLeft().getControlledList());
-        Assert.assertEquals(Hierarchy.Result.EXPECTED, result.getRight());
-    }
-
-    @Test
-    public void dependencyLCPUnexpectedRelease() {
-        ReturnType returnType = returnTypeDao.getByName("IED Chap 3 Inventory");
-        Assert.assertNotNull(returnType);
-
-        ReleasesAndTransfers releasesAndTransfers = releasesAndTransfersDao.getByName("Controlled Water");
-        Assert.assertNotNull(releasesAndTransfers);
-
-        Parameter parameter = parameterDao.getByName("Net Energy Input Other solid fuels");
-        Assert.assertNotNull(parameter);
-
-        Unit unit = unitDao.getByName("TJ");
-        Assert.assertNotNull(unit);
-
-        Pair<HierarchyLevel<? extends Hierarchy.HierarchyEntity>, Hierarchy.Result> result
-                = parameterHierarchy.validate(returnType, releasesAndTransfers, parameter, unit);
-
-        Assert.assertEquals(ControlledListsList.RELEASES_AND_TRANSFER, result.getLeft().getControlledList());
-        Assert.assertEquals(Hierarchy.Result.NOT_EXPECTED, result.getRight());
-    }
 
     @Test
     public void nothing() {
@@ -538,28 +320,7 @@ public class ParameterHierarchyValidationTests {
         Parameter parameter = parameterDao.getByName("Americium 241");
         Assert.assertNotNull(parameter);
 
-        Unit unit = unitDao.getByName("mol");
-        Assert.assertNotNull(unit);
-
-        Pair<HierarchyLevel<? extends Hierarchy.HierarchyEntity>, Hierarchy.Result> result
-                = parameterHierarchy.validate(returnType, releasesAndTransfers, parameter, unit);
-
-        Assert.assertEquals(Hierarchy.Result.EXCLUDED, result.getRight());
-        Assert.assertEquals(ControlledListsList.UNIT, result.getLeft().getControlledList());
-    }
-
-    @Test
-    public void dependencyTestGroupMassInvalid2() {
-        ReturnType returnType = returnTypeDao.getByName("Pollution Inventory");
-        Assert.assertNotNull(returnType);
-
-        ReleasesAndTransfers releasesAndTransfers = releasesAndTransfersDao.getByName("Air");
-        Assert.assertNotNull(releasesAndTransfers);
-
-        Parameter parameter = parameterDao.getByName("Americium 241");
-        Assert.assertNotNull(parameter);
-
-        Unit unit = unitDao.getByName("g/m²");
+        Unit unit = unitDao.getByName("µg/hr");
         Assert.assertNotNull(unit);
 
         Pair<HierarchyLevel<? extends Hierarchy.HierarchyEntity>, Hierarchy.Result> result
@@ -568,7 +329,4 @@ public class ParameterHierarchyValidationTests {
         Assert.assertEquals(Hierarchy.Result.NOT_IN_GROUP, result.getRight());
         Assert.assertEquals(ControlledListsList.UNIT, result.getLeft().getControlledList());
     }
-
-
-
 }
