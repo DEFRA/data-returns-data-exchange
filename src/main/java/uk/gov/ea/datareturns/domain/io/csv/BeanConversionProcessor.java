@@ -9,6 +9,7 @@ import org.slf4j.LoggerFactory;
 import uk.gov.ea.datareturns.domain.io.csv.generic.exceptions.InconsistentRowException;
 import uk.gov.ea.datareturns.domain.model.fields.MappedField;
 import uk.gov.ea.datareturns.domain.model.rules.FieldMapping;
+import uk.gov.ea.datareturns.util.TextUtils;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -44,6 +45,7 @@ public class BeanConversionProcessor<T> implements RowProcessor {
         this.beanClass = beanClass;
         this.fieldMappings = FieldMapping.getFieldNameToBeanMap(beanClass);
     }
+
     /**
      * Converts a parsed row to a java object
      */
@@ -81,6 +83,9 @@ public class BeanConversionProcessor<T> implements RowProcessor {
                 if (mapping != null) {
                     if (mapping.getMappedField().trim()) {
                         value = StringUtils.trim(value);
+                    }
+                    if (mapping.getMappedField().normalize()) {
+                        value = TextUtils.normalize(value);
                     }
                     mapping.setValue(instance, value);
                 }

@@ -23,4 +23,11 @@ public @interface MappedField {
      * @return true if the data should be trimmed, false otherwise
      */
     boolean trim() default true;
+
+    /**
+     * Should special characters within this field be normalized based on the
+     * {@link uk.gov.ea.datareturns.util.TextUtils.CharacterSubstitution} rules?
+     * @return true if the data should be normalized, false otherwise
+     */
+    boolean normalize() default true;
 }

@@ -66,6 +66,16 @@ public class DataSampleValidatorTests {
         Assert.assertEquals(1, violations.size());
     }
 
+
+    @Test
+    public void testPermitNumberIncorrectForSite() {
+        final DataSample record = createValidNumericRecord();
+        record.setEaId(new EaId("70057"));
+        final Set<ConstraintViolation<DataSample>> violations = this.validator.validate(record);
+        // one violation for the field being blank
+        Assert.assertEquals(1, violations.size());
+    }
+
     /*=================================================================================================================
      *
      * RETURN TYPE TESTS
@@ -713,8 +723,8 @@ public class DataSampleValidatorTests {
      */
     private static DataSample createValidNumericRecord() {
         final DataSample record = new DataSample();
-        record.setEaId(new EaId("DP3135ZP"));
-        record.setSiteName(new SiteName("Site Name"));
+        record.setEaId(new EaId("EP3136GK"));
+        record.setSiteName(new SiteName("Rainham Landfill"));
         record.setReturnType(new ReturnType("Landfill leachate monitoring"));
         record.setMonitoringDate(new MonitoringDate("2016-03-09T11:18:59"));
         record.setReturnPeriod(new ReturnPeriod("Aug 2016"));

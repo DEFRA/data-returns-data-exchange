@@ -18,6 +18,7 @@ import uk.gov.ea.datareturns.tests.unittests.*;
         UniqueIdentifierTests.class,
 
         DataQualityTests.class,
+        DataSampleValidatorTests.class,
         DataReturnsHeadersTests.class,
         DataReturnsZipFileModelTests.class,
         DateFormatTests.class,
@@ -26,7 +27,8 @@ import uk.gov.ea.datareturns.tests.unittests.*;
         MonitorProEmailerTests.class,
         S3StorageConfigurationTests.class,
         StorageHealthCheckTests.class,
-        FileTypeTests.class
+        FileTypeTests.class,
+        TextUtilsTest.class
 })
 public class AllUnitTests {
 }

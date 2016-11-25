@@ -5,6 +5,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.transaction.annotation.Transactional;
 import uk.gov.ea.datareturns.domain.jpa.entities.ControlledListEntity;
 import uk.gov.ea.datareturns.util.SpringApplicationContextProvider;
+import uk.gov.ea.datareturns.util.TextUtils;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -32,8 +33,7 @@ import static java.util.Comparator.comparing;
  */
 public abstract class EntityDao<E extends ControlledListEntity> {
     protected static final Logger LOGGER = LoggerFactory.getLogger(EntityDao.class);
-    private final String regex = "\\s+";
-    protected final Pattern removeSpaces = Pattern.compile("\\s");
+    protected static final Pattern removeSpaces = Pattern.compile("\\s");
 
     @PersistenceContext
     protected EntityManager entityManager;
@@ -42,8 +42,6 @@ public abstract class EntityDao<E extends ControlledListEntity> {
 
     protected volatile Map<String, E> cacheByName = null;
     protected volatile Map<String, E> cacheByNameKey = null;
-
-    private final Pattern removeMultipleSpaces = Pattern.compile("\\s{2,}");
 
     /**
      * Let the Dao class know the type of entity in order that type-safe
@@ -194,7 +192,7 @@ public abstract class EntityDao<E extends ControlledListEntity> {
      * is to convert to upper cases and reduce multiple spaces to a single space to create the lookup key.
      */
     public String getKeyFromRelaxedName(String name) {
-        return name == null ? null : removeMultipleSpaces.matcher(name.toUpperCase().trim()).replaceAll(" ");
+        return name == null ? null : TextUtils.normalize(name.toUpperCase()).trim();
     }
 
     /**
@@ -288,12 +286,12 @@ public abstract class EntityDao<E extends ControlledListEntity> {
     }
 
     /**
-     * Helper function to compare two strings cases insensitively ignoring whilespace
+     * Helper function to compare two strings cases insensitively ignoring whitespace
      * @param a
      * @param b
      * @return
      */
-    private boolean containsIgnoreCaseIgnoreSpaces(String a, String b) {
+    private static boolean containsIgnoreCaseIgnoreSpaces(String a, String b) {
         return removeSpaces.matcher(a).replaceAll("").contains(removeSpaces.matcher(b).replaceAll(""));
     }
 

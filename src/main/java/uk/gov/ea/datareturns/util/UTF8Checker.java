@@ -22,7 +22,9 @@ public class UTF8Checker {
         final File target = new File(args[0]);
         if (target.isDirectory()) {
             for (File f : target.listFiles()) {
-                System.out.println(buildFileReport(f, MAX_ASCII_EXTENDED));
+                if (f.isFile()) {
+                    System.out.println(buildFileReport(f, MAX_ASCII_EXTENDED));
+                }
             }
         } else if (target.isFile()) {
             System.out.println(buildFileReport(target, MAX_ASCII_EXTENDED));
@@ -61,6 +63,9 @@ public class UTF8Checker {
                 for (int pos = 0; pos < line.length(); pos++) {
                     char ch = line.charAt(pos);
                     if (ch > maxAsciiAllowed) {
+                        violations.add(new Violation(file, line, lineNo, pos + 1, ch));
+                    }
+                    if (TextUtils.CharacterSubstitution.getSubstitute(ch) != null) {
                         violations.add(new Violation(file, line, lineNo, pos + 1, ch));
                     }
                 }
