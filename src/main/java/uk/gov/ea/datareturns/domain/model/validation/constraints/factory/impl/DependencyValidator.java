@@ -43,7 +43,7 @@ public class DependencyValidator implements RecordConstraintValidator<DataSample
         entities.add(unitEntity);
 
         // Call the dependency validation engine
-        Pair<HierarchyLevel, Hierarchy.Result> validation
+        Pair<HierarchyLevel<? extends Hierarchy.HierarchyEntity>, Hierarchy.Result> validation
                 = parameterHierarchy.validate(entities);
 
         String message = null;

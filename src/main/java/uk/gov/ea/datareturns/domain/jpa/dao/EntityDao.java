@@ -3,7 +3,9 @@ package uk.gov.ea.datareturns.domain.jpa.dao;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.transaction.annotation.Transactional;
+import uk.gov.ea.datareturns.domain.jpa.hierarchy.processors.GroupingEntityCommon;
 import uk.gov.ea.datareturns.domain.jpa.entities.ControlledListEntity;
+import uk.gov.ea.datareturns.domain.jpa.hierarchy.Hierarchy;
 import uk.gov.ea.datareturns.util.SpringApplicationContextProvider;
 
 import javax.persistence.EntityManager;
@@ -34,11 +36,12 @@ public abstract class EntityDao<E extends ControlledListEntity> {
     protected static final Logger LOGGER = LoggerFactory.getLogger(EntityDao.class);
     private final String regex = "\\s+";
     protected final Pattern removeSpaces = Pattern.compile("\\s");
+    private final GroupingEntityCommon<? extends Hierarchy.GroupedHierarchyEntity> unitUnitDaoGroupingEntityCommon;
+    public final Class<E> entityClass;
 
     @PersistenceContext
     protected EntityManager entityManager;
 
-    public final Class<E> entityClass;
 
     protected volatile Map<String, E> cacheByName = null;
     protected volatile Map<String, E> cacheByNameKey = null;
@@ -51,6 +54,23 @@ public abstract class EntityDao<E extends ControlledListEntity> {
      */
     public EntityDao(Class<E> entityClass) {
         this.entityClass = entityClass;
+        this.unitUnitDaoGroupingEntityCommon = null;
+    }
+
+    /**
+     * For enities in the hierarchy that require grouping functions a GroupingEntityCommon is used.
+     * The principle applied here is composition over inheritance.
+     * @param entityClass
+     * @param unitUnitDaoGroupingEntityCommon
+     */
+    public EntityDao(Class<E> entityClass, GroupingEntityCommon<? extends Hierarchy.GroupedHierarchyEntity> unitUnitDaoGroupingEntityCommon) {
+        this.entityClass = entityClass;
+        this.unitUnitDaoGroupingEntityCommon = unitUnitDaoGroupingEntityCommon;
+        this.unitUnitDaoGroupingEntityCommon.setDao(this);
+    }
+
+    public GroupingEntityCommon<? extends Hierarchy.GroupedHierarchyEntity> getUnitUnitDaoGroupingEntityCommon() {
+        return unitUnitDaoGroupingEntityCommon;
     }
 
     /**

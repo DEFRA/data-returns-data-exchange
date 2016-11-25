@@ -170,7 +170,7 @@ public class ControlledListResource {
      */
     private Set<Hierarchy.HierarchyEntity> getHierarchyEntitiesFromParameters(MultivaluedMap<String, String> queryParams, ApplicationContext context, Set<HierarchyLevel> levels) {
         Set<Hierarchy.HierarchyEntity> entities = new HashSet<>();
-        for (HierarchyLevel level : levels) {
+        for (HierarchyLevel<? extends Hierarchy.HierarchyEntity> level : levels) {
             String path = level.getControlledList().getPath();
             if (queryParams.containsKey(path)) {
                 Class<? extends EntityDao<? extends Hierarchy.HierarchyEntity>> daoClass = level.getDaoClass();

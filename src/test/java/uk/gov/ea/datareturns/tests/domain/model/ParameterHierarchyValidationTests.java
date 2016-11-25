@@ -52,7 +52,7 @@ public class ParameterHierarchyValidationTests {
         Parameter parameter = parameterDao.getByName("Trichlorobenzene");
         Assert.assertNotNull(parameter);
 
-        Pair<HierarchyLevel, Hierarchy.Result> result
+        Pair<HierarchyLevel<? extends Hierarchy.HierarchyEntity>, Hierarchy.Result> result
                 = parameterHierarchy.validate(returnType, parameter);
 
         // We don't need to check the level (terminating entity for the happy path
@@ -73,7 +73,7 @@ public class ParameterHierarchyValidationTests {
         Unit unit = unitDao.getByName("cm3/hr");
         Assert.assertNotNull(unit);
 
-        Pair<HierarchyLevel, Hierarchy.Result> result
+        Pair<HierarchyLevel<? extends Hierarchy.HierarchyEntity>, Hierarchy.Result> result
                 = parameterHierarchy.validate(returnType, parameter, unit);
 
         Assert.assertEquals(Hierarchy.Result.OK, result.getRight());
@@ -93,7 +93,7 @@ public class ParameterHierarchyValidationTests {
         Unit unit = unitDao.getByName("cm3/hr");
         Assert.assertNotNull(unit);
 
-        Pair<HierarchyLevel, Hierarchy.Result> result
+        Pair<HierarchyLevel<? extends Hierarchy.HierarchyEntity>, Hierarchy.Result> result
                 = parameterHierarchy.validate(returnType, parameter, unit);
 
         Assert.assertEquals(ControlledListsList.PARAMETER, result.getLeft().getControlledList());
@@ -111,7 +111,7 @@ public class ParameterHierarchyValidationTests {
         Unit unit = unitDao.getByName("cm3/hr");
         Assert.assertNotNull(unit);
 
-        Pair<HierarchyLevel, Hierarchy.Result> result
+        Pair<HierarchyLevel<? extends Hierarchy.HierarchyEntity>, Hierarchy.Result> result
                 = parameterHierarchy.validate(returnType, null, unit);
 
         Assert.assertEquals(ControlledListsList.PARAMETER, result.getLeft().getControlledList());
@@ -136,7 +136,7 @@ public class ParameterHierarchyValidationTests {
         ReleasesAndTransfers releasesAndTransfers = releasesAndTransfersDao.getByName("Controlled Water");
         Assert.assertNotNull(releasesAndTransfers);
 
-        Pair<HierarchyLevel, Hierarchy.Result> result
+        Pair<HierarchyLevel<? extends Hierarchy.HierarchyEntity>, Hierarchy.Result> result
                 = parameterHierarchy.validate(returnType, releasesAndTransfers, parameter, unit);
 
         Assert.assertEquals(ControlledListsList.RELEASES_AND_TRANSFER, result.getLeft().getControlledList());
@@ -161,7 +161,7 @@ public class ParameterHierarchyValidationTests {
         Unit unit = unitDao.getByName("g");
         Assert.assertNotNull(unit);
 
-        Pair<HierarchyLevel, Hierarchy.Result> result
+        Pair<HierarchyLevel<? extends Hierarchy.HierarchyEntity>, Hierarchy.Result> result
                 = parameterHierarchy.validate(returnType, releasesAndTransfers, parameter, unit);
 
         Assert.assertEquals(Hierarchy.Result.OK, result.getRight());
@@ -181,7 +181,7 @@ public class ParameterHierarchyValidationTests {
         ReleasesAndTransfers releasesAndTransfers = releasesAndTransfersDao.getByName("Air");
         Assert.assertNotNull(releasesAndTransfers);
 
-        Pair<HierarchyLevel, Hierarchy.Result> result
+        Pair<HierarchyLevel<? extends Hierarchy.HierarchyEntity>, Hierarchy.Result> result
                 = parameterHierarchy.validate(returnType, releasesAndTransfers, parameter, null);
 
         Assert.assertEquals(ControlledListsList.UNIT, result.getLeft().getControlledList());
@@ -205,7 +205,7 @@ public class ParameterHierarchyValidationTests {
         Unit unit = unitDao.getByName("µgkg⁻¹");
         Assert.assertNotNull(unit);
 
-        Pair<HierarchyLevel, Hierarchy.Result> result
+        Pair<HierarchyLevel<? extends Hierarchy.HierarchyEntity>, Hierarchy.Result> result
                 = parameterHierarchy.validate(returnType, releasesAndTransfers, parameter, unit);
 
         Assert.assertEquals(ControlledListsList.UNIT, result.getLeft().getControlledList());
@@ -226,7 +226,7 @@ public class ParameterHierarchyValidationTests {
         Unit unit = unitDao.getByName("kg");
         Assert.assertNotNull(unit);
 
-        Pair<HierarchyLevel, Hierarchy.Result> result
+        Pair<HierarchyLevel<? extends Hierarchy.HierarchyEntity>, Hierarchy.Result> result
                 = parameterHierarchy.validate(returnType, releasesAndTransfers, parameter, unit);
 
         Assert.assertEquals(ControlledListsList.PARAMETER, result.getLeft().getControlledList());
@@ -244,7 +244,7 @@ public class ParameterHierarchyValidationTests {
         Unit unit = unitDao.getByName("kg");
         Assert.assertNotNull(unit);
 
-        Pair<HierarchyLevel, Hierarchy.Result> result
+        Pair<HierarchyLevel<? extends Hierarchy.HierarchyEntity>, Hierarchy.Result> result
                 = parameterHierarchy.validate(returnType, releasesAndTransfers, null, unit);
 
         Assert.assertEquals(ControlledListsList.PARAMETER, result.getLeft().getControlledList());
@@ -262,7 +262,7 @@ public class ParameterHierarchyValidationTests {
         Unit unit = unitDao.getByName("kg");
         Assert.assertNotNull(unit);
 
-        Pair<HierarchyLevel, Hierarchy.Result> result
+        Pair<HierarchyLevel<? extends Hierarchy.HierarchyEntity>, Hierarchy.Result> result
                 = parameterHierarchy.validate(returnType, null, parameter, unit);
 
         Assert.assertEquals(ControlledListsList.RELEASES_AND_TRANSFER, result.getLeft().getControlledList());
@@ -280,7 +280,7 @@ public class ParameterHierarchyValidationTests {
         Unit unit = unitDao.getByName("m3");
         Assert.assertNotNull(unit);
 
-        Pair<HierarchyLevel, Hierarchy.Result> result
+        Pair<HierarchyLevel<? extends Hierarchy.HierarchyEntity>, Hierarchy.Result> result
                 = parameterHierarchy.validate(returnType, parameter, unit);
 
         Assert.assertEquals(Hierarchy.Result.OK, result.getRight());
@@ -297,7 +297,7 @@ public class ParameterHierarchyValidationTests {
         Unit unit = unitDao.getByName("t");
         Assert.assertNotNull(unit);
 
-        Pair<HierarchyLevel, Hierarchy.Result> result
+        Pair<HierarchyLevel<? extends Hierarchy.HierarchyEntity>, Hierarchy.Result> result
                 = parameterHierarchy.validate(returnType, parameter, unit);
 
         Assert.assertEquals(ControlledListsList.UNIT, result.getLeft().getControlledList());
@@ -312,7 +312,7 @@ public class ParameterHierarchyValidationTests {
         Parameter parameter = parameterDao.getByName("Net Water Used");
         Assert.assertNotNull(parameter);
 
-        Pair<HierarchyLevel, Hierarchy.Result> result
+        Pair<HierarchyLevel<? extends Hierarchy.HierarchyEntity>, Hierarchy.Result> result
                 = parameterHierarchy.validate(returnType, parameter, null);
 
         Assert.assertEquals(ControlledListsList.UNIT, result.getLeft().getControlledList());
@@ -327,7 +327,7 @@ public class ParameterHierarchyValidationTests {
         Parameter parameter = parameterDao.getByName("Diethylenetriamine");
         Assert.assertNotNull(parameter);
 
-        Pair<HierarchyLevel, Hierarchy.Result> result
+        Pair<HierarchyLevel<? extends Hierarchy.HierarchyEntity>, Hierarchy.Result> result
                 = parameterHierarchy.validate(returnType, parameter, null);
 
         Assert.assertEquals(ControlledListsList.PARAMETER, result.getLeft().getControlledList());
@@ -339,7 +339,7 @@ public class ParameterHierarchyValidationTests {
         ReturnType returnType = returnTypeDao.getByName("REM Return");
         Assert.assertNotNull(returnType);
 
-        Pair<HierarchyLevel, Hierarchy.Result> result
+        Pair<HierarchyLevel<? extends Hierarchy.HierarchyEntity>, Hierarchy.Result> result
                 = parameterHierarchy.validate(returnType, null, null);
 
         Assert.assertEquals(ControlledListsList.PARAMETER, result.getLeft().getControlledList());
@@ -360,7 +360,7 @@ public class ParameterHierarchyValidationTests {
         Unit unit = unitDao.getByName("t");
         Assert.assertNotNull(unit);
 
-        Pair<HierarchyLevel, Hierarchy.Result> result
+        Pair<HierarchyLevel<? extends Hierarchy.HierarchyEntity>, Hierarchy.Result> result
                 = parameterHierarchy.validate(returnType, releasesAndTransfers, parameter, unit);
 
         Assert.assertEquals(ControlledListsList.RELEASES_AND_TRANSFER, result.getLeft().getControlledList());
@@ -378,7 +378,7 @@ public class ParameterHierarchyValidationTests {
         Unit unit = unitDao.getByName("TJ");
         Assert.assertNotNull(unit);
 
-        Pair<HierarchyLevel, Hierarchy.Result> result
+        Pair<HierarchyLevel<? extends Hierarchy.HierarchyEntity>, Hierarchy.Result> result
                 = parameterHierarchy.validate(returnType, parameter, unit);
 
         Assert.assertEquals(Hierarchy.Result.OK, result.getRight());
@@ -395,7 +395,7 @@ public class ParameterHierarchyValidationTests {
         Unit unit = unitDao.getByName("g");
         Assert.assertNotNull(unit);
 
-        Pair<HierarchyLevel, Hierarchy.Result> result
+        Pair<HierarchyLevel<? extends Hierarchy.HierarchyEntity>, Hierarchy.Result> result
                 = parameterHierarchy.validate(returnType, parameter, unit);
 
         Assert.assertEquals(ControlledListsList.UNIT, result.getLeft().getControlledList());
@@ -410,7 +410,7 @@ public class ParameterHierarchyValidationTests {
         Parameter parameter = parameterDao.getByName("Net Energy Input Other solid fuels");
         Assert.assertNotNull(parameter);
 
-        Pair<HierarchyLevel, Hierarchy.Result> result
+        Pair<HierarchyLevel<? extends Hierarchy.HierarchyEntity>, Hierarchy.Result> result
                 = parameterHierarchy.validate(returnType, parameter, null);
 
         Assert.assertEquals(ControlledListsList.UNIT, result.getLeft().getControlledList());
@@ -428,7 +428,7 @@ public class ParameterHierarchyValidationTests {
         Unit unit = unitDao.getByName("TJ");
         Assert.assertNotNull(unit);
 
-        Pair<HierarchyLevel, Hierarchy.Result> result
+        Pair<HierarchyLevel<? extends Hierarchy.HierarchyEntity>, Hierarchy.Result> result
                 = parameterHierarchy.validate(returnType, parameter, unit);
 
         Assert.assertEquals(ControlledListsList.PARAMETER, result.getLeft().getControlledList());
@@ -443,7 +443,7 @@ public class ParameterHierarchyValidationTests {
         Unit unit = unitDao.getByName("TJ");
         Assert.assertNotNull(unit);
 
-        Pair<HierarchyLevel, Hierarchy.Result> result
+        Pair<HierarchyLevel<? extends Hierarchy.HierarchyEntity>, Hierarchy.Result> result
                 = parameterHierarchy.validate(returnType, null, unit);
 
         Assert.assertEquals(ControlledListsList.PARAMETER, result.getLeft().getControlledList());
@@ -464,7 +464,7 @@ public class ParameterHierarchyValidationTests {
         Unit unit = unitDao.getByName("TJ");
         Assert.assertNotNull(unit);
 
-        Pair<HierarchyLevel, Hierarchy.Result> result
+        Pair<HierarchyLevel<? extends Hierarchy.HierarchyEntity>, Hierarchy.Result> result
                 = parameterHierarchy.validate(returnType, releasesAndTransfers, parameter, unit);
 
         Assert.assertEquals(ControlledListsList.RELEASES_AND_TRANSFER, result.getLeft().getControlledList());
@@ -473,7 +473,7 @@ public class ParameterHierarchyValidationTests {
 
     @Test
     public void nothing() {
-        Pair<HierarchyLevel, Hierarchy.Result> result
+        Pair<HierarchyLevel<? extends Hierarchy.HierarchyEntity>, Hierarchy.Result> result
                 = parameterHierarchy.validate(null, null, null, null);
 
         // We don't need to check the level (terminating entity for the happy path
@@ -501,7 +501,7 @@ public class ParameterHierarchyValidationTests {
         Unit unit = unitDao.getByName("Bq/m2");
         Assert.assertNotNull(unit);
 
-        Pair<HierarchyLevel, Hierarchy.Result> result
+        Pair<HierarchyLevel<? extends Hierarchy.HierarchyEntity>, Hierarchy.Result> result
                 = parameterHierarchy.validate(returnType, releasesAndTransfers, parameter, unit);
 
         Assert.assertEquals(Hierarchy.Result.OK, result.getRight());
@@ -521,7 +521,7 @@ public class ParameterHierarchyValidationTests {
         Unit unit = unitDao.getByName("g");
         Assert.assertNotNull(unit);
 
-        Pair<HierarchyLevel, Hierarchy.Result> result
+        Pair<HierarchyLevel<? extends Hierarchy.HierarchyEntity>, Hierarchy.Result> result
                 = parameterHierarchy.validate(returnType, releasesAndTransfers, parameter, unit);
 
         Assert.assertEquals(Hierarchy.Result.OK, result.getRight());
@@ -541,7 +541,7 @@ public class ParameterHierarchyValidationTests {
         Unit unit = unitDao.getByName("mol");
         Assert.assertNotNull(unit);
 
-        Pair<HierarchyLevel, Hierarchy.Result> result
+        Pair<HierarchyLevel<? extends Hierarchy.HierarchyEntity>, Hierarchy.Result> result
                 = parameterHierarchy.validate(returnType, releasesAndTransfers, parameter, unit);
 
         Assert.assertEquals(Hierarchy.Result.EXCLUDED, result.getRight());
@@ -562,7 +562,7 @@ public class ParameterHierarchyValidationTests {
         Unit unit = unitDao.getByName("g/m²");
         Assert.assertNotNull(unit);
 
-        Pair<HierarchyLevel, Hierarchy.Result> result
+        Pair<HierarchyLevel<? extends Hierarchy.HierarchyEntity>, Hierarchy.Result> result
                 = parameterHierarchy.validate(returnType, releasesAndTransfers, parameter, unit);
 
         Assert.assertEquals(Hierarchy.Result.NOT_IN_GROUP, result.getRight());

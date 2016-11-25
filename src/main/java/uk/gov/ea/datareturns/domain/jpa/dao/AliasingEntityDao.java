@@ -1,7 +1,9 @@
 package uk.gov.ea.datareturns.domain.jpa.dao;
 
 import org.springframework.transaction.annotation.Transactional;
+import uk.gov.ea.datareturns.domain.jpa.hierarchy.processors.GroupingEntityCommon;
 import uk.gov.ea.datareturns.domain.jpa.entities.AliasingEntity;
+import uk.gov.ea.datareturns.domain.jpa.hierarchy.Hierarchy;
 
 import java.util.List;
 import java.util.Map;
@@ -27,6 +29,10 @@ public abstract class AliasingEntityDao<E extends AliasingEntity> extends Entity
      */
     public AliasingEntityDao(Class<E> entityClass) {
         super(entityClass);
+    }
+
+    public AliasingEntityDao(Class<E> entityClass, GroupingEntityCommon<? extends Hierarchy.GroupedHierarchyEntity> groupedHierarchyEntity) {
+        super(entityClass, groupedHierarchyEntity);
     }
 
     /**

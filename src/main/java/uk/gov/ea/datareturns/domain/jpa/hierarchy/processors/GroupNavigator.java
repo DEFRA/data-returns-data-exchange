@@ -23,19 +23,19 @@ public class GroupNavigator implements Navigator {
      * Navigate to the next level down in the hierarchy
      */
     public Pair<HierarchyLevel<? extends Hierarchy.HierarchyEntity>, List<? extends Hierarchy.HierarchyEntity>> children(
-            Map cache, Set<HierarchyLevel<? extends Hierarchy.HierarchyEntity>> hierarchyLevels,
+            Map<String, ?> cache, Set<HierarchyLevel<? extends Hierarchy.HierarchyEntity>> hierarchyLevels,
             Map<HierarchyLevel<? extends Hierarchy.HierarchyEntity>, String> hierarchyNodeStringMap) {
 
         return children(cache, hierarchyLevels, hierarchyNodeStringMap, null, null);
     }
 
     public Pair<HierarchyLevel<? extends Hierarchy.HierarchyEntity>, List<? extends Hierarchy.HierarchyEntity>> children(
-            Map cache, Set<HierarchyLevel<? extends Hierarchy.HierarchyEntity>> hierarchyLevels,
+            Map<String, ?> cache, Set<HierarchyLevel<? extends Hierarchy.HierarchyEntity>> hierarchyLevels,
             Map<HierarchyLevel<? extends Hierarchy.HierarchyEntity>, String> entityNames,
             String field, String contains) {
 
         hierarchyNodesIttr = hierarchyLevels.iterator();
-        HierarchyLevel rootNode = hierarchyNodesIttr.next();
+        HierarchyLevel<? extends Hierarchy.HierarchyEntity> rootNode = hierarchyNodesIttr.next();
         return down(rootNode, cache, entityNames, new HashMap<>(), field, contains);
     }
 
@@ -53,7 +53,7 @@ public class GroupNavigator implements Navigator {
      */
     private Pair<HierarchyLevel<? extends Hierarchy.HierarchyEntity>, List<? extends Hierarchy.HierarchyEntity>> shim(
             HierarchyLevel<? extends Hierarchy.HierarchyEntity> node,
-            Map cache,
+            Map<String, ?> cache,
             String cacheKey,
             Map<HierarchyLevel<? extends Hierarchy.HierarchyEntity>, String> entityNames,
             Map<HierarchyLevel<? extends Hierarchy.HierarchyEntity>, String> keys,
@@ -62,15 +62,16 @@ public class GroupNavigator implements Navigator {
         keys.put(node, entityNames.remove(node));
 
         if (cache.get(cacheKey) instanceof Set) {
-            return list(hierarchyNodesIttr.next(), (Set)cache.get(cacheKey), field, contains);
+            return list(hierarchyNodesIttr.next(), (Set<String>)cache.get(cacheKey), field, contains);
         } else {
-            return down(hierarchyNodesIttr.next(), (Map)cache.get(cacheKey), entityNames, keys, field, contains);
+            return down(hierarchyNodesIttr.next(), (Map<String, ?>)cache.get(cacheKey), entityNames, keys, field, contains);
         }
     }
 
+    @SuppressWarnings("unchecked")
     private Pair<HierarchyLevel<? extends Hierarchy.HierarchyEntity>, List<? extends Hierarchy.HierarchyEntity>> down(
             HierarchyLevel<? extends Hierarchy.HierarchyEntity> level,
-            Map cache,
+            Map<String, ?> cache,
             Map<HierarchyLevel<? extends Hierarchy.HierarchyEntity>, String> entityNames,
             Map<HierarchyLevel<? extends Hierarchy.HierarchyEntity>, String> keys,
             String field, String contains) {
@@ -96,8 +97,8 @@ public class GroupNavigator implements Navigator {
                 return shim(level, cache, HierarchySymbols.INCLUDE_ALL, entityNames, keys, field, contains);
             } else if (level instanceof HierarchyGroupLevel) {
                 // For a group level search for the group
-                if (GroupCommon.cacheContainsGroupContainsName((HierarchyGroupLevel)level, cache, entityNames.get(level))) {
-                    String foundGroup = GroupCommon.getGroupInCacheFromName((HierarchyGroupLevel)level, cache, entityNames.get(level));
+                if (GroupCommon.cacheContainsGroupContainsName((HierarchyGroupLevel<? extends Hierarchy.HierarchyEntity>)level, cache, entityNames.get(level))) {
+                    String foundGroup = GroupCommon.getGroupInCacheFromName((HierarchyGroupLevel<? extends Hierarchy.HierarchyEntity>)level, cache, entityNames.get(level));
                     return shim(level, cache, HierarchyGroupSymbols.injectGroup(foundGroup), entityNames, keys, field, contains);
                 } else {
                     return Pair.of(level, null);
@@ -120,7 +121,8 @@ public class GroupNavigator implements Navigator {
 
     private Pair<HierarchyLevel<? extends Hierarchy.HierarchyEntity>, List<? extends Hierarchy.HierarchyEntity>> list(
             HierarchyLevel<? extends Hierarchy.HierarchyEntity> level,
-            Set cache, String field, String contains) {
+            Set<String> cache,
+            String field, String contains) {
 
         // Get the Dao from the level
         Class<? extends EntityDao> listItemDaoClass = level.getDaoClass();
@@ -163,12 +165,16 @@ public class GroupNavigator implements Navigator {
 
     /**
      * Return the subset of entities filtered by the hierarchy
-     * @param level
-     * @param cache
+     * @param level The parameter level
+     * @param cache The cache
      * @return A pair giving the level and the list
      */
-    private Pair<HierarchyLevel<? extends Hierarchy.HierarchyEntity>, List<? extends Hierarchy.HierarchyEntity>> list(HierarchyLevel<? extends Hierarchy.HierarchyEntity> level,
-                                                                                 Map cache, String field, String contains) {
+    @SuppressWarnings("unchecked")
+    private Pair<HierarchyLevel<? extends Hierarchy.HierarchyEntity>, List<? extends Hierarchy.HierarchyEntity>> list(
+            HierarchyLevel<? extends Hierarchy.HierarchyEntity> level,
+            Map<String, ?> cache,
+            String field, String contains) {
+
         // Get the Dao from the level
         Class<? extends EntityDao> listItemDaoClass = level.getDaoClass();
 
@@ -198,7 +204,7 @@ public class GroupNavigator implements Navigator {
                     // Item included by name
                     resultList.add(e);
                 } else if (level instanceof HierarchyGroupLevel) {
-                    if (GroupCommon.cacheContainsGroupContainsName((HierarchyGroupLevel)level, cache, e.getName())) {
+                    if (GroupCommon.cacheContainsGroupContainsName((HierarchyGroupLevel<? extends Hierarchy.HierarchyEntity>)level, cache, e.getName())) {
                         resultList.add(e);
                     }
                 }

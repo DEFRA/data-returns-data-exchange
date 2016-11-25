@@ -20,7 +20,7 @@ public class SimpleValidator implements Validator {
     private Iterator<HierarchyLevel<? extends Hierarchy.HierarchyEntity>> hierarchyNodesIttr;
 
     public Pair<HierarchyLevel<? extends Hierarchy.HierarchyEntity>, Hierarchy.Result> validate(
-            Map cache, Set<HierarchyLevel<? extends Hierarchy.HierarchyEntity>> hierarchyLevels,
+            Map<String, ?>  cache, Set<HierarchyLevel<? extends Hierarchy.HierarchyEntity>> hierarchyLevels,
             Map<HierarchyLevel<? extends Hierarchy.HierarchyEntity>, String> entityNames) {
 
         hierarchyNodesIttr = hierarchyLevels.iterator();
@@ -33,7 +33,8 @@ public class SimpleValidator implements Validator {
      */
     private Pair<HierarchyLevel<? extends Hierarchy.HierarchyEntity>, Hierarchy.Result> evaluate(
             HierarchyLevel<? extends Hierarchy.HierarchyEntity> level,
-            Map cache, Map<HierarchyLevel<? extends Hierarchy.HierarchyEntity>, String> entityNames) {
+            Map<String, ?> cache, Map<HierarchyLevel<? extends Hierarchy.HierarchyEntity>, String> entityNames) {
+
         if (entityNames.get(level) != null) {
             /*
              * If the entity name is supplied (not null)
@@ -89,7 +90,7 @@ public class SimpleValidator implements Validator {
      */
     private Pair<HierarchyLevel<? extends Hierarchy.HierarchyEntity>, Hierarchy.Result> evaluate(
             HierarchyLevel<? extends Hierarchy.HierarchyEntity> level,
-            Set cache,
+            Set<String> cache,
             Map<HierarchyLevel<? extends Hierarchy.HierarchyEntity>, String> entityNames) {
 
         if (entityNames.get(level) != null) {
@@ -155,17 +156,15 @@ public class SimpleValidator implements Validator {
      */
     private Pair<HierarchyLevel<? extends Hierarchy.HierarchyEntity>, Hierarchy.Result> shim(
             HierarchyLevel<? extends Hierarchy.HierarchyEntity> level,
-            Map cache, String cacheKey,
+            Map<String, ?>  cache, String cacheKey,
             Map<HierarchyLevel<? extends Hierarchy.HierarchyEntity>, String> entityNames) {
 
         entityNames.remove(level);
 
         if (cache.get(cacheKey) instanceof Set) {
-            return evaluate(hierarchyNodesIttr.next(), (Set)cache.get(cacheKey), entityNames);
+            return evaluate(hierarchyNodesIttr.next(), (Set<String>)cache.get(cacheKey), entityNames);
         } else {
-            return evaluate(hierarchyNodesIttr.next(), (Map)cache.get(cacheKey), entityNames);
+            return evaluate(hierarchyNodesIttr.next(), (Map<String, ?>)cache.get(cacheKey), entityNames);
         }
     }
-
-
 }
