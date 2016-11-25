@@ -1,5 +1,7 @@
 package uk.gov.ea.datareturns.domain.jpa.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import java.util.Set;
 
 /**
@@ -20,6 +22,7 @@ public interface AliasingEntity extends ControlledListEntity {
      *
      * @return the primary name to be sent to the downstream system
      */
+    @JsonIgnore
     default String getPrimaryName() {
         final String preferred = getPreferred();
         return preferred != null ? preferred : getName();

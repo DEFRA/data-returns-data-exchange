@@ -14,7 +14,7 @@
 	<property name="returnPeriodsFile" value="/db/data/ReturnPeriods.csv"/>
 	<property name="textValuesFile" value="/db/data/TextValues.csv"/>
 	<property name="releasesAndTransfersFile" value="/db/data/ReleasesAndTransfers.csv"/>
-	<property name="dependenciesFile" value="/db/data/Dependencies.csv"/>
+	<property name="parameterHierarchyFile" value="/db/data/ParameterHierarchy.csv"/>
 	<property name="pasRegisLicHoldStageFile" value="/db/data/stage_data_initialization/lichold.csv"/>
 	<property name="pasRegisLicStatsStageFile" value="/db/data/stage_data_initialization/licstats.csv"/>
 	<property name="emmaStageFile" value="/db/data/stage_data_initialization/emma.csv"/>
@@ -652,11 +652,11 @@
 
 	<!--
   ****************************************************************
-  Dependencies
+  ParameterHierarchy
   ****************************************************************
   -->
-	<changeSet id="create-table: dependencies" author="Environment Agency">
-		<createTable tableName="dependencies">
+	<changeSet id="create-table: parameter_hierarchy" author="Environment Agency">
+		<createTable tableName="parameter_hierarchy">
 			<column name="return_type" type="varchar(80)">
 				<constraints nullable="false" unique="false"/>
 			</column>
@@ -666,35 +666,35 @@
 			<column name="releases_and_transfers" type="varchar(50)">
 				<constraints nullable="false" unique="false"/>
 			</column>
-			<column name="units" type="varchar(10)">
+			<column name="units" type="varchar(50)">
 				<constraints nullable="false" unique="false"/>
 			</column>
 		</createTable>
 		<rollback>
-			<dropTable tableName="dependencies"/>
+			<dropTable tableName="parameter_hierarchy"/>
 		</rollback>
 	</changeSet>
 
-	<changeSet id="load-data: dependencies" author="Environment Agency">
+	<changeSet id="load-data: parameter_hierarchy" author="Environment Agency">
 		<preConditions onFail="HALT">
-			<tableExists tableName="dependencies"/>
-			<sqlCheck expectedResult="0">select count(*) from dependencies</sqlCheck>
+			<tableExists tableName="parameter_hierarchy"/>
+			<sqlCheck expectedResult="0">select count(*) from parameter_hierarchy</sqlCheck>
 		</preConditions>
-		<loadData file="${dependenciesFile}" tableName="dependencies"/>
+		<loadData file="${parameterHierarchyFile}" tableName="parameter_hierarchy"/>
 		<rollback>
-			<delete tableName="dependencies"></delete>
+			<delete tableName="parameter_hierarchy"></delete>
 		</rollback>
 	</changeSet>
 
-	<changeSet id="create-index: dependencies" author="Environment Agency">
-		<createIndex indexName="idx_dependencies" tableName="dependencies" unique="true">
+	<changeSet id="create-index: parameter_hierarchy" author="Environment Agency">
+		<createIndex indexName="idx_parameter_hierarchy" tableName="parameter_hierarchy" unique="true">
 			<column name="return_type"/>
 			<column name="parameter"/>
 			<column name="releases_and_transfers"/>
 			<column name="units"/>
 		</createIndex>
 		<rollback>
-			<dropIndex tableName="dependencies" indexName="idx_dependencies"/>
+			<dropIndex tableName="parameter_hierarchy" indexName="idx_parameter_hierarchy"/>
 		</rollback>
 	</changeSet>
 

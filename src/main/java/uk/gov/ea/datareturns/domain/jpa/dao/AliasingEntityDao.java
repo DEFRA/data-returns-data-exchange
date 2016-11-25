@@ -1,7 +1,9 @@
 package uk.gov.ea.datareturns.domain.jpa.dao;
 
 import org.springframework.transaction.annotation.Transactional;
+import uk.gov.ea.datareturns.domain.jpa.hierarchy.processors.GroupingEntityCommon;
 import uk.gov.ea.datareturns.domain.jpa.entities.AliasingEntity;
+import uk.gov.ea.datareturns.domain.jpa.hierarchy.Hierarchy;
 
 import java.util.List;
 import java.util.Map;
@@ -14,7 +16,7 @@ import java.util.stream.Collectors;
  *
  * @author Graham Willis
  */
-public class AliasingEntityDao<E extends AliasingEntity> extends EntityDao<E> {
+public abstract class AliasingEntityDao<E extends AliasingEntity> extends EntityDao<E> {
 
     private volatile Map<String, E> cacheByAlias = null;
     private volatile Map<String, E> cacheByAliasKey = null;
@@ -25,8 +27,12 @@ public class AliasingEntityDao<E extends AliasingEntity> extends EntityDao<E> {
      *
      * @param entityClass
      */
-    AliasingEntityDao(Class<E> entityClass) {
+    public AliasingEntityDao(Class<E> entityClass) {
         super(entityClass);
+    }
+
+    public AliasingEntityDao(Class<E> entityClass, GroupingEntityCommon<? extends Hierarchy.GroupedHierarchyEntity> groupedHierarchyEntity) {
+        super(entityClass, groupedHierarchyEntity);
     }
 
     /**
