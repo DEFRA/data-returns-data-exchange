@@ -28,9 +28,9 @@ public class ParameterHierarchy extends Hierarchy<ParameterHierarchyDao> {
     @Inject
     public ParameterHierarchy(ParameterHierarchyDao parameterHierarchyDao, GroupNavigator hierarchyNavigator, GroupValidator hierarchyValidator) {
         super(Collections.unmodifiableSet(new LinkedHashSet<HierarchyLevel<? extends Hierarchy.HierarchyEntity>>() {{
-            add(new HierarchyLevel<>(ReturnType.class, ReturnTypeDao.class, ControlledListsList.RETURN_TYPE));
+            add(new HierarchyGroupLevel<>(ReturnType.class, ReturnTypeDao.class, ControlledListsList.RETURN_TYPE));
             add(new HierarchyLevel<>(ReleasesAndTransfers.class, ReleasesAndTransfersDao.class, ControlledListsList.RELEASES_AND_TRANSFER));
-            add(new HierarchyGroupLevel<>(Parameter.class, ParameterDao.class, ControlledListsList.PARAMETER));
+            add(new HierarchyLevel<>(Parameter.class, ParameterDao.class, ControlledListsList.PARAMETER));
             add(new HierarchyGroupLevel<>(Unit.class, UnitDao.class, ControlledListsList.UNIT));
         }}), parameterHierarchyDao, hierarchyNavigator, hierarchyValidator);
     }

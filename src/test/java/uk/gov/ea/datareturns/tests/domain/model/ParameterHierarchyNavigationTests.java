@@ -186,62 +186,7 @@ public class ParameterHierarchyNavigationTests {
         Assert.assertEquals(ControlledListsList.PARAMETER, result.getLeft().getControlledList());
     }
 
-    @Test
-    public void traverseReturningREMAllParameters() {
-        ReturnType returnType = returnTypeDao.getByName("REM Return");
-        Assert.assertNotNull(returnType);
-
-        Pair<HierarchyLevel<? extends Hierarchy.HierarchyEntity>, List<? extends Hierarchy.HierarchyEntity>> result = parameterHierarchy.children(returnType);
-
-        Assert.assertNotNull(result.getRight());
-        Assert.assertEquals(ControlledListsList.PARAMETER, result.getLeft().getControlledList());
-
-        printList(result.getRight());
-    }
-
-    @Test
-    public void traverseReturningREMAllParametersAndUnits() {
-        ReturnType returnType = returnTypeDao.getByName("REM Return");
-        Assert.assertNotNull(returnType);
-
-        Pair<HierarchyLevel<? extends Hierarchy.HierarchyEntity>, List<? extends Hierarchy.HierarchyEntity>> result = parameterHierarchy.children(returnType);
-
-        Assert.assertNotNull(result.getRight());
-        Assert.assertEquals(ControlledListsList.PARAMETER, result.getLeft().getControlledList());
-
-        for (Hierarchy.HierarchyEntity item : result.getRight()) {
-            if (item instanceof Parameter) {
-                Pair<HierarchyLevel<? extends Hierarchy.HierarchyEntity>, List<? extends Hierarchy.HierarchyEntity>> result2 = parameterHierarchy.children(returnType, (Parameter)item);
-                Assert.assertEquals(ControlledListsList.UNIT, result2.getLeft().getControlledList());
-                Assert.assertEquals(1, result2.getRight().size());
-                LOGGER.info(item.getName() + " " + result2.getRight().get(0).getName());
-            }
-        }
-
-    }
-
-    @Test
-    public void traverseReturningREMReturnNullForLandfillParameter() {
-        ReturnType returnType = returnTypeDao.getByName("REM Return");
-        Assert.assertNotNull(returnType);
-
-        // This parameter is not in the REM returns
-        Parameter parameter = parameterDao.getByName("Methylparathion");
-        Assert.assertNotNull(parameter);
-
-        Pair<HierarchyLevel<? extends Hierarchy.HierarchyEntity>, List<? extends Hierarchy.HierarchyEntity>> result = parameterHierarchy.children(returnType, parameter);
-
-        // It might be expected that we return the null list at the units level
-        // as this is what we have asked for. However because of the way the dependencies
-        // are processed, in order to search the next level down there must be a path to it - i.e. a
-        // wildcard or an explicit item. Here we find no route to let us search the
-        // units cache hence the null cache is displayed at the parameter level.
-        Assert.assertNull(result.getRight());
-        Assert.assertEquals(ControlledListsList.PARAMETER, result.getLeft().getControlledList());
-
-    }
-
-    @Test
+     @Test
     public void traverseAllNullsReturnsReturnTypes() {
         Pair<HierarchyLevel<? extends Hierarchy.HierarchyEntity>, List<? extends Hierarchy.HierarchyEntity>> result = parameterHierarchy.children((Hierarchy.HierarchyEntity)null);
 
@@ -256,6 +201,5 @@ public class ParameterHierarchyNavigationTests {
             LOGGER.info(e.getName());
         }
     }
-
 
 }

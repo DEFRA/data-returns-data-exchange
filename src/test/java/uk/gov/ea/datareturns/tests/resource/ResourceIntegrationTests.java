@@ -112,7 +112,7 @@ public class ResourceIntegrationTests {
     public final static String STEP_COMPLETE = "data-exchange/complete";
 
     public final static String CONTROLLED_LISTS = "controlled-list/lists";
-    public final static String CONTROLLED_LISTS_NAVIGATION = "controlled-list/nav";
+    public final static String CONTROLLED_LISTS_NAVIGATION = "controlled-list/hierarchy/parameter";
     public final static String TEST_SEARCH = "lookup/permit?term=Dogsthorpe";
 
     public final static String METH_STAND_VALID = "validation/testMethStand.csv";
@@ -444,27 +444,6 @@ public class ResourceIntegrationTests {
         final String uri = createURIForStep(CONTROLLED_LISTS_NAVIGATION);
         Response response = client.target(uri).request(MediaType.APPLICATION_JSON_TYPE).get();
         assertThat(response.getStatus()).isEqualTo(Status.OK.getStatusCode());
-    }
-
-    @Test
-    public void testREMValidParameter() {
-        Client client = createClient("Nav: REM valid parameter");
-        final Response response = performUploadStep(client, REM_VALID_PARAMETER, MEDIA_TYPE_CSV);
-        assertThat(response.getStatus()).isEqualTo(Status.OK.getStatusCode());
-    }
-
-    @Test
-    public void testREMInvalidParameter() {
-        Client client = createClient("Nav: REM valid parameter");
-        final Response response = performUploadStep(client, REM_INVALID_PARAMETER, MEDIA_TYPE_CSV);
-        assertThat(response.getStatus()).isEqualTo(Status.BAD_REQUEST.getStatusCode());
-    }
-
-    @Test
-    public void testREMInvalidUnit() {
-        Client client = createClient("Nav: REM invalid unit");
-        final Response response = performUploadStep(client, REM_INVALID_UNIT, MEDIA_TYPE_CSV);
-        assertThat(response.getStatus()).isEqualTo(Status.BAD_REQUEST.getStatusCode());
     }
 
     @Test
