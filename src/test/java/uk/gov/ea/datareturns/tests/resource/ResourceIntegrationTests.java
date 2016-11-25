@@ -139,10 +139,6 @@ public class ResourceIntegrationTests {
     public final static String TEXT_VALUE_VALID = "validation/testTextValue.csv";
     public final static String TEXT_VALUE_INVALID = "validation/testTextValueInvalid.csv";
 
-    public final static String REM_VALID_PARAMETER = "validation/testDependencyREMValid.csv";
-    public final static String REM_INVALID_PARAMETER = "validation/testDependencyREMInvalid.csv";
-    public final static String REM_INVALID_UNIT = "validation/testDependencyREMInvalidUnit.csv";
-
     public final static String PI_VALID = "validation/testDependencyPIValid.csv";
     public final static String PI_INVALID_NO_TRANSFER = "validation/testDependencyPINoTransfers.csv";
 
