@@ -1,10 +1,10 @@
 package uk.gov.ea.datareturns.domain.jpa.dao;
 
+import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Scope;
-import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.stereotype.Repository;
-import uk.gov.ea.datareturns.domain.jpa.dao.hierarchies.GroupingAliasingEntityDaoImpl;
 import uk.gov.ea.datareturns.domain.jpa.entities.Unit;
+import uk.gov.ea.datareturns.domain.jpa.hierarchy.processors.GroupingEntityCommon;
 
 /**
  * DAO for units of measure.
@@ -12,10 +12,10 @@ import uk.gov.ea.datareturns.domain.jpa.entities.Unit;
  * @author Sam Gardner-Dell
  */
 @Repository
-@Scope(proxyMode = ScopedProxyMode.TARGET_CLASS)
-public class UnitDao extends GroupingAliasingEntityDaoImpl<Unit> {
+@Scope(ConfigurableBeanFactory.SCOPE_SINGLETON)
+public class UnitDao extends AliasingEntityDao<Unit> {
     public UnitDao() {
-        super(Unit.class);
+        super(Unit.class, new GroupingEntityCommon<>());
     }
 
     // Just trim units are case sensitive

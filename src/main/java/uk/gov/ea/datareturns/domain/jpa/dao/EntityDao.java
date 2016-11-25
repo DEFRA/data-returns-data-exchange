@@ -32,7 +32,10 @@ import static java.util.Comparator.comparing;
  */
 public abstract class EntityDao<E extends ControlledListEntity> {
     protected static final Logger LOGGER = LoggerFactory.getLogger(EntityDao.class);
-    protected static final Pattern removeSpaces = Pattern.compile("\\s");
+    private final String regex = "\\s+";
+    protected final Pattern removeSpaces = Pattern.compile("\\s");
+    private final GroupingEntityCommon<? extends Hierarchy.GroupedHierarchyEntity> unitUnitDaoGroupingEntityCommon;
+    public final Class<E> entityClass;
 
     @PersistenceContext
     protected EntityManager entityManager;
@@ -50,6 +53,23 @@ public abstract class EntityDao<E extends ControlledListEntity> {
      */
     public EntityDao(Class<E> entityClass) {
         this.entityClass = entityClass;
+        this.unitUnitDaoGroupingEntityCommon = null;
+    }
+
+    /**
+     * For enities in the hierarchy that require grouping functions a GroupingEntityCommon is used.
+     * The principle applied here is composition over inheritance.
+     * @param entityClass
+     * @param unitUnitDaoGroupingEntityCommon
+     */
+    public EntityDao(Class<E> entityClass, GroupingEntityCommon<? extends Hierarchy.GroupedHierarchyEntity> unitUnitDaoGroupingEntityCommon) {
+        this.entityClass = entityClass;
+        this.unitUnitDaoGroupingEntityCommon = unitUnitDaoGroupingEntityCommon;
+        this.unitUnitDaoGroupingEntityCommon.setDao(this);
+    }
+
+    public GroupingEntityCommon<? extends Hierarchy.GroupedHierarchyEntity> getUnitUnitDaoGroupingEntityCommon() {
+        return unitUnitDaoGroupingEntityCommon;
     }
 
     /**

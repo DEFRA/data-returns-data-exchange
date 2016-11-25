@@ -9,10 +9,10 @@ import java.util.Set;
 
 /**
  * Interface describing the methods required for hierarchy validation
- * @Author Graham Willis
+ * @author Graham Willis
  */
 public interface Validator {
     Pair<HierarchyLevel<? extends Hierarchy.HierarchyEntity>, Hierarchy.Result> validate(
-            Map cache, Set<HierarchyLevel<? extends Hierarchy.HierarchyEntity>> hierarchyLevels,
+            Map<String, ?> cache, Set<HierarchyLevel<? extends Hierarchy.HierarchyEntity>> hierarchyLevels,
             Map<HierarchyLevel<? extends Hierarchy.HierarchyEntity>, String> entityNames);
 }

@@ -59,8 +59,8 @@ public class HierarchySymbols {
     /*
      * Detect the exclusion^ character at the beginning of a string
      */
-    public static boolean IsExclusion(String s) {
-         return s.charAt(0) == EXCLUDE.charAt(0) ? true : false;
+    private static boolean IsExclusion(String s) {
+         return s.charAt(0) == EXCLUDE.charAt(0);
     }
 
     /*

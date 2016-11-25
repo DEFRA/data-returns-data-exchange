@@ -1,4 +1,4 @@
-package uk.gov.ea.datareturns.domain.jpa.dao.hierarchies;
+package uk.gov.ea.datareturns.domain.jpa.hierarchy.processors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -10,20 +10,17 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
- * Functionality for classes implementing GroupingEntityDao - collects the functions in a single place
- * @param <E>
- * @param <F>
+ * Functionality for entities implementing GroupedHierarchyEntity
+ * @author Graham Willis
+ *
+ * @param <E> The entity
  */
-class GroupingEntityCommon<E extends Hierarchy.GroupedHierarchyEntity, F extends EntityDao<E>> {
+public class GroupingEntityCommon<E extends Hierarchy.GroupedHierarchyEntity> {
     private static final Logger LOGGER = LoggerFactory.getLogger(GroupingEntityCommon.class);
-    private final F dao;
+    private EntityDao<E> dao = null;
     private volatile Map<String, Set<E>> cacheByGroup = null;
 
-    public GroupingEntityCommon(F dao) {
-        this.dao = dao;
-    }
-
-    public Map<String, Set<E>> getCacheByGroup() {
+    private Map<String, Set<E>> getCacheByGroup() {
         if (cacheByGroup == null) {
             synchronized (this) {
                 if (cacheByGroup == null) {
@@ -45,5 +42,10 @@ class GroupingEntityCommon<E extends Hierarchy.GroupedHierarchyEntity, F extends
     public boolean isGroupMember(String group, String item) {
         E e = dao.getByNameRelaxed(item);
         return !(e == null || e.getGroup() == null) && dao.getKeyFromRelaxedName(e.getGroup()).equals(group);
+    }
+
+    @SuppressWarnings("unchecked")
+    public void setDao(EntityDao dao) {
+        this.dao = dao;
     }
 }

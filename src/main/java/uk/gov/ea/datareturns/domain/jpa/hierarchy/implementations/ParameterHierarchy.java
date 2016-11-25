@@ -20,17 +20,17 @@ import java.util.LinkedHashSet;
  * Please be aware the name of the component "parameter-hierarchy" is used in the Restful service so that
  * the endpoint can act on any hierarchy. See ControlledListResource.getHierarchyLevel
  *
- * @Author Graham Willis
+ * @author Graham Willis
  */
 @Component("parameter-hierarchy")
-public class ParameterHierarchy extends Hierarchy {
+public class ParameterHierarchy extends Hierarchy<ParameterHierarchyDao> {
 
     @Inject
     public ParameterHierarchy(ParameterHierarchyDao parameterHierarchyDao, GroupNavigator hierarchyNavigator, GroupValidator hierarchyValidator) {
-        super(Collections.unmodifiableSet(new LinkedHashSet() {{
+        super(Collections.unmodifiableSet(new LinkedHashSet<HierarchyLevel<? extends Hierarchy.HierarchyEntity>>() {{
             add(new HierarchyLevel<>(ReturnType.class, ReturnTypeDao.class, ControlledListsList.RETURN_TYPE));
             add(new HierarchyLevel<>(ReleasesAndTransfers.class, ReleasesAndTransfersDao.class, ControlledListsList.RELEASES_AND_TRANSFER));
-            add(new HierarchyLevel<>(Parameter.class, ParameterDao.class, ControlledListsList.PARAMETER));
+            add(new HierarchyGroupLevel<>(Parameter.class, ParameterDao.class, ControlledListsList.PARAMETER));
             add(new HierarchyGroupLevel<>(Unit.class, UnitDao.class, ControlledListsList.UNIT));
         }}), parameterHierarchyDao, hierarchyNavigator, hierarchyValidator);
     }

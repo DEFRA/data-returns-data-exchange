@@ -19,24 +19,22 @@ import java.util.*;
 public class SimpleNavigator implements Navigator {
     private Iterator<HierarchyLevel<? extends Hierarchy.HierarchyEntity>> hierarchyNodesIttr;
 
-    public Pair<HierarchyLevel<? extends Hierarchy.HierarchyEntity>, List<? extends Hierarchy.HierarchyEntity>>
-        children(
-            Map cache,
+    public Pair<HierarchyLevel<? extends Hierarchy.HierarchyEntity>, List<? extends Hierarchy.HierarchyEntity>> children(
+            Map<String, ?> cache,
             Set<HierarchyLevel<? extends Hierarchy.HierarchyEntity>> hierarchyLevels,
             Map<HierarchyLevel<? extends Hierarchy.HierarchyEntity>, String> hierarchyNodeStringMap) {
 
         return children(cache, hierarchyLevels, hierarchyNodeStringMap, null, null);
     }
 
-    public Pair<HierarchyLevel<? extends Hierarchy.HierarchyEntity>, List<? extends Hierarchy.HierarchyEntity>>
-        children(
-            Map cache,
+    public Pair<HierarchyLevel<? extends Hierarchy.HierarchyEntity>, List<? extends Hierarchy.HierarchyEntity>> children(
+            Map<String, ?> cache,
             Set<HierarchyLevel<? extends Hierarchy.HierarchyEntity>> hierarchyLevels,
             Map<HierarchyLevel<? extends Hierarchy.HierarchyEntity>, String> entityNames,
             String field, String contains) {
 
         hierarchyNodesIttr = hierarchyLevels.iterator();
-        HierarchyLevel rootNode = hierarchyNodesIttr.next();
+        HierarchyLevel<? extends Hierarchy.HierarchyEntity> rootNode = hierarchyNodesIttr.next();
         return down(rootNode, cache, entityNames, new HashMap<>(), field, contains);
     }
 
@@ -52,10 +50,9 @@ public class SimpleNavigator implements Navigator {
      * Map<String, Set<String>> - cache by parameters
      * Set<String> - a hash-set of units
      */
-    private Pair<HierarchyLevel<? extends Hierarchy.HierarchyEntity>, List<? extends Hierarchy.HierarchyEntity>>
-        shim(
-            HierarchyLevel node,
-            Map cache,
+    private Pair<HierarchyLevel<? extends Hierarchy.HierarchyEntity>, List<? extends Hierarchy.HierarchyEntity>> shim(
+            HierarchyLevel<? extends Hierarchy.HierarchyEntity> node,
+            Map<String, ?> cache,
             String cacheKey,
             Map<HierarchyLevel<? extends Hierarchy.HierarchyEntity>, String> entityNames,
             Map<HierarchyLevel<? extends Hierarchy.HierarchyEntity>, String> keys,
@@ -64,15 +61,15 @@ public class SimpleNavigator implements Navigator {
         keys.put(node, entityNames.remove(node));
 
         if (cache.get(cacheKey) instanceof Set) {
-            return list(hierarchyNodesIttr.next(), (Set)cache.get(cacheKey), field, contains);
+            return list(hierarchyNodesIttr.next(), (Set<String>)cache.get(cacheKey), field, contains);
         } else {
-            return down(hierarchyNodesIttr.next(), (Map)cache.get(cacheKey), entityNames, keys, field, contains);
+            return down(hierarchyNodesIttr.next(), (Map<String, ?>)cache.get(cacheKey), entityNames, keys, field, contains);
         }
     }
 
-    private Pair<HierarchyLevel<? extends Hierarchy.HierarchyEntity>, List<? extends Hierarchy.HierarchyEntity>>
-        down(HierarchyLevel level,
-            Map cache,
+    private Pair<HierarchyLevel<? extends Hierarchy.HierarchyEntity>, List<? extends Hierarchy.HierarchyEntity>> down(
+            HierarchyLevel<? extends Hierarchy.HierarchyEntity> level,
+            Map<String, ?> cache,
             Map<HierarchyLevel<? extends Hierarchy.HierarchyEntity>, String> entityNames,
             Map<HierarchyLevel<? extends Hierarchy.HierarchyEntity>, String> keys,
             String field, String contains) {
@@ -112,10 +109,9 @@ public class SimpleNavigator implements Navigator {
         }
     }
 
-    private Pair<HierarchyLevel<? extends Hierarchy.HierarchyEntity>, List<? extends Hierarchy.HierarchyEntity>>
-        list(
+    private Pair<HierarchyLevel<? extends Hierarchy.HierarchyEntity>, List<? extends Hierarchy.HierarchyEntity>> list(
             HierarchyLevel<? extends Hierarchy.HierarchyEntity> level,
-            Set cache,
+            Set<String> cache,
             String field, String contains) {
 
         // Get the Dao from the level
@@ -155,14 +151,14 @@ public class SimpleNavigator implements Navigator {
 
     /**
      * Return the subset of entities filtered by the hierarchy
-     * @param level
-     * @param cache
+     * @param level The hierarchy level
+     * @param cache The cache
      * @return A pair giving the level and the list
      */
-    private Pair<HierarchyLevel<? extends Hierarchy.HierarchyEntity>, List<? extends Hierarchy.HierarchyEntity>>
-        list(HierarchyLevel<? extends Hierarchy.HierarchyEntity> level,
-        Map cache,
-        String field, String contains) {
+    private Pair<HierarchyLevel<? extends Hierarchy.HierarchyEntity>, List<? extends Hierarchy.HierarchyEntity>> list(
+            HierarchyLevel<? extends Hierarchy.HierarchyEntity> level,
+            Map<String, ?> cache,
+            String field, String contains) {
 
         // Get the Dao from the level
         Class<? extends EntityDao> listItemDaoClass = level.getDaoClass();

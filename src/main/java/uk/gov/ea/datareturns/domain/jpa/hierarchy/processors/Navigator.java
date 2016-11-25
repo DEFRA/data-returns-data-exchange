@@ -10,18 +10,16 @@ import java.util.Set;
 
 /**
  * Interface describing the methods required for hierarchy navigation
- * @Author Graham Willis
+ * @author Graham Willis
  */
 public interface Navigator {
     Pair<HierarchyLevel<? extends Hierarchy.HierarchyEntity>, List<? extends Hierarchy.HierarchyEntity>> children(
-            Map cache,
+            Map<String, ?> cache,
             Set<HierarchyLevel<? extends Hierarchy.HierarchyEntity>> hierarchyLevels,
             Map<HierarchyLevel<? extends Hierarchy.HierarchyEntity>, String> hierarchyNodeStringMap);
 
     Pair<HierarchyLevel<? extends Hierarchy.HierarchyEntity>, List<? extends Hierarchy.HierarchyEntity>> children(
-            Map cache, Set<HierarchyLevel<? extends Hierarchy.HierarchyEntity>> hierarchyLevels,
+            Map<String, ?> cache, Set<HierarchyLevel<? extends Hierarchy.HierarchyEntity>> hierarchyLevels,
             Map<HierarchyLevel<? extends Hierarchy.HierarchyEntity>, String> hierarchyNodeStringMap,
             String field, String contains);
-
-
 }
