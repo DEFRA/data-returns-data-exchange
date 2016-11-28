@@ -1,4 +1,4 @@
-package uk.gov.ea.datareturns.domain.jpa.service;
+package uk.gov.ea.datareturns.domain.jpa.hierarchy;
 
 /**********************************************************************
 
@@ -49,10 +49,25 @@ package uk.gov.ea.datareturns.domain.jpa.service;
  *-
 
  **************************************************************/
-public class DependencyValidationSymbols {
+public class HierarchySymbols {
     public static final String EXCLUDE = "^";
     public static final String EXCLUDE_ALL = "^*";
     public static final String INCLUDE_ALL_OPTIONALLY = "*-";
     public static final String INCLUDE_ALL = "*";
     public static final String NOT_APPLICABLE = "...";
+
+    /*
+     * Detect the exclusion^ character at the beginning of a string
+     */
+    private static boolean IsExclusion(String s) {
+         return s.charAt(0) == EXCLUDE.charAt(0);
+    }
+
+    /*
+     * Return a string with any exclusion characters removed
+     * or return the string
+     */
+    public static String removeExclusion(String s) {
+         return !IsExclusion(s) ? s : s.substring(1);
+    }
 }

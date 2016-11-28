@@ -4,6 +4,9 @@ import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Repository;
 import uk.gov.ea.datareturns.domain.jpa.entities.Unit;
+import uk.gov.ea.datareturns.domain.jpa.hierarchy.processors.GroupingEntityCommon;
+
+import javax.inject.Inject;
 
 /**
  * DAO for units of measure.
@@ -13,10 +16,13 @@ import uk.gov.ea.datareturns.domain.jpa.entities.Unit;
 @Repository
 @Scope(ConfigurableBeanFactory.SCOPE_SINGLETON)
 public class UnitDao extends AliasingEntityDao<Unit> {
-    public UnitDao() {
-        super(Unit.class);
+
+    @Inject
+    public UnitDao(GroupingEntityCommon<Unit> groupingEntityCommon) {
+        super(Unit.class, groupingEntityCommon);
     }
 
+    // Just trim units are case sensitive
     public String getKeyFromRelaxedName(String name) {
         return name == null ? null : name.trim();
     }
@@ -36,4 +42,5 @@ public class UnitDao extends AliasingEntityDao<Unit> {
             }
         }
     }
+
 }

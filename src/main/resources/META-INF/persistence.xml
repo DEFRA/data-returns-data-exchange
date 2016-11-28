@@ -14,7 +14,7 @@
         <class>uk.gov.ea.datareturns.domain.jpa.entities.ReferencePeriod</class>
         <class>uk.gov.ea.datareturns.domain.jpa.entities.ReturnType</class>
         <class>uk.gov.ea.datareturns.domain.jpa.entities.Unit</class>
-			<class>uk.gov.ea.datareturns.domain.jpa.entities.Dependencies</class>
+			<class>uk.gov.ea.datareturns.domain.jpa.entities.ParameterHierarchy</class>
 			<properties>
 
 			<!-- Default persistence properties (connection details will be injected from the application configuration) -->
