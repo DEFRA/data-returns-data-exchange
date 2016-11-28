@@ -31,13 +31,13 @@ class GroupCommon {
      */
     static <E extends Hierarchy.GroupedHierarchyEntity> boolean cacheContainsGroupContainsName(HierarchyGroupLevel<E> level, Set<String> cache, String entityName) {
         EntityDao<E> dao = getEntityDaoFromLevel(level);
-        GroupingEntityCommon<?> unitUnitDaoGroupingEntityCommon = dao.getUnitUnitDaoGroupingEntityCommon();
-        Set<String> groups = findGroups(cache, unitUnitDaoGroupingEntityCommon);
+        GroupingEntityCommon<?> groupingEntityCommon = dao.getGroupingEntityCommon();
+        Set<String> groups = findGroups(cache, groupingEntityCommon);
         if (groups.size() == 0) {
             return false;
         } else {
             for (String group : groups) {
-                if (unitUnitDaoGroupingEntityCommon.isGroupMember(group, entityName)) {
+                if (groupingEntityCommon.isGroupMember(group, entityName)) {
                     return true;
                 }
             }
@@ -60,7 +60,7 @@ class GroupCommon {
      */
     private static <E extends Hierarchy.GroupedHierarchyEntity> String getGroupInCacheFromName(HierarchyGroupLevel<E> level, Set<String> cache, String entityName) {
         EntityDao<E> dao = getEntityDaoFromLevel(level);
-        GroupingEntityCommon<?> unitUnitDaoGroupingEntityCommon = dao.getUnitUnitDaoGroupingEntityCommon();
+        GroupingEntityCommon<?> unitUnitDaoGroupingEntityCommon = dao.getGroupingEntityCommon();
         Set<String> groups = findGroups(cache, unitUnitDaoGroupingEntityCommon);
         if (groups.size() == 0) {
             return null;

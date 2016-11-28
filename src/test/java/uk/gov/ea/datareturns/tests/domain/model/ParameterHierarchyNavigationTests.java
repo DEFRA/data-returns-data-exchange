@@ -13,7 +13,6 @@ import uk.gov.ea.datareturns.App;
 import uk.gov.ea.datareturns.domain.jpa.dao.ParameterDao;
 import uk.gov.ea.datareturns.domain.jpa.dao.ReleasesAndTransfersDao;
 import uk.gov.ea.datareturns.domain.jpa.dao.ReturnTypeDao;
-import uk.gov.ea.datareturns.domain.jpa.dao.UnitDao;
 import uk.gov.ea.datareturns.domain.jpa.entities.ControlledListsList;
 import uk.gov.ea.datareturns.domain.jpa.entities.Parameter;
 import uk.gov.ea.datareturns.domain.jpa.entities.ReleasesAndTransfers;
@@ -42,9 +41,6 @@ public class ParameterHierarchyNavigationTests {
 
     @Inject
     private ReleasesAndTransfersDao releasesAndTransfersDao;
-
-    @Inject
-    private UnitDao unitDao;
 
     @Inject
     ParameterHierarchy parameterHierarchy;

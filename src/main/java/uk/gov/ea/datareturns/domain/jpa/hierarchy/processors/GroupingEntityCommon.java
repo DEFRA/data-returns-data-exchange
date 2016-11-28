@@ -2,6 +2,9 @@ package uk.gov.ea.datareturns.domain.jpa.hierarchy.processors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.config.ConfigurableBeanFactory;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Service;
 import uk.gov.ea.datareturns.domain.jpa.dao.EntityDao;
 import uk.gov.ea.datareturns.domain.jpa.hierarchy.Hierarchy;
 
@@ -15,6 +18,8 @@ import java.util.stream.Collectors;
  *
  * @param <E> The entity
  */
+@Service
+@Scope(value = ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 public class GroupingEntityCommon<E extends Hierarchy.GroupedHierarchyEntity> {
     private static final Logger LOGGER = LoggerFactory.getLogger(GroupingEntityCommon.class);
     private EntityDao<E> dao = null;

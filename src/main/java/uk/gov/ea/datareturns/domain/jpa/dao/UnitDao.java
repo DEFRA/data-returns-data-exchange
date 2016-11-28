@@ -6,6 +6,8 @@ import org.springframework.stereotype.Repository;
 import uk.gov.ea.datareturns.domain.jpa.entities.Unit;
 import uk.gov.ea.datareturns.domain.jpa.hierarchy.processors.GroupingEntityCommon;
 
+import javax.inject.Inject;
+
 /**
  * DAO for units of measure.
  *
@@ -14,8 +16,10 @@ import uk.gov.ea.datareturns.domain.jpa.hierarchy.processors.GroupingEntityCommo
 @Repository
 @Scope(ConfigurableBeanFactory.SCOPE_SINGLETON)
 public class UnitDao extends AliasingEntityDao<Unit> {
-    public UnitDao() {
-        super(Unit.class, new GroupingEntityCommon<>());
+
+    @Inject
+    public UnitDao(GroupingEntityCommon<Unit> groupingEntityCommon) {
+        super(Unit.class, groupingEntityCommon);
     }
 
     // Just trim units are case sensitive

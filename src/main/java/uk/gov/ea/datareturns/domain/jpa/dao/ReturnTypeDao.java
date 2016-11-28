@@ -6,6 +6,8 @@ import org.springframework.stereotype.Repository;
 import uk.gov.ea.datareturns.domain.jpa.entities.ReturnType;
 import uk.gov.ea.datareturns.domain.jpa.hierarchy.processors.GroupingEntityCommon;
 
+import javax.inject.Inject;
+
 /**
  * DAO for return types.
  *
@@ -14,7 +16,9 @@ import uk.gov.ea.datareturns.domain.jpa.hierarchy.processors.GroupingEntityCommo
 @Repository
 @Scope(ConfigurableBeanFactory.SCOPE_SINGLETON)
 public class ReturnTypeDao extends EntityDao<ReturnType> {
-    public ReturnTypeDao() {
-        super(ReturnType.class, new GroupingEntityCommon<>());
+
+    @Inject
+    public ReturnTypeDao(GroupingEntityCommon<ReturnType> groupingEntityCommon) {
+        super(ReturnType.class, groupingEntityCommon);
     }
 }

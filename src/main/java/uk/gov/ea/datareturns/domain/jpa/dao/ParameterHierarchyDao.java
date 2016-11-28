@@ -74,7 +74,7 @@ public class ParameterHierarchyDao extends HierarchyCacheProvider<Map<String, Ma
 
     /**
      * Builds the dependencies cache.
-     * It pretty much explains itself. Note the doublic check locking
+     * It pretty much explains itself. Note the double check locking
      * on the cache and the volatile keyword
      */
     private Map<String, Map<String, Map<String, Set<String>>>> buildCache() {

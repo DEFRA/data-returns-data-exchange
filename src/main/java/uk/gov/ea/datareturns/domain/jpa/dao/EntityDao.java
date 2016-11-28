@@ -36,17 +36,15 @@ import static java.util.Comparator.comparing;
 public abstract class EntityDao<E extends ControlledListEntity> {
     protected static final Logger LOGGER = LoggerFactory.getLogger(EntityDao.class);
 
-    protected static final Pattern removeSpaces = Pattern.compile("\\s");
-
-    private final GroupingEntityCommon<? extends Hierarchy.GroupedHierarchyEntity> unitUnitDaoGroupingEntityCommon;
-    public final Class<E> entityClass;
-
     @PersistenceContext
     protected EntityManager entityManager;
 
+    private static final Pattern removeSpaces = Pattern.compile("\\s");
+    private final GroupingEntityCommon<? extends Hierarchy.GroupedHierarchyEntity> groupingEntityCommon;
+    public final Class<E> entityClass;
 
-    protected volatile Map<String, E> cacheByName = null;
-    protected volatile Map<String, E> cacheByNameKey = null;
+    private volatile Map<String, E> cacheByName = null;
+    private volatile Map<String, E> cacheByNameKey = null;
 
     /**
      * Let the Dao class know the type of entity in order that type-safe
@@ -54,23 +52,23 @@ public abstract class EntityDao<E extends ControlledListEntity> {
      */
     public EntityDao(Class<E> entityClass) {
         this.entityClass = entityClass;
-        this.unitUnitDaoGroupingEntityCommon = null;
+        this.groupingEntityCommon = null;
     }
 
     /**
      * For enities in the hierarchy that require grouping functions a GroupingEntityCommon is used.
      * The principle applied here is composition over inheritance.
      * @param entityClass
-     * @param unitUnitDaoGroupingEntityCommon
+     * @param groupingEntityCommon
      */
-    public EntityDao(Class<E> entityClass, GroupingEntityCommon<? extends Hierarchy.GroupedHierarchyEntity> unitUnitDaoGroupingEntityCommon) {
+    public EntityDao(Class<E> entityClass, GroupingEntityCommon<? extends Hierarchy.GroupedHierarchyEntity> groupingEntityCommon) {
         this.entityClass = entityClass;
-        this.unitUnitDaoGroupingEntityCommon = unitUnitDaoGroupingEntityCommon;
-        this.unitUnitDaoGroupingEntityCommon.setDao(this);
+        this.groupingEntityCommon = groupingEntityCommon;
+        this.groupingEntityCommon.setDao(this);
     }
 
-    public GroupingEntityCommon<? extends Hierarchy.GroupedHierarchyEntity> getUnitUnitDaoGroupingEntityCommon() {
-        return unitUnitDaoGroupingEntityCommon;
+    public GroupingEntityCommon<? extends Hierarchy.GroupedHierarchyEntity> getGroupingEntityCommon() {
+        return groupingEntityCommon;
     }
 
     /**

@@ -45,11 +45,6 @@ public class GroupNavigator implements Navigator {
      * Map<String, Map<String, Map<String, Set<String>>>>
      * Then as each entity is validated the cache is drilled into so that we get the following
      * sequence
-     *
-     * Map<String, Map<String, Map<String, Set<String>>>> - Cache by Return type
-     * Map<String, Map<String, Set<String>>> - cache by releases and transfers
-     * Map<String, Set<String>> - cache by parameters
-     * Set<String> - a hash-set of units
      */
     private Pair<HierarchyLevel<? extends Hierarchy.HierarchyEntity>, List<? extends Hierarchy.HierarchyEntity>> shim(
             HierarchyLevel<? extends Hierarchy.HierarchyEntity> node,
