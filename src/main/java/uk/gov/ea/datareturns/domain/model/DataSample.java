@@ -3,6 +3,7 @@ package uk.gov.ea.datareturns.domain.model;
 import uk.gov.ea.datareturns.domain.model.fields.MappedField;
 import uk.gov.ea.datareturns.domain.model.fields.impl.*;
 import uk.gov.ea.datareturns.domain.model.rules.FieldDefinition;
+import uk.gov.ea.datareturns.domain.model.validation.ValidationGroups;
 import uk.gov.ea.datareturns.domain.model.validation.constraints.factory.ValidRecord;
 
 import javax.validation.Valid;
@@ -12,7 +13,7 @@ import javax.validation.Valid;
  *
  * @author Sam Gardner-Dell
  */
-@ValidRecord(DataSample.class)
+@ValidRecord(value = DataSample.class, groups = ValidationGroups.RecordTier.class)
 public class DataSample {
 
     /** The EA Unique Identifier (EA_ID) */
