@@ -52,7 +52,7 @@ public class DataSampleValidator {
         // Record number starts at 2 (line 1 = header, line 2 = start of data)
         int recordNumber = 2;
         for (final DataSample record : model) {
-            final Set<ConstraintViolation<DataSample>> violations = this.validator.validate(record);
+            final Set<ConstraintViolation<DataSample>> violations = this.validator.validate(record, ValidationGroups.OrderedChecks.class);
             for (final ConstraintViolation<DataSample> violation : violations) {
                 int errorCode = 0;
                 String errorType = "Unknown";
