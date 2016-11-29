@@ -42,28 +42,21 @@ public class DependencyValidator implements RecordConstraintValidator<DataSample
 
         if (result == DependencyValidation.Result.OK) {
             return true;
-        } else {
-            // We will disregard 'missing' because this
-            // is detected by the straight forward controlled lists check
-            // (Except in the case of releases)
-            if (result == DependencyValidation.Result.EXPECTED && level != ControlledListsList.RELEASES_AND_TRANSFERS) {
-                return true;
-            } else {
-                switch (level) {
-                    case UNITS:
-                        message = MessageCodes.DependencyConflict.Unit;
-                        break;
-                    case PARAMETERS:
-                        message = MessageCodes.DependencyConflict.Parameter;
-                        break;
-                    case RELEASES_AND_TRANSFERS:
-                        message = MessageCodes.DependencyConflict.Rel_Trans;
-                        break;
-                    case RETURN_TYPE:
-                        message = MessageCodes.DependencyConflict.Rtn_Type;
-                        break;
-                }
-            }
+        }
+
+        switch (level) {
+            case UNITS:
+                message = MessageCodes.DependencyConflict.Unit;
+                break;
+            case PARAMETERS:
+                message = MessageCodes.DependencyConflict.Parameter;
+                break;
+            case RELEASES_AND_TRANSFERS:
+                message = MessageCodes.DependencyConflict.Rel_Trans;
+                break;
+            case RETURN_TYPE:
+                message = MessageCodes.DependencyConflict.Rtn_Type;
+                break;
         }
 
         if (message != null) {
