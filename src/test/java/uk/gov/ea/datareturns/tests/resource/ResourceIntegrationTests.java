@@ -730,50 +730,30 @@ public class ResourceIntegrationTests {
         assertThat(resp.getStatus()).isEqualTo(Status.OK.getStatusCode());
     }
 
-//    @Test
-//    public void testTextValueInvalid() {
-//        final Client client = createClient("test Text Value invalid");
-//        final Response resp = performUploadStep(client, TEXT_VALUE_INVALID, MEDIA_TYPE_CSV);
-//        assertThat(resp.getStatus()).isEqualTo(Status.BAD_REQUEST.getStatusCode());
-//        final DataExchangeResult result = getResultFromResponse(resp);
-//        ValidationErrors validationErrors = result.getValidationErrors();
-//
-//        // Only one of value and text value
-//        assertThat(validationErrors.getErrors().stream().anyMatch(e ->
-//                e.getLineNumber() == 2L &&
-//                        e.getErrorType().equals("Conflict") &&
-//                        e.getErrorCode() == 9999
-//        )).isTrue();
-//
-//        // Units must not be used with text value
-//        assertThat(validationErrors.getErrors().stream().anyMatch(e ->
-//                e.getLineNumber() == 2L &&
-//                        e.getErrorType().equals("Conflict") &&
-//                        e.getErrorCode() == 9050
-//        )).isTrue();
-//
-//        // Text value is not in the list
-//        assertThat(validationErrors.getErrors().stream().anyMatch(e ->
-//                e.getLineNumber() == 3L &&
-//                        e.getErrorType().equals("Incorrect") &&
-//                        e.getErrorCode() == 9080
-//        )).isTrue();
-//
-//        // Neither value or text value are present
-//        assertThat(validationErrors.getErrors().stream().anyMatch(e ->
-//                e.getLineNumber() == 4L &&
-//                        e.getErrorType().equals("Missing") &&
-//                        e.getErrorCode() == 9999
-//        )).isTrue();
-//
-//        // If Txt_Value is "See Comment" then Comment must be present
-//        assertThat(validationErrors.getErrors().stream().anyMatch(e ->
-//                e.getLineNumber() == 5L &&
-//                        e.getErrorType().equals("Missing") &&
-//                        e.getErrorCode() == 9140
-//        )).isTrue();
-//
-//    }
+    @Test
+    public void testTextValueInvalid() {
+        final Client client = createClient("test Text Value invalid");
+        final Response resp = performUploadStep(client, TEXT_VALUE_INVALID, MEDIA_TYPE_CSV);
+
+        assertThat(resp.getStatus()).isEqualTo(Status.BAD_REQUEST.getStatusCode());
+        final DataExchangeResult result = getResultFromResponse(resp);
+        ValidationErrors validationErrors = result.getValidationErrors();
+
+        // Only one of value and text value
+        assertThat(validationErrors.getErrors().stream().anyMatch(e ->
+                e.getLineNumber() == 4L &&
+                        e.getErrorType().equals("Conflict") &&
+                        e.getErrorCode() == 9999
+        )).isTrue();
+
+        // Units must not be used with text value
+        assertThat(validationErrors.getErrors().stream().anyMatch(e ->
+                e.getLineNumber() == 4L &&
+                        e.getErrorType().equals("Conflict") &&
+                        e.getErrorCode() == 9050
+        )).isTrue();
+
+    }
 
     ///////////////////////////////////////////////////////////////////////////////////////////
     /////////////////////////////// End Content Validation tests
