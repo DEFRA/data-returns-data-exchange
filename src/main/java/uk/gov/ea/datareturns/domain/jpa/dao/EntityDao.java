@@ -22,6 +22,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.function.Predicate;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -177,7 +178,7 @@ public abstract class EntityDao<E extends ControlledListEntity> {
                     final Method readMethod = pd.getReadMethod();
                     Predicate<E> builtPredicate = e -> {
                         try {
-                            return containsIgnoreCaseIgnoreSpaces(readMethod.invoke(e).toString(), contains);
+                            return containsIgnoreCaseIgnoreSpaces(Objects.toString(readMethod.invoke(e)), contains);
                         } catch (IllegalAccessException | InvocationTargetException ex) {
                             return true;
                         }
@@ -312,7 +313,14 @@ public abstract class EntityDao<E extends ControlledListEntity> {
      * @return
      */
     private static boolean containsIgnoreCaseIgnoreSpaces(String a, String b) {
-        return removeSpaces.matcher(a).replaceAll("").contains(removeSpaces.matcher(b).replaceAll(""));
+        return (a != null && b != null) &&
+                removeSpaces.matcher(a)
+                    .replaceAll("")
+                    .toUpperCase()
+                    .contains(removeSpaces
+                        .matcher(b)
+                        .replaceAll("")
+                        .toUpperCase());
     }
 
     /**

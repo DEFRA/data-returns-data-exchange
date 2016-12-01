@@ -41,7 +41,7 @@ public class GroupingEntityCommon<E extends Hierarchy.GroupedHierarchyEntity> {
     }
 
     public Set<String> listGroups() {
-        return getCacheByGroup().entrySet().stream().map(Map.Entry::getKey).collect(Collectors.toSet());
+        return getCacheByGroup().keySet();
     }
 
     public boolean isGroupMember(String group, String item) {
