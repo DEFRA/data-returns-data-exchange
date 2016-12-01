@@ -13,6 +13,8 @@ import uk.gov.ea.datareturns.domain.model.validation.constraints.factory.RecordC
 import uk.gov.ea.datareturns.util.SpringApplicationContextProvider;
 
 import javax.validation.ConstraintValidatorContext;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * Validate that all entries meet the dependency validation requirements
@@ -53,13 +55,13 @@ public class DependencyValidator implements RecordConstraintValidator<DataSample
         }
 
         switch (level) {
-            case UNITS:
+            case UNIT:
                 message = MessageCodes.DependencyConflict.Unit;
                 break;
-            case PARAMETERS:
+            case PARAMETER:
                 message = MessageCodes.DependencyConflict.Parameter;
                 break;
-            case RELEASES_AND_TRANSFERS:
+            case RELEASES_AND_TRANSFER:
                 message = MessageCodes.DependencyConflict.Rel_Trans;
                 break;
             case RETURN_TYPE:
