@@ -9,9 +9,10 @@ import uk.gov.ea.datareturns.domain.jpa.hierarchy.implementations.ParameterHiera
 import uk.gov.ea.datareturns.domain.model.DataSample;
 import uk.gov.ea.datareturns.domain.model.MessageCodes;
 import uk.gov.ea.datareturns.domain.model.fields.AbstractEntityValue;
-import uk.gov.ea.datareturns.domain.model.validation.constraints.factory.RecordConstraintValidator;
+import uk.gov.ea.datareturns.domain.model.validation.constraints.factory.HierarchyValidator;
 import uk.gov.ea.datareturns.util.SpringApplicationContextProvider;
 
+import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
 import java.util.HashSet;
 import java.util.Set;
@@ -22,9 +23,7 @@ import java.util.Set;
  * releases and transfers parameter and unit is allowed
  */
 @Component
-public class DependencyValidator implements RecordConstraintValidator<DataSample> {
-
-    //private (Disposer.Record recordAbstractEntityValue value)
+public class ParameterHierarchyValidator implements ConstraintValidator<HierarchyValidator, DataSample> {
 
     @Override
     public boolean isValid(DataSample record, ConstraintValidatorContext context) {
@@ -76,4 +75,10 @@ public class DependencyValidator implements RecordConstraintValidator<DataSample
 
         return false;
     }
+
+    @Override
+    public void initialize(HierarchyValidator constraintAnnotation) {
+
+    }
+
 }
