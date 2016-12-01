@@ -4,6 +4,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.transaction.annotation.Transactional;
 import uk.gov.ea.datareturns.domain.jpa.entities.ControlledListEntity;
+import uk.gov.ea.datareturns.domain.jpa.hierarchy.Hierarchy;
+import uk.gov.ea.datareturns.domain.jpa.hierarchy.processors.GroupingEntityCommon;
 import uk.gov.ea.datareturns.util.SpringApplicationContextProvider;
 import uk.gov.ea.datareturns.util.TextUtils;
 
@@ -20,6 +22,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.function.Predicate;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -33,22 +36,40 @@ import static java.util.Comparator.comparing;
  */
 public abstract class EntityDao<E extends ControlledListEntity> {
     protected static final Logger LOGGER = LoggerFactory.getLogger(EntityDao.class);
-    protected static final Pattern removeSpaces = Pattern.compile("\\s");
 
     @PersistenceContext
     protected EntityManager entityManager;
 
-    protected final Class<E> entityClass;
+    private static final Pattern removeSpaces = Pattern.compile("\\s");
+    private final GroupingEntityCommon<? extends Hierarchy.GroupedHierarchyEntity> groupingEntityCommon;
+    public final Class<E> entityClass;
 
-    protected volatile Map<String, E> cacheByName = null;
-    protected volatile Map<String, E> cacheByNameKey = null;
+    private volatile Map<String, E> cacheByName = null;
+    private volatile Map<String, E> cacheByNameKey = null;
 
     /**
      * Let the Dao class know the type of entity in order that type-safe
      * hibernate operations can be performed
      */
-    protected EntityDao(Class<E> entityClass) {
+    public EntityDao(Class<E> entityClass) {
         this.entityClass = entityClass;
+        this.groupingEntityCommon = null;
+    }
+
+    /**
+     * For enities in the hierarchy that require grouping functions a GroupingEntityCommon is used.
+     * The principle applied here is composition over inheritance.
+     * @param entityClass
+     * @param groupingEntityCommon
+     */
+    public EntityDao(Class<E> entityClass, GroupingEntityCommon<? extends Hierarchy.GroupedHierarchyEntity> groupingEntityCommon) {
+        this.entityClass = entityClass;
+        this.groupingEntityCommon = groupingEntityCommon;
+        this.groupingEntityCommon.setDao(this);
+    }
+
+    public GroupingEntityCommon<? extends Hierarchy.GroupedHierarchyEntity> getGroupingEntityCommon() {
+        return groupingEntityCommon;
     }
 
     /**
@@ -157,7 +178,7 @@ public abstract class EntityDao<E extends ControlledListEntity> {
                     final Method readMethod = pd.getReadMethod();
                     Predicate<E> builtPredicate = e -> {
                         try {
-                            return containsIgnoreCaseIgnoreSpaces(readMethod.invoke(e).toString(), contains);
+                            return containsIgnoreCaseIgnoreSpaces(Objects.toString(readMethod.invoke(e)), contains);
                         } catch (IllegalAccessException | InvocationTargetException ex) {
                             return true;
                         }
@@ -292,7 +313,14 @@ public abstract class EntityDao<E extends ControlledListEntity> {
      * @return
      */
     private static boolean containsIgnoreCaseIgnoreSpaces(String a, String b) {
-        return removeSpaces.matcher(a).replaceAll("").contains(removeSpaces.matcher(b).replaceAll(""));
+        return (a != null && b != null) &&
+                removeSpaces.matcher(a)
+                    .replaceAll("")
+                    .toUpperCase()
+                    .contains(removeSpaces
+                        .matcher(b)
+                        .replaceAll("")
+                        .toUpperCase());
     }
 
     /**

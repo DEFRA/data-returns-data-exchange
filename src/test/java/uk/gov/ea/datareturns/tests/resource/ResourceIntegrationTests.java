@@ -112,7 +112,7 @@ public class ResourceIntegrationTests {
     public final static String STEP_COMPLETE = "data-exchange/complete";
 
     public final static String CONTROLLED_LISTS = "controlled-list/lists";
-    public final static String CONTROLLED_LISTS_NAVIGATION = "controlled-list/nav";
+    public final static String CONTROLLED_LISTS_NAVIGATION = "controlled-list/hierarchy/parameter";
     public final static String TEST_SEARCH = "lookup/permit?term=Dogsthorpe";
 
     public final static String METH_STAND_VALID = "validation/testMethStand.csv";
@@ -138,10 +138,6 @@ public class ResourceIntegrationTests {
 
     public final static String TEXT_VALUE_VALID = "validation/testTextValue.csv";
     public final static String TEXT_VALUE_INVALID = "validation/testTextValueInvalid.csv";
-
-    public final static String REM_VALID_PARAMETER = "validation/testDependencyREMValid.csv";
-    public final static String REM_INVALID_PARAMETER = "validation/testDependencyREMInvalid.csv";
-    public final static String REM_INVALID_UNIT = "validation/testDependencyREMInvalidUnit.csv";
 
     public final static String PI_VALID = "validation/testDependencyPIValid.csv";
     public final static String PI_INVALID_NO_TRANSFER = "validation/testDependencyPINoTransfers.csv";
@@ -354,7 +350,7 @@ public class ResourceIntegrationTests {
     @Test
     public void testControlledListParameters() {
         Client client = createClient("test Controlled List Parameters");
-        final String uri = createURIForStep(CONTROLLED_LISTS) + "/parameters";
+        final String uri = createURIForStep(CONTROLLED_LISTS) + "/Parameter";
         Response response = client.target(uri).request(MediaType.APPLICATION_JSON_TYPE).get();
         assertThat(response.getStatus()).isEqualTo(Status.OK.getStatusCode());
     }
@@ -362,7 +358,7 @@ public class ResourceIntegrationTests {
     @Test
     public void testControlledListUnits() {
         Client client = createClient("test Controlled List Units");
-        final String uri = createURIForStep(CONTROLLED_LISTS) + "/units";
+        final String uri = createURIForStep(CONTROLLED_LISTS) + "/Unit";
         Response response = client.target(uri).request(MediaType.APPLICATION_JSON_TYPE).get();
         assertThat(response.getStatus()).isEqualTo(Status.OK.getStatusCode());
     }
@@ -370,7 +366,7 @@ public class ResourceIntegrationTests {
     @Test
     public void testControlledListRefPeriod() {
         Client client = createClient("test Controlled List Reference Period");
-        final String uri = createURIForStep(CONTROLLED_LISTS) + "/ref_period";
+        final String uri = createURIForStep(CONTROLLED_LISTS) + "/Ref_Period";
         Response response = client.target(uri).request(MediaType.APPLICATION_JSON_TYPE).get();
         assertThat(response.getStatus()).isEqualTo(Status.OK.getStatusCode());
     }
@@ -378,7 +374,7 @@ public class ResourceIntegrationTests {
     @Test
     public void testControlledListMethodOrStandard() {
         Client client = createClient("test Controlled List Method Or Standard");
-        final String uri = createURIForStep(CONTROLLED_LISTS) + "/method";
+        final String uri = createURIForStep(CONTROLLED_LISTS) + "/Meth_Stand";
         Response response = client.target(uri).request(MediaType.APPLICATION_JSON_TYPE).get();
         assertThat(response.getStatus()).isEqualTo(Status.OK.getStatusCode());
     }
@@ -386,7 +382,7 @@ public class ResourceIntegrationTests {
     @Test
     public void testControlledListReturnType() {
         Client client = createClient("test Controlled List Return Type");
-        final String uri = createURIForStep(CONTROLLED_LISTS) + "/rtn_type";
+        final String uri = createURIForStep(CONTROLLED_LISTS) + "/Rtn_Type";
         Response response = client.target(uri).request(MediaType.APPLICATION_JSON_TYPE).get();
         assertThat(response.getStatus()).isEqualTo(Status.OK.getStatusCode());
     }
@@ -397,7 +393,7 @@ public class ResourceIntegrationTests {
     @Test
     public void testControlledListParameters2() {
         Client client = createClient("test Controlled List Parameters2");
-        final String uri = createURIForStep(CONTROLLED_LISTS) + "/parameters";
+        final String uri = createURIForStep(CONTROLLED_LISTS) + "/Parameter";
         Response response = client.target(uri).request(MediaType.APPLICATION_JSON_TYPE).get();
         assertThat(response.getStatus()).isEqualTo(Status.OK.getStatusCode());
     }
@@ -405,7 +401,7 @@ public class ResourceIntegrationTests {
     @Test
     public void testControlledListUnits2() {
         Client client = createClient("test Controlled List Units2");
-        final String uri = createURIForStep(CONTROLLED_LISTS) + "/units";
+        final String uri = createURIForStep(CONTROLLED_LISTS) + "/Unit";
         Response response = client.target(uri).request(MediaType.APPLICATION_JSON_TYPE).get();
         assertThat(response.getStatus()).isEqualTo(Status.OK.getStatusCode());
     }
@@ -413,7 +409,7 @@ public class ResourceIntegrationTests {
     @Test
     public void testControlledListRefPeriod2() {
         Client client = createClient("test Controlled List Reference Period2");
-        final String uri = createURIForStep(CONTROLLED_LISTS) + "/ref_period";
+        final String uri = createURIForStep(CONTROLLED_LISTS) + "/Ref_Period";
         Response response = client.target(uri).request(MediaType.APPLICATION_JSON_TYPE).get();
         assertThat(response.getStatus()).isEqualTo(Status.OK.getStatusCode());
     }
@@ -421,7 +417,7 @@ public class ResourceIntegrationTests {
     @Test
     public void testControlledListMethodOrStandard2() {
         Client client = createClient("test Controlled List Method Or Standard2");
-        final String uri = createURIForStep(CONTROLLED_LISTS) + "/method";
+        final String uri = createURIForStep(CONTROLLED_LISTS) + "/Meth_Stand";
         Response response = client.target(uri).request(MediaType.APPLICATION_JSON_TYPE).get();
         assertThat(response.getStatus()).isEqualTo(Status.OK.getStatusCode());
     }
@@ -429,7 +425,7 @@ public class ResourceIntegrationTests {
     @Test
     public void testControlledListReturnType2() {
         Client client = createClient("test Controlled List Return Type2");
-        final String uri = createURIForStep(CONTROLLED_LISTS) + "/rtn_type";
+        final String uri = createURIForStep(CONTROLLED_LISTS) + "/Rtn_Type";
         Response response = client.target(uri).request(MediaType.APPLICATION_JSON_TYPE).get();
         assertThat(response.getStatus()).isEqualTo(Status.OK.getStatusCode());
     }
@@ -444,27 +440,6 @@ public class ResourceIntegrationTests {
         final String uri = createURIForStep(CONTROLLED_LISTS_NAVIGATION);
         Response response = client.target(uri).request(MediaType.APPLICATION_JSON_TYPE).get();
         assertThat(response.getStatus()).isEqualTo(Status.OK.getStatusCode());
-    }
-
-    @Test
-    public void testREMValidParameter() {
-        Client client = createClient("Nav: REM valid parameter");
-        final Response response = performUploadStep(client, REM_VALID_PARAMETER, MEDIA_TYPE_CSV);
-        assertThat(response.getStatus()).isEqualTo(Status.OK.getStatusCode());
-    }
-
-    @Test
-    public void testREMInvalidParameter() {
-        Client client = createClient("Nav: REM valid parameter");
-        final Response response = performUploadStep(client, REM_INVALID_PARAMETER, MEDIA_TYPE_CSV);
-        assertThat(response.getStatus()).isEqualTo(Status.BAD_REQUEST.getStatusCode());
-    }
-
-    @Test
-    public void testREMInvalidUnit() {
-        Client client = createClient("Nav: REM invalid unit");
-        final Response response = performUploadStep(client, REM_INVALID_UNIT, MEDIA_TYPE_CSV);
-        assertThat(response.getStatus()).isEqualTo(Status.BAD_REQUEST.getStatusCode());
     }
 
     @Test
