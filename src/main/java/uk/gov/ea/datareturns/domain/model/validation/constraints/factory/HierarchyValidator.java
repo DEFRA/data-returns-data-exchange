@@ -7,11 +7,15 @@ import javax.validation.Constraint;
 import javax.validation.Payload;
 import java.lang.annotation.*;
 
-@Target({ ElementType.TYPE })
+/**
+ * The hierarchy Validation has its own interface to allow it to
+ * have a different group to the other record level validators.
+ * @author Graham Willis
+ */
+@Target({ElementType.TYPE})
 @Retention(RetentionPolicy.RUNTIME)
 @Constraint(validatedBy = ParameterHierarchyValidator.class)
 @Documented
-
 public @interface HierarchyValidator {
 
     String message() default "";

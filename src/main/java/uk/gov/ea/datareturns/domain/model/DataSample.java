@@ -15,7 +15,7 @@ import javax.validation.Valid;
  * @author Sam Gardner-Dell
  */
 @ValidRecord(value = DataSample.class)
-@HierarchyValidator(value = DataSample.class, groups = ValidationGroups.OrderedChecks.class)
+@HierarchyValidator(value = DataSample.class, groups = ValidationGroups.RecordTier.class)
 public class DataSample {
 
     /** The EA Unique Identifier (EA_ID) */
