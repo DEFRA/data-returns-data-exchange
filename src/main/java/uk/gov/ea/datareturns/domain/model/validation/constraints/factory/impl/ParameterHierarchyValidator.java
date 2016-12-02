@@ -9,22 +9,22 @@ import uk.gov.ea.datareturns.domain.jpa.hierarchy.implementations.ParameterHiera
 import uk.gov.ea.datareturns.domain.model.DataSample;
 import uk.gov.ea.datareturns.domain.model.MessageCodes;
 import uk.gov.ea.datareturns.domain.model.fields.AbstractEntityValue;
-import uk.gov.ea.datareturns.domain.model.validation.constraints.factory.RecordConstraintValidator;
+import uk.gov.ea.datareturns.domain.model.validation.constraints.factory.HierarchyValidator;
 import uk.gov.ea.datareturns.util.SpringApplicationContextProvider;
 
+import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
 import java.util.HashSet;
 import java.util.Set;
 
 /**
+ * @author Graham Willis
  * Validate that all entries meet the dependency validation requirements
  * specified in the dependencies.csv file, i.e. that given combination of return type,
  * releases and transfers parameter and unit is allowed
  */
 @Component
-public class DependencyValidator implements RecordConstraintValidator<DataSample> {
-
-    //private (Disposer.Record recordAbstractEntityValue value)
+public class ParameterHierarchyValidator implements ConstraintValidator<HierarchyValidator, DataSample> {
 
     @Override
     public boolean isValid(DataSample record, ConstraintValidatorContext context) {
@@ -52,27 +52,21 @@ public class DependencyValidator implements RecordConstraintValidator<DataSample
 
         if (result == Hierarchy.Result.OK) {
             return true;
-        } else {
-            // TODO - remove this kludge - the validations need to be tiered
-            if (result == Hierarchy.Result.EXPECTED && level != ControlledListsList.RELEASES_AND_TRANSFER) {
-                return true;
-            } else {
-                switch (level) {
-                    case UNIT:
-                        message = MessageCodes.DependencyConflict.Unit;
-                        break;
-                    case PARAMETER:
-                        message = MessageCodes.DependencyConflict.Parameter;
-                        break;
-                    case RELEASES_AND_TRANSFER:
-                        message = MessageCodes.DependencyConflict.Rel_Trans;
-                        break;
-                    case RETURN_TYPE:
-                        message = MessageCodes.DependencyConflict.Rtn_Type;
-                        break;
-                }
-            }
+        }
 
+        switch (level) {
+            case UNIT:
+                message = MessageCodes.DependencyConflict.Unit;
+                break;
+            case PARAMETER:
+                message = MessageCodes.DependencyConflict.Parameter;
+                break;
+            case RELEASES_AND_TRANSFER:
+                message = MessageCodes.DependencyConflict.Rel_Trans;
+                break;
+            case RETURN_TYPE:
+                message = MessageCodes.DependencyConflict.Rtn_Type;
+                break;
         }
 
         if (message != null) {
@@ -82,4 +76,10 @@ public class DependencyValidator implements RecordConstraintValidator<DataSample
 
         return false;
     }
+
+    @Override
+    public void initialize(HierarchyValidator constraintAnnotation) {
+
+    }
+
 }

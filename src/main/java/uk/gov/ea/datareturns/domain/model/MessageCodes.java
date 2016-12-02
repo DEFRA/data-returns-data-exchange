@@ -90,7 +90,7 @@ public class MessageCodes {
      */
     public class DependencyConflict {
         public final static String Unit = "{DR9051-Conflict}";
-        public final static String Rtn_Type = "{DR9051-Conflict}";
+        public final static String Rtn_Type = "{DR9011-Conflict}";
         public final static String Parameter = "{DR9031-Conflict}";
         public final static String Rel_Trans = "{DR9170-Conflict}";
     }
