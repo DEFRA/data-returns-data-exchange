@@ -1,6 +1,8 @@
 package uk.gov.ea.datareturns.domain.jpa.hierarchy.processors;
 
 import org.apache.commons.lang3.tuple.Pair;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 import uk.gov.ea.datareturns.domain.jpa.dao.EntityDao;
 import uk.gov.ea.datareturns.domain.jpa.hierarchy.*;
@@ -17,7 +19,7 @@ import java.util.*;
  */
 @Component
 public class GroupNavigator implements Navigator {
-    private Iterator<HierarchyLevel<? extends Hierarchy.HierarchyEntity>> hierarchyNodesIttr;
+    private static final Logger LOGGER = LoggerFactory.getLogger(GroupNavigator.class);
 
     /**
      * Navigate to the next level down in the hierarchy
@@ -34,9 +36,9 @@ public class GroupNavigator implements Navigator {
             Map<HierarchyLevel<? extends Hierarchy.HierarchyEntity>, String> entityNames,
             String field, String contains) {
 
-        hierarchyNodesIttr = hierarchyLevels.iterator();
+        Iterator<HierarchyLevel<? extends Hierarchy.HierarchyEntity>> hierarchyNodesIttr = hierarchyLevels.iterator();
         HierarchyLevel<? extends Hierarchy.HierarchyEntity> rootNode = hierarchyNodesIttr.next();
-        return down(rootNode, cache, entityNames, new HashMap<>(), field, contains);
+        return down(hierarchyNodesIttr, rootNode, cache, entityNames, new HashMap<>(), field, contains);
     }
 
     /*
@@ -47,24 +49,31 @@ public class GroupNavigator implements Navigator {
      * sequence
      */
     private Pair<HierarchyLevel<? extends Hierarchy.HierarchyEntity>, List<? extends Hierarchy.HierarchyEntity>> shim(
-            HierarchyLevel<? extends Hierarchy.HierarchyEntity> node,
+            Iterator<HierarchyLevel<? extends Hierarchy.HierarchyEntity>> hierarchyNodesIttr,
+            HierarchyLevel<? extends Hierarchy.HierarchyEntity> level,
             Map<String, ?> cache,
             String cacheKey,
             Map<HierarchyLevel<? extends Hierarchy.HierarchyEntity>, String> entityNames,
             Map<HierarchyLevel<? extends Hierarchy.HierarchyEntity>, String> keys,
             String field, String contains) {
 
-        keys.put(node, entityNames.remove(node));
+        if (!hierarchyNodesIttr.hasNext()) {
+            LOGGER.error("Error evaluating hierarchy at : " + level.getControlledList().getDescription());
+            return Pair.of(level, null);
+        }
+
+        keys.put(level, entityNames.remove(level));
 
         if (cache.get(cacheKey) instanceof Set) {
             return list(hierarchyNodesIttr.next(), (Set<String>)cache.get(cacheKey), field, contains);
         } else {
-            return down(hierarchyNodesIttr.next(), (Map<String, ?>)cache.get(cacheKey), entityNames, keys, field, contains);
+            return down(hierarchyNodesIttr, hierarchyNodesIttr.next(), (Map<String, ?>)cache.get(cacheKey), entityNames, keys, field, contains);
         }
     }
 
     @SuppressWarnings("unchecked")
     private Pair<HierarchyLevel<? extends Hierarchy.HierarchyEntity>, List<? extends Hierarchy.HierarchyEntity>> down(
+            Iterator<HierarchyLevel<? extends Hierarchy.HierarchyEntity>> hierarchyNodesIttr,
             HierarchyLevel<? extends Hierarchy.HierarchyEntity> level,
             Map<String, ?> cache,
             Map<HierarchyLevel<? extends Hierarchy.HierarchyEntity>, String> entityNames,
@@ -83,18 +92,18 @@ public class GroupNavigator implements Navigator {
                 return Pair.of(level, null);
             } else if (cache.containsKey(entityNames.get(level))) {
                 // Item explicitly listed - Proceed
-                return shim(level, cache, entityNames.get(level), entityNames, keys, field, contains);
+                return shim(hierarchyNodesIttr, level, cache, entityNames.get(level), entityNames, keys, field, contains);
             } else if (cache.containsKey(HierarchySymbols.INCLUDE_ALL_OPTIONALLY)) {
                 // if the item is optionally supplied with a wildcard - proceed
-                return shim(level, cache, HierarchySymbols.INCLUDE_ALL_OPTIONALLY, entityNames, keys, field, contains);
+                return shim(hierarchyNodesIttr, level, cache, HierarchySymbols.INCLUDE_ALL_OPTIONALLY, entityNames, keys, field, contains);
             } else if (cache.containsKey(HierarchySymbols.INCLUDE_ALL)) {
                 // if the item is on a wildcard - proceed
-                return shim(level, cache, HierarchySymbols.INCLUDE_ALL, entityNames, keys, field, contains);
+                return shim(hierarchyNodesIttr, level, cache, HierarchySymbols.INCLUDE_ALL, entityNames, keys, field, contains);
             } else if (level instanceof HierarchyGroupLevel) {
                 // For a group level search for the group
                 if (GroupCommon.cacheContainsGroupContainsName((HierarchyGroupLevel<? extends Hierarchy.HierarchyEntity>)level, cache, entityNames.get(level))) {
                     String foundGroup = GroupCommon.getGroupInCacheFromName((HierarchyGroupLevel<? extends Hierarchy.HierarchyEntity>)level, cache, entityNames.get(level));
-                    return shim(level, cache, HierarchyGroupSymbols.injectGroup(foundGroup), entityNames, keys, field, contains);
+                    return shim(hierarchyNodesIttr, level, cache, HierarchyGroupSymbols.injectGroup(foundGroup), entityNames, keys, field, contains);
                 } else {
                     return Pair.of(level, null);
                 }
@@ -106,7 +115,7 @@ public class GroupNavigator implements Navigator {
                 return Pair.of(level, null);
             }
         } else if (entityNames.get(level) == null && cache.containsKey(HierarchySymbols.EXCLUDE_ALL)) {
-            return shim(level, cache, HierarchySymbols.EXCLUDE_ALL, entityNames, keys, field, contains);
+            return shim(hierarchyNodesIttr, level, cache, HierarchySymbols.EXCLUDE_ALL, entityNames, keys, field, contains);
         } else if (GroupCommon.allNulls(entityNames)) {
             return list(level, cache, field, contains);
         } else {
