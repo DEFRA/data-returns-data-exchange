@@ -106,7 +106,7 @@
 "Diethylene glycol","Chemical","2,2'-Oxydiethanol",,,,,,,"111-46-6"
 "Diethylenetriamine","Chemical","2,2'-Iminodi(ethylamine)",,,,,,,"111-40-0"
 "Diethyltoluamide","Chemical","Diethyltoluamide (SVOCSW)",,,,,,,"134-62-3"
-"hydrogen selenide","Chemical","Dihydrogen Selenide (As Se)",,,,,,,7783-07-05
+"Hydrogen selenide","Chemical","Dihydrogen Selenide (As Se)",,,,,,,7783-07-05
 "Diisopropyl ketone","Chemical","3-Pentanone, 2,4-dimethyl",,,,,,,"565-80-0"
 "Dimethyl phthalate","Chemical","DMP (Dimethyl Phthalate)",,,,,,,0113-11-03
 "Diphenyl ether","Chemical","Diphenyl oxide",,,,,,,"101-84-8"
@@ -301,7 +301,7 @@
 "Benzenebutanoic acid","Chemical",,,,,,,,1821-12-01
 "Benzeneethanol","Chemical",,,,,,,,1960-12-08
 "Benzethonium chloride","Chemical",,,,,,,,"121-54-0"
-"benzo(b)naphtho(2,1-d)thiophene","Chemical",,,,,,,,"239-35-0"
+"Benzo(b)naphtho(2,1-d)thiophene","Chemical",,,,,,,,"239-35-0"
 "Benzyl benzoate","Chemical",,,,,,,,"120-51-4"
 "Bifenox","Chemical",,,,,,,,"42576-02-3"
 "bis (1-oxododecyl) peroxide","Chemical",,,,,,,,0762-12-09
@@ -442,7 +442,7 @@
 "Heptachlor (and heptachor epoxide)","Chemical",,,,,,,,"76-44-8 and 102-57-3"
 "Heptadecane, 2,6,10,15-tetramethyl-","Chemical",,,,,,,,"54833-48-6"
 "Heptadecane,8-methyl","Chemical",,,,,,,,"13287-23-5"
-"heptane,4-methyl","Chemical",,,,,,,,"589-53-7"
+"Heptane,4-methyl","Chemical",,,,,,,,"589-53-7"
 "Hexabromobiphenyl","Chemical",,,,,,,,0
 "Hexachloronorbornadiene","Chemical",,,,,,,,"28680-44-6"
 "Hexachloropropene","Chemical",,,,,,,,"1888-71-7"
@@ -456,18 +456,18 @@
 "Isoamyl acetate","Chemical",,,,,,,,"123-92-2"
 "Isobutanolamine","Chemical",,,,,,,,"124-68-5"
 "Isobutyl acetate","Chemical",,,,,,,,"110-19-0"
-"iso-Butylamine","Chemical",,,,,,,,"78-81-9"
+"Iso-Butylamine","Chemical",,,,,,,,"78-81-9"
 "Isobutylene","Chemical",,,,,,,,0115-11-07
 "Isobutyraldehyde","Chemical",,,,,,,,"78-84-2"
-"iso-Butyric acid","Chemical",,,,,,,,"79-31-2"
-"iso-Caproic acid","Chemical",,,,,,,,0646-07-01
+"Iso-Butyric acid","Chemical",,,,,,,,"79-31-2"
+"Iso-Caproic acid","Chemical",,,,,,,,0646-07-01
 "Isodrin","Chemical",,,,,,,,"465-73-6"
 "Isooctyl alcohol","Chemical",,,,,,,,"26952-21-6"
 "Isopentane","Chemical",,,,,,,,"78-78-4"
 "Isopropyl acetate","Chemical",,,,,,,,"108-21-4"
 "Isopropyl chloroformate","Chemical",,,,,,,,"108-23-6"
 "Isovaleraldehyde","Chemical",,,,,,,,"590-86-3"
-"iso-Valeric acid","Chemical",,,,,,,,"503-74-2"
+"Iso-Valeric acid","Chemical",,,,,,,,"503-74-2"
 "Methanesulfonyl chloride","Chemical",,,,,,,,"124-63-0"
 "Methyl acetate","Chemical",,,,,,,,"79-20-9"
 "Methyl acrylate","Chemical",,,,,,,,"96-33-3"
@@ -541,7 +541,7 @@
 "Selenium trioxide","Chemical",,,,,,,,"13768-86-0"
 "Simazine","Chemical",,,,,,,,"122-34-9"
 "Sulphur chloride","Chemical",,,,,,,,"10545-99-0"
-"sulphuryl fluoride","Chemical",,,,,,,,"2699-79-8"
+"Sulphuryl fluoride","Chemical",,,,,,,,"2699-79-8"
 "Terbuthylazine","Chemical",,,,,,,,"5915 41 3"
 "tert-Butyl acetate","Chemical",,,,,,,,"540-88-5"
 "tert-Butylamine","Chemical",,,,,,,,"75-64-9"
@@ -685,7 +685,7 @@
 "Particulate matter - PM10","Physical parameter","Particles (PM10)","Particulates (PM10)",,,,,,
 "2,2',3,4',5,6'-Hexachlorobiphenyl","Chemical","PCB 148",,,,,,,
 "Phenol Index","Physical parameter","Phenols (Phenol Index)","Phenol Index as C6H5OH",,,,,,
-"potable water use","Physical parameter","potable water used","mains water",,,,,,
+"Potable water use","Physical parameter","potable water used","mains water",,,,,,
 "E.Coli","Biological Parameter","Faecal Coliforms","E. Coli (faecal coliforms)",,,,,,
 "Ammoniacal nitrogen as N","Chemical","Ammoniacal nitrogen (nitrogen)",,,,,,,
 "1,1-Dimethylethylbenzene","Chemical","tert-Butylbenzene",,,,,,,
@@ -1009,7 +1009,7 @@
 "Trichloronate","Chemical","Trichlorinate",,,,,,,
 "Trichlorofluoromethane","Chemical","Freon 11",,,,,,,
 "Trihalomethanes","Chemical Group","Haloforms",,,,,,,
-"trimethyl phosphate","Chemical","Trimethyl ester phosphoric acid",,,,,,,
+"Trimethyl phosphate","Chemical","Trimethyl ester phosphoric acid",,,,,,,
 "Volatile acid, total","Chemical Group","TVA",,,,,,,
 "Xylene (p)","Chemical","p-xylene",,,,,,,
 "Bottom Ash","Physical parameter","mass bottom ash produced",,,,,,,
@@ -1159,9 +1159,9 @@
 "Acetone + propanal","Chemical group",,,,,,,,
 "Acetone glycerol","Chemical",,,,,,,,
 "Acrylamide","Chemical",,,,,,,,
-"acrylates (as butyl acrylate)"," Chemical group",,,,,,,,
-"acrylates (as butyl arcylate)","Chemical group",,,,,,,,
-"acrylates (as glycidyl methacrylate)","Chemical group",,,,,,,,
+"Acrylates (as butyl acrylate)"," Chemical group",,,,,,,,
+"Acrylates (as butyl arcylate)","Chemical group",,,,,,,,
+"Acrylates (as glycidyl methacrylate)","Chemical group",,,,,,,,
 "Acrylic acid","Chemical",,,,,,,,
 "Actinium-228","Chemical","Actinium 228",,,,,,,
 "Activated Carbon","Chemical",,,,,,,,
@@ -1245,7 +1245,7 @@
 "Benazolin","Chemical",,,,,,,,
 "Bentonite","Chemical",,,,,,,,
 "Benzaldehyde","Chemical",,,,,,,,
-"benzemethanol,alpha,alpha-dimethyl","Chemical",,,,,,,,
+"Benzemethanol,alpha,alpha-dimethyl","Chemical",,,,,,,,
 "Benzenacetic acid, .alpha.-methyl-4-(2-methylprop","Chemical",,,,,,,,
 "Benzenemethanol,alpha,alpha-dimethyl","Chemical",,,,,,,,
 "Benzenepropanioc acid, alpha-methyl","Chemical",,,,,,,,
@@ -1254,7 +1254,7 @@
 "Benzenethiol","Chemical",,,,,,,,
 "Benzidine","Chemical",,,,,,,,
 "Benzo(a)anthracene","Chemical",,,,,,,,
-"benzo(b)naph(2,1-d)thiophene","Chemical",,,,,,,,
+"Benzo(b)naph(2,1-d)thiophene","Chemical",,,,,,,,
 "Benzo(bjk)fluoranthene","Chemical",,,,,,,,
 "Benzo(bk)fluoranthene","Chemical",,,,,,,,
 "Benzo(c)phenanthrene","Chemical",,,,,,,,
@@ -1279,7 +1279,7 @@
 "Bicyclo(2.2.1)Hepta-2-one,1,7,7-Trimethy","Chemical",,,,,,,,
 "Bicyclo(2.2.1)Heptan-2-one,1,7,7-Trimethyl","Chemical",,,,,,,,
 "Biocides","Chemical Group",,,,,,,,
-"bis (1,4-Isocyanatophenyl) methane","Chemical",,,,,,,,
+"Bis (1,4-Isocyanatophenyl) methane","Chemical",,,,,,,,
 "Bis (2-chloroethoxy) methane","Chemical",,,,,,,,
 "Bis(2-chloroethoxy)methane","Chemical",,,,,,,,
 "Bismuth-212","Chemical","Bismuth 212",,,,,,,
@@ -1372,7 +1372,7 @@
 "Cellulose","Chemical",,,,,,,,
 "Cerium-144","Chemical","Cerium 144",,,,,,,
 "Chloral hydrate","Chemical",,,,,,,,
-"chloranthene","Chemical",,,,,,,,
+"Chloranthene","Chemical",,,,,,,,
 "Chlorate","Chemical",,,,,,,,
 "Chlordane","Chemical",,,,,,,,
 "Chlorinated hydrocarbons","Chemical Group",,,,,,,,
@@ -1398,7 +1398,7 @@
 "Cholesterol","Chemical",,,,,,,,
 "Chromium","Chemical",,,,,,,,
 "Chromium and its compounds expressed as chromium (total Cr)","Chemical Group",,,,,,,,
-"chromium and its compounds expressed at chromium (total Cr)","Chemical Group",,,,,,,,
+"Chromium and its compounds expressed at chromium (total Cr)","Chemical Group",,,,,,,,
 "Chromium III","Chemical",,,,,,,,
 "Chromium trioxide","Chemical",,,,,,,,
 "Chromium(II) compounds (as Cr)","Chemical Group",,,,,,,,
@@ -1447,7 +1447,7 @@
 "Detergents Anionic","Chemical Group",,,,,,,,
 "Diallate","Chemical",,,,,,,,
 "Diazinon","Chemical",,,,,,,,
-"dibenzo(a,i)pyrene","Chemical",,,,,,,,
+"Dibenzo(a,i)pyrene","Chemical",,,,,,,,
 "Dibenzofuran","Chemical",,,,,,,,
 "Dibenzothiophene","Chemical",,,,,,,,
 "Dibismuth tritelluride","Chemical",,,,,,,,
@@ -1561,7 +1561,7 @@
 "Fuel Oil","Chemical",,,,,,,,
 "Furan","Chemical",,,,,,,,
 "Gadolinium","Chemical",,,,,,,,
-"gas oil","Chemical",,,,,,,,
+"Gas oil","Chemical",,,,,,,,
 "Gasoline range organics C5-C12","Chemical Group",,,,,,,,
 "Germane","Chemical",,,,,,,,
 "Glutaraldehyde","Chemical",,,,,,,,
@@ -1636,7 +1636,7 @@
 "Ivermectin","Chemical",,,,,,,,
 "Kepone","Chemical",,,,,,,,
 "Ketene","Chemical",,,,,,,,
-"kresoxim-methyl","Chemical",,,,,,,,
+"Kresoxim-methyl","Chemical",,,,,,,,
 "Krypton-85","Chemical","Krypton 85",,,,,,,
 "Lactate","Chemical",,,,,,,,
 "n-Butylbenzene","Chemical",,,,,,,,
@@ -1949,7 +1949,7 @@
 "Radon","Chemical",,,,,,,,
 "Radon-222","Chemical","Radon 222",,,,,,,
 "Radon-226","Chemical","Radon 226",,,,,,,
-"recovered fuel oil","Chemical",,,,,,,,
+"Recovered fuel oil","Chemical",,,,,,,,
 "Residual Nitrogen","Chemical",,,,,,,,
 "Resmethrin","Chemical",,,,,,,,
 "Resorcinol","Chemical",,,,,,,,
@@ -2010,7 +2010,7 @@
 "Sulphur-35","Chemical","Sulphur 35",,,,,,,
 "Sulphur Hexafluoride","Chemical",,,,,,,,
 "Sulphur oxides (SO2 and SO3) as SO2","Chemical Group",,,,,,,,
-"supplementary fuel oil","Chemical",,,,,,,,
+"Supplementary fuel oil","Chemical",,,,,,,,
 "Simetryn","Chemical",,,,,,,,
 "Tantalum","Chemical",,,,,,,,
 "Tantalum-182","Chemical","Tantalum 182",,,,,,,
@@ -2283,7 +2283,7 @@
 "Electrical Energy Imported","Physical parameter",,,,,,,,
 "Electrical Energy Used","Physical parameter",,,,,,,,
 "Electricity Exported","Physical parameter",,,,,,,,
-"energy used","Physical parameter",,,,,,,,
+"Energy used","Physical parameter",,,,,,,,
 "Engine Output","Physical parameter",,,,,,,,
 "Environmental Tobacco Smoke (ETS)","Physical parameter",,,,,,,,
 "Explosivity","Physical parameter",,,,,,,,
@@ -2319,7 +2319,7 @@
 "Hardness as CaCO3","Physical parameter",,,,,,,,
 "Hardwood Dust","Physical parameter",,,,,,,,
 "Hazardous Pollutants screen","Physical parameter",,,,,,,,
-"hazardous waste","Physical parameter",,,,,,,,
+"Hazardous waste","Physical parameter",,,,,,,,
 "Hazardous Waste Transferred","Physical parameter",,,,,,,,
 "Heat Exported","Physical parameter",,,,,,,,
 "HMX","Physical parameter",,,,,,,,
@@ -2333,12 +2333,12 @@
 "Lime","Physical parameter",,,,,,,,
 "Longitude","Physical parameter",,,,,,,,
 "Loss On Ignition","Physical parameter",,,,,,,,
-"mass ash from ESP produced","Physical parameter",,,,,,,,
+"Mass ash from ESP produced","Physical parameter",,,,,,,,
 "Mechanical Power Provided","Physical parameter",,,,,,,,
 "Moisture content","Physical parameter",,,,,,,,
 "Naled","Physical parameter",,,,,,,,
-"named hazardous waste","Physical parameter",,,,,,,,
-"named non hazardous waste","Physical parameter",,,,,,,,
+"Named hazardous waste","Physical parameter",,,,,,,,
+"Named non hazardous waste","Physical parameter",,,,,,,,
 "Net total annual production of product","Physical parameter",,,,,,,,
 "Non hazardous waste transferred","Physical parameter",,,,,,,,
 "Non potable water extracted","Physical parameter",,,,,,,,
@@ -2355,9 +2355,9 @@
 "Oil Fingerprint Interpretation","Physical parameter",,,,,,,,
 "Operating Hours","Physical parameter",,,,,,,,
 "Other Energy Produced","Physical parameter",,,,,,,,
-"other hazardous waste","Physical parameter",,,,,,,,
+"Other hazardous waste","Physical parameter",,,,,,,,
 "Other inputs of water/moisture","Physical parameter",,,,,,,,
-"other non hazardous waste","Physical parameter",,,,,,,,
+"Other non hazardous waste","Physical parameter",,,,,,,,
 "Oxidisability","Physical parameter",,,,,,,,
 "Particle Size Distribution","Physical parameter",,,,,,,,
 "Particulate matter - PM2.5","Physical parameter",,,,,,,,
@@ -2366,7 +2366,7 @@
 "Power Generated","Physical parameter",,,,,,,,
 "Precipitation","Physical parameter",,,,,,,,
 "Pressure","Physical parameter",,,,,,,,
-"primary electricity use","Physical parameter",,,,,,,,
+"Primary electricity use","Physical parameter",,,,,,,,
 "Pulse Count","Physical parameter",,,,,,,,
 "Pulverised Fuel Ash","Physical parameter",,,,,,,,
 "Pump count value","Physical parameter",,,,,,,,
@@ -2387,7 +2387,7 @@
 "Secondary Colour","Physical parameter",,,,,,,,
 "Settleable solids","Physical parameter",,,,,,,,
 "Site Weather Conditions","Physical parameter",,,,,,,,
-"sludge incinerated (dry basis)","Physical parameter",,,,,,,,
+"Sludge incinerated (dry basis)","Physical parameter",,,,,,,,
 "Softwood Dust","Physical parameter",,,,,,,,
 "Soil Organic Matter","Physical parameter",,,,,,,,
 "Solids, Ashed STL008","Physical parameter",,,,,,,,
@@ -2395,7 +2395,7 @@
 "Stack gas pressure","Physical parameter",,,,,,,,
 "Stack gas temperature","Physical parameter",,,,,,,,
 "Stone Content","Physical parameter",,,,,,,,
-"strength","Physical parameter",,,,,,,,
+"Strength","Physical parameter",,,,,,,,
 "Substances affecting the taste of the shellfish","Physical parameter",,,,,,,,
 "Surface-Active Substances Reacting with Methylene Blue (Lauryl Sulphate)","Physical parameter",,,,,,,,
 "Tarry Residues and Floating Materials","Physical parameter",,,,,,,,
@@ -2409,7 +2409,7 @@
 "Total Hardness as CaCO3","Physical parameter",,,,,,,,
 "Total Indicative Dose (for Radioactivity)","Physical parameter",,,,,,,,
 "Total Inhalable Dust","Physical parameter",,,,,,,,
-"total waste generated","Physical parameter",,,,,,,,
+"Total waste generated","Physical parameter",,,,,,,,
 "Total Water Hardness","Physical parameter",,,,,,,,
 "Total Water Used","Physical parameter",,,,,,,,
 "Transparency","Physical parameter",,,,,,,,
@@ -2423,7 +2423,7 @@
 "Valve Turn Position Before","Physical parameter",,,,,,,,
 "Visual Inspection (insitu)","Physical parameter",,,,,,,,
 "Volatiles Screen","Physical parameter",,,,,,,,
-"waste delivered to site","Physical parameter",,,,,,,,
+"Waste delivered to site","Physical parameter",,,,,,,,
 "Waste Recovered","Physical parameter",,,,,,,,
 "Waste transfer","Physical parameter",,,,,,,,
 "Waste transfer number","Physical parameter",,,,,,,,
