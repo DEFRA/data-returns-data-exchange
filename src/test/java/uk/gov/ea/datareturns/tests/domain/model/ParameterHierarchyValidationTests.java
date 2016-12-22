@@ -70,7 +70,7 @@ public class ParameterHierarchyValidationTests {
         ReturnType returnType = returnTypeDao.getByName("Ambient air quality");
         Assert.assertNotNull(returnType);
 
-        Parameter parameter = parameterDao.getByName("Krypton 85");
+        Parameter parameter = parameterDao.getByName("Krypton-85");
         Assert.assertNotNull(parameter);
 
         Unit unit = unitDao.getByName("cm3/hr");
@@ -277,7 +277,7 @@ public class ParameterHierarchyValidationTests {
         ReleasesAndTransfers releasesAndTransfers = releasesAndTransfersDao.getByName("Air");
         Assert.assertNotNull(releasesAndTransfers);
 
-        Parameter parameter = parameterDao.getByName("Xenon 133");
+        Parameter parameter = parameterDao.getByName("Xenon-133");
         Assert.assertNotNull(parameter);
 
         Unit unit = unitDao.getByName("Bq/m2");
@@ -297,7 +297,7 @@ public class ParameterHierarchyValidationTests {
         ReleasesAndTransfers releasesAndTransfers = releasesAndTransfersDao.getByName("Air");
         Assert.assertNotNull(releasesAndTransfers);
 
-        Parameter parameter = parameterDao.getByName("Americium 241");
+        Parameter parameter = parameterDao.getByName("Americium-241");
         Assert.assertNotNull(parameter);
 
         Unit unit = unitDao.getByName("g");
@@ -317,7 +317,7 @@ public class ParameterHierarchyValidationTests {
         ReleasesAndTransfers releasesAndTransfers = releasesAndTransfersDao.getByName("Air");
         Assert.assertNotNull(releasesAndTransfers);
 
-        Parameter parameter = parameterDao.getByName("Americium 241");
+        Parameter parameter = parameterDao.getByName("Americium-241");
         Assert.assertNotNull(parameter);
 
         Unit unit = unitDao.getByName("µg/hr");
