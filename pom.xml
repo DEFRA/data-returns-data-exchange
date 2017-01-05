@@ -73,6 +73,8 @@
 		<!-- Test -->
 		<assertj.version>3.5.2</assertj.version>
 		<run.test.suite>**/AllTests.class</run.test.suite>
+
+		<influxdb-java.version>2.5</influxdb-java.version>
 	</properties>
 
 	<dependencyManagement>
@@ -145,6 +147,13 @@
 			<groupId>io.dropwizard.metrics</groupId>
 			<artifactId>metrics-jetty9</artifactId>
 			<version>${dropwizard-metrics.version}</version>
+		</dependency>
+
+		<!-- InfluxDB -->
+		<dependency>
+			<groupId>org.influxdb</groupId>
+			<artifactId>influxdb-java</artifactId>
+			<version>${influxdb-java.version}</version>
 		</dependency>
 
 		<!-- Jersey JAX-RS -->

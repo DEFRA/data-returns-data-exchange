@@ -182,6 +182,26 @@ logging:
 ---
 ###############################################################################
 #
+# Profile: metrics
+#
+###############################################################################
+spring:
+  profiles: metrics
+  influxdb:
+    url: http://localhost:8086
+    username: root
+    password: root
+    database: test
+    retention-policy: default
+    # Number of points to store in memory before writing to influxdb
+    batch-size: 500
+    # Maximum time period before data is flushed to influxdb
+    flush-timeout-seconds: 300
+    enabled: true
+
+---
+###############################################################################
+#
 # Profile: cluster
 #
 ###############################################################################
