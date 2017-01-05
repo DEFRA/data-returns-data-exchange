@@ -35,7 +35,8 @@ public abstract class AbstractAliasingEntityValue<R, E extends AliasingEntity> e
      * @return the transformed output value of this entity for use in the downstream system.
      */
     @Override public String transform(R record) {
-        Key lookup = Key.explicit(Optional.ofNullable(super.getEntity()).map(AliasingEntity::getName).orElse(null));
-        return Optional.ofNullable(getDao().getPreferred(lookup)).map(AliasingEntity::getName).orElse(null);
+        String entityName = Optional.ofNullable(super.getEntity()).map(AliasingEntity::getName).orElse(null);
+        // Use an explicit lookup as we are already using an entity
+        return Optional.ofNullable(getDao().getPreferred(Key.explicit(entityName))).map(AliasingEntity::getName).orElse(null);
     }
 }

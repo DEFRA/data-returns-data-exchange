@@ -51,7 +51,7 @@ public abstract class AbstractAliasingEntityDao<E extends AliasingEntity> extend
     }
 
     @Override public E getPreferred(Key name) {
-        E val = getByAliasName(name);
+        E val = getByNameOrAlias(name);
         while (val != null && val.getPreferred() != null) {
             val = getCache().forView(CACHE_ALL_ENTITIES).get(val.getPreferred());
         }

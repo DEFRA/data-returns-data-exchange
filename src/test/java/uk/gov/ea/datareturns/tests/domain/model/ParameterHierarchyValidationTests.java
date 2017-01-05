@@ -293,7 +293,7 @@ public class ParameterHierarchyValidationTests {
         ReleasesAndTransfers releasesAndTransfers = releasesAndTransfersDao.getByName("Air");
         Assert.assertNotNull(releasesAndTransfers);
 
-        Parameter parameter = parameterDao.getByName("Americium 241");
+        Parameter parameter = parameterDao.getByName("Americium-241");
         Assert.assertNotNull(parameter);
 
         Unit unit = unitDao.getByName("g");
