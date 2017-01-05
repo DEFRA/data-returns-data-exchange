@@ -32,6 +32,8 @@ public class DataSampleValidatorImpl implements DataSampleValidator {
 
     /** hibernate validator instance */
     private final Validator validator;
+    /** flag to indicate if the validator has been fully initialised */
+    private boolean initialised = false;
 
     /**
      * Instantiates a new {@link DataSample} validator.
@@ -54,7 +56,7 @@ public class DataSampleValidatorImpl implements DataSampleValidator {
 
         int index = 0;
         for (final DataSample record : model) {
-            final Set<ConstraintViolation<DataSample>> violations = this.validator.validate(record, ValidationGroups.OrderedChecks.class);
+            final Set<ConstraintViolation<DataSample>> violations = validate(record);
             for (final ConstraintViolation<DataSample> violation : violations) {
                 int errorCode = 0;
                 String errorType = "Unknown";
@@ -117,5 +119,30 @@ public class DataSampleValidatorImpl implements DataSampleValidator {
      */
     private List<FieldDefinition> getFieldsForViolation(final ConstraintViolation<DataSample> violation) {
         return MessageCodes.getFieldDependencies(violation.getMessageTemplate());
+    }
+
+    /**
+     * Wrapper to handle synchronisation of the hibernate validator initialisation.
+     * This is necessary because when multiple threads call this.validator.validate(..) before it is completely initialised, then the
+     * initialisation sequence may get run more than once.  This results in any referenced
+     * {@link javax.validation.ConstraintValidator#initialize(Annotation)} method being called more than once.
+     *
+     * @param record the record to be validated
+     * @param <E> the type of the record
+     * @return a set of constraint violations detailing any validation errors that were found
+     */
+    private <E> Set<ConstraintViolation<E>> validate(E record) {
+        Set<ConstraintViolation<E>> violations;
+        if (initialised) {
+            // Avoid synchronisation if initialised
+            violations = this.validator.validate(record, ValidationGroups.OrderedChecks.class);
+        } else {
+            // Synchronise first call to validator if not yet initialised.
+            synchronized (this) {
+                violations = this.validator.validate(record, ValidationGroups.OrderedChecks.class);
+            }
+            initialised = true;
+        }
+        return violations;
     }
 }

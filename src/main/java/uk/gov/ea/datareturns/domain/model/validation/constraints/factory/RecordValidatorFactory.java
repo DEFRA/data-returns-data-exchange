@@ -10,7 +10,9 @@ import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
+import java.util.Arrays;
 import java.util.HashSet;
+import java.util.Optional;
 import java.util.Set;
 
 /**
@@ -38,9 +40,8 @@ public class RecordValidatorFactory implements ConstraintValidator<ValidRecord, 
                 for (Type interfaceType : validatorCls.getGenericInterfaces()) {
                     if (interfaceType instanceof ParameterizedType) {
                         ParameterizedType parameterizedType = (ParameterizedType) interfaceType;
-
-                        if (parameterizedType.getActualTypeArguments().length == 1
-                                && parameterizedType.getActualTypeArguments()[0].getTypeName().equals(forType.getName())) {
+                        Optional<Type> actualType = Arrays.stream(parameterizedType.getActualTypeArguments()).findFirst();
+                        if (actualType.isPresent() && actualType.get().getTypeName().equals(forType.getName())) {
                             LOGGER.info("Initialised validator " + validatorCls.getName());
                             validators.add(validatorCls.newInstance());
                         }

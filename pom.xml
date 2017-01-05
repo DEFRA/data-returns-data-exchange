@@ -12,7 +12,7 @@
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
-		<version>1.4.2.RELEASE</version>
+		<version>1.4.3.RELEASE</version>
 	</parent>
 
 	<organization>
@@ -43,7 +43,7 @@
 
 
 		<!-- Spring boot version - ensure that this matches the version number used for spring-boot-starter-parent above -->
-		<spring-boot.version>1.4.2.RELEASE</spring-boot.version>
+		<spring-boot.version>1.4.3.RELEASE</spring-boot.version>
 
 		<!-- Library versions -->
 
@@ -52,6 +52,7 @@
 
 		<!-- Hibernate validation -->
 		<hibernate.version>5.2.5.Final</hibernate.version>
+		<hibernate-validator.version>5.3.4.Final</hibernate-validator.version>
 
 		<!-- Apache commons libraries -->
 		<commons-lang3.version>3.5</commons-lang3.version>
@@ -205,6 +206,7 @@
 		<dependency>
 			<groupId>org.hibernate</groupId>
 			<artifactId>hibernate-validator</artifactId>
+			<version>${hibernate-validator.version}</version>
 		</dependency>
 
 		<dependency>
