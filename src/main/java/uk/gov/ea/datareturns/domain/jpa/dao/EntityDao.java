@@ -1,152 +1,61 @@
 package uk.gov.ea.datareturns.domain.jpa.dao;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.transaction.annotation.Transactional;
 import uk.gov.ea.datareturns.domain.jpa.entities.ControlledListEntity;
 import uk.gov.ea.datareturns.domain.jpa.hierarchy.Hierarchy;
 import uk.gov.ea.datareturns.domain.jpa.hierarchy.processors.GroupingEntityCommon;
 import uk.gov.ea.datareturns.util.SpringApplicationContextProvider;
-import uk.gov.ea.datareturns.util.TextUtils;
 
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-import javax.persistence.TypedQuery;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Root;
-import java.beans.IntrospectionException;
-import java.beans.Introspector;
-import java.beans.PropertyDescriptor;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.util.List;
-import java.util.Map;
-import java.util.Objects;
 import java.util.function.Predicate;
-import java.util.regex.Pattern;
-import java.util.stream.Collectors;
-
-import static java.util.Comparator.comparing;
 
 /**
- * Base class for JPA based DAO classes
+ * Common DAO Interface for controlled list entities
  *
- * @author Graham Willis
+ * @author Sam Gardner-Dell
  */
-public abstract class EntityDao<E extends ControlledListEntity> {
-    protected static final Logger LOGGER = LoggerFactory.getLogger(EntityDao.class);
+public interface EntityDao<E extends ControlledListEntity> {
 
-    @PersistenceContext
-    protected EntityManager entityManager;
-
-    private static final Pattern removeSpaces = Pattern.compile("\\s");
-    private final GroupingEntityCommon<? extends Hierarchy.GroupedHierarchyEntity> groupingEntityCommon;
-    public final Class<E> entityClass;
-
-    private volatile Map<String, E> cacheByName = null;
-    private volatile Map<String, E> cacheByNameKey = null;
+    GroupingEntityCommon<? extends Hierarchy.GroupedHierarchyEntity> getGroupingEntityCommon();
 
     /**
-     * Let the Dao class know the type of entity in order that type-safe
-     * hibernate operations can be performed
-     */
-    public EntityDao(Class<E> entityClass) {
-        this.entityClass = entityClass;
-        this.groupingEntityCommon = null;
-    }
-
-    /**
-     * For enities in the hierarchy that require grouping functions a GroupingEntityCommon is used.
-     * The principle applied here is composition over inheritance.
-     * @param entityClass
-     * @param groupingEntityCommon
-     */
-    public EntityDao(Class<E> entityClass, GroupingEntityCommon<? extends Hierarchy.GroupedHierarchyEntity> groupingEntityCommon) {
-        this.entityClass = entityClass;
-        this.groupingEntityCommon = groupingEntityCommon;
-        this.groupingEntityCommon.setDao(this);
-    }
-
-    public GroupingEntityCommon<? extends Hierarchy.GroupedHierarchyEntity> getGroupingEntityCommon() {
-        return groupingEntityCommon;
-    }
-
-    /**
-     * Get an entity of type <E> by is unique identifier
+     * Get an entity of type <E> by its unique identifier
      *
      * @param id The entity identifier
      * @return E
      */
-    public E getById(final long id) {
-        return entityManager.find(entityClass, id);
-    }
+    E getById(long id);
 
     /**
+     * Retrieve an entity by its name
      *
-     * @param name case sensitive name search term - will also get any aliases
+     * @param name the name of entity to retrieve
      * @return The entity E or null
      */
-    public E getByName(String name) {
-        return getCache().get(name);
-    }
+    E getByName(String name);
 
     /**
-     * Retrieve an entity using a relaxed key lookup
+     * Retrieve an entity using the given {@link Key}
      *
-     * @param name case insensitive and whitespace agnostic name search term - will also get any aliases
+     * @param name the key to retrieve the entity
      * @return The entity E or null
      */
-    public E getByNameRelaxed(String name) {
-        E e = getKeyCache().get(getKeyFromRelaxedName(name));
-        return e;
-    }
+    E getByName(Key name);
 
     /**
-     * Check for the name ignoring cases and multiple spaces
-     * @param name
-     * @return
-     */
-    public boolean nameExistsRelaxed(final String name) {
-        return getByNameRelaxed(name) != null;
-    }
-
-    /**
-     * Determine if a method or standard with the given name exists
+     * Determine if an entity with the given name exists
      *
      * @param name the method or standard name to check
      * @return true if the name exists, false otherwise
      */
-    public boolean nameExists(final String name) {
-        return getCache().get(name) != null;
-    }
-
-    /**
-     * Convert the relaxed name into the exact one held in the list
-     * @param name
-     * @return
-     */
-    public String getStandardizedName(final String name) {
-        if (name != null) {
-            E e = getByNameRelaxed(name);
-            return e != null ? e.getName() : null;
-        }
-        return null;
-    }
+    boolean nameExists(Key name);
 
     /**
      * List all entities of type E. This list invocation includes any aliases as primaries
      *
      * @return List<E>
      */
-    public List<E> list() {
-        return getCache()
-                .entrySet()
-                .stream()
-                .map(Map.Entry::getValue)
-                .sorted(comparing(E::getId))
-                .collect(Collectors.toList());
-    }
+    List<E> list();
 
     /**
      * List all entities of type <E> which satisfy a predicate
@@ -154,15 +63,7 @@ public abstract class EntityDao<E extends ControlledListEntity> {
      * @param predicate The predicate
      * @return List<E>
      */
-    public List<E> list(Predicate<E> predicate) {
-        return getCache()
-                .entrySet()
-                .stream()
-                .map(Map.Entry::getValue)
-                .filter(predicate)
-                .sorted(comparing(E::getId))
-                .collect(Collectors.toList());
-    }
+    List<E> list(Predicate<E> predicate);
 
     /**
      * List the entities of type <E> filtered such that the field contains the search term
@@ -171,86 +72,39 @@ public abstract class EntityDao<E extends ControlledListEntity> {
      * @param contains The search term
      * @return A filtered list
      */
-    public List<E> list(String field, String contains) {
-        try {
-            for (PropertyDescriptor pd : Introspector.getBeanInfo(entityClass).getPropertyDescriptors()) {
-                if (pd.getReadMethod() != null && pd.getName().toLowerCase().equals(field.toLowerCase())) {
-                    final Method readMethod = pd.getReadMethod();
-                    Predicate<E> builtPredicate = e -> {
-                        try {
-                            return containsIgnoreCaseIgnoreSpaces(Objects.toString(readMethod.invoke(e)), contains);
-                        } catch (IllegalAccessException | InvocationTargetException ex) {
-                            return true;
-                        }
-                    };
-                    return list(builtPredicate);
-                }
-            }
-        } catch (IntrospectionException e) {
-            return list();
-        }
-        return list();
-    }
+    List<E> list(String field, String contains);
 
     /**
-     * Apply a basic name filter (MPV) to an existing list. Used in the navigation
-     * where the list is already determined
-     * @param list The list to filter
-     * @param contains The search term
-     * @return the filtered list
+     * Retrieves a mashed version of the name from a cache.
+     *
+     * The name must exist in the cache or null will be returned.
+     *
+     * @param name the name by which to lookup a mash
+     * @return the mashed version of the name if one is found in the cache, null otherwise
      */
-    public List<E> filterByName(List<E> list, String contains) {
-        return list
-                .stream()
-                .filter(e -> containsIgnoreCaseIgnoreSpaces(e.getName(), contains))
-                .sorted(comparing(E::getName))
-                .collect(Collectors.toList());
-    }
+    String lookupMashFromName(String name);
+
+    /**
+     * Retrieves a name from the cache given an exact mashed value
+     * The mash must exist in the cache or null will be returned.
+     *
+     * @param mash a mashed version of a name (space reduced/normalised according to entity specific rules)
+     * @return the proper name for the given mash if one is found in the cache, null otherwise
+     */
+    String lookupNameFromMash(final String mash);
 
     /**
      * A method to convert the reduce variation in name in case and spacing
      * to a standard format which acts as the key. Here so it can be overridden. The default functionality
      * is to convert to upper cases and reduce multiple spaces to a single space to create the lookup key.
      */
-    public String getKeyFromRelaxedName(String name) {
-        return name == null ? null : TextUtils.normalize(name.toUpperCase()).trim();
-    }
-
-    /**
-     * Builds the cache if necessary and returns built cache. The cache will include any aliases
-     * as primaries so we can check for the existence of aliases using this (super) class method
-     */
-    protected Map<String, E> getCache() {
-        if (cacheByName == null) {
-            synchronized (this) {
-                if (cacheByName == null) {
-                    LOGGER.info("Build name cache of: " + entityClass.getSimpleName());
-                    CriteriaBuilder cb = entityManager.getCriteriaBuilder();
-                    CriteriaQuery<E> q = cb.createQuery(entityClass);
-                    Root<E> c = q.from(entityClass);
-                    q.select(c);
-                    TypedQuery<E> query = entityManager.createQuery(q);
-                    List<E> results = query.getResultList();
-                    cacheByName = results
-                            .stream()
-                            .collect(Collectors.toMap(ControlledListEntity::getName, k -> k));
-                }
-            }
-        }
-        return cacheByName;
-    }
+    String generateMash(String input);
 
     /**
      * Add a new entity of type <E>
      *
      */
-    @Transactional
-    public void add(E entity) {
-        entityManager.persist(entity);
-        entityManager.flush();
-        LOGGER.info("Added: " + entityClass.getSimpleName() + "id: " + entity.getId() + " " + entity.getName());
-        clearCache();
-    }
+    @Transactional void add(E entity);
 
     /**
      * Remove an entity of type <E>
@@ -258,77 +112,12 @@ public abstract class EntityDao<E extends ControlledListEntity> {
      * @param id The entity identifier
      * @throws IllegalArgumentException
      */
-    @Transactional
-    public void removeById(long id) throws IllegalArgumentException {
-        E entity = getById(id);
-        entityManager.remove(entity);
-        LOGGER.info("Deleted: " + entityClass.getSimpleName() + " ID: " + id);
-        clearCache();
-    }
-
-    /**
-     * Builds the uppercase cache if necessary and returns built cache. The cache will include any aliases
-     * as primaries so we can check for the existence of aliases using this (super) class method
-     */
-    protected Map<String, E> getKeyCache() {
-        if (cacheByNameKey == null) {
-            Map<String, E> localCache = getCache();
-            synchronized (this) {
-                if (cacheByNameKey == null) {
-                    LOGGER.info("Build key cache of: " + entityClass.getSimpleName());
-                    cacheByNameKey = localCache.entrySet().stream().map(Map.Entry::getValue)
-                            .collect(Collectors.toMap(e -> getKeyFromRelaxedName(e.getName()), e -> e));
-                }
-            }
-        }
-        return cacheByNameKey;
-    }
-
-    /**
-     * Clear the cache by name
-     */
-    protected void clearCache() {
-        if (cacheByNameKey != null) {
-            synchronized (this) {
-                if (cacheByNameKey != null) {
-                    cacheByNameKey = null;
-                    LOGGER.info("Clear name cache: " + entityClass.getSimpleName());
-                }
-            }
-        }
-        if (cacheByName != null) {
-            synchronized (this) {
-                if (cacheByName != null) {
-                    cacheByName = null;
-                    LOGGER.info("Clear key cache: " + entityClass.getSimpleName());
-                }
-            }
-        }
-    }
-
-    /**
-     * Helper function to compare two strings cases insensitively ignoring whitespace
-     * @param a
-     * @param b
-     * @return
-     */
-    private static boolean containsIgnoreCaseIgnoreSpaces(String a, String b) {
-        return (a != null && b != null) &&
-                removeSpaces.matcher(a)
-                    .replaceAll("")
-                    .toUpperCase()
-                    .contains(removeSpaces
-                        .matcher(b)
-                        .replaceAll("")
-                        .toUpperCase());
-    }
+    @Transactional void removeById(long id) throws IllegalArgumentException;
 
     /**
      * Get the class of the entity being operated on
      */
-    public Class<E> getEntityClass() {
-        return entityClass;
-    }
+    Class<E> getEntityClass();
 
     /**
      * Retrieve a DAO for a given DAO class
@@ -337,7 +126,7 @@ public abstract class EntityDao<E extends ControlledListEntity> {
      * @param daoClass the desired dao class
      * @return the spring managed dao for the given class
      */
-    public static <E extends ControlledListEntity> EntityDao<E> getDao(Class<? extends EntityDao<E>> daoClass) {
+    static <T extends EntityDao<? extends ControlledListEntity>> T getDao(Class<T> daoClass) {
         return SpringApplicationContextProvider.getApplicationContext().getBean(daoClass);
     }
 }

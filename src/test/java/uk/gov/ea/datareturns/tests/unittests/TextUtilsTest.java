@@ -21,13 +21,13 @@ public class TextUtilsTest {
                 expectedResult += entry.getValue();
             }
         }
-        assertThat(TextUtils.normalize(inputString)).isEqualTo(expectedResult);
+        assertThat(TextUtils.normalize(inputString)).isEqualTo(expectedResult.trim());
     }
 
     @Test
     public void testWhitespaceCollapse() {
         final String inputString = "   \r\u200bThe  \u3000\u2005  cat  \u2007  sat  \u2009  on\u0009\n    the \u00a0\u2028\u202f\u2060\ufeffmat\n\r\r\n\t   ";
-        final String expectedResult = " The cat sat on the mat ";
+        final String expectedResult = "The cat sat on the mat";
         assertThat(TextUtils.normalize(inputString)).isEqualTo(expectedResult);
     }
 }

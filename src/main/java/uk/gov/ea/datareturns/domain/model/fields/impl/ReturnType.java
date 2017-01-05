@@ -1,6 +1,7 @@
 package uk.gov.ea.datareturns.domain.model.fields.impl;
 
 import org.hibernate.validator.constraints.NotBlank;
+import uk.gov.ea.datareturns.domain.jpa.dao.EntityDao;
 import uk.gov.ea.datareturns.domain.jpa.dao.ReturnTypeDao;
 import uk.gov.ea.datareturns.domain.model.DataSample;
 import uk.gov.ea.datareturns.domain.model.MessageCodes;
@@ -13,7 +14,9 @@ import uk.gov.ea.datareturns.domain.model.validation.constraints.controlledlist.
  *
  * @author Sam Gardner-Dell
  */
-public class ReturnType extends AbstractEntityValue<DataSample, uk.gov.ea.datareturns.domain.jpa.entities.ReturnType> {
+public class ReturnType extends AbstractEntityValue<ReturnTypeDao, DataSample, uk.gov.ea.datareturns.domain.jpa.entities.ReturnType> {
+    private static final ReturnTypeDao DAO = EntityDao.getDao(ReturnTypeDao.class);
+
     @NotBlank(message = MessageCodes.Missing.Rtn_Type)
     @ControlledList(auditor = ReturnTypeAuditor.class, message = MessageCodes.ControlledList.Rtn_Type)
     private final String inputValue;
@@ -24,8 +27,12 @@ public class ReturnType extends AbstractEntityValue<DataSample, uk.gov.ea.datare
      * @param inputValue the input value
      */
     public ReturnType(String inputValue) {
-        super(ReturnTypeDao.class, inputValue);
+        super(inputValue);
         this.inputValue = inputValue;
+    }
+
+    @Override protected ReturnTypeDao getDao() {
+        return DAO;
     }
 
     @Override public String getInputValue() {

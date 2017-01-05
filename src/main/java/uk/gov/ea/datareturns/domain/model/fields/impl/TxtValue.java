@@ -1,5 +1,6 @@
 package uk.gov.ea.datareturns.domain.model.fields.impl;
 
+import uk.gov.ea.datareturns.domain.jpa.dao.EntityDao;
 import uk.gov.ea.datareturns.domain.jpa.dao.TextValueDao;
 import uk.gov.ea.datareturns.domain.jpa.entities.TextValue;
 import uk.gov.ea.datareturns.domain.model.DataSample;
@@ -14,6 +15,7 @@ import uk.gov.ea.datareturns.domain.model.validation.constraints.controlledlist.
  * @author Sam Gardner-Dell
  */
 public class TxtValue extends AbstractAliasingEntityValue<DataSample, TextValue> {
+    private static final TextValueDao DAO = EntityDao.getDao(TextValueDao.class);
     @ControlledList(auditor = TxtValueAuditor.class, message = MessageCodes.ControlledList.Txt_Value)
     private final String inputValue;
 
@@ -23,8 +25,12 @@ public class TxtValue extends AbstractAliasingEntityValue<DataSample, TextValue>
      * @param inputValue the input value
      */
     public TxtValue(String inputValue) {
-        super(TextValueDao.class, inputValue);
+        super(inputValue);
         this.inputValue = inputValue;
+    }
+
+    @Override protected TextValueDao getDao() {
+        return DAO;
     }
 
     @Override public String getInputValue() {

@@ -135,7 +135,7 @@ public class SimpleNavigator implements Navigator {
             // Test the items individually with the cache.
             // I have split out the branching for clarity
             for (Hierarchy.HierarchyEntity e : itemList) {
-                String name = dao.getKeyFromRelaxedName(e.getName());
+                String name = dao.generateMash(e.getName());
                 if (cache.contains(HierarchySymbols.EXCLUDE + name)) {
                     // Explicitly excluded - do nothing
                 } else if (cache.contains(HierarchySymbols.INCLUDE_ALL)) {
@@ -181,7 +181,7 @@ public class SimpleNavigator implements Navigator {
         } else {
             // Test the items individually with the cache.
             for (Hierarchy.HierarchyEntity e : itemList) {
-                String name = dao.getKeyFromRelaxedName(e.getName());
+                String name = dao.generateMash(e.getName());
                 if (cache.containsKey(HierarchySymbols.EXCLUDE + name)) {
                     // Explicitly excluded - do nothing
                 } else if (cache.containsKey(HierarchySymbols.INCLUDE_ALL)) {

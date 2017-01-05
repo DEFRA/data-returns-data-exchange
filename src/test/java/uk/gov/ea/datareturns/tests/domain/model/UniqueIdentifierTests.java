@@ -7,6 +7,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.junit4.SpringRunner;
 import uk.gov.ea.datareturns.App;
+import uk.gov.ea.datareturns.domain.jpa.dao.Key;
 import uk.gov.ea.datareturns.domain.jpa.dao.SiteDao;
 import uk.gov.ea.datareturns.domain.jpa.dao.UniqueIdentifierDao;
 import uk.gov.ea.datareturns.domain.jpa.entities.Site;
@@ -21,7 +22,7 @@ import java.util.stream.Collectors;
 /**
  * Created by graham on 08/11/16.
  */
-@SpringBootTest(classes=App.class)
+@SpringBootTest(classes = App.class)
 @DirtiesContext
 @RunWith(SpringRunner.class)
 public class UniqueIdentifierTests {
@@ -48,9 +49,9 @@ public class UniqueIdentifierTests {
      */
     @Test
     public void getUniqueIdentifierFromAliasName() {
-        UniqueIdentifier uniqueIdentifier = uniqueIdentifierDao.getByName("KP3030NG");
+        UniqueIdentifier uniqueIdentifier = uniqueIdentifierDao.getByNameOrAlias(Key.explicit("KP3030NG"));
         Assert.assertEquals(uniqueIdentifier.getName(), "BS7722ID");
-        uniqueIdentifier = uniqueIdentifierDao.getByName("JB3937RN");
+        uniqueIdentifier = uniqueIdentifierDao.getByNameOrAlias(Key.relaxed("JB3937RN"));
         Assert.assertEquals(uniqueIdentifier.getName(), "104554");
     }
 
@@ -88,7 +89,7 @@ public class UniqueIdentifierTests {
     public void getSite() {
         Site s1 = siteDao.getByName("Land North Of The Sewage Works");
         Assert.assertNotNull(s1);
-        Site s2 = siteDao.getByNameRelaxed("Land  North Of   The Sewage  WORKS");
+        Site s2 = siteDao.getByName(Key.relaxed("Land  North Of   The Sewage  WORKS"));
         Assert.assertNull(s2);
     }
 

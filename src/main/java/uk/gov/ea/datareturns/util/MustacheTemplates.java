@@ -8,9 +8,8 @@ import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Handles compilation and caching for Mustache templates
@@ -22,7 +21,7 @@ public final class MustacheTemplates {
     private static final Logger LOGGER = LoggerFactory.getLogger(MustacheTemplates.class);
 
     /** cache of compiled mustache templates */
-    private static final Map<String, Template> compiledTemplates = Collections.synchronizedMap(new HashMap<>());
+    private static final Map<String, Template> compiledTemplates = new ConcurrentHashMap<>();
 
     /**
      * Private utility class constructor
@@ -57,25 +56,19 @@ public final class MustacheTemplates {
      * @return the compiled mustache template
      */
     public static Template get(String key, String templateText) {
-        Template templ = compiledTemplates.get(key);
-        if (templ == null) {
-            synchronized (compiledTemplates) {
-                if (templ == null) {
-                    LOGGER.info("Compiling mustache template for key " + key);
-                    try {
-                        final Mustache.Compiler compiler = Mustache.compiler()
-                                .escapeHTML(false)
-                                .emptyStringIsFalse(true)
-                                .defaultValue("")
-                                .nullValue("");
-                        templ = compiler.compile(templateText);
-                        compiledTemplates.put(key, templ);
-                    } catch (Throwable t) {
-                        LOGGER.error("Failed to compile mustache template for key " + key, t);
-                    }
-                }
+        return compiledTemplates.computeIfAbsent(key, (v) -> {
+            LOGGER.info("Compiling mustache template for key " + key);
+            try {
+                final Mustache.Compiler compiler = Mustache.compiler()
+                        .escapeHTML(false)
+                        .emptyStringIsFalse(true)
+                        .defaultValue("")
+                        .nullValue("");
+                return compiler.compile(templateText);
+            } catch (Throwable t) {
+                LOGGER.error("Failed to compile mustache template for key " + key, t);
             }
-        }
-        return templ;
+            return null;
+        });
     }
 }

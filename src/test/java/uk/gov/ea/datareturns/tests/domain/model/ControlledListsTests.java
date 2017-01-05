@@ -16,7 +16,7 @@ import java.util.List;
 /**
  * Unit tests for the controlled list functionality
  */
-@SpringBootTest(classes=App.class)
+@SpringBootTest(classes = App.class)
 @DirtiesContext
 @RunWith(SpringRunner.class)
 public class ControlledListsTests {
@@ -84,16 +84,16 @@ public class ControlledListsTests {
         Assert.assertEquals(retrieveParameter2.getId(), retrieveParameter.getId());
 
         // Test the case-insensitive cache
-        Assert.assertEquals(parameterDao.nameExistsRelaxed(NAME_MASH), true);
-        Assert.assertEquals(parameterDao.getStandardizedName(NAME_MASH), NAME);
+        Assert.assertTrue(parameterDao.nameExists(Key.relaxed(NAME_MASH)));
+        Assert.assertEquals(NAME, parameterDao.getByName(Key.relaxed(NAME_MASH)).getName());
 
         // Second test to prove cache use
-        Assert.assertEquals(parameterDao.nameExistsRelaxed(NAME_MASH), true);
-        Assert.assertEquals(parameterDao.getStandardizedName(NAME_MASH), NAME);
+        Assert.assertTrue(parameterDao.nameExists(Key.relaxed(NAME_MASH)));
+        Assert.assertEquals(NAME, parameterDao.getByName(Key.relaxed(NAME_MASH)).getName());
 
         parameterDao.removeById(retrieveParameter2.getId());
-        Assert.assertEquals(parameterDao.nameExistsRelaxed(NAME_MASH), false);
-        Assert.assertEquals(parameterDao.getStandardizedName(NAME_MASH), null);
+        Assert.assertFalse(parameterDao.nameExists(Key.relaxed(NAME_MASH)));
+        Assert.assertNull(parameterDao.getByName(Key.relaxed(NAME_MASH)));
 
         Parameter retrieveParameter3 = parameterDao.getById(retrieveParameter.getId());
         Assert.assertNull(retrieveParameter3);
@@ -121,17 +121,17 @@ public class ControlledListsTests {
         Assert.assertEquals(retrieveReturnType2.getId(), retrieveReturnType.getId());
 
         // Test the case-insensitive cache
-        Assert.assertEquals(returnTypeDao.nameExistsRelaxed(NAME_MASH), true);
-        Assert.assertEquals(returnTypeDao.getStandardizedName(NAME_MASH), NAME);
+        Assert.assertTrue(returnTypeDao.nameExists(Key.relaxed(NAME_MASH)));
+        Assert.assertEquals(NAME, returnTypeDao.getByName(Key.relaxed(NAME_MASH)).getName());
 
         // Second test to prove cache use
-        Assert.assertEquals(returnTypeDao.nameExistsRelaxed(NAME_MASH), true);
-        Assert.assertEquals(returnTypeDao.getStandardizedName(NAME_MASH), NAME);
+        Assert.assertTrue(returnTypeDao.nameExists(Key.relaxed(NAME_MASH)));
+        Assert.assertEquals(NAME, returnTypeDao.getByName(Key.relaxed(NAME_MASH)).getName());
 
         // Remove it and try again
         returnTypeDao.removeById(retrieveReturnType2.getId());
-        Assert.assertEquals(returnTypeDao.nameExistsRelaxed(NAME_MASH), false);
-        Assert.assertEquals(returnTypeDao.getStandardizedName(NAME_MASH), null);
+        Assert.assertFalse(returnTypeDao.nameExists(Key.relaxed(NAME_MASH)));
+        Assert.assertNull(returnTypeDao.getByName(Key.relaxed(NAME_MASH)));
 
         ReturnType retrieveReturnType3 = returnTypeDao.getById(retrieveReturnType.getId());
         Assert.assertNull(retrieveReturnType3);
@@ -225,9 +225,9 @@ public class ControlledListsTests {
         final String PRIMARY_2_MASH = "PrImary 2";
         final String PRIMARY_3_MASH = "PriMary 3";
 
-        ReferencePeriod referencePeriod1 = referencePeriodDao.getByName(PRIMARY_1);
-        ReferencePeriod referencePeriod2 = referencePeriodDao.getByName(PRIMARY_2);
-        ReferencePeriod referencePeriod3 = referencePeriodDao.getByName(PRIMARY_3);
+        ReferencePeriod referencePeriod1 = referencePeriodDao.getByNameOrAlias(Key.explicit(PRIMARY_1));
+        ReferencePeriod referencePeriod2 = referencePeriodDao.getByNameOrAlias(Key.explicit(PRIMARY_2));
+        ReferencePeriod referencePeriod3 = referencePeriodDao.getByNameOrAlias(Key.explicit(PRIMARY_3));
 
         // Have to remove 2 & 3 first in order not to violates foreign key constraint fk_reference_periods
         if (referencePeriod2 != null) {
@@ -259,21 +259,26 @@ public class ControlledListsTests {
         List list = referencePeriodDao.list();
 
         Assert.assertNotNull(list);
-        Assert.assertNotEquals(list.size(), 0);
+        Assert.assertFalse(list.isEmpty());
 
-        Assert.assertEquals(referencePeriodDao.getByName(PRIMARY_1).getName(), PRIMARY_1);
-        Assert.assertEquals(referencePeriodDao.getByAlias(PRIMARY_2).getName(), PRIMARY_1);
-        Assert.assertEquals(referencePeriodDao.getByAlias(PRIMARY_3).getName(), PRIMARY_1);
-        Assert.assertNull(referencePeriodDao.getByAlias(PRIMARY_1));
+        Assert.assertEquals(PRIMARY_1, referencePeriodDao.getByName(PRIMARY_1).getName());
 
-        Assert.assertEquals(referencePeriodDao.nameExistsRelaxed(PRIMARY_1_MASH), true);
-        Assert.assertEquals(referencePeriodDao.getStandardizedName(PRIMARY_1_MASH), PRIMARY_1);
+        Assert.assertEquals(PRIMARY_2, referencePeriodDao.getByAliasName(Key.explicit(PRIMARY_2)).getName());
+        Assert.assertEquals(PRIMARY_1, referencePeriodDao.getPreferred(Key.explicit(PRIMARY_2)).getName());
 
-        Assert.assertEquals(referencePeriodDao.nameExistsRelaxed(PRIMARY_2_MASH), true);
-        Assert.assertEquals(referencePeriodDao.getStandardizedName(PRIMARY_2_MASH), PRIMARY_1);
+        Assert.assertEquals(PRIMARY_3, referencePeriodDao.getByAliasName(Key.relaxed(PRIMARY_3)).getName());
+        Assert.assertEquals(PRIMARY_1, referencePeriodDao.getPreferred(Key.relaxed(PRIMARY_3)).getName());
 
-        Assert.assertEquals(referencePeriodDao.nameExistsRelaxed(PRIMARY_3_MASH), true);
-        Assert.assertEquals(referencePeriodDao.getStandardizedName(PRIMARY_3_MASH), PRIMARY_1);
+        Assert.assertNull(referencePeriodDao.getByAliasName(Key.relaxed(PRIMARY_1)));
+
+        Assert.assertTrue(referencePeriodDao.nameOrAliasExists(Key.relaxed(PRIMARY_1_MASH)));
+        Assert.assertEquals(PRIMARY_1, referencePeriodDao.getPreferred(Key.relaxed(PRIMARY_1_MASH)).getName());
+
+        Assert.assertTrue(referencePeriodDao.nameOrAliasExists(Key.relaxed(PRIMARY_2_MASH)));
+        Assert.assertEquals(PRIMARY_1, referencePeriodDao.getPreferred(Key.relaxed(PRIMARY_2_MASH)).getName());
+
+        Assert.assertTrue(referencePeriodDao.nameOrAliasExists(Key.relaxed(PRIMARY_3_MASH)));
+        Assert.assertEquals(PRIMARY_1, referencePeriodDao.getPreferred(Key.relaxed(PRIMARY_3_MASH)).getName());
 
         referencePeriodDao.removeById(referencePeriod2.getId());
         referencePeriodDao.removeById(referencePeriod3.getId());
