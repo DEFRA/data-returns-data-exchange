@@ -12,9 +12,8 @@
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
-		<version>1.4.1.RELEASE</version>
+		<version>1.4.2.RELEASE</version>
 	</parent>
-
 
 	<organization>
 		<name>Environment Agency</name>
@@ -41,16 +40,21 @@
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<java.version>1.8</java.version>
+
+
+		<!-- Spring boot version - ensure that this matches the version number used for spring-boot-starter-parent above -->
+		<spring-boot.version>1.4.2.RELEASE</spring-boot.version>
+
 		<!-- Library versions -->
 
 		<!-- Postgres version -->
 		<postgresql.version>9.4.1208</postgresql.version>
 
 		<!-- Hibernate validation -->
-		<hibernate.version>5.1.0.Final</hibernate.version>
+		<hibernate.version>5.2.5.Final</hibernate.version>
 
 		<!-- Apache commons libraries -->
-		<commons-lang3.version>3.4</commons-lang3.version>
+		<commons-lang3.version>3.5</commons-lang3.version>
 		<commons-collections4.version>4.1</commons-collections4.version>
 		<commons-email.version>1.4</commons-email.version>
 		<commons-io.version>2.5</commons-io.version>
@@ -64,13 +68,13 @@
 
 		<airbrake-logback.version>1.0.1</airbrake-logback.version>
 
-		<aws.java.sdk.version>1.11.4</aws.java.sdk.version>
-
-		<spring-boot.version>1.4.1.RELEASE</spring-boot.version>
+		<aws.java.sdk.version>1.11.68</aws.java.sdk.version>
 
 		<!-- Test -->
 		<assertj.version>3.5.2</assertj.version>
 		<run.test.suite>**/AllTests.class</run.test.suite>
+
+		<influxdb-java.version>2.5</influxdb-java.version>
 	</properties>
 
 	<dependencyManagement>
@@ -112,6 +116,13 @@
 			<artifactId>spring-boot-configuration-processor</artifactId>
 			<optional>true</optional>
 		</dependency>
+
+		<!-- Spring AOP support -->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-aop</artifactId>
+		</dependency>
+
 		<!-- Expose dropwizard metrics via management port -->
 		<dependency>
 			<groupId>com.ryantenney.metrics</groupId>
@@ -136,6 +147,13 @@
 			<groupId>io.dropwizard.metrics</groupId>
 			<artifactId>metrics-jetty9</artifactId>
 			<version>${dropwizard-metrics.version}</version>
+		</dependency>
+
+		<!-- InfluxDB -->
+		<dependency>
+			<groupId>org.influxdb</groupId>
+			<artifactId>influxdb-java</artifactId>
+			<version>${influxdb-java.version}</version>
 		</dependency>
 
 		<!-- Jersey JAX-RS -->

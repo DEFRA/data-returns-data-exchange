@@ -26,11 +26,12 @@ public enum ControlledListsList {
                 add(new DisplayHeaderDto("notes", "Notes"));
             }}), "name"),
 
-    RETURN_PERIOD("Return period", ReturnPeriodDao.class, "Rtn_Period", Collections.unmodifiableList(new ArrayList<DisplayHeaderDto>() {{
-        add(new DisplayHeaderDto("name", "Rtn_Period"));
-        add(new DisplayHeaderDto("definition", "Definition"));
-        add(new DisplayHeaderDto("example", "Example"));
-    }}), "name"),
+    RETURN_PERIOD("Return period", ReturnPeriodDao.class, "Rtn_Period",
+            Collections.unmodifiableList(new ArrayList<DisplayHeaderDto>() {{
+                add(new DisplayHeaderDto("name", "Rtn_Period"));
+                add(new DisplayHeaderDto("definition", "Definition"));
+                add(new DisplayHeaderDto("example", "Example"));
+            }}), "name"),
 
     PARAMETER("Parameter (substance name)", ParameterDao.class, "Parameter",
             Collections.unmodifiableList(new ArrayList<DisplayHeaderDto>() {{
@@ -69,7 +70,7 @@ public enum ControlledListsList {
     RELEASES_AND_TRANSFER("Releases and transfers", ReleasesAndTransfersDao.class, "Rel_Trans",
             Collections.unmodifiableList(new ArrayList<DisplayHeaderDto>() {{
                 add(new DisplayHeaderDto("name", "Rel_Trans"));
-    }}), "name");
+            }}), "name");
 
     private final String path;
 
@@ -80,7 +81,7 @@ public enum ControlledListsList {
     private final List<DisplayHeaderDto> displayHeaders; // Column name to column heading
 
     ControlledListsList(String description, Class<? extends EntityDao> dao,
-                        String path, List<DisplayHeaderDto> displayHeaders, String defaultSearch) {
+            String path, List<DisplayHeaderDto> displayHeaders, String defaultSearch) {
         this.description = description;
         this.path = path;
         this.dao = dao;

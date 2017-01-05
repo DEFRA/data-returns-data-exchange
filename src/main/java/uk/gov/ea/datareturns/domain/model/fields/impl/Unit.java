@@ -1,5 +1,6 @@
 package uk.gov.ea.datareturns.domain.model.fields.impl;
 
+import uk.gov.ea.datareturns.domain.jpa.dao.EntityDao;
 import uk.gov.ea.datareturns.domain.jpa.dao.UnitDao;
 import uk.gov.ea.datareturns.domain.model.DataSample;
 import uk.gov.ea.datareturns.domain.model.MessageCodes;
@@ -13,6 +14,7 @@ import uk.gov.ea.datareturns.domain.model.validation.constraints.controlledlist.
  * @author Sam Gardner-Dell
  */
 public class Unit extends AbstractAliasingEntityValue<DataSample, uk.gov.ea.datareturns.domain.jpa.entities.Unit> {
+    private static final UnitDao DAO = EntityDao.getDao(UnitDao.class);
     @ControlledList(auditor = UnitAuditor.class, message = MessageCodes.ControlledList.Unit)
     private final String inputValue;
 
@@ -22,8 +24,12 @@ public class Unit extends AbstractAliasingEntityValue<DataSample, uk.gov.ea.data
      * @param inputValue the input value
      */
     public Unit(String inputValue) {
-        super(UnitDao.class, inputValue);
+        super(inputValue);
         this.inputValue = inputValue;
+    }
+
+    @Override protected UnitDao getDao() {
+        return DAO;
     }
 
     @Override public String getInputValue() {

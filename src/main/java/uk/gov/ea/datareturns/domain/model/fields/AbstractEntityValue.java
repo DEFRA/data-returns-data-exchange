@@ -1,7 +1,9 @@
 package uk.gov.ea.datareturns.domain.model.fields;
 
 import uk.gov.ea.datareturns.domain.jpa.dao.EntityDao;
+import uk.gov.ea.datareturns.domain.jpa.dao.Key;
 import uk.gov.ea.datareturns.domain.jpa.entities.ControlledListEntity;
+
 /**
  * The {@link AbstractEntityValue} class provides the base {@link FieldValue} implementation for fields which are backed by
  * a database entity
@@ -9,17 +11,28 @@ import uk.gov.ea.datareturns.domain.jpa.entities.ControlledListEntity;
  * @param <R>   Parmeterized type for the record the entity belongs to
  * @param <E>   Parmeterized type for the entity
  */
-public abstract class AbstractEntityValue<R, E extends ControlledListEntity> implements FieldValue<R, E> {
+public abstract class AbstractEntityValue<D extends EntityDao<E>, R, E extends ControlledListEntity> implements FieldValue<R, E> {
     private E entity;
 
     /**
      * Instantiates a new Abstract entity value.
      *
-     * @param daoCls the dao cls
      * @param inputValue the input value
      */
-    public AbstractEntityValue(Class<? extends EntityDao<E>> daoCls, String inputValue) {
-        this.entity = EntityDao.getDao(daoCls).getByNameRelaxed(inputValue);
+    public AbstractEntityValue(String inputValue) {
+        this.entity = findEntity(inputValue);
+    }
+
+    protected abstract D getDao();
+
+    /**
+     * Find the entity for the given input value
+     *
+     * @param inputValue the term used to retrieve the entity from the data layer
+     * @return the entity for the given term, or null if not found.
+     */
+    protected E findEntity(String inputValue) {
+        return getDao().getByName(Key.relaxed(inputValue));
     }
 
     /**
@@ -56,7 +69,7 @@ public abstract class AbstractEntityValue<R, E extends ControlledListEntity> imp
      * @param <E> The entity type
      * @return The entity
      */
-    public static <E extends ControlledListEntity> E getEntity(AbstractEntityValue<? , E> fv) {
+    public static <E extends ControlledListEntity> E getEntity(AbstractEntityValue<?, ?, E> fv) {
         return fv != null ? fv.getEntity() : null;
     }
 

@@ -15,10 +15,7 @@ import uk.gov.ea.datareturns.domain.jpa.entities.ControlledListsList;
 import uk.gov.ea.datareturns.domain.jpa.hierarchy.Hierarchy;
 import uk.gov.ea.datareturns.domain.jpa.hierarchy.HierarchyLevel;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 /**
  * @Author Graham Willis
@@ -55,7 +52,7 @@ public class ControlledListProcessor implements ApplicationContextAware {
      */
     private Pair<String, List<? extends ControlledListEntity>> getListData(ControlledListsList controlledList) {
         EntityDao<? extends ControlledListEntity> dao = applicationContext.getBean(controlledList.getDao());
-        return new ImmutablePair<>(controlledList.getPath(), dao.list());
+        return new ImmutablePair<>(controlledList.getPath(), sortedList(dao.list()));
     }
 
     /**
@@ -70,7 +67,7 @@ public class ControlledListProcessor implements ApplicationContextAware {
         } else {
             LOGGER.debug("Get list data filtered by name contains: " + controlledList.name());
             EntityDao<? extends ControlledListEntity> dao = applicationContext.getBean(controlledList.getDao());
-            return new ImmutablePair<>(controlledList.getPath(), dao.list(e -> e.getName().toLowerCase().contains(searchTerm)));
+            return new ImmutablePair<>(controlledList.getPath(), sortedList(dao.list(e -> e.getName().toLowerCase().contains(searchTerm))));
         }
     }
 
@@ -81,13 +78,14 @@ public class ControlledListProcessor implements ApplicationContextAware {
      * @param contains The search term
      * @return The filtered list
      */
-    public Pair<String, List<? extends ControlledListEntity>> getListData(ControlledListsList controlledList, String field, String contains) {
+    public Pair<String, List<? extends ControlledListEntity>> getListData(ControlledListsList controlledList, String field,
+            String contains) {
         if (field == null || field.isEmpty() || contains == null || contains.isEmpty()) {
             return getListData(controlledList);
         } else {
             LOGGER.debug("Get list data filtered by name contains: " + controlledList.name());
             EntityDao<? extends ControlledListEntity> dao = applicationContext.getBean(controlledList.getDao());
-            return new ImmutablePair<>(controlledList.getPath(), dao.list(field, contains));
+            return new ImmutablePair<>(controlledList.getPath(), sortedList(dao.list(field, contains)));
         }
     }
 
@@ -98,7 +96,8 @@ public class ControlledListProcessor implements ApplicationContextAware {
      * @param field
      *@param contains @return A pair of the controlled list path and the list
      */
-    public Pair<String, List<? extends Hierarchy.HierarchyEntity>> getListData(Hierarchy hierarchy, Set<Hierarchy.HierarchyEntity> entities, String field, String contains) {
+    public Pair<String, List<? extends Hierarchy.HierarchyEntity>> getListData(Hierarchy hierarchy, Set<Hierarchy.HierarchyEntity> entities,
+            String field, String contains) {
         Pair<HierarchyLevel, List<? extends Hierarchy.HierarchyEntity>> results = null;
         if (field == null || field.isEmpty() || contains == null || contains.isEmpty()) {
             results = hierarchy.children(entities);
@@ -118,4 +117,15 @@ public class ControlledListProcessor implements ApplicationContextAware {
         return new ImmutablePair<>(result.getLeft().getControlledList().getPath(), result.getRight());
     }
 
+    /**
+     * Convenience method to sort list entries in the natural order by primary key
+     *
+     * @param list the list of {@link ControlledListEntity} to be sorted
+     * @param <E>
+     * @return the sorted list (in place)
+     */
+    private static <E extends ControlledListEntity> List<E> sortedList(List<E> list) {
+        list.sort(Comparator.comparing(E::getId));
+        return list;
+    }
 }

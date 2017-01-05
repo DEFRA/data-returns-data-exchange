@@ -11,6 +11,7 @@ import org.springframework.stereotype.Component;
 import uk.gov.ea.datareturns.domain.dto.ControlledListsDto;
 import uk.gov.ea.datareturns.domain.exceptions.ApplicationExceptionType;
 import uk.gov.ea.datareturns.domain.jpa.dao.EntityDao;
+import uk.gov.ea.datareturns.domain.jpa.dao.Key;
 import uk.gov.ea.datareturns.domain.jpa.entities.ControlledListEntity;
 import uk.gov.ea.datareturns.domain.jpa.entities.ControlledListsList;
 import uk.gov.ea.datareturns.domain.jpa.hierarchy.Hierarchy;
@@ -175,7 +176,7 @@ public class ControlledListResource {
             if (queryParams.containsKey(path)) {
                 Class<? extends EntityDao<? extends Hierarchy.HierarchyEntity>> daoClass = level.getDaoClass();
                 EntityDao<? extends Hierarchy.HierarchyEntity> dao = context.getBean(daoClass);
-                Hierarchy.HierarchyEntity entity = dao.getByNameRelaxed(queryParams.getFirst(path));
+                Hierarchy.HierarchyEntity entity = dao.getByName(Key.relaxed(queryParams.getFirst(path)));
                 if (entity != null) {
                     entities.add(entity);
                 }

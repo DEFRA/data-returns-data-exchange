@@ -1,6 +1,7 @@
 package uk.gov.ea.datareturns.domain.model.fields.impl;
 
 import org.hibernate.validator.constraints.NotBlank;
+import uk.gov.ea.datareturns.domain.jpa.dao.EntityDao;
 import uk.gov.ea.datareturns.domain.jpa.dao.ReleasesAndTransfersDao;
 import uk.gov.ea.datareturns.domain.model.DataSample;
 import uk.gov.ea.datareturns.domain.model.MessageCodes;
@@ -14,7 +15,10 @@ import uk.gov.ea.datareturns.domain.model.validation.constraints.controlledlist.
  *
  * @author Sam Gardner-Dell
  */
-public class ReleasesAndTransfers extends AbstractEntityValue<DataSample, uk.gov.ea.datareturns.domain.jpa.entities.ReleasesAndTransfers> {
+public class ReleasesAndTransfers
+        extends AbstractEntityValue<ReleasesAndTransfersDao, DataSample, uk.gov.ea.datareturns.domain.jpa.entities.ReleasesAndTransfers> {
+    private static final ReleasesAndTransfersDao DAO = EntityDao.getDao(ReleasesAndTransfersDao.class);
+
     @NotBlank(message = MessageCodes.Missing.Rel_Trans)
     @ControlledList(auditor = ReleasesAndTransfersAuditor.class, message = MessageCodes.ControlledList.Rel_Trans)
     private final String inputValue;
@@ -25,8 +29,12 @@ public class ReleasesAndTransfers extends AbstractEntityValue<DataSample, uk.gov
      * @param inputValue the input value
      */
     public ReleasesAndTransfers(String inputValue) {
-        super(ReleasesAndTransfersDao.class, inputValue);
+        super(inputValue);
         this.inputValue = inputValue;
+    }
+
+    @Override protected ReleasesAndTransfersDao getDao() {
+        return DAO;
     }
 
     @Override public String getInputValue() {

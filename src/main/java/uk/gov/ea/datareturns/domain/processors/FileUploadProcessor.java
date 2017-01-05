@@ -24,6 +24,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * Processor for file uploads to the data-returns service.
@@ -107,7 +108,7 @@ public class FileUploadProcessor extends AbstractReturnsProcessor<DataExchangeRe
             stopwatch.startTask("Parsing file into model");
 
             // 3. Read the CSV data into a model
-            final Collection<DataSample> model = csvProcessor.read(uploadedFile);
+            final List<DataSample> model = csvProcessor.read(uploadedFile);
 
             stopwatch.startTask("Validating model");
             // Validate the model
@@ -127,7 +128,7 @@ public class FileUploadProcessor extends AbstractReturnsProcessor<DataExchangeRe
 				 */
                 final List<File> outputFiles = new ArrayList<>();
                 final Map<String, EaId> outputFileIdentifiers = new HashMap<>();
-                final Map<EaId, List<DataSample>> permitToRecordMap = prepareOutputData(model);
+                final Map<EaId, List<DataSample>> permitToRecordMap = model.stream().collect(Collectors.groupingBy(DataSample::getEaId));
                 for (final Map.Entry<EaId, List<DataSample>> entry : permitToRecordMap.entrySet()) {
                     final File permitDataFile = File.createTempFile("output-" + entry.getKey().getValue().getName() + "-", ".csv",
                             this.workingFolder);
@@ -191,28 +192,5 @@ public class FileUploadProcessor extends AbstractReturnsProcessor<DataExchangeRe
         if (FileUtils.sizeOf(uploadedFile) == 0) {
             throw new FileEmptyException("The uploaded file is empty");
         }
-    }
-
-    /**
-     * Prepare a Map of permit numbers (key) to a {@link Collection} of {@link DataSample}s (value) belonging to that permit
-     *
-     * @param records the {@link Collection} of {@link DataSample} to prepared for output
-     * @return a {@link Map} of {@link EaId}s to a {@link Collection} of {@link DataSample}s
-     */
-    private static Map<EaId, List<DataSample>> prepareOutputData(final Collection<DataSample> records) {
-        final Map<EaId, List<DataSample>> recordMap = new HashMap<>();
-
-        for (final DataSample record : records) {
-			/*
-			 * Build the output map
-			 */
-            List<DataSample> recordsForPermit = recordMap.get(record.getEaId());
-            if (recordsForPermit == null) {
-                recordsForPermit = new ArrayList<>();
-            }
-            recordsForPermit.add(record);
-            recordMap.put(record.getEaId(), recordsForPermit);
-        }
-        return recordMap;
     }
 }

@@ -3,7 +3,10 @@ package uk.gov.ea.datareturns.domain.model.fields.impl;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.hibernate.validator.constraints.NotBlank;
+import uk.gov.ea.datareturns.domain.jpa.dao.EntityDao;
+import uk.gov.ea.datareturns.domain.jpa.dao.Key;
 import uk.gov.ea.datareturns.domain.jpa.dao.UniqueIdentifierDao;
+import uk.gov.ea.datareturns.domain.jpa.entities.ControlledListEntity;
 import uk.gov.ea.datareturns.domain.jpa.entities.UniqueIdentifier;
 import uk.gov.ea.datareturns.domain.model.DataSample;
 import uk.gov.ea.datareturns.domain.model.MessageCodes;
@@ -12,12 +15,15 @@ import uk.gov.ea.datareturns.domain.model.rules.EaIdType;
 import uk.gov.ea.datareturns.domain.model.validation.auditors.controlledlist.UniqueIdentifierAuditor;
 import uk.gov.ea.datareturns.domain.model.validation.constraints.controlledlist.ControlledList;
 
+import java.util.Optional;
+
 /**
  * Models details about an EA Unique Identifier (EA_ID)
  *
  * @author Sam Gardner-Dell
  */
-public class EaId extends AbstractEntityValue<DataSample, UniqueIdentifier> implements Comparable<EaId> {
+public class EaId extends AbstractEntityValue<UniqueIdentifierDao, DataSample, UniqueIdentifier> implements Comparable<EaId> {
+    private static final UniqueIdentifierDao DAO = EntityDao.getDao(UniqueIdentifierDao.class);
 
     @NotBlank(message = MessageCodes.Missing.EA_ID)
     @ControlledList(auditor = UniqueIdentifierAuditor.class, message = MessageCodes.ControlledList.EA_ID)
@@ -31,11 +37,18 @@ public class EaId extends AbstractEntityValue<DataSample, UniqueIdentifier> impl
      * @param identifier the String representation of the unique identifier.
      */
     public EaId(final String identifier) {
-        super(UniqueIdentifierDao.class, identifier);
+        super(identifier);
         this.identifier = identifier;
         if (getEntity() != null) {
             this.type = EaIdType.forUniqueId(getEntity().getName());
         }
+    }
+    protected UniqueIdentifier findEntity(String inputValue) {
+        return getDao().getByNameOrAlias(Key.explicit(inputValue));
+    }
+
+    @Override protected UniqueIdentifierDao getDao() {
+        return DAO;
     }
 
     /**
@@ -75,6 +88,12 @@ public class EaId extends AbstractEntityValue<DataSample, UniqueIdentifier> impl
     @JsonIgnore
     public boolean isAlphaNumeric() {
         return !isNumeric();
+    }
+
+
+    @Override public String transform(DataSample record) {
+        Key lookup = Key.explicit(this.getInputValue());
+        return Optional.ofNullable(getDao().getPreferred(lookup)).map(ControlledListEntity::getName).orElse(null);
     }
 
     /**

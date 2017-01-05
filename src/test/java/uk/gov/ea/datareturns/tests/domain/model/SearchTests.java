@@ -20,7 +20,7 @@ import java.util.List;
 /**
  * Test the permit lookup functionality
  */
-@SpringBootTest(classes=App.class)
+@SpringBootTest(classes = App.class)
 @DirtiesContext
 @RunWith(SpringRunner.class)
 public class SearchTests {
@@ -40,20 +40,13 @@ public class SearchTests {
     public void listUniqueIdentifiers() {
         List<UniqueIdentifier> list = uniqueIdentifierDao.list();
         Assert.assertNotNull(list);
-        //for (UniqueIdentifier id : list) {
-        //    System.out.println(id);
-        //}
     }
 
     @Test
     public void listSites() {
         List<Site> list = siteDao.list();
         Assert.assertNotNull(list);
-        for (Site site : list) {
-            System.out.println(site);
-        }
     }
-
 
     @Test
     public void siteSearch() {
@@ -62,7 +55,10 @@ public class SearchTests {
         search.searchSite("Aycliffe Quary");
         search.searchSite("Weight Landfill Farm ");
         search.searchSite("Aycliffe");
-        search.searchSite("Weight Landfill");        Assert.assertEquals(1, 1);
+        search.searchSite("Weight Landfill");
+        Assert.assertEquals(1, 1);
+
+        // TODO: Graham - this test isn't doing anything....
     }
 
 }

@@ -4,8 +4,8 @@ import com.amazonaws.ClientConfiguration;
 import com.amazonaws.Protocol;
 import com.amazonaws.auth.AWSCredentials;
 import com.amazonaws.auth.AWSCredentialsProvider;
+import com.amazonaws.auth.AWSStaticCredentialsProvider;
 import com.amazonaws.auth.BasicAWSCredentials;
-import com.amazonaws.internal.StaticCredentialsProvider;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.boot.context.properties.ConfigurationProperties;
@@ -189,7 +189,7 @@ public class S3StorageConfiguration implements AmazonS3Configuration {
     @Override
     public AWSCredentialsProvider getCredentialProvider() {
         final AWSCredentials credentials = new BasicAWSCredentials(this.awsAccessKey, this.awsSecretKey);
-        return new StaticCredentialsProvider(credentials);
+        return new AWSStaticCredentialsProvider(credentials);
     }
 
     /* (non-Javadoc)
