@@ -8,10 +8,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.junit4.SpringRunner;
 import uk.gov.ea.datareturns.App;
-import uk.gov.ea.datareturns.domain.jpa.dao.ParameterDao;
-import uk.gov.ea.datareturns.domain.jpa.dao.ReleasesAndTransfersDao;
-import uk.gov.ea.datareturns.domain.jpa.dao.ReturnTypeDao;
-import uk.gov.ea.datareturns.domain.jpa.dao.UnitDao;
+import uk.gov.ea.datareturns.domain.jpa.dao.*;
 import uk.gov.ea.datareturns.domain.jpa.entities.*;
 import uk.gov.ea.datareturns.domain.jpa.hierarchy.Hierarchy;
 import uk.gov.ea.datareturns.domain.jpa.hierarchy.HierarchyLevel;
@@ -22,7 +19,7 @@ import javax.inject.Inject;
 /**
  * Created by graham on 17/11/16.
  */
-@SpringBootTest(classes=App.class)
+@SpringBootTest(classes = App.class)
 @DirtiesContext
 @RunWith(SpringRunner.class)
 public class ParameterHierarchyValidationTests {
@@ -39,8 +36,7 @@ public class ParameterHierarchyValidationTests {
     private UnitDao unitDao;
 
     @Inject
-    ParameterHierarchy parameterHierarchy;
-
+    private ParameterHierarchy parameterHierarchy;
 
     /*
      * Test landfill happy paths - with unit
@@ -113,7 +109,7 @@ public class ParameterHierarchyValidationTests {
         Parameter parameter = parameterDao.getByName("Diethylenetriamine");
         Assert.assertNotNull(parameter);
 
-        Unit unit = unitDao.getByName("µScm⁻¹");
+        Unit unit = unitDao.getByNameOrAlias(Key.relaxed("µScm⁻¹"));
         Assert.assertNotNull(unit);
 
         ReleasesAndTransfers releasesAndTransfers = releasesAndTransfersDao.getByName("Controlled Water");
@@ -185,7 +181,7 @@ public class ParameterHierarchyValidationTests {
         ReleasesAndTransfers releasesAndTransfers = releasesAndTransfersDao.getByName("Controlled Water");
         Assert.assertNotNull(releasesAndTransfers);
 
-        Unit unit = unitDao.getByName("µgkg⁻¹");
+        Unit unit = unitDao.getByNameOrAlias(Key.explicit("µgkg⁻¹"));
         Assert.assertNotNull(unit);
 
         Pair<HierarchyLevel<? extends Hierarchy.HierarchyEntity>, Hierarchy.Result> result
@@ -277,10 +273,10 @@ public class ParameterHierarchyValidationTests {
         ReleasesAndTransfers releasesAndTransfers = releasesAndTransfersDao.getByName("Air");
         Assert.assertNotNull(releasesAndTransfers);
 
-        Parameter parameter = parameterDao.getByName("Xenon-133");
+        Parameter parameter = parameterDao.getByNameOrAlias(Key.explicit("Xenon-133"));
         Assert.assertNotNull(parameter);
 
-        Unit unit = unitDao.getByName("Bq/m2");
+        Unit unit = unitDao.getByNameOrAlias(Key.explicit("Bq/m2"));
         Assert.assertNotNull(unit);
 
         Pair<HierarchyLevel<? extends Hierarchy.HierarchyEntity>, Hierarchy.Result> result
@@ -297,7 +293,7 @@ public class ParameterHierarchyValidationTests {
         ReleasesAndTransfers releasesAndTransfers = releasesAndTransfersDao.getByName("Air");
         Assert.assertNotNull(releasesAndTransfers);
 
-        Parameter parameter = parameterDao.getByName("Americium-241");
+        Parameter parameter = parameterDao.getByName("Americium 241");
         Assert.assertNotNull(parameter);
 
         Unit unit = unitDao.getByName("g");
@@ -320,7 +316,7 @@ public class ParameterHierarchyValidationTests {
         Parameter parameter = parameterDao.getByName("Americium-241");
         Assert.assertNotNull(parameter);
 
-        Unit unit = unitDao.getByName("µg/hr");
+        Unit unit = unitDao.getByNameOrAlias(Key.explicit("µg/hr"));
         Assert.assertNotNull(unit);
 
         Pair<HierarchyLevel<? extends Hierarchy.HierarchyEntity>, Hierarchy.Result> result

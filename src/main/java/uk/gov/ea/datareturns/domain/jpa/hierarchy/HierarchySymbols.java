@@ -56,10 +56,14 @@ public class HierarchySymbols {
     public static final String INCLUDE_ALL = "*";
     public static final String NOT_APPLICABLE = "...";
 
+    public static final String[] ALL_SYMBOLS = { EXCLUDE, EXCLUDE_ALL, INCLUDE_ALL_OPTIONALLY, INCLUDE_ALL, NOT_APPLICABLE };
+
+
+
     /*
      * Detect the exclusion^ character at the beginning of a string
      */
-    private static boolean IsExclusion(String s) {
+    private static boolean isExclusion(String s) {
          return s.charAt(0) == EXCLUDE.charAt(0);
     }
 
@@ -68,6 +72,6 @@ public class HierarchySymbols {
      * or return the string
      */
     public static String removeExclusion(String s) {
-         return !IsExclusion(s) ? s : s.substring(1);
+         return !isExclusion(s) ? s : s.substring(1);
     }
 }

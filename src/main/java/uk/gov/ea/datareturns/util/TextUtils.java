@@ -16,13 +16,29 @@ public class TextUtils {
 
     /**
      * Process the provided {@link String} substituting any special characters based on the {@link CharacterSubstitution} enumeration
+     * Multiple whitespace will be collapsed to a single space character.  Return values are always trimmed.
      *
      * @param inputString the {@link String} to be processed
      * @return the resultant {@link String} with special characters substituted
      */
     public static String normalize(String inputString) {
+        return normalize(inputString, WhitespaceHandling.COLLAPSE);
+    }
+
+    /**
+     * Process the provided {@link String} substituting any special characters based on the {@link CharacterSubstitution} enumeration
+     * Whitespace handling is determined by the whitespaceMode parameter.  Return values are always trimmed.
+     *
+     * @param inputString the {@link String} to be processed
+     * @param whitespaceMode determines how whitespace will be handled - see {@link WhitespaceHandling}
+     * @return the resultant {@link String} with special characters substituted
+     *
+     */
+
+    public static String normalize(String inputString, WhitespaceHandling whitespaceMode) {
         final CharacterVisitor[] visitors = {
-                new SubstitutionProcessor(), new WhitespaceProcessor()
+                new SubstitutionProcessor(),
+                new WhitespaceProcessor(whitespaceMode != null ? whitespaceMode : WhitespaceHandling.COLLAPSE)
         };
 
         if (inputString != null) {
@@ -39,7 +55,7 @@ public class TextUtils {
                     buf.append(output);
                 }
             }
-            return buf.toString();
+            return buf.toString().trim();
         }
         return null;
     }
@@ -61,12 +77,17 @@ public class TextUtils {
      * Processor to remove duplicate whitespace from a given string
      */
     public static class WhitespaceProcessor implements CharacterVisitor {
+        private final WhitespaceHandling mode;
         private boolean inWhitespace = false;
+
+        public WhitespaceProcessor(WhitespaceHandling mode) {
+            this.mode = mode;
+        }
 
         @Override public Character process(Character c) {
             boolean wasInWhitespace = inWhitespace;
             inWhitespace = CharacterSubstitution.isSpace(c);
-            return (wasInWhitespace && inWhitespace) ? null : c;
+            return inWhitespace && (wasInWhitespace || WhitespaceHandling.REMOVE.equals(mode)) ? null : c;
         }
     }
 
@@ -78,6 +99,16 @@ public class TextUtils {
             final Character substitute = CharacterSubstitution.getSubstitute(c);
             return substitute != null ? substitute : c;
         }
+    }
+
+    /**
+     * Enumeration for whitespace handling when normalising
+     */
+    public enum WhitespaceHandling {
+        /** Multiple whitespaces should be collapsed to a single space character */
+        COLLAPSE,
+        /** Whitepsace should be removed entirely */
+        REMOVE;
     }
 
     /**
@@ -146,6 +177,7 @@ public class TextUtils {
         /** Map of aliases to their target character */
         private static final int CAPACITY = Math.round(CharacterSubstitution.values().length / 0.75f);
         public static final Map<Character, Character> SUBSTITUTIONS = new HashMap<>(CAPACITY);
+
         static {
             Arrays.stream(CharacterSubstitution.values())
                     .filter(e -> e.substitution() != null)

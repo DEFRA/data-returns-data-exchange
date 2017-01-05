@@ -1,6 +1,7 @@
 package uk.gov.ea.datareturns.domain.model.validation.auditors.controlledlist;
 
 import org.springframework.stereotype.Component;
+import uk.gov.ea.datareturns.domain.jpa.dao.Key;
 import uk.gov.ea.datareturns.domain.jpa.dao.ReleasesAndTransfersDao;
 import uk.gov.ea.datareturns.domain.model.validation.constraints.controlledlist.ControlledListAuditor;
 
@@ -15,7 +16,7 @@ import java.util.Objects;
 @Component
 public class ReleasesAndTransfersAuditor implements ControlledListAuditor {
     @Inject
-    private ReleasesAndTransfersDao dao;
+    private ReleasesAndTransfersDao releasesAndTransfersDao;
 
     /**
      *
@@ -29,6 +30,6 @@ public class ReleasesAndTransfersAuditor implements ControlledListAuditor {
      */
     @Override
     public boolean isValid(final Object value) {
-        return this.dao.nameExistsRelaxed(Objects.toString(value, ""));
+        return this.releasesAndTransfersDao.nameExists(Key.relaxed(Objects.toString(value, "")));
     }
 }

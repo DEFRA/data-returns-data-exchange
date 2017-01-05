@@ -83,7 +83,7 @@ public class Search {
                 Document d = searcher.doc(docId);
                 List<Term> hitTerms = new ArrayList<>();
                 getHitTerms(query, searcher,docId, hitTerms);
-                results.add(new ImmutablePair<>(d.get(SITE).toString(), hitTerms.stream().map(t -> t.text()).toArray(String[]::new)));
+                results.add(new ImmutablePair<>(d.get(SITE), hitTerms.stream().map(t -> t.text()).toArray(String[]::new)));
             }
             return results;
         } catch (ParseException|IOException e) {

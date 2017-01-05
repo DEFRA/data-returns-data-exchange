@@ -29,4 +29,16 @@ public class StopWatch extends org.springframework.util.StopWatch {
         }
         super.start(taskName);
     }
+
+    /**
+     * Stop the current task.
+     *
+     * This method first checks to see if the stopwatch is running before attempting to stop and will therefore not throw any exceptions.
+     * @see org.springframework.util.StopWatch#stop()
+     */
+    public void stopTask() {
+        if (super.isRunning()) {
+            super.stop();
+        }
+    }
 }

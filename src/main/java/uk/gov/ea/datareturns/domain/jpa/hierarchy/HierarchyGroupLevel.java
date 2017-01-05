@@ -15,6 +15,5 @@ public class HierarchyGroupLevel<E extends Hierarchy.GroupedHierarchyEntity> ext
                                ControlledListsList controlledList) {
 
         super(hierarchyEntity, daoClass, controlledList);
-        this.daoClass = daoClass;
     }
 }

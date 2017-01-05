@@ -15,13 +15,13 @@ import java.util.Objects;
 @Component
 public class UniqueIdentifierAuditor implements ControlledListAuditor {
     @Inject
-    UniqueIdentifierDao dao;
+    UniqueIdentifierDao uniqueIdentifierDao;
 
     /* (non-Javadoc)
      * @see uk.gov.ea.datareturns.domain.model.validation.constraints.controlledlist.ControlledListAuditor#isValid(java.lang.Object)
      */
     @Override
     public boolean isValid(final Object value) {
-        return this.dao.uniqueIdentifierExists(Objects.toString(value, ""));
+        return this.uniqueIdentifierDao.uniqueIdentifierExists(Objects.toString(value, ""));
     }
 }

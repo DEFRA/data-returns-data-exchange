@@ -4,7 +4,6 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 /**
@@ -14,7 +13,7 @@ import java.util.List;
  */
 public class ValidationErrors {
     @JsonProperty("validationErrors")
-    private final List<ValidationError> errors = Collections.synchronizedList(new ArrayList<>());
+    private final List<ValidationError> errors = new ArrayList<>();
 
     /**
      * Add a new validation error into the list of validation errors

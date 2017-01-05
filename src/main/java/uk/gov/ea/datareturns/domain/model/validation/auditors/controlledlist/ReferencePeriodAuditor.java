@@ -1,6 +1,7 @@
 package uk.gov.ea.datareturns.domain.model.validation.auditors.controlledlist;
 
 import org.springframework.stereotype.Component;
+import uk.gov.ea.datareturns.domain.jpa.dao.Key;
 import uk.gov.ea.datareturns.domain.jpa.dao.ReferencePeriodDao;
 import uk.gov.ea.datareturns.domain.model.validation.constraints.controlledlist.ControlledListAuditor;
 
@@ -15,13 +16,13 @@ import java.util.Objects;
 @Component
 public class ReferencePeriodAuditor implements ControlledListAuditor {
     @Inject
-    private ReferencePeriodDao dao;
+    private ReferencePeriodDao referencePeriodDao;
 
     /* (non-Javadoc)
      * @see uk.gov.ea.datareturns.domain.model.validation.constraints.ControlledListAuditor#isValid(java.lang.Object)
      */
     @Override
     public boolean isValid(final Object value) {
-        return this.dao.nameExistsRelaxed(Objects.toString(value, ""));
+        return this.referencePeriodDao.nameOrAliasExists(Key.relaxed(Objects.toString(value, "")));
     }
 }

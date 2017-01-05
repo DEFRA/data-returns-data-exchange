@@ -110,9 +110,12 @@ public class FieldMapping {
             final Constructor<?> constructor = getType().getConstructor(String.class);
             final Object fv = constructor.newInstance(inputValue);
             descriptor.getWriteMethod().invoke(target, fv);
+        } catch (NoSuchMethodException e) {
+            throw new RuntimeException(
+                    "Unable to find constructor with a single String argument for class " + mappedField.value().getType(), e);
         } catch (ReflectiveOperationException e) {
             throw new RuntimeException(
-                    "Unable to find constructor with a single String argument for class " + mappedField.value().getType());
+                    "Error attempting to instantiate model entity for class " + mappedField.value().getType(), e);
         }
     }
 

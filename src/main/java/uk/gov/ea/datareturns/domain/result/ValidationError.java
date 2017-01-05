@@ -14,7 +14,7 @@ public class ValidationError {
     private String definition;
 
     @JsonProperty("lineNumber")
-    private long lineNumber;
+    private int lineNumber;
 
     @JsonProperty("errorType")
     private String errorType;
@@ -76,6 +76,15 @@ public class ValidationError {
     public ValidationError() {
     }
 
+
+    public int getRecordIndex() {
+        return this.getLineNumber() - 2;
+    }
+
+    public void setRecordIndex(int index) {
+        this.setLineNumber(index + 2);
+    }
+
     /**
      * @return the definition
      */
@@ -93,14 +102,14 @@ public class ValidationError {
     /**
      * @return the lineNumber
      */
-    public long getLineNumber() {
+    public int getLineNumber() {
         return this.lineNumber;
     }
 
     /**
      * @param lineNumber the lineNumber to set
      */
-    public void setLineNumber(final long lineNumber) {
+    public void setLineNumber(final int lineNumber) {
         this.lineNumber = lineNumber;
     }
 

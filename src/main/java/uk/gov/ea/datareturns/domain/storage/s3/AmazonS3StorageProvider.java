@@ -11,6 +11,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Component;
 import uk.gov.ea.datareturns.domain.storage.StorageException;
 import uk.gov.ea.datareturns.domain.storage.StorageKeyMismatchException;
@@ -28,6 +29,7 @@ import java.util.Map;
  * @author Sam Gardner-Dell
  */
 @Component
+@Primary
 @ConditionalOnProperty(name = "storage.type", havingValue = "s3")
 public class AmazonS3StorageProvider implements StorageProvider {
     private static final Logger LOGGER = LoggerFactory.getLogger(AmazonS3StorageProvider.class);

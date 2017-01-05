@@ -8,6 +8,8 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Scope;
 import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 
+import javax.validation.Validator;
+
 /**
  * Application class for the Data Returns Backend Service.
  *
@@ -31,7 +33,7 @@ public class App {
      */
     @Bean
     @Scope(ConfigurableBeanFactory.SCOPE_SINGLETON)
-    public LocalValidatorFactoryBean validator() {
+    public Validator validator() {
         return new LocalValidatorFactoryBean();
     }
 }

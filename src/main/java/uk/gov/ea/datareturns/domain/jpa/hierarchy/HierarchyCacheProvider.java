@@ -7,6 +7,6 @@ import java.util.Map;
  * The provider of the validation rules cache. The cache must be of the form of nested maps
  * terminated by a set such as Map<String, Map<String, ....Set<String>...>
  */
-public abstract class HierarchyCacheProvider<T extends Map<String, ?>> {
-     public abstract T getCache();
+public interface HierarchyCacheProvider<T extends Map<String, ?>> {
+     T getCache();
 }

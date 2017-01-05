@@ -5,8 +5,11 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
+import uk.gov.ea.datareturns.domain.jpa.dao.AliasingEntityDao;
 import uk.gov.ea.datareturns.domain.jpa.dao.EntityDao;
+import uk.gov.ea.datareturns.domain.jpa.dao.Key;
 import uk.gov.ea.datareturns.domain.jpa.hierarchy.Hierarchy;
+import uk.gov.ea.datareturns.util.CachingSupplier;
 
 import java.util.Map;
 import java.util.Set;
@@ -23,21 +26,10 @@ import java.util.stream.Collectors;
 public class GroupingEntityCommon<E extends Hierarchy.GroupedHierarchyEntity> {
     private static final Logger LOGGER = LoggerFactory.getLogger(GroupingEntityCommon.class);
     private EntityDao<E> dao = null;
-    private volatile Map<String, Set<E>> cacheByGroup = null;
+    private CachingSupplier<Map<String, Set<E>>> cacheByGroup = CachingSupplier.of(this::cacheSupplier);
 
     private Map<String, Set<E>> getCacheByGroup() {
-        if (cacheByGroup == null) {
-            synchronized (this) {
-                if (cacheByGroup == null) {
-                    LOGGER.info("Build cache by group of: " + dao.entityClass.getSimpleName());
-                    cacheByGroup = dao.list()
-                            .stream()
-                            .filter(p -> p.getGroup() != null)
-                            .collect(Collectors.groupingBy(u -> dao.getKeyFromRelaxedName(u.getGroup()), Collectors.toSet()));
-                }
-            }
-        }
-        return cacheByGroup;
+        return cacheByGroup.get();
     }
 
     public Set<String> listGroups() {
@@ -45,12 +37,30 @@ public class GroupingEntityCommon<E extends Hierarchy.GroupedHierarchyEntity> {
     }
 
     public boolean isGroupMember(String group, String item) {
-        E e = dao.getByNameRelaxed(item);
-        return !(e == null || e.getGroup() == null) && dao.getKeyFromRelaxedName(e.getGroup()).equals(group);
+        E e;
+        // TODO: This needs rethinking
+        if (dao instanceof AliasingEntityDao) {
+            e = (E) ((AliasingEntityDao) dao).getByNameOrAlias(Key.relaxed(item));
+        } else {
+            e = dao.getByName(Key.relaxed(item));
+        }
+
+        return !(e == null || e.getGroup() == null) && dao.generateMash(e.getGroup()).equals(group);
     }
 
     @SuppressWarnings("unchecked")
     public void setDao(EntityDao dao) {
         this.dao = dao;
+    }
+
+    /**
+     * Method to populate the cache.  This is invoked lazily when the cache needs to be built or is explicitly cleared/rebuilt.
+     * @return a {@link Map} of cache data
+     */
+    private Map<String, Set<E>> cacheSupplier() {
+        LOGGER.info("Build cache by group of: " + dao.getEntityClass().getSimpleName());
+        return dao.list().stream()
+                .filter(p -> p.getGroup() != null)
+                .collect(Collectors.groupingBy(u -> dao.generateMash(u.getGroup()), Collectors.toSet()));
     }
 }
