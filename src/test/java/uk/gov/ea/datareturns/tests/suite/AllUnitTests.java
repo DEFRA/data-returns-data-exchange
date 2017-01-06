@@ -10,8 +10,6 @@ import uk.gov.ea.datareturns.tests.unittests.*;
 @RunWith(Suite.class)
 @SuiteClasses({
         ControlledListsTests.class,
-        ParameterHierarchyValidationTests.class,
-        ParameterHierarchyNavigationTests.class,
         SearchTests.class,
         UniqueIdentifierTests.class,
 

@@ -442,21 +442,6 @@ public class ResourceIntegrationTests {
         assertThat(response.getStatus()).isEqualTo(Status.OK.getStatusCode());
     }
 
-    @Test
-    public void testPIValid() {
-        Client client = createClient("Nav: PI valid");
-        final Response response = performUploadStep(client, PI_VALID, MEDIA_TYPE_CSV);
-        assertThat(response.getStatus()).isEqualTo(Status.OK.getStatusCode());
-    }
-
-    @Test
-    public void testPIInvalidNoTransfer() {
-        Client client = createClient("Nav: PI invalid");
-        final Response response = performUploadStep(client, PI_INVALID_NO_TRANSFER, MEDIA_TYPE_CSV);
-        assertThat(response.getStatus()).isEqualTo(Status.BAD_REQUEST.getStatusCode());
-    }
-
-
     ///////////////////////////////////////////////////////////////////////////////////////////
     /////////////////////// End Application Exception handling tests
     /////////////////////////////////////////////////////////////////////////////////////////// //////////////////////////
