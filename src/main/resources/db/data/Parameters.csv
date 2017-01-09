@@ -547,7 +547,7 @@
 "tert-Butylamine","Chemical",,,,,,,,"75-64-9"
 "Tetrabutyltin","Chemical",,,,,,,,"1461-25-2"
 "Tetrachloroethane (1,1,2,2-tetrachloroethane)","Chemical",,,,,,,,0
-"Tetracosamethylcyclododecasiloxane SVOCSW","Chemical",,,,,,,," 18919-94-3"
+"Tetracosamethylcyclododecasiloxane (SVOCSW)","Chemical","Tetracosamethylcyclododecasiloxane SVOCSW",,,,,,," 18919-94-3"
 "Tetrahydrofuran-2-one, 5-[1-hydroxyhexyl]-","Chemical",,,,,,,,"87877-77-8"
 "Tetrasodium pyrophosphate","Chemical",,,,,,,,"7722-88-5"
 "Thallium and its compounds expressed as thallium (Total Tl)","Chemical Group",,,,,,,,0
@@ -1999,7 +1999,6 @@
 "Tetra and trichloroethene","Chemical",,,,,,,,
 "Tetrachlorobiphenyl","Chemical",,,,,,,,
 "Tetrachloro-p-quinone","Chemical",,,,,,,,
-"Tetracosamethylcyclododecasiloxane (SVOCSW)","Chemical",,,,,,,,
 "Tetracosanal","Chemical",,,,,,,,
 "Tetracosane","Chemical",,,,,,,,
 "Tetracosane, 11-decyl-","Chemical",,,,,,,,
