@@ -474,7 +474,7 @@
 "Methyl methacrylate","Chemical",,,,,,,,"80-62-6"
 "Methyl vinyl ketone","Chemical",,,,,,,,"78-94-4"
 "Methylarsonic acid","Chemical",,,,,,,,"124-58-3"
-"Methylcyclohexane","Chemical",,,,,,,,"108-87-2"
+"Methylcyclohexane","Chemical","Methyl cyclohexane",,,,,,,"108-87-2"
 "Mirex","Chemical",,,,,,,,"2385-85-5"
 "N,N-Dimethylethylamine","Chemical",,,,,,,,"598-56-1"
 "N,N'-Ethylene distearylamide","Chemical",,,,,,,,"110-30-5"
@@ -1679,7 +1679,6 @@
 "Methyl 3 (3,5,Ditertbutyl-4-Hydroxyphenyl) Propion","Chemical",,,,,,,,
 "Methyl 3-(3,5,di-tert-butyl-4-hydroxyphenyl) propionate","Chemical",,,,,,,,
 "Methyl acrylate plus methyl chloride","Chemical Group",,,,,,,,
-"Methyl cyclohexane","Chemical",,,,,,,,
 "Methyl dehydroabietate","Chemical",,,,,,,,
 "Methyl ethyl ketone peroxides (MEKP)","Chemical group",,,,,,,,
 "Methyl ethyl phenol","Chemical",,,,,,,,
