@@ -332,7 +332,7 @@
 "Cyanogen chloride","Chemical",,,,,,,,"506-77-4"
 "Cyanuric chloride","Chemical",,,,,,,,"108-77-0"
 "Cyclohexane","Chemical",,,,,,,,"110-82-7"
-"Cyclohexane, isothiocyanato-","Chemical",,,,,,,,"1122-82-3"
+"Cyclohexane, isothiocyanato-","Chemical","Cyclohexane, Isothiocyanto",,,,,,,"1122-82-3"
 "Cyclohexanemethanol,4-hydroxy-alpha,alpha,4-trimethyl","Chemical",,,,,,,,"565-48-0"
 "Cyclohexanepropanoic acid","Chemical",,,,,,,,"701-97-3"
 "Cyclohexanethiol","Chemical",,,,,,,,"1569-69-3"
@@ -1418,7 +1418,6 @@
 "Cybutryne","Chemical",,,,,,,,
 "Cyclodocosane, ethyl-","Chemical",,,,,,,,
 "Cyclohexadecane, 1,2-diethyl-","Chemical",,,,,,,,
-"Cyclohexane, Isothiocyanto","Chemical",,,,,,,,
 "Cyclohexanone, 2-(2-nitro-1-(2-naphthyl)ethyl)","Chemical",,,,,,,,
 "Cyclonite","Chemical",,,,,,,,
 "Cyclononasiloxane, octadecamethyl (SVOCSW)","Chemical",,,,,,,,
