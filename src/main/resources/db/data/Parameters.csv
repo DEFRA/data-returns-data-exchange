@@ -108,7 +108,7 @@
 "Diethyltoluamide","Chemical","Diethyltoluamide (SVOCSW)",,,,,,,"134-62-3"
 "Hydrogen selenide","Chemical","Dihydrogen Selenide (As Se)",,,,,,,7783-07-05
 "Diisopropyl ketone","Chemical","3-Pentanone, 2,4-dimethyl",,,,,,,"565-80-0"
-"Dimethyl phthalate","Chemical","DMP (Dimethyl Phthalate)",,,,,,,0113-11-03
+"Dimethylphthalate","Chemical","DMP (Dimethyl Phthalate)","Dimethyl phthalate",,,,,,0113-11-03
 "Diphenyl ether","Chemical","Diphenyl oxide",,,,,,,"101-84-8"
 "Endosulfan","Chemical","Endosulfan I/II",,,,,,,"115-29-7"
 "Epichlorohydrin","Chemical","2-chloropropylene oxide",,,,,,,"106-89-8"
@@ -1469,7 +1469,6 @@
 "Dimethyl tetrasulphide (SVOCSW)","Chemical",,,,,,,,
 "Dimethylamine","Chemical",,,,,,,,
 "Dimethyldisulphide","Chemical",,,,,,,,
-"Dimethylphthalate","Chemical",,,,,,,,
 "Dinitrobenzenes","Chemical Group",,,,,,,,
 "Dinonyl Phenol","Chemical",,,,,,,,
 "Dinoseb","Chemical",,,,,,,,
