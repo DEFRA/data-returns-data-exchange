@@ -558,7 +558,7 @@
 "Triethyl phosphite","Chemical",,,,,,,,"122-52-1"
 "Triethylene glycol","Chemical",,,,,,,,"112-27-6"
 "Triethylene glycol monobutyl ether","Chemical",,,,,,,,"143-22-6"
-"Triethylenetetramine","Chemical",,,,,,,,"112-24-3"
+"Triethylenetetramine","Chemical","Triethylene tetramine",,,,,,,"112-24-3"
 "Triethylphosphate","Chemical",,,,,,,,"78-40-0"
 "Trifluralin","Chemical",,,,,,,,1582-09-08
 "Triglycidyl isocyanurate (TGIC)","Chemical",,,,,,,,"2451-62-9"
@@ -2123,7 +2123,6 @@
 "Trietazine","Chemical",,,,,,,,
 "Triethylamine","Chemical",,,,,,,,
 "Triethylene glycol diglycol ether","Chemical",,,,,,,,
-"Triethylene tetramine","Chemical",,,,,,,,
 "Triisopropanolamine","Chemical",,,,,,,,
 "Triisopropylphosphate","Chemical",,,,,,,,
 "Trimagnesium diphosphide","Chemical",,,,,,,,
