@@ -388,7 +388,7 @@
 "Dimethylsulphide","Chemical",,,,,,,,"75-18-3"
 "Di-n-butyl ether","Chemical",,,,,,,,"142-96-1"
 "Dinonyl phthalate","Chemical",,,,,,,,"87-76-4"
-"Dinonylphenol","Chemical",,,,,,,,"137-99-5"
+"Dinonylphenol","Chemical","Dinonyl Phenol",,,,,,,"137-99-5"
 "Diphenylamine","Chemical",,,,,,,,"122-39-4"
 "Diphenylol propane diglycidyl ether","Chemical",,,,,,,,"1675-54-3"
 "Dipropyl phthalate","Chemical",,,,,,,,"131-16-8"
@@ -1470,7 +1470,6 @@
 "Dimethylamine","Chemical",,,,,,,,
 "Dimethyldisulphide","Chemical",,,,,,,,
 "Dinitrobenzenes","Chemical Group",,,,,,,,
-"Dinonyl Phenol","Chemical",,,,,,,,
 "Dinoseb","Chemical",,,,,,,,
 "Dioxin-like PCBs (WHO-TEQ Birds)","Chemical Group",,,,,,,,
 "Dioxin-like PCBs (WHO-TEQ Fish)","Chemical Group",,,,,,,,
