@@ -112,7 +112,7 @@
 "Diphenyl ether","Chemical","Diphenyl oxide",,,,,,,"101-84-8"
 "Endosulfan","Chemical","Endosulfan I/II",,,,,,,"115-29-7"
 "Epichlorohydrin","Chemical","2-chloropropylene oxide",,,,,,,"106-89-8"
-"Heptachlor epoxide","Chemical","cis-Heptachlor epoxide",,,,,,,"1024-57-3"
+"Heptachlorepoxide","Chemical","Heptachlor epoxide","cis-Heptachlor epoxide",,,,,,"1024-57-3"
 "Hexabromocyclododecane","Chemical","HBCDD",,,,,,,0
 "Hexachlorobenzene","Chemical","HCB",,,,,,,"118-74-1"
 "Indane","Chemical","Indan",,,,,,,0496-11-07
@@ -1567,7 +1567,6 @@
 "Helium","Chemical",,,,,,,,
 "Heneicosane","Chemical",,,,,,,,
 "Hentriacontane","Chemical",,,,,,,,
-"Heptachlorepoxide","Chemical",,,,,,,,
 "Heptachlorobiphenyl","Chemical",,,,,,,,
 "Heptacosane","Chemical",,,,,,,,
 "Heptadecane","Chemical",,,,,,,,
