@@ -371,7 +371,7 @@
 "Diethyl sulphate","Chemical",,,,,,,,"64-67-5"
 "Diethylamine","Chemical",,,,,,,,"109-89-7"
 "Diethylene glycol dibenzoate","Chemical",,,,,,,,"120-55-8"
-"Diethyltoluenediamine","Chemical",,,,,,,,"68479-98-1"
+"Diethyltoluenediamine","Chemical","Diethyl toluene diamine",,,,,,,"68479-98-1"
 "Diisobutene","Chemical",,,,,,,,"25167-70-8"
 "Diisobutyl phthalate","Chemical",,,,,,,,"84-69-5"
 "Diisobutylene","Chemical",,,,,,,,"25167-70-8"
@@ -1460,7 +1460,6 @@
 "Diclofenac","Chemical",,,,,,,,
 "Diesel Range Organics","Chemical Group",,,,,,,,
 "Diethyl ether","Chemical",,,,,,,,
-"Diethyl toluene diamine","Chemical",,,,,,,,
 "Diethylene glycol diethyl ether","Chemical",,,,,,,,
 "Diethylene glycol monoethyl ether","Chemical",,,,,,,,
 "Diflubenzuron","Chemical",,,,,,,,
