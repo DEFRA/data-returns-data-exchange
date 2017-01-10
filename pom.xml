@@ -63,6 +63,10 @@
 		<!-- Univocity CSV parser -->
 		<univocity.parsers.version>2.2.2</univocity.parsers.version>
 
+		<!-- InfluxDB -->
+		<influxdb-java.version>2.5</influxdb-java.version>
+
+
 		<metrics-spring.version>3.1.3</metrics-spring.version>
 
 		<liquibase-slf4j.version>2.0.0</liquibase-slf4j.version>
@@ -72,10 +76,7 @@
 		<aws.java.sdk.version>1.11.68</aws.java.sdk.version>
 
 		<!-- Test -->
-		<assertj.version>3.5.2</assertj.version>
 		<run.test.suite>**/AllTests.class</run.test.suite>
-
-		<influxdb-java.version>2.5</influxdb-java.version>
 	</properties>
 
 	<dependencyManagement>
@@ -294,17 +295,6 @@
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-test</artifactId>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>junit</groupId>
-			<artifactId>junit</artifactId>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.assertj</groupId>
-			<artifactId>assertj-core</artifactId>
-			<version>${assertj.version}</version>
 			<scope>test</scope>
 		</dependency>
 	</dependencies>

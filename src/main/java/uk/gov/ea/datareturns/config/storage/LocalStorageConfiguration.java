@@ -1,7 +1,7 @@
 package uk.gov.ea.datareturns.config.storage;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.stereotype.Component;
+import org.springframework.context.annotation.Configuration;
 
 import java.io.File;
 
@@ -10,7 +10,7 @@ import java.io.File;
  *
  * @author Sam Gardner-Dell
  */
-@Component
+@Configuration
 @ConfigurationProperties(prefix = "storage.local")
 public class LocalStorageConfiguration {
     private File temporaryFolder;

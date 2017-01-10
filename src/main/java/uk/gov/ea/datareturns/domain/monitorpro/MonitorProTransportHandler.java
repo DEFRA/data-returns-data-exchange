@@ -8,14 +8,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 import uk.gov.ea.datareturns.config.email.MonitorProEmailConfiguration;
-import uk.gov.ea.datareturns.domain.model.fields.impl.EaId;
+import uk.gov.ea.datareturns.domain.model.rules.EaIdType;
 import uk.gov.ea.datareturns.util.MustacheTemplates;
 
 import javax.inject.Inject;
 import java.io.File;
-import java.time.Instant;
-import java.time.LocalDateTime;
-import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
@@ -55,7 +52,8 @@ public class MonitorProTransportHandler {
      * @param returnsCSVFile the CSV file to send to MonitorPro
      * @throws MonitorProTransportException if a problem occurred when attempting to send the file to MonitorPro
      */
-    public void sendNotifications(final String originatorEmail, final String originatorFilename, final EaId eaId, final File returnsCSVFile)
+    public void sendNotifications(final String originatorEmail, final String originatorFilename, final String eaId,
+            final File returnsCSVFile)
             throws MonitorProTransportException {
         sendNotifications(originatorEmail, originatorFilename, eaId, returnsCSVFile, new DefaultTransportHandler());
     }
@@ -70,13 +68,14 @@ public class MonitorProTransportHandler {
      * @param handler the transport handler to use to submit the file to MonitorPro
      * @throws MonitorProTransportException if a problem occurred when attempting to send the file to MonitorPro
      */
-    public void sendNotifications(final String originatorEmail, final String originatorFilename, final EaId eaId, final File returnsCSVFile,
+    public void sendNotifications(final String originatorEmail, final String originatorFilename, final String eaId,
+            final File returnsCSVFile,
             final EmailTransportHandler handler)
             throws MonitorProTransportException {
         LOGGER.debug("Sending Email with attachment '" + returnsCSVFile.getAbsolutePath() + "'");
         try {
             final MultiPartEmail email = new MultiPartEmail();
-            final String subject = this.settings.getDatabaseName(eaId.getType());
+            final String subject = this.settings.getDatabaseName(EaIdType.forUniqueId(eaId));
 
             email.setHostName(this.settings.getHost());
             email.setSmtpPort(this.settings.getPort());
@@ -86,7 +85,7 @@ public class MonitorProTransportHandler {
             email.setFrom(this.settings.getFrom());
 
             final Map<String, String> mustacheTemplateData = new HashMap<>();
-            mustacheTemplateData.put("EA_ID", eaId.getValue().getName());
+            mustacheTemplateData.put("EA_ID", eaId);
             mustacheTemplateData.put("originatorEmail", originatorEmail);
             mustacheTemplateData.put("originatorFilename", originatorFilename);
             mustacheTemplateData.put("currentDate", DateTimeFormatter.RFC_1123_DATE_TIME.format(ZonedDateTime.now()));

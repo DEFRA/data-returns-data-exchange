@@ -9,7 +9,7 @@ import com.amazonaws.auth.BasicAWSCredentials;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.stereotype.Component;
+import org.springframework.context.annotation.Configuration;
 import uk.gov.ea.datareturns.domain.storage.s3.AmazonS3Configuration;
 
 /**
@@ -17,7 +17,7 @@ import uk.gov.ea.datareturns.domain.storage.s3.AmazonS3Configuration;
  *
  * @author Sam Gardner-Dell
  */
-@Component
+@Configuration
 @ConfigurationProperties(prefix = "storage.s3")
 public class S3StorageConfiguration implements AmazonS3Configuration {
     @JsonProperty("awsAccessKey")

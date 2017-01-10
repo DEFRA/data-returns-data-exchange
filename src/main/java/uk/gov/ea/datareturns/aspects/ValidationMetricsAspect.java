@@ -8,13 +8,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Configurable;
 import org.springframework.stereotype.Component;
-import uk.gov.ea.datareturns.config.InfluxDBConfiguration;
+import uk.gov.ea.datareturns.config.metrics.InfluxDBFacade;
 import uk.gov.ea.datareturns.domain.jpa.entities.UniqueIdentifier;
 import uk.gov.ea.datareturns.domain.model.DataSample;
 import uk.gov.ea.datareturns.domain.model.MessageCodes;
 import uk.gov.ea.datareturns.domain.model.rules.FieldDefinition;
 import uk.gov.ea.datareturns.domain.result.ValidationError;
 import uk.gov.ea.datareturns.domain.result.ValidationErrors;
+import uk.gov.ea.datareturns.util.Environment;
 import uk.gov.ea.datareturns.util.StopWatch;
 
 import javax.inject.Inject;
@@ -37,7 +38,7 @@ public class ValidationMetricsAspect {
     private static final Logger LOGGER = LoggerFactory.getLogger(ValidationMetricsAspect.class);
 
     @Inject
-    private InfluxDBConfiguration.InfluxDbFacade influxdb;
+    private InfluxDBFacade influxdb;
 
     /**
      * Report validation metrics validation errors.
@@ -96,13 +97,14 @@ public class ValidationMetricsAspect {
                         .collect(Collectors.joining(","));
 
                 String errorType = errorsForType.stream().findFirst().map(ValidationError::getErrorType).orElse("Unknown");
-                Point.Builder point = Point.measurement("validation_error")
+                Point.Builder point = Point.measurement(MetricsConstants.Common.MEASUREMENT_VALIDATION_ERROR)
                         .time(timestamp, TimeUnit.MILLISECONDS)
-                        .tag("ea_id", eaId)
-                        .tag("error", error)
-                        .tag("error_field", field)
-                        .tag("error_type", errorType)
-                        .addField("error_count", errorsForType.size());
+                        .tag(MetricsConstants.ValidationError.TAG_HOST, Environment.getHostname())
+                        .tag(MetricsConstants.ValidationError.TAG_EA_ID, eaId)
+                        .tag(MetricsConstants.ValidationError.TAG_ERROR, error)
+                        .tag(MetricsConstants.ValidationError.TAG_ERROR_FIELD, field)
+                        .tag(MetricsConstants.ValidationError.TAG_ERROR_TYPE, errorType)
+                        .addField(MetricsConstants.ValidationError.FIELD_ERROR_COUNT, errorsForType.size());
                 return point.build();
             }).forEach(influxdb::write);
         });
@@ -121,15 +123,16 @@ public class ValidationMetricsAspect {
         long countEaIds = model.stream().map(DataSample::getEaId).distinct().count();
         long countReturnTypes = model.stream().map(ds -> ds.getReturnType().getEntity()).distinct().count();
 
-        influxdb.write(Point.measurement("validation_event")
+        influxdb.write(Point.measurement(MetricsConstants.Common.MEASUREMENT_VALIDATION_EVENT)
                 .time(timestamp, TimeUnit.MILLISECONDS)
-                .tag("status", validationStatus)
-                .addField("record_count", model.size())
-                .addField("eaid_count", countEaIds)
-                .addField("rtn_type_count", countReturnTypes)
-                .addField("total_error_count", errors.getErrors().size())
-                .addField("unique_error_count", uniqueErrors.size())
-                .addField("runtime_ms", validationRuntime)
+                .tag(MetricsConstants.ValidationEvent.TAG_VALIDATION_STATUS, validationStatus)
+                .tag(MetricsConstants.ValidationEvent.TAG_HOST, Environment.getHostname())
+                .addField(MetricsConstants.ValidationEvent.FIELD_RECORD_COUNT, model.size())
+                .addField(MetricsConstants.ValidationEvent.FIELD_EA_ID_COUNT, countEaIds)
+                .addField(MetricsConstants.ValidationEvent.FIELD_RETURN_TYPE_COUNT, countReturnTypes)
+                .addField(MetricsConstants.ValidationEvent.FIELD_TOTAL_ERROR_COUNT, errors.getErrors().size())
+                .addField(MetricsConstants.ValidationEvent.FIELD_UNIQUE_ERROR_COUNT, uniqueErrors.size())
+                .addField(MetricsConstants.ValidationEvent.FIELD_RUNTIME_MS, validationRuntime)
                 .build());
     }
 

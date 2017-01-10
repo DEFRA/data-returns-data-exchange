@@ -1,0 +1,5 @@
+"EA_ID","Site_Name","Rtn_Type","Mon_Date","Rtn_Period","Mon_Point","Parameter","Value","Unit","Ref_Period"
+"EP3136GK","Rainham Landfill",,"20zzz15-08-05","Period 1","Monitor point 1","Temperature",100,"mg","Annual"
+"EP3136GK","Rainham Landfill","invalid return type",2015-08-05,"Period 1",,,100,"mg","Annual"
+"EP3136GK","Rainham Landfill","EPR/IED self monitoring periodic leachate production/treatment",2015-08-05,"Period 1","Monitor point 1","Temperature",100,"mg","Annual"
+"EP3136GK","Rainham Landfill","Landfill gas borehole",2015-08-05,"Period 1","Monitor point 1","Temperature",,"Mzzzetres","Annual"

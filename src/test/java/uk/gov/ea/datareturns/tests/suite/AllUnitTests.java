@@ -1,30 +1,25 @@
 package uk.gov.ea.datareturns.tests.suite;
 
+import junit.framework.JUnit4TestAdapter;
+import junit.framework.TestSuite;
+import org.apache.commons.collections4.CollectionUtils;
+import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.junit.runners.Suite;
-import org.junit.runners.Suite.SuiteClasses;
-import uk.gov.ea.datareturns.tests.domain.model.*;
-import uk.gov.ea.datareturns.tests.type.FileTypeTests;
-import uk.gov.ea.datareturns.tests.unittests.*;
+import org.junit.runners.AllTests;
+import org.springframework.core.type.classreading.MetadataReader;
+import uk.gov.ea.datareturns.util.Environment;
 
-@RunWith(Suite.class)
-@SuiteClasses({
-        ControlledListsTests.class,
-        SearchTests.class,
-        UniqueIdentifierTests.class,
+import java.util.function.Predicate;
 
-        DataQualityTests.class,
-        DataSampleValidatorTests.class,
-        DataReturnsHeadersTests.class,
-        DataReturnsZipFileModelTests.class,
-        DateFormatTests.class,
-        EaIdTypeTests.class,
-        LocalStorageProviderTests.class,
-        MonitorProEmailerTests.class,
-        S3StorageConfigurationTests.class,
-        StorageHealthCheckTests.class,
-        FileTypeTests.class,
-        TextUtilsTest.class
-})
+@RunWith(AllTests.class)
 public class AllUnitTests {
+    public static TestSuite suite() {
+        TestSuite suite = new TestSuite("Unit Tests");
+        Predicate<MetadataReader> predicate = meta ->
+                CollectionUtils.isNotEmpty(meta.getAnnotationMetadata().getAnnotatedMethods(Test.class.getName()));
+        Environment.findClasses("uk.gov.ea.datareturns.tests.unit", predicate).stream()
+                .map(JUnit4TestAdapter::new)
+                .forEach(suite::addTest);
+        return suite;
+    }
 }

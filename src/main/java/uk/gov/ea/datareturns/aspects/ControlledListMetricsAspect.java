@@ -6,12 +6,15 @@ import org.aspectj.lang.annotation.Aspect;
 import org.influxdb.dto.Point;
 import org.springframework.beans.factory.annotation.Configurable;
 import org.springframework.stereotype.Component;
-import uk.gov.ea.datareturns.config.InfluxDBConfiguration;
+import uk.gov.ea.datareturns.config.metrics.InfluxDBFacade;
 import uk.gov.ea.datareturns.domain.jpa.dao.Key;
 import uk.gov.ea.datareturns.domain.jpa.entities.ControlledListEntity;
+import uk.gov.ea.datareturns.util.Environment;
 
 import javax.inject.Inject;
 import java.util.concurrent.TimeUnit;
+
+import static uk.gov.ea.datareturns.aspects.MetricsConstants.*;
 
 /**
  * Aspect to gather metrics from the data layer regarding alias cache hits.
@@ -23,7 +26,7 @@ import java.util.concurrent.TimeUnit;
 @Component
 public class ControlledListMetricsAspect {
     @Inject
-    private InfluxDBConfiguration.InfluxDbFacade influxdb;
+    private InfluxDBFacade influxdb;
 
     @AfterReturning(value = "Pointcuts.transformToPreferred(key)", returning = "preferredEntity")
     public void entityTransformToPreferred(Key key, ControlledListEntity preferredEntity) throws Throwable {
@@ -36,15 +39,16 @@ public class ControlledListMetricsAspect {
             boolean isPreferred = StringUtils.equals(inputValue, outputValue);
             String usageType = isPreferred ? "preferred" : "alias";
 
-            Point.Builder measurement = Point.measurement("controlled_list_usage")
+            Point.Builder measurement = Point.measurement(Common.MEASUREMENT_CONTROLLED_LIST_USAGE)
                     .time(timestamp, TimeUnit.MILLISECONDS)
-                    .tag("controlled_list", entityType)
-                    .tag("item_name", outputValue)
-                    .tag("usage_type", usageType)
-                    .addField("count", 1);
+                    .tag(ControlledListUsage.TAG_HOST, Environment.getHostname())
+                    .tag(ControlledListUsage.TAG_CONTROLLED_LIST, entityType)
+                    .tag(ControlledListUsage.TAG_ITEM_NAME, outputValue)
+                    .tag(ControlledListUsage.TAG_USAGE_TYPE, usageType)
+                    .addField(ControlledListUsage.FIELD_COUNT, 1);
 
             if (!isPreferred) {
-                measurement.tag("item_alias", inputValue);
+                measurement.tag(ControlledListUsage.TAG_ITEM_ALIAS, inputValue);
             }
             influxdb.write(measurement.build());
         }
