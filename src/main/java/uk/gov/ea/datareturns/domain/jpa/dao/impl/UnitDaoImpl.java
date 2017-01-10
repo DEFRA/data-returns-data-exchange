@@ -26,6 +26,6 @@ public class UnitDaoImpl extends AbstractAliasingEntityDao<Unit> implements Unit
 
     // Just trim units are case sensitive
     public String generateMash(String inputValue) {
-        return TextUtils.normalize(inputValue);
+        return TextUtils.normalize(inputValue, TextUtils.WhitespaceHandling.REMOVE);
     }
 }
