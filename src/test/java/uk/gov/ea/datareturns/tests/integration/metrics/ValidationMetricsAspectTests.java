@@ -24,7 +24,7 @@ import static uk.gov.ea.datareturns.aspects.MetricsConstants.*;
  */
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = App.class, webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
-@ActiveProfiles("IntegrationTests")
+@ActiveProfiles({"IntegrationTests"})
 public class ValidationMetricsAspectTests extends AbstractMetricsTests {
     private static final Long INVALID_FILE_UNIQUE_ERROR_COUNT = 9L;
     private static final Long INVALID_FILE_TOTAL_ERROR_COUNT = 16L;

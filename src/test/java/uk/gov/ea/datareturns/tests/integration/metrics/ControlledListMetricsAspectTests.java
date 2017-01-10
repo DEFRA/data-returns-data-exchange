@@ -21,9 +21,8 @@ import java.util.stream.Collectors;
  */
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = App.class, webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
-@ActiveProfiles("IntegrationTests")
+@ActiveProfiles({"IntegrationTests"})
 public class ControlledListMetricsAspectTests extends AbstractMetricsTests {
-    private static final String MEASUREMENT = "controlled_list_usage";
 
     @Test
     public void testSubstitutionMetrics() {

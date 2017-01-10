@@ -3,6 +3,7 @@ package uk.gov.ea.datareturns.testsupport;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.influxdb.dto.Point;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
+import org.springframework.context.annotation.Primary;
 import org.springframework.context.annotation.Profile;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -22,6 +23,7 @@ import java.util.concurrent.TimeUnit;
  */
 @Component
 @Scope(ConfigurableBeanFactory.SCOPE_SINGLETON)
+@Primary
 @Profile("IntegrationTests")
 public class InfluxDBTestImpl implements InfluxDBFacade {
     private Map<String, List<PointData>> points = new HashMap<>();

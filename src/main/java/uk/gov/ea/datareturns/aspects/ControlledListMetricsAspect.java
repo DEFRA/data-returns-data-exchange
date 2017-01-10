@@ -14,7 +14,8 @@ import uk.gov.ea.datareturns.util.Environment;
 import javax.inject.Inject;
 import java.util.concurrent.TimeUnit;
 
-import static uk.gov.ea.datareturns.aspects.MetricsConstants.*;
+import static uk.gov.ea.datareturns.aspects.MetricsConstants.Common;
+import static uk.gov.ea.datareturns.aspects.MetricsConstants.ControlledListUsage;
 
 /**
  * Aspect to gather metrics from the data layer regarding alias cache hits.
