@@ -113,7 +113,7 @@
 "Endosulfan","Chemical","Endosulfan I/II",,,,,,,"115-29-7"
 "Epichlorohydrin","Chemical","2-chloropropylene oxide",,,,,,,"106-89-8"
 "Heptachlorepoxide","Chemical","Heptachlor epoxide","cis-Heptachlor epoxide",,,,,,"1024-57-3"
-"Hexabromocyclododecane","Chemical","HBCDD",,,,,,,0
+"Hexabromocyclododecane","Chemical","HBCDD",,,,,,,
 "Hexachlorobenzene","Chemical","HCB",,,,,,,"118-74-1"
 "Indane","Chemical","Indan",,,,,,,0496-11-07
 "Isoproturon","Chemical","IPU",,,,,,,"34123-59-6"
@@ -126,7 +126,7 @@
 "Pentachlorophenol","Chemical","Pentachlorophenol (PCP)",,,,,,,"87-86-5"
 "Phosphorus oxychloride","Chemical","Phosphoryl trichloride",,,,,,,"10025-87-3"
 "Phosphorus pentachloride","Chemical","Phosphorus perchloride",,,,,,,"10026-13-8"
-"Prometryn","Chemical","Prometryne",,,,,,,0
+"Prometryn","Chemical","Prometryne",,,,,,,
 "Styrene","Chemical","Styrene VOC",,,,,,,"100-42-5"
 "Tetrahydrofuran","Chemical","Furan, tetrahydro",,,,,,,"109-99-9"
 "Tributyl phosphate","Chemical","Tributyl-phosphate",,,,,,,"126-73-8"
@@ -192,7 +192,7 @@
 "2,3,5-Trimethylphenol","Chemical",,,,,,,,"697-82-5"
 "2,3,6-TBA","Chemical",,,,,,,,"50-31-7"
 "2,3,6-Trimethylphenol","Chemical",,,,,,,,"527-60-6"
-"2,4,6-Tribromophenol","Chemical",,,,,,,,0
+"2,4,6-Tribromophenol","Chemical",,,,,,,,
 "2,4,6-trinitrophenyl-N-methylnitramine","Chemical",,,,,,,,"479-45-8"
 "2,4,7,9-Tetramethyl-5-decyne-4,7-diol","Chemical",,,,,,,,"126-86-3"
 "2,4-Dinitrophenol","Chemical",,,,,,,,"51-28-5"
@@ -281,7 +281,7 @@
 "Acenaphthylene","Chemical",,,,,,,,"208-96-8"
 "Aclonifen","Chemical",,,,,,,,"74070-46-5"
 "Allyl alcohol","Chemical",,,,,,,,"107-18-6"
-"Aromatics >EC16-EC35","Chemical Group",,,,,,,,0
+"Aromatics >EC16-EC35","Chemical Group",,,,,,,,
 "Benzene, (1-butylheptyl)-","Chemical",,,,,,,,"4537-15-9"
 "Benzene, (1-butyloctyl)-","Chemical",,,,,,,,"2719-63-3"
 "Benzene, (1-pentylheptyl)-","Chemical",,,,,,,,"2719-62-2"
@@ -312,9 +312,9 @@
 "Butyl citrate","Chemical",,,,,,,,"77-94-1"
 "Butyl lactate","Chemical",,,,,,,,"138-22-7"
 "Butyrolactone Beta (TIC)","Chemical",,,,,,,,"3068-88-0"
-"Carbon","Chemical",,,,,,,,0
+"Carbon","Chemical",,,,,,,,
 "Carbonyl sulphide","Chemical",,,,,,,,"463-58-1"
-"Chlordecone","Chemical",,,,,,,,0
+"Chlordecone","Chemical",,,,,,,,
 "Chloro-2,4-dinitrobenzene","Chemical",,,,,,,,"97-00-7"
 "Chloro-3, nitrobenzene","Chemical",,,,,,,,"121-73-3"
 "Chlorobenzene","Chemical",,,,,,,,"108-90-7"
@@ -429,21 +429,21 @@
 "Fluoranthene","Chemical",,,,,,,,"206-44-0"
 "Fluorene","Chemical",,,,,,,,"86-73-7"
 "Fluoroboric acid","Chemical",,,,,,,,"16872-11-0"
-"Flusilazole","Chemical",,,,,,,,0
+"Flusilazole","Chemical",,,,,,,,
 "Folpet","Chemical",,,,,,,,0133-07-03
 "Formamide","Chemical",,,,,,,,1975-12-07
 "Gallic acid","Chemical",,,,,,,,"149-91-7"
 "Glyceryl triacetate","Chemical",,,,,,,,"102-76-1"
-"GRO (C10-C12)","Chemical Group",,,,,,,,0
-"Halons","Chemical Group",,,,,,,,0
-"HCH-epsilon","Chemical",,,,,,,,0
+"GRO (C10-C12)","Chemical Group",,,,,,,,
+"Halons","Chemical Group",,,,,,,,
+"HCH-epsilon","Chemical",,,,,,,,
 "Heneicosane, 11-pentyl-","Chemical",,,,,,,,"14739-72-1"
 "Heptachlor","Chemical",,,,,,,,"76-44-8"
 "Heptachlor (and heptachor epoxide)","Chemical",,,,,,,,"76-44-8 and 102-57-3"
 "Heptadecane, 2,6,10,15-tetramethyl-","Chemical",,,,,,,,"54833-48-6"
 "Heptadecane,8-methyl","Chemical",,,,,,,,"13287-23-5"
 "Heptane,4-methyl","Chemical",,,,,,,,"589-53-7"
-"Hexabromobiphenyl","Chemical",,,,,,,,0
+"Hexabromobiphenyl","Chemical",,,,,,,,
 "Hexachloronorbornadiene","Chemical",,,,,,,,"28680-44-6"
 "Hexachloropropene","Chemical",,,,,,,,"1888-71-7"
 "Hexane, 3,3,4-Trimethyl","Chemical",,,,,,,,"16747-31-2"
@@ -518,7 +518,7 @@
 "Phenol, m-tert-butyl","Chemical",,,,,,,,"585-34-2"
 "Phenol,2(4-hydroxyphenyl)methyl","Chemical",,,,,,,,"2467-03-0"
 "Phenyl acetate","Chemical",,,,,,,,"122-79-2"
-"Phosphamidon","Chemical",,,,,,,,0
+"Phosphamidon","Chemical",,,,,,,,
 "Pirimiphos-ethyl","Chemical",,,,,,,,"23505-41-1"
 "Pirimiphos-methyl","Chemical",,,,,,,,"29232-93-7"
 "Polyvinyl chloride","Chemical",,,,,,,,"9002-86-2"
@@ -535,7 +535,7 @@
 "Pyrene","Chemical",,,,,,,,"129-00-0"
 "Pyrrolidine","Chemical",,,,,,,,"123-75-1"
 "Quinoxyfen","Chemical",,,,,,,,"124495-18-7"
-"Sb, As, Pb, Cr, Co, Cu, Mn, Ni and V and their compounds (total)","Chemical Group",,,,,,,,0
+"Sb, As, Pb, Cr, Co, Cu, Mn, Ni and V and their compounds (total)","Chemical Group",,,,,,,,
 "sec-Butyl Acetate","Chemical",,,,,,,,"105-46-4"
 "sec-Butylamine","Chemical",,,,,,,,"13952-84-6"
 "Selenium trioxide","Chemical",,,,,,,,"13768-86-0"
@@ -546,11 +546,11 @@
 "tert-Butyl acetate","Chemical",,,,,,,,"540-88-5"
 "tert-Butylamine","Chemical",,,,,,,,"75-64-9"
 "Tetrabutyltin","Chemical",,,,,,,,"1461-25-2"
-"Tetrachloroethane (1,1,2,2-tetrachloroethane)","Chemical",,,,,,,,0
+"Tetrachloroethane (1,1,2,2-tetrachloroethane)","Chemical",,,,,,,,
 "Tetracosamethylcyclododecasiloxane (SVOCSW)","Chemical","Tetracosamethylcyclododecasiloxane SVOCSW",,,,,,," 18919-94-3"
 "Tetrahydrofuran-2-one, 5-[1-hydroxyhexyl]-","Chemical",,,,,,,,"87877-77-8"
 "Tetrasodium pyrophosphate","Chemical",,,,,,,,"7722-88-5"
-"Thallium and its compounds expressed as thallium (Total Tl)","Chemical Group",,,,,,,,0
+"Thallium and its compounds expressed as thallium (Total Tl)","Chemical Group",,,,,,,,
 "Thionyl chloride","Chemical",,,,,,,,7719-09-07
 "Toxaphene","Chemical",,,,,,,,"8001-35-2"
 "Tributylamine","Chemical",,,,,,,,"102-82-9"
@@ -563,9 +563,9 @@
 "Trifluralin","Chemical",,,,,,,,1582-09-08
 "Triglycidyl isocyanurate (TGIC)","Chemical",,,,,,,,"2451-62-9"
 "Tri-o-tolyl phosphate","Chemical",,,,,,,,"1330-78-5"
-"Triphenyltin and compounds - as TPT","Chemical Group",,,,,,,,0
+"Triphenyltin and compounds - as TPT","Chemical Group",,,,,,,,
 "Xylidines","Chemical group",,,,,,,,"1300-73-8"
-"Methane + Carbon Dioxide","Chemical Group",,,,,,,,0
+"Methane + Carbon Dioxide","Chemical Group",,,,,,,,
 "Volatile organic compounds (VOCs) (as carbon)","Chemical Group","VOCs","VOC","VOC Measurement","TVOC","Total Volatile Organic Compounds","Field VOC","VOC with TICs",
 "Arochlor 1254","Chemical",,,,,,,,
 "Acetamide","Chemical",,,,,,,,
