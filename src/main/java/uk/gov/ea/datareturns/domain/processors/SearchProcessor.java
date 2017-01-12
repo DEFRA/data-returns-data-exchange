@@ -3,6 +3,7 @@ package uk.gov.ea.datareturns.domain.processors;
 import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.stereotype.Component;
 import uk.gov.ea.datareturns.domain.dto.PermitLookupDto;
+import uk.gov.ea.datareturns.domain.jpa.dao.Key;
 import uk.gov.ea.datareturns.domain.jpa.dao.SiteDao;
 import uk.gov.ea.datareturns.domain.jpa.dao.UniqueIdentifierDao;
 import uk.gov.ea.datareturns.domain.jpa.entities.Site;
@@ -46,7 +47,7 @@ public class SearchProcessor {
         while(tokenizer.hasMoreTokens()) {
             String word = tokenizer.nextToken();
             if (uniqueIdentifierDao.uniqueIdentifierExists(word)) {
-                UniqueIdentifier basePermit = uniqueIdentifierDao.getByName(word);
+                UniqueIdentifier basePermit = uniqueIdentifierDao.getByNameOrAlias(Key.explicit(word));
                 // Get the set of alternatives using the base identifier
                 Set<String> alternatives = uniqueIdentifierDao.getAliasNames(basePermit);
                 // Check that the search result is not previously found
@@ -56,7 +57,8 @@ public class SearchProcessor {
                 }
             }
         }
-        // If we have no results se lucene to try and find the site
+
+        // If we have no results use lucene to try and find the site
         List<Pair<String, String[]>> siteResults = search.searchSite(term);
         if (siteResults != null) {
             for (Pair<String, String[]> siteResult : siteResults) {

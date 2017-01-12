@@ -22,7 +22,7 @@ import java.util.stream.Collectors;
  * DAO for Unique Identifiers
  *
  * The Unique identifier (EA_ID) and its aliases do NOT use the
- * standard aliasing mechanism. (This is because the data strucutre
+ * standard aliasing mechanism. (This is because the data structure
  * differs for the entities uniqueIdentifier, uniqueIdentifierAlias and Site
  *
  * The UniqueIdentifiersService is the service level aggregator for teh functionality
