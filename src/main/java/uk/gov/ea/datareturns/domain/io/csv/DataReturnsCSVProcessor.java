@@ -5,7 +5,6 @@ import uk.gov.ea.datareturns.domain.model.DataSample;
 
 import java.io.File;
 import java.util.List;
-import java.util.Map;
 
 /**
  * Data Returns CSV reader/writer for DEP compliant CSV files.
@@ -26,8 +25,7 @@ public interface DataReturnsCSVProcessor {
      * Writes a CSV file based on the mappings specified in the configuration file.
      *
      * @param records the data returns records to be written
-     * @param outputMappings the mappings for the headings and data to be output (see {@link MappableBeanWriterProcessor})
      * @param csvFile a reference to the {@link File} to be written
      */
-    void write(List<DataSample> records, Map<String, String> outputMappings, File csvFile);
+    void write(List<DataSample> records, File csvFile);
 }

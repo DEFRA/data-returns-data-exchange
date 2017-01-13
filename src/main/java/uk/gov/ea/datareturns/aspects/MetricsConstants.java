@@ -38,7 +38,7 @@ public class MetricsConstants {
         String TAG_USAGE_TYPE = "usage_type";
 
         /** number of times the controlled list entry was used */
-        String FIELD_COUNT = "count";
+        String FIELD_USAGE_COUNT = "usage_count";
     }
 
     /**

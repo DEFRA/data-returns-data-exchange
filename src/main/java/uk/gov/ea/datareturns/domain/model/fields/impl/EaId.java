@@ -43,6 +43,7 @@ public class EaId extends AbstractEntityValue<UniqueIdentifierDao, DataSample, U
             this.type = EaIdType.forUniqueId(getEntity().getName());
         }
     }
+
     protected UniqueIdentifier findEntity(String inputValue) {
         return getDao().getByNameOrAlias(Key.explicit(inputValue));
     }
@@ -89,7 +90,6 @@ public class EaId extends AbstractEntityValue<UniqueIdentifierDao, DataSample, U
     public boolean isAlphaNumeric() {
         return !isNumeric();
     }
-
 
     @Override public String transform(DataSample record) {
         Key lookup = Key.explicit(this.getInputValue());

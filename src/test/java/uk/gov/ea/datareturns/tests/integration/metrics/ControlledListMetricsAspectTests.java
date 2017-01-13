@@ -21,7 +21,7 @@ import java.util.stream.Collectors;
  */
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = App.class, webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
-@ActiveProfiles({"IntegrationTests"})
+@ActiveProfiles({ "IntegrationTests" })
 public class ControlledListMetricsAspectTests extends AbstractMetricsTests {
 
     @Test
@@ -36,15 +36,25 @@ public class ControlledListMetricsAspectTests extends AbstractMetricsTests {
                     .filter(pd -> pd.getTags().get(MetricsConstants.ControlledListUsage.TAG_CONTROLLED_LIST).equals(c.getSimpleName()))
                     .collect(Collectors.toList());
 
+            // Preferred usage count should be 4 for each list type
             long preferredCount = parameterData.stream()
                     .filter(pd -> "preferred".equals(pd.getTags().get(MetricsConstants.ControlledListUsage.TAG_USAGE_TYPE)))
-                    .count();
+                    .mapToLong(pd -> (Long) pd.getFields().get(MetricsConstants.ControlledListUsage.FIELD_USAGE_COUNT))
+                    .sum();
+            Assertions.assertThat(preferredCount).isEqualTo(4);
+
+            // Alias count should be 20 for each list type
             long aliasCount = parameterData.stream()
                     .filter(pd -> "alias".equals(pd.getTags().get(MetricsConstants.ControlledListUsage.TAG_USAGE_TYPE)))
-                    .count();
-            Assertions.assertThat(preferredCount).isEqualTo(4);
+                    .mapToLong(pd -> (Long) pd.getFields().get(MetricsConstants.ControlledListUsage.FIELD_USAGE_COUNT))
+                    .sum();
             Assertions.assertThat(aliasCount).isEqualTo(20);
+
+            // Although there are numerous EA_ID's in the test file, they should all map to the preferred value for metrics use.
+            long uniqueEaIdCount = parameterData.stream()
+                    .map(pd -> pd.getTags().get(MetricsConstants.ControlledListUsage.TAG_EA_ID))
+                    .distinct().count();
+            Assertions.assertThat(uniqueEaIdCount).isEqualTo(1);
         }
     }
-
 }

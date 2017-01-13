@@ -132,7 +132,7 @@ public class FileUploadProcessor extends AbstractReturnsProcessor<DataExchangeRe
                 for (final Map.Entry<EaId, List<DataSample>> entry : permitToRecordMap.entrySet()) {
                     final File permitDataFile = File.createTempFile("output-" + entry.getKey().getValue().getName() + "-", ".csv",
                             this.workingFolder);
-                    csvProcessor.write(entry.getValue(), getProcessorSettings().getOutputMappingsMap(), permitDataFile);
+                    csvProcessor.write(entry.getValue(), permitDataFile);
                     outputFiles.add(permitDataFile);
                     outputFileIdentifiers.put(permitDataFile.getName(), entry.getKey());
                 }

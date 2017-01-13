@@ -14,8 +14,11 @@ import uk.gov.ea.datareturns.domain.io.csv.generic.exceptions.InconsistentRowExc
 import uk.gov.ea.datareturns.domain.model.DataSample;
 import uk.gov.ea.datareturns.domain.model.rules.FieldDefinition;
 
+import javax.inject.Inject;
 import java.io.File;
-import java.util.*;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Set;
 
 /**
  * Data Returns CSV reader/writer for DEP compliant CSV files.
@@ -27,10 +30,11 @@ import java.util.*;
 public class DataReturnsCSVProcessorImpl implements DataReturnsCSVProcessor {
     private static final Logger LOGGER = LoggerFactory.getLogger(DataReturnsCSVProcessor.class);
 
-    /**
-     * Default constructor
-     */
-    public DataReturnsCSVProcessorImpl() {
+    private DataSampleBeanWriterProcessor writerProcessor;
+
+    @Inject
+    public DataReturnsCSVProcessorImpl(final DataSampleBeanWriterProcessor writerProcessor) {
+        this.writerProcessor = writerProcessor;
     }
 
     /**
@@ -87,21 +91,21 @@ public class DataReturnsCSVProcessorImpl implements DataReturnsCSVProcessor {
      * Writes a CSV file based on the mappings specified in the configuration file.
      *
      * @param records the data returns records to be written
-     * @param outputMappings the mappings for the headings and data to be output (see {@link MappableBeanWriterProcessor})
      * @param csvFile a reference to the {@link File} to be written
      */
-    @Override public void write(final List<DataSample> records, final Map<String, String> outputMappings, final File csvFile) {
+    @Override public void write(final List<DataSample> records, final File csvFile) {
         final CsvWriterSettings settings = new CsvWriterSettings();
-        // Configure the standard set of headings here (as this covers the mapping from bean to csv field).  Actual headings
-        // are defined as part of the MappableBeanWriterProcessor.
-        settings.setHeaders(outputMappings.keySet().toArray(new String[outputMappings.size()]));
-
-        final MappableBeanWriterProcessor<DataSample> processor = new MappableBeanWriterProcessor<>(
-                DataSample.class, outputMappings, FieldDefinition.ALL_FIELD_NAMES_ARR);
-        settings.setRowWriterProcessor(processor);
+        writerProcessor.configure(settings);
         final CsvWriter writer = new CsvWriter(csvFile, settings);
         // Write the record headers of this file
         writer.writeHeaders();
-        writer.processRecordsAndClose(records);
+
+        try {
+            for (DataSample record : records) {
+                writerProcessor.write(writer, record);
+            }
+        } finally {
+            writer.close();
+        }
     }
 }
