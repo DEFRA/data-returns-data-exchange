@@ -11,10 +11,7 @@ import uk.gov.ea.datareturns.domain.jpa.entities.UniqueIdentifier;
 import uk.gov.ea.datareturns.domain.jpa.service.Search;
 
 import javax.inject.Inject;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Set;
-import java.util.StringTokenizer;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -59,7 +56,13 @@ public class SearchProcessor {
         }
 
         // If we have no results use lucene to try and find the site
-        List<Pair<String, String[]>> siteResults = search.searchSite(term);
+        tokenizer = new StringTokenizer(term, " ,.:;?!");
+        StringJoiner sj = new StringJoiner(" AND ");
+        while(tokenizer.hasMoreTokens()) {
+            String word = tokenizer.nextToken() + "*";
+            sj.add(word);
+        }
+        List<Pair<String, String[]>> siteResults = search.searchSite(sj.toString());
         if (siteResults != null) {
             for (Pair<String, String[]> siteResult : siteResults) {
                 // Lookup the site
