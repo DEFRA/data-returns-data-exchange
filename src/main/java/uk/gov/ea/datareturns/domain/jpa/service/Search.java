@@ -87,7 +87,7 @@ public class Search {
             }
             return results;
         } catch (ParseException|IOException e) {
-            LOGGER.error("Unexpected error in the search function");
+            LOGGER.warn("Error in search function trying to search: " + search);
             return null;
         }
     }
