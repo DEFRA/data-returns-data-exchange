@@ -467,6 +467,13 @@ public class DataSampleValidatorTests {
         final Set<ConstraintViolation<DataSample>> violations = this.validator.validate(record, ValidationGroups.OrderedChecks.class);
         Assert.assertEquals(0, violations.size());
     }
+    @Test
+    public void testValueValidWithSpaces() {
+        final DataSample record = createValidNumericRecord();
+        record.setValue(new Value(">   -0.1"));
+        final Set<ConstraintViolation<DataSample>> violations = this.validator.validate(record, ValidationGroups.OrderedChecks.class);
+        Assert.assertEquals(0, violations.size());
+    }
 
     @Test
     public void testValueInvalidLessThanDecimalNoLeadingZero() {

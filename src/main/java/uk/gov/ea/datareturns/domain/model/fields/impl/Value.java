@@ -3,6 +3,7 @@ package uk.gov.ea.datareturns.domain.model.fields.impl;
 import uk.gov.ea.datareturns.domain.model.DataSample;
 import uk.gov.ea.datareturns.domain.model.MessageCodes;
 import uk.gov.ea.datareturns.domain.model.fields.FieldValue;
+import uk.gov.ea.datareturns.util.TextUtils;
 
 import javax.validation.constraints.Pattern;
 
@@ -10,7 +11,7 @@ import javax.validation.constraints.Pattern;
  * A numerical value of a measurement. As well as numbers, can include the symbols < or >
  */
 public class Value implements FieldValue<DataSample, String> {
-    @Pattern(regexp = "([<>]?-?(\\d+\\.)?(\\d)+)", message = MessageCodes.Incorrect.Value)
+    @Pattern(regexp = "([<>]?\\s*-?(\\d+\\.)?(\\d)+)", message = MessageCodes.Incorrect.Value)
     private final String inputValue;
 
     /**
@@ -27,7 +28,7 @@ public class Value implements FieldValue<DataSample, String> {
     }
 
     @Override public String getValue() {
-        return inputValue;
+        return TextUtils.normalize(inputValue, TextUtils.WhitespaceHandling.REMOVE);
     }
 
     @Override public String transform(DataSample record) {
