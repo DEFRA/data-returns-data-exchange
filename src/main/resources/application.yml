@@ -188,15 +188,15 @@ logging:
 spring:
   profiles: metrics
   influxdb:
-    url: http://localhost:8086
-    username: root
-    password: root
-    database: test
-    retention-policy: default
+    url: ${metrics.influx.url}
+    username: ${metrics.influx.user}
+    password: ${metrics.influx.password}
+    database: ${metrics.influx.database}
+    retention-policy: ${metrics.influx.rp}
     # Number of points to store in memory before writing to influxdb
-    batch-size: 500
+    batch-size: ${metrics.influx.batchsize}
     # Maximum time period before data is flushed to influxdb
-    flush-timeout-seconds: 300
+    flush-timeout-seconds: ${metrics.influx.flushtimeout}
     enabled: true
 
 ---

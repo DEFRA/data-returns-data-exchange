@@ -43,13 +43,6 @@ public class InfluxDBFacadeImpl implements InfluxDBFacade {
             if (!this.isConnected()) {
                 throw new BeanCreationException("Unable to connect to influxdb");
             }
-            // Ensure the configured database exists.
-            boolean createDatabase = !this.connection.describeDatabases().contains(properties.getDatabase());
-            String logMsg = createDatabase ? "Creating influxdb database: " : "Using existing influxdb database: ";
-            LOGGER.info(logMsg + properties.getDatabase());
-            if (createDatabase) {
-                this.connection.createDatabase(properties.getDatabase());
-            }
         } else {
             LOGGER.warn("Metrics reporting is disabled.");
         }

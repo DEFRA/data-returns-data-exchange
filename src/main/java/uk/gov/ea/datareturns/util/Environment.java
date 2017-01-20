@@ -1,12 +1,12 @@
 package uk.gov.ea.datareturns.util;
 
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.annotation.ClassPathScanningCandidateComponentProvider;
 import org.springframework.core.type.classreading.MetadataReader;
-import sun.awt.OSInfo;
 
 import java.net.InetAddress;
 import java.nio.charset.StandardCharsets;
@@ -25,12 +25,14 @@ public final class Environment {
     private static final Logger LOGGER = LoggerFactory.getLogger(Environment.class);
 
     // Private utility class constructor
-    private Environment() {}
+    private Environment() {
+    }
 
     /** Hostname caching supplier */
     private static final CachingSupplier<String> HOSTNAME = CachingSupplier.of(() -> {
         String host = trim(defaultString(System.getenv("HOSTNAME"), System.getenv("COMPUTERNAME")));
-        if (host == null && (OSInfo.getOSType() == OSInfo.OSType.LINUX || OSInfo.getOSType() == OSInfo.OSType.MACOSX)) {
+        String osName = StringUtils.defaultString(System.getProperty("os.name"), "");
+        if (host == null && StringUtils.containsAny(osName, "Linux", "OS X")) {
             try {
                 Process proc = Runtime.getRuntime().exec("hostname");
                 host = trim(IOUtils.toString(proc.getInputStream(), StandardCharsets.UTF_8));
