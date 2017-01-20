@@ -85,7 +85,7 @@ processor:
   # This allows for input fields to be concatenated together to form a new field or to rename the fields that are
   # used for output.
   outputMappings:
-    - Site={{EA_ID}} - {{Site_Name}}
+    - Site={{EA_ID}}
     - Rtn_Type={{Rtn_Type}}
     - Sample Point={{Mon_Point}}
     - Rtn_Period={{Rtn_Period}}

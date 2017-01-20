@@ -95,7 +95,7 @@ processor:
     - Unit={{Unit}}
     - Test Method={{Meth_Stand}}
     - Comment={{Comments}}
-    - Data Source=Data Returns
+    - Data Source=Operator Self-Monitoring
 
 test:
   testFilesLocation: /testfiles
