@@ -73,7 +73,8 @@ public enum ControlledListsList {
 
     RELEASES_AND_TRANSFER("Releases and transfers", ReleasesAndTransfersDao.class, "Rel_Trans",
             Collections.unmodifiableList(new ArrayList<DisplayHeaderDto>() {{
-                add(new DisplayHeaderDto("name", "Rel_Trans"));
+                // TODO: Added for PI and subsequently disabled due to change of focus
+                //                add(new DisplayHeaderDto("name", "Rel_Trans"));
             }}));
 
     private final String path;
