@@ -1,5 +1,6 @@
 package uk.gov.ea.datareturns.domain.jpa.dao.impl;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Repository;
@@ -22,6 +23,11 @@ public class UnitDaoImpl extends AbstractAliasingEntityDao<Unit> implements Unit
     @Inject
     public UnitDaoImpl(GroupingEntityCommon<Unit> groupingEntityCommon) {
         super(Unit.class, groupingEntityCommon);
+
+        addSearchField("longName",
+                (entity, terms) -> terms.stream().anyMatch((term) -> StringUtils.containsIgnoreCase(entity.getLongName(), term)));
+        addSearchField("type",
+                (entity, terms) -> terms.stream().anyMatch((term) -> StringUtils.containsIgnoreCase(entity.getType(), term)));
     }
 
     // Just trim units are case sensitive

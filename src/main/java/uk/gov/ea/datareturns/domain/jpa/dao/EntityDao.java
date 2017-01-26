@@ -7,6 +7,7 @@ import uk.gov.ea.datareturns.domain.jpa.hierarchy.processors.GroupingEntityCommo
 import uk.gov.ea.datareturns.util.SpringApplicationContextProvider;
 
 import java.util.List;
+import java.util.Set;
 import java.util.function.Predicate;
 
 /**
@@ -73,6 +74,23 @@ public interface EntityDao<E extends ControlledListEntity> {
      * @return A filtered list
      */
     List<E> list(String field, String contains);
+
+    /**
+     * Search for entities which match ANY of the given search terms.
+     *
+     * The nature of the search is specific to the entity.  All entities will search names but specific subclasses may customise the
+     * implementation, for example to search aliases, or for parameters to search CAS numbers.
+     *
+     * @param terms the terms to search for
+     * @return a {@link List} of matching entities.
+     */
+    List<E> search(List<String> terms);
+
+
+    /**
+     * @return the set of field identifiers that are searchable for the entity <E>
+     */
+    Set<String> getSearchFields();
 
     /**
      * Retrieves a mashed version of the name from a cache.

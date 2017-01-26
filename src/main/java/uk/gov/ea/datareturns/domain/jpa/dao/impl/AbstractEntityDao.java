@@ -8,6 +8,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.transaction.annotation.Transactional;
 import uk.gov.ea.datareturns.domain.jpa.dao.EntityDao;
 import uk.gov.ea.datareturns.domain.jpa.dao.Key;
+import uk.gov.ea.datareturns.domain.jpa.dao.SearchFunction;
 import uk.gov.ea.datareturns.domain.jpa.entities.ControlledListEntity;
 import uk.gov.ea.datareturns.domain.jpa.hierarchy.Hierarchy;
 import uk.gov.ea.datareturns.domain.jpa.hierarchy.processors.GroupingEntityCommon;
@@ -20,15 +21,13 @@ import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
+import java.beans.BeanInfo;
 import java.beans.IntrospectionException;
 import java.beans.Introspector;
 import java.beans.PropertyDescriptor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
@@ -46,7 +45,11 @@ public abstract class AbstractEntityDao<E extends ControlledListEntity> implemen
 
     private final CachingSupplier<BidiMap<String, String>> mashAndNameCache = CachingSupplier.of(this::cacheMashToNameSupplier);
 
+    private final Map<String, SearchFunction<E>> searchMappings = new LinkedHashMap<>();
+
     private final Class<E> entityClass;
+    private BeanInfo entityBeanInfo;
+
     @PersistenceContext
     protected EntityManager entityManager;
 
@@ -66,10 +69,20 @@ public abstract class AbstractEntityDao<E extends ControlledListEntity> implemen
      */
     public AbstractEntityDao(Class<E> entityClass, GroupingEntityCommon<? extends Hierarchy.GroupedHierarchyEntity> groupingEntityCommon) {
         this.entityClass = entityClass;
+        try {
+            this.entityBeanInfo = Introspector.getBeanInfo(entityClass);
+        } catch (IntrospectionException e) {
+            LOGGER.error("Unable to retrieve entity bean information", e);
+        }
+
+        addSearchField("name",
+                (entity, terms) -> terms.stream().anyMatch((term) -> StringUtils.containsIgnoreCase(entity.getName(), term)));
+
         this.groupingEntityCommon = groupingEntityCommon;
         if (this.groupingEntityCommon != null) {
             this.groupingEntityCommon.setDao(this);
         }
+
     }
 
     @Override public GroupingEntityCommon<? extends Hierarchy.GroupedHierarchyEntity> getGroupingEntityCommon() {
@@ -129,8 +142,8 @@ public abstract class AbstractEntityDao<E extends ControlledListEntity> implemen
      * @return A filtered list
      */
     @Override public List<E> list(String field, String contains) {
-        try {
-            for (PropertyDescriptor pd : Introspector.getBeanInfo(entityClass).getPropertyDescriptors()) {
+        if (entityBeanInfo != null) {
+            for (PropertyDescriptor pd : entityBeanInfo.getPropertyDescriptors()) {
                 if (pd.getReadMethod() != null && pd.getName().toLowerCase().equals(field.toLowerCase())) {
                     final Method readMethod = pd.getReadMethod();
                     Predicate<E> builtPredicate = e -> {
@@ -143,10 +156,38 @@ public abstract class AbstractEntityDao<E extends ControlledListEntity> implemen
                     return list(builtPredicate);
                 }
             }
-        } catch (IntrospectionException e) {
-            return list();
         }
         return list();
+    }
+
+    /**
+     * Search for entities which match ANY of the given search terms.
+     *
+     * The nature of the search is specific to the entity.  All entities will search names but specific subclasses may customise the
+     * implementation, for example to search aliases, or for parameters to search CAS numbers.
+     *
+     * @param terms the terms to search for
+     * @return a {@link List} of matching entities.
+     */
+    @Override public final List<E> search(List<String> terms) {
+        return list((item) -> searchMappings.values().stream().anyMatch((i) -> i.matches(item, terms)));
+    }
+
+    /**
+     * Enable DAO implementations to add functionality to make individual entity fields searchable
+     *
+     * @param field the field identifier string
+     * @param searchFunction the {@link SearchFunction} implementation to provide search functionality for a field
+     */
+    void addSearchField(String field, SearchFunction<E> searchFunction) {
+        this.searchMappings.put(field, searchFunction);
+    }
+
+    /**
+     * @return the set of field identifiers that are searchable for the entity <E>
+     */
+    public Set<String> getSearchFields() {
+        return new LinkedHashSet<>(searchMappings.keySet());
     }
 
     /**
