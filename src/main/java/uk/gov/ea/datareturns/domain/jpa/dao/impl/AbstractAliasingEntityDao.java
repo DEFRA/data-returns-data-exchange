@@ -1,11 +1,14 @@
 package uk.gov.ea.datareturns.domain.jpa.dao.impl;
 
+import org.apache.commons.lang3.StringUtils;
 import uk.gov.ea.datareturns.domain.jpa.dao.Key;
 import uk.gov.ea.datareturns.domain.jpa.entities.AliasingEntity;
 import uk.gov.ea.datareturns.domain.jpa.hierarchy.Hierarchy;
 import uk.gov.ea.datareturns.domain.jpa.hierarchy.processors.GroupingEntityCommon;
 
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -32,6 +35,17 @@ public abstract class AbstractAliasingEntityDao<E extends AliasingEntity> extend
     public AbstractAliasingEntityDao(Class<E> entityClass,
             GroupingEntityCommon<? extends Hierarchy.GroupedHierarchyEntity> groupedHierarchyEntity) {
         super(entityClass, groupedHierarchyEntity);
+
+        addSearchField("aliases", (entity, terms) -> {
+            if (entity.getAliases() != null) {
+                for (String alias : entity.getAliases()) {
+                    if (terms.stream().anyMatch((term) -> StringUtils.containsIgnoreCase(alias, term))) {
+                        return true;
+                    }
+                }
+            }
+            return false;
+        });
     }
 
     @Override public E getByAliasName(Key alias) {
@@ -74,7 +88,7 @@ public abstract class AbstractAliasingEntityDao<E extends AliasingEntity> extend
         // Now that we have a map of primary values to a set of aliases we can decorate the root cache before returning
         for (Map.Entry<String, Set<String>> entry : aliasesByName.entrySet()) {
             String primaryName = entry.getKey();
-            Set<String> aliases = entry.getValue();
+            Set<String> aliases = Optional.of(entry.getValue()).orElse(new HashSet<>());
             allEntities.get(primaryName).setAliases(aliases);
         }
 

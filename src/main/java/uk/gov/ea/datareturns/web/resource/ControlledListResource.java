@@ -73,7 +73,6 @@ public class ControlledListResource {
     /**
      * Returns any given controlled list searched by a given field
      * @param listName
-     * @param field
      * @param contains
      * @return
      * @throws Exception
@@ -83,9 +82,8 @@ public class ControlledListResource {
     @Produces(APPLICATION_JSON)
     public Response getControlledList(
             @PathParam("listname") final String listName,
-            @QueryParam("field") final String field,
             @QueryParam("contains") final String contains) throws Exception {
-        LOGGER.debug("Request for /controlled-list/" + listName + " Field: " + field + " contains: " + contains);
+        LOGGER.debug("Request for /controlled-list/" + listName + " containing items matching filter: " + contains);
         ControlledListsList controlledList = ControlledListsList.getByPath(listName);
 
         // Check we have a registered controlled list type
@@ -95,7 +93,7 @@ public class ControlledListResource {
                     ApplicationExceptionType.UNKNOWN_LIST_TYPE, "Request for unknown controlled list: " + listName
             )).build();
         } else {
-            Pair<String, List<? extends ControlledListEntity>> listData = controlledListProcessor.getListData(controlledList, field, contains);
+            Pair<String, List<ControlledListEntity>> listData = controlledListProcessor.getListData(controlledList, contains);
             return Response.status(Response.Status.OK).entity(listData).build();
         }
     }
@@ -120,8 +118,8 @@ public class ControlledListResource {
             List<String> hierachyNames = pathParams.get("name");
             Hierarchy hierarchy = (Hierarchy) context.getBean(hierachyNames.get(0) + "-hierarchy");
             Set<HierarchyLevel> levels = hierarchy.getHierarchyLevels();
-            String field = queryParams.containsKey("field") ? ((List<String>)queryParams.get("field")).get(0) : null;
-            String contains = queryParams.containsKey("contains") ? ((List<String>)queryParams.get("contains")).get(0) : null;
+            String field = queryParams.containsKey("field") ? queryParams.get("field").get(0) : null;
+            String contains = queryParams.containsKey("contains") ? queryParams.get("contains").get(0) : null;
             Set<Hierarchy.HierarchyEntity> entities = getHierarchyEntitiesFromParameters(queryParams, context, levels);
             Pair<String, List<? extends Hierarchy.HierarchyEntity>> controlledList = controlledListProcessor.getListData(hierarchy, entities, field, contains);
             return Response.status(Response.Status.OK).entity(controlledList).build();

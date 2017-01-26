@@ -1,6 +1,7 @@
 package uk.gov.ea.datareturns.domain.dto;
 
 import java.util.List;
+import java.util.Set;
 
 /**
  * Created by graham on 29/07/16.
@@ -10,7 +11,7 @@ public class ControlledListsDto {
 
     private final List<DisplayHeaderDto> displayHeaders;
     private String description;
-    private String defaultSearch;
+    private Set<String> searchFields;
     private String path;
 
     public String getPath() {
@@ -22,11 +23,11 @@ public class ControlledListsDto {
     }
 
     public ControlledListsDto(String description, String path, List<DisplayHeaderDto> displayHeaders,
-            String defaultSearch) {
+            Set<String> searchFields) {
         this.description = description;
         this.path = path;
         this.displayHeaders = displayHeaders;
-        this.defaultSearch = defaultSearch;
+        this.searchFields = searchFields;
     }
 
     public String getDescription() {
@@ -41,13 +42,11 @@ public class ControlledListsDto {
         return displayHeaders;
     }
 
-    public String getDefaultSearch() {
-        return defaultSearch;
+    public Set<String> getSearchFields() {
+        return searchFields;
     }
 
-    public void setDefaultSearch(String defaultSearch) {
-        this.defaultSearch = defaultSearch;
+    public void setSearchFields(Set<String> searchFields) {
+        this.searchFields = searchFields;
     }
-
-
 }
