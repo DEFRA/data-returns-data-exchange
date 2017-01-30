@@ -84,7 +84,7 @@ public class ValidationMetricsAspectTests extends AbstractMetricsTests {
         Assertions.assertThat(totalErrorCount).isEqualTo(INVALID_FILE_TOTAL_ERROR_COUNT);
 
         Set<String> eaIds = data.stream().map(p -> p.getTags().get(ValidationError.TAG_EA_ID)).collect(Collectors.toSet());
-        Assertions.assertThat(eaIds).containsExactly("EP3136GK");
+        Assertions.assertThat(eaIds).containsExactly("AA9999AA");
 
         Set<String> expectedErrors = new HashSet<>(Arrays.asList(new String[] { "DR9010-Missing", "DR9010-Incorrect", "DR9020-Incorrect",
                 "DR9030-Missing", "DR9050-Incorrect", "DR9060-Missing", "DR9070-Incorrect", "DR9090-Incorrect", "DR9999-Missing" }));

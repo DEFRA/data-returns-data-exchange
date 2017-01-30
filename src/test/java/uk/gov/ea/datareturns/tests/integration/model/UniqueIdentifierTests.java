@@ -14,8 +14,6 @@ import uk.gov.ea.datareturns.domain.jpa.entities.Site;
 import uk.gov.ea.datareturns.domain.jpa.entities.UniqueIdentifier;
 
 import javax.inject.Inject;
-import java.util.Arrays;
-import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -38,10 +36,10 @@ public class UniqueIdentifierTests {
      */
     @Test
     public void getUniqueIdentifierFromName() {
-        UniqueIdentifier uniqueIdentifier = uniqueIdentifierDao.getByName("ZP3933LD");
-        Assert.assertEquals(uniqueIdentifier.getName(), "ZP3933LD");
-        uniqueIdentifier = uniqueIdentifierDao.getByName("BL9500IJ");
-        Assert.assertEquals(uniqueIdentifier.getName(), "BL9500IJ");
+        UniqueIdentifier uniqueIdentifier = uniqueIdentifierDao.getByName("AA9999AA");
+        Assert.assertEquals(uniqueIdentifier.getName(), "AA9999AA");
+        uniqueIdentifier = uniqueIdentifierDao.getByName("AA9999AA");
+        Assert.assertEquals(uniqueIdentifier.getName(), "AA9999AA");
     }
 
     /**
@@ -49,10 +47,10 @@ public class UniqueIdentifierTests {
      */
     @Test
     public void getUniqueIdentifierFromAliasName() {
-        UniqueIdentifier uniqueIdentifier = uniqueIdentifierDao.getByNameOrAlias(Key.explicit("KP3030NG"));
-        Assert.assertEquals(uniqueIdentifier.getName(), "BS7722ID");
-        uniqueIdentifier = uniqueIdentifierDao.getByNameOrAlias(Key.relaxed("JB3937RN"));
-        Assert.assertEquals(uniqueIdentifier.getName(), "104554");
+        UniqueIdentifier uniqueIdentifier = uniqueIdentifierDao.getByNameOrAlias(Key.explicit("AA9998AA"));
+        Assert.assertEquals(uniqueIdentifier.getName(), "AA9999AA");
+        uniqueIdentifier = uniqueIdentifierDao.getByNameOrAlias(Key.relaxed("AA9998AA"));
+        Assert.assertEquals(uniqueIdentifier.getName(), "AA9999AA");
     }
 
     /**
@@ -69,7 +67,7 @@ public class UniqueIdentifierTests {
      */
     @Test
     public void getUniqueIdentifierFound() {
-        boolean found = uniqueIdentifierDao.uniqueIdentifierExists("KP3030NG");
+        boolean found = uniqueIdentifierDao.uniqueIdentifierExists("AA9998AA");
         Assert.assertTrue(found);
     }
 
@@ -83,43 +81,14 @@ public class UniqueIdentifierTests {
     }
 
     /**
-     * Get a site - the site names are exact - we may not use a relaxed name
+     * Get a site
      */
     @Test
     public void getSite() {
-        Site s1 = siteDao.getByName("Land North Of The Sewage Works");
+        Site s1 = siteDao.getByName("Test Site");
         Assert.assertNotNull(s1);
-        Site s2 = siteDao.getByName(Key.relaxed("Land  North Of   The Sewage  WORKS"));
+        Site s2 = siteDao.getByName(Key.relaxed(" TEST   sitE "));
         Assert.assertNull(s2);
-    }
-
-    /**
-     * Permit set used for tests involving aliases
-     */
-    private static Set<String> permitSet = new HashSet<String>() {{
-        add("YP3638SX");
-        add("XP3732XP");
-        add("NP3935DM");
-        add("FP3935GQ");
-        add("ZP3134NK");
-    }};
-
-    /**
-     * Get the set of names from a given unique identifier name
-     */
-    @Test
-    public void getNamesFromUniqueIdentifierName() {
-        Set<String> names = uniqueIdentifierDao.getAllUniqueIdentifierNames("YP3638SX");
-        Assert.assertTrue(names.containsAll(permitSet) && permitSet.containsAll(names));
-    }
-
-    /**
-     * Get the set of names from a given alias identifier name
-     */
-    @Test
-    public void getNamesFromUniqueIdentifierAliasName() {
-        Set<String> names = uniqueIdentifierDao.getAllUniqueIdentifierNames("ZP3134NK");
-        Assert.assertTrue(names.containsAll(permitSet) && permitSet.containsAll(names));
     }
 
     /**
@@ -127,9 +96,9 @@ public class UniqueIdentifierTests {
      */
     @Test
     public void uniqueIdentifierBySiteName() {
-        Set<UniqueIdentifier> uniqueIdentifiers = uniqueIdentifierDao.getUniqueIdentifierBySiteName("CANDLES LANDFILL");
+        Set<UniqueIdentifier> uniqueIdentifiers = uniqueIdentifierDao.getUniqueIdentifierBySiteName("Test Site");
         Assert.assertNotNull(uniqueIdentifiers);
         Set<String> names = uniqueIdentifiers.stream().map(UniqueIdentifier::getName).collect(Collectors.toSet());
-        Assert.assertTrue(names.containsAll(Arrays.asList("BU9084IJ", "KP3238PU")));
+        Assert.assertTrue(names.contains("AA9999AA"));
     }
 }

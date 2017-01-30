@@ -1,0 +1,642 @@
+EA_ID,SITE,ALTERNATIVES
+19412,Otterham Landfill,P/04/05B
+19418,Lower Twydall Chalk Pit,P/04/18
+19435,Ham Farm,P/05/71
+19450,Austins Land,P/07/15
+19493,Harpwood Residential,P/10/50
+19518,Westwood,P/11/40
+19538,Pluckley Brickworks,P/13/14
+19565,Manor Farm,P/15/03
+19572,Oxted Quarry,P/18/04
+19577,Clackett Lane Pit,P/18/09
+19616,Lottbridge Drove Landfill,WR/6-063/L
+19621,Old Rodmell Cement Works,WD116
+19665,Tulley's Nurseries,WSX/L1/0080
+19701,Small Dole Landfill,WSX/L1/0089/10
+19706,Streat Sandpit,WD161
+19721,Goldbridge Farm,WD159
+19728,Lidsey Landfill Site Extension,WSX/L1/0168
+19729,Lidsey Landfill Site,5/BT/88
+19775,Combley Farm Pit Landfill Site,IW11 - R9358
+19779,Landfill At Knighton Sandpit,IW15
+19791,Stag Lane Landfill Site,IW32
+19794,Cheverton Down Landfill,IW36 - 9490
+19799,Extension To Apple Dell,1/17
+19806,Further Common Plantation,4/3
+19811,How Park,4/35
+19831,Land West Of Marsh Court Road,TV152
+19864,Brickyard Road,WR142
+19872,"Esso Refinery Landfill, Windy Corner",7/5b
+19878,Esso Petroleum Refinery Landfill,7/66
+19889,Dale Farm,N173
+19924,Abbey Fruit Farm,9/32d
+19937,Hook Lane Landfill Site,F8c
+19957,Paulsgrove Landfill Site,12/1d
+19995,Poundbottom Landfill - Licence C,S89/009C/WD
+20501,Lower Kergilliack Quarry Landfill Site,2/38
+20502,Dukes Quarry Landfill,2/60
+20503,R N Baker,2/67
+20506,West Chyverton Mine,2/78
+20511,Reen Cross Meadow Landfill,2/102
+20516,Tiscott Wood Depot Landfill Site,2/123
+20517,Land At Newlyn Downs,2/117
+20520,Land At Trethennal Farm,2/130
+20521,Carnsew Quarry Landfill,2/138
+20523,Park An Chy Landfill,2/146
+20525,Sticker Reservoir Landfill,2/148
+20526,Disused Railway Cutting - Lane End Landfill,2/64
+20528,Halloon Farm,2/161
+20532,The Kelliers,2/163
+20539,Treworder Landfill Site,2/99
+20753,Chelson Meadow,WR/L/LF/W/52
+20754,Old Canal Landfill Site,WR/L/LF/N/24
+20755,Newton Downs,WR/L/LF/W/29
+20757,Challonsleigh,WR/L/LF/W/20a
+20759,Hollacombe Landfill,WR/L/LF/N/101
+20760,Hayedown  Landfill Site,WR/L/LF/W/80
+21519,East Grindhill,W(036)
+21521,Bowerland,W(032)
+21522,Exeter Road Landfill,W(031)
+21585,Torr Quarry (nr),S(167)
+21594,Dallacombe Farm,S(141)
+21596,West Wheatley Farm,S(119)
+21599,Yannon Lane,ZP3230BN
+21604,Bickley Ball,S(058)
+21609,Rake Farm,S(027)
+21613,Wood Quarry,S(008)
+21615,Eastacombe Landfill Site,N(100)
+21621,Jubilee Tip,N(076)
+21622,Whitehills Plantation,N(075)
+21632,Chalwells,N(033)
+21654,Hillhead Quarry,E(194)
+21664,Storridge Lane,E(147)
+21666,Holelake Quarry,E(140)
+21667,Higher Whipcott Quarry,E(132)
+21669,Exwick Barton,E(127)
+21672,Holcombe Lane Landfill Site,E(109)
+21673,Shute Hill Landfill Site,E(101)
+21681,Allers Wood,E(019)
+21683,Stoke Hill,E(013)
+21690,Mouldens,N(119)
+21692,Morrels Lane,E(120)
+21711,Goutsford Quarry,S(111)
+21742,"Exeter Road Industrial Estate, Field No. 6367",W(023)
+23504,Throop House  Closed,WDL/91/148
+23535,Conygar Coppice T L,WML/292
+23559,North Bund Henbury Plantation Landfill,WDL/94/269
+23600,Shipton Lane Innsacre,WML/169(M1)
+23605,Stanbridge Chalk Pit,WML/153(M2)
+23606,P Lovell Quarries,WDL/91/152
+23608,Suckthumb Quarry Landfill,WDL/91/149
+23615,Warmwell Quarry ( Camas),WML/135(M1)
+23616,Crooked Willows Farm,WDL/91/133
+23617,Little Oak Farm,WDL/91/131
+23622,Peggs Farm,WDL/90/119
+23627,Withies Croft Quarry Phase 3,WML/93 (M1)
+23628,Povington Ball Clay Pit,WDL/87/92
+23632,White Mill Chalkpit,WDL/79/41(M2)
+23636,Barford Cliff Chalk Pit,S/94/0066/WD
+23637,Scotland Lodge,S/89/0064/WD
+23638,Little Ridghams Copse,S/87/0058/WD
+23640,Wide Street Portland,WDL/80/047(M1)
+27001,Penleigh Tip No 3,W/76/0003/WD
+27080,Creech Hill Farm Sludge Storage Lagoon,566
+27083,Allerford Railway Pit Landfill Site,561
+27089,Higher Hurcott,497
+27091,Southmead Farm Landfill Site,458
+27092,Stoke Hill Landfill Site,427
+27095,Witcombe Lane Landfill Site,365
+27096,Spaxton Road Landfill Site,342.1
+27099,Hinkley Point B Landfill Site,291
+27102,Pond Farm Landfill Site,269.1
+27103,Land To Rear Of Glastonbury Sewage Treatment Works,253
+27105,Vobster Cross Landfill Site,234.1
+27106,Allotment Drove Landfill Site,209.1
+27107,Station Road Landfill Site,205
+27110,Glastonbury Heath Landfill Site,159
+27114,Odcombe Waste Disposal Site,39.2
+27115,Poole Brickworks Landfill,28.2
+27116,Brompton Ralph Quarry,19
+27117,Croford Landfill Site,16
+27128,Bath Old Road Landfill Site,L/BA/T/332
+27129,Westbury Landfill,W/90/0048B/WM
+27137,Old Allotments Landfill Site,S/80/12/WD
+27148,Cumberwell Park,W/94/0050D/WM
+27149,Manor Farm Landfill Site,W/91/0039B/WD
+27150,Land Raising At Field North Of Hawcroft Holt,W/77/0008/WD
+27152,Old Park Farm Landfill Site,NW/93/0091/WD
+27155,Cowage Brook,NW/90/0081/WD
+27158,Studley Grange Farm Landfill Site,NW/95/0065A/WM
+27173,Four Winds Landfill Site,L/WK/T/309
+27201,Church Down's Farm Landfill,L/NA/T/272
+27207,Up Yonder Farm Landfill,L/NA/T/256
+27220,Tracy Park Golf Club Landfill Site,L/NA/T/225
+27227,Churngold University Playing Fields Landfill,L/BL/T/207A
+27231,Colemans Quarry Landfill Site,543
+27233,Rust Bridge Landfill Site,L/WG/T/191A
+27237,Star Farm Landfill Site,L/NA/T/163
+27238,Durston Shireway Yate Landfill,L/NA/T/161B
+27241,Codrington Quarry Landfill Site,L/NA/T/140C
+27245,Lady Farm Landfill Site,L/WK/T/85A
+27249,Weston Drove Landfill Site,L/WG/T/50B
+27250,Landfill Site,L/WK/T/46A
+27252,Foreshore Of Avonmouth Dock,L/BL/T/43G
+27255,Bathford Paper Mills Landfill Site,L/WK/T/22
+27256,Crooks Marsh Farm Landfill Site,L/BL/T/329
+27257,Harnhill Quarry Landfill Site,L/NA/T/328
+27282,Williton Landfill,182.2
+27300,Land Off Weston Drove,L/WK/T/321
+27301,Willow Farm Landfill Site,L/WK/T/221
+30192,The Lea Landfill,1.056.52  (30192)
+37005,Rhoswiel Sawmill,A25/30/SL/12
+37006,E T C Sawmills,A25/30/SL/21
+40704,Armitage Ware - Rugeley Landfill Site,8E770008
+40712,Sons - Brownhills Tileries Landfill Site,3E770027
+40752,C E M E X - Weeford Quarry,8A770113
+40820,Apollo Sports - Paddock Works,SL0137
+40919,Rover Group - Lode Lane Landfill Site,SL0162
+41005,Staffordshire C C - Crackley Gates Landfill Site,2D800179
+41011,Lichfield D C  Christian Fields Landfill Site,8A800190
+41013,Dudley Zoo - The Bearpit,SL0331
+41021,S T W - Ray Hall Reclamation Works,SL0352
+41108,R M Douglas - Stubbers Green Road Landfill Site,SL0346
+41112,Brindley Asphalt - Pennymore Hay Farm Landfill Site,6A810203
+41205,S T W - Foxyards Landfill Site,SL0380
+41302,Holmes - Brookside Farm Landfill Site,6A830230
+41406,Staffordshire C C - Hopton Railway Cutting,4D840243
+41421,H Transport - Blackflatts Farm,8D840259
+41517,Challinor - Within Lane Landfill Site,4A850273
+41601,H - Colton Hall Farm Landfill Site,8A860284
+41603,Biffa - Newstead Landfill Site,3D860292
+41703,Roarty - Tanworth Lane Farm Landfill Site,SL0542
+41818,Derbyshire C C - Birchwood Quarry,SLD00LS26
+42000,Biffa  Dosthill Landfill Site,9F970621
+42003,Jeffery - Swinholm Farm Lagoon,SLD00TN01
+42017,Peters - Whitby Riding Stables,SL0889
+42116,Sons Limited - Chatterley Quarry,2A910356
+42162,Leicestershire C C - Church Road Landfill Site,SLL000251
+42205,Mark Smith Transport  Dunstall Pool,8A920410
+42240,Boydon - The Old Mineral Line,6A920439
+42291,Mintworth Quays - Rattlechain Tip,SL0947
+42294,Chelson Properties - Dividy Road Landfill Site,3D920465
+42309,Weaver - Lavender Hall Farm Landfill Site,SL1017
+42313,Tarmac - Kevin Quarry,5A930478
+42331,B W B - Fishley Lane Landfill Site,SL1035
+42395,E A - Lea Marston Purification Lakes,SLW0468
+42400,P - Dilhorne Lane Landfill Site,1A930536
+42416,Cory - Leabrook Repository,SL1230
+42422,Dawkes - Hundred Acre Farm Landfill Site,4A930541
+42466,New Haden Metals - Oakhill Landfill Site,1A930558
+42492,Fallows - Booths Farm Landfill Site,1A930562
+42498,John Heath - Park Hall Farm Landfill Site,1A940565
+42506,Hanson Coneybury Farm Landfill Site,8A970620
+42652,Hepworth Building Products - Woodville Works,SLL000096
+42708,Dudley M B C - Castlegate Landfill Site,SL2027
+42713,Hanson Middleton Hall Pit,8A950592
+43021,Bestwood Landfill,7/88/194/54NE
+43061,Trent Concrete,7/96/462/64SW
+43085,Land Off A614,WD20 D695
+43087,Tipping Services Construction Ltd,WD20D354
+43095,Brigg Road,55/19/745
+43098,Goodwin Ltd,55/19/100
+43111,West Bank Of River Trent British Waterways,1/92/289/88SW
+43145,Girton Quarry,3/95/450/86NW
+43146,J C Hewitt Landfill Inert,L185
+43163,Disused Railway Cutting,SLD00LE10
+43164,Leen Valley Branch Line Landfill,SLD00LS60
+43170,Cavendish Lodge Farm,3/77/057/56SE
+43175,Girton Quarry Site,3/91/233/86NW
+43180,Vale Road Quarry,2/94/402/56SW
+43183,Rufford Colliery Complex,3/92/274/56SE
+43192,Hallam,1/91/250/68NE
+43225,Export Drive,4/81/114/45NE
+43226,Lumshill Quarry,LM40
+43236,Exchem Explosives Limited,LA04
+43256,Elvaston Quarry,LS50
+43273,Sons Ltd  Ford Lane,LL03
+43276,Pride Park Waste Repository,LD03
+43281,Veolia Es Cleanaway ( U K ) Limited - Mountsorrel Quarry,SLL000027
+43298,Sandfield Quarry,SLL000066
+43321,Huncote Quarry,SLL000094
+43331,F E Downes Ltd,SLL000193
+43372,Frolesworth Road,SLL000166
+43398,Old Coppice Side,SLD00LS73
+43412,British Waterways,1/93/330/68SE
+43413,Lindleys Lane,4/94/373/55NW
+43421,Land At Bowbridge Lane Balderton Newark,3/93/315/85SW
+43436,Grove Farm Tip,SLDOOLS16
+43442,Bassingfield Gravel Pit ( Disused),8/77/70/63NW
+43478,Brickyard Farm Lums Hill,LM30
+43497,Ibstock Building Products,55/19/7/2
+46010,Bayer Uk Ltd - Landfill Stoke Works,105117
+46016,Veolia E S Cleanaway ( U K) Limited,105164
+46020,Penny Hill Quarry Landfill,105406
+46032,Stourhill Quarry Landfill,105906
+46033,Summerway Landfill,105907
+46039,Doddingtree Farm Landfill,105926
+46052,Dudley Drop Forgings Ltd Landfill,SL277
+46053,Shaw Brothers Landfill,SL278
+46055,Landfill At Rear Of Moonraker House,SL424
+46058,Drawisle Ltd Landfill,SL569
+46133,Hanson ( W R G ) Landfill,6E/77/29
+46138,Enville Road Sand Quarry Landfill,6A/790/155
+46143,Severn Trent Water Ltd Screenings Tip Landfill,6D/920/412
+46147,High Down Quarry Landfill,6A/93/560
+46148,Himley Wood Landfill,6G/96/612
+47002,"B J Challinor, Landfill",4/A/92/443
+47007,British Sugar Plc Landfill,A25/30/SL9
+47011,Wrekin Council Landfill,A25/30/SL81
+47013,Coalmoor Landfill Site,A25/30/SL96
+47017,Silvertrees Landfill,A25/30/SL107
+47025,Wellings Ltd Landfill,A25/30/SL147
+47043,Preeshenlle Landfill Site,A25/30/SL208
+47053,Barnsley Lane Landfill Site (de-conditioned),A25/30/SL220
+48007,Standle Farm Landfill Site,016/128
+48012,Hawkwell Shaft Landfill Site,025/118
+48018,Drymeadow Farm Landfill Site,043/270
+48019,Dorn Fields Landfill Site,044/278
+48020,Walton Hill Farm,054/317
+48024,Cotswold Skip Hire,063/332
+48027,Brook Villa Farm Landfill Site,066/335
+48047,Woolgaston Farm,121/432
+48050,Brockworth Bypass,142/425
+48096,Daventry Rail Freight Terminal,D84
+48103,Rock Farm Landfill Site,420
+48107,Sandy Lane Landfill,444
+48119,Marsh Farm Landfill,482
+48124,Kingston Grange Farm Landfill,494
+48166,Strensham W T W,1.058.33
+48183,"Burfords, Watermead Meadow",
+48188,Colethrop Court Farm Landfill,049/311
+48192,Kingston Grange Farm Landfill,428
+53425,Bethell Construction Landfill Site,89
+53470,Sandy Lane Landfill Site,60326A
+53477,Meek Street Landfill Site,01008/M02
+53533,Arden Quarry Landfill,40006/M01
+53542,Holiday Moss Landfill Site,30006/M02
+53558,Greenside Farm Landfill Site,01110/M02
+53568,Woodend Farm Landfill Site,1160
+53584,Hapsford Landfill Site,60348A/M03
+53632,R J Mason Inert Landfill,30325
+53637,Green Farm Landfill Site,61624/M02
+53647,Prettywood Easterly Extension Landfill Site,690
+53651,Chadderton Landfill Site,00570/M05/T01
+53662,Higher Blackley,00828/M02
+53704,Bromborough Dock South Inert Landfill,30359
+53712,Garnet Fold Landfill Site,00548/M01
+53728,Ashfield Valley Inert Landfill Site,1028
+53739,Street Lane Farm Landfill Site,61550/M01
+53745,Duckworth Clough Landfill Site,20428
+53749,A M E C Landfill Site South,61744A
+53751,Mersey Canal Lagoon,61739
+53755,Hooton Brickworks Landfill Site,60484B
+53761,Tameside M B C Inert Landfill Site,915
+53762,Shropshire Canal Landfill Site,61736
+53765,Tarmac Construction Landfill Site,61729
+53770,Hough Mill Quarry South Landfill Site,61702/T01/M01
+53771,Acton Bridge Dredging Tip,61663
+53779,Longson Street Disused Reservoir Landfill,847
+53782,Handforth Road Landfill Site,61706
+53801,Pepper Street Landfill,90489
+53836,Norbury House Farm Landfill Site,792
+53842,Golden Nook Dredging Landfill Site,61640
+53877,Chulsey Gate Landfill Site,602
+53878,Higher Hills Farm Inert Landfill,628
+53889,Medlock Vale Farm Inert Landfill Site,612
+53894,Spooner Vicars Landfill Site,30040
+53902,Northern Land Agricultural Improvements Landfill Site,60828
+53919,Carrington Road Brickworks Landfill Site,00232/M03
+53928,Birchenley Farm Landfill Site,00332/M02
+53931,Landfill Site East Of Towngate Farm,00383/M02/T01
+53933,Brown Edge Farm Landfill Site,00120/M05
+53940,Tong Farm Landfill Site,20300
+53941,Greenhollins Farm Inert Landfill Site,578
+53950,Allwood House Farm,510
+53951,Fieldhouse Road Landfill Site,523
+53952,Moss Hall Farm Landfill Site,60301B
+53961,Fir Tree Farm Landfill Site,B
+53978,West Clifton Marsh Lagoon,60549
+53987,Moss Side Lane Brickworks,60835
+53989,Biddulph Sands Landfill Site,90256
+53990,Hough Mill Quarry North Landfill Site,60492
+54003,North Quarry,30
+54016,Grange Farm,148
+54020,Lundsfield Quarry,174
+54029,Ellel Crag Quarry,252
+54040,Castle House Farm Sand Quarry,314
+54049,Midgeland Farm,342
+54058,Holland Colliery,374
+54063,Kingscourt Development,386
+54067,Penwortham Golf Club Ltd,395
+54074,Bartles Lane,425
+54085,Marlpit Wood,450
+54089,Church Car Dismantlers,457
+54131,Stoney Brow Quarry,515
+54155,Moss Side Landfill Site,560
+54162,Moorfield Industrial Estate,572
+54169,Cropper Road L F S,581
+54214,Crag House Quarry,N00254
+54219,Seddons,S0030/M06
+54220,Standish Tip,S00034/M07
+54225,Cemetary Road L F S,S00549/M03
+54257,Marl Road/wood Ward Road Inert Landfill,S30372
+57037,Hotchberry Quarry,37
+57055,Windscale Landfill North,55
+57056,Windscale Landfill South,56
+57079,Calder Tip,79
+57092,Walney Road,92
+57128,Calder Tip Extension,128
+57159,Docker Fell Landfill,159
+57213,South Walney Landfill,213
+57216,Whinbank Farm,216
+57221,W A Tinkler,221
+57224,Ian Brown,224
+57231,Old Chapel Works,231
+57236,Black Bull Farm,236
+57253,Jacktrees Road,253
+57257,Fairthorns Inert Landfill Site,257
+57260,Broughton Craggs Phase 1,260
+57268,Longlands,268
+57291,Docker Fell,291
+57297,Durranhill,297
+57301,North Tip Extension,301
+57306,Derwent Howe,306
+60001,Embsay Landfill Site,NYCC 018
+60021,Mcmullen Road,DUR 049
+60022,Aycliffe Quarry East,DUR 055
+60023,Aycliffe Church Quarry,DUR 068
+60053,High Rails Farm,NYCC 267
+60054,Sandygate Farm,NYCC 270
+60074,Hall Construction Services Ltd,CLE 197
+60090,Langbaurgh Ridge Quarry,CLE 004
+60094,"Wilton, Perimeter Mounds",CLE 066
+60097,Coatham Stob Quarry,CLE 145
+60106,Coatham Stob Farm,CLE 211
+60120,Teesside Golf Club / A66 Thornaby,CLE 273
+60141,B S Redcar Works,CLE 124
+60142,Former B S Site South Bank,CLE 178
+60149,Farnham Quarry,NYCC 402
+60161,West Lodge,NYCC 289
+60172,Woodacre Lane,WY 600
+60176,Flixton Quarry,NYCC 400
+60180,Mickleby Landfill Site,NYCC R 024B
+60181,Highland Quarry,DUR 145
+60182,Bishop Middleham Quarry 2,DUR 167
+60189,"John O' Tooles Quarry, Westerton",DUR 288
+60195,Lodge Quarry Landfill,NYCC 038
+60196,Hull Road Landfill,NYCC 039
+60201,Stutton Road,NYCC 046(1)
+60205,Hazel Grove Quarry,NYCC 161
+60212,Darrington Long Lane Quarry,NYCC 221
+60223,Station Road Landfill,CLE 049
+60224,Durham Lane,CLE 120
+60229,Claxton Landfill,CLE 270
+60231,Stillington Tip,CLE 281
+60238,North Wood Tip,DUR 002
+60246,Lartington Water Treatment Sludge Disposal Area,DUR 285
+60560,E J Lidster Construction Limited,WD20 B427
+60588,Stairfoot Landfill,WD20 B772
+60593,R. Armstrong,WD20 B815
+60604,Parkhill Landfill Site,WD20 B958
+60616,Parkinson - Spencer Refractories Ltd,166
+60618,Haworth Scouring Company,178
+60624,Gilstead Filtration Works,332
+60629,Bingley Brickworks,549
+60632,Parkwood Off Road Centre,689
+60652,Thornton Moor Reservoir,819
+60655,Streethouse Farm Development,829
+60659,Crossley Farm,868
+60664,High Stream Head Farm,906
+60667,Bunkers Hill Farm,920
+60701,West Manywells Quarry,1143
+60719,Sugden End Landfill,1600
+60734,Hill Crest Quarry,158
+60748,Ash Grove Pipe Works,678
+60755,Disused Quarry,796
+60764,James Hudson,1013
+60769,Land At Red Acre,1059
+60780,Ringby Lane Quarry Landfill,1414
+60792,Land At Copley Playing Fields,1513
+60796,Disused Railway Cutting,1537
+60801,Cromwell Bottom Landfill Site,1610
+60831,Askern Sawmills Limited,WD20 D35
+60855,Sons Ltd,WD20 D82
+60871,Levitt Hagg Quarry,WD20 D930
+60879,Sutton Quarry,WD20 D98
+60882,Breighton Landfill,A209
+60884,"Weel Landfill Site, Waste Wise",55/17/8
+60886,Paull Holme Quarry,55/19/110
+60887,Figham Pasture Landfill Site,55/19/131
+60890,Sands Top Quarry,55/19/710
+60891,New Feeding Pasture Landfill Site,55/19/721
+60892,Dispit Ltd,55/19/723
+60896,White House Landfill,55/19/748
+60897,Gransmoor Quarry,55/19/757
+60898,Crosslands Quarry,55/19/779
+60899,Newton Lodge Landfill,55/19/783
+60900,Hutton Balk Quarry,55/19/87
+60901,"Burnby Lane, Pocklington",55/19/89
+60903,Melton Ings Landfill Site,55/19/94
+60926,Mill Hill Landfill Site,A912
+60928,Plant Pit 3,A931
+60990,Deighton Tip,75
+60992,Former Blakeborough's Tip,121
+60995,Washpit Mills,291
+60997,Marsden Dredsing Disposal Site,448
+60998,Wood Bottom,472
+61005,Battyeford Lock,777
+61025,C L M Properties Ltd,1036
+61033,Snee,1130
+61049,R M Peel,1467
+61058,Lower Spen Valley,1620
+61121,New Howley Park Quarries,167
+61178,Pool Paper Mill,364
+61200,Mr J F Calder,406
+61204,Soothill Brickworks,413
+61241,Arthington Quarry,555
+61244,E Williams,574
+61274,Thorpe Quarry,675
+61297,S Butterfield,754
+61400,Howley Park Landfill,1162
+61419,Pool Paper Mill,1438
+61567,T K Lynskey Excavations Limited,WD20 R377
+61569,Ravenfield Park Tip,WD20 R46
+61573,Mr M N Sargeson,WD20 R517
+61576,Trimbrim Limited,WD20 R553
+61620,Douglas Road Landfill Site,WD20 S1006
+61636,Houndkirk Quarry,WD20 S1076
+61644,Morehall Landfill,WD20 S14
+61645,Rowell Lane Works,WD20 S141
+61651,Holmes Farm Closed Landfill,WD20 S30
+61669,Land At Greenwheel House,WD20 S616
+61670,Dyson Refractories,WD20 S62
+61700,Co (tde) Ltd,WD20 S827
+61717,P J Hall,WD20 S995
+61730,Calder Vale Road Landfill,63
+61747,South Elmsall Quarry,WD20 W1150
+61853,Land At Stubbs Bridge,1234
+61861,Land Adj To River Calder,1291
+61924,Onyx Leigh Environmental Limited - Sheepbridge Landfill,LC52
+61929,Onyx Leigh Environmental Limited,LK13
+61932,Former Coalite Smokeless Fuels Site,LS88
+61948,D P Kelly,LS35
+61960,Harworth Mining Limited - Arkwright Colliery Reclamation Site,LS11
+65140,Field Adjacent To Blackhill Quarry,1080
+65162,Land N / W Of Woodlesford Lock,1393
+65168,Gamblethorpe Landfill,1631
+66008,West Tanfield Landfill,
+67026,West Sandy Carr,DUR 023
+67039,Scoby Scaur Waste Disposal Site,DUR 037
+67042,East Tanfield Tip,DUR 040
+67058,Backfield Quarry,DUR 058
+67071,Browns Houses Quarry,DUR 074
+67125,Hill Top Quarry,DUR 149
+67127,Cockfield Waste Disposal Site,DUR 151
+67154,Newton Cap Brickworks,DUR 178
+67167,Tilery Farm V,DUR 191
+67253,Wearhead Water Treatment,DUR 280
+67321,Broadoak Quarry Waste Disposal Site,NBL 064
+67433,Bothal Barns Waste Disposal Site,NBL 177
+67440,West Allotment Metro Site,TW 067 NT
+67441,Beamish Landfill Site,TW 069 GH
+67448,Derwenthaugh Cokeworks,TW 158 GH
+67471,Warden Law Quarry,TW 233 SL
+67514,Close House Farm,TW 295 GH
+67600,Care Centre,TW 456 ST
+68657,West Tanfield Quarries,NYCC R 050
+68679,"North Wold Farm ,folkton",NYCC 430
+68680,Brickyard Farm Landfill Site,NYCC 005
+68682,Tile Works,NYCC 033
+68685,Knabbs Quarry,NYCC 166B
+68686,Leases Farm Landfill,NYCC 172A
+68687,Farnham Lane Railway Cutting,NYCC 174
+68688,Parsons Lane Landfill,NYCC 188
+68691,Rock Cottage Farm,NYCC 219
+68692,Rock Cottage Farm,NYCC 219A
+68693,Sunnyside Farm,NYCC 229
+68696,Shawl Quarry,NYCC 271
+68697,Shawl Quarry Phase 2,NYCC 271A
+68702,St Nicholas Fields,NYCC 307A
+68709,Raskelf Road,NYCC 360
+68724,Scorton Landfill Site,NYCC R076B
+70001,Lodge Farm Salford,1/1988
+70022,Bromham Landfill,2/1979
+70037,Bedfordshire C C - Elstow Landfill Site A6,26/1977
+70038,Sundon Landfill,27/1977
+70057,Buckingham Group Contracting - Waterloo Farm Borrow Pit,4/1995
+70067,Ledburn Sandpit,8/1990
+70072,Peter Bennie Ltd - Woodlands Farm,WDA 102
+70074,G F X Hartigan Ltd - Ravenstone Quarry,WDA 145
+70077,J Barfoot - Courts Farm,WDA 227
+70078,G F X Hartigan Ltd - Woad Farm,WDA 247
+70085,T Taylor Agricultural Contractors - Woad Farm,WDA 274
+70095,Maurice Goss - Woodlands,WDA 380
+70124,"Cemex Uk Cement Ltd, Barrington Cement Works",LS 024
+70129,S M Akhtar - Flint Cross,LS 050
+70138,Guyhirn Landfill,LS 096
+70149,Eversden Landfill - Eltisley Landfill,LS 138
+70152,Eversden Landfill - Quy Landfill,LS 145
+70271,Titan Pit,125/85
+70281,Medebridge Road Landfill,162/89
+70302,Belsteads Farm,200/92
+70310,Old House Farm,210/92
+70318,St Cleres Hall Pit,226/92
+70321,Bellhouse Quarry,232/93
+70326,Co Ltd - Old Chalk Pit,239/93
+70328,Flint Grit Pond,242/93
+70339,Blood Lagoons,254/93
+70399,Bircher - Widdington Disused Chalk Pit,334/96
+70444,Rackheath,NFK/LS/017/1
+70445,Hemblington,NFK/LS/018/0
+70447,Highways Contractors ( Area 3 ) - Garboldisham Landfill,NFK/LS/020/0
+70449,Anti Waste Ltd - Kilverstone Landfill,NFK/LS/029/4
+70453,Costessey,NFK/LS/036/0
+70455,Letheringsett,NFK/LS/088/0
+70465,Burgh Castle,NFK/LS/062/0
+70466,Baco- Compac - Chalk Farm,NFK/LS/064/0
+70471,Brooke,NFK/LS/074/0
+70475,British Sugar Plc - Anzac Pit,NFK/LS/080/0
+70476,Wymondham,NFK/LS/081/0
+70561,C D C Deene Quarry,C020
+70595,Disused Railway Cutting. Warmington.,E060
+70601,Kings Cliffe Works,E081
+70613,Cranford Landfill Extension,K064
+70645,Pianoforte Supplies - Old Quarry,S013
+70646,Quarry,S040
+70648,Milton Malsor Landfill,S064
+70663,Pury Hill Developments - Pury Hill Farm,S109
+70664,J Harper - Brook Farm,S111
+70683,Crane Ltd,SFK/LG/057/01
+70684,British Sugar - Bury St Edmunds Sugar Factory,SFK/LG/061/01
+70689,Ski Centre,SFK/LS/009/01
+70691,Arc Landfill,SFK/LS/012/01
+70692,Anti Waste Ltd - Kentford Landfill Site,SFK/LS/021/02
+70697,Old Sandy Lane Pit,SFK/LS/032/01
+70698,Sally Woods Lane Landfill,SFK/LS/033/01
+70701,Ticehurst Gravels - Ticehurst Farm,SFK/LS/038/01
+70706,British Sugar - Hollow Road Landfill,SFK/LS/068/01
+70708,Culford Waste Ltd - The Folly,SFK/LS/073/01
+70709,Stanchils Farm,SFK/LS/074/01
+70712,A R Tilbrook Ltd - Culford Gravel Pit,SFK/LS/078/01
+70714,Sewage Works,SFK/LS/086/01
+70719,Gisleham,SFK/LS/105/01
+70720,Oulton,SFK/LS/110/01
+70722,Pakefield Landfill,SFK/LS/118/01
+70724,Creeting Hills,SFK/LS/135/01
+70809,Elsham Landfill,55/19/101
+70822,Hoe Hill Landfill,55/19/669
+70898,Smith Clayton Forge,L011
+70899,Spike Island Landfill,L012
+70900,Albion Works Landfill Site,L014
+70905,Brauncewell Quarry,L051
+70921,Bardney Sugar Factory,L105
+70925,73,L123
+70958,Saturday Pits,L194
+70965,Fiddlers Elbow Dredging Tip,L206
+70976,Canwick Sewage Treatment Works,L231
+70990,Stainby Landfill Site,L244
+71013,Boiling Wells Farm,L298
+71240,Haddiscoe,NFK/LS/039/0
+72011,Anchor Lane Landfill Site,L036
+72015,Part O S Plot 6068,L064
+72016,Spalding Road,L092
+72019,Land Adj  A46 Moor Lane,L106
+72020,Old Chalk Pit,L069
+72038,Boiling Wells Farm,L199
+72054,Land Adjacent To Riverslea Farm,L289
+72064,Conesby Quarry Phase I,55/19/737
+72067,Thornton Curtis Landfill,55/19/816
+72080,North Killingholme Landfill,A899
+72090,Worlaby Landfill Site,A940
+73044,Corby Inert Landfill Site,C029
+73054,Clifford Hill Quarry,N032
+73056,Clifford Hill Quarry,N041
+75031,Graham Churchill Plant Ltd - Bufflers Holt Landfill,WDA 397
+76089,Richmond Lakes,L119
+80017,"Howards Brickworks Ii, Prestwood",WDA242
+80103,"Gerpins Lane, Upminster",DL304
+80118,Rainham Landfill,CLE076
+80140,Rainham Landfill ( Phase 4 ) Ferry Lane,CLE121
+80164,"Hatfield Quarry, St Albans",93/0321
+80176,"Bedwell Park Quarry, Essendon",91/0254
+80219,"Moor Mill, St Albans",89/0234
+80220,"Moor Mill, St Albans",92/0271
+83039,"Prews Farm, Send, Woking, Gu23",SCC/3637/84
+83053,Bramshill Plantation Qy,2/26
+83090,Reservoir Aggregates,WRA/43
+83094,"Halliford Mere, Shepperton, Tw17",SCC/17904/187
+83105,"Stanwell I I I Landfill, Staines",SCC/3637/85
+83132,"Sheephouse Farm, Maidenhead, Sl6",54/12/4/33
+83137,"Stroud Farm, Bray, Maidenhead, Sl6",54/12/4/14
+83138,"Stroud Farm, Bray, Maidenhead, Sl6",54/12/4/319
+83203,"Land Adj Junction 8 M25, Reigate, Rh2",WRA/10
+83223,"Keepers Corner, Burstow, Rh6",SCC/14429/158
+86029,Smallmead Farm,54/12/4/91
+86035,Marley Tile Stage 3,54/12/4/155
+86036,Midgham Landfill Site,54/12/4/431
+86130,Slape Hill 1,OCC/41
+86137,Sutton Wick 2,OCC/73
+86142,Sutton Wick 2 Extension,OCC/94
+86144,Rugby Cement Works,OCC/99
+86156,Wheatley Railway Cutting,OCC/135
+86174,North End Works,NW/91/0085/WD
