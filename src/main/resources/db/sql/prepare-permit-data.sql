@@ -4,42 +4,17 @@
 
 -- Load site data
 insert into sites(name)
-select distinct trim(substr(long_name, strpos(long_name, '-') + 1)) from stage_emma;
+  select distinct site from stage_permits;
 
--- Load Emma permits
+-- Load permits
 insert into unique_identifiers(name, site_id)
-  select e.permit, cast(s.id as bigint) as site_id
-  from stage_emma e
-    join sites s on s.name = trim(substr(long_name, strpos(long_name, '-') + 1));
+  select p.ea_id, cast(s.id as bigint) as site_id
+  from stage_permits p
+    join sites s on s.name = p.site;
 
--- Load the aliases
--- In a small number of cases a historic alias can
--- refer to
+-- Load aliases
 insert into unique_identifier_aliases(unique_id, name)
-  with p as (
-    select l.lic_wml, l.lic_epr as name
-    from stage_emma e
-      join stage_lichold l on l.lic_wml = e.permit
-    where l.lic_epr != ''
-    union
-    select l.lic_wml, l.lic_othid
-    from stage_emma e
-      join stage_lichold l on l.lic_wml = e.permit
-    where l.lic_othid != ''
-    union
-    select l.lic_wml, l.pas_permit
-    from stage_emma e
-      join stage_lichold l on l.lic_wml = e.permit
-    where l.pas_permit != ''
-  ), q as (
-      select max(p.lic_wml) as permit, p.name
-      from p
-        where not exists(
-            select null from unique_identifiers u2
-              where p.name = u2.name
-        )
-      group by p.name having count(lic_wml) = 1
-  )
-  select u.id, q.name
-  from q
-    join unique_identifiers u on u.name = q.permit;
+  select cast(max(u.id) as bigint) as unique_id, p.alternatives as name
+  from stage_permits p
+    join unique_identifiers u on u.name = p.ea_id
+  group by p.alternatives having count(*) = 1;

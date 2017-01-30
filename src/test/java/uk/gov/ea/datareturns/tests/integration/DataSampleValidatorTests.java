@@ -731,8 +731,8 @@ public class DataSampleValidatorTests {
      */
     private static DataSample createValidNumericRecord() {
         final DataSample record = new DataSample();
-        record.setEaId(new EaId("EP3136GK"));
-        record.setSiteName(new SiteName("Rainham Landfill"));
+        record.setEaId(new EaId("AA9999AA"));
+        record.setSiteName(new SiteName("Test Site"));
         record.setReturnType(new ReturnType("Landfill leachate monitoring"));
         record.setMonitoringDate(new MonitoringDate("2016-03-09T11:18:59"));
         record.setReturnPeriod(new ReturnPeriod("Aug 2016"));

@@ -15,9 +15,12 @@
 	<property name="textValuesFile" value="/db/data/TextValues.csv"/>
 	<property name="releasesAndTransfersFile" value="/db/data/ReleasesAndTransfers.csv"/>
 	<property name="parameterHierarchyFile" value="/db/data/ParameterHierarchy.csv"/>
-	<property name="pasRegisLicHoldStageFile" value="/db/data/stage_data_initialization/lichold.csv"/>
-	<property name="pasRegisLicStatsStageFile" value="/db/data/stage_data_initialization/licstats.csv"/>
-	<property name="emmaStageFile" value="/db/data/stage_data_initialization/emma.csv"/>
+
+	<property name="WML" value="/db/data/stage_data_initialization/EA-WML.csv"/>
+	<property name="IPPC" value="/db/data/stage_data_initialization/IPPC.csv"/>
+	<property name="PRE" value="/db/data/stage_data_initialization/Pre-EA.csv"/>
+	<property name="EPR" value="/db/data/stage_data_initialization/EPR.csv"/>
+	<property name="TEST" value="/db/data/stage_data_initialization/Test-Permit.csv"/>
 
 	<preConditions>
 		<dbms type="${db.type}"/>
@@ -255,7 +258,7 @@
 		</rollback>
 	</changeSet>
 
-  <!-- Don't specify postgress here because liqibase silently fails. No comment. -->
+  <!-- Don't specify postgres here because liquibase silently fails. No comment. -->
 	<changeSet id="normalize: parameters" author="Environment Agency">
 		<sqlFile path="../sql/prepare-parameters.sql"
              relativeToChangelogFile="true"
@@ -741,98 +744,40 @@
 
 	<!--
 	****************************************************************
-	Regis/PAS LICSTATS table holds status information - Not needed
-	yet.
-	****************************************************************
-	-->
-<!--
-	<changeSet id="create-table: stage_licstats" author="Environment Agency">
-		<createTable tableName="stage_licstats">
-			<column name="stat_num" type="smallint"/>
-			<column name="stat_sub" type="smallint"/>
-			<column name="stat_sdesc" type="varchar(30)"/>
-			<column name="stat_ldesc" type="varchar(50)"/>
-		</createTable>
-		<rollback>
-			<dropTable tableName="stage_licstats"/>
-		</rollback>
-	</changeSet>
-
-	<changeSet id="load-data: stage_licstats" author="Environment Agency">
-		<preConditions onFail="HALT">
-			<tableExists tableName="stage_licstats"/>
-			<sqlCheck expectedResult="0">select count(*) from stage_licstats</sqlCheck>
-		</preConditions>
-		<loadData file="${pasRegisLicStatsStageFile}" tableName="stage_licstats">
-		</loadData>
-		<rollback>
-			<delete tableName="stage_licstats"></delete>
-		</rollback>
-	</changeSet>
--->
-
-	<!--
-	****************************************************************
 	Regis/PAS LICHOLD table holds status information
 	****************************************************************
 	-->
-	<changeSet id="create-table: stage_lichold" author="Environment Agency">
-		<createTable tableName="stage_lichold">
-			<column name="id" type="bigserial">
-				<constraints primaryKey="true" nullable="false"/>
-			</column>
-			<column name="lic_name" type="varchar(80)"/>
-			<column name="lic_site" type="varchar(80)"/>
-			<column name="lic_epr" type="varchar(18)"/>
-			<column name="lic_wml" type="varchar(18)"/>
-			<column name="lic_othid" type="varchar(18)"/>
-			<column name="pas_permit" type="varchar(18)"/>
-			<column name="date_created" type="timestamp"/>
-			<column name="date_modified" type="timestamp" valueDate="CURRENT_TIMESTAMP"/>
+	<changeSet id="create-table: stage_permits" author="Environment Agency">
+		<createTable tableName="stage_permits">
+			<column name="ea_id" type="varchar(18)"/>
+			<column name="site" type="varchar(80)"/>
+			<column name="alternatives" type="varchar(18)"/>
 		</createTable>
 		<rollback>
-			<dropTable tableName="stage_lichold"/>
+			<dropTable tableName="stage_permits"/>
 		</rollback>
 	</changeSet>
 
-	<changeSet id="load-data: stage_lichold" author="Environment Agency">
+	<changeSet id="load-data: stage_permits" author="Environment Agency">
 		<preConditions onFail="HALT">
-			<tableExists tableName="stage_lichold"/>
-			<sqlCheck expectedResult="0">select count(*) from stage_lichold</sqlCheck>
+			<tableExists tableName="stage_permits"/>
+			<sqlCheck expectedResult="0">select count(*) from stage_permits</sqlCheck>
 		</preConditions>
-		<loadData file="${pasRegisLicHoldStageFile}" tableName="stage_lichold">
-		</loadData>
+		<loadData file="${WML}" tableName="stage_permits"/>
+		<loadData file="${EPR}" tableName="stage_permits"/>
+		<loadData file="${IPPC}" tableName="stage_permits"/>
+		<loadData file="${PRE}" tableName="stage_permits"/>
+		<loadData file="${TEST}" tableName="stage_permits"/>
 		<rollback>
-			<delete tableName="stage_lichold"></delete>
-		</rollback>
-	</changeSet>
-	<!--
-	****************************************************************
-	EMMA extract table holds emma staging data
-	****************************************************************
-	-->
-	<changeSet id="create-table: stage_emma" author="Environment Agency">
-		<createTable tableName="stage_emma">
-			<column name="permit" type="varchar(18)"/>
-			<column name="long_name" type="varchar(100)"/>
-			<column name="date_created" type="timestamp"/>
-			<column name="date_modified" type="timestamp"/>
-		</createTable>
-		<rollback>
-			<dropTable tableName="stage_emma"/>
+			<delete tableName="stage_permits"></delete>
 		</rollback>
 	</changeSet>
 
-	<changeSet id="load-data: stage_emma" author="Environment Agency">
-		<preConditions onFail="HALT">
-			<tableExists tableName="stage_emma"/>
-			<sqlCheck expectedResult="0">select count(*) from stage_emma</sqlCheck>
-		</preConditions>
-		<loadData file="${emmaStageFile}" tableName="stage_emma">
-		</loadData>
-		<rollback>
-			<delete tableName="stage_emma"></delete>
-		</rollback>
+	<changeSet id="update-nulls: stage_permits" author="Environment Agency">
+		<update tableName="stage_permits">
+			<column name="alternatives"/>
+			<where>alternatives = ''</where>
+		</update>
 	</changeSet>
 
 	<!--
