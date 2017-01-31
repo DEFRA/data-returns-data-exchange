@@ -20,7 +20,7 @@ public class SiteAndUniqueIdentifierValidator implements RecordConstraintValidat
         final UniqueIdentifier eaIdEntity = eaId.getEntity();
         final SiteName site = record.getSiteName();
 
-        if (eaIdEntity != null && !StringUtils.equals(eaId.getEntity().getSite().getName(), site.getValue())) {
+        if (eaIdEntity != null && !StringUtils.equals(eaId.getEntity().getSite().getName().toUpperCase(), site.getValue().toUpperCase())) {
             context.disableDefaultConstraintViolation();
             context.buildConstraintViolationWithTemplate(MessageCodes.Conflict.UniqueIdentifierSiteConflict).addConstraintViolation();
             return false;

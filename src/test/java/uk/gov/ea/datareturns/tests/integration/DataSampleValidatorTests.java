@@ -77,6 +77,24 @@ public class DataSampleValidatorTests {
         Assert.assertEquals(1, violations.size());
     }
 
+    @Test
+    public void testSiteCaseInsensitive_1() {
+        final DataSample record = createValidNumericRecord();
+        record.setSiteName(new SiteName( record.getSiteName().getInputValue().toLowerCase()));
+        final Set<ConstraintViolation<DataSample>> violations = this.validator.validate(record, ValidationGroups.OrderedChecks.class);
+        // one violation for the field being blank
+        Assert.assertEquals(0, violations.size());
+    }
+
+    @Test
+    public void testSiteCaseInsensitive_2() {
+        final DataSample record = createValidNumericRecord();
+        record.setSiteName(new SiteName( record.getSiteName().getInputValue().toUpperCase()));
+        final Set<ConstraintViolation<DataSample>> violations = this.validator.validate(record, ValidationGroups.OrderedChecks.class);
+        // one violation for the field being blank
+        Assert.assertEquals(0, violations.size());
+    }
+
     /*=================================================================================================================
      *
      * RETURN TYPE TESTS
