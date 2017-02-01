@@ -310,11 +310,11 @@ public class DataSampleValidatorTests {
     @Test
     public void testMonitoringPointLength() {
         final DataSample record = createValidNumericRecord();
-        record.setMonitoringPoint(new MonitoringPoint(RandomStringUtils.randomAlphanumeric(30)));
+        record.setMonitoringPoint(new MonitoringPoint(RandomStringUtils.randomAlphanumeric(50)));
         Set<ConstraintViolation<DataSample>> violations = this.validator.validate(record, ValidationGroups.OrderedChecks.class);
         Assert.assertEquals(0, violations.size());
 
-        record.setMonitoringPoint(new MonitoringPoint(RandomStringUtils.randomAlphanumeric(31)));
+        record.setMonitoringPoint(new MonitoringPoint(RandomStringUtils.randomAlphanumeric(51)));
         violations = this.validator.validate(record, ValidationGroups.OrderedChecks.class);
         Assert.assertEquals(1, violations.size());
     }
@@ -322,7 +322,7 @@ public class DataSampleValidatorTests {
     @Test
     public void testMonitoringPointSpecialCharacters() {
         final DataSample record = createValidNumericRecord();
-        final String invalidCharacters = "!\"£$%^&*()-_=+[]{};:'@#~,<.>/?\\|`¬€";
+        final String invalidCharacters = "!\"£$%^&*()_=+[]{};:'@#~,<.>?\\|`¬€";
         for (final char c : invalidCharacters.toCharArray()) {
             record.setMonitoringPoint(new MonitoringPoint(String.valueOf(c)));
             final Set<ConstraintViolation<DataSample>> violations = this.validator.validate(record, ValidationGroups.OrderedChecks.class);

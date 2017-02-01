@@ -15,8 +15,8 @@ import javax.validation.constraints.Pattern;
  */
 public class MonitoringPoint implements FieldValue<DataSample, String> {
     @NotBlank(message = MessageCodes.Missing.Mon_Point)
-    @Length(max = 30, message = MessageCodes.Length.Mon_Point)
-    @Pattern(regexp = REGEX_SIMPLE_TEXT, message = MessageCodes.Incorrect.Mon_Point)
+    @Length(max = 50, message = MessageCodes.Length.Mon_Point)
+    @Pattern(regexp = REGEX_EHS_DELIMITED_TEXT, message = MessageCodes.Incorrect.Mon_Point)
     private String monitoringPoint;
 
     /**

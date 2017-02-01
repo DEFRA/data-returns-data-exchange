@@ -14,6 +14,9 @@ public interface FieldValue<R, T> {
     /** Regular expression for fields which should only contain simple text (no special characters) */
     String REGEX_SIMPLE_TEXT = "^[a-zA-Z0-9 ]*$";
 
+    /** Regular expression for fields which should only contain simple text and the EHS special delimiters / and - */
+    String REGEX_EHS_DELIMITED_TEXT = "^[a-zA-Z0-9\\/\\- ]*$";
+
     /**
      * Gets input value.
      *
