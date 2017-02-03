@@ -1,8 +1,6 @@
 package uk.gov.ea.datareturns.util;
 
 import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.*;
 
@@ -12,8 +10,6 @@ import java.util.*;
  * @author Sam Gardner-Dell
  */
 public class TextUtils {
-    private static final Logger LOGGER = LoggerFactory.getLogger(TextUtils.class);
-
     /**
      * Process the provided {@link String} substituting any special characters based on the {@link CharacterSubstitution} enumeration
      * Multiple whitespace will be collapsed to a single space character.  Return values are always trimmed.

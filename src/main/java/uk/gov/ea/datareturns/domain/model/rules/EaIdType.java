@@ -36,7 +36,7 @@ public enum EaIdType {
                 final int numericPermit = Integer.parseInt(uniqueId);
                 db = numericPermit < NUMERIC_BOUNDARY ? LOWER_NUMERIC : UPPER_NUMERIC;
             } catch (final NumberFormatException e) {
-                final char startLetter = uniqueId.toUpperCase().charAt(0);
+                final char startLetter = Character.toUpperCase(uniqueId.charAt(0));
                 db = startLetter < ALPHA_NUMERIC_BOUNDARY ? LOWER_ALPHANUMERIC : UPPER_ALPHANUMERIC;
             }
         }

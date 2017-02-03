@@ -153,10 +153,12 @@ public class ControlledListMetricsAspect {
                 data.tag(ControlledListUsage.TAG_ITEM_ALIAS, inputValue);
             }
 
-            // Has there already been a usage pf this tag/key data in this file?
-            if (usageData.containsKey(data.tagKey())) {
-                data = usageData.get(data.tagKey());
+            // Has there already been a usage of this tag/key data in this file?
+            ControlledListUsageData existingData = usageData.get(data.tagKey());
+            if (existingData != null) {
+                data = existingData;
             }
+
             // Increment the usage count
             data.incrementUsageCount();
             usageData.put(data.tagKey(), data);
