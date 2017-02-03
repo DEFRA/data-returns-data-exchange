@@ -1,13 +1,13 @@
 name,sector
-Landfill leachate monitoring,Landfill
-Emissions to surface water,Landfill
+Air point source emissions,Landfill
+Ambient air quality,Landfill
 Emissions to groundwater,Landfill
-Methane capped surfaces,Landfill
+Emissions to sewer,Landfill
+Emissions to surface water,Landfill
+Landfill annual monitoring report,Landfill
 Landfill gas borehole,Landfill
 Landfill gas engine,Landfill
 Landfill gas flare,Landfill
-Emissions to sewer,Landfill
-Ambient air quality,Landfill
-Air point source emissions,Landfill
+Landfill leachate monitoring,Landfill
+Methane capped surfaces,Landfill
 Tankered emissions,Landfill
-Landfill annual monitoring report,Landfill
