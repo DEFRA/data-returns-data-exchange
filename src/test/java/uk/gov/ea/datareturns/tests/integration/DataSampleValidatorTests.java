@@ -77,6 +77,24 @@ public class DataSampleValidatorTests {
         Assert.assertEquals(1, violations.size());
     }
 
+    @Test
+    public void testSiteCaseInsensitive_1() {
+        final DataSample record = createValidNumericRecord();
+        record.setSiteName(new SiteName( record.getSiteName().getInputValue().toLowerCase()));
+        final Set<ConstraintViolation<DataSample>> violations = this.validator.validate(record, ValidationGroups.OrderedChecks.class);
+        // one violation for the field being blank
+        Assert.assertEquals(0, violations.size());
+    }
+
+    @Test
+    public void testSiteCaseInsensitive_2() {
+        final DataSample record = createValidNumericRecord();
+        record.setSiteName(new SiteName( record.getSiteName().getInputValue().toUpperCase()));
+        final Set<ConstraintViolation<DataSample>> violations = this.validator.validate(record, ValidationGroups.OrderedChecks.class);
+        // one violation for the field being blank
+        Assert.assertEquals(0, violations.size());
+    }
+
     /*=================================================================================================================
      *
      * RETURN TYPE TESTS
@@ -292,11 +310,11 @@ public class DataSampleValidatorTests {
     @Test
     public void testMonitoringPointLength() {
         final DataSample record = createValidNumericRecord();
-        record.setMonitoringPoint(new MonitoringPoint(RandomStringUtils.randomAlphanumeric(30)));
+        record.setMonitoringPoint(new MonitoringPoint(RandomStringUtils.randomAlphanumeric(50)));
         Set<ConstraintViolation<DataSample>> violations = this.validator.validate(record, ValidationGroups.OrderedChecks.class);
         Assert.assertEquals(0, violations.size());
 
-        record.setMonitoringPoint(new MonitoringPoint(RandomStringUtils.randomAlphanumeric(31)));
+        record.setMonitoringPoint(new MonitoringPoint(RandomStringUtils.randomAlphanumeric(51)));
         violations = this.validator.validate(record, ValidationGroups.OrderedChecks.class);
         Assert.assertEquals(1, violations.size());
     }
@@ -304,7 +322,7 @@ public class DataSampleValidatorTests {
     @Test
     public void testMonitoringPointSpecialCharacters() {
         final DataSample record = createValidNumericRecord();
-        final String invalidCharacters = "!\"£$%^&*()-_=+[]{};:'@#~,<.>/?\\|`¬€";
+        final String invalidCharacters = "!\"£$%^&*()_=+[]{};:'@#~,<.>?\\|`¬€";
         for (final char c : invalidCharacters.toCharArray()) {
             record.setMonitoringPoint(new MonitoringPoint(String.valueOf(c)));
             final Set<ConstraintViolation<DataSample>> violations = this.validator.validate(record, ValidationGroups.OrderedChecks.class);
