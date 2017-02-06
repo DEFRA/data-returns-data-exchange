@@ -1,8 +1,8 @@
 name,preferred
-false,
-no,
+False,
+True,
+No,
+Yes,
 No result,
 See comment,
 See comments,See comment
-true,
-yes,
