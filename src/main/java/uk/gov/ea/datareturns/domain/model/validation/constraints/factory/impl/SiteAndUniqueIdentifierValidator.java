@@ -1,6 +1,6 @@
 package uk.gov.ea.datareturns.domain.model.validation.constraints.factory.impl;
 
-import org.apache.commons.codec.binary.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import uk.gov.ea.datareturns.domain.jpa.entities.UniqueIdentifier;
 import uk.gov.ea.datareturns.domain.model.DataSample;
 import uk.gov.ea.datareturns.domain.model.MessageCodes;
@@ -19,8 +19,7 @@ public class SiteAndUniqueIdentifierValidator implements RecordConstraintValidat
         final EaId eaId = record.getEaId();
         final UniqueIdentifier eaIdEntity = eaId.getEntity();
         final SiteName site = record.getSiteName();
-
-        if (eaIdEntity != null && !StringUtils.equals(eaId.getEntity().getSite().getName().toUpperCase(), site.getValue().toUpperCase())) {
+        if (eaIdEntity != null && !StringUtils.equalsIgnoreCase(eaId.getEntity().getSite().getName(), site.getValue())) {
             context.disableDefaultConstraintViolation();
             context.buildConstraintViolationWithTemplate(MessageCodes.Conflict.UniqueIdentifierSiteConflict).addConstraintViolation();
             return false;
