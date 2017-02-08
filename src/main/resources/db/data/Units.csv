@@ -209,7 +209,7 @@
 "mm3/s",,"Cubic millimetres per second",,"A measure of volume flow rate or discharge","Flow (vol/time)"
 "mm3/wk",,"Cubic millimetres per week",,"A measure of volume flow rate or discharge","Flow (vol/time)"
 "mmol/l",,"Millimoles per litre",,"A unit of concentration","Concentration (mass/vol)"
-"mol",,"Mole",,"An amount of a substance","Mass"
+"mol",,"Mole",,"An amount of a substance","Misc"
 "mol/kg",,"Moles per kilogram",,"A unit of concentration (molality)","Concentration (Mass/Mass)"
 "mol/l",,"Moles per litre",,"A unit of concentration (molarity)","Concentration (mass/vol)"
 "mol/m3",,"Moles per cubic metre",,"A unit of concentration","Concentration (mass/vol)"
