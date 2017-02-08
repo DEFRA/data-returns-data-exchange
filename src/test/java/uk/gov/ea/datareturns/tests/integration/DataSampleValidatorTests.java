@@ -749,7 +749,7 @@ public class DataSampleValidatorTests {
         record.setParameter(new Parameter("1,1,1,2-Tetrachloroethane"));
         record.setValue(new Value("<0.0006"));
         record.setUnit(new Unit("m3/s"));
-        record.setReferencePeriod(new ReferencePeriod("95% of all 10-minute averages in any 24-hour period"));
+        record.setReferencePeriod(new ReferencePeriod("95% of all 10-minute averages in any 24 hour period"));
         record.setMethStand(new MethodOrStandard("BS EN 12260"));
         record.setComments(new Comments("Free text comments entered in this field."));
         record.setCic(new Cic("True"));
