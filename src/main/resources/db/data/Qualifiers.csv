@@ -1,5 +1,5 @@
 "name","notes","type","singleormultiple"
-"% of total","A percentage of the Total","Calculation","Qualifier"
+"% of total","A percentage of the total","Calculation","Qualifier"
 "0.5x dilution",,"Sample condition","Qualifier"
 "1x dilution",,"Sample condition","Qualifier"
 "2x dilution",,"Sample condition","Qualifier"
