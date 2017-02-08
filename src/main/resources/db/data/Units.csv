@@ -261,7 +261,7 @@
 "TJ/m3","TJm-3","Terrajoules per cubic metre",,"A unit of energy density","Energy and power"
 "TJm-3",,"Terrajoules per cubic metre",,"A unit of energy density","Energy and power"
 "tSO2/GWh",,"Emissions versus electrical power generated",,"A unit of emissions versus power generated","Energy and power"
-"TW",,"Terrawatt",,"A unit of energy","Energy and power"
+"TW",,"Terrawatt",,"A unit of power","Energy and power"
 "TWh",,"Terrawatt hour",,"A unit of energy","Energy and power"
 "ug","µg","Microgram",,"A unit of mass","Mass"
 "ug/day","µg/day","Micrograms per day",,"A measure of volume flow rate or discharge","Flow (mass/time)"
