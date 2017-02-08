@@ -6,8 +6,6 @@ import uk.gov.ea.datareturns.domain.model.DataSample;
 import uk.gov.ea.datareturns.domain.model.MessageCodes;
 import uk.gov.ea.datareturns.domain.model.fields.FieldValue;
 
-import javax.validation.constraints.Pattern;
-
 /**
  * The monitoring point to which the record relates.
  *
@@ -16,7 +14,6 @@ import javax.validation.constraints.Pattern;
 public class MonitoringPoint implements FieldValue<DataSample, String> {
     @NotBlank(message = MessageCodes.Missing.Mon_Point)
     @Length(max = 50, message = MessageCodes.Length.Mon_Point)
-    @Pattern(regexp = REGEX_EHS_DELIMITED_TEXT, message = MessageCodes.Incorrect.Mon_Point)
     private String monitoringPoint;
 
     /**

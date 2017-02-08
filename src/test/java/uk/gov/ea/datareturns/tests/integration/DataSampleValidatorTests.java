@@ -319,17 +319,6 @@ public class DataSampleValidatorTests {
         Assert.assertEquals(1, violations.size());
     }
 
-    @Test
-    public void testMonitoringPointSpecialCharacters() {
-        final DataSample record = createValidNumericRecord();
-        final String invalidCharacters = "!\"£$%^&*()_=+[]{};:'@#~,<.>?\\|`¬€";
-        for (final char c : invalidCharacters.toCharArray()) {
-            record.setMonitoringPoint(new MonitoringPoint(String.valueOf(c)));
-            final Set<ConstraintViolation<DataSample>> violations = this.validator.validate(record, ValidationGroups.OrderedChecks.class);
-            Assert.assertEquals(1, violations.size());
-        }
-    }
-
     /*=================================================================================================================
      *
      * SAMPLE REFERENCE
