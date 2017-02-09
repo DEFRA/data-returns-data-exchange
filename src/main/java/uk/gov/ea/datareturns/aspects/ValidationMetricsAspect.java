@@ -13,7 +13,7 @@ import uk.gov.ea.datareturns.domain.jpa.entities.UniqueIdentifier;
 import uk.gov.ea.datareturns.domain.model.DataSample;
 import uk.gov.ea.datareturns.domain.model.MessageCodes;
 import uk.gov.ea.datareturns.domain.model.rules.FieldDefinition;
-import uk.gov.ea.datareturns.domain.result.ValidationError;
+import uk.gov.ea.datareturns.domain.result.ValidationErrorType;
 import uk.gov.ea.datareturns.domain.result.ValidationErrors;
 import uk.gov.ea.datareturns.util.Environment;
 import uk.gov.ea.datareturns.util.StopWatch;
@@ -22,9 +22,11 @@ import javax.inject.Inject;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
+
+import static uk.gov.ea.datareturns.aspects.MetricsConstants.Common;
+import static uk.gov.ea.datareturns.aspects.MetricsConstants.ValidationEvent;
 
 /**
  * Aspect to gather metrics from the validation engine.
@@ -77,26 +79,30 @@ public class ValidationMetricsAspect {
      * @param errors the errors returned by the validation process
      */
     private void writeValidationErrorMetricsByEaId(long timestamp, List<DataSample> model, ValidationErrors errors) {
-        Map<String, List<ValidationError>> errorsByEaId = errors.getErrors().stream().collect(Collectors.groupingBy(e -> {
-            DataSample row = model.get(e.getRecordIndex());
-            return Optional.ofNullable(row.getEaId().getEntity()).map(UniqueIdentifier::getName).orElse("Unknown");
-        }));
+        Map<String, List<ValidationErrors.FlatView>> errorsByEaId = errors.flatView().stream()
+                .collect(Collectors.groupingBy(e -> {
+                    DataSample row = model.get(e.getRecordIndex());
+                    return Optional.ofNullable(row.getEaId().getEntity()).map(UniqueIdentifier::getName).orElse("Unknown");
+                }));
 
         errorsByEaId.entrySet().stream().forEach(eaIdEntry -> {
             String eaId = eaIdEntry.getKey();
-            List<ValidationError> errorsForEaId = eaIdEntry.getValue();
+            List<ValidationErrors.FlatView> data = eaIdEntry.getValue();
+            List<ValidationErrorType> errorListForEaId = data.stream()
+                    .map(ValidationErrors.FlatView::getType)
+                    .collect(Collectors.toList());
 
-            Map<String, List<ValidationError>> errorsByType = errorsForEaId.stream()
+            Map<String, List<ValidationErrorType>> errorsByType = errorListForEaId.stream()
                     .collect(Collectors.groupingBy(ValidationMetricsAspect::getSpecificError));
 
             errorsByType.entrySet().stream().map(errorByTypeEntry -> {
                 String error = errorByTypeEntry.getKey();
-                List<ValidationError> errorsForType = errorByTypeEntry.getValue();
+                List<ValidationErrorType> errorsForType = errorByTypeEntry.getValue();
                 String field = MessageCodes.getFieldDependencies("{" + error + "}").stream()
                         .map(FieldDefinition::getName)
                         .collect(Collectors.joining(","));
 
-                String errorType = errorsForType.stream().findFirst().map(ValidationError::getErrorType).orElse("Unknown");
+                String errorType = errorsForType.stream().findFirst().map(ValidationErrorType::getErrorType).orElse("Unknown");
                 Point.Builder point = Point.measurement(MetricsConstants.Common.MEASUREMENT_VALIDATION_ERROR)
                         .time(timestamp, TimeUnit.MILLISECONDS)
                         .tag(MetricsConstants.ValidationError.TAG_HOST, Environment.getHostname())
@@ -114,34 +120,35 @@ public class ValidationMetricsAspect {
      * Write high-level validation engine metrics
      *
      * @param timestamp the timestamp of the validation event
+     * @param validationRuntime the time taken in ms to validate the file
      * @param model the model being validated
      * @param errors the errors returned by the validation process
      */
     private void writeValidationEventMetrics(long timestamp, long validationRuntime, List<DataSample> model, ValidationErrors errors) {
-        String validationStatus = errors.getErrors().isEmpty() ? "valid" : "invalid";
-        Set<String> uniqueErrors = errors.getErrors().stream().map(ValidationMetricsAspect::getSpecificError).collect(Collectors.toSet());
+        String validationStatus = errors.getErrorList().isEmpty() ? "valid" : "invalid";
         long countEaIds = model.stream().map(DataSample::getEaId).distinct().count();
         long countReturnTypes = model.stream().map(ds -> ds.getReturnType().getEntity()).distinct().count();
 
-        influxdb.write(Point.measurement(MetricsConstants.Common.MEASUREMENT_VALIDATION_EVENT)
+        influxdb.write(Point.measurement(Common.MEASUREMENT_VALIDATION_EVENT)
                 .time(timestamp, TimeUnit.MILLISECONDS)
-                .tag(MetricsConstants.ValidationEvent.TAG_VALIDATION_STATUS, validationStatus)
-                .tag(MetricsConstants.ValidationEvent.TAG_HOST, Environment.getHostname())
-                .addField(MetricsConstants.ValidationEvent.FIELD_RECORD_COUNT, model.size())
-                .addField(MetricsConstants.ValidationEvent.FIELD_EA_ID_COUNT, countEaIds)
-                .addField(MetricsConstants.ValidationEvent.FIELD_RETURN_TYPE_COUNT, countReturnTypes)
-                .addField(MetricsConstants.ValidationEvent.FIELD_TOTAL_ERROR_COUNT, errors.getErrors().size())
-                .addField(MetricsConstants.ValidationEvent.FIELD_UNIQUE_ERROR_COUNT, uniqueErrors.size())
-                .addField(MetricsConstants.ValidationEvent.FIELD_RUNTIME_MS, validationRuntime)
+                .tag(ValidationEvent.TAG_VALIDATION_STATUS, validationStatus)
+                .tag(ValidationEvent.TAG_HOST, Environment.getHostname())
+                .addField(ValidationEvent.FIELD_RECORD_COUNT, model.size())
+                .addField(ValidationEvent.FIELD_EA_ID_COUNT, countEaIds)
+                .addField(ValidationEvent.FIELD_RETURN_TYPE_COUNT, countReturnTypes)
+                .addField(ValidationEvent.FIELD_TOTAL_ERROR_COUNT,
+                        errors.getErrorList().stream().mapToLong(ValidationErrorType::countAllErrors).sum())
+                .addField(ValidationEvent.FIELD_UNIQUE_ERROR_COUNT, errors.getErrorList().size())
+                .addField(ValidationEvent.FIELD_RUNTIME_MS, validationRuntime)
                 .build());
     }
 
     /**
-     * Get a full error string from a {@link ValidationError} using {@link ValidationError#getErrorCode()} and {@link ValidationError#getErrorType()}
+     * Get a full error string from a {@link ValidationErrorType} using {@link ValidationErrorType#getErrorCode()} and {@link ValidationErrorType#getErrorType()}
      * @param error the target error
      * @return the error string - e.g. DR9000-Invalid
      */
-    private static final String getSpecificError(ValidationError error) {
+    private static final String getSpecificError(ValidationErrorType error) {
         return String.format("DR%04d-%s", error.getErrorCode(), error.getErrorType());
     }
 }

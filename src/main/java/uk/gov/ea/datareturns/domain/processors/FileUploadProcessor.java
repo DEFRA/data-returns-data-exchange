@@ -154,9 +154,9 @@ public class FileUploadProcessor extends AbstractReturnsProcessor<DataExchangeRe
             } else {
                 if (LOGGER.isDebugEnabled()) {
                     LOGGER.debug("File '" + this.clientFilename + "' is INVALID");
-                    for (ValidationError v : validationErrors.getErrors()) {
-                        LOGGER.debug("Validation error: " + v);
-                    }
+                }
+                for (ValidationErrorType v : validationErrors.getErrorList()) {
+                    LOGGER.debug("Validation error: " + v);
                 }
                 result.setValidationErrors(validationErrors);
                 result.setAppStatusCode(ApplicationExceptionType.VALIDATION_ERRORS.getAppStatusCode());

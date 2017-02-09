@@ -77,7 +77,6 @@ public class ValidationMetricsAspectTests extends AbstractMetricsTests {
         List<InfluxDBTestImpl.PointData> data = stub.getPointData().get(Common.MEASUREMENT_VALIDATION_ERROR);
         // One event just occurred...
         Assertions.assertThat(data).size().isEqualTo(INVALID_FILE_UNIQUE_ERROR_COUNT.intValue());
-
         long totalErrorCount = data.stream()
                 .mapToLong(p -> (Long) p.getFields().get(ValidationError.FIELD_ERROR_COUNT))
                 .sum();
