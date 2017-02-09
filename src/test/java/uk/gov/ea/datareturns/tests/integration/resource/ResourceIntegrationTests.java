@@ -524,7 +524,7 @@ public class ResourceIntegrationTests {
         final DataExchangeResult result = getResultFromResponse(resp);
         ValidationErrors validationErrors = result.getValidationErrors();
 
-        assertThat(validationErrors.forError(9100, "Incorrect").getInstancesForRecordIndex(0)).isNotNull();
+        assertThat(validationErrors.forError(9100, "Incorrect").getInstancesForRecordIndex(0)).isNotEmpty();
     }
 
     @Test
@@ -543,7 +543,7 @@ public class ResourceIntegrationTests {
         final DataExchangeResult result = getResultFromResponse(resp);
         ValidationErrors validationErrors = result.getValidationErrors();
 
-        assertThat(validationErrors.forError(9010, "Incorrect").getInstancesForRecordIndex(0)).isNotNull();
+        assertThat(validationErrors.forError(9010, "Incorrect").getInstancesForRecordIndex(0)).isNotEmpty();
     }
 
     @Test
@@ -562,7 +562,7 @@ public class ResourceIntegrationTests {
         final DataExchangeResult result = getResultFromResponse(resp);
         ValidationErrors validationErrors = result.getValidationErrors();
 
-        assertThat(validationErrors.forError(9090, "Incorrect").getInstancesForRecordIndex(0)).isNotNull();
+        assertThat(validationErrors.forError(9090, "Incorrect").getInstancesForRecordIndex(0)).isNotEmpty();
     }
 
     @Test
@@ -579,7 +579,7 @@ public class ResourceIntegrationTests {
         assertThat(resp.getStatus()).isEqualTo(Status.BAD_REQUEST.getStatusCode());
         final DataExchangeResult result = getResultFromResponse(resp);
         ValidationErrors validationErrors = result.getValidationErrors();
-        assertThat(validationErrors.forError(9050, "Incorrect").getInstancesForRecordIndex(0)).isNotNull();
+        assertThat(validationErrors.forError(9050, "Incorrect").getInstancesForRecordIndex(0)).isNotEmpty();
     }
 
     @Test
@@ -596,7 +596,7 @@ public class ResourceIntegrationTests {
         assertThat(resp.getStatus()).isEqualTo(Status.BAD_REQUEST.getStatusCode());
         final DataExchangeResult result = getResultFromResponse(resp);
         ValidationErrors validationErrors = result.getValidationErrors();
-        assertThat(validationErrors.forError(9180, "Incorrect").getInstancesForRecordIndex(0)).isNotNull();
+        assertThat(validationErrors.forError(9180, "Incorrect").getInstancesForRecordIndex(0)).isNotEmpty();
     }
 
     @Test
@@ -639,10 +639,10 @@ public class ResourceIntegrationTests {
         ValidationErrors validationErrors = result.getValidationErrors();
 
         // Test missing on first row
-        assertThat(validationErrors.forError(9030, "Missing").getInstancesForRecordIndex(0)).isNotNull();
+        assertThat(validationErrors.forError(9030, "Missing").getInstancesForRecordIndex(0)).isNotEmpty();
 
         // Test incorrect on second row
-        assertThat(validationErrors.forError(9030, "Incorrect").getInstancesForRecordIndex(1)).isNotNull();
+        assertThat(validationErrors.forError(9030, "Incorrect").getInstancesForRecordIndex(1)).isNotEmpty();
     }
 
     @Test
@@ -662,10 +662,10 @@ public class ResourceIntegrationTests {
         ValidationErrors validationErrors = result.getValidationErrors();
 
         // Only one of value and text value
-        assertThat(validationErrors.forError(9999, "Conflict").getInstancesForRecordIndex(2)).isNotNull();
+        assertThat(validationErrors.forError(9999, "Conflict").getInstancesForRecordIndex(2)).isNotEmpty();
 
         // Units must not be used with text value
-        assertThat(validationErrors.forError(9050, "Conflict").getInstancesForRecordIndex(2)).isNotNull();
+        assertThat(validationErrors.forError(9050, "Conflict").getInstancesForRecordIndex(2)).isNotEmpty();
     }
 
     ///////////////////////////////////////////////////////////////////////////////////////////
