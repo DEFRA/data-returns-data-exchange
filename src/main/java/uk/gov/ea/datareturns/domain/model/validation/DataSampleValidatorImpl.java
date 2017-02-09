@@ -7,17 +7,15 @@ import uk.gov.ea.datareturns.domain.model.DataSample;
 import uk.gov.ea.datareturns.domain.model.MessageCodes;
 import uk.gov.ea.datareturns.domain.model.rules.FieldDefinition;
 import uk.gov.ea.datareturns.domain.model.rules.FieldMapping;
-import uk.gov.ea.datareturns.domain.result.ValidationError;
+import uk.gov.ea.datareturns.domain.result.ValidationErrorField;
+import uk.gov.ea.datareturns.domain.result.ValidationErrorType;
 import uk.gov.ea.datareturns.domain.result.ValidationErrors;
 
 import javax.inject.Inject;
 import javax.validation.ConstraintViolation;
 import javax.validation.Validator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import java.lang.annotation.Annotation;
+import java.util.*;
 
 /**
  * DataSample validator implementation
@@ -27,7 +25,6 @@ import java.util.regex.Pattern;
 @Component
 @Scope(ConfigurableBeanFactory.SCOPE_SINGLETON)
 public class DataSampleValidatorImpl implements DataSampleValidator {
-    private static final Pattern ERROR_KEY_PATTERN = Pattern.compile("^\\{DR(?<errorCode>\\d{4})-(?<errorType>\\w+)\\}$");
     private static final Map<String, FieldMapping> BEAN_MAPPING = FieldMapping.getFieldNameToBeanMap(DataSample.class);
 
     /** hibernate validator instance */
@@ -58,28 +55,9 @@ public class DataSampleValidatorImpl implements DataSampleValidator {
         for (final DataSample record : model) {
             final Set<ConstraintViolation<DataSample>> violations = validate(record);
             for (final ConstraintViolation<DataSample> violation : violations) {
-                int errorCode = 0;
-                String errorType = "Unknown";
-
-                final Matcher errorKeyMatcher = ERROR_KEY_PATTERN.matcher(violation.getMessageTemplate());
-                if (errorKeyMatcher.matches()) {
-                    errorCode = Integer.parseInt(errorKeyMatcher.group("errorCode"));
-                    errorType = errorKeyMatcher.group("errorType");
-                }
-
-                List<FieldDefinition> fieldsForValidation = getFieldsForViolation(violation);
-                ValidationError.ErrorData[] errorData = getErrorDataFromFields(record, fieldsForValidation);
-
-                ValidationError error = new ValidationError();
-
-                error.setRecordIndex(index);
-                error.setErrorData(errorData);
-                error.setErrorMessage(violation.getMessage());
-
-                error.setErrorCode(errorCode);
-                error.setErrorType(errorType);
-
-                validationErrors.addError(error);
+                ValidationErrorType errorsForType = validationErrors.forViolation(violation);
+                List<ValidationErrorField> errorData = getErrorDataFromFields(record, violation);
+                errorsForType.addErrorInstance(index, errorData);
             }
             index++;
         }
@@ -89,27 +67,26 @@ public class DataSampleValidatorImpl implements DataSampleValidator {
     /**
      * Prepare the Error data array for addition to the ValidationError object
      * @param record The current record
-     * @param fieldsForValidation The set of field definitions to initialize the data error array from
+     * @param violation the {@link ConstraintViolation} detailing the error
      * @return The data error array
      */
-    private ValidationError.ErrorData[] getErrorDataFromFields(DataSample record, List<FieldDefinition> fieldsForValidation) {
-        if (fieldsForValidation == null || fieldsForValidation.size() == 0) {
-            return new ValidationError.ErrorData[0];
-        } else {
-            ValidationError.ErrorData[] errData = new ValidationError.ErrorData[fieldsForValidation.size()];
-            int errDataIdx = 0;
+    private List<ValidationErrorField> getErrorDataFromFields(DataSample record,
+            ConstraintViolation<DataSample> violation) {
+        List<ValidationErrorField> errorData = new ArrayList<>();
+        List<FieldDefinition> fieldsForValidation = getFieldsForViolation(violation);
+        if (fieldsForValidation != null) {
             for (FieldDefinition field : fieldsForValidation) {
                 FieldMapping fieldMapping = BEAN_MAPPING.get(field.getName());
-                ValidationError.ErrorData errorDatum = new ValidationError.ErrorData();
+                ValidationErrorField errorDatum = new ValidationErrorField();
                 if (fieldMapping != null) {
-                    errorDatum.setFieldName(field.getName());
-                    errorDatum.setErrorValue(fieldMapping.getInputValue(record));
+                    errorDatum.setName(field.getName());
+                    errorDatum.setValue(fieldMapping.getInputValue(record));
                     errorDatum.setResolvedValue(fieldMapping.getOutputValue(record));
                 }
-                errData[errDataIdx++] = errorDatum;
+                errorData.add(errorDatum);
             }
-            return errData;
         }
+        return errorData;
     }
 
     /**

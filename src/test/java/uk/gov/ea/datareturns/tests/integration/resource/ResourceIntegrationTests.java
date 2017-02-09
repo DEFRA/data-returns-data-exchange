@@ -31,6 +31,9 @@ import javax.ws.rs.core.Response.Status;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -280,6 +283,7 @@ public class ResourceIntegrationTests {
         assertThat(result.getAppStatusCode())
                 .isEqualTo(ApplicationExceptionType.VALIDATION_ERRORS.getAppStatusCode());
     }
+
     @Test
     public void testPermitSiteMismatch() {
         final Client client = createClient("test EA_ID and Site_Name mismatch.");
@@ -519,12 +523,8 @@ public class ResourceIntegrationTests {
 
         final DataExchangeResult result = getResultFromResponse(resp);
         ValidationErrors validationErrors = result.getValidationErrors();
-        assertThat(validationErrors.getErrors().stream().anyMatch(e ->
-                e.getLineNumber() == 2L &&
-                        e.getErrorType().equals("Incorrect") &&
-                        e.getErrorCode() == 9100
-        )).isTrue();
 
+        assertThat(validationErrors.forError(9100, "Incorrect").getInstancesForRecordIndex(0)).isNotEmpty();
     }
 
     @Test
@@ -542,11 +542,8 @@ public class ResourceIntegrationTests {
 
         final DataExchangeResult result = getResultFromResponse(resp);
         ValidationErrors validationErrors = result.getValidationErrors();
-        assertThat(validationErrors.getErrors().stream().anyMatch(e ->
-                e.getLineNumber() == 2L &&
-                        e.getErrorType().equals("Incorrect") &&
-                        e.getErrorCode() == 9010
-        )).isTrue();
+
+        assertThat(validationErrors.forError(9010, "Incorrect").getInstancesForRecordIndex(0)).isNotEmpty();
     }
 
     @Test
@@ -564,11 +561,8 @@ public class ResourceIntegrationTests {
 
         final DataExchangeResult result = getResultFromResponse(resp);
         ValidationErrors validationErrors = result.getValidationErrors();
-        assertThat(validationErrors.getErrors().stream().anyMatch(e ->
-                e.getLineNumber() == 2L &&
-                        e.getErrorType().equals("Incorrect") &&
-                        e.getErrorCode() == 9090
-        )).isTrue();
+
+        assertThat(validationErrors.forError(9090, "Incorrect").getInstancesForRecordIndex(0)).isNotEmpty();
     }
 
     @Test
@@ -585,11 +579,7 @@ public class ResourceIntegrationTests {
         assertThat(resp.getStatus()).isEqualTo(Status.BAD_REQUEST.getStatusCode());
         final DataExchangeResult result = getResultFromResponse(resp);
         ValidationErrors validationErrors = result.getValidationErrors();
-        assertThat(validationErrors.getErrors().stream().anyMatch(e ->
-                e.getLineNumber() == 2L &&
-                        e.getErrorType().equals("Incorrect") &&
-                        e.getErrorCode() == 9050
-        )).isTrue();
+        assertThat(validationErrors.forError(9050, "Incorrect").getInstancesForRecordIndex(0)).isNotEmpty();
     }
 
     @Test
@@ -606,11 +596,7 @@ public class ResourceIntegrationTests {
         assertThat(resp.getStatus()).isEqualTo(Status.BAD_REQUEST.getStatusCode());
         final DataExchangeResult result = getResultFromResponse(resp);
         ValidationErrors validationErrors = result.getValidationErrors();
-        assertThat(validationErrors.getErrors().stream().anyMatch(e ->
-                e.getLineNumber() == 2L &&
-                        e.getErrorType().equals("Incorrect") &&
-                        e.getErrorCode() == 9180
-        )).isTrue();
+        assertThat(validationErrors.forError(9180, "Incorrect").getInstancesForRecordIndex(0)).isNotEmpty();
     }
 
     @Test
@@ -627,41 +613,14 @@ public class ResourceIntegrationTests {
         assertThat(resp.getStatus()).isEqualTo(Status.BAD_REQUEST.getStatusCode());
         final DataExchangeResult result = getResultFromResponse(resp);
         ValidationErrors validationErrors = result.getValidationErrors();
-        assertThat(validationErrors.getErrors().stream().anyMatch(e ->
-                e.getLineNumber() == 2L &&
-                        e.getErrorType().equals("Incorrect") &&
-                        e.getErrorCode() == 9070
-        )).isTrue();
 
-        assertThat(validationErrors.getErrors().stream().anyMatch(e ->
-                e.getLineNumber() == 3L &&
-                        e.getErrorType().equals("Incorrect") &&
-                        e.getErrorCode() == 9070
-        )).isTrue();
+        List<Integer> allIndexes = validationErrors.forError(9070, "Incorrect")
+                .getInstances()
+                .stream()
+                .flatMap(instance -> instance.getRecordIndices().stream())
+                .collect(Collectors.toList());
 
-        assertThat(validationErrors.getErrors().stream().anyMatch(e ->
-                e.getLineNumber() == 4L &&
-                        e.getErrorType().equals("Incorrect") &&
-                        e.getErrorCode() == 9070
-        )).isTrue();
-
-        assertThat(validationErrors.getErrors().stream().anyMatch(e ->
-                e.getLineNumber() == 5L &&
-                        e.getErrorType().equals("Incorrect") &&
-                        e.getErrorCode() == 9070
-        )).isTrue();
-
-        assertThat(validationErrors.getErrors().stream().anyMatch(e ->
-                e.getLineNumber() == 6L &&
-                        e.getErrorType().equals("Incorrect") &&
-                        e.getErrorCode() == 9070
-        )).isTrue();
-
-        assertThat(validationErrors.getErrors().stream().anyMatch(e ->
-                e.getLineNumber() == 7L &&
-                        e.getErrorType().equals("Incorrect") &&
-                        e.getErrorCode() == 9070
-        )).isTrue();
+        assertThat(allIndexes.containsAll(Arrays.asList(0, 1, 2, 3, 4, 5))).isTrue();
     }
 
     @Test
@@ -679,19 +638,11 @@ public class ResourceIntegrationTests {
         final DataExchangeResult result = getResultFromResponse(resp);
         ValidationErrors validationErrors = result.getValidationErrors();
 
-        // Test missing
-        assertThat(validationErrors.getErrors().stream().anyMatch(e ->
-                e.getLineNumber() == 2L &&
-                        e.getErrorType().equals("Missing") &&
-                        e.getErrorCode() == 9030
-        )).isTrue();
+        // Test missing on first row
+        assertThat(validationErrors.forError(9030, "Missing").getInstancesForRecordIndex(0)).isNotEmpty();
 
-        // Test incorrect
-        assertThat(validationErrors.getErrors().stream().anyMatch(e ->
-                e.getLineNumber() == 3L &&
-                        e.getErrorType().equals("Incorrect") &&
-                        e.getErrorCode() == 9030
-        )).isTrue();
+        // Test incorrect on second row
+        assertThat(validationErrors.forError(9030, "Incorrect").getInstancesForRecordIndex(1)).isNotEmpty();
     }
 
     @Test
@@ -711,19 +662,10 @@ public class ResourceIntegrationTests {
         ValidationErrors validationErrors = result.getValidationErrors();
 
         // Only one of value and text value
-        assertThat(validationErrors.getErrors().stream().anyMatch(e ->
-                e.getLineNumber() == 4L &&
-                        e.getErrorType().equals("Conflict") &&
-                        e.getErrorCode() == 9999
-        )).isTrue();
+        assertThat(validationErrors.forError(9999, "Conflict").getInstancesForRecordIndex(2)).isNotEmpty();
 
         // Units must not be used with text value
-        assertThat(validationErrors.getErrors().stream().anyMatch(e ->
-                e.getLineNumber() == 4L &&
-                        e.getErrorType().equals("Conflict") &&
-                        e.getErrorCode() == 9050
-        )).isTrue();
-
+        assertThat(validationErrors.forError(9050, "Conflict").getInstancesForRecordIndex(2)).isNotEmpty();
     }
 
     ///////////////////////////////////////////////////////////////////////////////////////////
