@@ -16,6 +16,6 @@ Qtr 1 YYYY,Financial quarter 1 - April to June YYYY,Qtr 1 2016
 Qtr 2 YYYY,Financial quarter 2 - July to September YYYY,Qtr 2 2016
 Qtr 3 YYYY,Financial quarter 3 - October to December YYYY,Qtr 3 2016
 Qtr 4 YYYY,Financial quarter 4 - January to March YYYY,Qtr 4 2016
-YYYY,A calendar year as defined in ISO 8601,2016
+YYYY,A calendar year - as defined in ISO 8601,2016
 YYYY/YY,The financial year - 1 April to 31 March. You can also use the format YY/YY.,2016/17 or 16/17
 Water year YYYY,The hydrological water year - 1 October to 30 September,Water year 2016
