@@ -1,21 +1,20 @@
 package uk.gov.ea.datareturns.domain.model.fields.impl;
 
-import org.hibernate.validator.constraints.Length;
 import org.hibernate.validator.constraints.NotBlank;
 import uk.gov.ea.datareturns.domain.model.DataSample;
 import uk.gov.ea.datareturns.domain.model.MessageCodes;
 import uk.gov.ea.datareturns.domain.model.fields.FieldValue;
-
-import javax.validation.constraints.Pattern;
+import uk.gov.ea.datareturns.domain.model.validation.auditors.controlledlist.SiteNameAuditor;
+import uk.gov.ea.datareturns.domain.model.validation.constraints.controlledlist.ControlledList;
 
 /**
- * Reference to the site at which the measurement is being taken. This field allows EA to cross check site name against EA_ID.
+ * Reference to the site at which the measurement is being taken.
  *
  * @author Sam Gardner-Dell
  */
 public class SiteName implements FieldValue<DataSample, String> {
-    @Pattern(regexp = REGEX_SIMPLE_TEXT, message = MessageCodes.Incorrect.Site_Name)
-    @Length(max = 255, message = MessageCodes.Length.Site_Name)
+
+    @ControlledList(auditor = SiteNameAuditor.class, message = MessageCodes.ControlledList.Site_Name)
     @NotBlank(message = MessageCodes.Missing.Site_Name)
     private final String inputValue;
 
