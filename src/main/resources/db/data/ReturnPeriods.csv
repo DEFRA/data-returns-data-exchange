@@ -1,21 +1,21 @@
 name,definition,example
-Week XX YYYY,Duration of a calendar week - 7 days - time interval of 7 calendar days starting with a Monday - weeks can be given a calendar week number that identifies a calendar week in a calendar year where the first calendar week of a year is that one that includes the first Thursday of that year and that the last calendar week of a calendar year is the week immediately preceding the first calendar week of the next calendar year; weeks must be numbered from 1 at the beginning of January to 52 at the end of December,Week 01 2016
-Jan YYYY,January duration of the month - 31 calendar days,Jan 2016
-Feb YYYY,February duration of the month - 28 or 29 calendar days,Feb 2016
-Mar YYYY,March duration of the month - 31 calendar days,Mar 2016
-Apr YYYY,April duration of the month - 30 calendar days,Apr 2016
-May YYYY,May duration of the month - 31 calendar days,May 2016
-Jun YYYY,June duration of the month - 30 calendar days,Jun 2016
-Jul YYYY,July duration of the month - 31 calendar days,Jul 2016
-Aug YYYY,August duration of the month - 31 calendar days,Aug 2016
-Sep YYYY,September duration of the month - 30 calendar days,Sep 2016
-Oct YYYY,October duration of the month - 31 calendar days,Oct 2016
-Nov YYYY,November duration of the month - 30 calendar days,Nov 2016
-Dec YYYY,December duration of the month - 31 calendar days,Dec 2016
-Qtr 1 YYYY,Quarter 1 - April to June YYYY,Qtr 1 2016
-Qtr 2 YYYY,Quarter 2 - July to September YYYY,Qtr 2 2016
-Qtr 3 YYYY,Quarter 3 - October to December YYYY,Qtr 3 2016
-Qtr 4 YYYY,Quarter 4 - January to March YYYY,Qtr 4 2016
-YYYY,Year - duration of 365 (366 in a leap year) calendar days - the time interval in a calendar required for 1 revolution of the earth around the sun and approximated to an integral number of calendar days (expressed as YYYY),2016
-YYYY/YY,Fiscal year - the time interval between 1 April to 31 March (expressed as YY/YY or YYYY/YY),16/17 or 2016/17
+Week XX YYYY,A week number for a calendar week starting with a Monday. Use a leading zero for the first nine weeks. This is defined in ISO 8601.,Week 01 2016
+Jan YYYY,Month of January,Jan 2016
+Feb YYYY,Month of February,Feb 2016
+Mar YYYY,Month of March,Mar 2016
+Apr YYYY,Month of April,Apr 2016
+May YYYY,Month of May,May 2016
+Jun YYYY,Month of June,Jun 2016
+Jul YYYY,Month of July,Jul 2016
+Aug YYYY,Month of August,Aug 2016
+Sep YYYY,Month of September,Sep 2016
+Oct YYYY,Month of October,Oct 2016
+Nov YYYY,Month of November,Nov 2016
+Dec YYYY,Month of December,Dec 2016
+Qtr 1 YYYY,Financial quarter 1 - April to June YYYY,Qtr 1 2016
+Qtr 2 YYYY,Financial quarter 2 - July to September YYYY,Qtr 2 2016
+Qtr 3 YYYY,Financial quarter 3 - October to December YYYY,Qtr 3 2016
+Qtr 4 YYYY,Financial quarter 4 - January to March YYYY,Qtr 4 2016
+YYYY,A calendar year - as defined in ISO 8601,2016
+YYYY/YY,The financial year - 1 April to 31 March. You can also use the format YY/YY.,2016/17 or 16/17
 Water year YYYY,The hydrological water year - 1 October to 30 September,Water year 2016
