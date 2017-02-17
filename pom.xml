@@ -31,6 +31,15 @@
 				<role>Project lead</role>
 			</roles>
 		</developer>
+		<developer>
+			<id>Graham</id>
+			<name>Graham Willis</name>
+			<email>graham.willis@druidwood.co.uk</email>
+			<organization>Druid Wood Limited</organization>
+			<roles>
+				<role>Developer</role>
+			</roles>
+		</developer>
 	</developers>
 
 	<scm>
