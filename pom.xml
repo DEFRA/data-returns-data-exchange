@@ -25,20 +25,11 @@
 			<id>sam</id>
 			<name>Sam Gardner-Dell</name>
 			<email>sam.gardner-dell at environment-agency.gov.uk</email>
-			<organization>Environment Agency</organization>
-			<organizationUrl>http://www.environment-agency.gov.uk</organizationUrl>
-			<roles>
-				<role>Project lead</role>
-			</roles>
 		</developer>
 		<developer>
 			<id>Graham</id>
 			<name>Graham Willis</name>
 			<email>graham.willis@druidwood.co.uk</email>
-			<organization>Druid Wood Limited</organization>
-			<roles>
-				<role>Developer</role>
-			</roles>
 		</developer>
 	</developers>
 
