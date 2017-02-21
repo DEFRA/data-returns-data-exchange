@@ -30,7 +30,6 @@ public class MessageCodes {
         public final static String CiC = "{DR9150-Length}";
         public final static String Comments = "{DR9140-Length}";
         public final static String Mon_Point = "{DR9060-Length}";
-        public final static String Site_Name = "{DR9110-Length}";
     }
 
     /**
@@ -72,7 +71,6 @@ public class MessageCodes {
         public final static String Txt_Value = "{DR9080-Incorrect}";
         public final static String Unit = "{DR9050-Incorrect}";
         public final static String Rel_Trans = "{DR9170-Incorrect}";
-        public final static String Site_Name = "{DR9110-Incorrect}";
     }
 
     /**
@@ -81,7 +79,7 @@ public class MessageCodes {
     public class Conflict {
         public final static String ProhibitUnitForTxtValue = "{DR9050-Conflict}";
         public final static String RequireValueOrTxtValue = "{DR9999-Conflict}";
-        public final static String UniqueIdentifierSiteConflict = "{DR9000-Conflict}";
+        public final static String UniqueIdentifierSiteConflict = "{DR9110-Conflict}";
     }
 
     /**
@@ -117,7 +115,6 @@ public class MessageCodes {
         add(Length.CiC, new ArrayList<>(Collections.singletonList(FieldDefinition.CiC)));
         add(Length.Comments, new ArrayList<>(Collections.singletonList(FieldDefinition.Comments)));
         add(Length.Mon_Point, new ArrayList<>(Collections.singletonList(FieldDefinition.Mon_Point)));
-        add(Length.Site_Name, new ArrayList<>(Collections.singletonList(FieldDefinition.Site_Name)));
         /*
          * Add in the (atomic) Incorrect errors to the map
          */
@@ -147,7 +144,6 @@ public class MessageCodes {
         add(ControlledList.Rtn_Type, Collections.singletonList(FieldDefinition.Rtn_Type));
         add(ControlledList.Txt_Value, Collections.singletonList(FieldDefinition.Txt_Value));
         add(ControlledList.Unit, Collections.singletonList(FieldDefinition.Unit));
-        add(ControlledList.Site_Name, new ArrayList<>(Collections.singletonList(FieldDefinition.Site_Name)));
         /*
          * Add in the conflicts, optionally missing and dependency validations etc. The convention being applied is to
          * add first the primary data item - the header the error is being reported on and then
