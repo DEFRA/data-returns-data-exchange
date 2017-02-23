@@ -166,7 +166,24 @@ public class TextUtils {
         NARROW_NO_BREAK_SPACE(0x202f, SPACE),
         CHARACTER_TABULATION(0x0009, SPACE),
         LINE_FEED_LF(0x000a, SPACE),
-        CARRIAGE_RETURN_CR(0x000d, SPACE);
+        CARRIAGE_RETURN_CR(0x000d, SPACE),
+        /*
+         * When the data is copied from the look-up or controlled list search results
+         * pages in the browser the search marker causes the copy mechanism in windows and MAC
+         * to insert a non-breaking space character 0A into the copy buffer.
+         *
+         * When the data is transmitted in the multi-part form the 0A character is converted into
+         * utf-8 encoded unicode and the bytes C2 OA (49,824) are transmitted.
+         *
+         * The C2 0A is converted when it is stored as a Java utf-8 string as FF FD - the replacement character
+         * - it is used to replace any incoming character whose value is unknown or unrepresentable
+         * in unicode.
+         *
+         * So to get around this the system will replace the REPLACEMENT_CHARACTER as a single space
+         * which will have the perhaps undesirable side-effect of rendering any non-printing unicode character
+         * as a space. It is preferable however to the effects given by cut-and-paste operations in the browser.
+         */
+        REPLACEMENT_CHARACTER(0xfffd, SPACE);
 
         private final int codepoint;
         private CharacterSubstitution sub;
