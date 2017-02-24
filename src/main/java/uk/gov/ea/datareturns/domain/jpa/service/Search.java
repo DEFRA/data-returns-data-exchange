@@ -38,6 +38,7 @@ public class Search {
     private IndexReader reader = null;
     private IndexSearcher searcher = null;
     private QueryParser queryParser = null;
+    private final SiteDao siteDao;
 
     /**
      * Initialize the site search inverted index. For now a minimal configuration
@@ -47,22 +48,36 @@ public class Search {
      */
     @Inject
     public Search(SiteDao siteDao) throws IOException {
-        IndexWriterConfig config = new IndexWriterConfig(STANDARD_ANALYZER);
-        IndexWriter writer = new IndexWriter(INDEX, config);
+        this.siteDao = siteDao;
+        initialize();
+    }
 
-        // Collect the site, permit and permit alias into single documents and add them to the index
-        for(Site site : siteDao.list()) {
-            Document document = new Document();
-            document.add(new TextField(SITE, site.getName(), Field.Store.YES));
-            writer.addDocument(document);
+    /**
+     * Can be called to reinitialize the data after a change to the data
+     * @throws IOException
+     */
+    public void initialize()  {
+        LOGGER.info("Initializing permit lookup tool");
+        try {
+            IndexWriterConfig config = new IndexWriterConfig(STANDARD_ANALYZER);
+            IndexWriter writer = new IndexWriter(INDEX, config);
+
+            // Collect the site, permit and permit alias into single documents and add them to the index
+            for(Site site : siteDao.list()) {
+                Document document = new Document();
+                document.add(new TextField(SITE, site.getName(), Field.Store.YES));
+                writer.addDocument(document);
+            }
+            writer.close();
+
+            // For performance the searcher is shared across multiple searches -
+            // because the index does not change. The index reader will be left open
+            reader = DirectoryReader.open(INDEX);
+            searcher = new IndexSearcher(reader);
+            queryParser = new QueryParser(SITE, STANDARD_ANALYZER);
+        } catch (IOException e) {
+            LOGGER.error("Error initializing permit lookup tool: " + e.getMessage());
         }
-        writer.close();
-
-        // For performance the searcher is shared across multiple searches -
-        // because the index does not change. The index reader will be left open
-        reader = DirectoryReader.open(INDEX);
-        searcher = new IndexSearcher(reader);
-        queryParser = new QueryParser(SITE, STANDARD_ANALYZER);
     }
 
     /**

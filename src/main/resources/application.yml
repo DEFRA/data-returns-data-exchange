@@ -229,7 +229,7 @@ storage:
 ###############################################################################
 spring:
   profiles: dev_cluster,test_cluster
-  profiles.include: debug,cluster
+  profiles.include: debug,cluster,TestData
 
 
 ---
