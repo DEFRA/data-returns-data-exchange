@@ -42,15 +42,19 @@ public class DataReturnsZipFileModelTests {
     @Test
     public void testZipModelReadWrite() throws URISyntaxException, IOException {
         final DataReturnsZipFileModel model = new DataReturnsZipFileModel();
-        model.setInputFile(getTestFile(FILE_TEST_INPUT));
+        File inputFile = getTestFile(FILE_TEST_INPUT);
+        model.setInputFileName(inputFile.getName());
+        model.setInputData(FileUtils.readFileToByteArray(inputFile));
         model.addOutputFile(getTestFile(FILE_TEST_OUTPUT1));
         model.addOutputFile(getTestFile(FILE_TEST_OUTPUT2));
         final File zipFile = model.toZipFile(tempFolder);
         Assert.assertTrue(zipFile.exists());
 
         final DataReturnsZipFileModel readerModel = DataReturnsZipFileModel.fromZipFile(tempFolder, zipFile);
-        Assert.assertTrue(FileUtils.contentEquals(getTestFile(FILE_TEST_INPUT), readerModel.getInputFile()));
-        Assert.assertTrue(readerModel.getOutputFiles().size() == 2);
+        byte[] originalFileData = FileUtils.readFileToByteArray(getTestFile(FILE_TEST_INPUT));
+        byte[] processedFileData = readerModel.getInputData();
+        Assert.assertArrayEquals(originalFileData, processedFileData);
+        Assert.assertSame(2, readerModel.getOutputFiles().size());
 
         for (final File f : readerModel.getOutputFiles()) {
             Assert.assertTrue(FileUtils.contentEquals(getTestFile(f.getName()), f));

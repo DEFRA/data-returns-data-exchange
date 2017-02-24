@@ -1,6 +1,7 @@
 package uk.gov.ea.datareturns.domain.io.zip;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
 import uk.gov.ea.datareturns.domain.model.fields.impl.EaId;
 
 import java.io.File;
@@ -28,8 +29,10 @@ public class DataReturnsZipFileModel {
     /** Name of the fileName for output fileName identifier mappings */
     private static final String FILE_OUTPUT_IDENTIFIERS = DIR_METADATA + "outputFileIdentifiers.properties";
 
-    /** The original fileName uploaded by the user */
-    private File inputFile;
+    /** The original file data uploaded by the user */
+    private byte[] inputData;
+    private String inputFileName;
+
     /** Mapping of output fileName to EA_ID */
     private Map<String, EaId> outputFileIdentifiers;
     /** The output files (one per unique identifier) */
@@ -41,18 +44,20 @@ public class DataReturnsZipFileModel {
     public DataReturnsZipFileModel() {
     }
 
-    /**
-     * @return the inputFile
-     */
-    public File getInputFile() {
-        return this.inputFile;
+    public byte[] getInputData() {
+        return inputData;
     }
 
-    /**
-     * @param inputFile the inputFile to set
-     */
-    public void setInputFile(final File inputFile) {
-        this.inputFile = inputFile;
+    public void setInputData(byte[] inputData) {
+        this.inputData = inputData;
+    }
+
+    public String getInputFileName() {
+        return inputFileName;
+    }
+
+    public void setInputFileName(String inputFileName) {
+        this.inputFileName = inputFileName;
     }
 
     public Map<String, EaId> getOutputFileIdentifiers() {
@@ -97,7 +102,7 @@ public class DataReturnsZipFileModel {
      * @throws IOException if a problem occurred attempting to write the zip fileName.
      */
     public final File toZipFile(final File workFolder) throws IOException {
-        final File zipFile = new File(workFolder, this.inputFile.getName() + ".zip");
+        final File zipFile = File.createTempFile("drupload", ".zip", workFolder);
         try (
                 OutputStream fos = FileUtils.openOutputStream(zipFile);
                 ZipOutputStream zos = new ZipOutputStream(fos)) {
@@ -105,9 +110,9 @@ public class DataReturnsZipFileModel {
             zos.setLevel(Deflater.BEST_COMPRESSION);
 
             // Store the input fileName
-            ZipEntry entry = new ZipEntry(DIR_INPUT + this.inputFile.getName());
+            ZipEntry entry = new ZipEntry(DIR_INPUT + this.getInputFileName());
             zos.putNextEntry(entry);
-            FileUtils.copyFile(this.inputFile, zos);
+            zos.write(this.inputData);
             zos.closeEntry();
 
             // Store additional metadata
@@ -161,12 +166,12 @@ public class DataReturnsZipFileModel {
                             zipFileModel.outputFileIdentifiers.put(Objects.toString(fileName), new EaId(Objects.toString(eaIdString)));
                         });
                     } else {
-                        final File tempFile = new File(workFolder, entry.getName());
-                        FileUtils.copyInputStreamToFile(is, tempFile);
-
                         if (entry.getName().startsWith(DIR_INPUT)) {
-                            zipFileModel.setInputFile(tempFile);
+                            zipFileModel.setInputFileName(entry.getName());
+                            zipFileModel.setInputData(IOUtils.toByteArray(is));
                         } else {
+                            final File tempFile = new File(workFolder, entry.getName());
+                            FileUtils.copyInputStreamToFile(is, tempFile);
                             zipFileModel.addOutputFile(tempFile);
                         }
                     }

@@ -30,14 +30,6 @@ public class MetricsConfiguration extends MetricsConfigurerAdapter implements Je
      */
     @Override
     public void configureReporters(final MetricRegistry metricRegistry) {
-        //    	Console reporter
-        //        registerReporter(ConsoleReporter.forRegistry(metricRegistry).build()).start(1, TimeUnit.MINUTES);
-
-        //		Graphite graphite = new Graphite(graphiteHost, 1337);
-        //		GraphiteReporter graphiteReporter = GraphiteReporter.forRegistry(metricRegistry).build(graphite);
-        //		registerReporter(graphiteReporter);
-        //		graphiteReporter.start(10, TimeUnit.SECONDS);
-        //
         metricRegistry.register("jvm.attribute", new JvmAttributeGaugeSet());
         metricRegistry.register("jvm.classloader", new ClassLoadingGaugeSet());
         metricRegistry.register("jvm.filedescriptor", new FileDescriptorRatioGauge());

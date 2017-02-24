@@ -39,7 +39,7 @@ public interface CachingSupplier<T> extends Supplier<T> {
      * @return a {@link CachingSupplier} wrapping the delegate.
      */
     static <T> CachingSupplier<T> of(Supplier<T> delegate) {
-        return (delegate instanceof CachingSupplier) ? (CachingSupplier) delegate : new CachingSupplierImpl<>(delegate);
+        return (delegate instanceof CachingSupplier) ? (CachingSupplier<T>) delegate : new CachingSupplierImpl<>(delegate);
     }
 
     /**

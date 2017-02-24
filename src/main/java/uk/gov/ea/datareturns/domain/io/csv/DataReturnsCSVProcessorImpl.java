@@ -16,6 +16,7 @@ import uk.gov.ea.datareturns.domain.model.rules.FieldDefinition;
 
 import javax.inject.Inject;
 import java.io.File;
+import java.io.InputStream;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
@@ -40,11 +41,11 @@ public class DataReturnsCSVProcessorImpl implements DataReturnsCSVProcessor {
     /**
      * Read the content of the specified DEP compliant CSV file into the Java model
      *
-     * @param csvFile the DEP compliant CSV file to parse
+     * @param inputStream an {@link InputStream} from which DEP compliant CSV data can be read
      * @return a {@link List} composed of {@link DataSample} objects to represent the samples/readings submitted
      * @throws AbstractValidationException if a validation error occurs when attempting to read the DEP compliant CSV
      */
-    @Override public List<DataSample> read(final File csvFile) throws AbstractValidationException {
+    @Override public List<DataSample> read(InputStream inputStream) throws AbstractValidationException {
         final BeanConversionProcessor<DataSample> rowProcessor = new BeanConversionProcessor<>(DataSample.class);
         final CsvParserSettings parserSettings = new CsvParserSettings();
         parserSettings.setHeaderExtractionEnabled(true);
@@ -55,7 +56,7 @@ public class DataReturnsCSVProcessorImpl implements DataReturnsCSVProcessor {
         // creates a parser instance with the given settings
         final CsvParser parser = new CsvParser(parserSettings);
         try {
-            parser.parse(csvFile);
+            parser.parse(inputStream);
         } catch (final InconsistentRowException e) {
             // Row encountered with an inconsistent number of fields with respect to the header definitions.
             throw new FileStructureException(e.getMessage());
