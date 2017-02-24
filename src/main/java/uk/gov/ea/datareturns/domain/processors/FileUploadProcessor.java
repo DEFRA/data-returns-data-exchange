@@ -1,7 +1,7 @@
 package uk.gov.ea.datareturns.domain.processors;
 
-import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
@@ -17,13 +17,13 @@ import uk.gov.ea.datareturns.domain.model.rules.FileType;
 import uk.gov.ea.datareturns.domain.model.validation.DataSampleValidator;
 import uk.gov.ea.datareturns.domain.result.*;
 import uk.gov.ea.datareturns.domain.storage.StorageProvider;
-import uk.gov.ea.datareturns.util.StopWatch;
 
 import javax.inject.Inject;
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.*;
+import java.io.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
@@ -93,24 +93,13 @@ public class FileUploadProcessor extends AbstractReturnsProcessor<DataExchangeRe
             if (this.inputStream == null) {
                 throw new ProcessingException("Unable to process a null stream");
             }
-
-            final StopWatch stopwatch = new StopWatch("data-exchange upload timer");
-            stopwatch.startTask("Preparing File");
-
-            final File uploadedFile = File.createTempFile("dr-upload", ".csv", this.workingFolder);
-
-            // 1. Save upload file on server
-            FileUtils.copyInputStreamToFile(this.inputStream, uploadedFile);
+            byte[] data = IOUtils.toByteArray(new BufferedInputStream(this.inputStream));
 
             // 2. Do some basic checks on the upload file
-            checkUploadFile(this.clientFilename, uploadedFile);
-
-            stopwatch.startTask("Parsing file into model");
+            checkUploadFile(this.clientFilename, data);
 
             // 3. Read the CSV data into a model
-            final List<DataSample> model = csvProcessor.read(uploadedFile);
-
-            stopwatch.startTask("Validating model");
+            final List<DataSample> model = csvProcessor.read(new ByteArrayInputStream(data));
             // Validate the model
             final ValidationErrors validationErrors = this.validator.validateModel(model);
 
@@ -119,7 +108,6 @@ public class FileUploadProcessor extends AbstractReturnsProcessor<DataExchangeRe
 
             if (validationErrors.isValid()) {
                 LOGGER.debug("File '" + this.clientFilename + "' is VALID");
-                stopwatch.startTask("Preparing output files");
 
 				/*
                  * Prepare the data for output to Emma.
@@ -138,14 +126,13 @@ public class FileUploadProcessor extends AbstractReturnsProcessor<DataExchangeRe
                 }
 
                 // Persist the file to the configured storage provider (e.g. Amazon S3)
-                stopwatch.startTask("Zipping output files");
                 final DataReturnsZipFileModel zipModel = new DataReturnsZipFileModel();
-                zipModel.setInputFile(uploadedFile);
+                zipModel.setInputFileName(this.clientFilename);
+                zipModel.setInputData(data);
                 zipModel.setOutputFiles(outputFiles);
                 zipModel.setOutputFileIdentifiers(outputFileIdentifiers);
                 final File zipFile = zipModel.toZipFile(this.workingFolder);
 
-                stopwatch.startTask("Persisting output files to temporary storage");
                 final String fileKey = this.storage.storeTemporaryData(zipFile);
                 result.getUploadResult().setFileKey(fileKey);
 
@@ -161,12 +148,6 @@ public class FileUploadProcessor extends AbstractReturnsProcessor<DataExchangeRe
                 result.setValidationErrors(validationErrors);
                 result.setAppStatusCode(ApplicationExceptionType.VALIDATION_ERRORS.getAppStatusCode());
             }
-
-            stopwatch.stop();
-            if (LOGGER.isDebugEnabled()) {
-                LOGGER.debug(stopwatch.prettyPrint());
-            }
-
             return result;
         } catch (final IOException e) {
             throw new ProcessingException(e);
@@ -177,10 +158,10 @@ public class FileUploadProcessor extends AbstractReturnsProcessor<DataExchangeRe
      * Basic file validation
      *
      * @param clientFilename the filename of the file reported by the client
-     * @param uploadedFile the file that was uploaded
+     * @param data the file data that was uploaded
      * @throws AbstractValidationException if basic validation fails
      */
-    private static void checkUploadFile(final String clientFilename, final File uploadedFile) throws AbstractValidationException {
+    private static void checkUploadFile(final String clientFilename, byte[] data) throws AbstractValidationException {
         final String fileType = FilenameUtils.getExtension(clientFilename);
 
         // Release 1 must be csv - do not agree with checking file extension (means nothing) but this is a requirement!
@@ -189,7 +170,7 @@ public class FileUploadProcessor extends AbstractReturnsProcessor<DataExchangeRe
         }
 
         // Check for empty files
-        if (FileUtils.sizeOf(uploadedFile) == 0) {
+        if (data == null || data.length == 0) {
             throw new FileEmptyException("The uploaded file is empty");
         }
     }
