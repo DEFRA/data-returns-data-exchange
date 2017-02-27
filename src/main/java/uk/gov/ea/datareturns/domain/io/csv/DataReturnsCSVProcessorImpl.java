@@ -4,6 +4,8 @@ import com.univocity.parsers.csv.CsvParser;
 import com.univocity.parsers.csv.CsvParserSettings;
 import com.univocity.parsers.csv.CsvWriter;
 import com.univocity.parsers.csv.CsvWriterSettings;
+import org.apache.commons.io.IOUtils;
+import org.mozilla.universalchardet.UniversalDetector;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
@@ -15,11 +17,14 @@ import uk.gov.ea.datareturns.domain.model.DataSample;
 import uk.gov.ea.datareturns.domain.model.rules.FieldDefinition;
 
 import javax.inject.Inject;
+import java.io.ByteArrayInputStream;
 import java.io.File;
+import java.io.IOException;
 import java.io.InputStream;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Set;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
+import java.nio.charset.UnsupportedCharsetException;
+import java.util.*;
 
 /**
  * Data Returns CSV reader/writer for DEP compliant CSV files.
@@ -31,6 +36,10 @@ import java.util.Set;
 public class DataReturnsCSVProcessorImpl implements DataReturnsCSVProcessor {
     private static final Logger LOGGER = LoggerFactory.getLogger(DataReturnsCSVProcessor.class);
 
+    private final static Set<Charset> SUPPORT_CHARSETS = new HashSet<>(Arrays.asList(new Charset[] {
+            StandardCharsets.UTF_8, StandardCharsets.ISO_8859_1, Charset.forName("windows-1252")
+    }));
+
     private DataSampleBeanWriterProcessor writerProcessor;
 
     @Inject
@@ -39,13 +48,24 @@ public class DataReturnsCSVProcessorImpl implements DataReturnsCSVProcessor {
     }
 
     /**
-     * Read the content of the specified DEP compliant CSV file into the Java model
+     * Read the given source of DEP compliant CSV data into the Java model
      *
      * @param inputStream an {@link InputStream} from which DEP compliant CSV data can be read
      * @return a {@link List} composed of {@link DataSample} objects to represent the samples/readings submitted
      * @throws AbstractValidationException if a validation error occurs when attempting to read the DEP compliant CSV
      */
-    @Override public List<DataSample> read(InputStream inputStream) throws AbstractValidationException {
+    @Override public List<DataSample> read(InputStream inputStream) throws IOException, AbstractValidationException {
+        return read(IOUtils.toByteArray(inputStream));
+    }
+
+    /**
+     * Read the given source of DEP compliant CSV data into the Java model
+     *
+     * @param data a byte array containing DEP compliant CSV data
+     * @return a {@link List} composed of {@link DataSample} objects to represent the samples/readings submitted
+     * @throws AbstractValidationException if a validation error occurs when attempting to read the DEP compliant CSV
+     */
+    @Override public List<DataSample> read(byte[] data) throws AbstractValidationException {
         final BeanConversionProcessor<DataSample> rowProcessor = new BeanConversionProcessor<>(DataSample.class);
         final CsvParserSettings parserSettings = new CsvParserSettings();
         parserSettings.setHeaderExtractionEnabled(true);
@@ -56,7 +76,7 @@ public class DataReturnsCSVProcessorImpl implements DataReturnsCSVProcessor {
         // creates a parser instance with the given settings
         final CsvParser parser = new CsvParser(parserSettings);
         try {
-            parser.parse(inputStream);
+            parser.parse(new ByteArrayInputStream(data), autodetectCharset(data));
         } catch (final InconsistentRowException e) {
             // Row encountered with an inconsistent number of fields with respect to the header definitions.
             throw new FileStructureException(e.getMessage());
@@ -84,8 +104,32 @@ public class DataReturnsCSVProcessorImpl implements DataReturnsCSVProcessor {
             throw new MandatoryFieldMissingException(
                     "Missing fields one or more mandatory fields: " + FieldDefinition.MANDATORY_FIELD_NAMES.toString());
         }
-
         return rowProcessor.getBeans();
+
+    }
+
+    /**
+     * Attempts to detect the character set used to encode the given byte array
+     *
+     * @param data the byte array to test
+     * @return the correct character set used to encode the data (defaults to UTF8 if the charset cannot be detected)
+     */
+    private Charset autodetectCharset(byte[] data) {
+        // Default to expect UTF-8 encoded data.
+        Charset charset = StandardCharsets.UTF_8;
+        try {
+            UniversalDetector detector = new UniversalDetector();
+            detector.handleData(data);
+            detector.dataEnd();
+
+            Charset detected = Charset.forName(detector.getDetectedCharset());
+            if (SUPPORT_CHARSETS.contains(detected)) {
+                charset = detected;
+            }
+        } catch (UnsupportedCharsetException e) {
+            LOGGER.warn("Unable to autodetect charset of uploaded data.", e);
+        }
+        return charset;
     }
 
     /**

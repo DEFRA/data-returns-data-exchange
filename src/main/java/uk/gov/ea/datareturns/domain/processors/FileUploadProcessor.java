@@ -93,13 +93,12 @@ public class FileUploadProcessor extends AbstractReturnsProcessor<DataExchangeRe
             if (this.inputStream == null) {
                 throw new ProcessingException("Unable to process a null stream");
             }
-            byte[] data = IOUtils.toByteArray(new BufferedInputStream(this.inputStream));
-
+            byte[] data = IOUtils.toByteArray(this.inputStream);
             // 2. Do some basic checks on the upload file
             checkUploadFile(this.clientFilename, data);
 
             // 3. Read the CSV data into a model
-            final List<DataSample> model = csvProcessor.read(new ByteArrayInputStream(data));
+            final List<DataSample> model = csvProcessor.read(data);
             // Validate the model
             final ValidationErrors validationErrors = this.validator.validateModel(model);
 
