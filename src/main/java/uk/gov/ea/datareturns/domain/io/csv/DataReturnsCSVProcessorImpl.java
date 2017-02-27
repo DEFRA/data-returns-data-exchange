@@ -23,7 +23,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
-import java.nio.charset.UnsupportedCharsetException;
 import java.util.*;
 
 /**
@@ -126,8 +125,8 @@ public class DataReturnsCSVProcessorImpl implements DataReturnsCSVProcessor {
             if (SUPPORT_CHARSETS.contains(detected)) {
                 charset = detected;
             }
-        } catch (UnsupportedCharsetException e) {
-            LOGGER.warn("Unable to autodetect charset of uploaded data.", e);
+        } catch (IllegalArgumentException e) {
+            LOGGER.info("Unable to autodetect charset of uploaded data.", e);
         }
         return charset;
     }
