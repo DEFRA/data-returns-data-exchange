@@ -35,8 +35,14 @@ import java.util.*;
 public class DataReturnsCSVProcessorImpl implements DataReturnsCSVProcessor {
     private static final Logger LOGGER = LoggerFactory.getLogger(DataReturnsCSVProcessor.class);
 
-    private final static Set<Charset> SUPPORT_CHARSETS = new HashSet<>(Arrays.asList(new Charset[] {
-            StandardCharsets.UTF_8, StandardCharsets.ISO_8859_1, Charset.forName("windows-1252")
+    private static final Set<Charset> SUPPORTED_CHARSETS = new HashSet<>(Arrays.asList(new Charset[] {
+            StandardCharsets.UTF_8,
+            StandardCharsets.UTF_16,
+            StandardCharsets.UTF_16LE,
+            StandardCharsets.UTF_16BE,
+            StandardCharsets.ISO_8859_1,
+            Charset.forName("ISO-8859-15"),
+            Charset.forName("windows-1252")
     }));
 
     private DataSampleBeanWriterProcessor writerProcessor;
@@ -75,7 +81,7 @@ public class DataReturnsCSVProcessorImpl implements DataReturnsCSVProcessor {
         // creates a parser instance with the given settings
         final CsvParser parser = new CsvParser(parserSettings);
         try {
-            parser.parse(new ByteArrayInputStream(data), autodetectCharset(data));
+            parser.parse(new ByteArrayInputStream(data), detectCharset(data));
         } catch (final InconsistentRowException e) {
             // Row encountered with an inconsistent number of fields with respect to the header definitions.
             throw new FileStructureException(e.getMessage());
@@ -108,25 +114,29 @@ public class DataReturnsCSVProcessorImpl implements DataReturnsCSVProcessor {
     }
 
     /**
-     * Attempts to detect the character set used to encode the given byte array
+     * Attempts to detect the character set used to encode the given byte array.
+     *
+     * Assumes UTF-8 if the character set cannot be automatically detected (or if the data contains no specially encoded characters)
      *
      * @param data the byte array to test
      * @return the correct character set used to encode the data (defaults to UTF8 if the charset cannot be detected)
      */
-    private Charset autodetectCharset(byte[] data) {
+    private Charset detectCharset(byte[] data) {
+        UniversalDetector detector = new UniversalDetector();
+        detector.handleData(data);
+        detector.dataEnd();
+
         // Default to expect UTF-8 encoded data.
         Charset charset = StandardCharsets.UTF_8;
-        try {
-            UniversalDetector detector = new UniversalDetector();
-            detector.handleData(data);
-            detector.dataEnd();
-
-            Charset detected = Charset.forName(detector.getDetectedCharset());
-            if (SUPPORT_CHARSETS.contains(detected)) {
-                charset = detected;
+        if (detector.getDetectedCharset() != null) {
+            try {
+                Charset detected = Charset.forName(detector.getDetectedCharset());
+                if (SUPPORTED_CHARSETS.contains(detected)) {
+                    charset = detected;
+                }
+            } catch (IllegalArgumentException e) {
+                LOGGER.warn("Unable to load system charset for the type detected - " + detector.getDetectedCharset());
             }
-        } catch (IllegalArgumentException e) {
-            LOGGER.info("Unable to autodetect charset of uploaded data.", e);
         }
         return charset;
     }
