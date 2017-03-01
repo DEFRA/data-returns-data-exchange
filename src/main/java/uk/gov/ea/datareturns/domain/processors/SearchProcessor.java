@@ -57,7 +57,7 @@ public class SearchProcessor {
 
         // If we have no results use lucene to try and find the site
         if (results.size() == 0) {
-            tokenizer = new StringTokenizer(term, " ,.:;?!");
+            tokenizer = new StringTokenizer(term, " ,.:;?!-()/");
             StringJoiner sj = new StringJoiner(" AND ");
             while (tokenizer.hasMoreTokens()) {
                 String word = tokenizer.nextToken() + "*";
