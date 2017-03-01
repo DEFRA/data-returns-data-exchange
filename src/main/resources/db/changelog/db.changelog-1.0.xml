@@ -767,7 +767,6 @@
 		<loadData file="${EPR}" tableName="stage_permits"/>
 		<loadData file="${IPPC}" tableName="stage_permits"/>
 		<loadData file="${PRE}" tableName="stage_permits"/>
-		<loadData file="${TEST}" tableName="stage_permits"/>
 		<rollback>
 			<delete tableName="stage_permits"></delete>
 		</rollback>
