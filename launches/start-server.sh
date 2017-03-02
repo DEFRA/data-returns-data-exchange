@@ -14,7 +14,7 @@ if [[ ${rc} != 0 ]]; then
 	exit ${rc};
 fi
 
-server_cmd="$base_dir/target/data-returns-data-exchange-1.0-SNAPSHOT.jar"
+server_cmd="$base_dir/target/data-returns-data-exchange-1.0-SNAPSHOT.jar --spring.profiles.active=TestData"
 clear
 echo -e "Maven build successful, starting server: $server_cmd"
 ${server_cmd};
