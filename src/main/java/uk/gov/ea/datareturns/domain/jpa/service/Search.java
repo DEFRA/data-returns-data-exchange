@@ -2,6 +2,7 @@ package uk.gov.ea.datareturns.domain.jpa.service;
 
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
+import org.apache.lucene.analysis.CharArraySet;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
@@ -21,6 +22,7 @@ import uk.gov.ea.datareturns.domain.jpa.entities.Site;
 import javax.inject.Inject;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -34,7 +36,11 @@ public class Search {
 
     private static final String SITE = "site";
     private final Directory INDEX = new RAMDirectory();
-    private final StandardAnalyzer STANDARD_ANALYZER = new StandardAnalyzer();
+
+    final List<String> stopWords = Arrays.asList(); // Empty stop words list
+    final CharArraySet stopSet = new CharArraySet(stopWords, true);
+
+    private final StandardAnalyzer STANDARD_ANALYZER = new StandardAnalyzer(stopSet);
     private IndexReader reader = null;
     private IndexSearcher searcher = null;
     private QueryParser queryParser = null;
