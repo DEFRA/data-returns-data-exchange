@@ -109,8 +109,13 @@ public class DataReturnsCSVProcessorImpl implements DataReturnsCSVProcessor {
             throw new MandatoryFieldMissingException(
                     "Missing fields one or more mandatory fields: " + FieldDefinition.MANDATORY_FIELD_NAMES.toString());
         }
-        return rowProcessor.getBeans();
 
+        // Check that the file contains records as well as a header!
+        List<DataSample> records = rowProcessor.getBeans();
+        if (records.isEmpty()) {
+            throw new NoRecordsFoundException("The uploaded file does not contain any records.");
+        }
+        return records;
     }
 
     /**
