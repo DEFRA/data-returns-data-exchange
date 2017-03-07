@@ -1,5 +1,5 @@
 name,definition,example
-Week XX YYYY,A week number for a calendar week starting with a Monday. Use a leading zero for the first nine weeks. This is defined in ISO 8601.,Week 01 2016
+Week XX YYYY,A week number for a calendar week starting with a Monday. Use a leading 0 for the first 9 weeks. This is defined in ISO 8601.,Week 01 2016
 Jan YYYY,Month of January,Jan 2016
 Feb YYYY,Month of February,Feb 2016
 Mar YYYY,Month of March,Mar 2016
