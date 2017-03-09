@@ -1,11 +1,14 @@
 package uk.gov.ea.datareturns.domain.jpa.dao.impl;
 
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Repository;
 import uk.gov.ea.datareturns.domain.jpa.dao.MethodOrStandardDao;
 import uk.gov.ea.datareturns.domain.jpa.entities.MethodOrStandard;
 import uk.gov.ea.datareturns.util.TextUtils;
+
+import javax.inject.Inject;
 
 /**
  * DAO for monitoring methods and standards.
@@ -15,8 +18,9 @@ import uk.gov.ea.datareturns.util.TextUtils;
 @Repository
 @Scope(ConfigurableBeanFactory.SCOPE_SINGLETON)
 public class MethodOrStandardDaoImpl extends AbstractEntityDao<MethodOrStandard> implements MethodOrStandardDao {
-    public MethodOrStandardDaoImpl() {
-        super(MethodOrStandard.class);
+    @Inject
+    public MethodOrStandardDaoImpl(ApplicationEventPublisher publisher) {
+        super(MethodOrStandard.class, publisher);
     }
 
     /**

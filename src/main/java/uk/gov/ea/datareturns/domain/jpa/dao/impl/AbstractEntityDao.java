@@ -5,13 +5,15 @@ import org.apache.commons.collections4.bidimap.DualHashBidiMap;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.transaction.annotation.Transactional;
+import org.springframework.context.ApplicationEventPublisher;
 import uk.gov.ea.datareturns.domain.jpa.dao.EntityDao;
 import uk.gov.ea.datareturns.domain.jpa.dao.Key;
 import uk.gov.ea.datareturns.domain.jpa.dao.SearchFunction;
 import uk.gov.ea.datareturns.domain.jpa.entities.ControlledListEntity;
 import uk.gov.ea.datareturns.domain.jpa.hierarchy.Hierarchy;
 import uk.gov.ea.datareturns.domain.jpa.hierarchy.processors.GroupingEntityCommon;
+import uk.gov.ea.datareturns.events.DumbEvent;
+import uk.gov.ea.datareturns.events.EntityCreatedEvent;
 import uk.gov.ea.datareturns.util.CachingSupplier;
 import uk.gov.ea.datareturns.util.TextUtils;
 
@@ -50,6 +52,8 @@ public abstract class AbstractEntityDao<E extends ControlledListEntity> implemen
     private final Class<E> entityClass;
     private BeanInfo entityBeanInfo;
 
+    private final ApplicationEventPublisher publisher;
+
     @PersistenceContext
     protected EntityManager entityManager;
 
@@ -57,8 +61,8 @@ public abstract class AbstractEntityDao<E extends ControlledListEntity> implemen
      * Let the Dao class know the type of entity in order that type-safe
      * hibernate operations can be performed
      */
-    public AbstractEntityDao(Class<E> entityClass) {
-        this(entityClass, null);
+    public AbstractEntityDao(Class<E> entityClass, ApplicationEventPublisher publisher) {
+        this(entityClass, publisher, null);
     }
 
     /**
@@ -67,8 +71,12 @@ public abstract class AbstractEntityDao<E extends ControlledListEntity> implemen
      * @param entityClass
      * @param groupingEntityCommon
      */
-    public AbstractEntityDao(Class<E> entityClass, GroupingEntityCommon<? extends Hierarchy.GroupedHierarchyEntity> groupingEntityCommon) {
+    public AbstractEntityDao(Class<E> entityClass, ApplicationEventPublisher publisher,
+                             GroupingEntityCommon<? extends Hierarchy.GroupedHierarchyEntity> groupingEntityCommon
+                             ) {
+
         this.entityClass = entityClass;
+
         try {
             this.entityBeanInfo = Introspector.getBeanInfo(entityClass);
         } catch (IntrospectionException e) {
@@ -82,6 +90,8 @@ public abstract class AbstractEntityDao<E extends ControlledListEntity> implemen
         if (this.groupingEntityCommon != null) {
             this.groupingEntityCommon.setDao(this);
         }
+
+        this.publisher = publisher;
 
     }
 
@@ -238,7 +248,7 @@ public abstract class AbstractEntityDao<E extends ControlledListEntity> implemen
     /**
      * Clear the caches
      */
-    protected final void clearCache() {
+    public final void clearCache() {
         LOGGER.info("Clear caches for: " + entityClass.getSimpleName());
         cache.clear();
 
@@ -250,11 +260,12 @@ public abstract class AbstractEntityDao<E extends ControlledListEntity> implemen
      * Add a new entity of type <E>
      *
      */
-    @Override @Transactional
+    @Override
     public final void add(E entity) {
         entityManager.persist(entity);
-        entityManager.flush();
         LOGGER.info("Added: " + entityClass.getSimpleName() + "id: " + entity.getId() + " " + entity.getName());
+        publisher.publishEvent(new EntityCreatedEvent<>(entity));
+        publisher.publishEvent(new DumbEvent());
         clearCache();
     }
 
@@ -264,11 +275,11 @@ public abstract class AbstractEntityDao<E extends ControlledListEntity> implemen
      * @param id The entity identifier
      * @throws IllegalArgumentException
      */
-    @Override @Transactional
+    @Override
     public final void removeById(long id) throws IllegalArgumentException {
         E entity = getById(id);
         entityManager.remove(entity);
-        LOGGER.info("Deleted: " + entityClass.getSimpleName() + " ID: " + id);
+        LOGGER.info("Deleted " + entityClass.getSimpleName() + ": " + id);
         clearCache();
     }
 

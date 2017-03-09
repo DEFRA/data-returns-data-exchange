@@ -1,6 +1,7 @@
 package uk.gov.ea.datareturns.domain.jpa.dao.impl;
 
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Repository;
 import uk.gov.ea.datareturns.domain.jpa.dao.ReturnTypeDao;
@@ -19,7 +20,7 @@ import javax.inject.Inject;
 public class ReturnTypeDaoImpl extends AbstractEntityDao<ReturnType> implements ReturnTypeDao {
 
     @Inject
-    public ReturnTypeDaoImpl(GroupingEntityCommon<ReturnType> groupingEntityCommon) {
-        super(ReturnType.class, groupingEntityCommon);
+    public ReturnTypeDaoImpl(GroupingEntityCommon<ReturnType> groupingEntityCommon, ApplicationEventPublisher publisher) {
+        super(ReturnType.class, publisher, groupingEntityCommon);
     }
 }

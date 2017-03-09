@@ -20,7 +20,7 @@ public class Site implements ControlledListEntity {
     private Long id;
 
     @Basic
-    @Column(name = "name", nullable = false, length = 10)
+    @Column(name = "name", nullable = false, length = 10, unique = true)
     private String name;
 
     public Long getId() {
