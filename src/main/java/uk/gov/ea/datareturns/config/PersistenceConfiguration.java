@@ -1,6 +1,6 @@
 package uk.gov.ea.datareturns.config;
 
-import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.hibernate.jpa.HibernatePersistenceProvider;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceBuilder;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
@@ -22,7 +22,7 @@ import javax.sql.DataSource;
  */
 @Configuration
 @EnableTransactionManagement
-public class DatabaseConfiguration {
+public class PersistenceConfiguration {
 
     /**
      * Creates the primary application datasource from the spring.datasource section of the configuration
@@ -37,25 +37,29 @@ public class DatabaseConfiguration {
     }
 
     /**
+     * Create the Hibernate JPA adaptor
+     * @return
+     */
+    private HibernateJpaVendorAdapter vendorAdapter() {
+        HibernateJpaVendorAdapter vendorAdapter = new HibernateJpaVendorAdapter();
+        return vendorAdapter;
+    }
+
+    /**
      * Bean factory for the JPA entity manager
      *
      * @return a {@link LocalContainerEntityManagerFactoryBean} configured for the application database
      */
-    @Bean
-    @ConditionalOnMissingBean
-    public LocalContainerEntityManagerFactoryBean entityManagerFactory() {
+    private LocalContainerEntityManagerFactoryBean entityManagerFactory() {
         final LocalContainerEntityManagerFactoryBean entityManagerFactory = new LocalContainerEntityManagerFactoryBean();
+
+        entityManagerFactory.setJpaVendorAdapter(vendorAdapter());
         entityManagerFactory.setDataSource(primaryDataSource());
+        entityManagerFactory.setPersistenceProviderClass(HibernatePersistenceProvider.class);
+
         entityManagerFactory.setPersistenceUnitName("uk.gov.ea.datareturns.domain.jpa");
-        //		entityManagerFactory.setPackagesToScan("uk.gov.ea.datareturns.domain.jpa.entities");
-
-        // Vendor adapter
-        final HibernateJpaVendorAdapter vendorAdapter = new HibernateJpaVendorAdapter();
-        entityManagerFactory.setJpaVendorAdapter(vendorAdapter);
-
-        // Additional hibernate properties
-        //Properties additionalProperties = new Properties();
-        //entityManagerFactory.setJpaProperties(additionalProperties);
+        entityManagerFactory.setPackagesToScan("uk.gov.ea.datareturns.domain.jpa.entities");
+        entityManagerFactory.setJpaVendorAdapter(vendorAdapter());
         return entityManagerFactory;
     }
 

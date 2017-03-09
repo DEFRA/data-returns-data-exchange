@@ -1,5 +1,8 @@
 package uk.gov.ea.datareturns.domain.jpa.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import org.hibernate.annotations.GenericGenerator;
+
 import javax.persistence.*;
 
 /**
@@ -7,14 +10,16 @@ import javax.persistence.*;
  * The persistent class for the unique_identifiers database table.
  *
  */
-@SuppressWarnings({ "JavaDoc", "unused" })
 @Entity
 @Table(name = "unique_identifier_aliases")
+@GenericGenerator(name = "idGenerator", strategy = "org.hibernate.id.enhanced.SequenceStyleGenerator", parameters = {
+        @org.hibernate.annotations.Parameter(name = "sequence_name", value = "unique_identifier_aliases_id_seq") }
+)
 public class UniqueIdentifierAlias implements ControlledListEntity {
 
+    @JsonIgnore
     @Id
-    @SequenceGenerator(name = "unique_identifier_aliases_id_seq", sequenceName = "unique_identifier_aliases_id_seq", allocationSize = 1)
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "unique_identifier_aliases_id_seq")
+    @GeneratedValue(generator = "idGenerator")
     private Long id;
 
     @Basic

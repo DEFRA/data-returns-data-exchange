@@ -1,6 +1,5 @@
 package uk.gov.ea.datareturns.domain.jpa.dao;
 
-import org.springframework.transaction.annotation.Transactional;
 import uk.gov.ea.datareturns.domain.jpa.entities.ControlledListEntity;
 import uk.gov.ea.datareturns.domain.jpa.hierarchy.Hierarchy;
 import uk.gov.ea.datareturns.domain.jpa.hierarchy.processors.GroupingEntityCommon;
@@ -122,7 +121,7 @@ public interface EntityDao<E extends ControlledListEntity> {
      * Add a new entity of type <E>
      *
      */
-    @Transactional void add(E entity);
+    void add(E entity);
 
     /**
      * Remove an entity of type <E>
@@ -130,12 +129,17 @@ public interface EntityDao<E extends ControlledListEntity> {
      * @param id The entity identifier
      * @throws IllegalArgumentException
      */
-    @Transactional void removeById(long id) throws IllegalArgumentException;
+    void removeById(long id) throws IllegalArgumentException;
 
     /**
      * Get the class of the entity being operated on
      */
     Class<E> getEntityClass();
+
+    /**
+     * Clear the (local) caches
+     */
+    void clearCaches();
 
     /**
      * Retrieve a DAO for a given DAO class

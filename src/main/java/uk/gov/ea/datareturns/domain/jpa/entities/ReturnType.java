@@ -1,6 +1,7 @@
 package uk.gov.ea.datareturns.domain.jpa.entities;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import org.hibernate.annotations.GenericGenerator;
 import uk.gov.ea.datareturns.domain.jpa.hierarchy.Hierarchy;
 
 import javax.persistence.*;
@@ -9,14 +10,15 @@ import javax.persistence.*;
  * The persistent class for the return_types database table.
  *
  */
-@SuppressWarnings({ "JavaDoc", "unused" })
 @Entity
 @Table(name = "return_types")
+@GenericGenerator(name = "idGenerator", strategy = "org.hibernate.id.enhanced.SequenceStyleGenerator", parameters = {
+        @org.hibernate.annotations.Parameter(name = "sequence_name", value = "return_types_id_seq") }
+)
 public class ReturnType implements ControlledListEntity, Hierarchy.GroupedHierarchyEntity {
 
     @Id
-    @SequenceGenerator(name = "return_types_id_seq", sequenceName = "return_types_id_seq", allocationSize = 1)
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "return_types_id_seq")
+    @GeneratedValue(generator = "idGenerator")
     @JsonIgnore
     private Long id;
 

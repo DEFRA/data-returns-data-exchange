@@ -17,9 +17,17 @@ spring:
     username: ${db.username}
     password: ${db.password}
     driverClassName: ${db.driver}
+    tomcat.max-wait: 10000
+    tomcat.max-active: 50
+    tomcat.test-on-borrow: true
+
   jpa:
     database-platform: ${db.dialect}
     show-sql: false
+    hibernate:
+      ddl-auto: validate
+    properties:
+      hibernate.cache.use_second_level_cache: false
 
 # Congiguration for authorization hashing
 crypt:
@@ -62,7 +70,7 @@ logging:
     org.springframework: WARN
     org.springframework.boot: WARN
     org.springframework.boot.context.embedded.jetty.JettyEmbeddedServletContainer: INFO
-    
+
     javax.xml.bind: WARN
     
     # Database

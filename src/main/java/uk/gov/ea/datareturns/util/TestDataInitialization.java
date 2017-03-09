@@ -2,13 +2,10 @@ package uk.gov.ea.datareturns.util;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.context.annotation.Profile;
 import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Component;
 import uk.gov.ea.datareturns.domain.jpa.service.SitePermitService;
 
-import javax.annotation.PostConstruct;
-import javax.annotation.PreDestroy;
 import javax.inject.Inject;
 
 /**
@@ -17,7 +14,6 @@ import javax.inject.Inject;
  * on start-up and removes on shutdown. Called wherever the TestData profile is used
  */
 @Component
-@Profile("TestData")
 public class TestDataInitialization {
     protected static final Logger LOGGER = LoggerFactory.getLogger(TestDataInitialization.class);
 
@@ -37,7 +33,6 @@ public class TestDataInitialization {
         this.sitePermitService = sitePermitService;
     }
 
-    @PostConstruct
     public void setUpTestData() {
         try {
             LOGGER.info("Test data initialization...");
@@ -48,7 +43,6 @@ public class TestDataInitialization {
         }
     }
 
-    @PreDestroy
     public void tearDownTestData() {
         try {
             LOGGER.info("Test data removal...");

@@ -1,6 +1,7 @@
 package uk.gov.ea.datareturns.domain.jpa.entities;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import org.hibernate.annotations.GenericGenerator;
 import uk.gov.ea.datareturns.domain.jpa.hierarchy.Hierarchy;
 
 import javax.persistence.*;
@@ -11,14 +12,15 @@ import java.util.Set;
  * The persistent class for the units database table.
  *
  */
-@SuppressWarnings({ "JavaDoc", "unused" })
 @Entity
 @Table(name = "units")
+@GenericGenerator(name = "idGenerator", strategy = "org.hibernate.id.enhanced.SequenceStyleGenerator", parameters = {
+        @org.hibernate.annotations.Parameter(name = "sequence_name", value = "units_id_seq") }
+)
 public class Unit implements AliasingEntity, Hierarchy.GroupedHierarchyEntity {
-    @Id
-    @SequenceGenerator(name = "units_id_seq", sequenceName = "units_id_seq", allocationSize = 1)
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "units_id_seq")
     @JsonIgnore
+    @Id
+    @GeneratedValue(generator = "idGenerator")
     private Long id;
 
     @Basic

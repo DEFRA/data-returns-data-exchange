@@ -1,6 +1,7 @@
 package uk.gov.ea.datareturns.domain.jpa.entities;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
 
@@ -11,11 +12,13 @@ import javax.persistence.*;
 @SuppressWarnings({ "JavaDoc", "unused" })
 @Entity
 @Table(name = "methods_or_standards")
+@GenericGenerator(name = "idGenerator", strategy = "org.hibernate.id.enhanced.SequenceStyleGenerator", parameters = {
+        @org.hibernate.annotations.Parameter(name = "sequence_name", value = "methods_or_standards_id_seq") }
+)
 public class MethodOrStandard implements ControlledListEntity {
 
     @Id
-    @SequenceGenerator(name = "methods_or_standards_id_seq", sequenceName = "methods_or_standards_id_seq", allocationSize = 1)
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "methods_or_standards_id_seq")
+    @GeneratedValue(generator = "idGenerator")
     @JsonIgnore
     private Long id;
 

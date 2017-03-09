@@ -12,8 +12,6 @@ import uk.gov.ea.datareturns.domain.jpa.dao.SearchFunction;
 import uk.gov.ea.datareturns.domain.jpa.entities.ControlledListEntity;
 import uk.gov.ea.datareturns.domain.jpa.hierarchy.Hierarchy;
 import uk.gov.ea.datareturns.domain.jpa.hierarchy.processors.GroupingEntityCommon;
-import uk.gov.ea.datareturns.events.DumbEvent;
-import uk.gov.ea.datareturns.events.EntityCreatedEvent;
 import uk.gov.ea.datareturns.util.CachingSupplier;
 import uk.gov.ea.datareturns.util.TextUtils;
 
@@ -248,11 +246,9 @@ public abstract class AbstractEntityDao<E extends ControlledListEntity> implemen
     /**
      * Clear the caches
      */
-    public final void clearCache() {
+    public final void clearCaches() {
         LOGGER.info("Clear caches for: " + entityClass.getSimpleName());
         cache.clear();
-
-        LOGGER.info("Clear name to mash cache: " + entityClass.getSimpleName());
         mashAndNameCache.clear();
     }
 
@@ -264,9 +260,6 @@ public abstract class AbstractEntityDao<E extends ControlledListEntity> implemen
     public final void add(E entity) {
         entityManager.persist(entity);
         LOGGER.info("Added: " + entityClass.getSimpleName() + "id: " + entity.getId() + " " + entity.getName());
-        publisher.publishEvent(new EntityCreatedEvent<>(entity));
-        publisher.publishEvent(new DumbEvent());
-        clearCache();
     }
 
     /**
@@ -280,7 +273,6 @@ public abstract class AbstractEntityDao<E extends ControlledListEntity> implemen
         E entity = getById(id);
         entityManager.remove(entity);
         LOGGER.info("Deleted " + entityClass.getSimpleName() + ": " + id);
-        clearCache();
     }
 
     /**

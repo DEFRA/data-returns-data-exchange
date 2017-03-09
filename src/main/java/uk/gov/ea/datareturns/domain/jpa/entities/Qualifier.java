@@ -1,6 +1,7 @@
 package uk.gov.ea.datareturns.domain.jpa.entities;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
 
@@ -8,15 +9,16 @@ import javax.persistence.*;
  * The persistent class for the qualifiers database table.
  *
  */
-@SuppressWarnings({ "JavaDoc", "unused" })
 @Entity
 @Table(name = "qualifiers")
+@GenericGenerator(name = "idGenerator", strategy = "org.hibernate.id.enhanced.SequenceStyleGenerator", parameters = {
+        @org.hibernate.annotations.Parameter(name = "sequence_name", value = "qualifiers_id_seq") }
+)
 public class Qualifier implements ControlledListEntity {
 
-    @JsonIgnore
     @Id
-    @SequenceGenerator(name = "qualifiers_id_seq", sequenceName = "qualifiers_id_seq", allocationSize = 1)
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "qualifiers_id_seq")
+    @GeneratedValue(generator = "idGenerator")
+    @JsonIgnore
     private Long id;
 
     @Basic
