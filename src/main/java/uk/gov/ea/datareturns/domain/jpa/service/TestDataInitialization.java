@@ -60,10 +60,6 @@ public class TestDataInitialization {
     public void setUpTestData() {
         LOGGER.info("Test data initialization...");
 
-        // Remove any test data still persisted
-        // probably due to an ungraceful termination
-        tearDownTestData();
-
         // Add in the test data
         try {
             Site site2 = new Site();
@@ -90,8 +86,8 @@ public class TestDataInitialization {
             uniqueIdentifierDao.add(uniqueIdentifier1);
             uniqueIdentifierAliasDao.add(uniqueIdentifierAlias);
 
-        } catch (Exception e) {
-            LOGGER.warn("Error adding test data: " + e.getMessage());
+        } catch (Throwable e) {
+            LOGGER.warn("Cannot add test data: " + e.getMessage());
         }
 
         search.initialize();
@@ -142,7 +138,7 @@ public class TestDataInitialization {
             }
 
             LOGGER.info(ctr + " records removed");
-        } catch (Exception e) {
+        } catch (Throwable e) {
             LOGGER.info("Cannot remove test data: " + e.getMessage());
         }
     }
