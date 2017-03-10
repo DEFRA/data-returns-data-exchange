@@ -36,10 +36,10 @@ public class UniqueIdentifierTests {
      */
     @Test
     public void getUniqueIdentifierFromName() {
-        UniqueIdentifier uniqueIdentifier = uniqueIdentifierDao.getByName("AA9999AA");
-        Assert.assertEquals(uniqueIdentifier.getName(), "AA9999AA");
-        uniqueIdentifier = uniqueIdentifierDao.getByName("AA9999AA");
-        Assert.assertEquals(uniqueIdentifier.getName(), "AA9999AA");
+        UniqueIdentifier uniqueIdentifier = uniqueIdentifierDao.getByName("42355");
+        Assert.assertEquals(uniqueIdentifier.getName(), "42355");
+        uniqueIdentifier = uniqueIdentifierDao.getByName("42355");
+        Assert.assertEquals(uniqueIdentifier.getName(), "42355");
     }
 
     /**
@@ -47,10 +47,10 @@ public class UniqueIdentifierTests {
      */
     @Test
     public void getUniqueIdentifierFromAliasName() {
-        UniqueIdentifier uniqueIdentifier = uniqueIdentifierDao.getByNameOrAlias(Key.explicit("AA9998AA"));
-        Assert.assertEquals(uniqueIdentifier.getName(), "AA9999AA");
-        uniqueIdentifier = uniqueIdentifierDao.getByNameOrAlias(Key.relaxed("AA9998AA"));
-        Assert.assertEquals(uniqueIdentifier.getName(), "AA9999AA");
+        UniqueIdentifier uniqueIdentifier = uniqueIdentifierDao.getByNameOrAlias(Key.explicit("UP3791FG"));
+        Assert.assertEquals(uniqueIdentifier.getName(), "42355");
+        uniqueIdentifier = uniqueIdentifierDao.getByNameOrAlias(Key.relaxed("UP3791FG"));
+        Assert.assertEquals(uniqueIdentifier.getName(), "42355");
     }
 
     /**
@@ -67,7 +67,7 @@ public class UniqueIdentifierTests {
      */
     @Test
     public void getUniqueIdentifierFound() {
-        boolean found = uniqueIdentifierDao.uniqueIdentifierExists("AA9998AA");
+        boolean found = uniqueIdentifierDao.uniqueIdentifierExists("UP3791FG");
         Assert.assertTrue(found);
     }
 
@@ -85,9 +85,9 @@ public class UniqueIdentifierTests {
      */
     @Test
     public void getSite() {
-        Site s1 = siteDao.getByName("Test Site");
+        Site s1 = siteDao.getByName("Biffa - Marchington Landfill Site");
         Assert.assertNotNull(s1);
-        Site s2 = siteDao.getByName(Key.relaxed(" TEST   sitE "));
+        Site s2 = siteDao.getByName(Key.relaxed(" Biffa - marchington  Landfill Site"));
         Assert.assertNull(s2);
     }
 
@@ -96,9 +96,9 @@ public class UniqueIdentifierTests {
      */
     @Test
     public void uniqueIdentifierBySiteName() {
-        Set<UniqueIdentifier> uniqueIdentifiers = uniqueIdentifierDao.getUniqueIdentifierBySiteName("Test Site");
+        Set<UniqueIdentifier> uniqueIdentifiers = uniqueIdentifierDao.getUniqueIdentifierBySiteName("Biffa - Marchington Landfill Site");
         Assert.assertNotNull(uniqueIdentifiers);
         Set<String> names = uniqueIdentifiers.stream().map(UniqueIdentifier::getName).collect(Collectors.toSet());
-        Assert.assertTrue(names.contains("AA9999AA"));
+        Assert.assertTrue(names.contains("42355"));
     }
 }
