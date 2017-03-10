@@ -67,7 +67,6 @@ logging:
     
     # Database
     org.hibernate: WARN
-    org.hibernate.engine.jdbc.spi.SqlExceptionHelper: OFF
     net.sf.ehcache: WARN
     liquibase: INFO
     
