@@ -15,6 +15,8 @@ public class MetricsConstants {
         String MEASUREMENT_VALIDATION_EVENT = "validation_event";
         /** measurement (table) name for validation errors */
         String MEASUREMENT_VALIDATION_ERROR = "validation_error";
+        /** measurement (table) name for submissions to the downstream system */
+        String MEASUREMENT_SUBMISSIONS = "submissions";
         /** measurement (table) name for controlled list usage data */
         String MEASUREMENT_CONTROLLED_LIST_USAGE = "controlled_list_usage";
 
@@ -75,6 +77,14 @@ public class MetricsConstants {
         String FIELD_EA_ID_COUNT = "eaid_count";
         /** time taken (in ms) to process the file */
         String FIELD_RUNTIME_MS = "runtime_ms";
+    }
+
+    /**
+     * Constants specific to submission metrics
+     */
+    public interface SubmissionEvent extends Common {
+        /** the total number of records processed */
+        String FIELD_RECORD_COUNT = "record_count";
     }
 
 }

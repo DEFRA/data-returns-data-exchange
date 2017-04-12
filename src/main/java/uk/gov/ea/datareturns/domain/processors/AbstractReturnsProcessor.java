@@ -69,6 +69,7 @@ public abstract class AbstractReturnsProcessor<R> {
     @SuppressWarnings("WeakerAccess")
     protected void cleanup() {
         if (!FileUtils.deleteQuietly(workingFolder)) {
+            LOGGER.error("Unable to delete working folder " + workingFolder.getAbsolutePath());
             try {
                 FileUtils.forceDeleteOnExit(workingFolder);
             } catch (final IOException e) {
