@@ -9,12 +9,11 @@ import uk.gov.ea.datareturns.config.ProcessorSettings;
 import uk.gov.ea.datareturns.domain.exceptions.ProcessingException;
 import uk.gov.ea.datareturns.domain.io.zip.DataReturnsZipFileModel;
 import uk.gov.ea.datareturns.domain.model.fields.impl.EaId;
-import uk.gov.ea.datareturns.domain.monitorpro.MonitorProTransportHandler;
+import uk.gov.ea.datareturns.domain.monitorpro.TransportHandler;
 import uk.gov.ea.datareturns.domain.result.CompleteResult;
 import uk.gov.ea.datareturns.domain.result.DataExchangeResult;
 import uk.gov.ea.datareturns.domain.storage.StorageProvider;
 import uk.gov.ea.datareturns.domain.storage.StorageProvider.StoredFile;
-import uk.gov.ea.datareturns.util.StopWatch;
 
 import javax.inject.Inject;
 import java.io.File;
@@ -34,7 +33,7 @@ import java.util.Map;
 public class FileCompletionProcessor extends AbstractReturnsProcessor<DataExchangeResult> {
     private static final Logger LOGGER = LoggerFactory.getLogger(FileCompletionProcessor.class);
 
-    private final MonitorProTransportHandler monitorProHandler;
+    private final TransportHandler transportHandler;
 
     private final StorageProvider storage;
 
@@ -51,15 +50,15 @@ public class FileCompletionProcessor extends AbstractReturnsProcessor<DataExchan
      *
      * @param processorSettings processor specific configuration settings
      * @param storage the storage provider.
-     * @param monitorProHandler the MonitorPro transport handler
+     * @param transportHandler the downstream transport handler
      * @throws ProcessingException if a processing error occurs while attempting to complete the file submission
      */
     @Inject
     public FileCompletionProcessor(final ProcessorSettings processorSettings, final StorageProvider storage,
-            final MonitorProTransportHandler monitorProHandler) throws ProcessingException {
+            final TransportHandler transportHandler) throws ProcessingException {
         super(processorSettings);
         this.storage = storage;
-        this.monitorProHandler = monitorProHandler;
+        this.transportHandler = transportHandler;
     }
 
     /* (non-Javadoc)
@@ -68,32 +67,20 @@ public class FileCompletionProcessor extends AbstractReturnsProcessor<DataExchan
     @Override
     public DataExchangeResult doProcess() throws ProcessingException {
         try {
-            final StopWatch stopwatch = new StopWatch("data-exchange complete timer");
-            stopwatch.startTask("Retrieving file from temporary storage");
-
             final StoredFile storedFile = this.storage.retrieveTemporaryData(this.storedFileKey);
 
-            stopwatch.startTask("Extracting data files");
             final DataReturnsZipFileModel zipModel = DataReturnsZipFileModel.fromZipFile(this.workingFolder, storedFile.getFile());
 
-            stopwatch.startTask("Sending data to monitor pro");
             for (final File outputFile : zipModel.getOutputFiles()) {
                 final EaId eaId = zipModel.getOutputFileIdentifiers().get(outputFile.getName());
-                this.monitorProHandler.sendNotifications(this.userEmail, this.originalFilename, eaId.getValue().getName(), outputFile);
+                this.transportHandler.sendNotifications(this.userEmail, this.originalFilename, eaId.getValue().getName(), outputFile);
             }
 
-            stopwatch.startTask("Moving data to audit store");
             final Map<String, String> metadata = new LinkedHashMap<>();
             metadata.put("originator-email", this.userEmail);
             metadata.put("original-filename", this.originalFilename);
 
             this.storage.moveToAuditStore(this.storedFileKey, metadata);
-
-            stopwatch.stop();
-            if (LOGGER.isDebugEnabled()) {
-                LOGGER.debug(stopwatch.prettyPrint());
-            }
-
             return new DataExchangeResult(new CompleteResult(this.storedFileKey, this.userEmail));
         } catch (final IOException e) {
             throw new ProcessingException(e);

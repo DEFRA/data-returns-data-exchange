@@ -67,4 +67,16 @@ public class Pointcuts {
     @Pointcut("execution(public * uk.gov.ea.datareturns.domain.model.validation.DataSampleValidator.validateModel(*)) && args(model)")
     public void modelValidation(List<DataSample> model) {
     }
+
+    /**
+     * Pointcut to intercept submission of data to the downstream system
+     *
+     * @param originatorEmail the email address of the user that uploaded the source file that this output file has been created from
+     * @param originatorFilename the name of the file the user uploaded to the datareturns service
+     * @param eaId the EA Unique Identifier that the data in the output file pertains to
+     * @param returnsCSVFile the CSV file to send to MonitorPro
+     */
+    @Pointcut("execution(public * uk.gov.ea.datareturns.domain.monitorpro.TransportHandler.sendNotifications(..)) && args(originatorEmail, originatorFilename, eaId, returnsCSVFile)")
+    public void dataSubmission(String originatorEmail, String originatorFilename, String eaId, File returnsCSVFile) {
+    }
 }

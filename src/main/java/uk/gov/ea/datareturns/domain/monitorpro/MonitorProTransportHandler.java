@@ -26,7 +26,7 @@ import java.util.Map;
  * @author Sam Gardner-Dell
  */
 @Component
-public class MonitorProTransportHandler {
+public class MonitorProTransportHandler implements TransportHandler {
     private static final Logger LOGGER = LoggerFactory.getLogger(MonitorProTransportHandler.class);
 
     private static final String MONITOR_PRO_MUSTACHE_TEMPLATE_KEY = "MONITOR_PRO_TEMPLATE";
@@ -52,7 +52,7 @@ public class MonitorProTransportHandler {
      * @param returnsCSVFile the CSV file to send to MonitorPro
      * @throws MonitorProTransportException if a problem occurred when attempting to send the file to MonitorPro
      */
-    public void sendNotifications(final String originatorEmail, final String originatorFilename, final String eaId,
+    @Override public void sendNotifications(final String originatorEmail, final String originatorFilename, final String eaId,
             final File returnsCSVFile)
             throws MonitorProTransportException {
         sendNotifications(originatorEmail, originatorFilename, eaId, returnsCSVFile, new DefaultTransportHandler());
