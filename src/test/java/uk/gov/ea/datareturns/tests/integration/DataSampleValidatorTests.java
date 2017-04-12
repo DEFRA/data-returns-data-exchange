@@ -225,7 +225,7 @@ public class DataSampleValidatorTests {
     @Test
     public void testMonitoringDateFutureDateAndTime() {
         final DataSample record = createValidNumericRecord();
-        final LocalDateTime anHourFromNow = LocalDateTime.now(ZoneOffset.UTC).plusHours(1);
+        final LocalDateTime anHourFromNow = LocalDateTime.now().plusHours(1);
         final String testDate = anHourFromNow.format(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss"));
         record.setMonitoringDate(new MonitoringDate(testDate));
         final Set<ConstraintViolation<DataSample>> violations = this.validator.validate(record, ValidationGroups.OrderedChecks.class);
