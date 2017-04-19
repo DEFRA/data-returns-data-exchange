@@ -47,9 +47,7 @@ public class RemoteCacheDelegate implements RemoteCache {
                 siteDao.clearCaches();
                 uniqueIdentifierDao.clearCaches();
                 uniqueIdentifierAliasDao.clearCaches();
-                //TODO - the lucene cache would need to be built on demand
-                //using the same model as the other caches. 
-                //search.initialize();
+                search.clearIndexes();
                 LOGGER.info("Cleared (local) cache group: " + cache);
                 break;
 

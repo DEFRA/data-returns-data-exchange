@@ -6,6 +6,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.transaction.annotation.Transactional;
 import uk.gov.ea.datareturns.domain.jpa.dao.EntityDao;
 import uk.gov.ea.datareturns.domain.jpa.dao.Key;
 import uk.gov.ea.datareturns.domain.jpa.dao.SearchFunction;
@@ -256,7 +257,7 @@ public abstract class AbstractEntityDao<E extends ControlledListEntity> implemen
      * Add a new entity of type <E>
      *
      */
-    @Override
+    @Override @Transactional
     public final void add(E entity) {
         entityManager.persist(entity);
         LOGGER.info("Added: " + entityClass.getSimpleName() + "id: " + entity.getId() + " " + entity.getName());
@@ -268,7 +269,7 @@ public abstract class AbstractEntityDao<E extends ControlledListEntity> implemen
      * @param id The entity identifier
      * @throws IllegalArgumentException
      */
-    @Override
+    @Override @Transactional
     public final void removeById(long id) throws IllegalArgumentException {
         E entity = getById(id);
         entityManager.remove(entity);

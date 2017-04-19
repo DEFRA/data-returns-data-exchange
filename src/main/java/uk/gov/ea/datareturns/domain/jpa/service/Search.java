@@ -60,7 +60,6 @@ public class Search {
         this.siteDao = siteDao;
     }
 
-    @PostConstruct
     public void initialize() {
         LOGGER.info("Initializing site/permit indexes");
         IndexWriter writer = null;
@@ -113,6 +112,12 @@ public class Search {
      * @return List of searched sites
      */
     public List<Pair<String, String[]>> searchSite(String search)  {
+        // Initialize on demand
+        if (reader == null) {
+            initialize();
+        }
+
+        // Do index search
         List<Pair<String, String[]>> results = new ArrayList<>();
         try {
             Query query = queryParser.parse(search);
@@ -120,6 +125,8 @@ public class Search {
 
             TopDocs docs = searcher.search(query, hitsPerPage);
             ScoreDoc[] hits = docs.scoreDocs;
+
+            // Process hits
             for(int i=0; i < hits.length; ++i) {
                 int docId = hits[i].doc;
                 Document d = searcher.doc(docId);
@@ -150,4 +157,18 @@ public class Search {
         }
     }
 
+    /**
+     * Added to make the lucene index use the same on-demand methodology as teh generic caches
+     */
+    public void clearIndexes() {
+        if (reader != null) {
+            try {
+                LOGGER.info("Clear site-permit index");
+                reader.close();
+                reader = null;
+            } catch (IOException e) {
+                LOGGER.warn("Error clearing site-permit index: " + e);
+            }
+        }
+    }
 }

@@ -57,12 +57,18 @@ public class ControlledListsTests {
         MethodOrStandard methodOrStandard = new MethodOrStandard();
         methodOrStandard.setName(NAME);
         methodOrStandardDao.add(methodOrStandard);
+        methodOrStandardDao.clearCaches();
+
         MethodOrStandard retrieveMethodOrStandard = methodOrStandardDao.getByName(NAME);
         Assert.assertNotNull(retrieveMethodOrStandard.getId());
+
         MethodOrStandard retrieveMethodOrStandard2 = methodOrStandardDao.getById(retrieveMethodOrStandard.getId());
         Assert.assertNotNull(retrieveMethodOrStandard2);
         Assert.assertEquals(retrieveMethodOrStandard2.getId(), retrieveMethodOrStandard.getId());
+
         methodOrStandardDao.removeById(retrieveMethodOrStandard2.getId());
+        methodOrStandardDao.clearCaches();
+
         MethodOrStandard retrieveMethodOrStandard3 = methodOrStandardDao.getById(retrieveMethodOrStandard.getId());
         Assert.assertNull(retrieveMethodOrStandard3);
     }
@@ -77,6 +83,7 @@ public class ControlledListsTests {
         Parameter parameter = new Parameter();
         parameter.setName(NAME);
         parameterDao.add(parameter);
+        parameterDao.clearCaches();
 
         Parameter retrieveParameter = parameterDao.getByName(NAME);
         Assert.assertNotNull(retrieveParameter.getId());
@@ -94,6 +101,8 @@ public class ControlledListsTests {
         Assert.assertEquals(NAME, parameterDao.getByName(Key.relaxed(NAME_MASH)).getName());
 
         parameterDao.removeById(retrieveParameter2.getId());
+        parameterDao.clearCaches();
+
         Assert.assertFalse(parameterDao.nameExists(Key.relaxed(NAME_MASH)));
         Assert.assertNull(parameterDao.getByName(Key.relaxed(NAME_MASH)));
 
@@ -114,6 +123,7 @@ public class ControlledListsTests {
         returnType.setName(NAME);
         returnType.setSector(LANDFILL);
         returnTypeDao.add(returnType);
+        returnTypeDao.clearCaches();
 
         ReturnType retrieveReturnType = returnTypeDao.getByName(NAME);
         Assert.assertNotNull(retrieveReturnType.getId());
@@ -132,6 +142,7 @@ public class ControlledListsTests {
 
         // Remove it and try again
         returnTypeDao.removeById(retrieveReturnType2.getId());
+        returnTypeDao.clearCaches();
         Assert.assertFalse(returnTypeDao.nameExists(Key.relaxed(NAME_MASH)));
         Assert.assertNull(returnTypeDao.getByName(Key.relaxed(NAME_MASH)));
 
@@ -155,6 +166,7 @@ public class ControlledListsTests {
         unit.setUnicode("UC");
 
         unitDao.add(unit);
+        unitDao.clearCaches();
 
         Unit retrieveUnit = unitDao.getByName(NAME);
         Assert.assertNotNull(retrieveUnit.getId());
@@ -168,6 +180,8 @@ public class ControlledListsTests {
         Assert.assertEquals(retrieveUnit2.getId(), retrieveUnit.getId());
 
         unitDao.removeById(retrieveUnit2.getId());
+        unitDao.clearCaches();
+
         Unit retrieveUnit3 = unitDao.getById(retrieveUnit.getId());
         Assert.assertNull(retrieveUnit3);
     }
@@ -184,12 +198,16 @@ public class ControlledListsTests {
         Qualifier.setName(NAME);
         Qualifier.setNotes(NAME);
         qualifierDao.add(Qualifier);
+        qualifierDao.clearCaches();
+
         Qualifier retrieveQualifier = qualifierDao.getByName(NAME);
         Assert.assertNotNull(retrieveQualifier.getId());
         Qualifier retrieveQualifier2 = qualifierDao.getById(retrieveQualifier.getId());
         Assert.assertNotNull(retrieveQualifier2);
         Assert.assertEquals(retrieveQualifier2.getId(), retrieveQualifier.getId());
         qualifierDao.removeById(retrieveQualifier2.getId());
+        qualifierDao.clearCaches();
+
         Qualifier retrieveQualifier3 = qualifierDao.getById(retrieveQualifier.getId());
         Assert.assertNull(retrieveQualifier3);
     }
@@ -204,6 +222,8 @@ public class ControlledListsTests {
         TextValue TextValue = new TextValue();
         TextValue.setName(NAME);
         textValueDao.add(TextValue);
+        textValueDao.clearCaches();
+
         TextValue retrieveTextValue = textValueDao.getByName(NAME);
         Assert.assertNotNull(retrieveTextValue.getId());
 
@@ -212,6 +232,8 @@ public class ControlledListsTests {
         Assert.assertEquals(retrieveTextValue2.getId(), retrieveTextValue.getId());
 
         textValueDao.removeById(retrieveTextValue2.getId());
+        textValueDao.clearCaches();
+
         TextValue retrieveTextValue3 = textValueDao.getById(retrieveTextValue.getId());
         Assert.assertNull(retrieveTextValue3);
     }
@@ -235,6 +257,7 @@ public class ControlledListsTests {
         if (referencePeriod2 != null) {
             referencePeriodDao.removeById(referencePeriod2.getId());
         }
+
         if (referencePeriod3 != null) {
             referencePeriodDao.removeById(referencePeriod3.getId());
         }
@@ -242,6 +265,8 @@ public class ControlledListsTests {
         if (referencePeriod1 != null) {
             referencePeriodDao.removeById(referencePeriod1.getId());
         }
+
+        referencePeriodDao.clearCaches();
 
         referencePeriod1 = new ReferencePeriod();
         referencePeriod2 = new ReferencePeriod();
@@ -257,6 +282,8 @@ public class ControlledListsTests {
         referencePeriodDao.add(referencePeriod1);
         referencePeriodDao.add(referencePeriod2);
         referencePeriodDao.add(referencePeriod3);
+
+        referencePeriodDao.clearCaches();
 
         List list = referencePeriodDao.list();
 
@@ -284,9 +311,8 @@ public class ControlledListsTests {
 
         referencePeriodDao.removeById(referencePeriod2.getId());
         referencePeriodDao.removeById(referencePeriod3.getId());
-
-        // Last
         referencePeriodDao.removeById(referencePeriod1.getId());
+        referencePeriodDao.clearCaches();
     }
 
 }

@@ -3,6 +3,7 @@ package uk.gov.ea.datareturns.comms;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import uk.gov.ea.datareturns.comms.impl.APIAddrProviderLocalCluster;
+import uk.gov.ea.datareturns.comms.impl.APIAddrProviderLocalhost;
 import uk.gov.ea.datareturns.comms.impl.InterAPIUDPClient;
 import uk.gov.ea.datareturns.comms.impl.InterAPIUDPServer;
 import uk.gov.ea.datareturns.distributedtransaction.impl.DistributedTransactionServiceImpl;
@@ -39,7 +40,7 @@ public class Initialize {
                 InterAPICoordinator.runningInstanceOf(client, server, distributedTransactionService, remoteCacheDelegate);
 
         // Initiate startup handshake negotiation
-        coordinator.initiateNegotiation(new APIAddrProviderLocalCluster());
+        coordinator.initiateNegotiation(new APIAddrProviderLocalhost());
     }
 
 
