@@ -40,7 +40,7 @@ public class Initialize {
                 InterAPICoordinator.runningInstanceOf(client, server, distributedTransactionService, remoteCacheDelegate);
 
         // Initiate startup handshake negotiation
-        coordinator.initiateNegotiation(new APIAddrProviderLocalCluster());
+        coordinator.initiateNegotiation(new APIAddrProviderLocalhost());
     }
 
 
