@@ -67,15 +67,15 @@ public class DistributedTransactionServiceImpl implements DistributedTransaction
          */
         public void action(LockedActions lockedActions) {
             // Acquire a remote
+            LOGGER.info("Requesting remote locked transaction: " + locksubject.getSubject());
             if (remoteLockAcquireRequest.get(locksubject)) {
                 // Try to acquire a local lock on the transaction
                 try {
-
-                    LOGGER.info("Requesting locked transaction: " + locksubject.getSubject());
+                    LOGGER.info("Requesting local locked transaction: " + locksubject.getSubject());
                     lockAcquired = locksubject.getLock().tryLock(timeout, unit);
 
                     if (lockAcquired) {
-                        LOGGER.info("Starting locked transaction: " + locksubject.getSubject());
+                        LOGGER.info("Acquired local locked transaction: " + locksubject.getSubject());
 
                         // Run the enclosed transaction action
                         lockedActions.run();
@@ -89,10 +89,11 @@ public class DistributedTransactionServiceImpl implements DistributedTransaction
                     throw new DistributedLockException("Transaction thread interrupted within: " + locksubject.getSubject());
                 } finally {
                     if (lockAcquired) {
-                        LOGGER.info("Releasing locked transaction: " + locksubject.getSubject());
+                        LOGGER.info("Releasing local locked transaction: " + locksubject.getSubject());
                         locksubject.getLock().unlock();
                     }
                     // Release the remote locks
+                    LOGGER.info("Releasing remote locked transaction: " + locksubject.getSubject());
                     remoteLockReleaseRequest.get(locksubject);
                 }
             } else {
@@ -108,7 +109,6 @@ public class DistributedTransactionServiceImpl implements DistributedTransaction
         public boolean acquire() {
             // Try to acquire a lock on the transaction
             try {
-                LOGGER.info("Requesting lock: " + locksubject.getSubject());
                 lockAcquired = locksubject.getLock().tryLock(timeout, unit);
 
                 if (lockAcquired) {

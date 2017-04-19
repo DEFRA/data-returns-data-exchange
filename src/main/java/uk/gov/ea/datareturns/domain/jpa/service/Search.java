@@ -44,7 +44,7 @@ public class Search {
 
     private final StandardAnalyzer STANDARD_ANALYZER = new StandardAnalyzer(stopSet);
 
-    private IndexReader reader = null;
+    private volatile IndexReader reader = null;
     private IndexSearcher searcher = null;
     private QueryParser queryParser = null;
     private final SiteDao siteDao;
@@ -66,33 +66,35 @@ public class Search {
         // Close the readers of the index - the reader stays open
         // until the index is refreshed
         try {
-            if (reader != null) {
-                reader.close();
+            synchronized(reader) {
+                if (reader != null) {
+                    reader.close();
+                }
+                // Create a new index writer
+                IndexWriterConfig config = new IndexWriterConfig(STANDARD_ANALYZER);
+                writer = new IndexWriter(INDEX, config);
+                writer.deleteAll();
+
+                // Collect the site, permit and permit alias into single documents and add them to the index
+                for (Site site : siteDao.list()) {
+                    Document document = new Document();
+                    document.add(new TextField(SITE, site.getName(), Field.Store.YES));
+                    writer.addDocument(document);
+                }
+
+                writer.commit();
+                Assert.isTrue(writer.numDocs() == siteDao.list().size());
+                writer.close();
+
+                // Set up the reader which remains open until a refresh
+                // For performance the searcher is shared across multiple searches -
+                // because the index does not change. The index reader will be left open
+                reader = DirectoryReader.open(INDEX);
+                searcher = new IndexSearcher(reader);
+                queryParser = new QueryParser(SITE, STANDARD_ANALYZER);
+
+                Assert.isTrue(reader.numDocs() == siteDao.list().size());
             }
-            // Create a new index writer
-            IndexWriterConfig config = new IndexWriterConfig(STANDARD_ANALYZER);
-            writer = new IndexWriter(INDEX, config);
-            writer.deleteAll();
-
-            // Collect the site, permit and permit alias into single documents and add them to the index
-            for(Site site : siteDao.list()) {
-                Document document = new Document();
-                document.add(new TextField(SITE, site.getName(), Field.Store.YES));
-                writer.addDocument(document);
-            }
-
-            writer.commit();
-            Assert.isTrue(writer.numDocs() == siteDao.list().size());
-            writer.close();
-
-            // Set up the reader which remains open until a refresh
-            // For performance the searcher is shared across multiple searches -
-            // because the index does not change. The index reader will be left open
-            reader = DirectoryReader.open(INDEX);
-            searcher = new IndexSearcher(reader);
-            queryParser = new QueryParser(SITE, STANDARD_ANALYZER);
-
-            Assert.isTrue(reader.numDocs() == siteDao.list().size());
         } catch (Exception e) {
             LOGGER.error("Error creating lucene index: " + e.getMessage());
         } finally {
@@ -164,8 +166,10 @@ public class Search {
         if (reader != null) {
             try {
                 LOGGER.info("Clear site-permit index");
-                reader.close();
-                reader = null;
+                synchronized(reader) {
+                    reader.close();
+                    reader = null;
+                }
             } catch (IOException e) {
                 LOGGER.warn("Error clearing site-permit index: " + e);
             }

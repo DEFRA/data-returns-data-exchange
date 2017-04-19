@@ -272,11 +272,13 @@ public class InterAPICoordinator extends Thread {
         } else if (message.getPayload() instanceof CacheClearRequestPayload) {
             CacheClearRequestPayload cacheClearRequestPayload = (CacheClearRequestPayload)message.getPayload();
             if (cacheClearRequestPayload.getType() == CacheClearRequestPayload.Type.REQUESTED) {
+                LOGGER.info("Cache clear request from remote: " + message.getFrom());
                 remoteCache.clearCacheLocal(cacheClearRequestPayload.getCache());
                 reply = Message.createReply(message, localhost, CacheClearRequestPayload.cleared(cacheClearRequestPayload));
                 client.send(reply, message.getFrom());
             } else {
                 // This is processing the reply from a remote cache clear so unblock
+                LOGGER.info("Cache clear response from remote: " + message.getFrom());
                 Pair<InetAddress, Message> pair = new ImmutablePair<>(message.getFrom(), message);
                 Thread thread = asyncMessageStack.get(pair);
                 if (thread != null) {
@@ -295,6 +297,7 @@ public class InterAPICoordinator extends Thread {
                 // Either acquired or release the lock according to the request
                 DistributedTransactionServiceImpl.DistributedTransactionLock distributedLock = distributedTransactionService.distributedTransactionLockFor(lockSubject);
                 if (lockRequestPayload.getRequestType() == LockRequestPayload.RequestType.ACQUIRE) {
+                    LOGGER.info("Lock acquire request from remote: " + message.getFrom());
                     if (distributedLock.acquire()) {
                         // Reply acquired
                         reply = Message.createReply(message, localhost, LockRequestPayload.acquired(lockRequestPayload));
@@ -305,12 +308,14 @@ public class InterAPICoordinator extends Thread {
                         client.send(reply, message.getFrom());
                     }
                 } else if (lockRequestPayload.getRequestType() == LockRequestPayload.RequestType.RELEASE) {
+                    LOGGER.info("Lock release request from remote: " + message.getFrom());
                     distributedLock.release();
                     reply = Message.createReply(message, localhost, LockRequestPayload.released(lockRequestPayload));
                     client.send(reply, message.getFrom());
                 }
             } else {
                 // This is processing the reply from a remote lock request
+                LOGGER.info("Lock acquire/release response from remote: " + message.getFrom());
                 Pair<InetAddress, Message> pair = new ImmutablePair<>(message.getFrom(), message);
                 Thread thread = asyncMessageStack.get(pair);
                 if (thread != null) {
