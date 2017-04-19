@@ -73,7 +73,7 @@ public class SitePermitService {
     public void addNewPermitAndSite(String eaId, String siteName, String[] aliasNames)  {
 
         // Acquire a distributed lock on all remote servers for this transaction
-        distributedTransactionLock.action(() -> {
+        distributedTransactionLock.globalLockAction(() -> {
 
             DefaultTransactionDefinition def = new DefaultTransactionDefinition();
             def.setName("addNewPermitAndSite");
@@ -124,7 +124,7 @@ public class SitePermitService {
     public void addNewPermitAndSite(String eaId, String siteName) {
 
         // Acquire a distributed lock on all remote servers for this transaction
-        distributedTransactionLock.action(() -> {
+        distributedTransactionLock.globalLockAction(() -> {
 
             DefaultTransactionDefinition def = new DefaultTransactionDefinition();
             def.setName("addNewPermitAndSite");
@@ -165,7 +165,7 @@ public class SitePermitService {
         if (uniqueIdentifier != null) {
 
             // Acquire a distributed lock on all remote servers for this transaction
-            distributedTransactionLock.action(() -> {
+            distributedTransactionLock.globalLockAction(() -> {
 
                 DefaultTransactionDefinition def = new DefaultTransactionDefinition();
                 def.setName("removePermitSiteAndAliases");
@@ -214,7 +214,7 @@ public class SitePermitService {
     }
 
     public void resetLocalCacheWithLocking() {
-        distributedTransactionLock.action(() -> resetLocalCaches());
+        distributedTransactionLock.globalLockAction(() -> resetLocalCaches());
     }
 
 

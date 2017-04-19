@@ -17,6 +17,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 import org.springframework.util.Assert;
+import uk.gov.ea.datareturns.distributedtransaction.DistributedTransactionService;
+import uk.gov.ea.datareturns.distributedtransaction.LockSubject;
+import uk.gov.ea.datareturns.distributedtransaction.impl.DistributedTransactionServiceImpl;
 import uk.gov.ea.datareturns.domain.jpa.dao.SiteDao;
 import uk.gov.ea.datareturns.domain.jpa.entities.Site;
 
@@ -56,17 +59,18 @@ public class Search {
      * @throws IOException
      */
     @Inject
-    public Search(SiteDao siteDao) throws IOException {
+    public Search(SiteDao siteDao, DistributedTransactionService distributedTransactionService) throws IOException {
         this.siteDao = siteDao;
     }
 
     public void initialize() {
         LOGGER.info("Initializing site/permit indexes");
-        IndexWriter writer = null;
         // Close the readers of the index - the reader stays open
         // until the index is refreshed
-        try {
-            synchronized(reader) {
+        synchronized(reader) {
+
+            IndexWriter writer = null;
+            try {
                 if (reader != null) {
                     reader.close();
                 }
@@ -94,15 +98,16 @@ public class Search {
                 queryParser = new QueryParser(SITE, STANDARD_ANALYZER);
 
                 Assert.isTrue(reader.numDocs() == siteDao.list().size());
-            }
-        } catch (Exception e) {
-            LOGGER.error("Error creating lucene index: " + e.getMessage());
-        } finally {
-            if (writer != null) {
-                try {
-                    writer.close();
-                } catch (IOException e) {
-                    LOGGER.error("Error closing lucene index: " + e.getMessage());
+
+            } catch (Exception e) {
+                LOGGER.error("Error creating lucene index: " + e.getMessage());
+            } finally {
+                if (writer != null) {
+                    try {
+                        writer.close();
+                    } catch (IOException e) {
+                        LOGGER.error("Error closing lucene index: " + e.getMessage());
+                    }
                 }
             }
         }
@@ -167,8 +172,10 @@ public class Search {
             try {
                 LOGGER.info("Clear site-permit index");
                 synchronized(reader) {
-                    reader.close();
-                    reader = null;
+                    if (reader != null) {
+                        reader.close();
+                        reader = null;
+                    }
                 }
             } catch (IOException e) {
                 LOGGER.warn("Error clearing site-permit index: " + e);

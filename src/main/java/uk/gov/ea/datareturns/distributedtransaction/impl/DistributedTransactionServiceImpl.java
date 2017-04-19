@@ -40,7 +40,7 @@ public class DistributedTransactionServiceImpl implements DistributedTransaction
     }
 
     /**
-     * This interface used to provide a run action for the transactions to
+     * This interface used to provide a run globalLockAction for the transactions to
      * be guarded by the lock
      */
     @FunctionalInterface
@@ -51,21 +51,22 @@ public class DistributedTransactionServiceImpl implements DistributedTransaction
     /**
      * The lock object to be used to lock a given service designated by the lock subject.
      * The lock subject contains the actual reentrant lock for the service being guarded
+     * This object is responsible for distributed locks
      */
     public class DistributedTransactionLock {
         private boolean lockAcquired = false;
 
         LockSubject locksubject;
 
-        DistributedTransactionLock(LockSubject locksubject) {
+        private DistributedTransactionLock(LockSubject locksubject) {
             this.locksubject = locksubject;
         }
 
         /**
-         * Perform transaction locked operations
+         * Perform transaction locked operations within distributed lock
          * @param lockedActions
          */
-        public void action(LockedActions lockedActions) {
+        public void globalLockAction(LockedActions lockedActions) {
             // Acquire a remote
             LOGGER.info("Requesting remote locked transaction: " + locksubject.getSubject());
             if (remoteLockAcquireRequest.get(locksubject)) {
@@ -77,7 +78,7 @@ public class DistributedTransactionServiceImpl implements DistributedTransaction
                     if (lockAcquired) {
                         LOGGER.info("Acquired local locked transaction: " + locksubject.getSubject());
 
-                        // Run the enclosed transaction action
+                        // Run the enclosed transaction globalLockAction
                         lockedActions.run();
                     } else {
                         // We could not acquire the lock within the given timeout so we
@@ -101,6 +102,37 @@ public class DistributedTransactionServiceImpl implements DistributedTransaction
                 throw new DistributedLockException("Could not acquire: " + locksubject.getSubject());
             }
         }
+
+        /**
+         * Perform an action locally. Typically a read action
+         * @param lockedActions
+         */
+        public void localLockAction(LockedActions lockedActions) {
+            // Try to acquire a local lock on the transaction
+            try {
+                LOGGER.info("Requesting local locked transaction: " + locksubject.getSubject());
+                lockAcquired = locksubject.getLock().tryLock(timeout, unit);
+
+                if (lockAcquired) {
+                    LOGGER.info("Acquired local locked transaction: " + locksubject.getSubject());
+
+                    // Run the enclosed transaction globalLockAction
+                    lockedActions.run();
+                } else {
+                    // We could not acquire the lock within the given timeout so we
+                    // throw the lock exception to terminate the transaction
+                    throw new DistributedLockException("Timeout occurred acquiring transaction lock: " + locksubject.getSubject());
+                }
+            } catch (InterruptedException e) {
+                // This should not happen as this thread is not interrupted by the application
+                throw new DistributedLockException("Transaction thread interrupted within: " + locksubject.getSubject());
+            } finally {
+                if (lockAcquired) {
+                    LOGGER.info("Releasing local locked transaction: " + locksubject.getSubject());
+                    locksubject.getLock().unlock();
+                }
+            }
+         }
 
         /**
          * Function to acquire the lock - this is called by the remote server

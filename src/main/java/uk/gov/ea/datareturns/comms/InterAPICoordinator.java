@@ -152,30 +152,32 @@ public class InterAPICoordinator extends Thread {
         boolean success = true;
         Thread currentThread = Thread.currentThread();
         for (InetAddress addr : instances.keySet()) {
-            Pair<InetAddress, Message> pair = new ImmutablePair<>(addr, message);
-            try {
-                // The current (parent) thread attempts to acquire the lock
-                lockAcquired = asyncMessageLock.tryLock(RESPONSE_TIMEOUT, RESPONSE_TIMEOUT_UNITS);
-                if (lockAcquired) {
-                    // If the lock is acquired then log the thread as locked
-                    asyncMessageStack.put(pair, Thread.currentThread());
-                    if (client.send(message, addr)) {
-                        synchronized (currentThread) {
-                            currentThread.wait();
+            if (instances.get(addr).getNegotiationStatus() == NegotiationStatus.CONFIRMED) {
+                Pair<InetAddress, Message> pair = new ImmutablePair<>(addr, message);
+                try {
+                    // The current (parent) thread attempts to acquire the lock
+                    lockAcquired = asyncMessageLock.tryLock(RESPONSE_TIMEOUT, RESPONSE_TIMEOUT_UNITS);
+                    if (lockAcquired) {
+                        // If the lock is acquired then log the thread as locked
+                        asyncMessageStack.put(pair, Thread.currentThread());
+                        if (client.send(message, addr)) {
+                            synchronized (currentThread) {
+                                currentThread.wait();
+                            }
+                        } else {
+                            success = false;
                         }
                     } else {
                         success = false;
                     }
-                } else {
-                    success = false;
-                }
-            } catch (InterruptedException e) {
+                } catch (InterruptedException e) {
 
-            } finally {
-                if (lockAcquired && asyncMessageLock.isHeldByCurrentThread()) {
-                    asyncMessageLock.unlock();
-                    if (asyncMessageStack.containsKey(pair)) {
-                        asyncMessageStack.remove(pair);
+                } finally {
+                    if (lockAcquired && asyncMessageLock.isHeldByCurrentThread()) {
+                        asyncMessageLock.unlock();
+                        if (asyncMessageStack.containsKey(pair)) {
+                            asyncMessageStack.remove(pair);
+                        }
                     }
                 }
             }
