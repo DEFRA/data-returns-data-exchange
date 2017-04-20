@@ -1,5 +1,6 @@
 package uk.gov.ea.datareturns.domain.model.fields.impl;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
 import uk.gov.ea.datareturns.domain.jpa.dao.EntityDao;
 import uk.gov.ea.datareturns.domain.jpa.dao.ReferencePeriodDao;
 import uk.gov.ea.datareturns.domain.model.DataSample;
@@ -23,6 +24,7 @@ public class ReferencePeriod extends AbstractAliasingEntityValue<DataSample, uk.
      *
      * @param inputValue the input value
      */
+    @JsonCreator
     public ReferencePeriod(String inputValue) {
         super(inputValue);
         this.inputValue = inputValue;

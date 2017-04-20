@@ -1,5 +1,6 @@
 package uk.gov.ea.datareturns.domain.model.fields.impl;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
 import uk.gov.ea.datareturns.domain.jpa.dao.EntityDao;
 import uk.gov.ea.datareturns.domain.jpa.dao.MethodOrStandardDao;
 import uk.gov.ea.datareturns.domain.model.DataSample;
@@ -25,6 +26,7 @@ public class MethodOrStandard
      *
      * @param inputValue the input value
      */
+    @JsonCreator
     public MethodOrStandard(String inputValue) {
         super(inputValue);
         this.inputValue = inputValue;

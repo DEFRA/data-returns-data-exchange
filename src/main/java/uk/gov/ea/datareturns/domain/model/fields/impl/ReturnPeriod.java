@@ -1,5 +1,6 @@
 package uk.gov.ea.datareturns.domain.model.fields.impl;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
 import uk.gov.ea.datareturns.domain.model.DataSample;
 import uk.gov.ea.datareturns.domain.model.MessageCodes;
 import uk.gov.ea.datareturns.domain.model.fields.FieldValue;
@@ -22,6 +23,7 @@ public class ReturnPeriod implements FieldValue<DataSample, String> {
      *
      * @param inputValue the input value
      */
+    @JsonCreator
     public ReturnPeriod(String inputValue) {
         this.inputValue = inputValue;
         this.value = ReturnPeriodFormat.toStandardisedFormat(inputValue);

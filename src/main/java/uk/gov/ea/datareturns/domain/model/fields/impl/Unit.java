@@ -1,5 +1,6 @@
 package uk.gov.ea.datareturns.domain.model.fields.impl;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
 import uk.gov.ea.datareturns.domain.jpa.dao.EntityDao;
 import uk.gov.ea.datareturns.domain.jpa.dao.UnitDao;
 import uk.gov.ea.datareturns.domain.model.DataSample;
@@ -23,6 +24,7 @@ public class Unit extends AbstractAliasingEntityValue<DataSample, uk.gov.ea.data
      *
      * @param inputValue the input value
      */
+    @JsonCreator
     public Unit(String inputValue) {
         super(inputValue);
         this.inputValue = inputValue;

@@ -1,5 +1,6 @@
 package uk.gov.ea.datareturns.domain.model.fields.impl;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
 import org.apache.commons.lang3.StringUtils;
 import org.hibernate.validator.constraints.Length;
 import uk.gov.ea.datareturns.domain.model.DataSample;
@@ -20,6 +21,7 @@ public class Comments implements FieldValue<DataSample, String> {
      *
      * @param inputValue the input value
      */
+    @JsonCreator
     public Comments(String inputValue) {
         this.inputValue = inputValue;
     }

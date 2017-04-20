@@ -1,0 +1,12 @@
+{
+  "EA_ID": "42355",
+  "Site_Name": "Biffa - Marchington Landfill Site",
+  "Rtn_Type": "Landfill gas borehole",
+  "Mon_Date": "2015-08-05",
+  "Rtn_Period": "Qtr 2 2016",
+  "Mon_Point": "Monitor point/ the Mon-Point may be up to 50 chars",
+  "Parameter": "16-(Thienylmethylene)Androstane-3,17-Diol SVOCS",
+  "Value": "123",
+  "Unit": "ºC",
+  "Ref_Period": "Instantaneous"
+}

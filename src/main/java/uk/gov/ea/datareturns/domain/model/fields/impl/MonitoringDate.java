@@ -1,5 +1,6 @@
 package uk.gov.ea.datareturns.domain.model.fields.impl;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
 import uk.gov.ea.datareturns.domain.model.DataSample;
 import uk.gov.ea.datareturns.domain.model.fields.FieldValue;
 import uk.gov.ea.datareturns.domain.model.rules.DateFormat;
@@ -33,6 +34,7 @@ public class MonitoringDate implements FieldValue<DataSample, Instant> {
      *
      * @param monitoringDate the String to attempt to parse to create a MonitoringDate.
      */
+    @JsonCreator
     public MonitoringDate(final String monitoringDate) {
         this.inputValue = monitoringDate;
         if (this.inputValue != null) {

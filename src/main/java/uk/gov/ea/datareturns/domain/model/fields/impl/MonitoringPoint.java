@@ -1,5 +1,6 @@
 package uk.gov.ea.datareturns.domain.model.fields.impl;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
 import org.hibernate.validator.constraints.Length;
 import org.hibernate.validator.constraints.NotBlank;
 import uk.gov.ea.datareturns.domain.model.DataSample;
@@ -21,6 +22,7 @@ public class MonitoringPoint implements FieldValue<DataSample, String> {
      *
      * @param monitoringPoint the monitoring point
      */
+    @JsonCreator
     public MonitoringPoint(String monitoringPoint) {
         this.monitoringPoint = monitoringPoint;
     }
