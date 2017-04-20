@@ -1,9 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
-	xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd
-        http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
-        
+	xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd">
 
 	<preConditions>
 		<dbms type="${db.type}"/>
@@ -17,7 +14,7 @@
 		User
 		****************************************************************
 		-->
-		<createTable tableName="user">
+		<createTable tableName="users">
 			<column name="id" type="bigserial">
 				<constraints primaryKey="true" nullable="false"/>
 			</column>
@@ -26,9 +23,46 @@
 			</column>
 		</createTable>
 
-		<createIndex indexName="idx_user_name" tableName="user" unique="true">
+		<createIndex indexName="idx_user_name" tableName="users" unique="true">
 			<column name="name"/>
 		</createIndex>
+
+		<!--
+		****************************************************************
+		Dataset
+		****************************************************************
+		-->
+		<createTable tableName="datasets">
+
+			<column name="id" type="bigserial">
+				<constraints primaryKey="true" nullable="false"/>
+			</column>
+
+			<column name="user_id" type="bigserial">
+				<constraints nullable="false"/>
+			</column>
+
+			<column name="identifier" type="varchar(80)">
+				<constraints nullable="false" unique="true"/>
+			</column>
+
+			<column name="filename" type="varchar(500)">
+				<constraints nullable="true"/>
+			</column>
+
+		</createTable>
+
+		<createIndex indexName="idx_datasets" tableName="datasets" unique="true">
+			<column name="user_id"/>
+			<column name="identifier"/>
+		</createIndex>
+
+		<addForeignKeyConstraint baseColumnNames="user_id"
+														 baseTableName="datasets"
+														 constraintName="fk_dataset_user"
+														 referencedColumnNames="id"
+														 referencedTableName="users"/>
+
 
 		<!--
 		****************************************************************
@@ -36,46 +70,79 @@
 		****************************************************************
 		-->
 		<createTable tableName="status">
+
 			<column name="id" type="bigserial">
 				<constraints primaryKey="true" nullable="false"/>
 			</column>
+
 			<column name="status" type="varchar(80)">
 				<constraints nullable="false" unique="true"/>
 			</column>
+
 		</createTable>
 
 		<!--
 		****************************************************************
-		Submission
+		Records
 		****************************************************************
 		-->
-		<createTable tableName="submission">
+		<createTable tableName="records">
 
-			<column name="dataset_id" type="varchar(80)">
+			<column name="id" type="bigserial">
+				<constraints primaryKey="true" nullable="false"/>
+			</column>
+
+			<column name="dataset_id" type="bigserial">
 				<constraints nullable="false"/>
 			</column>
 
-			<column name="user_id" type="bigserial">
-				<constraints nullable="false" unique="false"/>
-			</column>
-
-			<column name="record_id" type="varchar(80)">
-				<constraints nullable="false"/>
+			<column name="identifier" type="varchar(80)">
+				<constraints nullable="false" unique="true"/>
 			</column>
 
 			<column name="status_id" type="bigserial">
 				<constraints nullable="false"/>
 			</column>
 
-			<column name="create_date" type="timestamp with time zone">
+			<column name="create_date" type="timestamp without timezone">
 				<constraints nullable="false"/>
 			</column>
 
-			<column name="last_change_date" type="timestamp with time zone">
+			<column name="last_changed_date" type="timestamp without timezone">
 				<constraints nullable="false"/>
 			</column>
 
 			<column name="etag" type="bytea">
+				<constraints nullable="false"/>
+			</column>
+
+		</createTable>
+
+		<createIndex indexName="idx_records" tableName="records" unique="true">
+			<column name="dataset_id"/>
+			<column name="identifier"/>
+		</createIndex>
+
+		<addForeignKeyConstraint baseColumnNames="dataset_id"
+														 baseTableName="records"
+														 constraintName="fk_record_dataset"
+														 referencedColumnNames="id"
+														 referencedTableName="datasets"/>
+
+		<addForeignKeyConstraint baseColumnNames="status_id"
+														 baseTableName="records"
+														 constraintName="fk_submission_status"
+														 referencedColumnNames="id"
+														 referencedTableName="status"/>
+
+		<!--
+		****************************************************************
+		Submissions
+		****************************************************************
+		-->
+		<createTable tableName="submissions">
+
+			<column name="record_id" type="bigserial">
 				<constraints nullable="false"/>
 			</column>
 
@@ -87,11 +154,11 @@
 				<constraints nullable="false"/>
 			</column>
 
-			<column name="rtn_type_id" type="bigserial">
+			<column name="return_type_id" type="bigserial">
 				<constraints nullable="false"/>
 			</column>
 
-			<column name="mon_date" type="timestamp with time zone">
+			<column name="mon_date" type="timestamp">
 				<constraints nullable="false"/>
 			</column>
 
@@ -103,54 +170,124 @@
 				<constraints nullable="false"/>
 			</column>
 
+			<column name="numeric_value" type="decimal">
+				<constraints nullable="true"/>
+			</column>
+
+			<column name="numeric_value_text" type="varchar(20)">
+				<constraints nullable="true"/>
+			</column>
+
+			<column name="text_value_id" type="bigserial">
+				<constraints nullable="true"/>
+			</column>
+
+			<column name="qualifier_id" type="bigserial">
+				<constraints nullable="true"/>
+			</column>
+
+			<column name="unit_id" type="bigserial">
+				<constraints nullable="true"/>
+			</column>
+
+			<column name="reference_period_id" type="bigserial">
+				<constraints nullable="true"/>
+			</column>
+
+			<column name="method_or_standard_id" type="bigserial">
+				<constraints nullable="true"/>
+			</column>
+
+			<column name="comments" type="varchar(255)">
+				<constraints nullable="true"/>
+			</column>
+
+			<column name="cic" type="varchar(255)">
+				<constraints nullable="true"/>
+			</column>
+
+			<column name="releases_and_transfers_id" type="bigserial">
+				<constraints nullable="true"/>
+			</column>
+
 		</createTable>
 
-		<createIndex indexName="idx_submission" tableName="submission" unique="true">
-			<column name="dataset_id"/>
-			<column name="user_id"/>
+		<createIndex indexName="idx_submissions" tableName="submissions" unique="true">
 			<column name="record_id"/>
 		</createIndex>
 
-		<addForeignKeyConstraint baseColumnNames="user_id"
-														 baseTableName="submission"
-														 constraintName="fk_submission_user"
+		<addForeignKeyConstraint baseColumnNames="record_id"
+														 baseTableName="submissions"
+														 constraintName="fk_submission_record"
 														 referencedColumnNames="id"
-														 referencedTableName="user"/>
-
-		<addForeignKeyConstraint baseColumnNames="status_id"
-														 baseTableName="submission"
-														 constraintName="fk_submission_status"
-														 referencedColumnNames="id"
-														 referencedTableName="status"/>
+														 referencedTableName="records"/>
 
 		<addForeignKeyConstraint baseColumnNames="ea_id"
-														 baseTableName="submission"
+														 baseTableName="submissions"
 														 constraintName="fk_submission_unique_identifier"
 														 referencedColumnNames="id"
 														 referencedTableName="unique_identifiers"/>
 
 		<addForeignKeyConstraint baseColumnNames="site_id"
-														 baseTableName="submission"
+														 baseTableName="submissions"
 														 constraintName="fk_submission_site"
 														 referencedColumnNames="id"
 														 referencedTableName="sites"/>
 
-		<addForeignKeyConstraint baseColumnNames="rtn_type_id"
-														 baseTableName="submission"
-														 constraintName="fk_submission_rtn_type"
+		<addForeignKeyConstraint baseColumnNames="return_type_id"
+														 baseTableName="submissions"
+														 constraintName="fk_submission_return_type"
 														 referencedColumnNames="id"
 														 referencedTableName="return_types"/>
 
 		<addForeignKeyConstraint baseColumnNames="parameter_id"
-														 baseTableName="submission"
+														 baseTableName="submissions"
 														 constraintName="fk_submission_parameter"
 														 referencedColumnNames="id"
 														 referencedTableName="parameters"/>
 
+		<addForeignKeyConstraint baseColumnNames="text_value_id"
+														 baseTableName="submissions"
+														 constraintName="fk_submission_text_value"
+														 referencedColumnNames="id"
+														 referencedTableName="text_values"/>
+
+		<addForeignKeyConstraint baseColumnNames="qualifier_id"
+														 baseTableName="submissions"
+														 constraintName="fk_submission_qualifier"
+														 referencedColumnNames="id"
+														 referencedTableName="qualifiers"/>
+
+		<addForeignKeyConstraint baseColumnNames="unit_id"
+														 baseTableName="submissions"
+														 constraintName="fk_submission_unit"
+														 referencedColumnNames="id"
+														 referencedTableName="units"/>
+
+		<addForeignKeyConstraint baseColumnNames="reference_period_id"
+														 baseTableName="submissions"
+														 constraintName="fk_submission_reference_period"
+														 referencedColumnNames="id"
+														 referencedTableName="reference_periods"/>
+
+		<addForeignKeyConstraint baseColumnNames="method_or_standard_id"
+														 baseTableName="submissions"
+														 constraintName="fk_submission_method_or_standard"
+														 referencedColumnNames="id"
+														 referencedTableName="methods_or_standards"/>
+
+		<addForeignKeyConstraint baseColumnNames="releases_and_transfers_id"
+														 baseTableName="submissions"
+														 constraintName="fk_submission_releases_and_transfers"
+														 referencedColumnNames="id"
+														 referencedTableName="releases_and_transfers"/>
+
 		<rollback>
-			<dropTable tableName="submission"/>
+			<dropTable tableName="submissions"/>
 			<dropTable tableName="status"/>
-			<dropTable tableName="user"/>
+			<dropTable tableName="records"/>
+			<dropTable tableName="datasets"/>
+			<dropTable tableName="users"/>
 		</rollback>
 
 	</changeSet>
