@@ -18,12 +18,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 import org.springframework.util.Assert;
 import uk.gov.ea.datareturns.distributedtransaction.DistributedTransactionService;
-import uk.gov.ea.datareturns.distributedtransaction.LockSubject;
-import uk.gov.ea.datareturns.distributedtransaction.impl.DistributedTransactionServiceImpl;
-import uk.gov.ea.datareturns.domain.jpa.dao.SiteDao;
-import uk.gov.ea.datareturns.domain.jpa.entities.Site;
+import uk.gov.ea.datareturns.domain.jpa.dao.masterdata.SiteDao;
+import uk.gov.ea.datareturns.domain.jpa.entities.masterdata.impl.Site;
 
-import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -67,47 +64,45 @@ public class Search {
         LOGGER.info("Initializing site/permit indexes");
         // Close the readers of the index - the reader stays open
         // until the index is refreshed
-        synchronized(reader) {
 
-            IndexWriter writer = null;
-            try {
-                if (reader != null) {
-                    reader.close();
-                }
-                // Create a new index writer
-                IndexWriterConfig config = new IndexWriterConfig(STANDARD_ANALYZER);
-                writer = new IndexWriter(INDEX, config);
-                writer.deleteAll();
+        IndexWriter writer = null;
+        try {
+            if (reader != null) {
+                reader.close();
+            }
+            // Create a new index writer
+            IndexWriterConfig config = new IndexWriterConfig(STANDARD_ANALYZER);
+            writer = new IndexWriter(INDEX, config);
+            writer.deleteAll();
 
-                // Collect the site, permit and permit alias into single documents and add them to the index
-                for (Site site : siteDao.list()) {
-                    Document document = new Document();
-                    document.add(new TextField(SITE, site.getName(), Field.Store.YES));
-                    writer.addDocument(document);
-                }
+            // Collect the site, permit and permit alias into single documents and add them to the index
+            for (Site site : siteDao.list()) {
+                Document document = new Document();
+                document.add(new TextField(SITE, site.getName(), Field.Store.YES));
+                writer.addDocument(document);
+            }
 
-                writer.commit();
-                Assert.isTrue(writer.numDocs() == siteDao.list().size());
-                writer.close();
+            writer.commit();
+            Assert.isTrue(writer.numDocs() == siteDao.list().size());
+            writer.close();
 
-                // Set up the reader which remains open until a refresh
-                // For performance the searcher is shared across multiple searches -
-                // because the index does not change. The index reader will be left open
-                reader = DirectoryReader.open(INDEX);
-                searcher = new IndexSearcher(reader);
-                queryParser = new QueryParser(SITE, STANDARD_ANALYZER);
+            // Set up the reader which remains open until a refresh
+            // For performance the searcher is shared across multiple searches -
+            // because the index does not change. The index reader will be left open
+            reader = DirectoryReader.open(INDEX);
+            searcher = new IndexSearcher(reader);
+            queryParser = new QueryParser(SITE, STANDARD_ANALYZER);
 
-                Assert.isTrue(reader.numDocs() == siteDao.list().size());
+            Assert.isTrue(reader.numDocs() == siteDao.list().size());
 
-            } catch (Exception e) {
-                LOGGER.error("Error creating lucene index: " + e.getMessage());
-            } finally {
-                if (writer != null) {
-                    try {
-                        writer.close();
-                    } catch (IOException e) {
-                        LOGGER.error("Error closing lucene index: " + e.getMessage());
-                    }
+        } catch (Exception e) {
+            LOGGER.error("Error creating lucene index: " + e.getMessage());
+        } finally {
+            if (writer != null) {
+                try {
+                    writer.close();
+                } catch (IOException e) {
+                    LOGGER.error("Error closing lucene index: " + e.getMessage());
                 }
             }
         }
@@ -171,11 +166,9 @@ public class Search {
         if (reader != null) {
             try {
                 LOGGER.info("Clear site-permit index");
-                synchronized(reader) {
-                    if (reader != null) {
-                        reader.close();
-                        reader = null;
-                    }
+                if (reader != null) {
+                    reader.close();
+                    reader = null;
                 }
             } catch (IOException e) {
                 LOGGER.warn("Error clearing site-permit index: " + e);

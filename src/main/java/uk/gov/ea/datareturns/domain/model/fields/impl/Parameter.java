@@ -3,8 +3,8 @@ package uk.gov.ea.datareturns.domain.model.fields.impl;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import org.hibernate.validator.constraints.NotBlank;
-import uk.gov.ea.datareturns.domain.jpa.dao.EntityDao;
-import uk.gov.ea.datareturns.domain.jpa.dao.ParameterDao;
+import uk.gov.ea.datareturns.domain.jpa.dao.masterdata.EntityDao;
+import uk.gov.ea.datareturns.domain.jpa.dao.masterdata.ParameterDao;
 import uk.gov.ea.datareturns.domain.model.DataSample;
 import uk.gov.ea.datareturns.domain.model.MessageCodes;
 import uk.gov.ea.datareturns.domain.model.fields.AbstractAliasingEntityValue;
@@ -16,7 +16,7 @@ import uk.gov.ea.datareturns.domain.model.validation.constraints.controlledlist.
  *
  * @author Sam Gardner-Dell
  */
-public class Parameter extends AbstractAliasingEntityValue<DataSample, uk.gov.ea.datareturns.domain.jpa.entities.Parameter> {
+public class Parameter extends AbstractAliasingEntityValue<DataSample, uk.gov.ea.datareturns.domain.jpa.entities.masterdata.impl.Parameter> {
     private static final ParameterDao DAO = EntityDao.getDao(ParameterDao.class);
 
     @NotBlank(message = MessageCodes.Missing.Parameter)

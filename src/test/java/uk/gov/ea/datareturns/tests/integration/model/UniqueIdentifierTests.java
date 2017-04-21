@@ -7,11 +7,11 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 import uk.gov.ea.datareturns.App;
-import uk.gov.ea.datareturns.domain.jpa.dao.Key;
-import uk.gov.ea.datareturns.domain.jpa.dao.SiteDao;
-import uk.gov.ea.datareturns.domain.jpa.dao.UniqueIdentifierDao;
-import uk.gov.ea.datareturns.domain.jpa.entities.Site;
-import uk.gov.ea.datareturns.domain.jpa.entities.UniqueIdentifier;
+import uk.gov.ea.datareturns.domain.jpa.dao.masterdata.Key;
+import uk.gov.ea.datareturns.domain.jpa.dao.masterdata.SiteDao;
+import uk.gov.ea.datareturns.domain.jpa.dao.masterdata.UniqueIdentifierDao;
+import uk.gov.ea.datareturns.domain.jpa.entities.masterdata.impl.Site;
+import uk.gov.ea.datareturns.domain.jpa.entities.masterdata.impl.UniqueIdentifier;
 
 import javax.inject.Inject;
 import java.util.Set;

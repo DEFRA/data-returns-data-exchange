@@ -8,9 +8,9 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 import uk.gov.ea.datareturns.App;
 import uk.gov.ea.datareturns.aspects.MetricsConstants;
-import uk.gov.ea.datareturns.domain.jpa.entities.Parameter;
-import uk.gov.ea.datareturns.domain.jpa.entities.UniqueIdentifier;
-import uk.gov.ea.datareturns.domain.jpa.entities.Unit;
+import uk.gov.ea.datareturns.domain.jpa.entities.masterdata.impl.Parameter;
+import uk.gov.ea.datareturns.domain.jpa.entities.masterdata.impl.UniqueIdentifier;
+import uk.gov.ea.datareturns.domain.jpa.entities.masterdata.impl.Unit;
 import uk.gov.ea.datareturns.testsupport.InfluxDBTestImpl;
 
 import java.util.List;

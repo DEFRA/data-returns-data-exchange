@@ -2,7 +2,7 @@ package uk.gov.ea.datareturns.aspects;
 
 import com.univocity.parsers.csv.CsvWriter;
 import org.aspectj.lang.annotation.Pointcut;
-import uk.gov.ea.datareturns.domain.jpa.dao.Key;
+import uk.gov.ea.datareturns.domain.jpa.dao.masterdata.Key;
 import uk.gov.ea.datareturns.domain.model.DataSample;
 
 import java.io.File;
@@ -18,7 +18,7 @@ public class Pointcuts {
      * Pointcut for transform of controlled list entity to preferred value.
      * @param nameOrAlias the name or alias of the entity
      */
-    @Pointcut("execution(public * uk.gov.ea.datareturns.domain.jpa.dao.AliasingEntityDao.getPreferred(*)) && args(nameOrAlias)")
+    @Pointcut("execution(public * uk.gov.ea.datareturns.domain.jpa.dao.masterdata.AliasingEntityDao.getPreferred(*)) && args(nameOrAlias)")
     public void transformControlledListEntityToPreferred(Key nameOrAlias) {
     }
 
@@ -26,7 +26,7 @@ public class Pointcuts {
      * Pointcut for transform of unique identifier list entity to preferred value.
      * @param nameOrAlias the name or alias of the entity
      */
-    @Pointcut("execution(public * uk.gov.ea.datareturns.domain.jpa.dao.UniqueIdentifierDao.getPreferred(*)) && args(nameOrAlias)")
+    @Pointcut("execution(public * uk.gov.ea.datareturns.domain.jpa.dao.masterdata.UniqueIdentifierDao.getPreferred(*)) && args(nameOrAlias)")
     public void transformUniqueIdentifierToPreferred(Key nameOrAlias) {
     }
 

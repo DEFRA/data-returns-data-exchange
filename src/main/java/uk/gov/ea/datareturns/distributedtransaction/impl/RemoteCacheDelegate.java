@@ -5,9 +5,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 import uk.gov.ea.datareturns.comms.InterAPICoordinator;
 import uk.gov.ea.datareturns.distributedtransaction.RemoteCache;
-import uk.gov.ea.datareturns.domain.jpa.dao.SiteDao;
-import uk.gov.ea.datareturns.domain.jpa.dao.UniqueIdentifierAliasDao;
-import uk.gov.ea.datareturns.domain.jpa.dao.UniqueIdentifierDao;
+import uk.gov.ea.datareturns.domain.jpa.dao.masterdata.SiteDao;
+import uk.gov.ea.datareturns.domain.jpa.dao.masterdata.UniqueIdentifierAliasDao;
+import uk.gov.ea.datareturns.domain.jpa.dao.masterdata.UniqueIdentifierDao;
 import uk.gov.ea.datareturns.domain.jpa.service.Search;
 
 import javax.inject.Inject;

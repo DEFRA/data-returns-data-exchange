@@ -1,8 +1,8 @@
 package uk.gov.ea.datareturns.domain.model.fields;
 
-import uk.gov.ea.datareturns.domain.jpa.dao.AliasingEntityDao;
-import uk.gov.ea.datareturns.domain.jpa.dao.Key;
-import uk.gov.ea.datareturns.domain.jpa.entities.AliasingEntity;
+import uk.gov.ea.datareturns.domain.jpa.dao.masterdata.AliasingEntityDao;
+import uk.gov.ea.datareturns.domain.jpa.dao.masterdata.Key;
+import uk.gov.ea.datareturns.domain.jpa.entities.masterdata.AliasingEntity;
 
 import java.util.Optional;
 

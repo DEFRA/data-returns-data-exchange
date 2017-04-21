@@ -1,8 +1,8 @@
 package uk.gov.ea.datareturns.domain.model.fields.impl;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
-import uk.gov.ea.datareturns.domain.jpa.dao.EntityDao;
-import uk.gov.ea.datareturns.domain.jpa.dao.QualifierDao;
+import uk.gov.ea.datareturns.domain.jpa.dao.masterdata.EntityDao;
+import uk.gov.ea.datareturns.domain.jpa.dao.masterdata.QualifierDao;
 import uk.gov.ea.datareturns.domain.model.DataSample;
 import uk.gov.ea.datareturns.domain.model.MessageCodes;
 import uk.gov.ea.datareturns.domain.model.fields.AbstractEntityValue;
@@ -14,7 +14,7 @@ import uk.gov.ea.datareturns.domain.model.validation.constraints.controlledlist.
  *
  * @author Sam Gardner-Dell
  */
-public class Qualifier extends AbstractEntityValue<QualifierDao, DataSample, uk.gov.ea.datareturns.domain.jpa.entities.Qualifier> {
+public class Qualifier extends AbstractEntityValue<QualifierDao, DataSample, uk.gov.ea.datareturns.domain.jpa.entities.masterdata.impl.Qualifier> {
     private static final QualifierDao DAO = EntityDao.getDao(QualifierDao.class);
 
     @ControlledList(auditor = QualifierAuditor.class, message = MessageCodes.ControlledList.Qualifier)

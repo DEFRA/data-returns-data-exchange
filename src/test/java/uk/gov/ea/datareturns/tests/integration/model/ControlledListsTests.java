@@ -8,8 +8,9 @@ import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 import uk.gov.ea.datareturns.App;
-import uk.gov.ea.datareturns.domain.jpa.dao.*;
-import uk.gov.ea.datareturns.domain.jpa.entities.*;
+import uk.gov.ea.datareturns.domain.jpa.dao.masterdata.*;
+import uk.gov.ea.datareturns.domain.jpa.entities.masterdata.impl.*;
+import uk.gov.ea.datareturns.domain.jpa.entities.userdata.ReferencePeriod;
 
 import javax.inject.Inject;
 import java.util.List;

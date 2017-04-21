@@ -1,8 +1,8 @@
 package uk.gov.ea.datareturns.domain.model.validation.auditors.controlledlist;
 
 import org.springframework.stereotype.Component;
-import uk.gov.ea.datareturns.domain.jpa.dao.Key;
-import uk.gov.ea.datareturns.domain.jpa.dao.ReturnTypeDao;
+import uk.gov.ea.datareturns.domain.jpa.dao.masterdata.Key;
+import uk.gov.ea.datareturns.domain.jpa.dao.masterdata.ReturnTypeDao;
 import uk.gov.ea.datareturns.domain.model.validation.constraints.controlledlist.ControlledListAuditor;
 
 import javax.inject.Inject;

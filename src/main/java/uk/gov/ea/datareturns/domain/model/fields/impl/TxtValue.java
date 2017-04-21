@@ -1,9 +1,9 @@
 package uk.gov.ea.datareturns.domain.model.fields.impl;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
-import uk.gov.ea.datareturns.domain.jpa.dao.EntityDao;
-import uk.gov.ea.datareturns.domain.jpa.dao.TextValueDao;
-import uk.gov.ea.datareturns.domain.jpa.entities.TextValue;
+import uk.gov.ea.datareturns.domain.jpa.dao.masterdata.EntityDao;
+import uk.gov.ea.datareturns.domain.jpa.dao.masterdata.TextValueDao;
+import uk.gov.ea.datareturns.domain.jpa.entities.masterdata.impl.TextValue;
 import uk.gov.ea.datareturns.domain.model.DataSample;
 import uk.gov.ea.datareturns.domain.model.MessageCodes;
 import uk.gov.ea.datareturns.domain.model.fields.AbstractAliasingEntityValue;

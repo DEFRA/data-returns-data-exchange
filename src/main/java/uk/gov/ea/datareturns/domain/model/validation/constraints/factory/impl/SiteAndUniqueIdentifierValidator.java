@@ -1,7 +1,7 @@
 package uk.gov.ea.datareturns.domain.model.validation.constraints.factory.impl;
 
 import org.apache.commons.lang3.StringUtils;
-import uk.gov.ea.datareturns.domain.jpa.entities.UniqueIdentifier;
+import uk.gov.ea.datareturns.domain.jpa.entities.masterdata.impl.UniqueIdentifier;
 import uk.gov.ea.datareturns.domain.model.DataSample;
 import uk.gov.ea.datareturns.domain.model.MessageCodes;
 import uk.gov.ea.datareturns.domain.model.fields.impl.EaId;

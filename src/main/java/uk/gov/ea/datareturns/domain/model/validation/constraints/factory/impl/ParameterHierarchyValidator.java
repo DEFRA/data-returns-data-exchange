@@ -2,7 +2,7 @@ package uk.gov.ea.datareturns.domain.model.validation.constraints.factory.impl;
 
 import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.stereotype.Component;
-import uk.gov.ea.datareturns.domain.jpa.entities.*;
+import uk.gov.ea.datareturns.domain.jpa.entities.masterdata.impl.*;
 import uk.gov.ea.datareturns.domain.jpa.hierarchy.Hierarchy;
 import uk.gov.ea.datareturns.domain.jpa.hierarchy.HierarchyLevel;
 import uk.gov.ea.datareturns.domain.jpa.hierarchy.implementations.ParameterHierarchy;

@@ -1,7 +1,7 @@
 package uk.gov.ea.datareturns.domain.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import uk.gov.ea.datareturns.domain.jpa.entities.UniqueIdentifier;
+import uk.gov.ea.datareturns.domain.jpa.entities.masterdata.impl.UniqueIdentifier;
 
 import java.util.Set;
 

@@ -2,8 +2,8 @@ package uk.gov.ea.datareturns.domain.model.fields.impl;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import org.hibernate.validator.constraints.NotBlank;
-import uk.gov.ea.datareturns.domain.jpa.dao.EntityDao;
-import uk.gov.ea.datareturns.domain.jpa.dao.ReleasesAndTransfersDao;
+import uk.gov.ea.datareturns.domain.jpa.dao.masterdata.EntityDao;
+import uk.gov.ea.datareturns.domain.jpa.dao.masterdata.ReleasesAndTransfersDao;
 import uk.gov.ea.datareturns.domain.model.DataSample;
 import uk.gov.ea.datareturns.domain.model.MessageCodes;
 import uk.gov.ea.datareturns.domain.model.fields.AbstractEntityValue;
@@ -17,7 +17,7 @@ import uk.gov.ea.datareturns.domain.model.validation.constraints.controlledlist.
  * @author Sam Gardner-Dell
  */
 public class ReleasesAndTransfers
-        extends AbstractEntityValue<ReleasesAndTransfersDao, DataSample, uk.gov.ea.datareturns.domain.jpa.entities.ReleasesAndTransfers> {
+        extends AbstractEntityValue<ReleasesAndTransfersDao, DataSample, uk.gov.ea.datareturns.domain.jpa.entities.masterdata.impl.ReleasesAndTransfers> {
     private static final ReleasesAndTransfersDao DAO = EntityDao.getDao(ReleasesAndTransfersDao.class);
 
     @NotBlank(message = MessageCodes.Missing.Rel_Trans)

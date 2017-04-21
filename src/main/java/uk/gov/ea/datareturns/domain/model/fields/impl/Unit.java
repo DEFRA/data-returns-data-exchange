@@ -1,8 +1,8 @@
 package uk.gov.ea.datareturns.domain.model.fields.impl;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
-import uk.gov.ea.datareturns.domain.jpa.dao.EntityDao;
-import uk.gov.ea.datareturns.domain.jpa.dao.UnitDao;
+import uk.gov.ea.datareturns.domain.jpa.dao.masterdata.EntityDao;
+import uk.gov.ea.datareturns.domain.jpa.dao.masterdata.UnitDao;
 import uk.gov.ea.datareturns.domain.model.DataSample;
 import uk.gov.ea.datareturns.domain.model.MessageCodes;
 import uk.gov.ea.datareturns.domain.model.fields.AbstractAliasingEntityValue;
@@ -14,7 +14,7 @@ import uk.gov.ea.datareturns.domain.model.validation.constraints.controlledlist.
  *
  * @author Sam Gardner-Dell
  */
-public class Unit extends AbstractAliasingEntityValue<DataSample, uk.gov.ea.datareturns.domain.jpa.entities.Unit> {
+public class Unit extends AbstractAliasingEntityValue<DataSample, uk.gov.ea.datareturns.domain.jpa.entities.masterdata.impl.Unit> {
     private static final UnitDao DAO = EntityDao.getDao(UnitDao.class);
     @ControlledList(auditor = UnitAuditor.class, message = MessageCodes.ControlledList.Unit)
     private final String inputValue;
