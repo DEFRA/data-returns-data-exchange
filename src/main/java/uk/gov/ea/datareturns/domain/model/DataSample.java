@@ -1,5 +1,7 @@
 package uk.gov.ea.datareturns.domain.model;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import uk.gov.ea.datareturns.domain.model.fields.MappedField;
 import uk.gov.ea.datareturns.domain.model.fields.impl.*;
 import uk.gov.ea.datareturns.domain.model.rules.FieldDefinition;
@@ -16,72 +18,87 @@ import javax.validation.Valid;
  */
 @ValidRecord(value = DataSample.class)
 @HierarchyValidator(value = DataSample.class, groups = ValidationGroups.RecordTier.class)
-public class DataSample {
+public class DataSample implements Payload {
 
     /** The EA Unique Identifier (EA_ID) */
     @Valid @MappedField(FieldDefinition.EA_ID)
+    @JsonProperty("EA_ID")
     private EaId eaId;
 
     /** The site name (Site_Name) */
     @Valid @MappedField(FieldDefinition.Site_Name)
+    @JsonProperty("Site_Name")
     private SiteName siteName;
 
     /** The return type (Rtn_Type) */
     @Valid @MappedField(FieldDefinition.Rtn_Type)
+    @JsonProperty("Rtn_Type")
     private ReturnType returnType;
 
     /** The monitoring date (Mon_Date) */
     @Valid @MappedField(FieldDefinition.Mon_Date)
+    @JsonProperty("Mon_Date")
     private MonitoringDate monitoringDate;
 
     /** The return period  (Rtn_Period) */
     @Valid @MappedField(FieldDefinition.Rtn_Period)
+    @JsonProperty("Rtn_Period")
     private ReturnPeriod returnPeriod;
 
     /** The monitoring point (Mon_Point) */
     @Valid @MappedField(FieldDefinition.Mon_Point)
+    @JsonProperty("Mon_Point")
     private MonitoringPoint monitoringPoint;
 
     /** Parameter value (Parameter) */
     @Valid @MappedField(FieldDefinition.Parameter)
+    @JsonProperty("Parameter")
     private Parameter parameter;
 
     /** Value (Value) */
     @Valid @MappedField(FieldDefinition.Value)
+    @JsonProperty("Value")
     private Value value;
 
     /** Textual value (Txt_Value) */
     @Valid @MappedField(FieldDefinition.Txt_Value)
+    @JsonProperty("Txt_Value")
     private TxtValue textValue;
 
     /** Qualifier value (Qualifier) */
     @Valid @MappedField(FieldDefinition.Qualifier)
+    @JsonProperty("Qualifier")
     private Qualifier qualifier;
 
     /** Unit of measurement (Unit) */
     @Valid @MappedField(FieldDefinition.Unit)
+    @JsonProperty("Unit")
     private Unit unit;
 
     /** Reference period */
     @Valid @MappedField(FieldDefinition.Ref_Period)
+    @JsonProperty("Ref_Period")
     private ReferencePeriod referencePeriod;
 
     /** Method or standard used (Meth_Stand) */
     @Valid @MappedField(FieldDefinition.Meth_Stand)
+    @JsonProperty("Meth_Stand")
     private MethodOrStandard methStand;
 
     /** Record comments (Comments) */
     @Valid @MappedField(FieldDefinition.Comments)
+    @JsonProperty("Comments")
     private Comments comments;
 
     /** Commercial in confidence data (CiC) */
     @Valid @MappedField(FieldDefinition.CiC)
+    @JsonProperty("CiC")
     private Cic cic;
 
     /** Pollution inventory releases and transfers */
     @Valid @MappedField(FieldDefinition.Rel_Trans)
+    @JsonProperty("Rel_Trans")
     private ReleasesAndTransfers releasesAndTransfers;
-
 
     //    /** Sample reference (Smpl_Ref) */
     //    @Length(max = 255, message = "{DR9120-Length}")

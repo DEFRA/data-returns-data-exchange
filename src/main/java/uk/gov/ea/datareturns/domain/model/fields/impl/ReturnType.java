@@ -1,5 +1,6 @@
 package uk.gov.ea.datareturns.domain.model.fields.impl;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
 import org.hibernate.validator.constraints.NotBlank;
 import uk.gov.ea.datareturns.domain.jpa.dao.EntityDao;
 import uk.gov.ea.datareturns.domain.jpa.dao.ReturnTypeDao;
@@ -26,6 +27,7 @@ public class ReturnType extends AbstractEntityValue<ReturnTypeDao, DataSample, u
      *
      * @param inputValue the input value
      */
+    @JsonCreator
     public ReturnType(String inputValue) {
         super(inputValue);
         this.inputValue = inputValue;

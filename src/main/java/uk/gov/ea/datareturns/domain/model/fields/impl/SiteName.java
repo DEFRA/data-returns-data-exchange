@@ -1,5 +1,6 @@
 package uk.gov.ea.datareturns.domain.model.fields.impl;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
 import org.hibernate.validator.constraints.NotBlank;
 import uk.gov.ea.datareturns.domain.model.DataSample;
 import uk.gov.ea.datareturns.domain.model.MessageCodes;
@@ -20,6 +21,7 @@ public class SiteName implements FieldValue<DataSample, String> {
      *
      * @param inputValue the input value
      */
+    @JsonCreator
     public SiteName(String inputValue) {
         this.inputValue = inputValue;
     }

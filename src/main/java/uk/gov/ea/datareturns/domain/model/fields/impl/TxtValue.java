@@ -1,5 +1,6 @@
 package uk.gov.ea.datareturns.domain.model.fields.impl;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
 import uk.gov.ea.datareturns.domain.jpa.dao.EntityDao;
 import uk.gov.ea.datareturns.domain.jpa.dao.TextValueDao;
 import uk.gov.ea.datareturns.domain.jpa.entities.TextValue;
@@ -24,6 +25,7 @@ public class TxtValue extends AbstractAliasingEntityValue<DataSample, TextValue>
      *
      * @param inputValue the input value
      */
+    @JsonCreator
     public TxtValue(String inputValue) {
         super(inputValue);
         this.inputValue = inputValue;

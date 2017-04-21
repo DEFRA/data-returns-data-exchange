@@ -1,5 +1,6 @@
 package uk.gov.ea.datareturns.domain.model.fields.impl;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
 import uk.gov.ea.datareturns.domain.jpa.dao.EntityDao;
 import uk.gov.ea.datareturns.domain.jpa.dao.QualifierDao;
 import uk.gov.ea.datareturns.domain.model.DataSample;
@@ -24,6 +25,7 @@ public class Qualifier extends AbstractEntityValue<QualifierDao, DataSample, uk.
      *
      * @param inputValue the input value
      */
+    @JsonCreator
     public Qualifier(String inputValue) {
         super(inputValue);
         this.inputValue = inputValue;

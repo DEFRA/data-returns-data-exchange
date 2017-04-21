@@ -1,6 +1,7 @@
 
 package uk.gov.ea.datareturns.domain.model.fields.impl;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
 import org.hibernate.validator.constraints.NotBlank;
 import uk.gov.ea.datareturns.domain.jpa.dao.EntityDao;
 import uk.gov.ea.datareturns.domain.jpa.dao.ParameterDao;
@@ -27,6 +28,7 @@ public class Parameter extends AbstractAliasingEntityValue<DataSample, uk.gov.ea
      *
      * @param inputValue the input value
      */
+    @JsonCreator
     public Parameter(String inputValue) {
         super(inputValue);
         this.inputValue = inputValue;

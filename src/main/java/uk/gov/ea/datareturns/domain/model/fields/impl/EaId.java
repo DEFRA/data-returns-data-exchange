@@ -1,5 +1,6 @@
 package uk.gov.ea.datareturns.domain.model.fields.impl;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.hibernate.validator.constraints.NotBlank;
@@ -36,6 +37,7 @@ public class EaId extends AbstractEntityValue<UniqueIdentifierDao, DataSample, U
      *
      * @param identifier the String representation of the unique identifier.
      */
+    @JsonCreator
     public EaId(final String identifier) {
         super(identifier);
         this.identifier = identifier;
