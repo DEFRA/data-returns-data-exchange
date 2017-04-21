@@ -1,6 +1,7 @@
 package uk.gov.ea.datareturns.domain.model.validation;
 
 import uk.gov.ea.datareturns.domain.model.DataSample;
+import uk.gov.ea.datareturns.domain.model.Payload;
 import uk.gov.ea.datareturns.domain.result.ValidationErrors;
 
 import java.util.List;
@@ -10,7 +11,7 @@ import java.util.List;
  *
  * @author Sam Gardner-Dell
  */
-public interface DataSampleValidator {
+public interface DataSampleValidator<T extends Payload> {
 
     /**
      * Validate the specified model of {@link DataSample}s
@@ -19,5 +20,5 @@ public interface DataSampleValidator {
      * @return a {@link ValidationErrors} instance detailing any validation errors (if any) which were found with the model.
      *          Use {@link ValidationErrors#isValid()} to determine if any errors were found.
      */
-    ValidationErrors validateModel(final List<DataSample> model);
+    ValidationErrors validateModel(final List<T> model);
 }
