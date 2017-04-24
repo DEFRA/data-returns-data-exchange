@@ -1,8 +1,9 @@
-package uk.gov.ea.datareturns.domain.jpa.entities.userdata;
+package uk.gov.ea.datareturns.domain.jpa.entities.userdata.impl;
 
 import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
+import java.io.Serializable;
 
 /**
  * @author Graham Willis
@@ -12,7 +13,9 @@ import javax.persistence.*;
 @GenericGenerator(name = "idGenerator", strategy = "org.hibernate.id.enhanced.SequenceStyleGenerator", parameters = {
         @org.hibernate.annotations.Parameter(name = "sequence_name", value = "status_id_seq") }
 )
-public class RecordStatus {
+public class RecordStatus implements Serializable {
+
+    public final static String UNVALIDATED = "UNVALIDATED";
 
     @Id @GeneratedValue(generator = "idGenerator")
     private Long id;
@@ -51,5 +54,13 @@ public class RecordStatus {
     @Override
     public int hashCode() {
         return status.hashCode();
+    }
+
+    @Override
+    public String toString() {
+        return "RecordStatus{" +
+                "id=" + id +
+                ", status='" + status + '\'' +
+                '}';
     }
 }

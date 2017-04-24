@@ -1,7 +1,6 @@
 package uk.gov.ea.datareturns.domain.jpa.dao.masterdata.impl;
 
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
-import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Repository;
 import uk.gov.ea.datareturns.domain.jpa.dao.masterdata.TextValueDao;
@@ -18,7 +17,7 @@ import javax.inject.Inject;
 @Scope(ConfigurableBeanFactory.SCOPE_SINGLETON)
 public class TextValueDaoImpl extends AbstractAliasingEntityDao<TextValue> implements TextValueDao {
     @Inject
-    public TextValueDaoImpl(ApplicationEventPublisher publisher) {
-        super(TextValue.class, publisher);
+    public TextValueDaoImpl() {
+        super(TextValue.class);
     }
 }

@@ -1,8 +1,11 @@
-package uk.gov.ea.datareturns.domain.jpa.entities.userdata;
+package uk.gov.ea.datareturns.domain.jpa.entities.userdata.impl;
 
 import org.hibernate.annotations.GenericGenerator;
+import uk.gov.ea.datareturns.domain.jpa.entities.userdata.Userdata;
 
 import javax.persistence.*;
+import java.io.Serializable;
+import java.util.Arrays;
 import java.util.Date;
 
 /**
@@ -13,7 +16,7 @@ import java.util.Date;
 @GenericGenerator(name = "idGenerator", strategy = "org.hibernate.id.enhanced.SequenceStyleGenerator", parameters = {
         @org.hibernate.annotations.Parameter(name = "sequence_name", value = "records_id_seq") }
 )
-public class Record {
+public class Record implements Serializable, Userdata {
 
     @Id @GeneratedValue(generator = "idGenerator")
     private Long id;
@@ -113,5 +116,18 @@ public class Record {
         int result = identifier.hashCode();
         result = 31 * result + dataset.hashCode();
         return result;
+    }
+
+    @Override
+    public String toString() {
+        return "Record{" +
+                "id=" + id +
+                ", identifier='" + identifier + '\'' +
+                ", dataset=" + dataset +
+                ", recordStatus=" + recordStatus +
+                ", createDate=" + createDate +
+                ", lastChangedDate=" + lastChangedDate +
+                ", etag=" + Arrays.toString(etag) +
+                '}';
     }
 }

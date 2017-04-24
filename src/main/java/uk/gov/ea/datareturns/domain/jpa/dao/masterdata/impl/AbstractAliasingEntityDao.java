@@ -1,9 +1,8 @@
 package uk.gov.ea.datareturns.domain.jpa.dao.masterdata.impl;
 
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.context.ApplicationEventPublisher;
-import uk.gov.ea.datareturns.domain.jpa.dao.masterdata.Key;
 import uk.gov.ea.datareturns.domain.jpa.dao.masterdata.AliasingEntityDao;
+import uk.gov.ea.datareturns.domain.jpa.dao.masterdata.Key;
 import uk.gov.ea.datareturns.domain.jpa.entities.masterdata.AliasingEntity;
 import uk.gov.ea.datareturns.domain.jpa.hierarchy.Hierarchy;
 import uk.gov.ea.datareturns.domain.jpa.hierarchy.processors.GroupingEntityCommon;
@@ -30,14 +29,14 @@ public abstract class AbstractAliasingEntityDao<E extends AliasingEntity> extend
      *
      * @param entityClass
      */
-    public AbstractAliasingEntityDao(Class<E> entityClass, ApplicationEventPublisher publisher) {
-        this(entityClass, publisher, null);
+    public AbstractAliasingEntityDao(Class<E> entityClass) {
+        this(entityClass, null);
     }
 
-    public AbstractAliasingEntityDao(Class<E> entityClass, ApplicationEventPublisher publisher,
+    public AbstractAliasingEntityDao(Class<E> entityClass,
             GroupingEntityCommon<? extends Hierarchy.GroupedHierarchyEntity> groupedHierarchyEntity) {
 
-        super(entityClass, publisher, groupedHierarchyEntity);
+        super(entityClass, groupedHierarchyEntity);
 
         addSearchField("aliases", (entity, terms) -> {
             if (entity.getAliases() != null) {

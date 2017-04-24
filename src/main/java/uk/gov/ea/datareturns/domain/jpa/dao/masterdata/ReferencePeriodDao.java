@@ -1,6 +1,6 @@
 package uk.gov.ea.datareturns.domain.jpa.dao.masterdata;
 
-import uk.gov.ea.datareturns.domain.jpa.entities.userdata.ReferencePeriod;
+import uk.gov.ea.datareturns.domain.jpa.entities.masterdata.impl.ReferencePeriod;
 
 /**
  * DAO for reference periods.

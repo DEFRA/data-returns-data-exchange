@@ -1,7 +1,6 @@
 package uk.gov.ea.datareturns.domain.jpa.dao.masterdata.impl;
 
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
-import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Repository;
 import uk.gov.ea.datareturns.domain.jpa.dao.masterdata.MethodOrStandardDao;
@@ -19,8 +18,8 @@ import javax.inject.Inject;
 @Scope(ConfigurableBeanFactory.SCOPE_SINGLETON)
 public class MethodOrStandardDaoImpl extends AbstractEntityDao<MethodOrStandard> implements MethodOrStandardDao {
     @Inject
-    public MethodOrStandardDaoImpl(ApplicationEventPublisher publisher) {
-        super(MethodOrStandard.class, publisher);
+    public MethodOrStandardDaoImpl() {
+        super(MethodOrStandard.class);
     }
 
     /**

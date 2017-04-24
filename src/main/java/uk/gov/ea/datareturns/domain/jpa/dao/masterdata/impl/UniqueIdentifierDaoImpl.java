@@ -1,7 +1,6 @@
 package uk.gov.ea.datareturns.domain.jpa.dao.masterdata.impl;
 
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
-import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Repository;
 import uk.gov.ea.datareturns.domain.jpa.dao.masterdata.EntityDao;
@@ -41,8 +40,8 @@ public class UniqueIdentifierDaoImpl extends AbstractEntityDao<UniqueIdentifier>
     private EntityDao<UniqueIdentifierAlias> uniqueIdentifierAliasDao;
 
     @Inject
-    public UniqueIdentifierDaoImpl(EntityDao<UniqueIdentifierAlias> uniqueIdentifierAliasDao, ApplicationEventPublisher publisher) {
-        super(UniqueIdentifier.class, publisher);
+    public UniqueIdentifierDaoImpl(EntityDao<UniqueIdentifierAlias> uniqueIdentifierAliasDao) {
+        super(UniqueIdentifier.class);
         this.uniqueIdentifierAliasDao = uniqueIdentifierAliasDao;
     }
 

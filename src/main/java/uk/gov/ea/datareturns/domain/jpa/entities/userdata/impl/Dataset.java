@@ -1,8 +1,10 @@
-package uk.gov.ea.datareturns.domain.jpa.entities.userdata;
+package uk.gov.ea.datareturns.domain.jpa.entities.userdata.impl;
 
 import org.hibernate.annotations.GenericGenerator;
+import uk.gov.ea.datareturns.domain.jpa.entities.userdata.Userdata;
 
 import javax.persistence.*;
+import java.io.Serializable;
 
 /**
  * @author Graham
@@ -12,7 +14,7 @@ import javax.persistence.*;
 @GenericGenerator(name = "idGenerator", strategy = "org.hibernate.id.enhanced.SequenceStyleGenerator", parameters = {
         @org.hibernate.annotations.Parameter(name = "sequence_name", value = "datasets_id_seq") }
 )
-public class Dataset {
+public class Dataset implements Serializable, Userdata {
 
     @Id @GeneratedValue(generator = "idGenerator")
     private Long id;
@@ -79,5 +81,15 @@ public class Dataset {
         int result = identifier.hashCode();
         result = 31 * result + user.hashCode();
         return result;
+    }
+
+    @Override
+    public String toString() {
+        return "Dataset{" +
+                "id=" + id +
+                ", identifier='" + identifier + '\'' +
+                ", filename='" + filename + '\'' +
+                ", user=" + user +
+                '}';
     }
 }

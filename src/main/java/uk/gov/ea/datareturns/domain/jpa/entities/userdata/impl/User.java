@@ -1,8 +1,10 @@
-package uk.gov.ea.datareturns.domain.jpa.entities.userdata;
+package uk.gov.ea.datareturns.domain.jpa.entities.userdata.impl;
 
 import org.hibernate.annotations.GenericGenerator;
+import uk.gov.ea.datareturns.domain.jpa.entities.userdata.Userdata;
 
 import javax.persistence.*;
+import java.io.Serializable;
 
 /**
  * @author Graham
@@ -12,13 +14,15 @@ import javax.persistence.*;
 @GenericGenerator(name = "idGenerator", strategy = "org.hibernate.id.enhanced.SequenceStyleGenerator", parameters = {
         @org.hibernate.annotations.Parameter(name = "sequence_name", value = "users_id_seq") }
 )
-public class User {
+public class User implements Serializable, Userdata {
+
+    public static final String SYSTEM = "SYSTEM";
 
     @Id @GeneratedValue(generator = "idGenerator")
     private Long id;
 
-    @Basic @Column(name = "name", nullable = false, length = 80)
-    private String name;
+    @Basic @Column(name = "identifier", nullable = false, length = 80)
+    private String identifier;
 
     public Long getId() {
         return id;
@@ -28,12 +32,12 @@ public class User {
         this.id = id;
     }
 
-    public String getName() {
-        return name;
+    public String getIdentifier() {
+        return identifier;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setIdentifier(String identifier) {
+        this.identifier = identifier;
     }
 
     @Override
@@ -43,11 +47,19 @@ public class User {
 
         User user = (User) o;
 
-        return name.equals(user.name);
+        return identifier.equals(user.identifier);
     }
 
     @Override
     public int hashCode() {
-        return name.hashCode();
+        return identifier.hashCode();
+    }
+
+    @Override
+    public String toString() {
+        return "User{" +
+                "id=" + id +
+                ", identifier='" + identifier + '\'' +
+                '}';
     }
 }

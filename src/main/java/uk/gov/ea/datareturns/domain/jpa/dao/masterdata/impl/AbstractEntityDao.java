@@ -5,12 +5,11 @@ import org.apache.commons.collections4.bidimap.DualHashBidiMap;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.transaction.annotation.Transactional;
+import uk.gov.ea.datareturns.domain.jpa.dao.masterdata.AliasingEntityDao;
 import uk.gov.ea.datareturns.domain.jpa.dao.masterdata.EntityDao;
 import uk.gov.ea.datareturns.domain.jpa.dao.masterdata.Key;
 import uk.gov.ea.datareturns.domain.jpa.dao.masterdata.SearchFunction;
-import uk.gov.ea.datareturns.domain.jpa.dao.masterdata.AliasingEntityDao;
 import uk.gov.ea.datareturns.domain.jpa.entities.masterdata.ControlledListEntity;
 import uk.gov.ea.datareturns.domain.jpa.hierarchy.Hierarchy;
 import uk.gov.ea.datareturns.domain.jpa.hierarchy.processors.GroupingEntityCommon;
@@ -52,8 +51,6 @@ public abstract class AbstractEntityDao<E extends ControlledListEntity> implemen
     private final Class<E> entityClass;
     private BeanInfo entityBeanInfo;
 
-    private final ApplicationEventPublisher publisher;
-
     @PersistenceContext
     protected EntityManager entityManager;
 
@@ -61,8 +58,8 @@ public abstract class AbstractEntityDao<E extends ControlledListEntity> implemen
      * Let the Dao class know the type of entity in order that type-safe
      * hibernate operations can be performed
      */
-    public AbstractEntityDao(Class<E> entityClass, ApplicationEventPublisher publisher) {
-        this(entityClass, publisher, null);
+    public AbstractEntityDao(Class<E> entityClass) {
+        this(entityClass, null);
     }
 
     /**
@@ -71,7 +68,7 @@ public abstract class AbstractEntityDao<E extends ControlledListEntity> implemen
      * @param entityClass
      * @param groupingEntityCommon
      */
-    public AbstractEntityDao(Class<E> entityClass, ApplicationEventPublisher publisher,
+    public AbstractEntityDao(Class<E> entityClass,
                              GroupingEntityCommon<? extends Hierarchy.GroupedHierarchyEntity> groupingEntityCommon
                              ) {
 
@@ -90,10 +87,7 @@ public abstract class AbstractEntityDao<E extends ControlledListEntity> implemen
         if (this.groupingEntityCommon != null) {
             this.groupingEntityCommon.setDao(this);
         }
-
-        this.publisher = publisher;
-
-    }
+   }
 
     @Override public GroupingEntityCommon<? extends Hierarchy.GroupedHierarchyEntity> getGroupingEntityCommon() {
         return groupingEntityCommon;

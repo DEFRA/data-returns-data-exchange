@@ -1,7 +1,6 @@
 package uk.gov.ea.datareturns.domain.jpa.dao.masterdata.impl;
 
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
-import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Repository;
 import uk.gov.ea.datareturns.domain.jpa.dao.masterdata.UniqueIdentifierAliasDao;
@@ -19,8 +18,8 @@ import javax.inject.Inject;
 public class UniqueIdentifierAliasDaoImpl extends AbstractEntityDao<UniqueIdentifierAlias> implements UniqueIdentifierAliasDao {
 
     @Inject
-    public UniqueIdentifierAliasDaoImpl(ApplicationEventPublisher publisher) {
-        super(UniqueIdentifierAlias.class, publisher);
+    public UniqueIdentifierAliasDaoImpl() {
+        super(UniqueIdentifierAlias.class);
     }
 
     // Do not allow any relaxation when looking for EA_ID's they should always be exact

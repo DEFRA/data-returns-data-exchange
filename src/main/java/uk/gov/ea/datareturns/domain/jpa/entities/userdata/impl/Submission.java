@@ -1,7 +1,7 @@
-package uk.gov.ea.datareturns.domain.jpa.entities.userdata;
+package uk.gov.ea.datareturns.domain.jpa.entities.userdata.impl;
 
-import uk.gov.ea.datareturns.domain.jpa.entities.masterdata.impl.Parameter;
 import uk.gov.ea.datareturns.domain.jpa.entities.masterdata.impl.*;
+import uk.gov.ea.datareturns.domain.jpa.entities.masterdata.impl.Parameter;
 
 import javax.persistence.*;
 import java.io.Serializable;
@@ -226,5 +226,28 @@ public class Submission implements Serializable {
     @Override
     public int hashCode() {
         return record.hashCode();
+    }
+
+    @Override
+    public String toString() {
+        return "Submission{" +
+                "record=" + record +
+                ", uniqueIdentifier=" + uniqueIdentifier +
+                ", site=" + site +
+                ", returnType=" + returnType +
+                ", monDate=" + monDate +
+                ", monPoint='" + monPoint + '\'' +
+                ", parameter=" + parameter +
+                ", numericValue=" + numericValue +
+                ", numericValueText='" + numericValueText + '\'' +
+                ", textValue=" + textValue +
+                ", qualifier=" + qualifier +
+                ", unit=" + unit +
+                ", referencePeriod=" + referencePeriod +
+                ", methodOrStandard=" + methodOrStandard +
+                ", comments='" + comments + '\'' +
+                ", cic='" + cic + '\'' +
+                ", releasesAndTransfers=" + releasesAndTransfers +
+                '}';
     }
 }
