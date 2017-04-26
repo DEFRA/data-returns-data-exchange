@@ -1,6 +1,6 @@
 package uk.gov.ea.datareturns.domain.model;
 
-import uk.gov.ea.datareturns.domain.jpa.entities.userdata.SubmissionType;
+import uk.gov.ea.datareturns.domain.jpa.entities.userdata.Submission;
 
 /**
  * @author Graham Willis
@@ -8,6 +8,6 @@ import uk.gov.ea.datareturns.domain.jpa.entities.userdata.SubmissionType;
  * RESTful interface. The current and only implmenting class is Datasample
  * which defines the dataset for landfill returns.
  */
-public interface Payload<T extends SubmissionType> {
+public interface Payload<T extends Submission> {
     T toSubmissionType();
 }
