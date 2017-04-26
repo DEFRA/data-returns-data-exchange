@@ -8,6 +8,6 @@ import uk.gov.ea.datareturns.domain.jpa.entities.userdata.Submission;
  * RESTful interface. The current and only implmenting class is Datasample
  * which defines the dataset for landfill returns.
  */
-public interface Payload<T extends Submission> {
-    T toSubmissionType();
+public interface Datum<T extends Submission> {
+    T createSubmissionType();
 }

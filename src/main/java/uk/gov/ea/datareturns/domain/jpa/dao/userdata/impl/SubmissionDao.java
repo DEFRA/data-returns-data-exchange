@@ -5,10 +5,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Repository;
-import uk.gov.ea.datareturns.domain.jpa.dao.masterdata.impl.EntityCache;
-import uk.gov.ea.datareturns.domain.jpa.entities.userdata.SubmissionType;
-import uk.gov.ea.datareturns.domain.jpa.entities.userdata.impl.RecordStatus;
-import uk.gov.ea.datareturns.util.CachingSupplier;
+import uk.gov.ea.datareturns.domain.jpa.entities.userdata.Submission;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -24,13 +21,13 @@ public class SubmissionDao  {
     @PersistenceContext
     protected EntityManager entityManager;
 
-    public SubmissionType add(SubmissionType submissionType) {
+    public Submission add(Submission submissionType) {
         entityManager.persist(submissionType);
         LOGGER.info("Added: submission: " + submissionType.toString());
         return submissionType;
     }
 
-    public void merge(SubmissionType submissionType) {
+    public void merge(Submission submissionType) {
         entityManager.merge(submissionType);
         LOGGER.info("Merged: submission: " + submissionType.toString());
     }

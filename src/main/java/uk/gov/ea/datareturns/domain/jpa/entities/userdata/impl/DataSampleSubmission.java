@@ -2,7 +2,7 @@ package uk.gov.ea.datareturns.domain.jpa.entities.userdata.impl;
 
 import uk.gov.ea.datareturns.domain.jpa.entities.masterdata.impl.*;
 import uk.gov.ea.datareturns.domain.jpa.entities.masterdata.impl.Parameter;
-import uk.gov.ea.datareturns.domain.jpa.entities.userdata.SubmissionType;
+import uk.gov.ea.datareturns.domain.jpa.entities.userdata.Submission;
 
 import javax.persistence.*;
 import java.io.Serializable;
@@ -14,11 +14,7 @@ import java.util.Date;
  */
 @Entity
 @Table(name = "submissions")
-public class DataSampleSubmission implements Serializable, SubmissionType {
-
-    @Id @OneToOne(optional = false)
-    @JoinColumn(name = "record_id", referencedColumnName = "id")
-    private Record record;
+public class DataSampleSubmission extends Submission {
 
     @ManyToOne(optional = false)
     @JoinColumn(name = "ea_id", referencedColumnName = "id")
@@ -77,14 +73,6 @@ public class DataSampleSubmission implements Serializable, SubmissionType {
     @ManyToOne
     @JoinColumn(name = "releases_and_transfers_id", referencedColumnName = "id")
     ReleasesAndTransfers releasesAndTransfers;
-
-    public Record getRecord() {
-        return record;
-    }
-
-    public void setRecord(Record record) {
-        this.record = record;
-    }
 
     public UniqueIdentifier getUniqueIdentifier() {
         return uniqueIdentifier;
@@ -212,21 +200,6 @@ public class DataSampleSubmission implements Serializable, SubmissionType {
 
     public void setReleasesAndTransfers(ReleasesAndTransfers releasesAndTransfers) {
         this.releasesAndTransfers = releasesAndTransfers;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-
-        DataSampleSubmission that = (DataSampleSubmission) o;
-
-        return record.equals(that.record);
-    }
-
-    @Override
-    public int hashCode() {
-        return record.hashCode();
     }
 
     @Override

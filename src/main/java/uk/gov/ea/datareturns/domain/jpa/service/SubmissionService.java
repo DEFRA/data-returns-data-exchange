@@ -5,13 +5,11 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import uk.gov.ea.datareturns.domain.jpa.dao.userdata.impl.*;
-import uk.gov.ea.datareturns.domain.jpa.entities.userdata.SubmissionType;
+import uk.gov.ea.datareturns.domain.jpa.entities.userdata.Submission;
 import uk.gov.ea.datareturns.domain.jpa.entities.userdata.impl.*;
-import uk.gov.ea.datareturns.domain.model.DataSample;
-import uk.gov.ea.datareturns.domain.model.Payload;
+import uk.gov.ea.datareturns.domain.model.Datum;
 
 import javax.inject.Inject;
-import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
@@ -20,7 +18,7 @@ import java.util.UUID;
  * @author Graham Willis
  */
 @Service
-public class SubmissionService {
+public class SubmissionService<T extends Datum<? extends Submission>> {
     protected static final Logger LOGGER = LoggerFactory.getLogger(SubmissionService.class);
     private final DatasetDao datasetDao;
     private final UserDao userDao;
@@ -145,24 +143,6 @@ public class SubmissionService {
         return recordDao.add(record);
     }
 
-    /**
-     * Create a new submission record for a dataset. The record is user managed
-     * @param dataset
-     * @return
-     */
-    public Record generateDetachedRecord(Dataset dataset, String identifier) {
-        Date now = new Date();
-        Record record = new Record();
-        record.setDataset(dataset);
-        record.setIdentifier(identifier);
-        RecordStatus recordStatus = recordStatusDao.getStatus(RecordStatus.UNINITIALIZED);
-        record.setRecordStatus(recordStatus);
-        record.setCreateDate(now);
-        record.setEtag(UUID.randomUUID().toString());
-        record.setLastChangedDate(now);
-        return record;
-    }
-
     @Transactional(readOnly = true)
     public Dataset getDataset(String identifier) {
         return datasetDao.getByIdentifier(identifier);
@@ -184,11 +164,6 @@ public class SubmissionService {
     }
 
     /**
-     * Create a new submission record for a dataset using a submission entity. The record is system managed
-     * @param dataset
-     * @return
-     */
-    /**
      * Persist validated samples - will fail if the samples are invalid
      * @param dataset - the dataset to associated with the saved samples
      * @param samples - an array of samples to persist. The records will
@@ -196,13 +171,13 @@ public class SubmissionService {
      * @return the number of persisted samples
      */
     @Transactional
-    public long submit(Dataset dataset, List<DataSample> samples) {
+    public long submit(Dataset dataset, List<T> samples) {
         long ctr = 0L;
-        for (DataSample t : samples) {
-            DataSampleSubmission dataSampleSubmission = t.toSubmissionType();
-            Record record = generateDetachedRecord(dataset, UUID.randomUUID().toString());
-            record.setDataSampleSubmission(dataSampleSubmission);
-            dataSampleSubmission.setRecord(record);
+        for (T t : samples) {
+            Submission submission = t.createSubmissionType();
+            Record record = generateDetachedRecord(dataset);
+            record.setSubmission(submission);
+            submission.setRecord(record);
             recordDao.add(record);
             if (record.getId() != null) {
                 ctr++;
@@ -216,7 +191,36 @@ public class SubmissionService {
         return datasetDao.list(user);
     }
 
+    @Transactional(readOnly = true)
     public List<Record> getRecords(Dataset dataset) {
         return recordDao.list(dataset);
+    }
+
+    /**
+     * Create a new submission record for a dataset. The record is user managed
+     * @param dataset The dataset
+     * @param identifier an identifier for the record
+     * @return
+     */
+    private Record generateDetachedRecord(Dataset dataset, String identifier) {
+        Date now = new Date();
+        Record record = new Record();
+        record.setDataset(dataset);
+        record.setIdentifier(identifier);
+        RecordStatus recordStatus = recordStatusDao.getStatus(RecordStatus.UNINITIALIZED);
+        record.setRecordStatus(recordStatus);
+        record.setCreateDate(now);
+        record.setEtag(UUID.randomUUID().toString());
+        record.setLastChangedDate(now);
+        return record;
+    }
+
+    /**
+     * Create a new submission record for a dataset. The record is system managed
+     * @param dataset
+     * @return
+     */
+    private Record generateDetachedRecord(Dataset dataset) {
+        return generateDetachedRecord(dataset, UUID.randomUUID().toString());
     }
 }

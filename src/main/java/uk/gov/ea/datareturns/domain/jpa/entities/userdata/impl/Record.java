@@ -1,12 +1,11 @@
 package uk.gov.ea.datareturns.domain.jpa.entities.userdata.impl;
 
 import org.hibernate.annotations.GenericGenerator;
-import uk.gov.ea.datareturns.domain.jpa.entities.userdata.SubmissionType;
+import uk.gov.ea.datareturns.domain.jpa.entities.userdata.Submission;
 import uk.gov.ea.datareturns.domain.jpa.entities.userdata.Userdata;
 
 import javax.persistence.*;
 import java.io.Serializable;
-import java.util.Arrays;
 import java.util.Date;
 
 /**
@@ -23,7 +22,7 @@ public class Record implements Serializable, Userdata {
     private Long id;
 
     @OneToOne(cascade = CascadeType.ALL, mappedBy = "record")
-    private DataSampleSubmission dataSampleSubmission;
+    private Submission submission;
 
     @Basic @Column(name = "identifier", nullable = false, length = 80)
     private String identifier;
@@ -122,19 +121,19 @@ public class Record implements Serializable, Userdata {
         return result;
     }
 
-    public DataSampleSubmission getDataSampleSubmission() {
-        return dataSampleSubmission;
+    public Submission getSubmission() {
+        return submission;
     }
 
-    public void setDataSampleSubmission(DataSampleSubmission dataSampleSubmission) {
-        this.dataSampleSubmission = dataSampleSubmission;
+    public void setSubmission(Submission submission) {
+        this.submission = submission;
     }
 
     @Override
     public String toString() {
         return "Record{" +
                 "id=" + id +
-                ", dataSampleSubmission=" + dataSampleSubmission +
+                ", submission=" + submission +
                 ", identifier='" + identifier + '\'' +
                 ", dataset=" + dataset +
                 ", recordStatus=" + recordStatus +

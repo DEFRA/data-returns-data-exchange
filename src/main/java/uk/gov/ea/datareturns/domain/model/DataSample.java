@@ -21,7 +21,7 @@ import java.util.regex.Pattern;
  */
 @ValidRecord(value = DataSample.class)
 @HierarchyValidator(value = DataSample.class, groups = ValidationGroups.RecordTier.class)
-public class DataSample implements Payload<DataSampleSubmission> {
+public class DataSample implements Datum<DataSampleSubmission> {
 
     /** The EA Unique Identifier (EA_ID) */
     @Valid @MappedField(FieldDefinition.EA_ID)
@@ -407,7 +407,7 @@ public class DataSample implements Payload<DataSampleSubmission> {
     private Pattern textReg = Pattern.compile("[0-9\\.\\-\\+]");
 
     @Override
-    public DataSampleSubmission toSubmissionType() {
+    public DataSampleSubmission createSubmissionType() {
         DataSampleSubmission datasampleSubmission = new DataSampleSubmission();
 
         datasampleSubmission.setUniqueIdentifier((this.eaId != null) ? this.eaId.getEntity() : null);

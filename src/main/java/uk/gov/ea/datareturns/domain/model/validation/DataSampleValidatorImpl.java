@@ -1,11 +1,8 @@
 package uk.gov.ea.datareturns.domain.model.validation;
 
-import org.springframework.beans.factory.config.ConfigurableBeanFactory;
-import org.springframework.context.annotation.Scope;
-import org.springframework.stereotype.Component;
 import uk.gov.ea.datareturns.domain.model.DataSample;
+import uk.gov.ea.datareturns.domain.model.Datum;
 import uk.gov.ea.datareturns.domain.model.MessageCodes;
-import uk.gov.ea.datareturns.domain.model.Payload;
 import uk.gov.ea.datareturns.domain.model.rules.FieldDefinition;
 import uk.gov.ea.datareturns.domain.model.rules.FieldMapping;
 import uk.gov.ea.datareturns.domain.result.ValidationErrorField;
@@ -23,7 +20,7 @@ import java.util.*;
  *
  * @author Sam Gardner-Dell
  */
-public class DataSampleValidatorImpl<T extends Payload> implements DataSampleValidator<T> {
+public class DataSampleValidatorImpl<T extends Datum> implements DataSampleValidator<T> {
     private static final Map<String, FieldMapping> BEAN_MAPPING = FieldMapping.getFieldNameToBeanMap(DataSample.class);
 
     /** hibernate validator instance */
