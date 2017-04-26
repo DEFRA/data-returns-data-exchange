@@ -102,4 +102,14 @@ public class ReferencePeriod implements ControlledListEntity, AliasingEntity {
         return name.hashCode();
     }
 
+    @Override
+    public String toString() {
+        return "ReferencePeriod{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", notes='" + notes + '\'' +
+                ", preferred='" + preferred + '\'' +
+                ", aliases=" + aliases +
+                '}';
+    }
 }

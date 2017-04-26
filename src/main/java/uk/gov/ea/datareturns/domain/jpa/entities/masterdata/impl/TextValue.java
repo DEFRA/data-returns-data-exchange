@@ -86,4 +86,13 @@ public class TextValue implements AliasingEntity {
         return name.hashCode();
     }
 
+    @Override
+    public String toString() {
+        return "TextValue{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", preferred='" + preferred + '\'' +
+                ", aliases=" + aliases +
+                '}';
+    }
 }

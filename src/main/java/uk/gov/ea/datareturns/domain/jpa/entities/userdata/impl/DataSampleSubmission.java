@@ -2,6 +2,7 @@ package uk.gov.ea.datareturns.domain.jpa.entities.userdata.impl;
 
 import uk.gov.ea.datareturns.domain.jpa.entities.masterdata.impl.*;
 import uk.gov.ea.datareturns.domain.jpa.entities.masterdata.impl.Parameter;
+import uk.gov.ea.datareturns.domain.jpa.entities.userdata.SubmissionType;
 
 import javax.persistence.*;
 import java.io.Serializable;
@@ -13,7 +14,7 @@ import java.util.Date;
  */
 @Entity
 @Table(name = "submissions")
-public class Submission implements Serializable {
+public class DataSampleSubmission implements Serializable, SubmissionType {
 
     @Id @OneToOne(optional = false)
     @JoinColumn(name = "record_id", referencedColumnName = "id")
@@ -47,23 +48,23 @@ public class Submission implements Serializable {
     @Basic @Column(name = "numeric_value_text", length = 20)
     String numericValueText;
 
-    @ManyToOne(optional = true)
+    @ManyToOne
     @JoinColumn(name = "text_value_id", referencedColumnName = "id")
     TextValue textValue;
 
-    @ManyToOne(optional = true)
+    @ManyToOne
     @JoinColumn(name = "qualifier_id", referencedColumnName = "id")
     Qualifier qualifier;
 
-    @ManyToOne(optional = true)
+    @ManyToOne
     @JoinColumn(name = "unit_id", referencedColumnName = "id")
     Unit unit;
 
-    @ManyToOne(optional = true)
+    @ManyToOne
     @JoinColumn(name = "reference_period_id", referencedColumnName = "id")
     ReferencePeriod referencePeriod;
 
-    @ManyToOne(optional = true)
+    @ManyToOne
     @JoinColumn(name = "method_or_standard_id", referencedColumnName = "id")
     MethodOrStandard methodOrStandard;
 
@@ -73,7 +74,7 @@ public class Submission implements Serializable {
     @Basic @Column(name = "cic", length = 255)
     String cic;
 
-    @ManyToOne(optional = true)
+    @ManyToOne
     @JoinColumn(name = "releases_and_transfers_id", referencedColumnName = "id")
     ReleasesAndTransfers releasesAndTransfers;
 
@@ -218,7 +219,7 @@ public class Submission implements Serializable {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
-        Submission that = (Submission) o;
+        DataSampleSubmission that = (DataSampleSubmission) o;
 
         return record.equals(that.record);
     }
@@ -230,9 +231,8 @@ public class Submission implements Serializable {
 
     @Override
     public String toString() {
-        return "Submission{" +
-                "record=" + record +
-                ", uniqueIdentifier=" + uniqueIdentifier +
+        return "DataSampleSubmission{" +
+                "uniqueIdentifier=" + uniqueIdentifier +
                 ", site=" + site +
                 ", returnType=" + returnType +
                 ", monDate=" + monDate +

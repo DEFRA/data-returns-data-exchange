@@ -15,7 +15,7 @@ import java.io.Serializable;
 )
 public class RecordStatus implements Serializable {
 
-    public final static String UNVALIDATED = "UNVALIDATED";
+    public final static String UNINITIALIZED = "UNINITIALIZED";
 
     @Id @GeneratedValue(generator = "idGenerator")
     private Long id;

@@ -139,4 +139,18 @@ public class Unit implements AliasingEntity, Hierarchy.GroupedHierarchyEntity {
     public String getGroup() {
         return type;
     }
+
+    @Override
+    public String toString() {
+        return "Unit{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", preferred='" + preferred + '\'' +
+                ", longName='" + longName + '\'' +
+                ", unicode='" + unicode + '\'' +
+                ", description='" + description + '\'' +
+                ", type='" + type + '\'' +
+                ", aliases=" + aliases +
+                '}';
+    }
 }

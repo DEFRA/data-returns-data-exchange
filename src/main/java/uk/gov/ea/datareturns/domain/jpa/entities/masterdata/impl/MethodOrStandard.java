@@ -70,5 +70,12 @@ public class MethodOrStandard implements ControlledListEntity {
         return name.hashCode();
     }
 
-
+    @Override
+    public String toString() {
+        return "MethodOrStandard{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", notes='" + notes + '\'' +
+                '}';
+    }
 }

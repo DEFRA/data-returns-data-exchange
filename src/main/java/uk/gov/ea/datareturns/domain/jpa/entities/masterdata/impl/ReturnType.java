@@ -78,4 +78,13 @@ public class ReturnType implements ControlledListEntity, Hierarchy.GroupedHierar
     public String getGroup() {
         return sector;
     }
+
+    @Override
+    public String toString() {
+        return "ReturnType{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", sector='" + sector + '\'' +
+                '}';
+    }
 }

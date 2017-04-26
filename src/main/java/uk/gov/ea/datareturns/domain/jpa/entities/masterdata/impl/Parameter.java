@@ -116,4 +116,15 @@ public class Parameter implements AliasingEntity, Hierarchy.HierarchyEntity {
         return name.hashCode();
     }
 
+    @Override
+    public String toString() {
+        return "Parameter{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", cas='" + cas + '\'' +
+                ", preferred='" + preferred + '\'' +
+                ", type='" + type + '\'' +
+                ", aliases=" + aliases +
+                '}';
+    }
 }

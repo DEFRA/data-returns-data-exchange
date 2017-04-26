@@ -80,4 +80,14 @@ public class ReturnPeriod implements ControlledListEntity {
     public int hashCode() {
         return name.hashCode();
     }
+
+    @Override
+    public String toString() {
+        return "ReturnPeriod{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", definition='" + definition + '\'' +
+                ", example='" + example + '\'' +
+                '}';
+    }
 }

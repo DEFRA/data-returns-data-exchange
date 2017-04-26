@@ -1,7 +1,7 @@
 package uk.gov.ea.datareturns.domain.model;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import uk.gov.ea.datareturns.domain.jpa.entities.userdata.impl.DataSampleSubmission;
 import uk.gov.ea.datareturns.domain.model.fields.MappedField;
 import uk.gov.ea.datareturns.domain.model.fields.impl.*;
 import uk.gov.ea.datareturns.domain.model.rules.FieldDefinition;
@@ -10,6 +10,9 @@ import uk.gov.ea.datareturns.domain.model.validation.constraints.factory.Hierarc
 import uk.gov.ea.datareturns.domain.model.validation.constraints.factory.ValidRecord;
 
 import javax.validation.Valid;
+import java.math.BigDecimal;
+import java.util.Date;
+import java.util.regex.Pattern;
 
 /**
  * Represents an individual sample (data return) record entry
@@ -18,7 +21,7 @@ import javax.validation.Valid;
  */
 @ValidRecord(value = DataSample.class)
 @HierarchyValidator(value = DataSample.class, groups = ValidationGroups.RecordTier.class)
-public class DataSample implements Payload {
+public class DataSample implements Payload<DataSampleSubmission> {
 
     /** The EA Unique Identifier (EA_ID) */
     @Valid @MappedField(FieldDefinition.EA_ID)
@@ -99,27 +102,6 @@ public class DataSample implements Payload {
     @Valid @MappedField(FieldDefinition.Rel_Trans)
     @JsonProperty("Rel_Trans")
     private ReleasesAndTransfers releasesAndTransfers;
-
-    //    /** Sample reference (Smpl_Ref) */
-    //    @Length(max = 255, message = "{DR9120-Length}")
-    //    @Pattern(regexp = FieldValue.REGEX_SIMPLE_TEXT, message = "{DR9120-Incorrect}")
-    //    @Valid @MappedField(FieldDefinition.Smpl_Ref)
-    //    private String sampleReference;
-    //
-    //    /** Sampled by (Smpl_By) */
-    //    @Length(max = 255, message = "{DR9130-Length}")
-    //    @Valid @MappedField(FieldDefinition.Smpl_By)
-    //    private String sampleBy;
-
-    //    /** Chemical Abstracts Service value (CAS) */
-    //    @Length(max = 255, message = "{DR9160-Length}")
-    //    @Valid @MappedField(FieldDefinition.CAS)
-    //    private String cas;
-    //`
-    //    /** Recovery and disposal code (RD_Code) */
-    //    @Length(max = 255, message = "{DR9170-Length}")
-    //    @Valid @MappedField(FieldDefinition.RD_Code)
-    //    private String rdCode;
 
     /**
      * Default constructor
@@ -414,5 +396,45 @@ public class DataSample implements Payload {
      */
     public void setReleasesAndTransfers(ReleasesAndTransfers releasesAndTransfers) {
         this.releasesAndTransfers = releasesAndTransfers;
+    }
+
+    /**
+     * This method is responsible for mapping the dataset to the output type (submission)
+     * @param p
+     * @return
+     */
+    private Pattern numericReg = Pattern.compile("[^0-9\\.\\-\\+]");
+    private Pattern textReg = Pattern.compile("[0-9\\.\\-\\+]");
+
+    @Override
+    public DataSampleSubmission toSubmissionType() {
+        DataSampleSubmission datasampleSubmission = new DataSampleSubmission();
+
+        datasampleSubmission.setUniqueIdentifier((this.eaId != null) ? this.eaId.getEntity() : null);
+        datasampleSubmission.setSite((this.eaId != null) ? this.eaId.getEntity().getSite() : null);
+        datasampleSubmission.setReturnType((this.returnType != null) ? this.returnType.getEntity() : null);
+        datasampleSubmission.setMonDate((this.monitoringDate != null) ? Date.from(this.monitoringDate.getInstant()) : null);
+        datasampleSubmission.setMonPoint((this.monitoringPoint != null) ? this.monitoringPoint.getValue() : null);
+        datasampleSubmission.setParameter((this.parameter != null) ? this.parameter.getEntity() : null);
+
+        if (this.value != null) {
+            String val = this.value.getValue();
+            String numStr = numericReg.matcher(val).replaceAll("");
+            String strStr = textReg.matcher(val).replaceAll("");
+
+            datasampleSubmission.setNumericValue(new BigDecimal(numStr));
+            datasampleSubmission.setNumericValueText(strStr);
+        }
+
+        datasampleSubmission.setTextValue((this.textValue != null) ? this.textValue.getEntity() : null);
+        datasampleSubmission.setQualifier((this.qualifier != null) ? this.qualifier.getEntity() : null);
+        datasampleSubmission.setUnit((this.unit != null) ? this.unit.getEntity() : null);
+        datasampleSubmission.setReferencePeriod((this.referencePeriod != null) ? this.referencePeriod.getEntity() : null);
+        datasampleSubmission.setMethodOrStandard((this.methStand != null) ? this.methStand.getEntity() : null);
+        datasampleSubmission.setComments((this.comments != null) ? this.comments.getValue() : null);
+        datasampleSubmission.setCic((this.cic != null) ? this.cic.getValue() : null);
+        datasampleSubmission.setReleasesAndTransfers((this.releasesAndTransfers != null) ? this.releasesAndTransfers.getEntity() : null);
+
+        return datasampleSubmission;
     }
 }

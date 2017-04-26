@@ -10,6 +10,7 @@ import uk.gov.ea.datareturns.domain.result.ValidationErrors;
 
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.List;
 
 /**
  * @author Graham Willis
@@ -31,9 +32,9 @@ public class SubmissionProcessor<T extends Payload> {
     /**
      * Parse JSON and return the an array of samples OR null if the JSON cannot be parsed
      */
-    public T[] parse(String json) {
+    public List<T> parse(String json) {
         try {
-            return mapper.readValue(json, dataSampleClass);
+            return Arrays.asList(mapper.readValue(json, dataSampleClass));
         } catch (IOException e) {
             LOGGER.info("Cannot parse JSON: " + json);
             return null;
@@ -44,7 +45,7 @@ public class SubmissionProcessor<T extends Payload> {
      * Validate samples
      * @param samples
      */
-    public ValidationErrors validate(T[] samples) {
-        return validator.validateModel(Arrays.asList(samples));
+    public ValidationErrors validate(List<T> samples) {
+        return validator.validateModel(samples);
     }
 }

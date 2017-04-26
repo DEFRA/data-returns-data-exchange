@@ -40,7 +40,7 @@
 				<constraints primaryKey="true" nullable="false"/>
 			</column>
 
-			<column name="user_id" type="bigserial">
+			<column name="user_id" type="bigint">
 				<constraints nullable="false"/>
 			</column>
 
@@ -60,10 +60,10 @@
 		</createIndex>
 
 		<addForeignKeyConstraint baseColumnNames="user_id"
-														 baseTableName="datasets"
-														 constraintName="fk_dataset_user"
-														 referencedColumnNames="id"
-														 referencedTableName="users"/>
+								 baseTableName="datasets"
+								 constraintName="fk_dataset_user"
+								 referencedColumnNames="id"
+								 referencedTableName="users"/>
 
 
 		<!--
@@ -83,7 +83,7 @@
 
 		</createTable>
 
-		<sql>insert into status (status) values ('UNINITALIZED')</sql>
+		<sql>insert into status (status) values ('UNINITIALIZED')</sql>
 		<sql>insert into status (status) values ('UNVALIDATED')</sql>
 		<sql>insert into status (status) values ('INVALID')</sql>
 		<sql>insert into status (status) values ('VALID')</sql>
@@ -100,7 +100,7 @@
 				<constraints primaryKey="true" nullable="false"/>
 			</column>
 
-			<column name="dataset_id" type="bigserial">
+			<column name="dataset_id" type="bigint">
 				<constraints nullable="false"/>
 			</column>
 
@@ -108,7 +108,7 @@
 				<constraints nullable="false" unique="true"/>
 			</column>
 
-			<column name="status_id" type="bigserial">
+			<column name="status_id" type="bigint">
 				<constraints nullable="false"/>
 			</column>
 
@@ -120,7 +120,7 @@
 				<constraints nullable="false"/>
 			</column>
 
-			<column name="etag" type="bytea">
+			<column name="etag" type="varchar(36)">
 				<constraints nullable="false"/>
 			</column>
 
@@ -132,16 +132,16 @@
 		</createIndex>
 
 		<addForeignKeyConstraint baseColumnNames="dataset_id"
-														 baseTableName="records"
-														 constraintName="fk_record_dataset"
-														 referencedColumnNames="id"
-														 referencedTableName="datasets"/>
+								 baseTableName="records"
+								 constraintName="fk_record_dataset"
+								 referencedColumnNames="id"
+								 referencedTableName="datasets"/>
 
 		<addForeignKeyConstraint baseColumnNames="status_id"
-														 baseTableName="records"
-														 constraintName="fk_submission_status"
-														 referencedColumnNames="id"
-														 referencedTableName="status"/>
+								 baseTableName="records"
+								 constraintName="fk_submission_status"
+								 referencedColumnNames="id"
+								 referencedTableName="status"/>
 
 		<!--
 		****************************************************************
@@ -154,15 +154,15 @@
 				<constraints nullable="false"/>
 			</column>
 
-			<column name="ea_id" type="bigserial">
+			<column name="ea_id" type="bigint">
 				<constraints nullable="false"/>
 			</column>
 
-			<column name="site_id" type="bigserial">
+			<column name="site_id" type="bigint">
 				<constraints nullable="false"/>
 			</column>
 
-			<column name="return_type_id" type="bigserial">
+			<column name="return_type_id" type="bigint">
 				<constraints nullable="false"/>
 			</column>
 
@@ -174,7 +174,7 @@
 				<constraints nullable="false"/>
 			</column>
 
-			<column name="parameter_id" type="bigserial">
+			<column name="parameter_id" type="bigint">
 				<constraints nullable="false"/>
 			</column>
 
@@ -186,23 +186,23 @@
 				<constraints nullable="true"/>
 			</column>
 
-			<column name="text_value_id" type="bigserial">
+			<column name="text_value_id" type="bigint">
 				<constraints nullable="true"/>
 			</column>
 
-			<column name="qualifier_id" type="bigserial">
+			<column name="qualifier_id" type="bigint">
 				<constraints nullable="true"/>
 			</column>
 
-			<column name="unit_id" type="bigserial">
+			<column name="unit_id" type="bigint">
 				<constraints nullable="true"/>
 			</column>
 
-			<column name="reference_period_id" type="bigserial">
+			<column name="reference_period_id" type="bigint">
 				<constraints nullable="true"/>
 			</column>
 
-			<column name="method_or_standard_id" type="bigserial">
+			<column name="method_or_standard_id" type="bigint">
 				<constraints nullable="true"/>
 			</column>
 
@@ -214,7 +214,7 @@
 				<constraints nullable="true"/>
 			</column>
 
-			<column name="releases_and_transfers_id" type="bigserial">
+			<column name="releases_and_transfers_id" type="bigint">
 				<constraints nullable="true"/>
 			</column>
 
@@ -225,70 +225,70 @@
 		</createIndex>
 
 		<addForeignKeyConstraint baseColumnNames="record_id"
-														 baseTableName="submissions"
-														 constraintName="fk_submission_record"
-														 referencedColumnNames="id"
-														 referencedTableName="records"/>
+								 baseTableName="submissions"
+								 constraintName="fk_submission_record"
+								 referencedColumnNames="id"
+								 referencedTableName="records"/>
 
 		<addForeignKeyConstraint baseColumnNames="ea_id"
-														 baseTableName="submissions"
-														 constraintName="fk_submission_unique_identifier"
-														 referencedColumnNames="id"
-														 referencedTableName="unique_identifiers"/>
+								 baseTableName="submissions"
+								 constraintName="fk_submission_unique_identifier"
+								 referencedColumnNames="id"
+								 referencedTableName="unique_identifiers"/>
 
 		<addForeignKeyConstraint baseColumnNames="site_id"
-														 baseTableName="submissions"
-														 constraintName="fk_submission_site"
-														 referencedColumnNames="id"
-														 referencedTableName="sites"/>
+								 baseTableName="submissions"
+								 constraintName="fk_submission_site"
+								 referencedColumnNames="id"
+								 referencedTableName="sites"/>
 
 		<addForeignKeyConstraint baseColumnNames="return_type_id"
-														 baseTableName="submissions"
-														 constraintName="fk_submission_return_type"
-														 referencedColumnNames="id"
-														 referencedTableName="return_types"/>
+								 baseTableName="submissions"
+								 constraintName="fk_submission_return_type"
+								 referencedColumnNames="id"
+								 referencedTableName="return_types"/>
 
 		<addForeignKeyConstraint baseColumnNames="parameter_id"
-														 baseTableName="submissions"
-														 constraintName="fk_submission_parameter"
-														 referencedColumnNames="id"
-														 referencedTableName="parameters"/>
+								 baseTableName="submissions"
+								 constraintName="fk_submission_parameter"
+								 referencedColumnNames="id"
+								 referencedTableName="parameters"/>
 
 		<addForeignKeyConstraint baseColumnNames="text_value_id"
-														 baseTableName="submissions"
-														 constraintName="fk_submission_text_value"
-														 referencedColumnNames="id"
-														 referencedTableName="text_values"/>
+								 baseTableName="submissions"
+								 constraintName="fk_submission_text_value"
+								 referencedColumnNames="id"
+								 referencedTableName="text_values"/>
 
 		<addForeignKeyConstraint baseColumnNames="qualifier_id"
-														 baseTableName="submissions"
-														 constraintName="fk_submission_qualifier"
-														 referencedColumnNames="id"
-														 referencedTableName="qualifiers"/>
+								 baseTableName="submissions"
+								 constraintName="fk_submission_qualifier"
+								 referencedColumnNames="id"
+								 referencedTableName="qualifiers"/>
 
 		<addForeignKeyConstraint baseColumnNames="unit_id"
-														 baseTableName="submissions"
-														 constraintName="fk_submission_unit"
-														 referencedColumnNames="id"
-														 referencedTableName="units"/>
+								 baseTableName="submissions"
+								 constraintName="fk_submission_unit"
+								 referencedColumnNames="id"
+								 referencedTableName="units"/>
 
 		<addForeignKeyConstraint baseColumnNames="reference_period_id"
-														 baseTableName="submissions"
-														 constraintName="fk_submission_reference_period"
-														 referencedColumnNames="id"
-														 referencedTableName="reference_periods"/>
+								 baseTableName="submissions"
+								 constraintName="fk_submission_reference_period"
+								 referencedColumnNames="id"
+								 referencedTableName="reference_periods"/>
 
 		<addForeignKeyConstraint baseColumnNames="method_or_standard_id"
-														 baseTableName="submissions"
-														 constraintName="fk_submission_method_or_standard"
-														 referencedColumnNames="id"
-														 referencedTableName="methods_or_standards"/>
+								 baseTableName="submissions"
+								 constraintName="fk_submission_method_or_standard"
+								 referencedColumnNames="id"
+								 referencedTableName="methods_or_standards"/>
 
 		<addForeignKeyConstraint baseColumnNames="releases_and_transfers_id"
-														 baseTableName="submissions"
-														 constraintName="fk_submission_releases_and_transfers"
-														 referencedColumnNames="id"
-														 referencedTableName="releases_and_transfers"/>
+								 baseTableName="submissions"
+								 constraintName="fk_submission_releases_and_transfers"
+								 referencedColumnNames="id"
+								 referencedTableName="releases_and_transfers"/>
 
 		<rollback>
 			<dropTable tableName="submissions"/>

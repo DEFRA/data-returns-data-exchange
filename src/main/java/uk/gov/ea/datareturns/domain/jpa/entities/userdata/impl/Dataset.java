@@ -5,6 +5,7 @@ import uk.gov.ea.datareturns.domain.jpa.entities.userdata.Userdata;
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.util.Collection;
 
 /**
  * @author Graham
@@ -28,6 +29,9 @@ public class Dataset implements Serializable, Userdata {
     @ManyToOne(optional=false)
     @JoinColumn(name = "user_id", referencedColumnName = "id")
     private User user;
+
+    @OneToMany(mappedBy="dataset",targetEntity=Record.class, fetch=FetchType.LAZY, cascade = CascadeType.ALL)
+    private Collection records;
 
     public Long getId() {
         return id;
@@ -59,6 +63,14 @@ public class Dataset implements Serializable, Userdata {
 
     public void setUser(User user) {
         this.user = user;
+    }
+
+    public Collection getRecords() {
+        return records;
+    }
+
+    public void setRecords(Collection records) {
+        this.records = records;
     }
 
     /*

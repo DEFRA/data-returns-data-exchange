@@ -93,4 +93,15 @@ public class Qualifier implements ControlledListEntity {
     public int hashCode() {
         return name.hashCode();
     }
+
+    @Override
+    public String toString() {
+        return "Qualifier{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", notes='" + notes + '\'' +
+                ", type='" + type + '\'' +
+                ", SingleOrMultiple='" + SingleOrMultiple + '\'' +
+                '}';
+    }
 }

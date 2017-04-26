@@ -58,4 +58,11 @@ public class ReleasesAndTransfers implements ControlledListEntity, Hierarchy.Hie
         return name.hashCode();
     }
 
+    @Override
+    public String toString() {
+        return "ReleasesAndTransfers{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                '}';
+    }
 }

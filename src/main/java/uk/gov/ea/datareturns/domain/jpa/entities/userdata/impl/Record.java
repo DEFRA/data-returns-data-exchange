@@ -1,6 +1,7 @@
 package uk.gov.ea.datareturns.domain.jpa.entities.userdata.impl;
 
 import org.hibernate.annotations.GenericGenerator;
+import uk.gov.ea.datareturns.domain.jpa.entities.userdata.SubmissionType;
 import uk.gov.ea.datareturns.domain.jpa.entities.userdata.Userdata;
 
 import javax.persistence.*;
@@ -21,6 +22,9 @@ public class Record implements Serializable, Userdata {
     @Id @GeneratedValue(generator = "idGenerator")
     private Long id;
 
+    @OneToOne(cascade = CascadeType.ALL, mappedBy = "record")
+    private DataSampleSubmission dataSampleSubmission;
+
     @Basic @Column(name = "identifier", nullable = false, length = 80)
     private String identifier;
 
@@ -32,7 +36,7 @@ public class Record implements Serializable, Userdata {
     @JoinColumn(name = "status_id", referencedColumnName = "id")
     private RecordStatus recordStatus;
 
-    // Note: hibernate does not support LocalDatatime yet
+    // Note: hibernate does not support LocalDataTime yet
     // TODO look into this
     @Basic @Column(name = "create_date", nullable = false)
     private Date createDate;
@@ -41,7 +45,7 @@ public class Record implements Serializable, Userdata {
     private Date lastChangedDate;
 
     @Basic @Column(name = "etag", nullable = false)
-    private byte[] etag;
+    private String etag;
 
     public Long getId() {
         return id;
@@ -91,11 +95,11 @@ public class Record implements Serializable, Userdata {
         this.lastChangedDate = lastChangedDate;
     }
 
-    public byte[] getEtag() {
+    public String getEtag() {
         return etag;
     }
 
-    public void setEtag(byte[] etag) {
+    public void setEtag(String etag) {
         this.etag = etag;
     }
 
@@ -118,16 +122,25 @@ public class Record implements Serializable, Userdata {
         return result;
     }
 
+    public DataSampleSubmission getDataSampleSubmission() {
+        return dataSampleSubmission;
+    }
+
+    public void setDataSampleSubmission(DataSampleSubmission dataSampleSubmission) {
+        this.dataSampleSubmission = dataSampleSubmission;
+    }
+
     @Override
     public String toString() {
         return "Record{" +
                 "id=" + id +
+                ", dataSampleSubmission=" + dataSampleSubmission +
                 ", identifier='" + identifier + '\'' +
                 ", dataset=" + dataset +
                 ", recordStatus=" + recordStatus +
                 ", createDate=" + createDate +
                 ", lastChangedDate=" + lastChangedDate +
-                ", etag=" + Arrays.toString(etag) +
+                ", etag='" + etag + '\'' +
                 '}';
     }
 }

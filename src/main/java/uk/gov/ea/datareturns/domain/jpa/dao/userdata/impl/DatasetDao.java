@@ -6,6 +6,7 @@ import org.springframework.stereotype.Repository;
 import uk.gov.ea.datareturns.domain.jpa.dao.userdata.AbstractUserDataDao;
 import uk.gov.ea.datareturns.domain.jpa.entities.userdata.impl.Dataset;
 import uk.gov.ea.datareturns.domain.jpa.entities.userdata.impl.Dataset_;
+import uk.gov.ea.datareturns.domain.jpa.entities.userdata.impl.User;
 
 import javax.persistence.NoResultException;
 import javax.persistence.TypedQuery;
@@ -13,6 +14,7 @@ import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
 import javax.persistence.metamodel.Metamodel;
+import java.util.List;
 
 /**
  * @author Graham Willis
@@ -45,5 +47,16 @@ public class DatasetDao extends AbstractUserDataDao<Dataset> {
             // If there are no results just return null
             return null;
         }
+    }
+
+    public List<Dataset> list(User user) {
+        CriteriaBuilder cb = entityManager.getCriteriaBuilder();
+        Metamodel m = entityManager.getMetamodel();
+        CriteriaQuery<Dataset> cq = cb.createQuery(Dataset.class);
+        Root<Dataset> dataset = cq.from(m.entity(Dataset.class));
+        cq.where(cb.equal(dataset.get(Dataset_.user), user));
+        cq.select(dataset);
+        TypedQuery<Dataset> q = entityManager.createQuery(cq);
+        return q.getResultList();
     }
 }

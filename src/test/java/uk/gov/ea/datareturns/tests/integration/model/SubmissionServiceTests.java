@@ -31,14 +31,6 @@ public class SubmissionServiceTests {
 
     @Before
     public void init() {
-        if (submissionService.getRecord(RECORD_ID) != null) {
-            submissionService.removeRecord(RECORD_ID);
-        }
-
-        if (submissionService.getDataset(DATASET_ID) != null) {
-            submissionService.removeDataset(DATASET_ID);
-        }
-
         if (submissionService.getUser(USER_NAME) != null) {
             submissionService.removeUser(USER_NAME);
         }
@@ -75,6 +67,12 @@ public class SubmissionServiceTests {
         Dataset dataset = submissionService.createDataset(newUser, DATASET_ID);
         Assert.assertEquals(dataset.getUser().getIdentifier(), USER_NAME);
         Assert.assertEquals(dataset.getIdentifier(), DATASET_ID);
+    }
+
+    @Test
+    public void createSystemManagedRecordAndDataset() {
+        Record record = submissionService.createRecord();
+        Assert.assertEquals(record.getDataset().getUser().getIdentifier(), User.SYSTEM);
     }
 
     @Test
