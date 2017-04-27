@@ -3,6 +3,8 @@ package uk.gov.ea.datareturns.domain.jpa.entities.masterdata.impl;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.hibernate.annotations.GenericGenerator;
 import uk.gov.ea.datareturns.domain.jpa.entities.masterdata.AliasingEntity;
+import uk.gov.ea.datareturns.domain.model.fields.AbstractEntityValue;
+import uk.gov.ea.datareturns.domain.model.fields.FieldValue;
 
 import javax.persistence.*;
 import java.util.Set;
@@ -49,6 +51,11 @@ public class TextValue implements AliasingEntity {
 
     public void setName(final String name) {
         this.name = name;
+    }
+
+    @Override
+    public uk.gov.ea.datareturns.domain.model.fields.impl.TxtValue getFieldValue() {
+        return new uk.gov.ea.datareturns.domain.model.fields.impl.TxtValue(this.getName());
     }
 
     @Override

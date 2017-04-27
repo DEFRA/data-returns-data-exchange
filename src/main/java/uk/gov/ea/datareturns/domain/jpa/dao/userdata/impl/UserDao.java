@@ -31,11 +31,10 @@ public class UserDao extends AbstractUserDataDao<User> {
     }
 
     public User getSystemUser() {
-        return getByIdentifier(User.SYSTEM);
+        return get(User.SYSTEM);
     }
 
-    @Override
-    public User getByIdentifier(String identifier) {
+    public User get(String identifier) {
         CriteriaBuilder cb = entityManager.getCriteriaBuilder();
         Metamodel m = entityManager.getMetamodel();
         CriteriaQuery<User> cq = cb.createQuery(User.class);
@@ -50,5 +49,10 @@ public class UserDao extends AbstractUserDataDao<User> {
             // If there are no results just return null
             return null;
         }
+    }
+
+    public void remove(String identifier) {
+        User user = get(identifier);
+        remove(user.getId());
     }
 }

@@ -4,6 +4,8 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.hibernate.annotations.GenericGenerator;
 import uk.gov.ea.datareturns.domain.jpa.entities.masterdata.AliasingEntity;
 import uk.gov.ea.datareturns.domain.jpa.entities.masterdata.ControlledListEntity;
+import uk.gov.ea.datareturns.domain.model.fields.AbstractEntityValue;
+import uk.gov.ea.datareturns.domain.model.fields.FieldValue;
 
 import javax.persistence.*;
 import java.util.Set;
@@ -85,6 +87,11 @@ public class ReferencePeriod implements ControlledListEntity, AliasingEntity {
     @Override
     public void setAliases(Set<String> aliases) {
         this.aliases = aliases;
+    }
+
+    @Override
+    public uk.gov.ea.datareturns.domain.model.fields.impl.ReferencePeriod getFieldValue() {
+        return new uk.gov.ea.datareturns.domain.model.fields.impl.ReferencePeriod(this.name);
     }
 
     @Override

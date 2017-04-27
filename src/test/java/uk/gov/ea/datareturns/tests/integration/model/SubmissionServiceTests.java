@@ -74,12 +74,6 @@ public class SubmissionServiceTests {
     }
 
     @Test
-    public void createSystemManagedRecordAndDataset() {
-        Record record = submissionService.createRecord();
-        Assert.assertEquals(record.getDataset().getUser().getIdentifier(), User.SYSTEM);
-    }
-
-    @Test
     public void createSystemManagedRecord() {
         Dataset dataset = submissionService.createDataset();
         Record record = submissionService.createRecord(dataset);
@@ -107,9 +101,7 @@ public class SubmissionServiceTests {
         User newUser = submissionService.createUser(USER_NAME);
         Dataset dataset = submissionService.createDataset(newUser, DATASET_ID);
         List<Record> records = submissionService.createRecords(dataset, Arrays.asList(RECORDS));
-        Record record = submissionService.getRecord(RECORDS[1]);
+        Record record = submissionService.getRecord(dataset, RECORDS[1]);
         Assert.assertEquals(record.getIdentifier(), RECORDS[1]);
     }
-
-
 }

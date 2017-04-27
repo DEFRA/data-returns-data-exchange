@@ -4,10 +4,7 @@ import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Repository;
 import uk.gov.ea.datareturns.domain.jpa.dao.userdata.AbstractUserDataDao;
-import uk.gov.ea.datareturns.domain.jpa.entities.userdata.impl.Dataset;
-import uk.gov.ea.datareturns.domain.jpa.entities.userdata.impl.Dataset_;
-import uk.gov.ea.datareturns.domain.jpa.entities.userdata.impl.Record;
-import uk.gov.ea.datareturns.domain.jpa.entities.userdata.impl.Record_;
+import uk.gov.ea.datareturns.domain.jpa.entities.userdata.impl.*;
 
 import javax.persistence.NoResultException;
 import javax.persistence.TypedQuery;
@@ -33,15 +30,20 @@ public class RecordDao extends AbstractUserDataDao<Record> {
         super(Record.class);
     }
 
-    @Override
-    public Record getByIdentifier(String identifier) {
+    public Record get(Dataset dataset, String identifier) {
         CriteriaBuilder cb = entityManager.getCriteriaBuilder();
         Metamodel m = entityManager.getMetamodel();
         CriteriaQuery<Record> cq = cb.createQuery(Record.class);
         Root<Record> record = cq.from(m.entity(Record.class));
-        cq.where(cb.equal(record.get(Record_.identifier), identifier));
+
         cq.select(record);
+        cq.where(
+                cb.equal(record.get(Record_.identifier), identifier),
+                cb.equal(record.get(Record_.dataset), dataset)
+        );
+
         TypedQuery<Record> q = entityManager.createQuery(cq);
+
         try {
             Record r = q.getSingleResult();
             return r;
@@ -61,4 +63,11 @@ public class RecordDao extends AbstractUserDataDao<Record> {
         TypedQuery<Record> q = entityManager.createQuery(cq);
         return q.getResultList();
     }
+
+    public void remove(Dataset dataset, String identifier) {
+        Record record = get(dataset, identifier);
+        remove(record.getId());
+    }
+
+
 }

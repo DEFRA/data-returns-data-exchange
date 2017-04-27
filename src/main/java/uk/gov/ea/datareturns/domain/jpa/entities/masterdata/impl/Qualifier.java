@@ -3,6 +3,8 @@ package uk.gov.ea.datareturns.domain.jpa.entities.masterdata.impl;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.hibernate.annotations.GenericGenerator;
 import uk.gov.ea.datareturns.domain.jpa.entities.masterdata.ControlledListEntity;
+import uk.gov.ea.datareturns.domain.model.fields.AbstractEntityValue;
+import uk.gov.ea.datareturns.domain.model.fields.FieldValue;
 
 import javax.persistence.*;
 
@@ -77,6 +79,11 @@ public class Qualifier implements ControlledListEntity {
 
     public void setSingleOrMultiple(String singleOrMultiple) {
         SingleOrMultiple = singleOrMultiple;
+    }
+
+    @Override
+    public uk.gov.ea.datareturns.domain.model.fields.impl.Qualifier getFieldValue() {
+        return new uk.gov.ea.datareturns.domain.model.fields.impl.Qualifier(this.name);
     }
 
     @Override

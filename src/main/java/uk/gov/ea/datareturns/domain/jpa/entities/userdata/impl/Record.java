@@ -21,7 +21,7 @@ public class Record implements Serializable, Userdata {
     @Id @GeneratedValue(generator = "idGenerator")
     private Long id;
 
-    @OneToOne(cascade = CascadeType.ALL, mappedBy = "record")
+    @OneToOne(cascade = { CascadeType.REMOVE }, mappedBy = "record")
     private Submission submission;
 
     @Basic @Column(name = "identifier", nullable = false, length = 80)

@@ -1,8 +1,18 @@
 package uk.gov.ea.datareturns.domain.jpa.entities.userdata.impl;
 
 import uk.gov.ea.datareturns.domain.jpa.entities.masterdata.impl.*;
+import uk.gov.ea.datareturns.domain.jpa.entities.masterdata.impl.MethodOrStandard;
 import uk.gov.ea.datareturns.domain.jpa.entities.masterdata.impl.Parameter;
+import uk.gov.ea.datareturns.domain.jpa.entities.masterdata.impl.Qualifier;
+import uk.gov.ea.datareturns.domain.jpa.entities.masterdata.impl.ReferencePeriod;
+import uk.gov.ea.datareturns.domain.jpa.entities.masterdata.impl.ReleasesAndTransfers;
+import uk.gov.ea.datareturns.domain.jpa.entities.masterdata.impl.ReturnType;
+import uk.gov.ea.datareturns.domain.jpa.entities.masterdata.impl.Unit;
 import uk.gov.ea.datareturns.domain.jpa.entities.userdata.Submission;
+import uk.gov.ea.datareturns.domain.model.DataSample;
+import uk.gov.ea.datareturns.domain.model.Datum;
+import uk.gov.ea.datareturns.domain.model.fields.FieldValue;
+import uk.gov.ea.datareturns.domain.model.fields.impl.*;
 
 import javax.persistence.*;
 import java.io.Serializable;
@@ -223,4 +233,49 @@ public class DataSampleSubmission extends Submission {
                 ", releasesAndTransfers=" + releasesAndTransfers +
                 '}';
     }
+
+    @Override
+    public Datum getDatum() {
+        DataSample sample = new DataSample();
+        sample.setEaId(this.uniqueIdentifier.getFieldValue());
+        sample.setSiteName(this.getSite().getFieldValue());
+        sample.setReturnType(this.returnType.getFieldValue());
+        sample.setMonitoringPoint(new MonitoringPoint(this.monPoint));
+        sample.setMonitoringDate(new MonitoringDate(this.monDate.toString()));
+        sample.setParameter(this.parameter.getFieldValue());
+        sample.setValue(new Value(this.numericValueText + this.numericValue.toString()));
+        sample.setUnit(this.unit.getFieldValue());
+
+        if (this.textValue != null) {
+            sample.setTextValue(this.textValue.getFieldValue());
+        }
+
+        if (this.comments != null) {
+            sample.setComments(new Comments(this.comments));
+        }
+
+        if (this.qualifier != null) {
+            sample.setQualifier(this.qualifier.getFieldValue());
+        }
+
+
+        if (this.referencePeriod != null) {
+            sample.setReferencePeriod(this.referencePeriod.getFieldValue());
+        }
+
+        if (this.releasesAndTransfers != null) {
+            sample.setReleasesAndTransfers(this.releasesAndTransfers.getFieldValue());
+        }
+
+        if (this.methodOrStandard != null) {
+            sample.setMethStand(this.methodOrStandard.getFieldValue());
+        }
+
+        if (this.cic != null) {
+            sample.setCic(new Cic(this.cic));
+        }
+
+        return sample;
+    }
+
 }

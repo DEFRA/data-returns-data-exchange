@@ -25,7 +25,7 @@ public class User implements Serializable, Userdata {
     @Basic @Column(name = "identifier", nullable = false, length = 80)
     private String identifier;
 
-    @OneToMany(mappedBy="user",targetEntity=Dataset.class, fetch=FetchType.LAZY, cascade = CascadeType.ALL)
+    @OneToMany(mappedBy="user",targetEntity=Dataset.class, fetch=FetchType.LAZY, cascade = CascadeType.REMOVE)
     private Collection datasets;
 
     public Long getId() {

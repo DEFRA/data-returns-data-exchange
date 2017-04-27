@@ -4,6 +4,8 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.hibernate.annotations.GenericGenerator;
 import uk.gov.ea.datareturns.domain.jpa.entities.masterdata.ControlledListEntity;
 import uk.gov.ea.datareturns.domain.jpa.hierarchy.Hierarchy;
+import uk.gov.ea.datareturns.domain.model.fields.AbstractEntityValue;
+import uk.gov.ea.datareturns.domain.model.fields.FieldValue;
 
 import javax.persistence.*;
 
@@ -53,6 +55,11 @@ public class ReturnType implements ControlledListEntity, Hierarchy.GroupedHierar
 
     public void setSector(String sector) {
         this.sector = sector;
+    }
+
+    @Override
+    public uk.gov.ea.datareturns.domain.model.fields.impl.ReturnType getFieldValue() {
+        return new uk.gov.ea.datareturns.domain.model.fields.impl.ReturnType(this.name);
     }
 
     @Override

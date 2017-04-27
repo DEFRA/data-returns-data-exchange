@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.hibernate.annotations.GenericGenerator;
 import uk.gov.ea.datareturns.domain.jpa.entities.masterdata.AliasingEntity;
 import uk.gov.ea.datareturns.domain.jpa.hierarchy.Hierarchy;
+import uk.gov.ea.datareturns.domain.model.fields.FieldValue;
 
 import javax.persistence.*;
 import java.util.Set;
@@ -128,6 +129,11 @@ public class Unit implements AliasingEntity, Hierarchy.GroupedHierarchyEntity {
         Unit that = (Unit) o;
 
         return name.equals(that.name);
+    }
+
+    @Override
+    public uk.gov.ea.datareturns.domain.model.fields.impl.Unit getFieldValue() {
+        return new uk.gov.ea.datareturns.domain.model.fields.impl.Unit(this.name);
     }
 
     @Override

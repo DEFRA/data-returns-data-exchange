@@ -7,7 +7,6 @@ import org.springframework.transaction.annotation.Transactional;
 import uk.gov.ea.datareturns.domain.jpa.dao.userdata.impl.*;
 import uk.gov.ea.datareturns.domain.jpa.entities.userdata.Submission;
 import uk.gov.ea.datareturns.domain.jpa.entities.userdata.impl.*;
-import uk.gov.ea.datareturns.domain.model.DataSample;
 import uk.gov.ea.datareturns.domain.model.Datum;
 
 import javax.inject.Inject;
@@ -37,6 +36,55 @@ public class SubmissionService<T extends Datum<? extends Submission>> {
         this.recordStatusDao = recordStatusDao;
         this.submissionDao = submissionDao;
     }
+
+    /****************************************************************************************
+     * User centric operations
+     ****************************************************************************************/
+
+    /**
+     * Get the default (system) user
+     * @return
+     */
+    @Transactional(readOnly = true)
+    public User getSystemUser() {
+        return userDao.getSystemUser();
+    }
+
+    /**
+     * Create a new user
+     * @param identifier The username
+     * @return The user
+     */
+    @Transactional
+    public User createUser(String identifier) {
+        User user = new User();
+        user.setIdentifier(identifier);
+        userDao.persist(user);
+        return user;
+    }
+
+    /**
+     * Get a user entity from its identifier
+     * @param identifier
+     * @return
+     */
+    @Transactional(readOnly = true)
+    public User getUser(String identifier) {
+        return userDao.get(identifier);
+    }
+
+    /**
+     * Remove a user entity by its identifier
+     * @param identifier
+     */
+    @Transactional
+    public void removeUser(String identifier) {
+        userDao.remove(identifier);
+    }
+
+    /****************************************************************************************
+     * Dataset centric operations
+     ****************************************************************************************/
 
     /**
      * Create a new dataset where the identifier and user is managed by the system
@@ -68,84 +116,18 @@ public class SubmissionService<T extends Datum<? extends Submission>> {
         Dataset dataset = new Dataset();
         dataset.setIdentifier(identifier);
         dataset.setUser(user);
-        datasetDao.add(dataset);
+        datasetDao.persist(dataset);
         return dataset;
     }
 
-    /**
-     * Get the default (system) user
-     * @return
-     */
-    @Transactional(readOnly = true)
-    public User getSystemUser() {
-        return userDao.getSystemUser();
-    }
-
-    /**
-     * Create a new user
-     * @param identifier The username
-     * @return The user
-     */
     @Transactional
-    public User createUser(String identifier) {
-        User user = new User();
-        user.setIdentifier(identifier);
-        userDao.add(user);
-        return user;
+    public void removeDataset(String identifier) {
+        datasetDao.remove(identifier);
     }
 
-    /**
-     * Get a user entity from its identifier
-     * @param identifier
-     * @return
-     */
-    @Transactional(readOnly = true)
-    public User getUser(String identifier) {
-        return userDao.getByIdentifier(identifier);
-    }
-
-    /**
-     * Remove a user entity by its identifier
-     * @param identifier
-     */
-    @Transactional
-    public void removeUser(String identifier) {
-        userDao.remove(identifier);
-    }
-
-    /**
-     * Create a new submission record for a dataset. The and dataset and record is system managed
-     * @return
-     */
-    @Transactional
-    public Record createRecord() {
-        Record record = generateDetachedRecord(createDataset(), UUID.randomUUID().toString());
-        return recordDao.add(record);
-    }
-
-    /**
-     * Create a new submission record for a dataset. The record is system managed
-     * @param dataset
-     * @return
-     */
-    @Transactional
-    public Record createRecord(Dataset dataset) {
-        Record record = generateDetachedRecord(dataset, UUID.randomUUID().toString());
-        return recordDao.add(record);
-    }
-
-    /**
-     * Create a new submission record for a dataset. The record is user managed and identified by
-     * identifier
-     * @param dataset
-     * @param identifier
-     * @return A new Record
-     */
-    @Transactional
-    public Record createRecord(Dataset dataset, String identifier) {
-        Record record = generateDetachedRecord(dataset, identifier);
-        return recordDao.add(record);
-    }
+    /****************************************************************************************
+     * Record and submission centric operations
+     ****************************************************************************************/
 
     /**
      * Create a list of new submission records for a dataset. The records are user managed and identified by
@@ -157,66 +139,104 @@ public class SubmissionService<T extends Datum<? extends Submission>> {
     @Transactional
     public List<Record> createRecords(Dataset dataset, List<String> identifiers) {
         return identifiers.stream()
-                .map(p -> generateDetachedRecord(dataset, p))
-                .map(r -> recordDao.add(r))
+                .map(p -> getRecord(dataset, p))
+                .map(r -> recordDao.persist(r))
                 .collect(Collectors.toList());
     }
 
-    @Transactional(readOnly = true)
-    public Dataset getDataset(String identifier) {
-        return datasetDao.getByIdentifier(identifier);
-    }
-
+    /**
+     * Create a system managed record and persist
+     * @return
+     */
     @Transactional
-    public void removeDataset(String identifier) {
-        datasetDao.remove(identifier);
-    }
-
-    @Transactional(readOnly = true)
-    public Record getRecord(String identifier) {
-        return recordDao.getByIdentifier(identifier);
-    }
-
-    @Transactional
-    public void removeRecord(String identifier) {
-        recordDao.remove(identifier);
+    public Record createRecord(Dataset dataset) {
+        return recordDao.persist(getRecord(dataset));
     }
 
     /**
-     * Persist validated samples - will fail if the samples are invalid
+     * Create a user managed record and persist
+     * @return
+     */
+    @Transactional
+    public Record createRecord(Dataset dataset, String identifier) {
+        recordDao.merge(getRecord(dataset, identifier));
+        return recordDao.get(dataset, identifier);
+    }
+
+    /**
+     * Gets a new record for a given dataset and initializes with a system generated identifier
+     * It does not persist the record
+     * @param dataset
+     * @return The initialized record
+     */
+    public Record getRecord(Dataset dataset) {
+        return getRecord(dataset, UUID.randomUUID().toString());
+    }
+
+    /**
+     * Returns either a new and initialized record for a dataset and identifier
+     * or if the identified record already exists it returns the existing record
+     * It does not persist the record
+     * @param dataset
+     * @param identifier
+     * @return
+     */
+    public Record getRecord(Dataset dataset, String identifier) {
+        Record record = recordDao.get(dataset, identifier);
+        if (record == null) {
+            Date now = new Date();
+            record = new Record();
+            record.setDataset(dataset);
+            record.setIdentifier(identifier);
+            record.setRecordStatus(recordStatusDao.getStatus(RecordStatus.UNINITIALIZED));
+            record.setCreateDate(now);
+            record.setLastChangedDate(now);
+            record.setEtag(UUID.randomUUID().toString());
+        }
+        return record;
+    }
+
+    /**
+     * Persist validated samples - may fail if the samples are invalid
      * @param dataset - the dataset to associated with the saved samples
      * @param samples - an array of samples to persist. The records will
-     *                be automatically generated
+     * be system generated
+     *
      * @return the number of persisted samples
      */
     @Transactional
-    public long submit(Dataset dataset, List<T> samples) {
-        long ctr = 0L;
+    public void submit(Dataset dataset, List<T> samples) {
         for (T t : samples) {
-            Submission submission = t.createSubmissionType();
-            Record record = generateDetachedRecord(dataset);
-            record.setSubmission(submission);
-            submission.setRecord(record);
-            recordDao.add(record);
-            if (record.getId() != null) {
-                ctr++;
-            }
+            Record record = getRecord(dataset);
+            submit(record, t);
         }
-        return ctr;
     }
 
     /**
-     * Persist a supplied sample with an existing record
+     * Persist a supplied given sample against a record
      * @param record
      * @param dataSample
      * @return
      */
     @Transactional
     public void submit(Record record, T dataSample) {
+        Date now = new Date();
         Submission submission = dataSample.createSubmissionType();
         record.setSubmission(submission);
         submission.setRecord(record);
-        recordDao.update(record);
+        record.setRecordStatus(recordStatusDao.getStatus(RecordStatus.SUBMITTED));
+        record.setLastChangedDate(now);
+        record.setEtag(UUID.randomUUID().toString());
+
+        // If the record is new persist it otherwise merge the changes and then persis the
+        // new submission
+        if (record.getId() == null) {
+            recordDao.persist(record);
+        } else {
+            recordDao.merge(record);
+        }
+
+        submissionDao.persist(submission);
     }
 
     @Transactional(readOnly = true)
@@ -229,31 +249,4 @@ public class SubmissionService<T extends Datum<? extends Submission>> {
         return recordDao.list(dataset);
     }
 
-    /**
-     * Create a new submission record for a dataset. The record is user managed
-     * @param dataset The dataset
-     * @param identifier an identifier for the record
-     * @return
-     */
-    private Record generateDetachedRecord(Dataset dataset, String identifier) {
-        Date now = new Date();
-        Record record = new Record();
-        record.setDataset(dataset);
-        record.setIdentifier(identifier);
-        RecordStatus recordStatus = recordStatusDao.getStatus(RecordStatus.UNINITIALIZED);
-        record.setRecordStatus(recordStatus);
-        record.setCreateDate(now);
-        record.setEtag(UUID.randomUUID().toString());
-        record.setLastChangedDate(now);
-        return record;
-    }
-
-    /**
-     * Create a new submission record for a dataset. The record is system managed
-     * @param dataset
-     * @return
-     */
-    private Record generateDetachedRecord(Dataset dataset) {
-        return generateDetachedRecord(dataset, UUID.randomUUID().toString());
-    }
 }

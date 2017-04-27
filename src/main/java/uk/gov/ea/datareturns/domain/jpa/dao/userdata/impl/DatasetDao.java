@@ -31,8 +31,7 @@ public class DatasetDao extends AbstractUserDataDao<Dataset> {
         super(Dataset.class);
     }
 
-    @Override
-    public Dataset getByIdentifier(String identifier) {
+    public Dataset get(String identifier) {
         CriteriaBuilder cb = entityManager.getCriteriaBuilder();
         Metamodel m = entityManager.getMetamodel();
         CriteriaQuery<Dataset> cq = cb.createQuery(Dataset.class);
@@ -58,5 +57,10 @@ public class DatasetDao extends AbstractUserDataDao<Dataset> {
         cq.select(dataset);
         TypedQuery<Dataset> q = entityManager.createQuery(cq);
         return q.getResultList();
+    }
+
+    public void remove(String identifier) {
+        Dataset ds = get(identifier);
+        remove(ds.getId());
     }
 }

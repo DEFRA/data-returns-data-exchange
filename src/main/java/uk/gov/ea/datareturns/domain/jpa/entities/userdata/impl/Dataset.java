@@ -30,7 +30,7 @@ public class Dataset implements Serializable, Userdata {
     @JoinColumn(name = "user_id", referencedColumnName = "id")
     private User user;
 
-    @OneToMany(mappedBy="dataset",targetEntity=Record.class, fetch=FetchType.LAZY, cascade = CascadeType.ALL)
+    @OneToMany(mappedBy="dataset",targetEntity=Record.class, fetch=FetchType.LAZY, cascade = CascadeType.REMOVE)
     private Collection records;
 
     public Long getId() {

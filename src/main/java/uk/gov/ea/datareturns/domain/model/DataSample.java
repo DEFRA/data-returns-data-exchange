@@ -1,7 +1,9 @@
 package uk.gov.ea.datareturns.domain.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import uk.gov.ea.datareturns.domain.jpa.entities.masterdata.impl.UniqueIdentifier;
 import uk.gov.ea.datareturns.domain.jpa.entities.userdata.impl.DataSampleSubmission;
+import uk.gov.ea.datareturns.domain.model.fields.AbstractEntityValue;
 import uk.gov.ea.datareturns.domain.model.fields.MappedField;
 import uk.gov.ea.datareturns.domain.model.fields.impl.*;
 import uk.gov.ea.datareturns.domain.model.rules.FieldDefinition;
@@ -410,12 +412,18 @@ public class DataSample implements Datum<DataSampleSubmission> {
     public DataSampleSubmission createSubmissionType() {
         DataSampleSubmission datasampleSubmission = new DataSampleSubmission();
 
-        datasampleSubmission.setUniqueIdentifier((this.eaId != null) ? this.eaId.getEntity() : null);
-        datasampleSubmission.setSite((this.eaId != null) ? this.eaId.getEntity().getSite() : null);
-        datasampleSubmission.setReturnType((this.returnType != null) ? this.returnType.getEntity() : null);
-        datasampleSubmission.setMonDate((this.monitoringDate != null) ? Date.from(this.monitoringDate.getInstant()) : null);
-        datasampleSubmission.setMonPoint((this.monitoringPoint != null) ? this.monitoringPoint.getValue() : null);
-        datasampleSubmission.setParameter((this.parameter != null) ? this.parameter.getEntity() : null);
+        datasampleSubmission.setUniqueIdentifier(AbstractEntityValue.getEntity(this.eaId));
+        datasampleSubmission.setSite(AbstractEntityValue.getEntity(this.eaId).getSite());
+        datasampleSubmission.setReturnType(AbstractEntityValue.getEntity(this.returnType));
+
+        if (this.monitoringDate != null) {
+            datasampleSubmission.setMonDate(Date.from(this.monitoringDate.getInstant()));
+        }
+
+        if (this.monitoringPoint != null) {
+            datasampleSubmission.setMonPoint(this.monitoringPoint.getValue());
+        }
+        datasampleSubmission.setParameter(AbstractEntityValue.getEntity(this.parameter));
 
         if (this.value != null) {
             String val = this.value.getValue();
@@ -426,14 +434,21 @@ public class DataSample implements Datum<DataSampleSubmission> {
             datasampleSubmission.setNumericValueText(strStr);
         }
 
-        datasampleSubmission.setTextValue((this.textValue != null) ? this.textValue.getEntity() : null);
-        datasampleSubmission.setQualifier((this.qualifier != null) ? this.qualifier.getEntity() : null);
-        datasampleSubmission.setUnit((this.unit != null) ? this.unit.getEntity() : null);
-        datasampleSubmission.setReferencePeriod((this.referencePeriod != null) ? this.referencePeriod.getEntity() : null);
-        datasampleSubmission.setMethodOrStandard((this.methStand != null) ? this.methStand.getEntity() : null);
-        datasampleSubmission.setComments((this.comments != null) ? this.comments.getValue() : null);
-        datasampleSubmission.setCic((this.cic != null) ? this.cic.getValue() : null);
-        datasampleSubmission.setReleasesAndTransfers((this.releasesAndTransfers != null) ? this.releasesAndTransfers.getEntity() : null);
+        datasampleSubmission.setTextValue(AbstractEntityValue.getEntity(this.textValue));
+        datasampleSubmission.setQualifier(AbstractEntityValue.getEntity(this.qualifier));
+        datasampleSubmission.setUnit(AbstractEntityValue.getEntity(this.unit));
+        datasampleSubmission.setReferencePeriod(AbstractEntityValue.getEntity(this.referencePeriod));
+        datasampleSubmission.setMethodOrStandard(AbstractEntityValue.getEntity(this.methStand));
+
+        if (this.comments != null) {
+            datasampleSubmission.setComments((this.comments != null) ? this.comments.getValue() : null);
+        }
+
+        if (this.cic != null) {
+            datasampleSubmission.setCic(this.cic.getValue());
+        }
+
+        datasampleSubmission.setReleasesAndTransfers(AbstractEntityValue.getEntity(this.releasesAndTransfers));
 
         return datasampleSubmission;
     }

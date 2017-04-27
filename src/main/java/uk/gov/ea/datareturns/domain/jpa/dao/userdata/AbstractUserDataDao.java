@@ -32,23 +32,24 @@ public abstract class AbstractUserDataDao<E extends Userdata>  {
         this.entityClass = entityClass;
     }
 
-    public E add(E entity) {
+    public E persist(E entity) {
         entityManager.persist(entity);
         LOGGER.info("Adding: " + entityClass.getSimpleName() + ": " + entity.toString());
         return entity;
     }
 
-    public abstract E getByIdentifier(String identifier);
-
-    public void remove(String identifier) {
-        E entity = getByIdentifier(identifier);
+    public void remove(long id) {
+        E entity = entityManager.find(entityClass, id);
         LOGGER.info("Removing: " + entityClass.getSimpleName() + ": " + entity.toString());
         entityManager.remove(entity);
     }
 
-    public void update(E entity) {
-        LOGGER.info("Updating: " + entityClass.getSimpleName() + ": " + entity.toString());
+    public void merge(E entity) {
+        LOGGER.info("Merging: " + entityClass.getSimpleName() + ": " + entity.toString());
         entityManager.merge(entity);
     }
 
+    //public boolean managed(E entity) {
+    //     return entityManager.contains(entity);
+    //}
 }

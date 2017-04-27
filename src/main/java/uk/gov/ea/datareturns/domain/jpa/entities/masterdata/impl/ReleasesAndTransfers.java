@@ -4,6 +4,8 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.hibernate.annotations.GenericGenerator;
 import uk.gov.ea.datareturns.domain.jpa.entities.masterdata.ControlledListEntity;
 import uk.gov.ea.datareturns.domain.jpa.hierarchy.Hierarchy;
+import uk.gov.ea.datareturns.domain.model.fields.AbstractEntityValue;
+import uk.gov.ea.datareturns.domain.model.fields.FieldValue;
 
 import javax.persistence.*;
 
@@ -41,6 +43,11 @@ public class ReleasesAndTransfers implements ControlledListEntity, Hierarchy.Hie
 
     public void setName(final String name) {
         this.name = name;
+    }
+
+    @Override
+    public uk.gov.ea.datareturns.domain.model.fields.impl.ReleasesAndTransfers getFieldValue() {
+        return new uk.gov.ea.datareturns.domain.model.fields.impl.ReleasesAndTransfers(this.name);
     }
 
     @Override

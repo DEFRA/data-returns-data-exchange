@@ -16,6 +16,7 @@ import java.io.Serializable;
 public class RecordStatus implements Serializable {
 
     public final static String UNINITIALIZED = "UNINITIALIZED";
+    public final static String SUBMITTED = "SUBMITTED";
 
     @Id @GeneratedValue(generator = "idGenerator")
     private Long id;
@@ -46,9 +47,7 @@ public class RecordStatus implements Serializable {
         if (o == null || getClass() != o.getClass()) return false;
 
         RecordStatus that = (RecordStatus) o;
-
         return status.equals(that.status);
-
     }
 
     @Override
@@ -63,4 +62,5 @@ public class RecordStatus implements Serializable {
                 ", status='" + status + '\'' +
                 '}';
     }
+
 }
