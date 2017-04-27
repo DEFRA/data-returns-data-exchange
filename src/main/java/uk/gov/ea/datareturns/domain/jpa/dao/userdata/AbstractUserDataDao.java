@@ -46,4 +46,9 @@ public abstract class AbstractUserDataDao<E extends Userdata>  {
         entityManager.remove(entity);
     }
 
+    public void update(E entity) {
+        LOGGER.info("Updating: " + entityClass.getSimpleName() + ": " + entity.toString());
+        entityManager.merge(entity);
+    }
+
 }

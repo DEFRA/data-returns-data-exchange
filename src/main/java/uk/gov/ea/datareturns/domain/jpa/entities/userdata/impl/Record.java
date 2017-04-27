@@ -111,7 +111,6 @@ public class Record implements Serializable, Userdata {
 
         if (!identifier.equals(record.identifier)) return false;
         return dataset.equals(record.dataset);
-
     }
 
     @Override

@@ -7,12 +7,14 @@ import org.springframework.transaction.annotation.Transactional;
 import uk.gov.ea.datareturns.domain.jpa.dao.userdata.impl.*;
 import uk.gov.ea.datareturns.domain.jpa.entities.userdata.Submission;
 import uk.gov.ea.datareturns.domain.jpa.entities.userdata.impl.*;
+import uk.gov.ea.datareturns.domain.model.DataSample;
 import uk.gov.ea.datareturns.domain.model.Datum;
 
 import javax.inject.Inject;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 /**
  * @author Graham Willis
@@ -133,14 +135,31 @@ public class SubmissionService<T extends Datum<? extends Submission>> {
     }
 
     /**
-     * Create a new submission record for a dataset. The record is system managed
+     * Create a new submission record for a dataset. The record is user managed and identified by
+     * identifier
      * @param dataset
-     * @return
+     * @param identifier
+     * @return A new Record
      */
     @Transactional
     public Record createRecord(Dataset dataset, String identifier) {
         Record record = generateDetachedRecord(dataset, identifier);
         return recordDao.add(record);
+    }
+
+    /**
+     * Create a list of new submission records for a dataset. The records are user managed and identified by
+     * identifiers
+     * @param dataset
+     * @param identifiers a list of identifiers for the records
+     * @return
+     */
+    @Transactional
+    public List<Record> createRecords(Dataset dataset, List<String> identifiers) {
+        return identifiers.stream()
+                .map(p -> generateDetachedRecord(dataset, p))
+                .map(r -> recordDao.add(r))
+                .collect(Collectors.toList());
     }
 
     @Transactional(readOnly = true)
@@ -184,6 +203,20 @@ public class SubmissionService<T extends Datum<? extends Submission>> {
             }
         }
         return ctr;
+    }
+
+    /**
+     * Persist a supplied sample with an existing record
+     * @param record
+     * @param dataSample
+     * @return
+     */
+    @Transactional
+    public void submit(Record record, T dataSample) {
+        Submission submission = dataSample.createSubmissionType();
+        record.setSubmission(submission);
+        submission.setRecord(record);
+        recordDao.update(record);
     }
 
     @Transactional(readOnly = true)

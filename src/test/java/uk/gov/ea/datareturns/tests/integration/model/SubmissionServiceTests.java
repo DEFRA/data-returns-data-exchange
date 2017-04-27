@@ -13,6 +13,9 @@ import uk.gov.ea.datareturns.domain.jpa.entities.userdata.impl.User;
 import uk.gov.ea.datareturns.domain.jpa.service.SubmissionService;
 
 import javax.inject.Inject;
+import java.lang.reflect.Array;
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * Test to run against the service layer for submission (user) data
@@ -25,6 +28,7 @@ public class SubmissionServiceTests {
     private final String USER_NAME = "Test User";
     private final String DATASET_ID = "AUG2018Q2";
     private final String RECORD_ID = "UM1009001";
+    private final String[] RECORDS = { "AA0001", "AA002", "AA003" };
 
     @Inject
     SubmissionService submissionService;
@@ -89,5 +93,23 @@ public class SubmissionServiceTests {
         Record record = submissionService.createRecord(dataset, RECORD_ID);
         Assert.assertEquals(record.getIdentifier(), RECORD_ID);
     }
+
+    @Test
+    public void createUserManagedRecords() {
+        User newUser = submissionService.createUser(USER_NAME);
+        Dataset dataset = submissionService.createDataset(newUser, DATASET_ID);
+        List<Record> records = submissionService.createRecords(dataset, Arrays.asList(RECORDS));
+        Assert.assertEquals(records.size(), 3);
+    }
+
+    @Test
+    public void getRecord() {
+        User newUser = submissionService.createUser(USER_NAME);
+        Dataset dataset = submissionService.createDataset(newUser, DATASET_ID);
+        List<Record> records = submissionService.createRecords(dataset, Arrays.asList(RECORDS));
+        Record record = submissionService.getRecord(RECORDS[1]);
+        Assert.assertEquals(record.getIdentifier(), RECORDS[1]);
+    }
+
 
 }
