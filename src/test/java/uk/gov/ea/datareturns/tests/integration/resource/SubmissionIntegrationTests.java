@@ -96,16 +96,14 @@ public class SubmissionIntegrationTests {
         // Changed the sample comments.
         // The changed record will be validated
         DataSampleSubmission changedSample = (DataSampleSubmission)record.getSubmission();
-        Datum datum = changedSample.getDatum();
+        DataSample sample = changedSample.getDatum();
+        sample.setComments(new Comments(COMMENT));
+        submissionService.submit(record, sample);
 
-        //DataSample sample
-        //changedSample.setComments(COMMENT);
-        //submissionService.submit(record, changedSample);
-
-        // Get from record
-        //Record newRecord = submissionService.getRecord(ids.get(1));
-        //String comment = ((DataSampleSubmission) newRecord.getSubmission()).getComments();
-        //Assert.assertEquals(COMMENT, comment);
+        // Get again from record
+        Record newRecord = submissionService.getRecord(dataset, ids.get(1));
+        String comment = ((DataSampleSubmission) newRecord.getSubmission()).getComments();
+        Assert.assertEquals(COMMENT, comment);
     }
 
     private String readTestFile(String testFileName) throws IOException {

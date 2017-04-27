@@ -235,7 +235,7 @@ public class DataSampleSubmission extends Submission {
     }
 
     @Override
-    public Datum getDatum() {
+    public DataSample getDatum() {
         DataSample sample = new DataSample();
         sample.setEaId(this.uniqueIdentifier.getFieldValue());
         sample.setSiteName(this.getSite().getFieldValue());

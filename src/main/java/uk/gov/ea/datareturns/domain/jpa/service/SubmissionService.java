@@ -228,7 +228,7 @@ public class SubmissionService<T extends Datum<? extends Submission>> {
         record.setLastChangedDate(now);
         record.setEtag(UUID.randomUUID().toString());
 
-        // If the record is new persist it otherwise merge the changes and then persis the
+        // If the record is new persist it otherwise merge the changes
         // new submission
         if (record.getId() == null) {
             recordDao.persist(record);
