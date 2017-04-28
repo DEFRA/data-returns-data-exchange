@@ -9,13 +9,9 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 import uk.gov.ea.datareturns.App;
 import uk.gov.ea.datareturns.config.TestSettings;
-import uk.gov.ea.datareturns.domain.jpa.entities.userdata.impl.DataSampleSubmission;
-import uk.gov.ea.datareturns.domain.jpa.entities.userdata.impl.Dataset;
-import uk.gov.ea.datareturns.domain.jpa.entities.userdata.impl.Record;
-import uk.gov.ea.datareturns.domain.jpa.entities.userdata.impl.User;
+import uk.gov.ea.datareturns.domain.jpa.entities.userdata.impl.*;
 import uk.gov.ea.datareturns.domain.jpa.service.SubmissionService;
 import uk.gov.ea.datareturns.domain.model.DataSample;
-import uk.gov.ea.datareturns.domain.model.Datum;
 import uk.gov.ea.datareturns.domain.model.fields.impl.Comments;
 import uk.gov.ea.datareturns.domain.processors.SubmissionProcessor;
 import uk.gov.ea.datareturns.domain.result.ValidationErrors;
@@ -63,7 +59,11 @@ public class SubmissionIntegrationTests {
     public void validationAndSubmission() throws IOException {
         List<DataSample> samples = getValidDataSamples();
         submissionService.submit(dataset, samples);
-        //Assert.assertEquals(4, count);
+        List<Record> records = submissionService.getRecords(dataset);
+        Assert.assertEquals(4, records.size());
+        records.stream().forEach(p -> {
+            Assert.assertEquals(RecordStatus.SUBMITTED, p.getRecordStatus().getStatus());
+        });
     }
 
     @Test
@@ -77,7 +77,6 @@ public class SubmissionIntegrationTests {
         datasets = submissionService.getDatasets(user);
         Assert.assertEquals(0, datasets.size());
     }
-
 
     @Test
     public void validationAndSubmissionAndChangeRemoval() throws IOException {
@@ -104,6 +103,12 @@ public class SubmissionIntegrationTests {
         Record newRecord = submissionService.getRecord(dataset, ids.get(1));
         String comment = ((DataSampleSubmission) newRecord.getSubmission()).getComments();
         Assert.assertEquals(COMMENT, comment);
+
+        // Remove the record
+        submissionService.removeRecord(dataset, ids.get(1));
+
+        // Test exists
+        Assert.assertFalse(submissionService.recordExists(dataset, ids.get(1)));
     }
 
     private String readTestFile(String testFileName) throws IOException {
@@ -113,11 +118,11 @@ public class SubmissionIntegrationTests {
         return IOUtils.toString(inputStream, StandardCharsets.UTF_8);
     }
 
+    // Create 3 validated samples
     private List<DataSample> getValidDataSamples() throws IOException {
         List<DataSample> samples = submissionProcessor.parse(readTestFile(SUCCESSFUL_SUBMISSION));
         ValidationErrors validationErrors = submissionProcessor.validate(samples);
         Assert.assertTrue(validationErrors.isValid());
         return samples;
     }
-
 }

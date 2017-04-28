@@ -1,21 +1,18 @@
 package uk.gov.ea.datareturns.domain.jpa.entities.userdata.impl;
 
-import uk.gov.ea.datareturns.domain.jpa.entities.masterdata.impl.*;
 import uk.gov.ea.datareturns.domain.jpa.entities.masterdata.impl.MethodOrStandard;
 import uk.gov.ea.datareturns.domain.jpa.entities.masterdata.impl.Parameter;
 import uk.gov.ea.datareturns.domain.jpa.entities.masterdata.impl.Qualifier;
 import uk.gov.ea.datareturns.domain.jpa.entities.masterdata.impl.ReferencePeriod;
 import uk.gov.ea.datareturns.domain.jpa.entities.masterdata.impl.ReleasesAndTransfers;
 import uk.gov.ea.datareturns.domain.jpa.entities.masterdata.impl.ReturnType;
+import uk.gov.ea.datareturns.domain.jpa.entities.masterdata.impl.*;
 import uk.gov.ea.datareturns.domain.jpa.entities.masterdata.impl.Unit;
 import uk.gov.ea.datareturns.domain.jpa.entities.userdata.Submission;
 import uk.gov.ea.datareturns.domain.model.DataSample;
-import uk.gov.ea.datareturns.domain.model.Datum;
-import uk.gov.ea.datareturns.domain.model.fields.FieldValue;
 import uk.gov.ea.datareturns.domain.model.fields.impl.*;
 
 import javax.persistence.*;
-import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.Date;
 
@@ -234,9 +231,17 @@ public class DataSampleSubmission extends Submission {
                 '}';
     }
 
+    /**
+     * This method is responsible for mapping the entity submission to its associated datum implementation
+     * and is necessary because the duality between Field (Validation) entities and
+     * persistence entities. It also allows for an indirect mapping to be made between the two
+     *
+     * @return A dataum instance in this case DataSample
+     */
     @Override
     public DataSample getDatum() {
         DataSample sample = new DataSample();
+
         sample.setEaId(this.uniqueIdentifier.getFieldValue());
         sample.setSiteName(this.getSite().getFieldValue());
         sample.setReturnType(this.returnType.getFieldValue());

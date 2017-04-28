@@ -1,7 +1,6 @@
 package uk.gov.ea.datareturns.domain.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import uk.gov.ea.datareturns.domain.jpa.entities.masterdata.impl.UniqueIdentifier;
 import uk.gov.ea.datareturns.domain.jpa.entities.userdata.impl.DataSampleSubmission;
 import uk.gov.ea.datareturns.domain.model.fields.AbstractEntityValue;
 import uk.gov.ea.datareturns.domain.model.fields.MappedField;
@@ -400,56 +399,62 @@ public class DataSample implements Datum<DataSampleSubmission> {
         this.releasesAndTransfers = releasesAndTransfers;
     }
 
-    /**
-     * This method is responsible for mapping the dataset to the output type (submission)
-     * @param p
-     * @return
-     */
     private Pattern numericReg = Pattern.compile("[^0-9\\.\\-\\+]");
     private Pattern textReg = Pattern.compile("[0-9\\.\\-\\+]");
 
+    /**
+     * This method is responsible for mapping the dataset to the output type (submission)
+     * and is necessary because the duality between Field (Validation) entities and
+     * persistence entities. It also allows for an indirect mapping to be made between the two
+     *
+     * @return The sample submission
+     */
     @Override
-    public DataSampleSubmission createSubmissionType() {
-        DataSampleSubmission datasampleSubmission = new DataSampleSubmission();
+    public DataSampleSubmission toSubmission() {
+        return toSubmission(new DataSampleSubmission());
+    }
 
-        datasampleSubmission.setUniqueIdentifier(AbstractEntityValue.getEntity(this.eaId));
-        datasampleSubmission.setSite(AbstractEntityValue.getEntity(this.eaId).getSite());
-        datasampleSubmission.setReturnType(AbstractEntityValue.getEntity(this.returnType));
+    @Override
+    public DataSampleSubmission toSubmission(DataSampleSubmission dataSampleSubmission) {
+        dataSampleSubmission.setUniqueIdentifier(AbstractEntityValue.getEntity(this.eaId));
+        dataSampleSubmission.setSite(AbstractEntityValue.getEntity(this.eaId).getSite());
+        dataSampleSubmission.setReturnType(AbstractEntityValue.getEntity(this.returnType));
 
-        if (this.monitoringDate != null) {
-            datasampleSubmission.setMonDate(Date.from(this.monitoringDate.getInstant()));
+        if (this.monitoringDate != null && this.monitoringDate.isParsed()) {
+            dataSampleSubmission.setMonDate(Date.from(this.monitoringDate.getInstant()));
         }
 
         if (this.monitoringPoint != null) {
-            datasampleSubmission.setMonPoint(this.monitoringPoint.getValue());
+            dataSampleSubmission.setMonPoint(this.monitoringPoint.getValue());
         }
-        datasampleSubmission.setParameter(AbstractEntityValue.getEntity(this.parameter));
+
+        dataSampleSubmission.setParameter(AbstractEntityValue.getEntity(this.parameter));
 
         if (this.value != null) {
             String val = this.value.getValue();
             String numStr = numericReg.matcher(val).replaceAll("");
             String strStr = textReg.matcher(val).replaceAll("");
 
-            datasampleSubmission.setNumericValue(new BigDecimal(numStr));
-            datasampleSubmission.setNumericValueText(strStr);
+            dataSampleSubmission.setNumericValue(new BigDecimal(numStr));
+            dataSampleSubmission.setNumericValueText(strStr);
         }
 
-        datasampleSubmission.setTextValue(AbstractEntityValue.getEntity(this.textValue));
-        datasampleSubmission.setQualifier(AbstractEntityValue.getEntity(this.qualifier));
-        datasampleSubmission.setUnit(AbstractEntityValue.getEntity(this.unit));
-        datasampleSubmission.setReferencePeriod(AbstractEntityValue.getEntity(this.referencePeriod));
-        datasampleSubmission.setMethodOrStandard(AbstractEntityValue.getEntity(this.methStand));
+        dataSampleSubmission.setTextValue(AbstractEntityValue.getEntity(this.textValue));
+        dataSampleSubmission.setQualifier(AbstractEntityValue.getEntity(this.qualifier));
+        dataSampleSubmission.setUnit(AbstractEntityValue.getEntity(this.unit));
+        dataSampleSubmission.setReferencePeriod(AbstractEntityValue.getEntity(this.referencePeriod));
+        dataSampleSubmission.setMethodOrStandard(AbstractEntityValue.getEntity(this.methStand));
 
         if (this.comments != null) {
-            datasampleSubmission.setComments((this.comments != null) ? this.comments.getValue() : null);
+            dataSampleSubmission.setComments((this.comments != null) ? this.comments.getValue() : null);
         }
 
         if (this.cic != null) {
-            datasampleSubmission.setCic(this.cic.getValue());
+            dataSampleSubmission.setCic(this.cic.getValue());
         }
 
-        datasampleSubmission.setReleasesAndTransfers(AbstractEntityValue.getEntity(this.releasesAndTransfers));
+        dataSampleSubmission.setReleasesAndTransfers(AbstractEntityValue.getEntity(this.releasesAndTransfers));
 
-        return datasampleSubmission;
+        return dataSampleSubmission;
     }
 }

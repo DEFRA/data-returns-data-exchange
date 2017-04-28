@@ -19,7 +19,7 @@ import java.util.stream.Collectors;
  * @author Graham Willis
  */
 @Service
-public class SubmissionService<T extends Datum<? extends Submission>> {
+public class SubmissionService<T extends Datum> {
     protected static final Logger LOGGER = LoggerFactory.getLogger(SubmissionService.class);
     private final DatasetDao datasetDao;
     private final UserDao userDao;
@@ -221,22 +221,37 @@ public class SubmissionService<T extends Datum<? extends Submission>> {
     @Transactional
     public void submit(Record record, T dataSample) {
         Date now = new Date();
-        Submission submission = dataSample.createSubmissionType();
-        record.setSubmission(submission);
-        submission.setRecord(record);
+        boolean newSubmission = false;
+        Submission submission;
+
+        // If the record contains a submission then use it
+        if (record.getSubmission() == null) {
+            submission = dataSample.toSubmission();
+            record.setSubmission(submission);
+            submission.setRecord(record);
+            newSubmission = true;
+        } else {
+            submission = record.getSubmission();
+            dataSample.toSubmission(submission);
+        }
+
         record.setRecordStatus(recordStatusDao.getStatus(RecordStatus.SUBMITTED));
         record.setLastChangedDate(now);
         record.setEtag(UUID.randomUUID().toString());
 
         // If the record is new persist it otherwise merge the changes
-        // new submission
         if (record.getId() == null) {
             recordDao.persist(record);
         } else {
             recordDao.merge(record);
         }
 
-        submissionDao.persist(submission);
+        if (newSubmission) {
+            submissionDao.persist(submission);
+        } else {
+            submissionDao.merge(submission);
+        }
+
     }
 
     @Transactional(readOnly = true)
@@ -249,4 +264,12 @@ public class SubmissionService<T extends Datum<? extends Submission>> {
         return recordDao.list(dataset);
     }
 
+    @Transactional
+    public void removeRecord(Dataset dataset, String identifier) {
+        recordDao.remove(dataset, identifier);
+    }
+
+    public boolean recordExists(Dataset dataset, String identifier) {
+        return (recordDao.get(dataset, identifier) == null) ? false : true;
+    }
 }
