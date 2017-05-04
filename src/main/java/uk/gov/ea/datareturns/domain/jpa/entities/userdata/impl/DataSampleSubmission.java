@@ -8,9 +8,7 @@ import uk.gov.ea.datareturns.domain.jpa.entities.masterdata.impl.ReleasesAndTran
 import uk.gov.ea.datareturns.domain.jpa.entities.masterdata.impl.ReturnType;
 import uk.gov.ea.datareturns.domain.jpa.entities.masterdata.impl.*;
 import uk.gov.ea.datareturns.domain.jpa.entities.masterdata.impl.Unit;
-import uk.gov.ea.datareturns.domain.jpa.entities.userdata.Submission;
-import uk.gov.ea.datareturns.domain.model.DataSample;
-import uk.gov.ea.datareturns.domain.model.fields.impl.*;
+import uk.gov.ea.datareturns.domain.jpa.entities.userdata.AbstractMeasurement;
 
 import javax.persistence.*;
 import java.math.BigDecimal;
@@ -21,7 +19,7 @@ import java.util.Date;
  */
 @Entity
 @Table(name = "submissions")
-public class DataSampleSubmission extends Submission {
+public class DataSampleSubmission extends AbstractMeasurement {
 
     @ManyToOne(optional = false)
     @JoinColumn(name = "ea_id", referencedColumnName = "id")

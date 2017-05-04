@@ -1,4 +1,4 @@
-package uk.gov.ea.datareturns.domain.dto;
+package uk.gov.ea.datareturns.domain.dto.impl;
 
 /**
  * Created by graham on 16/08/16.

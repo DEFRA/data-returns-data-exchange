@@ -1,4 +1,4 @@
-package uk.gov.ea.datareturns.domain.dto;
+package uk.gov.ea.datareturns.domain.dto.impl;
 
 import java.util.List;
 import java.util.Set;

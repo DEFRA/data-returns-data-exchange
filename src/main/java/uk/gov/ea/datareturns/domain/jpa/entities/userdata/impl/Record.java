@@ -1,15 +1,13 @@
 package uk.gov.ea.datareturns.domain.jpa.entities.userdata.impl;
 
 import org.hibernate.annotations.GenericGenerator;
-import uk.gov.ea.datareturns.domain.jpa.entities.userdata.Submission;
+import uk.gov.ea.datareturns.domain.jpa.entities.userdata.AbstractMeasurement;
+import uk.gov.ea.datareturns.domain.jpa.entities.userdata.Metadata;
 import uk.gov.ea.datareturns.domain.jpa.entities.userdata.Userdata;
-import uk.gov.ea.datareturns.domain.model.DataSample;
-import uk.gov.ea.datareturns.domain.model.Datum;
 
 import javax.persistence.*;
 import java.io.Serializable;
 import java.util.Date;
-import java.util.List;
 
 /**
  * @author Graham
@@ -19,7 +17,7 @@ import java.util.List;
 @GenericGenerator(name = "idGenerator", strategy = "org.hibernate.id.enhanced.SequenceStyleGenerator", parameters = {
         @org.hibernate.annotations.Parameter(name = "sequence_name", value = "records_id_seq") }
 )
-public class Record implements Serializable, Userdata {
+public class Record implements Metadata {
 
     public String getValidation() {
         return validation;
@@ -33,7 +31,7 @@ public class Record implements Serializable, Userdata {
     private Long id;
 
     @OneToOne(cascade = { CascadeType.REMOVE }, mappedBy = "record")
-    private Submission submission;
+    private AbstractMeasurement submission;
 
     @Basic @Column(name = "identifier", nullable = false, length = 80)
     private String identifier;
@@ -145,11 +143,11 @@ public class Record implements Serializable, Userdata {
         return result;
     }
 
-    public Submission getSubmission() {
+    public AbstractMeasurement getSubmission() {
         return submission;
     }
 
-    public void setSubmission(Submission submission) {
+    public void setSubmission(AbstractMeasurement submission) {
         this.submission = submission;
     }
 

@@ -2,31 +2,29 @@ package uk.gov.ea.datareturns.domain.jpa.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.MapperFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
-import com.fasterxml.jackson.databind.introspect.AnnotatedMember;
-import com.fasterxml.jackson.databind.introspect.JacksonAnnotationIntrospector;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.transaction.annotation.Transactional;
-import uk.gov.ea.datareturns.domain.jpa.dao.userdata.impl.*;
-import uk.gov.ea.datareturns.domain.jpa.entities.userdata.Submission;
-import uk.gov.ea.datareturns.domain.jpa.entities.userdata.impl.*;
-import uk.gov.ea.datareturns.domain.model.DataSample;
-import uk.gov.ea.datareturns.domain.model.Datum;
-import uk.gov.ea.datareturns.domain.model.validation.DataSampleValidator;
-import uk.gov.ea.datareturns.domain.result.ValidationErrors;
+import uk.gov.ea.datareturns.domain.dto.MeasurementDto;
+import uk.gov.ea.datareturns.domain.jpa.dao.userdata.impl.DatasetDao;
+import uk.gov.ea.datareturns.domain.jpa.dao.userdata.impl.RecordDao;
+import uk.gov.ea.datareturns.domain.jpa.dao.userdata.impl.UserDao;
+import uk.gov.ea.datareturns.domain.jpa.entities.userdata.AbstractMeasurement;
+import uk.gov.ea.datareturns.domain.jpa.entities.userdata.impl.Dataset;
+import uk.gov.ea.datareturns.domain.jpa.entities.userdata.impl.Record;
+import uk.gov.ea.datareturns.domain.jpa.entities.userdata.impl.User;
 
-import javax.inject.Inject;
 import java.io.IOException;
-import java.util.*;
-import java.util.function.Function;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 /**
  * @author Graham Willis
- * The submission service is responsible for managing the lifecycle of a submission:
+ * A submission service is responsible for managing the lifecycle of a submission:
  *
  * (1) CREATED. A submission record is created in the system which may have an identifier
  * set by the user or generated automatically by the system. There is no payload (submission data)
@@ -42,63 +40,214 @@ import java.util.stream.Collectors;
  * cleared from the error field
  *
  * (5) SUBMITTED. The validated data is used to persist the submission and all of ite relationships.
+ * 
+ * The service is created by the submission service configuration
  *
  */
-public class SubmissionService<T extends Datum> {
+public class SubmissionService<DTO extends MeasurementDto, M extends AbstractMeasurement> {
+
     protected static final Logger LOGGER = LoggerFactory.getLogger(SubmissionService.class);
-    private final DatasetDao datasetDao;
+
+    private final Class<DTO> measurementDtoClass;
+    private final Class<M> measurementClass;
     private final UserDao userDao;
+    private final DatasetDao datasetDao;
     private final RecordDao recordDao;
-    private final SubmissionDao submissionDao;
-    private final Class<T[]> dataSampleClass;
-    private final DataSampleValidator validator;
+    private final Class<DTO[]> measurementDtoArrayClass;
     private final static ObjectMapper mapper = new ObjectMapper();
 
-    @Inject
-    public SubmissionService(Class<T[]> dataSampleClass, DataSampleValidator validator,
-                             UserDao userDao, DatasetDao datasetDao, RecordDao recordDao,
-                             SubmissionDao submissionDao
-                             ) {
+    /**
+     * @param measurementDtoClass Class of the data transfer object
+     * @param measurementClass The class of the measurement entity to persist
+     * @param userDao The user data access object
+     * @param datasetDao The dataset data access object
+     * @param recordDao The record data access object
+     */
+    public SubmissionService(Class<DTO> measurementDtoClass,
+                             Class<DTO[]> measurementDtoArrayClass,
+                             Class<M> measurementClass,
+                             UserDao userDao,
+                             DatasetDao datasetDao, 
+                             RecordDao recordDao) {
 
-        this.dataSampleClass = dataSampleClass;
-        this.validator = validator;
-        this.datasetDao =  datasetDao;
+        this.measurementDtoClass = measurementDtoClass;
+        this.measurementDtoArrayClass = measurementDtoArrayClass;
+        this.measurementClass = measurementClass;
         this.userDao = userDao;
+        this.datasetDao = datasetDao;
         this.recordDao = recordDao;
-        this.submissionDao = submissionDao;
 
-        LOGGER.info("Initializing submission service for datum type: " + dataSampleClass.getSimpleName());
+        LOGGER.info("Initializing submission service for datum type: " + measurementDtoClass.getSimpleName());
         mapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
         mapper.enable(DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY);
-        mapper.setAnnotationIntrospector(new IgnoreInheritedIntrospector());
-    }
 
-    private static class IgnoreInheritedIntrospector extends JacksonAnnotationIntrospector {
-        @Override
-        public boolean hasIgnoreMarker(final AnnotatedMember m) {
-            return false ;//m.getDeclaringClass() == Base.class || super.hasIgnoreMarker(m);
-        }
     }
 
     /****************************************************************************************
-     * Json serialization and deserialization operations
+     * Record and submission centric operations
+     *
+     * Bulk record and submission centric operations require a the use of nested class to
+     * couple given identifiers and payloads either of which may be given as null
      ****************************************************************************************/
+    public static class DatumIdentifierPair<DTO> {
+        protected final String identifier;
+        protected final DTO datum;
+
+        public DatumIdentifierPair(String identifier, DTO datum) {
+            this.identifier = identifier;
+            this.datum = datum;
+        }
+
+        public DatumIdentifierPair(DTO datum) {
+            this.identifier = UUID.randomUUID().toString();
+            this.datum = datum;
+        }
+
+        public DatumIdentifierPair(String identifier) {
+            this.identifier = identifier;
+            this.datum = null;
+        }
+
+        public DatumIdentifierPair() {
+            this.identifier = UUID.randomUUID().toString();
+            this.datum = null;
+        }
+    }
 
     /**
-     * Parse JSON and return the an array of samples OR null if the JSON cannot be parsed
+     * Parse a JSON string and create the DTO objects.
+     * @param json
+     * @return
      */
-    public List<T> parse(String json) {
+    public List<DTO> parse(String json) {
         try {
-            return Arrays.asList(mapper.readValue(json, dataSampleClass));
+            return Arrays.asList(mapper.readValue(json, measurementDtoArrayClass));
         } catch (IOException e) {
             LOGGER.info("Cannot parse JSON: " + json);
             return null;
         }
     }
 
-    /****************************************************************************************
-     * User centric
-     ****************************************************************************************/
+    /**
+     * Get a list of existing records for a given dataset
+     * @param dataset
+     * @return
+     */
+    @Transactional(readOnly = true)
+    public List<Record> getRecords(Dataset dataset) {
+        return recordDao.list(dataset);
+    }
+
+    /**
+     * Remove a record using its identifier
+     * @param dataset The dataset
+     * @param identifier the record identifier
+     */
+    @Transactional
+    public void removeRecord(Dataset dataset, String identifier) {
+        recordDao.remove(dataset, identifier);
+    }
+
+    /**
+     * Test if a record exists in a given dataset by its identifier
+     * @param dataset The dataset
+     * @param identifier The identifier
+     * @return
+     */
+    public boolean recordExists(Dataset dataset, String identifier) {
+        return (recordDao.get(dataset, identifier) == null) ? false : true;
+    }
+
+    /**
+     * Creates new records associated with a given dataset.
+     * The record status will be set to CREATED if no datum
+     * is specified or PARSED if a datum is specified
+     * @param dataset
+     * @param datumIdentifierPairs
+     * @return A list of records
+     */
+    @Transactional
+    public List<Record> createRecords(Dataset dataset, List<SubmissionService.DatumIdentifierPair<DTO>> datumIdentifierPairs) {
+        return datumIdentifierPairs.stream()
+                .map(p -> createOrResetRecord(dataset, p.identifier, p.datum))
+                .collect(Collectors.toList());
+    }
+
+    /**
+     * Creates a new record on a given identifier OR resets a record
+     * on a given identifier if it already exists.
+     *
+     * If a valid datum is supplied the record status is set to PARSED
+     * otherwise it is set to created.
+     *
+     * Any errors are cleared and the record values
+     * are reset
+     *
+     * @return
+     */
+    private Record createOrResetRecord(Dataset dataset, String identifier, DTO dto) {
+        Record record = getRecord(dataset, identifier);
+        Record.RecordStatus newRecordStatus = record.getRecordStatus();
+        Date now = new Date();
+
+        // If we have a datum associated it
+        if (dto != null) {
+            String json = null;
+            try {
+                json = mapper.writeValueAsString(dto);
+                record.setJson(json);
+                record.setRecordStatus(Record.RecordStatus.PARSED);
+            } catch (JsonProcessingException e) {
+                LOGGER.error("Cannot serialize Json: " + json);
+            }
+        } else {
+            record.setRecordStatus(Record.RecordStatus.PERSISTED);
+            record.setJson(null);
+        }
+
+        // If its a new record persist it or otherwise merge
+        if (newRecordStatus == Record.RecordStatus.CREATED) {
+            return recordDao.persist(record);
+        } else {
+            record.setLastChangedDate(now);
+            recordDao.merge(record);
+            return record;
+        }
+    }
+
+    /**
+     * Returns a new and initialized record for a given dataset
+     * with a system generated identifier
+     * It does not persist the record
+     * @param dataset
+     * @return The initialized record
+     */
+    private Record getRecord(Dataset dataset) {
+        return getRecord(dataset, UUID.randomUUID().toString());
+    }
+
+    /**
+     * Returns either a new and initialized record for a dataset and identifier
+     * or if the identified record already exists it returns the existing record
+     * It does not persist the record
+     * @param dataset
+     * @param identifier
+     * @return
+     */
+    private Record getRecord(Dataset dataset, String identifier) {
+        Record record = recordDao.get(dataset, identifier);
+        if (record == null) {
+            Date now = new Date();
+            record = new Record();
+            record.setDataset(dataset);
+            record.setIdentifier(identifier);
+            record.setRecordStatus(Record.RecordStatus.CREATED);
+            record.setCreateDate(now);
+            record.setLastChangedDate(now);
+            record.setEtag(UUID.randomUUID().toString());
+        }
+        return record;
+    }
 
     /**
      * Get the default (system) user
@@ -188,233 +337,5 @@ public class SubmissionService<T extends Datum> {
     public void removeDataset(String identifier) {
         datasetDao.remove(identifier);
     }
-
-    /****************************************************************************************
-     * Record and submission centric operations
-     *
-     * Bulk record and submission centric operations require a the use of nested class to
-     * couple given identifiers and payloads either of which may be given as null
-     ****************************************************************************************/
-    public static class DatumIdentifierPair<T> {
-        protected final String identifier;
-        protected final T datum;
-
-        public DatumIdentifierPair(String identifier, T datum) {
-            this.identifier = identifier;
-            this.datum = datum;
-        }
-
-        public DatumIdentifierPair(T datum) {
-            this.identifier = UUID.randomUUID().toString();
-            this.datum = datum;
-        }
-
-        public DatumIdentifierPair(String identifier) {
-            this.identifier = identifier;
-            this.datum = null;
-        }
-
-        public DatumIdentifierPair() {
-            this.identifier = UUID.randomUUID().toString();
-            this.datum = null;
-        }
-    }
-
-    /**
-     * Get a list of existing records for a given dataset
-     * @param dataset
-     * @return
-     */
-    @Transactional(readOnly = true)
-    public List<Record> getRecords(Dataset dataset) {
-        return recordDao.list(dataset);
-    }
-
-    /**
-     * Remove a record using its identifier
-     * @param dataset The dataset
-     * @param identifier the record identifier
-     */
-    @Transactional
-    public void removeRecord(Dataset dataset, String identifier) {
-        recordDao.remove(dataset, identifier);
-    }
-
-    /**
-     * Test if a record exists in a given dataset by its identifier
-     * @param dataset The dataset
-     * @param identifier The identifier
-     * @return
-     */
-    public boolean recordExists(Dataset dataset, String identifier) {
-        return (recordDao.get(dataset, identifier) == null) ? false : true;
-    }
-
-    /**
-     * Creates new records associated with a given dataset.
-     * The record status will be set to CREATED if no datum
-     * is specified or PARSED if a datum is specified
-     * @param dataset
-     * @param datumIdentifierPairs
-     * @return A list of records
-     */
-    @Transactional
-    public List<Record> createRecords(Dataset dataset, List<DatumIdentifierPair<T>> datumIdentifierPairs) {
-        return datumIdentifierPairs.stream()
-                .map(p -> createOrResetRecord(dataset, p.identifier, p.datum))
-                .collect(Collectors.toList());
-    }
-
-    /**
-     * Creates a new record on a given identifier OR resets a record
-     * on a given identifier if it already exists.
-     *
-     * If a valid datum is supplied the record status is set to PARSED
-     * otherwise it is set to created.
-     *
-     * Any errors are cleared and the record values
-     * are reset
-     *
-     * @return
-     */
-    private Record createOrResetRecord(Dataset dataset, String identifier, T datum) {
-        Record record = getRecord(dataset, identifier);
-        Record.RecordStatus newRecordStatus = record.getRecordStatus();
-        Date now = new Date();
-
-        // If we have a datum associated it
-        if (datum != null) {
-            String json = null;
-            try {
-                json = mapper.writeValueAsString(datum);
-                record.setJson(json);
-                record.setRecordStatus(Record.RecordStatus.PARSED);
-            } catch (JsonProcessingException e) {
-                LOGGER.error("Cannot serialize Json: " + json);
-            }
-        } else {
-            record.setRecordStatus(Record.RecordStatus.PERSISTED);
-            record.setJson(null);
-        }
-
-        // If its a new record persist it or otherwise merge
-        if (newRecordStatus == Record.RecordStatus.CREATED) {
-            return recordDao.persist(record);
-        } else {
-            record.setLastChangedDate(now);
-            recordDao.merge(record);
-            return record;
-        }
-    }
-
-    /**
-     * Returns a new and initialized record for a given dataset
-     * with a system generated identifier
-     * It does not persist the record
-     * @param dataset
-     * @return The initialized record
-     */
-    private Record getRecord(Dataset dataset) {
-        return getRecord(dataset, UUID.randomUUID().toString());
-    }
-
-    /**
-     * Returns either a new and initialized record for a dataset and identifier
-     * or if the identified record already exists it returns the existing record
-     * It does not persist the record
-     * @param dataset
-     * @param identifier
-     * @return
-     */
-    private Record getRecord(Dataset dataset, String identifier) {
-        Record record = recordDao.get(dataset, identifier);
-        if (record == null) {
-            Date now = new Date();
-            record = new Record();
-            record.setDataset(dataset);
-            record.setIdentifier(identifier);
-            record.setRecordStatus(Record.RecordStatus.CREATED);
-            record.setCreateDate(now);
-            record.setLastChangedDate(now);
-            record.setEtag(UUID.randomUUID().toString());
-        }
-        return record;
-    }
-
-    /**
-     * Persist validated samples - may fail if the samples are invalid
-     * @param dataset - the dataset to associated with the saved samples
-     * @param samples - an array of samples to persist. The records will
-     * be system generated
-     *
-     * @return the number of persisted samples
-     */
-    @Transactional
-    public void submit(Dataset dataset, List<T> samples) {
-        for (T t : samples) {
-            Record record = getRecord(dataset);
-            submit(record, t);
-        }
-    }
-
-    @Transactional
-    public ValidationErrors validate(List<Record> records) {
-        // Get a map of the samples
-        Map<Record, DataSample> samples = records.stream()
-                //.filter(r -> r.getJson().isEmpty())
-                .collect(Collectors.toMap(v -> v, v -> {
-                    try {
-                        return mapper.readValue(v.getJson(), DataSample.class);
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                        return null;
-                    }
-                }));
-
-        return null;
-    }
-
-    /**
-     * Persist a supplied given sample against a record
-     * @param record
-     * @param dataSample
-     * @return
-     */
-    @Transactional
-    public void submit(Record record, T dataSample) {
-        Date now = new Date();
-        boolean newSubmission = false;
-        Submission submission;
-
-        // If the record contains a submission then use it
-        if (record.getSubmission() == null) {
-            submission = dataSample.toSubmission();
-            record.setSubmission(submission);
-            submission.setRecord(record);
-            newSubmission = true;
-        } else {
-            submission = record.getSubmission();
-            dataSample.toSubmission(submission);
-        }
-
-        record.setRecordStatus(Record.RecordStatus.CREATED);
-        record.setLastChangedDate(now);
-        record.setEtag(UUID.randomUUID().toString());
-
-        // If the record is new persist it otherwise merge the changes
-        if (record.getId() == null) {
-            recordDao.persist(record);
-        } else {
-            recordDao.merge(record);
-        }
-
-        if (newSubmission) {
-            submissionDao.persist(submission);
-        } else {
-            submissionDao.merge(submission);
-        }
-
-    }
-
 
 }

@@ -1,8 +1,6 @@
 package uk.gov.ea.datareturns.domain.jpa.entities.userdata;
 
-import uk.gov.ea.datareturns.domain.jpa.entities.userdata.impl.DataSampleSubmission;
 import uk.gov.ea.datareturns.domain.jpa.entities.userdata.impl.Record;
-import uk.gov.ea.datareturns.domain.model.Datum;
 
 import javax.persistence.*;
 import java.io.Serializable;
@@ -12,7 +10,7 @@ import java.io.Serializable;
  */
 @Entity
 @Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
-public abstract class Submission<T extends Datum> implements Serializable {
+public abstract class AbstractMeasurement implements Userdata {
 
     @Id
     @OneToOne(optional = false)
@@ -31,7 +29,7 @@ public abstract class Submission<T extends Datum> implements Serializable {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
-        Submission that = (Submission) o;
+        AbstractMeasurement that = (AbstractMeasurement) o;
 
         return record.equals(that.record);
     }

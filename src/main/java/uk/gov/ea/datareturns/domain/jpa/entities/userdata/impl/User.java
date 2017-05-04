@@ -1,6 +1,7 @@
 package uk.gov.ea.datareturns.domain.jpa.entities.userdata.impl;
 
 import org.hibernate.annotations.GenericGenerator;
+import uk.gov.ea.datareturns.domain.jpa.entities.userdata.Metadata;
 import uk.gov.ea.datareturns.domain.jpa.entities.userdata.Userdata;
 
 import javax.persistence.*;
@@ -15,7 +16,7 @@ import java.util.Collection;
 @GenericGenerator(name = "idGenerator", strategy = "org.hibernate.id.enhanced.SequenceStyleGenerator", parameters = {
         @org.hibernate.annotations.Parameter(name = "sequence_name", value = "users_id_seq") }
 )
-public class User implements Serializable, Userdata {
+public class User implements Metadata {
 
     public static final String SYSTEM = "SYSTEM";
 

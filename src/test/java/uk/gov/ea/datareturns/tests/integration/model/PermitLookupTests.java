@@ -12,7 +12,7 @@ import org.springframework.dao.DataAccessException;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 import uk.gov.ea.datareturns.App;
-import uk.gov.ea.datareturns.domain.dto.PermitLookupDto;
+import uk.gov.ea.datareturns.domain.dto.impl.PermitLookupDto;
 import uk.gov.ea.datareturns.domain.jpa.service.SitePermitService;
 import uk.gov.ea.datareturns.domain.processors.SearchProcessor;
 

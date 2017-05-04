@@ -1,9 +1,9 @@
 package uk.gov.ea.datareturns.domain.jpa.entities.userdata;
 
+import java.io.Serializable;
+
 /**
  * @author Graham Willis
  */
-public interface Userdata {
-    String getIdentifier();
-    void setIdentifier(String identifier);
+public interface Userdata extends Serializable {
 }

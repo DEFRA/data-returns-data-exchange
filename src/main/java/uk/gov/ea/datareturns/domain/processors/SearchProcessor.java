@@ -2,7 +2,7 @@ package uk.gov.ea.datareturns.domain.processors;
 
 import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.stereotype.Component;
-import uk.gov.ea.datareturns.domain.dto.PermitLookupDto;
+import uk.gov.ea.datareturns.domain.dto.impl.PermitLookupDto;
 import uk.gov.ea.datareturns.domain.jpa.dao.masterdata.Key;
 import uk.gov.ea.datareturns.domain.jpa.dao.masterdata.SiteDao;
 import uk.gov.ea.datareturns.domain.jpa.dao.masterdata.UniqueIdentifierDao;

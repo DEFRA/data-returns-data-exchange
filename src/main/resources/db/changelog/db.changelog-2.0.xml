@@ -269,7 +269,48 @@
 								 referencedColumnNames="id"
 								 referencedTableName="releases_and_transfers"/>
 
+
+		<!--
+		****************************************************************
+		Measurements - prototype
+		****************************************************************
+		-->
+		<createTable tableName="measurements">
+
+			<column name="record_id" type="bigserial">
+				<constraints nullable="false"/>
+			</column>
+
+			<column name="parameter_id" type="bigint">
+				<constraints nullable="false"/>
+			</column>
+
+			<column name="value" type="numeric">
+				<constraints nullable="false"/>
+			</column>
+
+		</createTable>
+
+		<addForeignKeyConstraint baseColumnNames="record_id"
+								 baseTableName="submissions"
+								 constraintName="fk_measurements_record"
+								 referencedColumnNames="id"
+								 referencedTableName="records"/>
+
+		<addForeignKeyConstraint baseColumnNames="parameter_id"
+								 baseTableName="submissions"
+								 constraintName="fk_measurements_parameter"
+								 referencedColumnNames="id"
+								 referencedTableName="parameters"/>
+
+		<!--
+		****************************************************************
+		Rollback
+		****************************************************************
+		-->
+
 		<rollback>
+			<dropTable tableName="measurements"/>
 			<dropTable tableName="submissions"/>
 			<dropTable tableName="status"/>
 			<dropTable tableName="records"/>

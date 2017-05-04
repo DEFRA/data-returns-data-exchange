@@ -5,7 +5,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
-import uk.gov.ea.datareturns.domain.dto.PermitLookupDto;
+import uk.gov.ea.datareturns.domain.dto.impl.PermitLookupDto;
 import uk.gov.ea.datareturns.domain.processors.SearchProcessor;
 
 import javax.inject.Inject;

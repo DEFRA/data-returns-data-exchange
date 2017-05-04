@@ -1,4 +1,4 @@
-package uk.gov.ea.datareturns.domain.dto;
+package uk.gov.ea.datareturns.domain.dto.impl;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import uk.gov.ea.datareturns.domain.jpa.entities.masterdata.impl.UniqueIdentifier;

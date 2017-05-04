@@ -3,12 +3,9 @@ package uk.gov.ea.datareturns.domain.jpa.dao.userdata;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uk.gov.ea.datareturns.domain.jpa.entities.userdata.Userdata;
-import uk.gov.ea.datareturns.domain.jpa.entities.userdata.impl.Dataset;
-import uk.gov.ea.datareturns.domain.jpa.entities.userdata.impl.Record;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
-import java.util.List;
 
 /**
  * @author Graham Willis. Define the data access objects for the user data entities
@@ -48,8 +45,4 @@ public abstract class AbstractUserDataDao<E extends Userdata>  {
         LOGGER.info("Merging: " + entityClass.getSimpleName() + ": " + entity.toString());
         entityManager.merge(entity);
     }
-
-    //public boolean managed(E entity) {
-    //     return entityManager.contains(entity);
-    //}
 }

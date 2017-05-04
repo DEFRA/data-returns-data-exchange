@@ -1,6 +1,6 @@
 package uk.gov.ea.datareturns.domain.jpa.entities.masterdata.impl;
 
-import uk.gov.ea.datareturns.domain.dto.DisplayHeaderDto;
+import uk.gov.ea.datareturns.domain.dto.impl.DisplayHeaderDto;
 import uk.gov.ea.datareturns.domain.jpa.dao.masterdata.*;
 
 import java.util.*;
@@ -46,7 +46,7 @@ public enum ControlledListsList {
                 add(new DisplayHeaderDto("name", "Unit"));
                 add(new DisplayHeaderDto("aliases", "Alternatives"));
                 add(new DisplayHeaderDto("longName", "Long Name"));
-                add(new DisplayHeaderDto("type", "Measurement Type"));
+                add(new DisplayHeaderDto("type", "BasicMeasurement Type"));
                 add(new DisplayHeaderDto("unicode", "Unicode"));
                 add(new DisplayHeaderDto("description", "Definition"));
             }})),
