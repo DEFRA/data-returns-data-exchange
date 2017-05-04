@@ -14,12 +14,11 @@ import uk.gov.ea.datareturns.domain.jpa.entities.userdata.AbstractMeasurement;
 import uk.gov.ea.datareturns.domain.jpa.entities.userdata.impl.Dataset;
 import uk.gov.ea.datareturns.domain.jpa.entities.userdata.impl.Record;
 import uk.gov.ea.datareturns.domain.jpa.entities.userdata.impl.User;
+import uk.gov.ea.datareturns.domain.result.ValidationErrors;
+import uk.gov.ea.datareturns.domain.validator.MeasurementValidator;
 
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -49,12 +48,13 @@ public class SubmissionService<DTO extends MeasurementDto, M extends AbstractMea
     protected static final Logger LOGGER = LoggerFactory.getLogger(SubmissionService.class);
 
     private final Class<DTO> measurementDtoClass;
+    private final Class<DTO[]> measurementDtoArrayClass;
     private final Class<M> measurementClass;
     private final UserDao userDao;
     private final DatasetDao datasetDao;
     private final RecordDao recordDao;
-    private final Class<DTO[]> measurementDtoArrayClass;
     private final static ObjectMapper mapper = new ObjectMapper();
+    private final MeasurementValidator<DTO> validator;
 
     /**
      * @param measurementDtoClass Class of the data transfer object
@@ -62,13 +62,15 @@ public class SubmissionService<DTO extends MeasurementDto, M extends AbstractMea
      * @param userDao The user data access object
      * @param datasetDao The dataset data access object
      * @param recordDao The record data access object
+     * @param validator The validator to be used
      */
     public SubmissionService(Class<DTO> measurementDtoClass,
                              Class<DTO[]> measurementDtoArrayClass,
                              Class<M> measurementClass,
                              UserDao userDao,
-                             DatasetDao datasetDao, 
-                             RecordDao recordDao) {
+                             DatasetDao datasetDao,
+                             RecordDao recordDao, 
+                             MeasurementValidator<DTO> validator) {
 
         this.measurementDtoClass = measurementDtoClass;
         this.measurementDtoArrayClass = measurementDtoArrayClass;
@@ -76,6 +78,7 @@ public class SubmissionService<DTO extends MeasurementDto, M extends AbstractMea
         this.userDao = userDao;
         this.datasetDao = datasetDao;
         this.recordDao = recordDao;
+        this.validator = validator;
 
         LOGGER.info("Initializing submission service for datum type: " + measurementDtoClass.getSimpleName());
         mapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
@@ -172,6 +175,68 @@ public class SubmissionService<DTO extends MeasurementDto, M extends AbstractMea
                 .map(p -> createOrResetRecord(dataset, p.identifier, p.datum))
                 .collect(Collectors.toList());
     }
+
+    @Transactional
+    public ValidationErrors validate(List<Record> records) {
+        // Deserialize the list of samples from the JSON
+        // field in the record and pass it to the validator returning the
+        // result
+        List<DTO> samples = records.stream()
+                .filter(r -> !r.getJson().isEmpty())
+                .map(v -> {
+                    try {
+                        return mapper.readValue(v.getJson(), measurementDtoClass);
+                    } catch (IOException e) {
+                        LOGGER.error("Error de-serializing stored JSON: " + e.getMessage());
+                        return null;
+                    }
+                })
+                .collect(Collectors.toList());
+
+        return validator.validate(samples);
+    }
+
+    /**
+     * Persist a supplied given sample against a record
+     * @param record
+     * @param dataSample
+     * @return
+     */
+//    @Transactional
+//    public void submit(Record record, T dataSample) {
+//        Date now = new Date();
+//        boolean newSubmission = false;
+//        AbstractMeasurement submission;
+//
+//        // If the record contains a submission then use it
+//        if (record.getSubmission() == null) {
+//            submission = dataSample.toSubmission();
+//            record.setSubmission(submission);
+//            submission.setRecord(record);
+//            newSubmission = true;
+//        } else {
+//            submission = record.getSubmission();
+//            dataSample.toSubmission(submission);
+//        }
+//
+//        record.setRecordStatus(Record.RecordStatus.CREATED);
+//        record.setLastChangedDate(now);
+//        record.setEtag(UUID.randomUUID().toString());
+//
+//        // If the record is new persist it otherwise merge the changes
+//        if (record.getId() == null) {
+//            recordDao.persist(record);
+//        } else {
+//            recordDao.merge(record);
+//        }
+//
+//        //if (newSubmission) {
+//        //    submissionDao.persist(submission);
+//        //} else {
+//        //    submissionDao.merge(submission);
+//        //}
+//
+//    }
 
     /**
      * Creates a new record on a given identifier OR resets a record

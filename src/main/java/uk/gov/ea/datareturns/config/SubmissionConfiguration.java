@@ -8,8 +8,8 @@ import uk.gov.ea.datareturns.domain.dto.impl.BasicMeasurementDto;
 import uk.gov.ea.datareturns.domain.jpa.dao.userdata.impl.*;
 import uk.gov.ea.datareturns.domain.jpa.entities.userdata.impl.BasicMeasurement;
 import uk.gov.ea.datareturns.domain.jpa.service.SubmissionService;
-import uk.gov.ea.datareturns.domain.model.validation.DataSampleValidator;
-import uk.gov.ea.datareturns.domain.model.validation.DataSampleValidatorImpl;
+import uk.gov.ea.datareturns.domain.validator.MeasurementValidator;
+import uk.gov.ea.datareturns.domain.validator.MeasurementValidatorImpl;
 
 /**
  * @author Graham Willis
@@ -23,14 +23,14 @@ public class SubmissionConfiguration {
     @Inject private RecordDao recordDao;
 
     @Bean
-    public DataSampleValidator dataSampleValidator(final Validator validator) {
-        return new DataSampleValidatorImpl(validator);
+    @Inject
+    public MeasurementValidator<BasicMeasurementDto> dataSampleValidator(final Validator validator) {
+        return new MeasurementValidatorImpl<>(validator);
     }
 
     @Bean
     public SubmissionService<BasicMeasurementDto, BasicMeasurement> basicSubmissionService() {
         return new SubmissionService<>(BasicMeasurementDto.class, BasicMeasurementDto[].class,
-                BasicMeasurement.class, userDao, datasetDao, recordDao);
+                BasicMeasurement.class, userDao, datasetDao, recordDao, dataSampleValidator(this.validator));
     }
-
 }

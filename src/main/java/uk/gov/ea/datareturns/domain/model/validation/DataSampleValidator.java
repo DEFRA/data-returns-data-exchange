@@ -1,7 +1,6 @@
 package uk.gov.ea.datareturns.domain.model.validation;
 
 import uk.gov.ea.datareturns.domain.model.DataSample;
-import uk.gov.ea.datareturns.domain.model.Datum;
 import uk.gov.ea.datareturns.domain.result.ValidationErrors;
 
 import java.util.List;
@@ -11,7 +10,7 @@ import java.util.List;
  *
  * @author Sam Gardner-Dell
  */
-public interface DataSampleValidator<T extends Datum> {
+public interface DataSampleValidator<T> {
 
     /**
      * Validate the specified model of {@link DataSample}s

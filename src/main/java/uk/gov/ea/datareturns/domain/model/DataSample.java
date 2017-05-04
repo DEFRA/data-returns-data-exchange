@@ -24,7 +24,7 @@ import java.util.regex.Pattern;
  */
 @ValidRecord(value = DataSample.class)
 @HierarchyValidator(value = DataSample.class, groups = ValidationGroups.RecordTier.class)
-public class DataSample implements Datum<DataSampleSubmission> {
+public class DataSample {
 
     /** The EA Unique Identifier (EA_ID) */
     @Valid @MappedField(FieldDefinition.EA_ID)
@@ -399,64 +399,5 @@ public class DataSample implements Datum<DataSampleSubmission> {
      */
     public void setReleasesAndTransfers(ReleasesAndTransfers releasesAndTransfers) {
         this.releasesAndTransfers = releasesAndTransfers;
-    }
-
-    private Pattern numericReg = Pattern.compile("[^0-9\\.\\-\\+]");
-    private Pattern textReg = Pattern.compile("[0-9\\.\\-\\+]");
-
-    /**
-     * This method is responsible for mapping the dataset to the output type (submission)
-     * and is necessary because the duality between Field (Validation) entities and
-     * persistence entities. It also allows for an indirect mapping to be made between the two
-     *
-     * @return The sample submission
-     */
-    @Override
-    public DataSampleSubmission toSubmission() {
-        return toSubmission(new DataSampleSubmission());
-    }
-
-    @Override
-    public DataSampleSubmission toSubmission(DataSampleSubmission dataSampleSubmission) {
-        dataSampleSubmission.setUniqueIdentifier(AbstractEntityValue.getEntity(this.eaId));
-        dataSampleSubmission.setSite(AbstractEntityValue.getEntity(this.eaId).getSite());
-        dataSampleSubmission.setReturnType(AbstractEntityValue.getEntity(this.returnType));
-
-        if (this.monitoringDate != null && this.monitoringDate.isParsed()) {
-            dataSampleSubmission.setMonDate(Date.from(this.monitoringDate.getInstant()));
-        }
-
-        if (this.monitoringPoint != null) {
-            dataSampleSubmission.setMonPoint(this.monitoringPoint.getValue());
-        }
-
-        dataSampleSubmission.setParameter(AbstractEntityValue.getEntity(this.parameter));
-
-        if (this.value != null) {
-            String val = this.value.getValue();
-            String numStr = numericReg.matcher(val).replaceAll("");
-            String strStr = textReg.matcher(val).replaceAll("");
-
-            dataSampleSubmission.setNumericValue(new BigDecimal(numStr));
-            dataSampleSubmission.setNumericValueText(strStr);
-        }
-
-        dataSampleSubmission.setTextValue(AbstractEntityValue.getEntity(this.textValue));
-        dataSampleSubmission.setQualifier(AbstractEntityValue.getEntity(this.qualifier));
-        dataSampleSubmission.setUnit(AbstractEntityValue.getEntity(this.unit));
-        dataSampleSubmission.setReferencePeriod(AbstractEntityValue.getEntity(this.referencePeriod));
-        dataSampleSubmission.setMethodOrStandard(AbstractEntityValue.getEntity(this.methStand));
-
-        if (this.comments != null) {
-            dataSampleSubmission.setComments((this.comments != null) ? this.comments.getValue() : null);
-        }
-
-        if (this.cic != null) {
-            dataSampleSubmission.setCic(this.cic.getValue());
-        }
-
-        dataSampleSubmission.setReleasesAndTransfers(AbstractEntityValue.getEntity(this.releasesAndTransfers));
-
-        return dataSampleSubmission;
     }
 }

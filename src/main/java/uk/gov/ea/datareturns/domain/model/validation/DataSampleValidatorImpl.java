@@ -1,7 +1,6 @@
 package uk.gov.ea.datareturns.domain.model.validation;
 
 import uk.gov.ea.datareturns.domain.model.DataSample;
-import uk.gov.ea.datareturns.domain.model.Datum;
 import uk.gov.ea.datareturns.domain.model.MessageCodes;
 import uk.gov.ea.datareturns.domain.model.rules.FieldDefinition;
 import uk.gov.ea.datareturns.domain.model.rules.FieldMapping;
@@ -20,7 +19,7 @@ import java.util.*;
  *
  * @author Sam Gardner-Dell
  */
-public class DataSampleValidatorImpl<T extends Datum> implements DataSampleValidator<T> {
+public class DataSampleValidatorImpl<T> implements DataSampleValidator<T> {
     private static final Map<String, FieldMapping> BEAN_MAPPING = FieldMapping.getFieldNameToBeanMap(DataSample.class);
 
     /** hibernate validator instance */

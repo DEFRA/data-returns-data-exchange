@@ -12,6 +12,7 @@ import uk.gov.ea.datareturns.config.TestSettings;
 import uk.gov.ea.datareturns.domain.dto.impl.BasicMeasurementDto;
 import uk.gov.ea.datareturns.domain.jpa.entities.userdata.impl.*;
 import uk.gov.ea.datareturns.domain.jpa.service.SubmissionService;
+import uk.gov.ea.datareturns.domain.result.ValidationErrors;
 
 import javax.inject.Inject;
 import java.io.File;
@@ -145,7 +146,8 @@ public class SubmissionIntegrationTests {
             list.add(new SubmissionService.DatumIdentifierPair(sample));
         }
         List<Record> records = submissionService.createRecords(dataset, list);
-//        submissionService.validate(records);
+        ValidationErrors validationErrors = submissionService.validate(records);
+        Assert.assertTrue(validationErrors.isValid());
     }
 
     /**
