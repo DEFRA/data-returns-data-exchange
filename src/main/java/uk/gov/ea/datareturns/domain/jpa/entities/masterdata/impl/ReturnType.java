@@ -58,11 +58,6 @@ public class ReturnType implements ControlledListEntity, Hierarchy.GroupedHierar
     }
 
     @Override
-    public uk.gov.ea.datareturns.domain.model.fields.impl.ReturnType getFieldValue() {
-        return new uk.gov.ea.datareturns.domain.model.fields.impl.ReturnType(this.name);
-    }
-
-    @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;

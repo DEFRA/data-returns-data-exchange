@@ -70,11 +70,6 @@ public class ReturnPeriod implements ControlledListEntity {
     }
 
     @Override
-    public uk.gov.ea.datareturns.domain.model.fields.impl.ReturnPeriod getFieldValue() {
-        return new uk.gov.ea.datareturns.domain.model.fields.impl.ReturnPeriod(this.name);
-    }
-
-    @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;

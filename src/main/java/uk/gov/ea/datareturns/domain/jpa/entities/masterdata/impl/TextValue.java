@@ -54,11 +54,6 @@ public class TextValue implements AliasingEntity {
     }
 
     @Override
-    public uk.gov.ea.datareturns.domain.model.fields.impl.TxtValue getFieldValue() {
-        return new uk.gov.ea.datareturns.domain.model.fields.impl.TxtValue(this.getName());
-    }
-
-    @Override
     public String getPreferred() {
         return this.preferred;
     }

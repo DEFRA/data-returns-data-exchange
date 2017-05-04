@@ -57,11 +57,6 @@ public class UniqueIdentifierAlias implements ControlledListEntity {
     }
 
     @Override
-    public uk.gov.ea.datareturns.domain.model.fields.impl.EaId getFieldValue() {
-        return new uk.gov.ea.datareturns.domain.model.fields.impl.EaId(uniqueIdentifier.getName());
-    }
-
-    @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;

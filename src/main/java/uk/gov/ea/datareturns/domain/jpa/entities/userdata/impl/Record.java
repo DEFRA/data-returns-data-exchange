@@ -3,10 +3,13 @@ package uk.gov.ea.datareturns.domain.jpa.entities.userdata.impl;
 import org.hibernate.annotations.GenericGenerator;
 import uk.gov.ea.datareturns.domain.jpa.entities.userdata.Submission;
 import uk.gov.ea.datareturns.domain.jpa.entities.userdata.Userdata;
+import uk.gov.ea.datareturns.domain.model.DataSample;
+import uk.gov.ea.datareturns.domain.model.Datum;
 
 import javax.persistence.*;
 import java.io.Serializable;
 import java.util.Date;
+import java.util.List;
 
 /**
  * @author Graham
@@ -17,6 +20,14 @@ import java.util.Date;
         @org.hibernate.annotations.Parameter(name = "sequence_name", value = "records_id_seq") }
 )
 public class Record implements Serializable, Userdata {
+
+    public String getValidation() {
+        return validation;
+    }
+
+    public enum RecordStatus {
+        CREATED, PERSISTED, PARSED, INVALID, VALID, SUBMITTED
+    }
 
     @Id @GeneratedValue(generator = "idGenerator")
     private Long id;
@@ -31,8 +42,8 @@ public class Record implements Serializable, Userdata {
     @JoinColumn(name = "dataset_id", referencedColumnName = "id")
     private Dataset dataset;
 
-    @ManyToOne(optional=false)
-    @JoinColumn(name = "status_id", referencedColumnName = "id")
+    @Enumerated(EnumType.STRING)
+    @Column(name = "status")
     private RecordStatus recordStatus;
 
     // Note: hibernate does not support LocalDataTime yet
@@ -45,6 +56,12 @@ public class Record implements Serializable, Userdata {
 
     @Basic @Column(name = "etag", nullable = false)
     private String etag;
+
+    @Basic @Column(name = "json", length = 16000)
+    private String json;
+
+    @Basic @Column(name = "validation", length = 16000)
+    private String validation;
 
     public Long getId() {
         return id;
@@ -102,6 +119,14 @@ public class Record implements Serializable, Userdata {
         this.etag = etag;
     }
 
+    public String getJson() {
+        return json;
+    }
+
+    public void setJson(String json) {
+        this.json = json;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -139,6 +164,8 @@ public class Record implements Serializable, Userdata {
                 ", createDate=" + createDate +
                 ", lastChangedDate=" + lastChangedDate +
                 ", etag='" + etag + '\'' +
+                ", json='" + json + '\'' +
+                ", validation='" + validation + '\'' +
                 '}';
     }
 }

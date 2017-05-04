@@ -46,11 +46,6 @@ public class ReleasesAndTransfers implements ControlledListEntity, Hierarchy.Hie
     }
 
     @Override
-    public uk.gov.ea.datareturns.domain.model.fields.impl.ReleasesAndTransfers getFieldValue() {
-        return new uk.gov.ea.datareturns.domain.model.fields.impl.ReleasesAndTransfers(this.name);
-    }
-
-    @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;

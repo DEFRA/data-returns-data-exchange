@@ -104,11 +104,6 @@ public class Parameter implements AliasingEntity, Hierarchy.HierarchyEntity {
     }
 
     @Override
-    public uk.gov.ea.datareturns.domain.model.fields.impl.Parameter getFieldValue() {
-        return new uk.gov.ea.datareturns.domain.model.fields.impl.Parameter(this.name);
-    }
-
-    @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;

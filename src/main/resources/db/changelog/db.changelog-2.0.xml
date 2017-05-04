@@ -68,29 +68,6 @@
 
 		<!--
 		****************************************************************
-		Status
-		****************************************************************
-		-->
-		<createTable tableName="status">
-
-			<column name="id" type="bigserial">
-				<constraints primaryKey="true" nullable="false"/>
-			</column>
-
-			<column name="status" type="varchar(80)">
-				<constraints nullable="false" unique="true"/>
-			</column>
-
-		</createTable>
-
-		<sql>insert into status (status) values ('UNINITIALIZED')</sql>
-		<sql>insert into status (status) values ('UNVALIDATED')</sql>
-		<sql>insert into status (status) values ('INVALID')</sql>
-		<sql>insert into status (status) values ('VALID')</sql>
-		<sql>insert into status (status) values ('SUBMITTED')</sql>
-
-		<!--
-		****************************************************************
 		Records
 		****************************************************************
 		-->
@@ -108,7 +85,7 @@
 				<constraints nullable="false" unique="true"/>
 			</column>
 
-			<column name="status_id" type="bigint">
+			<column name="status" type="varchar(10)">
 				<constraints nullable="false"/>
 			</column>
 
@@ -124,6 +101,14 @@
 				<constraints nullable="false"/>
 			</column>
 
+			<column name="json" type="varchar(16000)">
+				<constraints nullable="true"/>
+			</column>
+
+			<column name="validation" type="varchar(16000)">
+				<constraints nullable="true"/>
+			</column>
+
 		</createTable>
 
 		<createIndex indexName="idx_records" tableName="records" unique="true">
@@ -136,12 +121,6 @@
 								 constraintName="fk_record_dataset"
 								 referencedColumnNames="id"
 								 referencedTableName="datasets"/>
-
-		<addForeignKeyConstraint baseColumnNames="status_id"
-								 baseTableName="records"
-								 constraintName="fk_submission_status"
-								 referencedColumnNames="id"
-								 referencedTableName="status"/>
 
 		<!--
 		****************************************************************

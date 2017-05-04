@@ -49,11 +49,6 @@ public class MethodOrStandard implements ControlledListEntity {
         this.name = name;
     }
 
-    @Override
-    public uk.gov.ea.datareturns.domain.model.fields.impl.MethodOrStandard getFieldValue() {
-        return new uk.gov.ea.datareturns.domain.model.fields.impl.MethodOrStandard(this.name);
-    }
-
     public String getNotes() {
         return notes;
     }

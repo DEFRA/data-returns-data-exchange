@@ -89,12 +89,7 @@ public class ReferencePeriod implements ControlledListEntity, AliasingEntity {
         this.aliases = aliases;
     }
 
-    @Override
-    public uk.gov.ea.datareturns.domain.model.fields.impl.ReferencePeriod getFieldValue() {
-        return new uk.gov.ea.datareturns.domain.model.fields.impl.ReferencePeriod(this.name);
-    }
-
-    @Override
+   @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;

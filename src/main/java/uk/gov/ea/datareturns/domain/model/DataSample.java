@@ -1,5 +1,7 @@
 package uk.gov.ea.datareturns.domain.model;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import uk.gov.ea.datareturns.domain.jpa.entities.userdata.impl.DataSampleSubmission;
 import uk.gov.ea.datareturns.domain.model.fields.AbstractEntityValue;

@@ -41,6 +41,4 @@ public abstract class Submission<T extends Datum> implements Serializable {
         return record.hashCode();
     }
 
-    public abstract T getDatum();
-
 }

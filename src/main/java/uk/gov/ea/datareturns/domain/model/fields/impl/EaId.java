@@ -46,6 +46,7 @@ public class EaId extends AbstractEntityValue<UniqueIdentifierDao, DataSample, U
         }
     }
 
+    @JsonIgnore
     protected UniqueIdentifier findEntity(String inputValue) {
         return getDao().getByNameOrAlias(Key.explicit(inputValue));
     }

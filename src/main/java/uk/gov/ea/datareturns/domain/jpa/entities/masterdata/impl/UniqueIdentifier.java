@@ -56,10 +56,10 @@ public class UniqueIdentifier implements ControlledListEntity {
         this.site = site;
     }
 
-    @Override
-    public uk.gov.ea.datareturns.domain.model.fields.impl.EaId getFieldValue() {
-        return new uk.gov.ea.datareturns.domain.model.fields.impl.EaId(this.getName());
-    }
+//    @Override
+//    public uk.gov.ea.datareturns.domain.model.fields.impl.EaId getFieldValue() {
+//        return new uk.gov.ea.datareturns.domain.model.fields.impl.EaId(this.getName());
+//    }
 
     @Override
     public boolean equals(Object o) {

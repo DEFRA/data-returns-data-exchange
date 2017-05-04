@@ -17,11 +17,4 @@ public interface ControlledListEntity<T extends FieldValue> {
     String getName();
 
     void setName(final String name);
-
-    /**
-     * Gets the validating entity (or field)
-     * from the persistence entity
-     * @return The fieldvalue representation
-     */
-    T getFieldValue();
 }

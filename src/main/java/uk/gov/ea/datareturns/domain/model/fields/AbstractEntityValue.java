@@ -1,5 +1,6 @@
 package uk.gov.ea.datareturns.domain.model.fields;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import uk.gov.ea.datareturns.domain.jpa.dao.masterdata.EntityDao;
 import uk.gov.ea.datareturns.domain.jpa.dao.masterdata.Key;
 import uk.gov.ea.datareturns.domain.jpa.entities.masterdata.ControlledListEntity;
@@ -12,6 +13,7 @@ import uk.gov.ea.datareturns.domain.jpa.entities.masterdata.ControlledListEntity
  * @param <E>   Parmeterized type for the entity
  */
 public abstract class AbstractEntityValue<D extends EntityDao<E>, R, E extends ControlledListEntity> implements FieldValue<R, E> {
+    @JsonIgnore
     private E entity;
 
     /**

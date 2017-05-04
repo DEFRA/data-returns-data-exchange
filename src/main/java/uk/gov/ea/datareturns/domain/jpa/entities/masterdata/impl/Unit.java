@@ -132,11 +132,6 @@ public class Unit implements AliasingEntity, Hierarchy.GroupedHierarchyEntity {
     }
 
     @Override
-    public uk.gov.ea.datareturns.domain.model.fields.impl.Unit getFieldValue() {
-        return new uk.gov.ea.datareturns.domain.model.fields.impl.Unit(this.name);
-    }
-
-    @Override
     public int hashCode() {
         return name.hashCode();
     }
