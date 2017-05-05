@@ -11,14 +11,20 @@ import uk.gov.ea.datareturns.domain.jpa.dao.userdata.impl.DatasetDao;
 import uk.gov.ea.datareturns.domain.jpa.dao.userdata.impl.RecordDao;
 import uk.gov.ea.datareturns.domain.jpa.dao.userdata.impl.UserDao;
 import uk.gov.ea.datareturns.domain.jpa.entities.userdata.AbstractMeasurement;
+import uk.gov.ea.datareturns.domain.jpa.entities.userdata.AbstractMeasurementFactory;
 import uk.gov.ea.datareturns.domain.jpa.entities.userdata.impl.Dataset;
 import uk.gov.ea.datareturns.domain.jpa.entities.userdata.impl.Record;
 import uk.gov.ea.datareturns.domain.jpa.entities.userdata.impl.User;
+import uk.gov.ea.datareturns.domain.model.validation.ModelValidator;
 import uk.gov.ea.datareturns.domain.result.ValidationErrors;
-import uk.gov.ea.datareturns.domain.validator.MeasurementValidator;
+import uk.gov.ea.datareturns.domain.validation.MVO;
+import uk.gov.ea.datareturns.domain.validation.MVOFactory;
 
 import java.io.IOException;
-import java.util.*;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 /**
@@ -43,18 +49,20 @@ import java.util.stream.Collectors;
  * The service is created by the submission service configuration
  *
  */
-public class SubmissionService<DTO extends MeasurementDto, M extends AbstractMeasurement> {
+public class SubmissionService<D extends MeasurementDto, M extends AbstractMeasurement, V extends MVO> {
 
     protected static final Logger LOGGER = LoggerFactory.getLogger(SubmissionService.class);
 
-    private final Class<DTO> measurementDtoClass;
-    private final Class<DTO[]> measurementDtoArrayClass;
+    private final Class<D> measurementDtoClass;
+    private final Class<D[]> measurementDtoArrayClass;
     private final Class<M> measurementClass;
+    private final MVOFactory<D, V> mvoFactory;
     private final UserDao userDao;
     private final DatasetDao datasetDao;
     private final RecordDao recordDao;
     private final static ObjectMapper mapper = new ObjectMapper();
-    private final MeasurementValidator<DTO> validator;
+    private final ModelValidator<V> validator;
+    private final AbstractMeasurementFactory<M, D> abstractMeasurementFactory;
 
     /**
      * @param measurementDtoClass Class of the data transfer object
@@ -64,21 +72,25 @@ public class SubmissionService<DTO extends MeasurementDto, M extends AbstractMea
      * @param recordDao The record data access object
      * @param validator The validator to be used
      */
-    public SubmissionService(Class<DTO> measurementDtoClass,
-                             Class<DTO[]> measurementDtoArrayClass,
+    public SubmissionService(Class<D> measurementDtoClass,
+                             Class<D[]> measurementDtoArrayClass,
                              Class<M> measurementClass,
+                             MVOFactory<D, V> mvoFactory,
                              UserDao userDao,
                              DatasetDao datasetDao,
-                             RecordDao recordDao, 
-                             MeasurementValidator<DTO> validator) {
+                             RecordDao recordDao,
+                             ModelValidator<V> validator,
+                             AbstractMeasurementFactory<M, D> abstractMeasurementFactory) {
 
         this.measurementDtoClass = measurementDtoClass;
         this.measurementDtoArrayClass = measurementDtoArrayClass;
         this.measurementClass = measurementClass;
+        this.mvoFactory = mvoFactory;
         this.userDao = userDao;
         this.datasetDao = datasetDao;
         this.recordDao = recordDao;
         this.validator = validator;
+        this.abstractMeasurementFactory = abstractMeasurementFactory;
 
         LOGGER.info("Initializing submission service for datum type: " + measurementDtoClass.getSimpleName());
         mapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
@@ -86,7 +98,16 @@ public class SubmissionService<DTO extends MeasurementDto, M extends AbstractMea
 
     }
 
-    /****************************************************************************************
+    /**
+     * An exception class for submission failures
+     */
+    public static final class SubmissionException extends Exception {
+        public SubmissionException(String msg) {
+            super(msg);
+        }
+    }
+
+     /****************************************************************************************
      * Record and submission centric operations
      *
      * Bulk record and submission centric operations require a the use of nested class to
@@ -118,15 +139,15 @@ public class SubmissionService<DTO extends MeasurementDto, M extends AbstractMea
     }
 
     /**
-     * Parse a JSON string and create the DTO objects.
+     * Parse a JSON string and create the D objects.
      * @param json
      * @return
      */
-    public List<DTO> parse(String json) {
+    public List<D> parse(String json) {
         try {
             return Arrays.asList(mapper.readValue(json, measurementDtoArrayClass));
         } catch (IOException e) {
-            LOGGER.info("Cannot parse JSON: " + json);
+            LOGGER.info("Cannot parse JSON: " + json + ": " + e.getMessage());
             return null;
         }
     }
@@ -170,7 +191,7 @@ public class SubmissionService<DTO extends MeasurementDto, M extends AbstractMea
      * @return A list of records
      */
     @Transactional
-    public List<Record> createRecords(Dataset dataset, List<SubmissionService.DatumIdentifierPair<DTO>> datumIdentifierPairs) {
+    public List<Record> createRecords(Dataset dataset, List<SubmissionService.DatumIdentifierPair<D>> datumIdentifierPairs) {
         return datumIdentifierPairs.stream()
                 .map(p -> createOrResetRecord(dataset, p.identifier, p.datum))
                 .collect(Collectors.toList());
@@ -181,7 +202,7 @@ public class SubmissionService<DTO extends MeasurementDto, M extends AbstractMea
         // Deserialize the list of samples from the JSON
         // field in the record and pass it to the validator returning the
         // result
-        List<DTO> samples = records.stream()
+        List<V> mvos = records.stream()
                 .filter(r -> !r.getJson().isEmpty())
                 .map(v -> {
                     try {
@@ -191,52 +212,52 @@ public class SubmissionService<DTO extends MeasurementDto, M extends AbstractMea
                         return null;
                     }
                 })
+                .map(v -> mvoFactory.create(v))
                 .collect(Collectors.toList());
 
-        return validator.validate(samples);
+        ValidationErrors validationErrors = validator.validateModel(mvos);
+
+        // TODO - this needs to be strongly associated with the record
+        Date now = new Date();
+        if (validationErrors.isValid()) {
+            records.stream()
+                    .forEach(r -> {
+                        r.setRecordStatus(Record.RecordStatus.VALID);
+                        r.setLastChangedDate(now);
+                        recordDao.merge(r);
+                    });
+        }
+
+        return validationErrors;
     }
 
     /**
-     * Persist a supplied given sample against a record
-     * @param record
-     * @param dataSample
-     * @return
+     * Submit a set of valid records - this writes the data from the stored JSON into the
+     * relation database structures - it creates an instance of a class inheriting AbstractMeasurement
+     * and associates it with the record.
+     *
+     * It tests if all the records are valid otherwise it throws an exception
+     * @param records
      */
-//    @Transactional
-//    public void submit(Record record, T dataSample) {
-//        Date now = new Date();
-//        boolean newSubmission = false;
-//        AbstractMeasurement submission;
-//
-//        // If the record contains a submission then use it
-//        if (record.getSubmission() == null) {
-//            submission = dataSample.toSubmission();
-//            record.setSubmission(submission);
-//            submission.setRecord(record);
-//            newSubmission = true;
-//        } else {
-//            submission = record.getSubmission();
-//            dataSample.toSubmission(submission);
-//        }
-//
-//        record.setRecordStatus(Record.RecordStatus.CREATED);
-//        record.setLastChangedDate(now);
-//        record.setEtag(UUID.randomUUID().toString());
-//
-//        // If the record is new persist it otherwise merge the changes
-//        if (record.getId() == null) {
-//            recordDao.persist(record);
-//        } else {
-//            recordDao.merge(record);
-//        }
-//
-//        //if (newSubmission) {
-//        //    submissionDao.persist(submission);
-//        //} else {
-//        //    submissionDao.merge(submission);
-//        //}
-//
-//    }
+    @Transactional
+    public void submit(List<Record> records) {
+        Date now = new Date();
+        records.stream()
+            .forEach(r -> {
+                r.setRecordStatus(Record.RecordStatus.SUBMITTED);
+                r.setLastChangedDate(now);
+                try {
+                    r.setSubmission(abstractMeasurementFactory.create(
+                            mapper.readValue(r.getJson(), measurementDtoClass)
+                    ));
+                } catch (IOException e) {
+                    LOGGER.error("Error de-serializing stored JSON: " + e.getMessage());
+                }
+                r.getSubmission().setRecord(r);
+
+                recordDao.merge(r);
+            });
+    }
 
     /**
      * Creates a new record on a given identifier OR resets a record
@@ -250,7 +271,7 @@ public class SubmissionService<DTO extends MeasurementDto, M extends AbstractMea
      *
      * @return
      */
-    private Record createOrResetRecord(Dataset dataset, String identifier, DTO dto) {
+    private Record createOrResetRecord(Dataset dataset, String identifier, D dto) {
         Record record = getRecord(dataset, identifier);
         Record.RecordStatus newRecordStatus = record.getRecordStatus();
         Date now = new Date();

@@ -19,8 +19,23 @@ public class BasicMeasurementDto implements MeasurementDto {
     public String getParameter() {
         return parameter;
     }
-
     public void setParameter(String parameter) {
         this.parameter = parameter;
+    }
+
+    public BigDecimal getValue() {
+        return value;
+    }
+
+    public void setValue(BigDecimal value) {
+        this.value = value;
+    }
+
+    @Override
+    public String toString() {
+        return "BasicMeasurementDto{" +
+                "parameter='" + parameter + '\'' +
+                ", value=" + value +
+                '}';
     }
 }

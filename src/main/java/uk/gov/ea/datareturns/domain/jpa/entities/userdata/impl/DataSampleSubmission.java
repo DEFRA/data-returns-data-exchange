@@ -1,13 +1,7 @@
 package uk.gov.ea.datareturns.domain.jpa.entities.userdata.impl;
 
-import uk.gov.ea.datareturns.domain.jpa.entities.masterdata.impl.MethodOrStandard;
-import uk.gov.ea.datareturns.domain.jpa.entities.masterdata.impl.Parameter;
-import uk.gov.ea.datareturns.domain.jpa.entities.masterdata.impl.Qualifier;
-import uk.gov.ea.datareturns.domain.jpa.entities.masterdata.impl.ReferencePeriod;
-import uk.gov.ea.datareturns.domain.jpa.entities.masterdata.impl.ReleasesAndTransfers;
-import uk.gov.ea.datareturns.domain.jpa.entities.masterdata.impl.ReturnType;
 import uk.gov.ea.datareturns.domain.jpa.entities.masterdata.impl.*;
-import uk.gov.ea.datareturns.domain.jpa.entities.masterdata.impl.Unit;
+import uk.gov.ea.datareturns.domain.jpa.entities.masterdata.impl.Parameter;
 import uk.gov.ea.datareturns.domain.jpa.entities.userdata.AbstractMeasurement;
 
 import javax.persistence.*;

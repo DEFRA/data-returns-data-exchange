@@ -20,4 +20,19 @@ public class BasicMeasurement extends AbstractMeasurement {
     @Basic @Column(name = "value")
     BigDecimal numericValue;
 
+    public Parameter getParameter() {
+        return parameter;
+    }
+
+    public void setParameter(Parameter parameter) {
+        this.parameter = parameter;
+    }
+
+    public BigDecimal getNumericValue() {
+        return numericValue;
+    }
+
+    public void setNumericValue(BigDecimal numericValue) {
+        this.numericValue = numericValue;
+    }
 }

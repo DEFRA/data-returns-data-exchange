@@ -3,7 +3,6 @@ package uk.gov.ea.datareturns.domain.jpa.entities.userdata;
 import uk.gov.ea.datareturns.domain.jpa.entities.userdata.impl.Record;
 
 import javax.persistence.*;
-import java.io.Serializable;
 
 /**
  * @author Graham Willis
@@ -38,5 +37,4 @@ public abstract class AbstractMeasurement implements Userdata {
     public int hashCode() {
         return record.hashCode();
     }
-
 }

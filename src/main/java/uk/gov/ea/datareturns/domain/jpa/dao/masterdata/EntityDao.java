@@ -111,9 +111,9 @@ public interface EntityDao<E extends ControlledListEntity> {
     String lookupNameFromMash(final String mash);
 
     /**
-     * A method to convert the reduce variation in name in case and spacing
+     * A method to initialize the reduce variation in name in case and spacing
      * to a standard format which acts as the key. Here so it can be overridden. The default functionality
-     * is to convert to upper cases and reduce multiple spaces to a single space to create the lookup key.
+     * is to initialize to upper cases and reduce multiple spaces to a single space to create the lookup key.
      */
     String generateMash(String input);
 

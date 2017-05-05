@@ -218,9 +218,9 @@ public abstract class AbstractEntityDao<E extends ControlledListEntity> implemen
     }
 
     /**
-     * A method to convert the reduce variation in name in case and spacing
+     * A method to initialize the reduce variation in name in case and spacing
      * to a standard format which acts as the key. Here so it can be overridden. The default functionality
-     * is to convert to upper cases and reduce multiple spaces to a single space to create the lookup key.
+     * is to initialize to upper cases and reduce multiple spaces to a single space to create the lookup key.
      *
      * Overriding implementations must ensure that generating a mash from a previously mashed value will produce the same result, such that:
      *     generateMash(value) == generateMash(generateMash(value)) holds true

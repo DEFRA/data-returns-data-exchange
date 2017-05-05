@@ -13,6 +13,7 @@ import uk.gov.ea.datareturns.domain.dto.impl.BasicMeasurementDto;
 import uk.gov.ea.datareturns.domain.jpa.entities.userdata.impl.*;
 import uk.gov.ea.datareturns.domain.jpa.service.SubmissionService;
 import uk.gov.ea.datareturns.domain.result.ValidationErrors;
+import uk.gov.ea.datareturns.domain.validation.impl.BasicMeasurementMVO;
 
 import javax.inject.Inject;
 import java.io.File;
@@ -30,11 +31,13 @@ import java.util.List;
 @SpringBootTest(classes = App.class)
 public class SubmissionIntegrationTests {
     @Inject
-    SubmissionService<BasicMeasurementDto, BasicMeasurement> submissionService;
+    SubmissionService<BasicMeasurementDto, BasicMeasurement, BasicMeasurementMVO> submissionService;
 
     @Inject private TestSettings testSettings;
 
     private final static String SUBMISSION_SUCCESS = "json/measurements-success.json";
+    private final static String SUBMISSION_FAILURE = "json/measurements-fail.json";
+
     //private final static String SUBMISSION_SUCCESS = "json/success-multiple.json";
     //private final static String SUBMISSION_SUCCESS = "json/success-multiple.json";
     //private final static String FAILURE_SUBMISSION = "json/success-multiple.json";
@@ -148,6 +151,32 @@ public class SubmissionIntegrationTests {
         List<Record> records = submissionService.createRecords(dataset, list);
         ValidationErrors validationErrors = submissionService.validate(records);
         Assert.assertTrue(validationErrors.isValid());
+        records.stream().forEach(r -> Assert.assertEquals(Record.RecordStatus.VALID, r.getRecordStatus()));
+    }
+
+    // Create a valid set of records and submit them
+    @Test public void createValidateAndSubmitRecords() {
+        List<SubmissionService.DatumIdentifierPair<BasicMeasurementDto>> list = new ArrayList<>();
+        for (BasicMeasurementDto sample : samples) {
+            list.add(new SubmissionService.DatumIdentifierPair(sample));
+        }
+        List<Record> records = submissionService.createRecords(dataset, list);
+        ValidationErrors validationErrors = submissionService.validate(records);
+        records.stream().forEach(r -> Assert.assertEquals(Record.RecordStatus.VALID, r.getRecordStatus()));
+        submissionService.submit(records);
+        records.stream().forEach(r -> Assert.assertEquals(Record.RecordStatus.SUBMITTED, r.getRecordStatus()));
+    }
+
+    // Create and validate a set of valid and invalid records
+    @Test public void createAndValidateValidAndInvalidRecords() throws IOException {
+        List<BasicMeasurementDto> samples = submissionService.parse(readTestFile(SUBMISSION_FAILURE));
+        List<SubmissionService.DatumIdentifierPair<BasicMeasurementDto>> list = new ArrayList<>();
+        for (BasicMeasurementDto sample : samples) {
+            list.add(new SubmissionService.DatumIdentifierPair(sample));
+        }
+        List<Record> records = submissionService.createRecords(dataset, list);
+        ValidationErrors validationErrors = submissionService.validate(records);
+        Assert.assertFalse(validationErrors.isValid());
     }
 
     /**
