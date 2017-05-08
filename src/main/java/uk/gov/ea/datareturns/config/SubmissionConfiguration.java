@@ -6,13 +6,15 @@ import uk.gov.ea.datareturns.domain.dto.impl.BasicMeasurementDto;
 import uk.gov.ea.datareturns.domain.jpa.dao.masterdata.ParameterDao;
 import uk.gov.ea.datareturns.domain.jpa.dao.userdata.impl.DatasetDao;
 import uk.gov.ea.datareturns.domain.jpa.dao.userdata.impl.RecordDao;
+import uk.gov.ea.datareturns.domain.jpa.dao.userdata.impl.MeasurementDao;
 import uk.gov.ea.datareturns.domain.jpa.dao.userdata.impl.UserDao;
+import uk.gov.ea.datareturns.domain.jpa.entities.userdata.AbstractMeasurement;
 import uk.gov.ea.datareturns.domain.jpa.entities.userdata.AbstractMeasurementFactory;
 import uk.gov.ea.datareturns.domain.jpa.entities.userdata.impl.BasicMeasurement;
 import uk.gov.ea.datareturns.domain.jpa.entities.userdata.impl.BasicMeasurementFactory;
 import uk.gov.ea.datareturns.domain.jpa.service.SubmissionService;
-import uk.gov.ea.datareturns.domain.model.validation.ModelValidator;
-import uk.gov.ea.datareturns.domain.model.validation.ModelValidatorImpl;
+import uk.gov.ea.datareturns.domain.validation.MeasurementValidator;
+import uk.gov.ea.datareturns.domain.validation.impl.MeasurementValidatorImpl;
 import uk.gov.ea.datareturns.domain.validation.MVOFactory;
 import uk.gov.ea.datareturns.domain.validation.impl.BasicMeasurementMVO;
 
@@ -25,11 +27,31 @@ import javax.validation.Validator;
 @Configuration
 public class SubmissionConfiguration {
 
-    @Inject private Validator validator;
-    @Inject private DatasetDao datasetDao;
-    @Inject private UserDao userDao;
-    @Inject private RecordDao recordDao;
-    @Inject private ParameterDao parameterDao;
+    private Validator validator;
+    private DatasetDao datasetDao;
+    private UserDao userDao;
+    private RecordDao recordDao;
+    private ParameterDao parameterDao;
+
+    @Inject
+    public SubmissionConfiguration(
+            Validator validator,
+            DatasetDao datasetDao,
+            UserDao userDao,
+            RecordDao recordDao,
+            ParameterDao parameterDao
+    ) {
+        this.validator = validator;
+        this.datasetDao = datasetDao;
+        this.userDao = userDao;
+        this.recordDao = recordDao;
+        this.parameterDao = parameterDao;
+    }
+
+    @Bean
+    public MeasurementDao<? extends AbstractMeasurement> basicMeasuementDao() {
+        return new MeasurementDao(BasicMeasurement.class);
+    }
 
     @Bean
     public MVOFactory<BasicMeasurementDto, BasicMeasurementMVO> mvoFactory() {
@@ -37,8 +59,8 @@ public class SubmissionConfiguration {
     }
 
     @Bean
-    public ModelValidator<BasicMeasurementMVO> basicMeasurementValidator() {
-        return new ModelValidatorImpl<>(this.validator, BasicMeasurementMVO.class);
+    public MeasurementValidator<BasicMeasurementMVO> basicMeasurementValidator() {
+        return new MeasurementValidatorImpl<>(this.validator);
     }
 
     @Bean
@@ -48,10 +70,15 @@ public class SubmissionConfiguration {
 
     @Bean
     public SubmissionService<BasicMeasurementDto, BasicMeasurement, BasicMeasurementMVO> basicSubmissionService() {
-        return new SubmissionService<>(BasicMeasurementDto.class,
+        return new SubmissionService<>(
+                BasicMeasurementDto.class,
                 BasicMeasurementDto[].class,
-                BasicMeasurement.class, mvoFactory(),
-                userDao, datasetDao, recordDao,
+                BasicMeasurement.class,
+                mvoFactory(),
+                userDao,
+                datasetDao,
+                recordDao,
+                basicMeasuementDao(),
                 basicMeasurementValidator(),
                 measurementFactory());
     }

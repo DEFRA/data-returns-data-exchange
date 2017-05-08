@@ -149,8 +149,7 @@ public class SubmissionIntegrationTests {
             list.add(new SubmissionService.DatumIdentifierPair(sample));
         }
         List<Record> records = submissionService.createRecords(dataset, list);
-        ValidationErrors validationErrors = submissionService.validate(records);
-        Assert.assertTrue(validationErrors.isValid());
+        submissionService.validate(records);
         records.stream().forEach(r -> Assert.assertEquals(Record.RecordStatus.VALID, r.getRecordStatus()));
     }
 
@@ -161,7 +160,7 @@ public class SubmissionIntegrationTests {
             list.add(new SubmissionService.DatumIdentifierPair(sample));
         }
         List<Record> records = submissionService.createRecords(dataset, list);
-        ValidationErrors validationErrors = submissionService.validate(records);
+        submissionService.validate(records);
         records.stream().forEach(r -> Assert.assertEquals(Record.RecordStatus.VALID, r.getRecordStatus()));
         submissionService.submit(records);
         records.stream().forEach(r -> Assert.assertEquals(Record.RecordStatus.SUBMITTED, r.getRecordStatus()));
@@ -175,9 +174,25 @@ public class SubmissionIntegrationTests {
             list.add(new SubmissionService.DatumIdentifierPair(sample));
         }
         List<Record> records = submissionService.createRecords(dataset, list);
-        ValidationErrors validationErrors = submissionService.validate(records);
-        Assert.assertFalse(validationErrors.isValid());
+        submissionService.validate(records);
+        Assert.assertEquals(5, records.stream().filter(r -> r.getRecordStatus() == Record.RecordStatus.VALID).count());
+        Assert.assertEquals(1, records.stream().filter(r -> r.getRecordStatus() == Record.RecordStatus.INVALID).count());
     }
+
+    // Create and validate a set of valid and invalid records and submit them
+    @Test public void createAndValidateValidAndInvalidAndSubmitRecords() throws IOException {
+        List<BasicMeasurementDto> samples = submissionService.parse(readTestFile(SUBMISSION_FAILURE));
+        List<SubmissionService.DatumIdentifierPair<BasicMeasurementDto>> list = new ArrayList<>();
+        for (BasicMeasurementDto sample : samples) {
+            list.add(new SubmissionService.DatumIdentifierPair(sample));
+        }
+        List<Record> records = submissionService.createRecords(dataset, list);
+        submissionService.validate(records);
+        submissionService.submit(records);
+        Assert.assertEquals(5, records.stream().filter(r -> r.getRecordStatus() == Record.RecordStatus.SUBMITTED).count());
+        Assert.assertEquals(1, records.stream().filter(r -> r.getRecordStatus() == Record.RecordStatus.INVALID).count());
+    }
+
 
     /**
      * Reads the content of the test files and returns as a string

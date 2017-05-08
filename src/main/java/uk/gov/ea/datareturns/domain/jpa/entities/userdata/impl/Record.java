@@ -3,10 +3,8 @@ package uk.gov.ea.datareturns.domain.jpa.entities.userdata.impl;
 import org.hibernate.annotations.GenericGenerator;
 import uk.gov.ea.datareturns.domain.jpa.entities.userdata.AbstractMeasurement;
 import uk.gov.ea.datareturns.domain.jpa.entities.userdata.Metadata;
-import uk.gov.ea.datareturns.domain.jpa.entities.userdata.Userdata;
 
 import javax.persistence.*;
-import java.io.Serializable;
 import java.util.Date;
 
 /**
@@ -19,10 +17,6 @@ import java.util.Date;
 )
 public class Record implements Metadata {
 
-    public String getValidation() {
-        return validation;
-    }
-
     public enum RecordStatus {
         CREATED, PERSISTED, PARSED, INVALID, VALID, SUBMITTED
     }
@@ -31,7 +25,7 @@ public class Record implements Metadata {
     private Long id;
 
     @OneToOne(cascade = { CascadeType.REMOVE }, mappedBy = "record")
-    private AbstractMeasurement submission;
+    private AbstractMeasurement abstractMeasurement;
 
     @Basic @Column(name = "identifier", nullable = false, length = 80)
     private String identifier;
@@ -58,8 +52,8 @@ public class Record implements Metadata {
     @Basic @Column(name = "json", length = 16000)
     private String json;
 
-    @Basic @Column(name = "validation", length = 16000)
-    private String validation;
+    @Basic @Column(name = "validation_result", length = 16000)
+    private String validationResult;
 
     public Long getId() {
         return id;
@@ -125,6 +119,14 @@ public class Record implements Metadata {
         this.json = json;
     }
 
+    public String getValidationResult() {
+        return validationResult;
+    }
+
+    public void setValidationResult(String validationResult) {
+        this.validationResult = validationResult;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -136,6 +138,14 @@ public class Record implements Metadata {
         return dataset.equals(record.dataset);
     }
 
+    public AbstractMeasurement getAbstractMeasurement() {
+        return abstractMeasurement;
+    }
+
+    public void setAbstractMeasurement(AbstractMeasurement abstractMeasurement) {
+        this.abstractMeasurement = abstractMeasurement;
+    }
+
     @Override
     public int hashCode() {
         int result = identifier.hashCode();
@@ -143,19 +153,11 @@ public class Record implements Metadata {
         return result;
     }
 
-    public AbstractMeasurement getSubmission() {
-        return submission;
-    }
-
-    public void setSubmission(AbstractMeasurement submission) {
-        this.submission = submission;
-    }
-
     @Override
     public String toString() {
         return "Record{" +
                 "id=" + id +
-                ", submission=" + submission +
+                ", abstractMeasurement=" + abstractMeasurement +
                 ", identifier='" + identifier + '\'' +
                 ", dataset=" + dataset +
                 ", recordStatus=" + recordStatus +
@@ -163,7 +165,7 @@ public class Record implements Metadata {
                 ", lastChangedDate=" + lastChangedDate +
                 ", etag='" + etag + '\'' +
                 ", json='" + json + '\'' +
-                ", validation='" + validation + '\'' +
+                ", validationResult=" + validationResult +
                 '}';
     }
 }

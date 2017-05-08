@@ -3,28 +3,27 @@ package uk.gov.ea.datareturns.domain.jpa.service;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.module.SimpleModule;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.transaction.annotation.Transactional;
 import uk.gov.ea.datareturns.domain.dto.MeasurementDto;
 import uk.gov.ea.datareturns.domain.jpa.dao.userdata.impl.DatasetDao;
 import uk.gov.ea.datareturns.domain.jpa.dao.userdata.impl.RecordDao;
+import uk.gov.ea.datareturns.domain.jpa.dao.userdata.impl.MeasurementDao;
 import uk.gov.ea.datareturns.domain.jpa.dao.userdata.impl.UserDao;
 import uk.gov.ea.datareturns.domain.jpa.entities.userdata.AbstractMeasurement;
 import uk.gov.ea.datareturns.domain.jpa.entities.userdata.AbstractMeasurementFactory;
 import uk.gov.ea.datareturns.domain.jpa.entities.userdata.impl.Dataset;
 import uk.gov.ea.datareturns.domain.jpa.entities.userdata.impl.Record;
 import uk.gov.ea.datareturns.domain.jpa.entities.userdata.impl.User;
-import uk.gov.ea.datareturns.domain.model.validation.ModelValidator;
-import uk.gov.ea.datareturns.domain.result.ValidationErrors;
+import uk.gov.ea.datareturns.domain.validation.MeasurementValidator;
 import uk.gov.ea.datareturns.domain.validation.MVO;
 import uk.gov.ea.datareturns.domain.validation.MVOFactory;
 
+import javax.validation.ConstraintViolation;
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -60,9 +59,11 @@ public class SubmissionService<D extends MeasurementDto, M extends AbstractMeasu
     private final UserDao userDao;
     private final DatasetDao datasetDao;
     private final RecordDao recordDao;
-    private final static ObjectMapper mapper = new ObjectMapper();
-    private final ModelValidator<V> validator;
+    private final MeasurementDao measurementDao;
+    private final MeasurementValidator<V> validator;
     private final AbstractMeasurementFactory<M, D> abstractMeasurementFactory;
+
+    private final static ObjectMapper mapper = new ObjectMapper();
 
     /**
      * @param measurementDtoClass Class of the data transfer object
@@ -79,7 +80,8 @@ public class SubmissionService<D extends MeasurementDto, M extends AbstractMeasu
                              UserDao userDao,
                              DatasetDao datasetDao,
                              RecordDao recordDao,
-                             ModelValidator<V> validator,
+                             MeasurementDao submissionDao,
+                             MeasurementValidator<V> validator,
                              AbstractMeasurementFactory<M, D> abstractMeasurementFactory) {
 
         this.measurementDtoClass = measurementDtoClass;
@@ -89,6 +91,7 @@ public class SubmissionService<D extends MeasurementDto, M extends AbstractMeasu
         this.userDao = userDao;
         this.datasetDao = datasetDao;
         this.recordDao = recordDao;
+        this.measurementDao = submissionDao;
         this.validator = validator;
         this.abstractMeasurementFactory = abstractMeasurementFactory;
 
@@ -96,15 +99,10 @@ public class SubmissionService<D extends MeasurementDto, M extends AbstractMeasu
         mapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
         mapper.enable(DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY);
 
-    }
-
-    /**
-     * An exception class for submission failures
-     */
-    public static final class SubmissionException extends Exception {
-        public SubmissionException(String msg) {
-            super(msg);
-        }
+        // Register the object mapper fro constraint violations
+        SimpleModule module = new SimpleModule();
+        module.addSerializer(ConstraintViolation.class, new MeasurementValidator.ViolationSerializer());
+        mapper.registerModule(module);
     }
 
      /****************************************************************************************
@@ -198,37 +196,47 @@ public class SubmissionService<D extends MeasurementDto, M extends AbstractMeasu
     }
 
     @Transactional
-    public ValidationErrors validate(List<Record> records) {
+    public void validate(List<Record> records) {
         // Deserialize the list of samples from the JSON
-        // field in the record and pass it to the validator returning the
-        // result
-        List<V> mvos = records.stream()
-                .filter(r -> !r.getJson().isEmpty())
-                .map(v -> {
+        // field in the record and pass store in a map
+        Date now = new Date();
+        Map<Record, V> mvos = records.stream()
+            .filter(r -> !r.getJson().isEmpty())
+            .collect(Collectors.toMap(
+                r -> r,
+                r -> {
+                    D dto;
                     try {
-                        return mapper.readValue(v.getJson(), measurementDtoClass);
+                        dto = mapper.readValue(r.getJson(), measurementDtoClass);
                     } catch (IOException e) {
                         LOGGER.error("Error de-serializing stored JSON: " + e.getMessage());
                         return null;
                     }
-                })
-                .map(v -> mvoFactory.create(v))
-                .collect(Collectors.toList());
+                    V mvo = mvoFactory.create(dto);
+                    return mvo;
+                }
+            ));
 
-        ValidationErrors validationErrors = validator.validateModel(mvos);
-
-        // TODO - this needs to be strongly associated with the record
-        Date now = new Date();
-        if (validationErrors.isValid()) {
-            records.stream()
-                    .forEach(r -> {
-                        r.setRecordStatus(Record.RecordStatus.VALID);
-                        r.setLastChangedDate(now);
-                        recordDao.merge(r);
-                    });
-        }
-
-        return validationErrors;
+        // Validate the MVO measurement record and store the result of the validation
+        // as the validation result serialized to json
+        mvos.entrySet().stream()
+            .filter(m -> m != null)
+            .forEach(m -> {
+                Set<ConstraintViolation<V>> validationResult = validator.validateMeasurement(m.getValue());
+                try {
+                    if (validationResult.size() == 0) {
+                        m.getKey().setRecordStatus(Record.RecordStatus.VALID);
+                    } else {
+                        String result = mapper.writeValueAsString(validationResult);
+                        m.getKey().setValidationResult(result);
+                        m.getKey().setRecordStatus(Record.RecordStatus.INVALID);
+                    }
+                    m.getKey().setLastChangedDate(now);
+                    recordDao.merge(m.getKey());
+                } catch (JsonProcessingException e) {
+                    LOGGER.error("Error de-serializing stored JSON: " + e.getMessage());
+                }
+            });
     }
 
     /**
@@ -236,26 +244,26 @@ public class SubmissionService<D extends MeasurementDto, M extends AbstractMeasu
      * relation database structures - it creates an instance of a class inheriting AbstractMeasurement
      * and associates it with the record.
      *
-     * It tests if all the records are valid otherwise it throws an exception
+     * It will ignore all records that are invalid
      * @param records
      */
     @Transactional
     public void submit(List<Record> records) {
         Date now = new Date();
         records.stream()
+            .filter(r -> r.getRecordStatus() == Record.RecordStatus.VALID)
             .forEach(r -> {
-                r.setRecordStatus(Record.RecordStatus.SUBMITTED);
-                r.setLastChangedDate(now);
                 try {
-                    r.setSubmission(abstractMeasurementFactory.create(
-                            mapper.readValue(r.getJson(), measurementDtoClass)
-                    ));
+                    M submission = abstractMeasurementFactory.create(mapper.readValue(r.getJson(), measurementDtoClass));
+                    r.setAbstractMeasurement(submission);
+                    r.setRecordStatus(Record.RecordStatus.SUBMITTED);
+                    r.getAbstractMeasurement().setRecord(r);
+                    r.setLastChangedDate(now);
+                    measurementDao.persist(submission);
+                    recordDao.merge(r);
                 } catch (IOException e) {
                     LOGGER.error("Error de-serializing stored JSON: " + e.getMessage());
                 }
-                r.getSubmission().setRecord(r);
-
-                recordDao.merge(r);
             });
     }
 

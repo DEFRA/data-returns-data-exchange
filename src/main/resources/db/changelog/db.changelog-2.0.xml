@@ -7,7 +7,7 @@
 		<runningAs username="${db.username}"/>
 	</preConditions>
 
-	<changeSet id="submission data" author="Environment Agency">
+	<changeSet id="abstractMeasurement data" author="Environment Agency">
 
 		<!--
 		****************************************************************
@@ -105,7 +105,7 @@
 				<constraints nullable="true"/>
 			</column>
 
-			<column name="validation" type="varchar(16000)">
+			<column name="validation_result" type="varchar(16000)">
 				<constraints nullable="true"/>
 			</column>
 
