@@ -3,7 +3,7 @@ package uk.gov.ea.datareturns.domain.validation.impl;
 import uk.gov.ea.datareturns.domain.dto.impl.BasicMeasurementDto;
 import uk.gov.ea.datareturns.domain.model.fields.impl.Parameter;
 import uk.gov.ea.datareturns.domain.model.validation.constraints.factory.ValidRecord;
-import uk.gov.ea.datareturns.domain.validation.MVO;
+import uk.gov.ea.datareturns.domain.validation.Mvo;
 
 import javax.validation.Valid;
 import java.math.BigDecimal;
@@ -12,8 +12,8 @@ import java.math.BigDecimal;
  * @author Graham Willis
  * Object contaioning fields and hibernate validation annotations
  */
-@ValidRecord(value = BasicMeasurementMVO.class)
-public class BasicMeasurementMVO extends MVO<BasicMeasurementDto> {
+@ValidRecord(value = BasicMeasurementMvo.class)
+public class BasicMeasurementMvo extends Mvo<BasicMeasurementDto> {
 
     @Valid private Parameter parameter;
     @Valid private BigDecimal value;
@@ -23,7 +23,7 @@ public class BasicMeasurementMVO extends MVO<BasicMeasurementDto> {
      *
      * @param dto
      */
-    public BasicMeasurementMVO(BasicMeasurementDto dto) {
+    public BasicMeasurementMvo(BasicMeasurementDto dto) {
         super(dto);
 
         // Initialize the fields for validation

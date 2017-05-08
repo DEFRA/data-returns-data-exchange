@@ -1,10 +1,6 @@
 package uk.gov.ea.datareturns.domain.model;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import uk.gov.ea.datareturns.domain.jpa.entities.userdata.impl.DataSampleSubmission;
-import uk.gov.ea.datareturns.domain.model.fields.AbstractEntityValue;
 import uk.gov.ea.datareturns.domain.model.fields.MappedField;
 import uk.gov.ea.datareturns.domain.model.fields.impl.*;
 import uk.gov.ea.datareturns.domain.model.rules.FieldDefinition;
@@ -13,9 +9,6 @@ import uk.gov.ea.datareturns.domain.model.validation.constraints.factory.Hierarc
 import uk.gov.ea.datareturns.domain.model.validation.constraints.factory.ValidRecord;
 
 import javax.validation.Valid;
-import java.math.BigDecimal;
-import java.util.Date;
-import java.util.regex.Pattern;
 
 /**
  * Represents an individual sample (data return) record entry

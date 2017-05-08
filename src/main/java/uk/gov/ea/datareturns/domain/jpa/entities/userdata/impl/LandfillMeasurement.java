@@ -12,8 +12,8 @@ import java.util.Date;
  * @author Graham Willis
  */
 @Entity
-@Table(name = "submissions")
-public class DataSampleSubmission extends AbstractMeasurement {
+@Table(name = "landfill")
+public class LandfillMeasurement extends AbstractMeasurement {
 
     @ManyToOne(optional = false)
     @JoinColumn(name = "ea_id", referencedColumnName = "id")
@@ -65,13 +65,6 @@ public class DataSampleSubmission extends AbstractMeasurement {
 
     @Basic @Column(name = "comments", length = 255)
     String comments;
-
-    @Basic @Column(name = "cic", length = 255)
-    String cic;
-
-    @ManyToOne
-    @JoinColumn(name = "releases_and_transfers_id", referencedColumnName = "id")
-    ReleasesAndTransfers releasesAndTransfers;
 
     public UniqueIdentifier getUniqueIdentifier() {
         return uniqueIdentifier;
@@ -185,25 +178,9 @@ public class DataSampleSubmission extends AbstractMeasurement {
         this.comments = comments;
     }
 
-    public String getCic() {
-        return cic;
-    }
-
-    public void setCic(String cic) {
-        this.cic = cic;
-    }
-
-    public ReleasesAndTransfers getReleasesAndTransfers() {
-        return releasesAndTransfers;
-    }
-
-    public void setReleasesAndTransfers(ReleasesAndTransfers releasesAndTransfers) {
-        this.releasesAndTransfers = releasesAndTransfers;
-    }
-
     @Override
     public String toString() {
-        return "DataSampleSubmission{" +
+        return "LandfillMeasurement{" +
                 "uniqueIdentifier=" + uniqueIdentifier +
                 ", site=" + site +
                 ", returnType=" + returnType +
@@ -218,8 +195,6 @@ public class DataSampleSubmission extends AbstractMeasurement {
                 ", referencePeriod=" + referencePeriod +
                 ", methodOrStandard=" + methodOrStandard +
                 ", comments='" + comments + '\'' +
-                ", cic='" + cic + '\'' +
-                ", releasesAndTransfers=" + releasesAndTransfers +
                 '}';
     }
 }

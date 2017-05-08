@@ -124,10 +124,10 @@
 
 		<!--
 		****************************************************************
-		Submissions
+		Landfill
 		****************************************************************
 		-->
-		<createTable tableName="submissions">
+		<createTable tableName="landfill">
 
 			<column name="record_id" type="bigserial">
 				<constraints nullable="false"/>
@@ -189,86 +189,71 @@
 				<constraints nullable="true"/>
 			</column>
 
-			<column name="cic" type="varchar(255)">
-				<constraints nullable="true"/>
-			</column>
-
-			<column name="releases_and_transfers_id" type="bigint">
-				<constraints nullable="true"/>
-			</column>
-
 		</createTable>
 
-		<createIndex indexName="idx_submissions" tableName="submissions" unique="true">
+		<createIndex indexName="idx_landfill" tableName="landfill" unique="true">
 			<column name="record_id"/>
 		</createIndex>
 
 		<addForeignKeyConstraint baseColumnNames="record_id"
-								 baseTableName="submissions"
-								 constraintName="fk_submission_record"
+								 baseTableName="landfill"
+								 constraintName="fk_landfill_record"
 								 referencedColumnNames="id"
 								 referencedTableName="records"/>
 
 		<addForeignKeyConstraint baseColumnNames="ea_id"
-								 baseTableName="submissions"
-								 constraintName="fk_submission_unique_identifier"
+								 baseTableName="landfill"
+								 constraintName="fk_landfill_unique_identifier"
 								 referencedColumnNames="id"
 								 referencedTableName="unique_identifiers"/>
 
 		<addForeignKeyConstraint baseColumnNames="site_id"
-								 baseTableName="submissions"
-								 constraintName="fk_submission_site"
+								 baseTableName="landfill"
+								 constraintName="fk_landfill_site"
 								 referencedColumnNames="id"
 								 referencedTableName="sites"/>
 
 		<addForeignKeyConstraint baseColumnNames="return_type_id"
-								 baseTableName="submissions"
-								 constraintName="fk_submission_return_type"
+								 baseTableName="landfill"
+								 constraintName="fk_landfill_return_type"
 								 referencedColumnNames="id"
 								 referencedTableName="return_types"/>
 
 		<addForeignKeyConstraint baseColumnNames="parameter_id"
-								 baseTableName="submissions"
-								 constraintName="fk_submission_parameter"
+								 baseTableName="landfill"
+								 constraintName="fk_landfill_parameter"
 								 referencedColumnNames="id"
 								 referencedTableName="parameters"/>
 
 		<addForeignKeyConstraint baseColumnNames="text_value_id"
-								 baseTableName="submissions"
-								 constraintName="fk_submission_text_value"
+								 baseTableName="landfill"
+								 constraintName="fk_landfill_text_value"
 								 referencedColumnNames="id"
 								 referencedTableName="text_values"/>
 
 		<addForeignKeyConstraint baseColumnNames="qualifier_id"
-								 baseTableName="submissions"
-								 constraintName="fk_submission_qualifier"
+								 baseTableName="landfill"
+								 constraintName="fk_landfill_qualifier"
 								 referencedColumnNames="id"
 								 referencedTableName="qualifiers"/>
 
 		<addForeignKeyConstraint baseColumnNames="unit_id"
-								 baseTableName="submissions"
-								 constraintName="fk_submission_unit"
+								 baseTableName="landfill"
+								 constraintName="fk_landfill_unit"
 								 referencedColumnNames="id"
 								 referencedTableName="units"/>
 
 		<addForeignKeyConstraint baseColumnNames="reference_period_id"
-								 baseTableName="submissions"
-								 constraintName="fk_submission_reference_period"
+								 baseTableName="landfill"
+								 constraintName="fk_landfill_reference_period"
 								 referencedColumnNames="id"
 								 referencedTableName="reference_periods"/>
 
 		<addForeignKeyConstraint baseColumnNames="method_or_standard_id"
-								 baseTableName="submissions"
-								 constraintName="fk_submission_method_or_standard"
+								 baseTableName="landfill"
+								 constraintName="fk_landfill_method_or_standard"
 								 referencedColumnNames="id"
 								 referencedTableName="methods_or_standards"/>
-
-		<addForeignKeyConstraint baseColumnNames="releases_and_transfers_id"
-								 baseTableName="submissions"
-								 constraintName="fk_submission_releases_and_transfers"
-								 referencedColumnNames="id"
-								 referencedTableName="releases_and_transfers"/>
-
 
 		<!--
 		****************************************************************
@@ -292,13 +277,13 @@
 		</createTable>
 
 		<addForeignKeyConstraint baseColumnNames="record_id"
-								 baseTableName="submissions"
+								 baseTableName="measurements"
 								 constraintName="fk_measurements_record"
 								 referencedColumnNames="id"
 								 referencedTableName="records"/>
 
 		<addForeignKeyConstraint baseColumnNames="parameter_id"
-								 baseTableName="submissions"
+								 baseTableName="measurements"
 								 constraintName="fk_measurements_parameter"
 								 referencedColumnNames="id"
 								 referencedTableName="parameters"/>
@@ -311,7 +296,7 @@
 
 		<rollback>
 			<dropTable tableName="measurements"/>
-			<dropTable tableName="submissions"/>
+			<dropTable tableName="landfill"/>
 			<dropTable tableName="status"/>
 			<dropTable tableName="records"/>
 			<dropTable tableName="datasets"/>

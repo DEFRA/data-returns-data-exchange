@@ -12,8 +12,7 @@ import uk.gov.ea.datareturns.config.TestSettings;
 import uk.gov.ea.datareturns.domain.dto.impl.BasicMeasurementDto;
 import uk.gov.ea.datareturns.domain.jpa.entities.userdata.impl.*;
 import uk.gov.ea.datareturns.domain.jpa.service.SubmissionService;
-import uk.gov.ea.datareturns.domain.result.ValidationErrors;
-import uk.gov.ea.datareturns.domain.validation.impl.BasicMeasurementMVO;
+import uk.gov.ea.datareturns.domain.validation.impl.BasicMeasurementMvo;
 
 import javax.inject.Inject;
 import java.io.File;
@@ -29,9 +28,9 @@ import java.util.List;
  */
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = App.class)
-public class SubmissionIntegrationTests {
+public class APIIntegrationTestsBasicSubmission {
     @Inject
-    SubmissionService<BasicMeasurementDto, BasicMeasurement, BasicMeasurementMVO> submissionService;
+    SubmissionService<BasicMeasurementDto, BasicMeasurement, BasicMeasurementMvo> submissionService;
 
     @Inject private TestSettings testSettings;
 
@@ -203,7 +202,7 @@ public class SubmissionIntegrationTests {
     private String readTestFile(String testFileName) throws IOException {
         final String testFilesLocation = this.testSettings.getTestFilesLocation();
         final File testFile = new File(testFilesLocation, testFileName);
-        InputStream inputStream = SubmissionIntegrationTests.class.getResourceAsStream(testFile.getAbsolutePath());
+        InputStream inputStream = APIIntegrationTestsBasicSubmission.class.getResourceAsStream(testFile.getAbsolutePath());
         return IOUtils.toString(inputStream, StandardCharsets.UTF_8);
     }
 }

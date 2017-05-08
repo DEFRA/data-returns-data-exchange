@@ -18,8 +18,8 @@ import uk.gov.ea.datareturns.domain.jpa.entities.userdata.impl.Dataset;
 import uk.gov.ea.datareturns.domain.jpa.entities.userdata.impl.Record;
 import uk.gov.ea.datareturns.domain.jpa.entities.userdata.impl.User;
 import uk.gov.ea.datareturns.domain.validation.MeasurementValidator;
-import uk.gov.ea.datareturns.domain.validation.MVO;
-import uk.gov.ea.datareturns.domain.validation.MVOFactory;
+import uk.gov.ea.datareturns.domain.validation.Mvo;
+import uk.gov.ea.datareturns.domain.validation.MvoFactory;
 
 import javax.validation.ConstraintViolation;
 import java.io.IOException;
@@ -48,14 +48,14 @@ import java.util.stream.Collectors;
  * The service is created by the submission service configuration
  *
  */
-public class SubmissionService<D extends MeasurementDto, M extends AbstractMeasurement, V extends MVO> {
+public class SubmissionService<D extends MeasurementDto, M extends AbstractMeasurement, V extends Mvo> {
 
     protected static final Logger LOGGER = LoggerFactory.getLogger(SubmissionService.class);
 
     private final Class<D> measurementDtoClass;
     private final Class<D[]> measurementDtoArrayClass;
     private final Class<M> measurementClass;
-    private final MVOFactory<D, V> mvoFactory;
+    private final MvoFactory<D, V> mvoFactory;
     private final UserDao userDao;
     private final DatasetDao datasetDao;
     private final RecordDao recordDao;
@@ -76,7 +76,7 @@ public class SubmissionService<D extends MeasurementDto, M extends AbstractMeasu
     public SubmissionService(Class<D> measurementDtoClass,
                              Class<D[]> measurementDtoArrayClass,
                              Class<M> measurementClass,
-                             MVOFactory<D, V> mvoFactory,
+                             MvoFactory<D, V> mvoFactory,
                              UserDao userDao,
                              DatasetDao datasetDao,
                              RecordDao recordDao,
@@ -217,7 +217,7 @@ public class SubmissionService<D extends MeasurementDto, M extends AbstractMeasu
                 }
             ));
 
-        // Validate the MVO measurement record and store the result of the validation
+        // Validate the Mvo measurement record and store the result of the validation
         // as the validation result serialized to json
         mvos.entrySet().stream()
             .filter(m -> m != null)

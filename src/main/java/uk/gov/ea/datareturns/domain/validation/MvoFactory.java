@@ -14,13 +14,13 @@ import java.lang.reflect.InvocationTargetException;
  * and responsible for defining the specific validations applicabe for a given measurement
  * type
  */
-public class MVOFactory<D extends MeasurementDto, V extends MVO> {
-    protected static final Logger LOGGER = LoggerFactory.getLogger(MVOFactory.class);
+public class MvoFactory<D extends MeasurementDto, V extends Mvo> {
+    protected static final Logger LOGGER = LoggerFactory.getLogger(MvoFactory.class);
 
     private final Class<V> mvoClass;
-    private static MVOFactory mvoFactory;
+    private static MvoFactory mvoFactory;
 
-    public MVOFactory(Class<V> mvoClass) {
+    public MvoFactory(Class<V> mvoClass) {
         this.mvoClass = mvoClass;
     }
 

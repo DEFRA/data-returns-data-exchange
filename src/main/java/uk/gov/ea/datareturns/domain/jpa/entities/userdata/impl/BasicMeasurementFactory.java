@@ -15,7 +15,6 @@ public class BasicMeasurementFactory implements AbstractMeasurementFactory<Basic
 
     private final ParameterDao parameterDao;
 
-    @Inject
     public BasicMeasurementFactory(ParameterDao parameterDao) {
         this.parameterDao = parameterDao;
     }

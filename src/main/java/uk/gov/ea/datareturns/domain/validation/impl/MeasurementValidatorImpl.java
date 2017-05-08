@@ -1,22 +1,18 @@
 package uk.gov.ea.datareturns.domain.validation.impl;
 
-import com.fasterxml.jackson.core.JsonGenerator;
-import com.fasterxml.jackson.databind.SerializerProvider;
-import com.fasterxml.jackson.databind.ser.std.StdSerializer;
-import uk.gov.ea.datareturns.domain.validation.MVO;
+import uk.gov.ea.datareturns.domain.validation.Mvo;
 import uk.gov.ea.datareturns.domain.validation.MeasurementValidator;
 
 import javax.inject.Inject;
 import javax.validation.ConstraintViolation;
 import javax.validation.Validator;
-import java.io.IOException;
 import java.lang.annotation.Annotation;
 import java.util.Set;
 
 /**
  * @author Sam Gardner-Dell, Graham Willis
  */
-public class MeasurementValidatorImpl<V extends MVO> implements MeasurementValidator<V> {
+public class MeasurementValidatorImpl<V extends Mvo> implements MeasurementValidator<V> {
 
     /** validator instance */
     private final Validator instanceValidator;
@@ -24,7 +20,7 @@ public class MeasurementValidatorImpl<V extends MVO> implements MeasurementValid
     private boolean initialised = false;
 
     /**
-     * Instantiates a new {@link MVO} instanceValidator.
+     * Instantiates a new {@link Mvo} instanceValidator.
      *
      * @param validator the hibernate instanceValidator instance
      */
