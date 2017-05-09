@@ -18,8 +18,10 @@ import javax.inject.Inject;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.math.BigDecimal;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -235,6 +237,25 @@ public class APIIntegrationTests_BasicMeasurement {
         List<Record> recs = submissionService.retrieve(dataset);
         recs.stream().map(r -> r.getAbstractMeasurement()).map(m -> m.getRecord()).forEach(
                 r -> Assert.assertEquals(Record.RecordStatus.SUBMITTED, r.getRecordStatus()));
+    }
+
+    // Create a valid set of records and then change one of them
+    @Test public void createAndValidateAndChangeRecords() throws IOException {
+        List<SubmissionService.DatumIdentifierPair<BasicMeasurementDto>> list = new ArrayList<>();
+        for (BasicMeasurementDto sample : samples) {
+            list.add(new SubmissionService.DatumIdentifierPair(sample));
+        }
+        List<Record> records = submissionService.createRecords(dataset, list);
+        submissionService.validate(records);
+        List<Record> recs = submissionService.retrieve(dataset);
+        BasicMeasurementDto dto = new BasicMeasurementDto();
+        dto.setParameter("1,1-Dichloropropene");
+        dto.setValue(new BigDecimal("9999"));
+        SubmissionService.DatumIdentifierPair pair = new SubmissionService.DatumIdentifierPair(recs.get(1).getIdentifier(), dto);
+
+        records = submissionService.createRecords(dataset, Collections.singletonList(pair));
+        records.stream().forEach(r -> Assert.assertEquals(Record.RecordStatus.PARSED, r.getRecordStatus()));
+        Assert.assertEquals(1, records.size());
     }
 
 

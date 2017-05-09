@@ -97,7 +97,7 @@ public class SubmissionService<D extends MeasurementDto, M extends AbstractMeasu
         mapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
         mapper.enable(DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY);
 
-        // Register the object mapper fro constraint violations
+        // Register the object mapper for constraint violations
         SimpleModule module = new SimpleModule();
         module.addSerializer(ConstraintViolation.class, new MeasurementValidator.ViolationSerializer());
         mapper.registerModule(module);
@@ -135,9 +135,11 @@ public class SubmissionService<D extends MeasurementDto, M extends AbstractMeasu
     }
 
     /**
-     * Parse a JSON string and create the D objects.
-     * @param json
-     * @return
+     * Parse a JSON string and create the data transfer objects. Used primarily for testing
+     * as jersey will be responsible for the initial deserialization of messages
+     *
+     * @param json The json string to parse
+     * @return A list of data transfer objects
      */
     public List<D> parse(String json) {
         try {
@@ -150,8 +152,8 @@ public class SubmissionService<D extends MeasurementDto, M extends AbstractMeasu
 
     /**
      * Get a list of existing records for a given dataset
-     * @param dataset
-     * @return
+     * @param dataset A dataset
+     * @return A list of records
      */
     @Transactional(readOnly = true)
     public List<Record> getRecords(Dataset dataset) {
@@ -193,6 +195,12 @@ public class SubmissionService<D extends MeasurementDto, M extends AbstractMeasu
                 .collect(Collectors.toList());
     }
 
+    /**
+     * Validate a set of records which have been created with samples
+     * The validation is against the associated validation object (MVO)
+     * The JSON stored in the record by the
+     * @param records The records to validate
+     */
     @Transactional
     public void validate(List<Record> records) {
         // Deserialize the list of samples from the JSON
