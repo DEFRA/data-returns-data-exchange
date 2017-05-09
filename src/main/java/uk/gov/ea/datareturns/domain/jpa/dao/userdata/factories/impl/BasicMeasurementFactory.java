@@ -1,11 +1,10 @@
-package uk.gov.ea.datareturns.domain.jpa.entities.userdata.impl;
+package uk.gov.ea.datareturns.domain.jpa.dao.userdata.factories.impl;
 
 import uk.gov.ea.datareturns.domain.dto.impl.BasicMeasurementDto;
 import uk.gov.ea.datareturns.domain.jpa.dao.masterdata.Key;
 import uk.gov.ea.datareturns.domain.jpa.dao.masterdata.ParameterDao;
-import uk.gov.ea.datareturns.domain.jpa.entities.userdata.AbstractMeasurementFactory;
-
-import javax.inject.Inject;
+import uk.gov.ea.datareturns.domain.jpa.dao.userdata.factories.AbstractMeasurementFactory;
+import uk.gov.ea.datareturns.domain.jpa.entities.userdata.impl.BasicMeasurement;
 
 /**
  * @author Graham Willis

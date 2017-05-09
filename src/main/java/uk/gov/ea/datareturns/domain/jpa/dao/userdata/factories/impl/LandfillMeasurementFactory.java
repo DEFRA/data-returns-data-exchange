@@ -1,11 +1,12 @@
-package uk.gov.ea.datareturns.domain.jpa.entities.userdata.impl;
+package uk.gov.ea.datareturns.domain.jpa.dao.userdata.factories.impl;
 
-import uk.gov.ea.datareturns.domain.dto.impl.BasicMeasurementDto;
 import uk.gov.ea.datareturns.domain.dto.impl.LandfillMeasurementDto;
 import uk.gov.ea.datareturns.domain.jpa.dao.masterdata.*;
-import uk.gov.ea.datareturns.domain.jpa.entities.userdata.AbstractMeasurementFactory;
+import uk.gov.ea.datareturns.domain.jpa.dao.userdata.factories.AbstractMeasurementFactory;
+import uk.gov.ea.datareturns.domain.jpa.entities.userdata.impl.LandfillMeasurement;
+import uk.gov.ea.datareturns.domain.model.fields.impl.MonitoringDate;
 
-import javax.inject.Inject;
+import java.util.Date;
 
 /**
  * @author Graham Willis
@@ -58,7 +59,8 @@ public class LandfillMeasurementFactory implements AbstractMeasurementFactory<La
         measurement.setUniqueIdentifier(uniqueIdentifierDao.getByNameOrAlias(Key.relaxed(dto.getEaId())));
         measurement.setSite(siteDao.getByName((Key.relaxed(dto.getSiteName()))));
         measurement.setReturnType(returnTypeDao.getByName(Key.relaxed((dto.getReturnType()))));
-        //measurement.setMonDate(dto.getMonitoringDate());
+        MonitoringDate monDate = new MonitoringDate(dto.getMonitoringDate());
+        measurement.setMonDate(Date.from(monDate.getInstant()));
         measurement.setMonPoint(dto.getMonitoringPoint());
         measurement.setParameter(parameterDao.getByNameOrAlias(Key.relaxed(dto.getParameter())));
         measurement.setNumericValue(dto.getValue());

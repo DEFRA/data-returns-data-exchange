@@ -13,7 +13,8 @@ import uk.gov.ea.datareturns.domain.jpa.dao.userdata.impl.RecordDao;
 import uk.gov.ea.datareturns.domain.jpa.dao.userdata.impl.MeasurementDao;
 import uk.gov.ea.datareturns.domain.jpa.dao.userdata.impl.UserDao;
 import uk.gov.ea.datareturns.domain.jpa.entities.userdata.AbstractMeasurement;
-import uk.gov.ea.datareturns.domain.jpa.entities.userdata.AbstractMeasurementFactory;
+import uk.gov.ea.datareturns.domain.jpa.dao.userdata.factories.AbstractMeasurementFactory;
+import uk.gov.ea.datareturns.domain.jpa.entities.userdata.impl.BasicMeasurement;
 import uk.gov.ea.datareturns.domain.jpa.entities.userdata.impl.Dataset;
 import uk.gov.ea.datareturns.domain.jpa.entities.userdata.impl.Record;
 import uk.gov.ea.datareturns.domain.jpa.entities.userdata.impl.User;
@@ -105,7 +106,7 @@ public class SubmissionService<D extends MeasurementDto, M extends AbstractMeasu
         mapper.registerModule(module);
     }
 
-     /****************************************************************************************
+    /****************************************************************************************
      * Record and submission centric operations
      *
      * Bulk record and submission centric operations require a the use of nested class to
@@ -310,6 +311,14 @@ public class SubmissionService<D extends MeasurementDto, M extends AbstractMeasu
     }
 
     /**
+     * Returns teh set of submitted measurements in a dataset
+     * @param dataset
+     */
+    public List<Record> retrieve(Dataset dataset) {
+        return recordDao.listMeasurements(dataset);
+    }
+
+    /**
      * Returns a new and initialized record for a given dataset
      * with a system generated identifier
      * It does not persist the record
@@ -328,7 +337,7 @@ public class SubmissionService<D extends MeasurementDto, M extends AbstractMeasu
      * @param identifier
      * @return
      */
-    private Record getRecord(Dataset dataset, String identifier) {
+    public Record getRecord(Dataset dataset, String identifier) {
         Record record = recordDao.get(dataset, identifier);
         if (record == null) {
             Date now = new Date();

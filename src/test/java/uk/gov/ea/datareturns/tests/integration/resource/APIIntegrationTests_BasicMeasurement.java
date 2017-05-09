@@ -28,7 +28,7 @@ import java.util.List;
  */
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = App.class)
-public class APIIntegrationTestsBasicSubmission {
+public class APIIntegrationTests_BasicMeasurement {
     @Inject
     SubmissionService<BasicMeasurementDto, BasicMeasurement, BasicMeasurementMvo> submissionService;
 
@@ -37,14 +37,8 @@ public class APIIntegrationTestsBasicSubmission {
     private final static String SUBMISSION_SUCCESS = "json/measurements-success.json";
     private final static String SUBMISSION_FAILURE = "json/measurements-fail.json";
 
-    //private final static String SUBMISSION_SUCCESS = "json/success-multiple.json";
-    //private final static String SUBMISSION_SUCCESS = "json/success-multiple.json";
-    //private final static String FAILURE_SUBMISSION = "json/success-multiple.json";
-
     private static final String USER_NAME = "Graham Willis";
-    private static final String DATASET_ID = "SEP2018Q2";
     private static final String[] RECORDS = { "AA0001", "AA002", "AA003" };
-    private static final String COMMENT = "Jolly good!";
 
     private static User user;
     private static Dataset dataset;
@@ -192,6 +186,20 @@ public class APIIntegrationTestsBasicSubmission {
         Assert.assertEquals(1, records.stream().filter(r -> r.getRecordStatus() == Record.RecordStatus.INVALID).count());
     }
 
+    // Create and validate a set of valid records, submit and retrieve them by dataset
+    @Test public void createAndValidateAndSubmitAndRetrieveRecords() throws IOException {
+        List<SubmissionService.DatumIdentifierPair<BasicMeasurementDto>> list = new ArrayList<>();
+        for (BasicMeasurementDto sample : samples) {
+            list.add(new SubmissionService.DatumIdentifierPair(sample));
+        }
+        List<Record> records = submissionService.createRecords(dataset, list);
+        submissionService.validate(records);
+        submissionService.submit(records);
+        List<Record> recs = submissionService.retrieve(dataset);
+        recs.stream().map(r -> r.getAbstractMeasurement()).map(m -> m.getRecord()).forEach(
+                r -> Assert.assertEquals(Record.RecordStatus.SUBMITTED, r.getRecordStatus()));
+    }
+
 
     /**
      * Reads the content of the test files and returns as a string
@@ -199,10 +207,11 @@ public class APIIntegrationTestsBasicSubmission {
      * @return
      * @throws IOException
      */
+
     private String readTestFile(String testFileName) throws IOException {
         final String testFilesLocation = this.testSettings.getTestFilesLocation();
         final File testFile = new File(testFilesLocation, testFileName);
-        InputStream inputStream = APIIntegrationTestsBasicSubmission.class.getResourceAsStream(testFile.getAbsolutePath());
+        InputStream inputStream = APIIntegrationTests_BasicMeasurement.class.getResourceAsStream(testFile.getAbsolutePath());
         return IOUtils.toString(inputStream, StandardCharsets.UTF_8);
     }
 }

@@ -30,6 +30,12 @@ public class RecordDao extends AbstractUserDataDao<Record> {
         super(Record.class);
     }
 
+    /**
+     * Get a given record for a dataset and identifier
+     * @param dataset The dataset
+     * @param identifier The identifier
+     * @return
+     */
     public Record get(Dataset dataset, String identifier) {
         CriteriaBuilder cb = entityManager.getCriteriaBuilder();
         Metamodel m = entityManager.getMetamodel();
@@ -53,6 +59,11 @@ public class RecordDao extends AbstractUserDataDao<Record> {
         }
     }
 
+    /**
+     * Get a list of the records for a given dataset
+     * @param dataset The dataset
+     * @return a list of records
+     */
     public List<Record> list(Dataset dataset) {
         CriteriaBuilder cb = entityManager.getCriteriaBuilder();
         Metamodel m = entityManager.getMetamodel();
@@ -64,10 +75,28 @@ public class RecordDao extends AbstractUserDataDao<Record> {
         return q.getResultList();
     }
 
+    /**
+     * Remove a single record by its identifier and dataset
+     * @param dataset
+     * @param identifier
+     */
     public void remove(Dataset dataset, String identifier) {
         Record record = get(dataset, identifier);
         remove(record.getId());
     }
 
+    public List<Record> listMeasurements(Dataset dataset) {
+        CriteriaBuilder cb = entityManager.getCriteriaBuilder();
+        CriteriaQuery<Record> cq = cb.createQuery(Record.class);
+
+        Root<Record> record = cq.from(Record.class);
+
+        cq.select(record);
+        cq.where(cb.equal(record.get(Record_.dataset), dataset));
+        cq.orderBy(cb.desc(record.get(Record_.id)));
+
+        TypedQuery<Record> tq = this.entityManager.createQuery(cq);
+        return tq.getResultList();
+    }
 
 }
