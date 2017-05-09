@@ -38,10 +38,12 @@ public class APIIntegrationTests_BasicMeasurement {
     private final static String SUBMISSION_FAILURE = "json/measurements-fail.json";
 
     private static final String USER_NAME = "Graham Willis";
+    private static final String DATASET_ID = "Dataset name";
     private static final String[] RECORDS = { "AA0001", "AA002", "AA003" };
 
     private static User user;
     private static Dataset dataset;
+
     private static List<BasicMeasurementDto> samples;
 
     // Remove any old data and set a user and dataset for use in the tests
@@ -52,6 +54,36 @@ public class APIIntegrationTests_BasicMeasurement {
         user = submissionService.createUser(USER_NAME);
         dataset = submissionService.createDataset(user);
         samples = submissionService.parse(readTestFile(SUBMISSION_SUCCESS));
+    }
+
+    @Test
+    public void createUser() {
+        Assert.assertEquals(user.getIdentifier(), USER_NAME);
+    }
+
+    @Test
+    public void getSystemUser() {
+        User systemUser = submissionService.getSystemUser();
+        Assert.assertEquals(systemUser.getIdentifier(), User.SYSTEM);
+    }
+
+    @Test
+    public void createSystemManagedDataset() {
+        Dataset dataset = submissionService.createDataset();
+        Assert.assertEquals(dataset.getUser().getIdentifier(), User.SYSTEM);
+    }
+
+    @Test
+    public void createUserManagedDatasetAutonamed() {
+        Dataset dataset = submissionService.createDataset(user);
+        Assert.assertEquals(dataset.getUser().getIdentifier(), USER_NAME);
+    }
+
+    @Test
+    public void createUserManagedDatasetNamed() {
+        Dataset dataset = submissionService.createDataset(user, DATASET_ID);
+        Assert.assertEquals(dataset.getUser().getIdentifier(), USER_NAME);
+        Assert.assertEquals(dataset.getIdentifier(), DATASET_ID);
     }
 
     @Test public void createTestRemoveRecords() {
