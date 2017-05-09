@@ -87,8 +87,8 @@ public class SubmissionConfiguration {
      * @return
      */
     @Bean
-    public MeasurementDao<? extends AbstractMeasurement> basicMeasuementDao() {
-        return new MeasurementDao(BasicMeasurement.class);
+    public MeasurementDao<BasicMeasurement> basicMeasuementDao() {
+        return new MeasurementDao<>(BasicMeasurement.class);
     }
 
     /**
@@ -142,8 +142,8 @@ public class SubmissionConfiguration {
      * @return
      */
     @Bean
-    public MeasurementDao<? extends AbstractMeasurement> landfillMeasurementDao() {
-        return new MeasurementDao(LandfillMeasurement.class);
+    public MeasurementDao<LandfillMeasurement> landfillMeasurementDao() {
+        return new MeasurementDao<>(LandfillMeasurement.class);
     }
 
     /**

@@ -77,6 +77,11 @@ public class APIIntegrationTests_BasicMeasurement {
     public void createUserManagedDatasetAutonamed() {
         Dataset dataset = submissionService.createDataset(user);
         Assert.assertEquals(dataset.getUser().getIdentifier(), USER_NAME);
+        List<Dataset> datasets = submissionService.getDatasets(user);
+        Assert.assertEquals(2, datasets.size());
+        submissionService.removeDataset(datasets.get(1).getIdentifier());
+        datasets = submissionService.getDatasets(user);
+        Assert.assertEquals(1, datasets.size());
     }
 
     @Test

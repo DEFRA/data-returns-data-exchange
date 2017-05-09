@@ -50,16 +50,15 @@ import java.util.stream.Collectors;
  */
 public class SubmissionService<D extends MeasurementDto, M extends AbstractMeasurement, V extends Mvo> {
 
-    protected static final Logger LOGGER = LoggerFactory.getLogger(SubmissionService.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(SubmissionService.class);
 
     private final Class<D> measurementDtoClass;
     private final Class<D[]> measurementDtoArrayClass;
-    private final Class<M> measurementClass;
     private final MvoFactory<D, V> mvoFactory;
     private final UserDao userDao;
     private final DatasetDao datasetDao;
     private final RecordDao recordDao;
-    private final MeasurementDao measurementDao;
+    private final MeasurementDao<M> measurementDao;
     private final MeasurementValidator<V> validator;
     private final AbstractMeasurementFactory<M, D> abstractMeasurementFactory;
 
@@ -80,13 +79,12 @@ public class SubmissionService<D extends MeasurementDto, M extends AbstractMeasu
                              UserDao userDao,
                              DatasetDao datasetDao,
                              RecordDao recordDao,
-                             MeasurementDao submissionDao,
+                             MeasurementDao<M> submissionDao,
                              MeasurementValidator<V> validator,
                              AbstractMeasurementFactory<M, D> abstractMeasurementFactory) {
 
         this.measurementDtoClass = measurementDtoClass;
         this.measurementDtoArrayClass = measurementDtoArrayClass;
-        this.measurementClass = measurementClass;
         this.mvoFactory = mvoFactory;
         this.userDao = userDao;
         this.datasetDao = datasetDao;
@@ -112,8 +110,8 @@ public class SubmissionService<D extends MeasurementDto, M extends AbstractMeasu
      * couple given identifiers and payloads either of which may be given as null
      ****************************************************************************************/
     public static class DatumIdentifierPair<D> {
-        protected final String identifier;
-        protected final D datum;
+        final String identifier;
+        final D datum;
 
         public DatumIdentifierPair(String identifier, D datum) {
             this.identifier = identifier;
@@ -177,7 +175,7 @@ public class SubmissionService<D extends MeasurementDto, M extends AbstractMeasu
      * @return
      */
     public boolean recordExists(Dataset dataset, String identifier) {
-        return (recordDao.get(dataset, identifier) == null) ? false : true;
+        return recordDao.get(dataset, identifier) != null;
     }
 
     /**
@@ -212,15 +210,14 @@ public class SubmissionService<D extends MeasurementDto, M extends AbstractMeasu
                         LOGGER.error("Error de-serializing stored JSON: " + e.getMessage());
                         return null;
                     }
-                    V mvo = mvoFactory.create(dto);
-                    return mvo;
+                    return mvoFactory.create(dto);
                 }
             ));
 
         // Validate the Mvo measurement record and store the result of the validation
         // as the validation result serialized to json
         mvos.entrySet().stream()
-            .filter(m -> m != null)
+            .filter(Objects::nonNull)
             .forEach(m -> {
                 Set<ConstraintViolation<V>> validationResult = validator.validateMeasurement(m.getValue());
                 try {
@@ -286,13 +283,12 @@ public class SubmissionService<D extends MeasurementDto, M extends AbstractMeasu
 
         // If we have a datum associated it
         if (dto != null) {
-            String json = null;
             try {
-                json = mapper.writeValueAsString(dto);
+                String json = mapper.writeValueAsString(dto);
                 record.setJson(json);
                 record.setRecordStatus(Record.RecordStatus.PARSED);
             } catch (JsonProcessingException e) {
-                LOGGER.error("Cannot serialize Json: " + json);
+                LOGGER.error("Cannot serialize to Json: " + dto.toString());
             }
         } else {
             record.setRecordStatus(Record.RecordStatus.PERSISTED);
