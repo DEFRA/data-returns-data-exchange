@@ -99,4 +99,22 @@ public class RecordDao extends AbstractUserDataDao<Record> {
         return tq.getResultList();
     }
 
+    public Record getMeasurement(Dataset dataset, String identifier) {
+        CriteriaBuilder cb = entityManager.getCriteriaBuilder();
+        CriteriaQuery<Record> cq = cb.createQuery(Record.class);
+
+        Root<Record> record = cq.from(Record.class);
+
+        cq.select(record);
+        cq.where(
+                cb.equal(record.get(Record_.dataset), dataset),
+                cb.equal(record.get(Record_.identifier), identifier)
+        );
+        cq.orderBy(cb.desc(record.get(Record_.id)));
+
+        TypedQuery<Record> tq = this.entityManager.createQuery(cq);
+
+        return tq.getSingleResult();
+    }
+
 }

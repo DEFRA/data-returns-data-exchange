@@ -23,6 +23,7 @@ import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * @author Graham Willis
@@ -191,7 +192,7 @@ public class APIIntegrationTests_LandfillMeasurement {
         Assert.assertEquals(3, records.stream().filter(r -> r.getRecordStatus() == Record.RecordStatus.INVALID).count());
     }
 
-    // Create and validate a set of valid records, submit and retrieve them by dataset
+    // Create and validate a set of valid records, submit and retrieve them by dataset and dataset/identifier
     @Test public void createAndValidateAndSubmitAndRetrieveRecords() throws IOException {
         List<SubmissionService.DatumIdentifierPair<LandfillMeasurementDto>> list = new ArrayList<>();
         for (LandfillMeasurementDto sample : samples) {
@@ -203,6 +204,12 @@ public class APIIntegrationTests_LandfillMeasurement {
         List<Record> recs = landfillSubmissionService.retrieve(dataset);
         recs.stream().map(r -> r.getAbstractMeasurement()).map(m -> m.getRecord()).forEach(
                 r -> Assert.assertEquals(Record.RecordStatus.SUBMITTED, r.getRecordStatus()));
+
+        Record r = recs.stream().findFirst().get();
+        String id = r.getIdentifier();
+
+        Record r1 = landfillSubmissionService.retrieve(dataset, id);
+        Assert.assertEquals(r, r1);
     }
 
     /**

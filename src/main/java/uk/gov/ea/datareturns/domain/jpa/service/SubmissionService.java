@@ -14,7 +14,6 @@ import uk.gov.ea.datareturns.domain.jpa.dao.userdata.impl.MeasurementDao;
 import uk.gov.ea.datareturns.domain.jpa.dao.userdata.impl.UserDao;
 import uk.gov.ea.datareturns.domain.jpa.entities.userdata.AbstractMeasurement;
 import uk.gov.ea.datareturns.domain.jpa.dao.userdata.factories.AbstractMeasurementFactory;
-import uk.gov.ea.datareturns.domain.jpa.entities.userdata.impl.BasicMeasurement;
 import uk.gov.ea.datareturns.domain.jpa.entities.userdata.impl.Dataset;
 import uk.gov.ea.datareturns.domain.jpa.entities.userdata.impl.Record;
 import uk.gov.ea.datareturns.domain.jpa.entities.userdata.impl.User;
@@ -112,16 +111,16 @@ public class SubmissionService<D extends MeasurementDto, M extends AbstractMeasu
      * Bulk record and submission centric operations require a the use of nested class to
      * couple given identifiers and payloads either of which may be given as null
      ****************************************************************************************/
-    public static class DatumIdentifierPair<DTO> {
+    public static class DatumIdentifierPair<D> {
         protected final String identifier;
-        protected final DTO datum;
+        protected final D datum;
 
-        public DatumIdentifierPair(String identifier, DTO datum) {
+        public DatumIdentifierPair(String identifier, D datum) {
             this.identifier = identifier;
             this.datum = datum;
         }
 
-        public DatumIdentifierPair(DTO datum) {
+        public DatumIdentifierPair(D datum) {
             this.identifier = UUID.randomUUID().toString();
             this.datum = datum;
         }
@@ -311,9 +310,19 @@ public class SubmissionService<D extends MeasurementDto, M extends AbstractMeasu
     }
 
     /**
-     * Returns teh set of submitted measurements in a dataset
+     * Returns a submitted measurements for a dataset and identifier
      * @param dataset
      */
+    @Transactional(readOnly = true)
+    public Record retrieve(Dataset dataset, String id) {
+        return recordDao.getMeasurement(dataset, id);
+    }
+
+    /**
+     * Returns the set of submitted measurements in a dataset
+     * @param dataset
+     */
+    @Transactional(readOnly = true)
     public List<Record> retrieve(Dataset dataset) {
         return recordDao.listMeasurements(dataset);
     }
