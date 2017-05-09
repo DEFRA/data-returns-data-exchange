@@ -13,7 +13,7 @@ import uk.gov.ea.datareturns.domain.dto.MeasurementDto;
 public abstract class Mvo<D extends MeasurementDto> {
     protected final D dto;
 
-    public Mvo(D dto) {
+    protected Mvo(D dto) {
         this.dto = dto;
     }
 }

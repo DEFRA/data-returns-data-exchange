@@ -2,10 +2,8 @@ package uk.gov.ea.datareturns.domain.jpa.entities.userdata.impl;
 
 import org.hibernate.annotations.GenericGenerator;
 import uk.gov.ea.datareturns.domain.jpa.entities.userdata.Metadata;
-import uk.gov.ea.datareturns.domain.jpa.entities.userdata.Userdata;
 
 import javax.persistence.*;
-import java.io.Serializable;
 import java.util.Collection;
 
 /**
@@ -84,8 +82,7 @@ public class Dataset implements Metadata {
 
         Dataset dataset = (Dataset) o;
 
-        if (!identifier.equals(dataset.identifier)) return false;
-        return user.equals(dataset.user);
+        return identifier.equals(dataset.identifier) && user.equals(dataset.user);
 
     }
 

@@ -134,8 +134,7 @@ public class Record implements Metadata {
 
         Record record = (Record) o;
 
-        if (!identifier.equals(record.identifier)) return false;
-        return dataset.equals(record.dataset);
+        return identifier.equals(record.identifier) && dataset.equals(record.dataset);
     }
 
     public AbstractMeasurement getAbstractMeasurement() {

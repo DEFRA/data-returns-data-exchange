@@ -14,17 +14,17 @@ import java.util.Date;
  */
 public class LandfillMeasurementFactory implements AbstractMeasurementFactory<LandfillMeasurement, LandfillMeasurementDto> {
 
-    private MethodOrStandardDao methodOrStandardDao;
-    private ParameterDao parameterDao;
-    private QualifierDao qualifierDao;
-    private ReferencePeriodDao referencePeriodDao;
-    private ReturnPeriodDao returnPeriodDao;
-    private ReturnTypeDao returnTypeDao;
-    private SiteDao siteDao;
-    private TextValueDao textValueDao;
-    private UniqueIdentifierAliasDao uniqueIdentifierAliasDao;
-    private UniqueIdentifierDao uniqueIdentifierDao;
-    private UnitDao unitDao;
+    private final MethodOrStandardDao methodOrStandardDao;
+    private final ParameterDao parameterDao;
+    private final QualifierDao qualifierDao;
+    private final ReferencePeriodDao referencePeriodDao;
+    private final ReturnPeriodDao returnPeriodDao;
+    private final ReturnTypeDao returnTypeDao;
+    private final SiteDao siteDao;
+    private final TextValueDao textValueDao;
+    private final UniqueIdentifierAliasDao uniqueIdentifierAliasDao;
+    private final UniqueIdentifierDao uniqueIdentifierDao;
+    private final UnitDao unitDao;
 
     public LandfillMeasurementFactory(
         MethodOrStandardDao methodOrStandardDao,

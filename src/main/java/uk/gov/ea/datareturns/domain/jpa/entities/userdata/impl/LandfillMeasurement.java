@@ -17,15 +17,15 @@ public class LandfillMeasurement extends AbstractMeasurement {
 
     @ManyToOne(optional = false)
     @JoinColumn(name = "ea_id", referencedColumnName = "id")
-    UniqueIdentifier uniqueIdentifier;
+    private UniqueIdentifier uniqueIdentifier;
 
     @ManyToOne(optional = false)
     @JoinColumn(name = "site_id", referencedColumnName = "id")
-    Site site;
+    private Site site;
 
     @ManyToOne(optional = false)
     @JoinColumn(name = "return_type_id", referencedColumnName = "id")
-    ReturnType returnType;
+    private ReturnType returnType;
 
     @Basic @Column(name = "mon_date", nullable = false)
     private Date monDate;
@@ -35,36 +35,36 @@ public class LandfillMeasurement extends AbstractMeasurement {
 
     @ManyToOne(optional = false)
     @JoinColumn(name = "parameter_id", referencedColumnName = "id")
-    Parameter parameter;
+    private Parameter parameter;
 
     @Basic @Column(name = "numeric_value")
-    BigDecimal numericValue;
+    private BigDecimal numericValue;
 
     @Basic @Column(name = "numeric_value_text", length = 20)
-    String numericValueText;
+    private String numericValueText;
 
     @ManyToOne
     @JoinColumn(name = "text_value_id", referencedColumnName = "id")
-    TextValue textValue;
+    private TextValue textValue;
 
     @ManyToOne
     @JoinColumn(name = "qualifier_id", referencedColumnName = "id")
-    Qualifier qualifier;
+    private Qualifier qualifier;
 
     @ManyToOne
     @JoinColumn(name = "unit_id", referencedColumnName = "id")
-    Unit unit;
+    private Unit unit;
 
     @ManyToOne
     @JoinColumn(name = "reference_period_id", referencedColumnName = "id")
-    ReferencePeriod referencePeriod;
+    private ReferencePeriod referencePeriod;
 
     @ManyToOne
     @JoinColumn(name = "method_or_standard_id", referencedColumnName = "id")
-    MethodOrStandard methodOrStandard;
+    private MethodOrStandard methodOrStandard;
 
-    @Basic @Column(name = "comments", length = 255)
-    String comments;
+    @Basic @Column(name = "comments")
+    private String comments;
 
     public UniqueIdentifier getUniqueIdentifier() {
         return uniqueIdentifier;

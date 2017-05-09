@@ -9,7 +9,6 @@ import uk.gov.ea.datareturns.domain.jpa.dao.userdata.impl.DatasetDao;
 import uk.gov.ea.datareturns.domain.jpa.dao.userdata.impl.RecordDao;
 import uk.gov.ea.datareturns.domain.jpa.dao.userdata.impl.MeasurementDao;
 import uk.gov.ea.datareturns.domain.jpa.dao.userdata.impl.UserDao;
-import uk.gov.ea.datareturns.domain.jpa.entities.userdata.AbstractMeasurement;
 import uk.gov.ea.datareturns.domain.jpa.dao.userdata.factories.AbstractMeasurementFactory;
 import uk.gov.ea.datareturns.domain.jpa.entities.userdata.impl.BasicMeasurement;
 import uk.gov.ea.datareturns.domain.jpa.dao.userdata.factories.impl.BasicMeasurementFactory;
@@ -31,21 +30,21 @@ import javax.validation.Validator;
 @Configuration
 public class SubmissionConfiguration {
 
-    private Validator validator;
-    private DatasetDao datasetDao;
-    private UserDao userDao;
-    private RecordDao recordDao;
-    private MethodOrStandardDao methodOrStandardDao;
-    private ParameterDao parameterDao;
-    private QualifierDao qualifierDao;
-    private ReferencePeriodDao referencePeriodDao;
-    private ReturnPeriodDao returnPeriodDao;
-    private ReturnTypeDao returnTypeDao;
-    private SiteDao siteDao;
-    private TextValueDao textValueDao;
-    private UniqueIdentifierAliasDao uniqueIdentifierAliasDao;
-    private UniqueIdentifierDao uniqueIdentifierDao;
-    private UnitDao unitDao;
+    private final Validator validator;
+    private final DatasetDao datasetDao;
+    private final UserDao userDao;
+    private final RecordDao recordDao;
+    private final MethodOrStandardDao methodOrStandardDao;
+    private final ParameterDao parameterDao;
+    private final QualifierDao qualifierDao;
+    private final ReferencePeriodDao referencePeriodDao;
+    private final ReturnPeriodDao returnPeriodDao;
+    private final ReturnTypeDao returnTypeDao;
+    private final SiteDao siteDao;
+    private final TextValueDao textValueDao;
+    private final UniqueIdentifierAliasDao uniqueIdentifierAliasDao;
+    private final UniqueIdentifierDao uniqueIdentifierDao;
+    private final UnitDao unitDao;
 
     @Inject
     public SubmissionConfiguration(

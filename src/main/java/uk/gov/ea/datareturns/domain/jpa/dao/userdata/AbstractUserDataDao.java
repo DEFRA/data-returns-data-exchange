@@ -14,7 +14,7 @@ import javax.persistence.PersistenceContext;
  * which are much more 'read-write' in nature.)
  */
 public abstract class AbstractUserDataDao<E extends Userdata>  {
-    protected static final Logger LOGGER = LoggerFactory.getLogger(AbstractUserDataDao.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(AbstractUserDataDao.class);
 
     private final Class<E> entityClass;
 
@@ -25,7 +25,7 @@ public abstract class AbstractUserDataDao<E extends Userdata>  {
      * Let the Dao class know the type of entity in order that type-safe
      * hibernate operations can be performed
      */
-    public AbstractUserDataDao(Class<E> entityClass) {
+    protected AbstractUserDataDao(Class<E> entityClass) {
         this.entityClass = entityClass;
     }
 

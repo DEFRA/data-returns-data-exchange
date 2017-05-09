@@ -1,8 +1,6 @@
 package uk.gov.ea.datareturns.domain.validation.impl;
 
-import uk.gov.ea.datareturns.domain.dto.impl.BasicMeasurementDto;
 import uk.gov.ea.datareturns.domain.dto.impl.LandfillMeasurementDto;
-import uk.gov.ea.datareturns.domain.jpa.entities.masterdata.impl.TextValue;
 import uk.gov.ea.datareturns.domain.model.fields.impl.*;
 import uk.gov.ea.datareturns.domain.model.validation.constraints.factory.ValidRecord;
 import uk.gov.ea.datareturns.domain.validation.Mvo;

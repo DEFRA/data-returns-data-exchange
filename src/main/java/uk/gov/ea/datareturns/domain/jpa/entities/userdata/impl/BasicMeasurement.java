@@ -15,10 +15,10 @@ public class BasicMeasurement extends AbstractMeasurement {
 
     @ManyToOne(optional = false)
     @JoinColumn(name = "parameter_id", referencedColumnName = "id")
-    Parameter parameter;
+    private Parameter parameter;
 
     @Basic @Column(name = "value")
-    BigDecimal numericValue;
+    private BigDecimal numericValue;
 
     public Parameter getParameter() {
         return parameter;

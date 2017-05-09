@@ -15,7 +15,7 @@ import java.lang.reflect.InvocationTargetException;
  * type
  */
 public class MvoFactory<D extends MeasurementDto, V extends Mvo> {
-    protected static final Logger LOGGER = LoggerFactory.getLogger(MvoFactory.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(MvoFactory.class);
 
     private final Class<V> mvoClass;
     private static MvoFactory mvoFactory;
