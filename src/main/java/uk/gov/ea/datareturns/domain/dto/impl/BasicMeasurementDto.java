@@ -14,7 +14,7 @@ public class BasicMeasurementDto implements MeasurementDto {
     private String parameter;
 
     @JsonProperty("Value")
-    private BigDecimal value;
+    private String value;
 
     public String getParameter() {
         return parameter;
@@ -23,11 +23,11 @@ public class BasicMeasurementDto implements MeasurementDto {
         this.parameter = parameter;
     }
 
-    public BigDecimal getValue() {
+    public String getValue() {
         return value;
     }
 
-    public void setValue(BigDecimal value) {
+    public void setValue(String value) {
         this.value = value;
     }
 

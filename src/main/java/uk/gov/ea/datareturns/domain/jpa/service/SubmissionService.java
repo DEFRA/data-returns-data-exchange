@@ -23,6 +23,7 @@ import uk.gov.ea.datareturns.domain.validation.MvoFactory;
 
 import javax.validation.ConstraintViolation;
 import java.io.IOException;
+import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -109,26 +110,26 @@ public class SubmissionService<D extends MeasurementDto, M extends AbstractMeasu
      * Bulk record and submission centric operations require a the use of nested class to
      * couple given identifiers and payloads either of which may be given as null
      ****************************************************************************************/
-    public static class DatumIdentifierPair<D> {
+    public static class DtoIdentifierPair<D> {
         final String identifier;
         final D datum;
 
-        public DatumIdentifierPair(String identifier, D datum) {
+        public DtoIdentifierPair(String identifier, D datum) {
             this.identifier = identifier;
             this.datum = datum;
         }
 
-        public DatumIdentifierPair(D datum) {
+        public DtoIdentifierPair(D datum) {
             this.identifier = UUID.randomUUID().toString();
             this.datum = datum;
         }
 
-        public DatumIdentifierPair(String identifier) {
+        public DtoIdentifierPair(String identifier) {
             this.identifier = identifier;
             this.datum = null;
         }
 
-        public DatumIdentifierPair() {
+        public DtoIdentifierPair() {
             this.identifier = UUID.randomUUID().toString();
             this.datum = null;
         }
@@ -189,7 +190,7 @@ public class SubmissionService<D extends MeasurementDto, M extends AbstractMeasu
      * @return A list of records
      */
     @Transactional
-    public List<Record> createRecords(Dataset dataset, List<SubmissionService.DatumIdentifierPair<D>> datumIdentifierPairs) {
+    public List<Record> createRecords(Dataset dataset, List<DtoIdentifierPair<D>> datumIdentifierPairs) {
         return datumIdentifierPairs.stream()
                 .map(p -> createOrResetRecord(dataset, p.identifier, p.datum))
                 .collect(Collectors.toList());
@@ -205,7 +206,6 @@ public class SubmissionService<D extends MeasurementDto, M extends AbstractMeasu
     public void validate(List<Record> records) {
         // Deserialize the list of samples from the JSON
         // field in the record and pass store in a map
-        Date now = new Date();
         Map<Record, V> mvos = records.stream()
             .filter(r -> !r.getJson().isEmpty())
             .collect(Collectors.toMap(
@@ -236,7 +236,7 @@ public class SubmissionService<D extends MeasurementDto, M extends AbstractMeasu
                         m.getKey().setValidationResult(result);
                         m.getKey().setRecordStatus(Record.RecordStatus.INVALID);
                     }
-                    m.getKey().setLastChangedDate(now);
+                    m.getKey().setLastChangedDate(LocalDateTime.now());
                     recordDao.merge(m.getKey());
                 } catch (JsonProcessingException e) {
                     LOGGER.error("Error de-serializing stored JSON: " + e.getMessage());
@@ -254,16 +254,15 @@ public class SubmissionService<D extends MeasurementDto, M extends AbstractMeasu
      */
     @Transactional
     public void submit(List<Record> records) {
-        Date now = new Date();
         records.stream()
             .filter(r -> r.getRecordStatus() == Record.RecordStatus.VALID)
             .forEach(r -> {
                 try {
                     M submission = abstractMeasurementFactory.create(mapper.readValue(r.getJson(), measurementDtoClass));
-                    r.setAbstractMeasurement(submission);
+                    r.setMeasurement(submission);
                     r.setRecordStatus(Record.RecordStatus.SUBMITTED);
-                    r.getAbstractMeasurement().setRecord(r);
-                    r.setLastChangedDate(now);
+                    r.getMeasurement().setRecord(r);
+                    r.setLastChangedDate(LocalDateTime.now());
                     measurementDao.persist(submission);
                     recordDao.merge(r);
                 } catch (IOException e) {
@@ -282,14 +281,19 @@ public class SubmissionService<D extends MeasurementDto, M extends AbstractMeasu
      * Any errors are cleared and the record values
      * are reset
      *
+     * Any record with a status if SUBMITTED remains unaffected by this call
+     *
      * @return
      */
     private Record createOrResetRecord(Dataset dataset, String identifier, D dto) {
         Record record = getRecord(dataset, identifier);
         Record.RecordStatus newRecordStatus = record.getRecordStatus();
-        Date now = new Date();
 
-        // If we have a datum associated it
+        if (newRecordStatus == Record.RecordStatus.SUBMITTED) {
+            return record;
+        }
+
+        // If we have a data transfer object, associated
         if (dto != null) {
             try {
                 String json = mapper.writeValueAsString(dto);
@@ -307,7 +311,7 @@ public class SubmissionService<D extends MeasurementDto, M extends AbstractMeasu
         if (newRecordStatus == Record.RecordStatus.CREATED) {
             return recordDao.persist(record);
         } else {
-            record.setLastChangedDate(now);
+            record.setLastChangedDate(LocalDateTime.now());
             recordDao.merge(record);
             return record;
         }
@@ -353,13 +357,12 @@ public class SubmissionService<D extends MeasurementDto, M extends AbstractMeasu
     public Record getRecord(Dataset dataset, String identifier) {
         Record record = recordDao.get(dataset, identifier);
         if (record == null) {
-            Date now = new Date();
             record = new Record();
             record.setDataset(dataset);
             record.setIdentifier(identifier);
             record.setRecordStatus(Record.RecordStatus.CREATED);
-            record.setCreateDate(now);
-            record.setLastChangedDate(now);
+            record.setCreateDate(LocalDateTime.now());
+            record.setLastChangedDate(LocalDateTime.now());
             record.setEtag(UUID.randomUUID().toString());
         }
         return record;

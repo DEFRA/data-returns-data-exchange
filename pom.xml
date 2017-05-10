@@ -196,6 +196,12 @@
 			<artifactId>hibernate-jpamodelgen</artifactId>
 		</dependency>
 
+		<!-- Add in support for Java8 data times -->
+		<dependency>
+			<groupId>org.hibernate</groupId>
+			<artifactId>hibernate-java8</artifactId>
+		</dependency>
+
 		<dependency>
 			<groupId>org.liquibase</groupId>
 			<artifactId>liquibase-core</artifactId>

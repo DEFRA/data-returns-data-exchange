@@ -7,7 +7,7 @@
 		<runningAs username="${db.username}"/>
 	</preConditions>
 
-	<changeSet id="abstractMeasurement data" author="Environment Agency">
+	<changeSet id="measurement data" author="Environment Agency">
 
 		<!--
 		****************************************************************

@@ -6,6 +6,9 @@ import uk.gov.ea.datareturns.domain.jpa.dao.userdata.factories.AbstractMeasureme
 import uk.gov.ea.datareturns.domain.jpa.entities.userdata.impl.LandfillMeasurement;
 import uk.gov.ea.datareturns.domain.model.fields.impl.MonitoringDate;
 
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import java.util.Date;
 
 /**
@@ -60,10 +63,10 @@ public class LandfillMeasurementFactory implements AbstractMeasurementFactory<La
         measurement.setSite(siteDao.getByName((Key.relaxed(dto.getSiteName()))));
         measurement.setReturnType(returnTypeDao.getByName(Key.relaxed((dto.getReturnType()))));
         MonitoringDate monDate = new MonitoringDate(dto.getMonitoringDate());
-        measurement.setMonDate(Date.from(monDate.getInstant()));
+        measurement.setMonDate(LocalDateTime.ofInstant(monDate.getInstant(), ZoneOffset.UTC));
         measurement.setMonPoint(dto.getMonitoringPoint());
         measurement.setParameter(parameterDao.getByNameOrAlias(Key.relaxed(dto.getParameter())));
-        measurement.setNumericValue(dto.getValue());
+        measurement.setNumericValue(new BigDecimal(dto.getValue()));
         measurement.setTextValue(textValueDao.getByName(Key.relaxed((dto.getTextValue()))));
         measurement.setQualifier(qualifierDao.getByName(Key.relaxed((dto.getQualifier()))));
         measurement.setUnit(unitDao.getByName(Key.relaxed((dto.getUnit()))));

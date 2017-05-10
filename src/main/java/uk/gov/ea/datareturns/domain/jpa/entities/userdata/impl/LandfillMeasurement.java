@@ -6,6 +6,7 @@ import uk.gov.ea.datareturns.domain.jpa.entities.userdata.AbstractMeasurement;
 
 import javax.persistence.*;
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.Date;
 
 /**
@@ -28,7 +29,7 @@ public class LandfillMeasurement extends AbstractMeasurement {
     private ReturnType returnType;
 
     @Basic @Column(name = "mon_date", nullable = false)
-    private Date monDate;
+    private LocalDateTime monDate;
 
     @Basic @Column(name = "mon_point", nullable = false, length = 50)
     private String monPoint;
@@ -90,11 +91,11 @@ public class LandfillMeasurement extends AbstractMeasurement {
         this.returnType = returnType;
     }
 
-    public Date getMonDate() {
+    public LocalDateTime getMonDate() {
         return monDate;
     }
 
-    public void setMonDate(Date monDate) {
+    public void setMonDate(LocalDateTime monDate) {
         this.monDate = monDate;
     }
 

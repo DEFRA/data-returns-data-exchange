@@ -74,7 +74,7 @@ public class LandfillMeasurementMvo extends Mvo<LandfillMeasurementDto> {
         monitoringPoint = new MonitoringPoint(dto.getMonitoringPoint());
         parameter = new Parameter(dto.getParameter());
         unit = new Unit(dto.getUnit());
-        value = dto.getValue();
+        value = new BigDecimal(dto.getValue());
         textValue = new TxtValue(dto.getTextValue());
         qualifier = new Qualifier(dto.getQualifier());
         referencePeriod = new ReferencePeriod(dto.getReferencePeriod());

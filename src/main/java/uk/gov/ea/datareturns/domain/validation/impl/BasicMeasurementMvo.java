@@ -27,8 +27,8 @@ public class BasicMeasurementMvo extends Mvo<BasicMeasurementDto> {
         super(dto);
 
         // Initialize the fields for validation
-        parameter = new Parameter(this.dto.getParameter());
-        value = this.dto.getValue();
+        parameter = new Parameter(dto.getParameter());
+        value = new BigDecimal(dto.getValue());
     }
 
     public Parameter getParameter() {

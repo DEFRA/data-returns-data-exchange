@@ -40,7 +40,7 @@ public class LandfillMeasurementDto implements MeasurementDto {
 
     /** Value (Value) */
     @JsonProperty("Value")
-    private BigDecimal value;
+    private String value;
 
     /** Textual value (Txt_Value) */
     @JsonProperty("Txt_Value")
@@ -122,11 +122,11 @@ public class LandfillMeasurementDto implements MeasurementDto {
         this.parameter = parameter;
     }
 
-    public BigDecimal getValue() {
+    public String getValue() {
         return value;
     }
 
-    public void setValue(BigDecimal value) {
+    public void setValue(String value) {
         this.value = value;
     }
 

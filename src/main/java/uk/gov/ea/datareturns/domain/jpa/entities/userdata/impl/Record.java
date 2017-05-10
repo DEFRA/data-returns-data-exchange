@@ -5,6 +5,7 @@ import uk.gov.ea.datareturns.domain.jpa.entities.userdata.AbstractMeasurement;
 import uk.gov.ea.datareturns.domain.jpa.entities.userdata.Metadata;
 
 import javax.persistence.*;
+import java.time.LocalDateTime;
 import java.util.Date;
 
 /**
@@ -25,7 +26,7 @@ public class Record implements Metadata {
     private Long id;
 
     @OneToOne(cascade = { CascadeType.REMOVE }, mappedBy = "record")
-    private AbstractMeasurement abstractMeasurement;
+    private AbstractMeasurement measurement;
 
     @Basic @Column(name = "identifier", nullable = false, length = 80)
     private String identifier;
@@ -41,10 +42,10 @@ public class Record implements Metadata {
     // Note: hibernate does not support LocalDataTime yet
     // TODO look into this
     @Basic @Column(name = "create_date", nullable = false)
-    private Date createDate;
+    private LocalDateTime createDate;
 
     @Basic @Column(name = "last_changed_date", nullable = false)
-    private Date lastChangedDate;
+    private LocalDateTime lastChangedDate;
 
     @Basic @Column(name = "etag", nullable = false)
     private String etag;
@@ -87,19 +88,19 @@ public class Record implements Metadata {
         this.recordStatus = recordStatus;
     }
 
-    public Date getCreateDate() {
+    public LocalDateTime getCreateDate() {
         return createDate;
     }
 
-    public void setCreateDate(Date createDate) {
+    public void setCreateDate(LocalDateTime createDate) {
         this.createDate = createDate;
     }
 
-    public Date getLastChangedDate() {
+    public LocalDateTime getLastChangedDate() {
         return lastChangedDate;
     }
 
-    public void setLastChangedDate(Date lastChangedDate) {
+    public void setLastChangedDate(LocalDateTime lastChangedDate) {
         this.lastChangedDate = lastChangedDate;
     }
 
@@ -137,12 +138,12 @@ public class Record implements Metadata {
         return identifier.equals(record.identifier) && dataset.equals(record.dataset);
     }
 
-    public AbstractMeasurement getAbstractMeasurement() {
-        return abstractMeasurement;
+    public AbstractMeasurement getMeasurement() {
+        return measurement;
     }
 
-    public void setAbstractMeasurement(AbstractMeasurement abstractMeasurement) {
-        this.abstractMeasurement = abstractMeasurement;
+    public void setMeasurement(AbstractMeasurement measurement) {
+        this.measurement = measurement;
     }
 
     @Override
@@ -156,7 +157,7 @@ public class Record implements Metadata {
     public String toString() {
         return "Record{" +
                 "id=" + id +
-                ", abstractMeasurement=" + abstractMeasurement +
+                ", measurement=" + measurement +
                 ", identifier='" + identifier + '\'' +
                 ", dataset=" + dataset +
                 ", recordStatus=" + recordStatus +

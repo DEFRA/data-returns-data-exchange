@@ -1,5 +1,7 @@
 package uk.gov.ea.datareturns.domain.validation.impl;
 
+import uk.gov.ea.datareturns.domain.model.MessageCodes;
+import uk.gov.ea.datareturns.domain.model.rules.FieldDefinition;
 import uk.gov.ea.datareturns.domain.validation.Mvo;
 import uk.gov.ea.datareturns.domain.validation.MeasurementValidator;
 
@@ -7,6 +9,7 @@ import javax.inject.Inject;
 import javax.validation.ConstraintViolation;
 import javax.validation.Validator;
 import java.lang.annotation.Annotation;
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -53,4 +56,14 @@ public class MeasurementValidatorImpl<V extends Mvo> implements MeasurementValid
         }
         return violations;
     }
+
+    /**
+     * Determines the set of FieldDefinitions for each given error code declared in MessageCodes
+     * @param violation The hibernate violation
+     * @return A list of field definitions
+     */
+    private List<FieldDefinition> getFieldsForViolation(final ConstraintViolation<V> violation) {
+        return MessageCodes.getFieldDependencies(violation.getMessageTemplate());
+    }
+
 }
