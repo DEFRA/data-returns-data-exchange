@@ -1,7 +1,7 @@
 # Data Returns Backend Service
 
-RESTful service to support the upload and validation of Data Exchange Protocol (DEP) compliant data returns.
-This service handles the validation and preparation of uploaded files for abstractMeasurement to the downstream persistence provider.
+RESTful service to support the submission and validation of Data Exchange Protocol (DEP) compliant data returns and their
+transmission to downstream systems.
 
 ## Running
 

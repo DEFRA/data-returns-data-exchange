@@ -10,7 +10,7 @@ import java.util.List;
  *
  * @author Sam Gardner-Dell
  */
-public interface DataSampleValidator<T> {
+public interface DataSampleValidator {
 
     /**
      * Validate the specified model of {@link DataSample}s
@@ -19,5 +19,5 @@ public interface DataSampleValidator<T> {
      * @return a {@link ValidationErrors} instance detailing any validation errors (if any) which were found with the model.
      *          Use {@link ValidationErrors#isValid()} to determine if any errors were found.
      */
-    ValidationErrors validateModel(final List<T> model);
+    ValidationErrors validateModel(final List<DataSample> model);
 }

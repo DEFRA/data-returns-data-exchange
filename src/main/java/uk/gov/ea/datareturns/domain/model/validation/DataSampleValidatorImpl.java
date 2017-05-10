@@ -1,5 +1,8 @@
 package uk.gov.ea.datareturns.domain.model.validation;
 
+import org.springframework.beans.factory.config.ConfigurableBeanFactory;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
 import uk.gov.ea.datareturns.domain.model.DataSample;
 import uk.gov.ea.datareturns.domain.model.MessageCodes;
 import uk.gov.ea.datareturns.domain.model.rules.FieldDefinition;
@@ -19,7 +22,9 @@ import java.util.*;
  *
  * @author Sam Gardner-Dell
  */
-public class DataSampleValidatorImpl<T> implements DataSampleValidator<T> {
+@Component
+@Scope(ConfigurableBeanFactory.SCOPE_SINGLETON)
+public class DataSampleValidatorImpl implements DataSampleValidator {
     private static final Map<String, FieldMapping> BEAN_MAPPING = FieldMapping.getFieldNameToBeanMap(DataSample.class);
 
     /** hibernate validator instance */
@@ -43,13 +48,13 @@ public class DataSampleValidatorImpl<T> implements DataSampleValidator<T> {
      * @param model the model to be validated
      * @return a {@link ValidationErrors} instance detailing any validation errors (if any) which were found with the model. 		   Use {@link ValidationErrors#isValid()} to determine if any errors were found.
      */
-    public final ValidationErrors validateModel(final List<T> model) {
+    public final ValidationErrors validateModel(final List<DataSample> model) {
         final ValidationErrors validationErrors = new ValidationErrors();
 
         int index = 0;
-        for (final T record : model) {
-            final Set<ConstraintViolation<T>> violations = validate(record);
-            for (final ConstraintViolation<T> violation : violations) {
+        for (final DataSample record : model) {
+            final Set<ConstraintViolation<DataSample>> violations = validate(record);
+            for (final ConstraintViolation<DataSample> violation : violations) {
                 ValidationErrorType errorsForType = validationErrors.forViolation(violation);
                 List<ValidationErrorField> errorData = getErrorDataFromFields(record, violation);
                 errorsForType.addErrorInstance(index, errorData);
@@ -65,8 +70,8 @@ public class DataSampleValidatorImpl<T> implements DataSampleValidator<T> {
      * @param violation the {@link ConstraintViolation} detailing the error
      * @return The data error array
      */
-    private List<ValidationErrorField> getErrorDataFromFields(T record,
-            ConstraintViolation<T> violation) {
+    private List<ValidationErrorField> getErrorDataFromFields(DataSample record,
+                                                              ConstraintViolation<DataSample> violation) {
         List<ValidationErrorField> errorData = new ArrayList<>();
         List<FieldDefinition> fieldsForValidation = getFieldsForViolation(violation);
         if (fieldsForValidation != null) {
@@ -89,7 +94,7 @@ public class DataSampleValidatorImpl<T> implements DataSampleValidator<T> {
      * @param violation The hibernate violation
      * @return A list of field definitions
      */
-    private List<FieldDefinition> getFieldsForViolation(final ConstraintViolation<T> violation) {
+    private List<FieldDefinition> getFieldsForViolation(final ConstraintViolation<DataSample> violation) {
         return MessageCodes.getFieldDependencies(violation.getMessageTemplate());
     }
 
@@ -100,11 +105,11 @@ public class DataSampleValidatorImpl<T> implements DataSampleValidator<T> {
      * {@link javax.validation.ConstraintValidator#initialize(Annotation)} method being called more than once.
      *
      * @param record the record to be validated
-     * @param <T> the type of the record
+     * @param <E> the type of the record
      * @return a set of constraint violations detailing any validation errors that were found
      */
-    private <T> Set<ConstraintViolation<T>> validate(T record) {
-        Set<ConstraintViolation<T>> violations;
+    private <E> Set<ConstraintViolation<E>> validate(E record) {
+        Set<ConstraintViolation<E>> violations;
         if (initialised) {
             // Avoid synchronisation if initialised
             violations = this.validator.validate(record, ValidationGroups.OrderedChecks.class);
