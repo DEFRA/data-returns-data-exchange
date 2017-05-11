@@ -16,10 +16,12 @@ import uk.gov.ea.datareturns.domain.jpa.entities.userdata.impl.LandfillMeasureme
 import uk.gov.ea.datareturns.domain.jpa.dao.userdata.factories.impl.LandfillMeasurementFactory;
 import uk.gov.ea.datareturns.domain.jpa.service.SubmissionService;
 import uk.gov.ea.datareturns.domain.validation.MeasurementValidator;
-import uk.gov.ea.datareturns.domain.validation.impl.LandfillMeasurementMvo;
-import uk.gov.ea.datareturns.domain.validation.impl.MeasurementValidatorImpl;
+import uk.gov.ea.datareturns.domain.validation.basicmeasurement.BasicMeasurementFieldMessageMap;
+import uk.gov.ea.datareturns.domain.validation.landfillmeasurement.LandfillMeasurementFieldMessageMap;
+import uk.gov.ea.datareturns.domain.validation.landfillmeasurement.LandfillMeasurementMvo;
+import uk.gov.ea.datareturns.domain.validation.MeasurementValidatorImpl;
 import uk.gov.ea.datareturns.domain.validation.MvoFactory;
-import uk.gov.ea.datareturns.domain.validation.impl.BasicMeasurementMvo;
+import uk.gov.ea.datareturns.domain.validation.basicmeasurement.BasicMeasurementMvo;
 
 import javax.inject.Inject;
 import javax.validation.Validator;
@@ -114,7 +116,7 @@ public class SubmissionConfiguration {
      */
     @Bean
     public MeasurementValidator<BasicMeasurementMvo> basicMeasurementValidator() {
-        return new MeasurementValidatorImpl<>(this.validator);
+        return new MeasurementValidatorImpl<>(this.validator, BasicMeasurementMvo.class, new BasicMeasurementFieldMessageMap());
     }
 
     /**
@@ -180,7 +182,7 @@ public class SubmissionConfiguration {
      */
     @Bean
     public MeasurementValidator<LandfillMeasurementMvo> landfillMeasurementValidator() {
-        return new MeasurementValidatorImpl<>(this.validator);
+        return new MeasurementValidatorImpl<>(this.validator, LandfillMeasurementMvo.class, new LandfillMeasurementFieldMessageMap());
     }
 
     @Bean

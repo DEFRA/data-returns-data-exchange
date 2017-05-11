@@ -9,9 +9,9 @@ import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import uk.gov.ea.datareturns.config.ProcessorSettings;
-import uk.gov.ea.datareturns.domain.model.DataSample;
-import uk.gov.ea.datareturns.domain.model.rules.FieldDefinition;
-import uk.gov.ea.datareturns.domain.model.rules.FieldMapping;
+import uk.gov.ea.datareturns.domain.validation.model.DataSample;
+import uk.gov.ea.datareturns.domain.validation.model.rules.FieldDefinition;
+import uk.gov.ea.datareturns.domain.validation.model.rules.FieldMapping;
 import uk.gov.ea.datareturns.util.MustacheTemplates;
 
 import javax.inject.Inject;

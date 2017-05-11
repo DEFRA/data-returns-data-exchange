@@ -3,7 +3,7 @@ package uk.gov.ea.datareturns.aspects;
 import com.univocity.parsers.csv.CsvWriter;
 import org.aspectj.lang.annotation.Pointcut;
 import uk.gov.ea.datareturns.domain.jpa.dao.masterdata.Key;
-import uk.gov.ea.datareturns.domain.model.DataSample;
+import uk.gov.ea.datareturns.domain.validation.model.DataSample;
 
 import java.io.File;
 import java.util.List;
@@ -64,7 +64,7 @@ public class Pointcuts {
      *
      * @param model the {@link List} of {@link DataSample} records being validated
      */
-    @Pointcut("execution(public * uk.gov.ea.datareturns.domain.model.validation.DataSampleValidator.validateModel(*)) && args(model)")
+    @Pointcut("execution(public * uk.gov.ea.datareturns.domain.validation.model.validation.DataSampleValidator.validateModel(*)) && args(model)")
     public void modelValidation(List<DataSample> model) {
     }
 

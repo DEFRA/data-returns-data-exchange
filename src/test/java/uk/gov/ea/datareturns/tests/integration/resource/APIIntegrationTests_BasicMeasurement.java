@@ -12,13 +12,12 @@ import uk.gov.ea.datareturns.config.TestSettings;
 import uk.gov.ea.datareturns.domain.dto.impl.BasicMeasurementDto;
 import uk.gov.ea.datareturns.domain.jpa.entities.userdata.impl.*;
 import uk.gov.ea.datareturns.domain.jpa.service.SubmissionService;
-import uk.gov.ea.datareturns.domain.validation.impl.BasicMeasurementMvo;
+import uk.gov.ea.datareturns.domain.validation.basicmeasurement.BasicMeasurementMvo;
 
 import javax.inject.Inject;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.math.BigDecimal;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collections;

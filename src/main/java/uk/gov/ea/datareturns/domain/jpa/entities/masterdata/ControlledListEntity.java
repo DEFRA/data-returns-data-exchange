@@ -1,6 +1,6 @@
 package uk.gov.ea.datareturns.domain.jpa.entities.masterdata;
 
-import uk.gov.ea.datareturns.domain.model.fields.FieldValue;
+import uk.gov.ea.datareturns.domain.validation.model.fields.FieldValue;
 
 /**
  * Created by graham on 26/07/16.

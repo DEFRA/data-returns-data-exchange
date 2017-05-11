@@ -14,7 +14,7 @@ import uk.gov.ea.datareturns.config.metrics.InfluxDBFacade;
 import uk.gov.ea.datareturns.domain.jpa.dao.masterdata.Key;
 import uk.gov.ea.datareturns.domain.jpa.entities.masterdata.ControlledListEntity;
 import uk.gov.ea.datareturns.domain.jpa.entities.masterdata.impl.UniqueIdentifier;
-import uk.gov.ea.datareturns.domain.model.DataSample;
+import uk.gov.ea.datareturns.domain.validation.model.DataSample;
 import uk.gov.ea.datareturns.util.Environment;
 
 import javax.inject.Inject;

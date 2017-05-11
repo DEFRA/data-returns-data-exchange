@@ -17,6 +17,7 @@ import uk.gov.ea.datareturns.domain.jpa.dao.userdata.factories.AbstractMeasureme
 import uk.gov.ea.datareturns.domain.jpa.entities.userdata.impl.Dataset;
 import uk.gov.ea.datareturns.domain.jpa.entities.userdata.impl.Record;
 import uk.gov.ea.datareturns.domain.jpa.entities.userdata.impl.User;
+import uk.gov.ea.datareturns.domain.result.ValidationErrors;
 import uk.gov.ea.datareturns.domain.validation.MeasurementValidator;
 import uk.gov.ea.datareturns.domain.validation.Mvo;
 import uk.gov.ea.datareturns.domain.validation.MvoFactory;
@@ -98,10 +99,6 @@ public class SubmissionService<D extends MeasurementDto, M extends AbstractMeasu
         mapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
         mapper.enable(DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY);
 
-        // Register the object mapper for constraint violations
-        SimpleModule module = new SimpleModule();
-        module.addSerializer(ConstraintViolation.class, new MeasurementValidator.ViolationSerializer());
-        mapper.registerModule(module);
     }
 
     /****************************************************************************************
@@ -227,12 +224,12 @@ public class SubmissionService<D extends MeasurementDto, M extends AbstractMeasu
         mvos.entrySet().stream()
             .filter(Objects::nonNull)
             .forEach(m -> {
-                Set<ConstraintViolation<V>> validationResult = validator.validateMeasurement(m.getValue());
+                ValidationErrors validationErrors = validator.validateMeasurement(m.getValue());
                 try {
-                    if (validationResult.size() == 0) {
+                    if (validationErrors.isValid()) {
                         m.getKey().setRecordStatus(Record.RecordStatus.VALID);
                     } else {
-                        String result = mapper.writeValueAsString(validationResult);
+                        String result = mapper.writeValueAsString(validationErrors);
                         m.getKey().setValidationResult(result);
                         m.getKey().setRecordStatus(Record.RecordStatus.INVALID);
                     }

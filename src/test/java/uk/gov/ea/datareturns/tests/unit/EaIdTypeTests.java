@@ -1,7 +1,7 @@
 package uk.gov.ea.datareturns.tests.unit;
 
 import org.junit.Test;
-import uk.gov.ea.datareturns.domain.model.rules.EaIdType;
+import uk.gov.ea.datareturns.domain.validation.model.rules.EaIdType;
 
 import static org.assertj.core.api.Assertions.assertThat;
 

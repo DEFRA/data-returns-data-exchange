@@ -8,7 +8,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 import uk.gov.ea.datareturns.config.email.MonitorProEmailConfiguration;
-import uk.gov.ea.datareturns.domain.model.rules.EaIdType;
+import uk.gov.ea.datareturns.domain.validation.model.rules.EaIdType;
 import uk.gov.ea.datareturns.util.MustacheTemplates;
 
 import javax.inject.Inject;

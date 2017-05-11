@@ -26,9 +26,9 @@ public class MvoFactory<D extends MeasurementDto, V extends Mvo> {
 
     public V create(D dto) {
         try {
-            Constructor ctor = mvoClass.getDeclaredConstructor(dto.getClass());
-            ctor.setAccessible(true);
-            V instance = (V)ctor.newInstance(dto);
+            Constructor<V> declaredConstructor = mvoClass.getDeclaredConstructor(dto.getClass());
+            declaredConstructor.setAccessible(true);
+            V instance = declaredConstructor.newInstance(dto);
             return instance;
         } catch (NoSuchMethodException|IllegalAccessException|InstantiationException|InvocationTargetException e) {
             LOGGER.error("Cannot create measurement validation object for: " + dto.toString());

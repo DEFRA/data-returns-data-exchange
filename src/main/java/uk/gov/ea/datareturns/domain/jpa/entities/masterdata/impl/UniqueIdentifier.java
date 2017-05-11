@@ -3,7 +3,6 @@ package uk.gov.ea.datareturns.domain.jpa.entities.masterdata.impl;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.hibernate.annotations.GenericGenerator;
 import uk.gov.ea.datareturns.domain.jpa.entities.masterdata.ControlledListEntity;
-import uk.gov.ea.datareturns.domain.model.fields.FieldValue;
 
 import javax.persistence.*;
 
@@ -57,8 +56,8 @@ public class UniqueIdentifier implements ControlledListEntity {
     }
 
 //    @Override
-//    public uk.gov.ea.datareturns.domain.model.fields.impl.EaId getFieldValue() {
-//        return new uk.gov.ea.datareturns.domain.model.fields.impl.EaId(this.getName());
+//    public EaId getFieldValue() {
+//        return new EaId(this.getName());
 //    }
 
     @Override

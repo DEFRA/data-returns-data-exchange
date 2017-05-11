@@ -4,12 +4,11 @@ import uk.gov.ea.datareturns.domain.dto.impl.LandfillMeasurementDto;
 import uk.gov.ea.datareturns.domain.jpa.dao.masterdata.*;
 import uk.gov.ea.datareturns.domain.jpa.dao.userdata.factories.AbstractMeasurementFactory;
 import uk.gov.ea.datareturns.domain.jpa.entities.userdata.impl.LandfillMeasurement;
-import uk.gov.ea.datareturns.domain.model.fields.impl.MonitoringDate;
+import uk.gov.ea.datareturns.domain.validation.model.fields.impl.ds.MonitoringDate;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
-import java.util.Date;
 
 /**
  * @author Graham Willis

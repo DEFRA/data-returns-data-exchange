@@ -7,8 +7,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 import uk.gov.ea.datareturns.App;
-import uk.gov.ea.datareturns.domain.model.MessageCodes;
-import uk.gov.ea.datareturns.domain.model.rules.FieldDefinition;
+import uk.gov.ea.datareturns.domain.validation.model.MessageCodes;
+import uk.gov.ea.datareturns.domain.validation.model.rules.FieldDefinition;
 import uk.gov.ea.datareturns.testsupport.InfluxDBTestImpl;
 
 import java.util.Arrays;

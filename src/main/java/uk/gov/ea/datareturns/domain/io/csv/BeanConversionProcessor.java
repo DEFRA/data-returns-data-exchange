@@ -7,8 +7,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uk.gov.ea.datareturns.domain.io.csv.generic.exceptions.InconsistentRowException;
-import uk.gov.ea.datareturns.domain.model.fields.MappedField;
-import uk.gov.ea.datareturns.domain.model.rules.FieldMapping;
+import uk.gov.ea.datareturns.domain.validation.model.fields.MappedField;
+import uk.gov.ea.datareturns.domain.validation.model.rules.FieldMapping;
 import uk.gov.ea.datareturns.util.TextUtils;
 
 import java.util.ArrayList;

@@ -2,7 +2,7 @@ package uk.gov.ea.datareturns.tests.unit;
 
 import org.junit.Assert;
 import org.junit.Test;
-import uk.gov.ea.datareturns.domain.model.rules.DateFormat;
+import uk.gov.ea.datareturns.domain.validation.rules.DateFormat;
 import uk.gov.ea.datareturns.tests.util.TestUtils;
 
 import java.time.LocalDate;

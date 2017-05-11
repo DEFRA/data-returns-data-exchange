@@ -12,7 +12,7 @@ import uk.gov.ea.datareturns.config.TestSettings;
 import uk.gov.ea.datareturns.domain.dto.impl.LandfillMeasurementDto;
 import uk.gov.ea.datareturns.domain.jpa.entities.userdata.impl.*;
 import uk.gov.ea.datareturns.domain.jpa.service.SubmissionService;
-import uk.gov.ea.datareturns.domain.validation.impl.LandfillMeasurementMvo;
+import uk.gov.ea.datareturns.domain.validation.landfillmeasurement.LandfillMeasurementMvo;
 
 import javax.inject.Inject;
 import java.io.File;

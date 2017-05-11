@@ -2,7 +2,7 @@ package uk.gov.ea.datareturns.tests.unit;
 
 import org.junit.Assert;
 import org.junit.Test;
-import uk.gov.ea.datareturns.domain.model.rules.FieldDefinition;
+import uk.gov.ea.datareturns.domain.validation.model.rules.FieldDefinition;
 
 /**
  * Tests the {@link DataReturnsHeadersTests} rules meet the application specification
