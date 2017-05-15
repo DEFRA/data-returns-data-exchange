@@ -14,7 +14,7 @@ import uk.gov.ea.datareturns.domain.validation.model.validation.constraints.cont
  * @author Sam Gardner-Dell
  */
 public class MethodOrStandard
-        extends AbstractEntityValue<MethodOrStandardDao, LandfillMeasurementMvo, uk.gov.ea.datareturns.domain.jpa.entities.masterdata.impl.MethodOrStandard> {
+        extends AbstractEntityValue<MethodOrStandardDao, uk.gov.ea.datareturns.domain.jpa.entities.masterdata.impl.MethodOrStandard> {
     private static final MethodOrStandardDao DAO = EntityDao.getDao(MethodOrStandardDao.class);
 
     @ControlledList(auditor = MethodOrStandardAuditor.class, message = MessageCodes.ControlledList.MethodOrStandard)

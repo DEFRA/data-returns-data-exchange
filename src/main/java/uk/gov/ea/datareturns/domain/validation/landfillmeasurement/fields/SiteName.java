@@ -10,7 +10,7 @@ import uk.gov.ea.datareturns.domain.validation.model.fields.FieldValue;
  *
  * @author Sam Gardner-Dell
  */
-public class SiteName implements FieldValue<LandfillMeasurementMvo, String> {
+public class SiteName implements FieldValue<String> {
 
     @NotBlank(message = MessageCodes.Missing.Site_Name)
     private final String inputValue;
@@ -32,7 +32,4 @@ public class SiteName implements FieldValue<LandfillMeasurementMvo, String> {
         return this.inputValue;
     }
 
-    @Override public String transform(LandfillMeasurementMvo record) {
-        return getValue();
-    }
 }

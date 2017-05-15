@@ -13,7 +13,7 @@ import java.util.Optional;
  * @param <R>  Parmeterized type for the record the entity belongs to
  * @param <E>  Parmeterized type for the entity
  */
-public abstract class AbstractAliasingEntityValue<R, E extends AliasingEntity> extends AbstractEntityValue<AliasingEntityDao<E>, R, E> {
+public abstract class AbstractAliasingEntityValue<E extends AliasingEntity> extends AbstractEntityValue<AliasingEntityDao<E>, E> {
 
     /**
      * Instantiates a new Abstract aliasing entity value.
@@ -28,15 +28,4 @@ public abstract class AbstractAliasingEntityValue<R, E extends AliasingEntity> e
         return getDao().getByNameOrAlias(Key.relaxed(inputValue));
     }
 
-    /**
-     * Provide standard transformation functionality based on the {@link AliasingEntity} aliasing functionality
-     *
-     * @param record the record to which the entity belongs
-     * @return the transformed output value of this entity for use in the downstream system.
-     */
-    @Override public String transform(R record) {
-        String entityName = Optional.ofNullable(super.getEntity()).map(AliasingEntity::getName).orElse(null);
-        // Use an explicit lookup as we are already using an entity
-        return Optional.ofNullable(getDao().getPreferred(Key.explicit(entityName))).map(AliasingEntity::getName).orElse(null);
-    }
 }

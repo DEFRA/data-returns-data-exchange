@@ -21,7 +21,7 @@ import java.util.Optional;
  *
  * @author Sam Gardner-Dell
  */
-public class EaId extends AbstractEntityValue<UniqueIdentifierDao, LandfillMeasurementMvo, UniqueIdentifier> implements Comparable<EaId> {
+public class EaId extends AbstractEntityValue<UniqueIdentifierDao, UniqueIdentifier> implements Comparable<EaId> {
     private static final UniqueIdentifierDao DAO = EntityDao.getDao(UniqueIdentifierDao.class);
 
     @NotBlank(message = MessageCodes.Missing.EA_ID)
@@ -86,11 +86,6 @@ public class EaId extends AbstractEntityValue<UniqueIdentifierDao, LandfillMeasu
      */
     public boolean isAlphaNumeric() {
         return !isNumeric();
-    }
-
-    @Override public String transform(LandfillMeasurementMvo record) {
-        Key lookup = Key.explicit(this.getInputValue());
-        return Optional.ofNullable(getDao().getPreferred(lookup)).map(ControlledListEntity::getName).orElse(null);
     }
 
     /**

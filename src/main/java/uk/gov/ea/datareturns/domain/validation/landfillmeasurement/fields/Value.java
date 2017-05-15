@@ -1,6 +1,7 @@
 package uk.gov.ea.datareturns.domain.validation.landfillmeasurement.fields;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
+import uk.gov.ea.datareturns.domain.validation.Mvo;
 import uk.gov.ea.datareturns.domain.validation.landfillmeasurement.LandfillMeasurementMvo;
 import uk.gov.ea.datareturns.domain.validation.model.MessageCodes;
 import uk.gov.ea.datareturns.domain.validation.model.fields.FieldValue;
@@ -11,7 +12,7 @@ import javax.validation.constraints.Pattern;
 /**
  * A numerical value of a measurement.
  */
-public class Value implements FieldValue<LandfillMeasurementMvo, String> {
+public class Value implements FieldValue<String> {
     @Pattern(regexp = "([<>]?\\s*-?(\\d+\\.)?(\\d)+)", message = MessageCodes.Incorrect.Value)
     private final String inputValue;
 
@@ -33,7 +34,4 @@ public class Value implements FieldValue<LandfillMeasurementMvo, String> {
         return TextUtils.normalize(inputValue, TextUtils.WhitespaceHandling.REMOVE);
     }
 
-    @Override public String transform(LandfillMeasurementMvo record) {
-        return getValue();
-    }
 }

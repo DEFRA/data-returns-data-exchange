@@ -12,7 +12,7 @@ import uk.gov.ea.datareturns.domain.jpa.entities.masterdata.ControlledListEntity
  * @param <R>   Parmeterized type for the record the entity belongs to
  * @param <E>   Parmeterized type for the entity
  */
-public abstract class AbstractEntityValue<D extends EntityDao<E>, R, E extends ControlledListEntity> implements FieldValue<R, E> {
+public abstract class AbstractEntityValue<D extends EntityDao<E>, E extends ControlledListEntity> implements FieldValue<E> {
     @JsonIgnore
     private E entity;
 
@@ -56,22 +56,12 @@ public abstract class AbstractEntityValue<D extends EntityDao<E>, R, E extends C
     }
 
     /**
-     * Provide standard transformation functionality by using the standard name field from the referenced entity
-     *
-     * @param record the record to which the entity belongs
-     * @return the transformed output value of this entity for use in the downstream system.
-     */
-    @Override public String transform(R record) {
-        return this.entity != null ? this.entity.getName() : null;
-    }
-
-    /**
      * Helper function to provide null checking getting entity from field value from a static reference
      * @param fv The field Value
      * @param <E> The entity type
      * @return The entity
      */
-    public static <E extends ControlledListEntity> E getEntity(AbstractEntityValue<?, ?, E> fv) {
+    public static <E extends ControlledListEntity> E getEntity(AbstractEntityValue<?, E> fv) {
         return fv != null ? fv.getEntity() : null;
     }
 

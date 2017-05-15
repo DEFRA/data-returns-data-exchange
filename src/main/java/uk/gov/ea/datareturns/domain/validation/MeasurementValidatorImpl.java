@@ -47,34 +47,10 @@ public class MeasurementValidatorImpl<V extends Mvo> implements MeasurementValid
         final ValidationErrors validationErrors = new ValidationErrors();
         final Set<ConstraintViolation<V>> violations = validate(measurement);
         for (final ConstraintViolation<V> violation : violations) {
-            List<FieldValue<V, ?>> fieldValues = fieldMessageMap.getFieldDependencies(measurement, violation.getMessageTemplate());
+            List<FieldValue<?>> fieldValues = fieldMessageMap.getFieldDependencies(measurement, violation.getMessageTemplate());
         }
 
         return validationErrors;
-    }
-
-    /**
-     * Prepare the Error data array for addition to the ValidationError object
-     * @param record The current record
-     * @param violation the {@link ConstraintViolation} detailing the error
-     * @return The data error array
-     */
-    private List<ValidationErrorField> getErrorDataFromFields(V record, ConstraintViolation<V> violation) {
-        List<ValidationErrorField> errorData = new ArrayList<>();
-        List<FieldDefinition> fieldsForValidation = getFieldsForViolation(violation);
-        if (fieldsForValidation != null) {
-            for (FieldDefinition field : fieldsForValidation) {
-                FieldMapping fieldMapping = beanMapping.get(field.getName());
-                ValidationErrorField errorDatum = new ValidationErrorField();
-                if (fieldMapping != null) {
-                    errorDatum.setName(field.getName());
-                    errorDatum.setValue(fieldMapping.getInputValue(record));
-                    errorDatum.setResolvedValue(fieldMapping.getOutputValue(record));
-                }
-                errorData.add(errorDatum);
-            }
-        }
-        return errorData;
     }
 
     /**

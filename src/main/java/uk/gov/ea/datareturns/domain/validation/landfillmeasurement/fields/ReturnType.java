@@ -14,7 +14,7 @@ import uk.gov.ea.datareturns.domain.validation.model.validation.constraints.cont
  *
  * @author Sam Gardner-Dell
  */
-public class ReturnType extends AbstractEntityValue<ReturnTypeDao, LandfillMeasurementMvo, uk.gov.ea.datareturns.domain.jpa.entities.masterdata.impl.ReturnType> {
+public class ReturnType extends AbstractEntityValue<ReturnTypeDao, uk.gov.ea.datareturns.domain.jpa.entities.masterdata.impl.ReturnType> {
     private static final ReturnTypeDao DAO = EntityDao.getDao(ReturnTypeDao.class);
 
     @NotBlank(message = MessageCodes.Missing.Rtn_Type)

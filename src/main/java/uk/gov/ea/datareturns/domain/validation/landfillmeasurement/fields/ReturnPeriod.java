@@ -12,7 +12,7 @@ import uk.gov.ea.datareturns.domain.validation.rules.ReturnPeriodFormat;
  *
  * @author Sam Gardner-Dell Created by sam on 04/10/16.
  */
-public class ReturnPeriod implements FieldValue<LandfillMeasurementMvo, String> {
+public class ReturnPeriod implements FieldValue<String> {
     @ControlledList(auditor = ReturnPeriodAuditor.class, message = MessageCodes.ControlledList.Rtn_Period)
     private final String inputValue;
     private final String value;
@@ -35,8 +35,5 @@ public class ReturnPeriod implements FieldValue<LandfillMeasurementMvo, String> 
         return this.value;
     }
 
-    @Override public String transform(LandfillMeasurementMvo record) {
-        return this.value;
-    }
 }
 

@@ -15,7 +15,7 @@ import uk.gov.ea.datareturns.domain.validation.model.validation.constraints.cont
  *
  * @author Sam Gardner-Dell
  */
-public class Parameter extends AbstractAliasingEntityValue<LandfillMeasurementMvo, uk.gov.ea.datareturns.domain.jpa.entities.masterdata.impl.Parameter> {
+public class Parameter extends AbstractAliasingEntityValue<uk.gov.ea.datareturns.domain.jpa.entities.masterdata.impl.Parameter> {
     private static final ParameterDao DAO = EntityDao.getDao(ParameterDao.class);
 
     @NotBlank(message = MessageCodes.Missing.Parameter)

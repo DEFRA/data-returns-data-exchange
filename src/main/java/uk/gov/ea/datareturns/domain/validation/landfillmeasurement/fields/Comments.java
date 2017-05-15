@@ -11,7 +11,7 @@ import uk.gov.ea.datareturns.domain.validation.model.fields.FieldValue;
  *
  * @author Sam Gardner-Dell
  */
-public class Comments implements FieldValue<LandfillMeasurementMvo, String> {
+public class Comments implements FieldValue<String> {
     @Length(max = 255, message = MessageCodes.Length.Comments)
     private final String inputValue;
 
@@ -30,9 +30,5 @@ public class Comments implements FieldValue<LandfillMeasurementMvo, String> {
 
     @Override public String getValue() {
         return inputValue;
-    }
-
-    @Override public String transform(LandfillMeasurementMvo record) {
-        return StringUtils.trim(getValue());
     }
 }

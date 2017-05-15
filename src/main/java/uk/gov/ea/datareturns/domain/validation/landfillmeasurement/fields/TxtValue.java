@@ -14,7 +14,7 @@ import uk.gov.ea.datareturns.domain.validation.model.validation.constraints.cont
  *
  * @author Sam Gardner-Dell
  */
-public class TxtValue extends AbstractAliasingEntityValue<LandfillMeasurementMvo, TextValue> {
+public class TxtValue extends AbstractAliasingEntityValue<TextValue> {
     private static final TextValueDao DAO = EntityDao.getDao(TextValueDao.class);
     @ControlledList(auditor = TxtValueAuditor.class, message = MessageCodes.ControlledList.Txt_Value)
     private final String inputValue;

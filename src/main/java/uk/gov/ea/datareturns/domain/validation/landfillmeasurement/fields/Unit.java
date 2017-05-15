@@ -13,7 +13,7 @@ import uk.gov.ea.datareturns.domain.validation.model.validation.constraints.cont
  *
  * @author Sam Gardner-Dell
  */
-public class Unit extends AbstractAliasingEntityValue<LandfillMeasurementMvo, uk.gov.ea.datareturns.domain.jpa.entities.masterdata.impl.Unit> {
+public class Unit extends AbstractAliasingEntityValue<uk.gov.ea.datareturns.domain.jpa.entities.masterdata.impl.Unit> {
     private static final UnitDao DAO = EntityDao.getDao(UnitDao.class);
 
     @ControlledList(auditor = UnitAuditor.class, message = MessageCodes.ControlledList.Unit)

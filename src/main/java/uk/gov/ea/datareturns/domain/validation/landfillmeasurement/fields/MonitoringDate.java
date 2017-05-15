@@ -18,7 +18,7 @@ import java.time.format.DateTimeFormatter;
  * @author Sam Gardner-Dell
  */
 @ValidMonitoringDate
-public class MonitoringDate implements FieldValue<LandfillMeasurementMvo, Instant> {
+public class MonitoringDate implements FieldValue<Instant> {
     /** The {@link Instant} representing the date that was specified */
     private Instant instant;
     /** Flag to store if the time was specified as part of the date */
@@ -99,22 +99,4 @@ public class MonitoringDate implements FieldValue<LandfillMeasurementMvo, Instan
         return this.instant;
     }
 
-    /**
-     * Retrieve the standardised String form of this {@link MonitoringDate}
-     *
-     * @return the date/time information in standard format.
-     */
-    @Override public String transform(LandfillMeasurementMvo record) {
-        String fmt = "";
-        if (this.instant != null) {
-            if (isTimeSpecified()) {
-                fmt = DateTimeFormatter.ofPattern(DateFormat.STANDARD_DATE_TIME_FORMAT)
-                        .format(LocalDateTime.ofInstant(this.instant, ZoneOffset.UTC));
-            } else {
-                fmt = DateTimeFormatter.ofPattern(DateFormat.STANDARD_DATE_FORMAT)
-                        .format(LocalDateTime.ofInstant(this.instant, ZoneOffset.UTC));
-            }
-        }
-        return fmt;
-    }
 }

@@ -6,11 +6,10 @@ import uk.gov.ea.datareturns.domain.validation.model.rules.FieldDefinition;
 /**
  * Represents a single field value for a record
  *
- * @param <R>  the type parameter
  * @param <T>  the type parameter
  * @author Sam Gardner-Dell
  */
-public interface FieldValue<R, T> {
+public interface FieldValue<T> {
 
     /**
      * Gets input value.
@@ -25,13 +24,6 @@ public interface FieldValue<R, T> {
      * @return the value that should be output to the downstream system for this field value
      */
     T getValue();
-
-    /**
-     * Transform output
-     * @param record the record which this field belongs to
-     * @return the appropriate output value for the downstream system
-     */
-    String transform(R record);
 
     /**
      * Gets field.

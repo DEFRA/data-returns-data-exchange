@@ -13,7 +13,7 @@ import uk.gov.ea.datareturns.domain.validation.model.validation.constraints.cont
  *
  * @author Sam Gardner-Dell
  */
-public class Qualifier extends AbstractEntityValue<QualifierDao, LandfillMeasurementMvo, uk.gov.ea.datareturns.domain.jpa.entities.masterdata.impl.Qualifier> {
+public class Qualifier extends AbstractEntityValue<QualifierDao, uk.gov.ea.datareturns.domain.jpa.entities.masterdata.impl.Qualifier> {
     private static final QualifierDao DAO = EntityDao.getDao(QualifierDao.class);
 
     @ControlledList(auditor = QualifierAuditor.class, message = MessageCodes.ControlledList.Qualifier)
