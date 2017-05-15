@@ -2,11 +2,10 @@ package uk.gov.ea.datareturns.domain.validation.landfillmeasurement.fields;
 
 import uk.gov.ea.datareturns.domain.jpa.dao.masterdata.EntityDao;
 import uk.gov.ea.datareturns.domain.jpa.dao.masterdata.QualifierDao;
-import uk.gov.ea.datareturns.domain.validation.landfillmeasurement.LandfillMeasurementMvo;
-import uk.gov.ea.datareturns.domain.validation.model.MessageCodes;
-import uk.gov.ea.datareturns.domain.validation.model.fields.AbstractEntityValue;
-import uk.gov.ea.datareturns.domain.validation.model.validation.auditors.controlledlist.QualifierAuditor;
-import uk.gov.ea.datareturns.domain.validation.model.validation.constraints.controlledlist.ControlledList;
+import uk.gov.ea.datareturns.domain.validation.landfillmeasurement.LandfillMeasurementFieldMessageMap;
+import uk.gov.ea.datareturns.domain.validation.newmodel.auditors.controlledlist.QualifierAuditorNew;
+import uk.gov.ea.datareturns.domain.validation.newmodel.constraints.controlledlist.ControlledList;
+import uk.gov.ea.datareturns.domain.validation.newmodel.entityfields.AbstractEntityValue;
 
 /**
  * Qualifies a measurement with additional information to better define the properties of measurement.  E.g. dry weight, wet weight
@@ -16,7 +15,7 @@ import uk.gov.ea.datareturns.domain.validation.model.validation.constraints.cont
 public class Qualifier extends AbstractEntityValue<QualifierDao, uk.gov.ea.datareturns.domain.jpa.entities.masterdata.impl.Qualifier> {
     private static final QualifierDao DAO = EntityDao.getDao(QualifierDao.class);
 
-    @ControlledList(auditor = QualifierAuditor.class, message = MessageCodes.ControlledList.Qualifier)
+    @ControlledList(auditor = QualifierAuditorNew.class, message = LandfillMeasurementFieldMessageMap.ControlledList.Qualifier)
     private final String inputValue;
 
     /**

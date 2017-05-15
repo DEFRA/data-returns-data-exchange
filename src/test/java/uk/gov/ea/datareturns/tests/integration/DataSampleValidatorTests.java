@@ -24,7 +24,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.Set;
 
 /**
- * Tests the validation constraints the DataSample class
+ * Tests the validation entityfields the DataSample class
  *
  * @author Sam Gardner-Dell
  */

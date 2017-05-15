@@ -1,15 +1,15 @@
 package uk.gov.ea.datareturns.domain.validation.basicmeasurement;
 
 import uk.gov.ea.datareturns.domain.dto.impl.BasicMeasurementDto;
-import uk.gov.ea.datareturns.domain.validation.model.fields.impl.ds.Parameter;
-import uk.gov.ea.datareturns.domain.validation.Mvo;
+import uk.gov.ea.datareturns.domain.validation.basicmeasurement.fields.*;
+import uk.gov.ea.datareturns.domain.validation.newmodel.validator.Mvo;
 
 import javax.validation.Valid;
 import java.math.BigDecimal;
 
 /**
  * @author Graham Willis
- * Object contaioning fields and hibernate validation annotations
+ * Object contaioning entityfields and hibernate validation annotations
  */
 public class BasicMeasurementMvo extends Mvo<BasicMeasurementDto> {
 
@@ -24,7 +24,7 @@ public class BasicMeasurementMvo extends Mvo<BasicMeasurementDto> {
     public BasicMeasurementMvo(BasicMeasurementDto dto) {
         super(dto);
 
-        // Initialize the fields for validation
+        // Initialize the entityfields for validation
         parameter = new Parameter(dto.getParameter());
         value = new BigDecimal(dto.getValue());
     }

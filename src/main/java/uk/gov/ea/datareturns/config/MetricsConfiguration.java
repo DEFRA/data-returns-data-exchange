@@ -42,7 +42,7 @@ public class MetricsConfiguration extends MetricsConfigurerAdapter implements Je
     }
 
     /**
-     * Bean factory for the {@link EmbeddedServletContainerCustomizer} which allows us to customise the
+     * Bean record for the {@link EmbeddedServletContainerCustomizer} which allows us to customise the
      * servlet container
      *
      * @return the EmbeddedServletContainerCustomizer

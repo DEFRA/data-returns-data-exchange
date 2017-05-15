@@ -1,4 +1,4 @@
-package uk.gov.ea.datareturns.domain.validation;
+package uk.gov.ea.datareturns.domain.validation.newmodel.validator;
 
 
 import org.slf4j.Logger;

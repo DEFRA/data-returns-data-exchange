@@ -3,7 +3,7 @@ package uk.gov.ea.datareturns.domain.io.csv.generic.exceptions;
 import com.univocity.parsers.common.DataProcessingException;
 
 /**
- * Thrown by the reader if a row is encountered with an inconsistent number of fields with respect to the header.
+ * Thrown by the reader if a row is encountered with an inconsistent number of entityfields with respect to the header.
  *
  * @author Sam Gardner-Dell
  */

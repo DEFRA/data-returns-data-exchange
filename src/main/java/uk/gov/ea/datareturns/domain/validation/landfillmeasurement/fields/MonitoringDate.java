@@ -1,15 +1,13 @@
 package uk.gov.ea.datareturns.domain.validation.landfillmeasurement.fields;
 
-import uk.gov.ea.datareturns.domain.validation.landfillmeasurement.LandfillMeasurementMvo;
-import uk.gov.ea.datareturns.domain.validation.model.fields.FieldValue;
-import uk.gov.ea.datareturns.domain.validation.model.validation.constraints.field.ValidMonitoringDate;
-import uk.gov.ea.datareturns.domain.validation.rules.DateFormat;
+import uk.gov.ea.datareturns.domain.validation.newmodel.constraints.field.ValidMonitoringDate;
+import uk.gov.ea.datareturns.domain.validation.newmodel.entityfields.FieldValue;
+import uk.gov.ea.datareturns.domain.validation.newmodel.rules.DateFormat;
 
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
-import java.time.format.DateTimeFormatter;
 
 /**
  * Monitoring date/time. This is the date and (optionally) time (eg, for a spot sample).

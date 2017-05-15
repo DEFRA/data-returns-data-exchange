@@ -46,7 +46,7 @@ public class PersistenceConfiguration {
     }
 
     /**
-     * Bean factory for the JPA entity manager
+     * Bean record for the JPA entity manager
      *
      * @return a {@link LocalContainerEntityManagerFactoryBean} configured for the application database
      */

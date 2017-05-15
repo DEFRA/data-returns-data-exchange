@@ -3,8 +3,8 @@ package uk.gov.ea.datareturns.tests.unit;
 import org.junit.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static uk.gov.ea.datareturns.domain.validation.rules.FileType.CSV;
-import static uk.gov.ea.datareturns.domain.validation.rules.FileType.XML;
+import static uk.gov.ea.datareturns.domain.validation.model.rules.FileType.CSV;
+import static uk.gov.ea.datareturns.domain.validation.model.rules.FileType.XML;
 
 /**
  * Tests for File types.

@@ -143,7 +143,7 @@ public class FieldMapping {
                 }
                 if (pd.getReadMethod() == null || pd.getWriteMethod() == null) {
                     LOGGER.warn("Ignoring field " + property
-                            + ".  All mappable fields must have accessor methods as per the JavaBean specification.");
+                            + ".  All mappable entityfields must have accessor methods as per the JavaBean specification.");
                     continue;
                 }
                 mappings.put(mappedField.value().getName(), new FieldMapping(pd, field, mappedField));

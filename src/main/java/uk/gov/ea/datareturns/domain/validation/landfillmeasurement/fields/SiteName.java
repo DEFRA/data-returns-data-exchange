@@ -1,9 +1,8 @@
 package uk.gov.ea.datareturns.domain.validation.landfillmeasurement.fields;
 
 import org.hibernate.validator.constraints.NotBlank;
-import uk.gov.ea.datareturns.domain.validation.landfillmeasurement.LandfillMeasurementMvo;
-import uk.gov.ea.datareturns.domain.validation.model.MessageCodes;
-import uk.gov.ea.datareturns.domain.validation.model.fields.FieldValue;
+import uk.gov.ea.datareturns.domain.validation.landfillmeasurement.LandfillMeasurementFieldMessageMap;
+import uk.gov.ea.datareturns.domain.validation.newmodel.entityfields.FieldValue;
 
 /**
  * Reference to the site at which the measurement is being taken.
@@ -12,7 +11,7 @@ import uk.gov.ea.datareturns.domain.validation.model.fields.FieldValue;
  */
 public class SiteName implements FieldValue<String> {
 
-    @NotBlank(message = MessageCodes.Missing.Site_Name)
+    @NotBlank(message = LandfillMeasurementFieldMessageMap.Missing.Site_Name)
     private final String inputValue;
 
     /**

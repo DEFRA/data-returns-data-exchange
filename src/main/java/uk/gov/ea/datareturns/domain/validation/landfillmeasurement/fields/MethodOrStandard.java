@@ -2,11 +2,10 @@ package uk.gov.ea.datareturns.domain.validation.landfillmeasurement.fields;
 
 import uk.gov.ea.datareturns.domain.jpa.dao.masterdata.EntityDao;
 import uk.gov.ea.datareturns.domain.jpa.dao.masterdata.MethodOrStandardDao;
-import uk.gov.ea.datareturns.domain.validation.landfillmeasurement.LandfillMeasurementMvo;
-import uk.gov.ea.datareturns.domain.validation.model.MessageCodes;
-import uk.gov.ea.datareturns.domain.validation.model.fields.AbstractEntityValue;
-import uk.gov.ea.datareturns.domain.validation.model.validation.auditors.controlledlist.MethodOrStandardAuditor;
-import uk.gov.ea.datareturns.domain.validation.model.validation.constraints.controlledlist.ControlledList;
+import uk.gov.ea.datareturns.domain.validation.landfillmeasurement.LandfillMeasurementFieldMessageMap;
+import uk.gov.ea.datareturns.domain.validation.newmodel.auditors.controlledlist.MethodOrStandardAuditorNew;
+import uk.gov.ea.datareturns.domain.validation.newmodel.constraints.controlledlist.ControlledList;
+import uk.gov.ea.datareturns.domain.validation.newmodel.entityfields.AbstractEntityValue;
 
 /**
  * The method or standard used for monitoring
@@ -17,7 +16,7 @@ public class MethodOrStandard
         extends AbstractEntityValue<MethodOrStandardDao, uk.gov.ea.datareturns.domain.jpa.entities.masterdata.impl.MethodOrStandard> {
     private static final MethodOrStandardDao DAO = EntityDao.getDao(MethodOrStandardDao.class);
 
-    @ControlledList(auditor = MethodOrStandardAuditor.class, message = MessageCodes.ControlledList.MethodOrStandard)
+    @ControlledList(auditor = MethodOrStandardAuditorNew.class, message = LandfillMeasurementFieldMessageMap.ControlledList.MethodOrStandard)
     private final String inputValue;
 
     /**

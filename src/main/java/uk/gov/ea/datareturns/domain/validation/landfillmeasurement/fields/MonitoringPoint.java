@@ -2,9 +2,8 @@ package uk.gov.ea.datareturns.domain.validation.landfillmeasurement.fields;
 
 import org.hibernate.validator.constraints.Length;
 import org.hibernate.validator.constraints.NotBlank;
-import uk.gov.ea.datareturns.domain.validation.landfillmeasurement.LandfillMeasurementMvo;
-import uk.gov.ea.datareturns.domain.validation.model.MessageCodes;
-import uk.gov.ea.datareturns.domain.validation.model.fields.FieldValue;
+import uk.gov.ea.datareturns.domain.validation.landfillmeasurement.LandfillMeasurementFieldMessageMap;
+import uk.gov.ea.datareturns.domain.validation.newmodel.entityfields.FieldValue;
 
 /**
  * The monitoring point to which the record relates.
@@ -12,8 +11,8 @@ import uk.gov.ea.datareturns.domain.validation.model.fields.FieldValue;
  * @author Sam Gardner-Dell
  */
 public class MonitoringPoint implements FieldValue<String> {
-    @NotBlank(message = MessageCodes.Missing.Mon_Point)
-    @Length(max = 50, message = MessageCodes.Length.Mon_Point)
+    @NotBlank(message = LandfillMeasurementFieldMessageMap.Missing.Mon_Point)
+    @Length(max = 50, message = LandfillMeasurementFieldMessageMap.Length.Mon_Point)
     private String monitoringPoint;
 
     /**

@@ -1,10 +1,7 @@
 package uk.gov.ea.datareturns.domain.validation.landfillmeasurement.fields;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
-import uk.gov.ea.datareturns.domain.validation.Mvo;
-import uk.gov.ea.datareturns.domain.validation.landfillmeasurement.LandfillMeasurementMvo;
-import uk.gov.ea.datareturns.domain.validation.model.MessageCodes;
-import uk.gov.ea.datareturns.domain.validation.model.fields.FieldValue;
+import uk.gov.ea.datareturns.domain.validation.landfillmeasurement.LandfillMeasurementFieldMessageMap;
+import uk.gov.ea.datareturns.domain.validation.newmodel.entityfields.FieldValue;
 import uk.gov.ea.datareturns.util.TextUtils;
 
 import javax.validation.constraints.Pattern;
@@ -13,7 +10,7 @@ import javax.validation.constraints.Pattern;
  * A numerical value of a measurement.
  */
 public class Value implements FieldValue<String> {
-    @Pattern(regexp = "([<>]?\\s*-?(\\d+\\.)?(\\d)+)", message = MessageCodes.Incorrect.Value)
+    @Pattern(regexp = "([<>]?\\s*-?(\\d+\\.)?(\\d)+)", message = LandfillMeasurementFieldMessageMap.Incorrect.Value)
     private final String inputValue;
 
     /**
@@ -21,7 +18,6 @@ public class Value implements FieldValue<String> {
      *
      * @param inputValue the input value
      */
-    @JsonCreator
     public Value(String inputValue) {
         this.inputValue = inputValue;
     }

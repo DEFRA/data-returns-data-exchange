@@ -66,7 +66,7 @@ public class InfluxDBTestImpl implements InfluxDBFacade {
             this.tags = (Map<String, String>) getPointField("tags", point);
             this.time = (Long) getPointField("time", point);
             this.precision = (TimeUnit) getPointField("precision", point);
-            this.fields = (Map<String, Object>) getPointField("fields", point);
+            this.fields = (Map<String, Object>) getPointField("entityfields", point);
         }
 
         public String getMeasurement() {
@@ -95,7 +95,7 @@ public class InfluxDBTestImpl implements InfluxDBFacade {
                     .append("tags", tags)
                     .append("time", time)
                     .append("precision", precision)
-                    .append("fields", fields)
+                    .append("entityfields", fields)
                     .toString();
         }
 

@@ -83,7 +83,7 @@ public class DataReturnsCSVProcessorImpl implements DataReturnsCSVProcessor {
         try {
             parser.parse(new ByteArrayInputStream(data), detectCharset(data));
         } catch (final InconsistentRowException e) {
-            // Row encountered with an inconsistent number of fields with respect to the header definitions.
+            // Row encountered with an inconsistent number of entityfields with respect to the header definitions.
             throw new FileStructureException(e.getMessage());
         } catch (final Throwable e) {
             LOGGER.warn("Unexpected exception while parsing CSV file.", e);
@@ -107,7 +107,7 @@ public class DataReturnsCSVProcessorImpl implements DataReturnsCSVProcessor {
         // Check that the file contains all mandatory headers
         if (!csvHeaders.containsAll(FieldDefinition.MANDATORY_FIELD_NAMES)) {
             throw new MandatoryFieldMissingException(
-                    "Missing fields one or more mandatory fields: " + FieldDefinition.MANDATORY_FIELD_NAMES.toString());
+                    "Missing entityfields one or more mandatory entityfields: " + FieldDefinition.MANDATORY_FIELD_NAMES.toString());
         }
 
         // Check that the file contains records as well as a header!

@@ -1,6 +1,6 @@
 package uk.gov.ea.datareturns.domain.validation.landfillmeasurement;
 
-import uk.gov.ea.datareturns.domain.validation.FieldMessageMap;
+import uk.gov.ea.datareturns.domain.validation.newmodel.validator.FieldMessageMap;
 import uk.gov.ea.datareturns.domain.validation.landfillmeasurement.fields.*;
 
 /**

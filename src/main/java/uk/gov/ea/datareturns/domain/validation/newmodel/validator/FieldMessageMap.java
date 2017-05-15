@@ -1,8 +1,8 @@
-package uk.gov.ea.datareturns.domain.validation;
+package uk.gov.ea.datareturns.domain.validation.newmodel.validator;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import uk.gov.ea.datareturns.domain.validation.model.fields.FieldValue;
+import uk.gov.ea.datareturns.domain.validation.newmodel.entityfields.FieldValue;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;

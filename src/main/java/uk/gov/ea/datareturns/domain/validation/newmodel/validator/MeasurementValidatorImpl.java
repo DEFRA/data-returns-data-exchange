@@ -1,28 +1,20 @@
-package uk.gov.ea.datareturns.domain.validation;
+package uk.gov.ea.datareturns.domain.validation.newmodel.validator;
 
-import uk.gov.ea.datareturns.domain.validation.landfillmeasurement.LandfillMeasurementMvo;
-import uk.gov.ea.datareturns.domain.validation.model.MessageCodes;
-import uk.gov.ea.datareturns.domain.validation.model.fields.FieldValue;
-import uk.gov.ea.datareturns.domain.validation.model.rules.FieldDefinition;
-import uk.gov.ea.datareturns.domain.validation.model.rules.FieldMapping;
-import uk.gov.ea.datareturns.domain.result.ValidationErrorField;
-import uk.gov.ea.datareturns.domain.result.ValidationErrorType;
 import uk.gov.ea.datareturns.domain.result.ValidationErrors;
+import uk.gov.ea.datareturns.domain.validation.newmodel.entityfields.FieldValue;
+import uk.gov.ea.datareturns.domain.validation.newmodel.validator.result.ValidationResult;
 
 import javax.inject.Inject;
 import javax.validation.ConstraintViolation;
 import javax.validation.Validator;
 import java.lang.annotation.Annotation;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 /**
- * @author Sam Gardner-Dell, Graham Willis
+ * @author Graham Willis
  */
 public class MeasurementValidatorImpl<V extends Mvo> implements MeasurementValidator<V> {
-    private final Map<String, FieldMapping> beanMapping;
 
     /** validator instance */
     private final Validator instanceValidator;
@@ -39,18 +31,21 @@ public class MeasurementValidatorImpl<V extends Mvo> implements MeasurementValid
     @Inject
     public MeasurementValidatorImpl(final Validator validator, final Class<V> mvoClass, FieldMessageMap<V> fieldMessageMap) {
         this.instanceValidator = validator;
-        this.beanMapping = FieldMapping.getFieldNameToBeanMap(mvoClass);
         this.fieldMessageMap = fieldMessageMap;
     }
 
-    public ValidationErrors validateMeasurement(V measurement) {
-        final ValidationErrors validationErrors = new ValidationErrors();
+    public ValidationResult validateMeasurement(V measurement) {
+        final ValidationResult validationResult = new ValidationResult();
         final Set<ConstraintViolation<V>> violations = validate(measurement);
         for (final ConstraintViolation<V> violation : violations) {
+            ValidationResult.ValidationError error = validationResult.forViolation(violation);
             List<FieldValue<?>> fieldValues = fieldMessageMap.getFieldDependencies(measurement, violation.getMessageTemplate());
+            for (FieldValue<?> fieldValue : fieldValues) {
+                error.add(fieldValue);
+            }
         }
 
-        return validationErrors;
+        return validationResult;
     }
 
     /**
@@ -77,14 +72,4 @@ public class MeasurementValidatorImpl<V extends Mvo> implements MeasurementValid
         }
         return violations;
     }
-
-    /**
-     * Determines the set of FieldDefinitions for each given error code declared in MessageCodes
-     * @param violation The hibernate violation
-     * @return A list of field definitions
-     */
-    private List<FieldDefinition> getFieldsForViolation(final ConstraintViolation<V> violation) {
-        return MessageCodes.getFieldDependencies(violation.getMessageTemplate());
-    }
-
 }

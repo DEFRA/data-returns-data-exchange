@@ -1,4 +1,4 @@
-package uk.gov.ea.datareturns.domain.validation.rules;
+package uk.gov.ea.datareturns.domain.validation.model.rules;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;

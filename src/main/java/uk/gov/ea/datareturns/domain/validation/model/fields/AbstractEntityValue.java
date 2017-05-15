@@ -1,19 +1,17 @@
 package uk.gov.ea.datareturns.domain.validation.model.fields;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import uk.gov.ea.datareturns.domain.jpa.dao.masterdata.EntityDao;
 import uk.gov.ea.datareturns.domain.jpa.dao.masterdata.Key;
 import uk.gov.ea.datareturns.domain.jpa.entities.masterdata.ControlledListEntity;
 
 /**
- * The {@link AbstractEntityValue} class provides the base {@link FieldValue} implementation for fields which are backed by
+ * The {@link AbstractEntityValue} class provides the base {@link FieldValue} implementation for entityfields which are backed by
  * a database entity
  *
  * @param <R>   Parmeterized type for the record the entity belongs to
  * @param <E>   Parmeterized type for the entity
  */
-public abstract class AbstractEntityValue<D extends EntityDao<E>, E extends ControlledListEntity> implements FieldValue<E> {
-    @JsonIgnore
+public abstract class AbstractEntityValue<D extends EntityDao<E>, R, E extends ControlledListEntity> implements FieldValue<R, E> {
     private E entity;
 
     /**
@@ -56,12 +54,22 @@ public abstract class AbstractEntityValue<D extends EntityDao<E>, E extends Cont
     }
 
     /**
+     * Provide standard transformation functionality by using the standard name field from the referenced entity
+     *
+     * @param record the record to which the entity belongs
+     * @return the transformed output value of this entity for use in the downstream system.
+     */
+    @Override public String transform(R record) {
+        return this.entity != null ? this.entity.getName() : null;
+    }
+
+    /**
      * Helper function to provide null checking getting entity from field value from a static reference
      * @param fv The field Value
      * @param <E> The entity type
      * @return The entity
      */
-    public static <E extends ControlledListEntity> E getEntity(AbstractEntityValue<?, E> fv) {
+    public static <E extends ControlledListEntity> E getEntity(AbstractEntityValue<?, ?, E> fv) {
         return fv != null ? fv.getEntity() : null;
     }
 

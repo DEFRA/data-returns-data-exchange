@@ -27,7 +27,7 @@ public class App {
     }
 
     /**
-     * Bean factory for hibernate validator.
+     * Bean record for hibernate validator.
      *
      * @return a singleton instance of the {@link LocalValidatorFactoryBean} to be shared application-wide.
      */

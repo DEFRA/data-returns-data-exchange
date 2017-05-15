@@ -4,11 +4,10 @@ package uk.gov.ea.datareturns.domain.validation.landfillmeasurement.fields;
 import org.hibernate.validator.constraints.NotBlank;
 import uk.gov.ea.datareturns.domain.jpa.dao.masterdata.EntityDao;
 import uk.gov.ea.datareturns.domain.jpa.dao.masterdata.ParameterDao;
-import uk.gov.ea.datareturns.domain.validation.landfillmeasurement.LandfillMeasurementMvo;
-import uk.gov.ea.datareturns.domain.validation.model.MessageCodes;
-import uk.gov.ea.datareturns.domain.validation.model.fields.AbstractAliasingEntityValue;
-import uk.gov.ea.datareturns.domain.validation.model.validation.auditors.controlledlist.ParameterAuditor;
-import uk.gov.ea.datareturns.domain.validation.model.validation.constraints.controlledlist.ControlledList;
+import uk.gov.ea.datareturns.domain.validation.landfillmeasurement.LandfillMeasurementFieldMessageMap;
+import uk.gov.ea.datareturns.domain.validation.newmodel.auditors.controlledlist.ParameterAuditorNew;
+import uk.gov.ea.datareturns.domain.validation.newmodel.constraints.controlledlist.ControlledList;
+import uk.gov.ea.datareturns.domain.validation.newmodel.entityfields.AbstractAliasingEntityValue;
 
 /**
  * The chemical substance or physical parameter being measured
@@ -18,8 +17,8 @@ import uk.gov.ea.datareturns.domain.validation.model.validation.constraints.cont
 public class Parameter extends AbstractAliasingEntityValue<uk.gov.ea.datareturns.domain.jpa.entities.masterdata.impl.Parameter> {
     private static final ParameterDao DAO = EntityDao.getDao(ParameterDao.class);
 
-    @NotBlank(message = MessageCodes.Missing.Parameter)
-    @ControlledList(auditor = ParameterAuditor.class, message = MessageCodes.ControlledList.Parameter)
+    @NotBlank(message = LandfillMeasurementFieldMessageMap.Missing.Parameter)
+    @ControlledList(auditor = ParameterAuditorNew.class, message = LandfillMeasurementFieldMessageMap.ControlledList.Parameter)
     private final String inputValue;
 
     /**

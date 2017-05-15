@@ -19,7 +19,7 @@ public class MethodOrStandardAuditor implements ControlledListAuditor {
     private MethodOrStandardDao methodOrStandardDao;
 
     /* (non-Javadoc)
-     * @see uk.gov.ea.datareturns.domain.validation.model.validation.constraints.ControlledListAuditor#isValid(java.lang.Object)
+     * @see uk.gov.ea.datareturns.domain.validation.model.validation.entityfields.ControlledListAuditor#isValid(java.lang.Object)
      */
     @Override
     public boolean isValid(final Object value) {

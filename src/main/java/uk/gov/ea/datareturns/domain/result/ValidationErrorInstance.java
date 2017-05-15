@@ -17,11 +17,11 @@ import java.util.List;
  */
 @SuppressWarnings("unused")
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
-@JsonPropertyOrder(value = {"recordIndices", "fields"})
+@JsonPropertyOrder(value = {"recordIndices", "entityfields"})
 public class ValidationErrorInstance {
     @JsonProperty("recordIndices")
     private List<Integer> recordIndices = new ArrayList<>();
-    @JsonProperty("fields")
+    @JsonProperty("entityfields")
     private List<ValidationErrorField> fields;
 
     /**
@@ -34,18 +34,18 @@ public class ValidationErrorInstance {
     }
 
     /**
-     * The fields which contributed to this validation error (may be multiple for dependent field validation)
+     * The entityfields which contributed to this validation error (may be multiple for dependent field validation)
      *
-     * @return the fields
+     * @return the entityfields
      */
     public List<ValidationErrorField> getFields() {
         return fields;
     }
 
     /**
-     * Sets the fields which contributed to this validation error (may be multiple for dependent field validation)
+     * Sets the entityfields which contributed to this validation error (may be multiple for dependent field validation)
      *
-     * @param fields the fields
+     * @param fields the entityfields
      */
     public void setFields(List<ValidationErrorField> fields) {
         this.fields = fields;

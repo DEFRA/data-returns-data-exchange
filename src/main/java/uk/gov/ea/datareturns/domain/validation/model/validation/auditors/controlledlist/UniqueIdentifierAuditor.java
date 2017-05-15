@@ -18,7 +18,7 @@ public class UniqueIdentifierAuditor implements ControlledListAuditor {
     UniqueIdentifierDao uniqueIdentifierDao;
 
     /* (non-Javadoc)
-     * @see uk.gov.ea.datareturns.domain.validation.model.validation.constraints.controlledlist.ControlledListAuditor#isValid(java.lang.Object)
+     * @see uk.gov.ea.datareturns.domain.validation.model.validation.entityfields.controlledlist.ControlledListAuditor#isValid(java.lang.Object)
      */
     @Override
     public boolean isValid(final Object value) {

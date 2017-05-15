@@ -7,9 +7,9 @@ import uk.gov.ea.datareturns.domain.validation.model.rules.FieldDefinition;
 import java.util.*;
 
 /**
- * The intersection between the error codes DR...and associated fields
+ * The intersection between the error codes DR...and associated entityfields
  *
- * This class allows the message codes to be associated with a group of fields so that each
+ * This class allows the message codes to be associated with a group of entityfields so that each
  * unique error message can be contextualized by other data on the row.
  *
  * This gets rid of the problem whereby the hibernate validator error cannot

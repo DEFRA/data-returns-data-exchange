@@ -5,16 +5,12 @@ import org.hibernate.validator.constraints.NotBlank;
 import uk.gov.ea.datareturns.domain.jpa.dao.masterdata.EntityDao;
 import uk.gov.ea.datareturns.domain.jpa.dao.masterdata.Key;
 import uk.gov.ea.datareturns.domain.jpa.dao.masterdata.UniqueIdentifierDao;
-import uk.gov.ea.datareturns.domain.jpa.entities.masterdata.ControlledListEntity;
 import uk.gov.ea.datareturns.domain.jpa.entities.masterdata.impl.UniqueIdentifier;
-import uk.gov.ea.datareturns.domain.validation.landfillmeasurement.LandfillMeasurementMvo;
-import uk.gov.ea.datareturns.domain.validation.model.MessageCodes;
-import uk.gov.ea.datareturns.domain.validation.model.fields.AbstractEntityValue;
-import uk.gov.ea.datareturns.domain.validation.model.rules.EaIdType;
-import uk.gov.ea.datareturns.domain.validation.model.validation.auditors.controlledlist.UniqueIdentifierAuditor;
-import uk.gov.ea.datareturns.domain.validation.model.validation.constraints.controlledlist.ControlledList;
-
-import java.util.Optional;
+import uk.gov.ea.datareturns.domain.validation.landfillmeasurement.LandfillMeasurementFieldMessageMap;
+import uk.gov.ea.datareturns.domain.validation.newmodel.entityfields.AbstractEntityValue;
+import uk.gov.ea.datareturns.domain.validation.newmodel.rules.EaIdType;
+import uk.gov.ea.datareturns.domain.validation.newmodel.auditors.controlledlist.UniqueIdentifierAuditorNew;
+import uk.gov.ea.datareturns.domain.validation.newmodel.constraints.controlledlist.ControlledList;
 
 /**
  * Models details about an EA Unique Identifier (EA_ID)
@@ -24,8 +20,8 @@ import java.util.Optional;
 public class EaId extends AbstractEntityValue<UniqueIdentifierDao, UniqueIdentifier> implements Comparable<EaId> {
     private static final UniqueIdentifierDao DAO = EntityDao.getDao(UniqueIdentifierDao.class);
 
-    @NotBlank(message = MessageCodes.Missing.EA_ID)
-    @ControlledList(auditor = UniqueIdentifierAuditor.class, message = MessageCodes.ControlledList.EA_ID)
+    @NotBlank(message = LandfillMeasurementFieldMessageMap.Missing.EA_ID)
+    @ControlledList(auditor = UniqueIdentifierAuditorNew.class, message = LandfillMeasurementFieldMessageMap.ControlledList.EA_ID)
     private String identifier;
 
     private EaIdType type;

@@ -3,7 +3,6 @@ package uk.gov.ea.datareturns.domain.jpa.service;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.module.SimpleModule;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.transaction.annotation.Transactional;
@@ -18,11 +17,11 @@ import uk.gov.ea.datareturns.domain.jpa.entities.userdata.impl.Dataset;
 import uk.gov.ea.datareturns.domain.jpa.entities.userdata.impl.Record;
 import uk.gov.ea.datareturns.domain.jpa.entities.userdata.impl.User;
 import uk.gov.ea.datareturns.domain.result.ValidationErrors;
-import uk.gov.ea.datareturns.domain.validation.MeasurementValidator;
-import uk.gov.ea.datareturns.domain.validation.Mvo;
-import uk.gov.ea.datareturns.domain.validation.MvoFactory;
+import uk.gov.ea.datareturns.domain.validation.newmodel.validator.MeasurementValidator;
+import uk.gov.ea.datareturns.domain.validation.newmodel.validator.Mvo;
+import uk.gov.ea.datareturns.domain.validation.newmodel.validator.MvoFactory;
+import uk.gov.ea.datareturns.domain.validation.newmodel.validator.result.ValidationResult;
 
-import javax.validation.ConstraintViolation;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.*;
@@ -45,7 +44,7 @@ import java.util.stream.Collectors;
  * (4) VALID. The data in the Json string has been validated and found to be valid. Any errors are
  * cleared from the error field
  *
- * (5) SUBMITTED. The validated data is used to persist the submission and all of ite relationships.
+ * (5) SUBMITTED. The validated data is used to persist the submission and all of its relationships.
  * 
  * The service is created by the submission service configuration
  *
@@ -224,12 +223,12 @@ public class SubmissionService<D extends MeasurementDto, M extends AbstractMeasu
         mvos.entrySet().stream()
             .filter(Objects::nonNull)
             .forEach(m -> {
-                ValidationErrors validationErrors = validator.validateMeasurement(m.getValue());
+                ValidationResult validationResult = validator.validateMeasurement(m.getValue());
                 try {
-                    if (validationErrors.isValid()) {
+                    if (validationResult.isValid()) {
                         m.getKey().setRecordStatus(Record.RecordStatus.VALID);
                     } else {
-                        String result = mapper.writeValueAsString(validationErrors);
+                        String result = mapper.writeValueAsString(validationResult);
                         m.getKey().setValidationResult(result);
                         m.getKey().setRecordStatus(Record.RecordStatus.INVALID);
                     }
