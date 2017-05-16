@@ -1,8 +1,8 @@
 package uk.gov.ea.datareturns.domain.jpa.hierarchy;
 
 import org.apache.commons.lang3.tuple.Pair;
-import uk.gov.ea.datareturns.domain.jpa.dao.EntityDao;
-import uk.gov.ea.datareturns.domain.jpa.entities.ControlledListEntity;
+import uk.gov.ea.datareturns.domain.jpa.dao.masterdata.EntityDao;
+import uk.gov.ea.datareturns.domain.jpa.entities.masterdata.ControlledListEntity;
 import uk.gov.ea.datareturns.domain.jpa.hierarchy.processors.Navigator;
 import uk.gov.ea.datareturns.domain.jpa.hierarchy.processors.Validator;
 

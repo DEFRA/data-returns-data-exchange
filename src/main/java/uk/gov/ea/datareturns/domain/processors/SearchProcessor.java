@@ -2,12 +2,12 @@ package uk.gov.ea.datareturns.domain.processors;
 
 import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.stereotype.Component;
-import uk.gov.ea.datareturns.domain.dto.PermitLookupDto;
-import uk.gov.ea.datareturns.domain.jpa.dao.Key;
-import uk.gov.ea.datareturns.domain.jpa.dao.SiteDao;
-import uk.gov.ea.datareturns.domain.jpa.dao.UniqueIdentifierDao;
-import uk.gov.ea.datareturns.domain.jpa.entities.Site;
-import uk.gov.ea.datareturns.domain.jpa.entities.UniqueIdentifier;
+import uk.gov.ea.datareturns.domain.dto.impl.PermitLookupDto;
+import uk.gov.ea.datareturns.domain.jpa.dao.masterdata.Key;
+import uk.gov.ea.datareturns.domain.jpa.dao.masterdata.SiteDao;
+import uk.gov.ea.datareturns.domain.jpa.dao.masterdata.UniqueIdentifierDao;
+import uk.gov.ea.datareturns.domain.jpa.entities.masterdata.impl.Site;
+import uk.gov.ea.datareturns.domain.jpa.entities.masterdata.impl.UniqueIdentifier;
 import uk.gov.ea.datareturns.domain.jpa.service.Search;
 
 import javax.inject.Inject;

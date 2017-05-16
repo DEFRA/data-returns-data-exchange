@@ -4,7 +4,7 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
-import uk.gov.ea.datareturns.domain.jpa.dao.EntityDao;
+import uk.gov.ea.datareturns.domain.jpa.dao.masterdata.EntityDao;
 import uk.gov.ea.datareturns.domain.jpa.hierarchy.*;
 import uk.gov.ea.datareturns.util.SpringApplicationContextProvider;
 

@@ -2,7 +2,7 @@ package uk.gov.ea.datareturns.domain.io.zip;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
-import uk.gov.ea.datareturns.domain.model.fields.impl.EaId;
+import uk.gov.ea.datareturns.domain.validation.model.fields.impl.ds.EaId;
 
 import java.io.File;
 import java.io.IOException;

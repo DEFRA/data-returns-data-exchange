@@ -2,7 +2,7 @@ package uk.gov.ea.datareturns.config.email;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
-import uk.gov.ea.datareturns.domain.model.rules.EaIdType;
+import uk.gov.ea.datareturns.domain.validation.model.rules.EaIdType;
 
 /**
  * Configuration values for email messages to Monitor Pro

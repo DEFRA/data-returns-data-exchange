@@ -1,0 +1,308 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd">
+
+	<preConditions>
+		<dbms type="${db.type}"/>
+		<runningAs username="${db.username}"/>
+	</preConditions>
+
+	<changeSet id="measurement data" author="Environment Agency">
+
+		<!--
+		****************************************************************
+		User
+		****************************************************************
+		-->
+		<createTable tableName="users">
+			<column name="id" type="bigserial">
+				<constraints primaryKey="true" nullable="false"/>
+			</column>
+			<column name="identifier" type="varchar(80)">
+				<constraints nullable="false"/>
+			</column>
+		</createTable>
+
+		<createIndex indexName="idx_user_identifier" tableName="users" unique="true">
+			<column name="identifier"/>
+		</createIndex>
+
+		<sql>insert into users (identifier) values ('SYSTEM')</sql>
+
+		<!--
+		****************************************************************
+		Dataset
+		****************************************************************
+		-->
+		<createTable tableName="datasets">
+
+			<column name="id" type="bigserial">
+				<constraints primaryKey="true" nullable="false"/>
+			</column>
+
+			<column name="user_id" type="bigint">
+				<constraints nullable="false"/>
+			</column>
+
+			<column name="identifier" type="varchar(80)">
+				<constraints nullable="false" unique="true"/>
+			</column>
+
+			<column name="filename" type="varchar(500)">
+				<constraints nullable="true"/>
+			</column>
+
+		</createTable>
+
+		<createIndex indexName="idx_datasets" tableName="datasets" unique="true">
+			<column name="user_id"/>
+			<column name="identifier"/>
+		</createIndex>
+
+		<addForeignKeyConstraint baseColumnNames="user_id"
+								 baseTableName="datasets"
+								 constraintName="fk_dataset_user"
+								 referencedColumnNames="id"
+								 referencedTableName="users"/>
+
+
+		<!--
+		****************************************************************
+		Records
+		****************************************************************
+		-->
+		<createTable tableName="records">
+
+			<column name="id" type="bigserial">
+				<constraints primaryKey="true" nullable="false"/>
+			</column>
+
+			<column name="dataset_id" type="bigint">
+				<constraints nullable="false"/>
+			</column>
+
+			<column name="identifier" type="varchar(80)">
+				<constraints nullable="false" unique="true"/>
+			</column>
+
+			<column name="status" type="varchar(10)">
+				<constraints nullable="false"/>
+			</column>
+
+			<column name="create_date" type="timestamp without timezone">
+				<constraints nullable="false"/>
+			</column>
+
+			<column name="last_changed_date" type="timestamp without timezone">
+				<constraints nullable="false"/>
+			</column>
+
+			<column name="etag" type="varchar(36)">
+				<constraints nullable="false"/>
+			</column>
+
+			<column name="json" type="varchar(16000)">
+				<constraints nullable="true"/>
+			</column>
+
+			<column name="validation_result" type="varchar(16000)">
+				<constraints nullable="true"/>
+			</column>
+
+		</createTable>
+
+		<createIndex indexName="idx_records" tableName="records" unique="true">
+			<column name="dataset_id"/>
+			<column name="identifier"/>
+		</createIndex>
+
+		<addForeignKeyConstraint baseColumnNames="dataset_id"
+								 baseTableName="records"
+								 constraintName="fk_record_dataset"
+								 referencedColumnNames="id"
+								 referencedTableName="datasets"/>
+
+		<!--
+		****************************************************************
+		Landfill
+		****************************************************************
+		-->
+		<createTable tableName="landfill">
+
+			<column name="record_id" type="bigserial">
+				<constraints nullable="false"/>
+			</column>
+
+			<column name="ea_id" type="bigint">
+				<constraints nullable="false"/>
+			</column>
+
+			<column name="site_id" type="bigint">
+				<constraints nullable="false"/>
+			</column>
+
+			<column name="return_type_id" type="bigint">
+				<constraints nullable="false"/>
+			</column>
+
+			<column name="mon_date" type="timestamp">
+				<constraints nullable="false"/>
+			</column>
+
+			<column name="mon_point" type="varchar(50)">
+				<constraints nullable="false"/>
+			</column>
+
+			<column name="parameter_id" type="bigint">
+				<constraints nullable="false"/>
+			</column>
+
+			<column name="numeric_value" type="decimal">
+				<constraints nullable="true"/>
+			</column>
+
+			<column name="numeric_value_text" type="varchar(20)">
+				<constraints nullable="true"/>
+			</column>
+
+			<column name="text_value_id" type="bigint">
+				<constraints nullable="true"/>
+			</column>
+
+			<column name="qualifier_id" type="bigint">
+				<constraints nullable="true"/>
+			</column>
+
+			<column name="unit_id" type="bigint">
+				<constraints nullable="true"/>
+			</column>
+
+			<column name="reference_period_id" type="bigint">
+				<constraints nullable="true"/>
+			</column>
+
+			<column name="method_or_standard_id" type="bigint">
+				<constraints nullable="true"/>
+			</column>
+
+			<column name="comments" type="varchar(255)">
+				<constraints nullable="true"/>
+			</column>
+
+		</createTable>
+
+		<createIndex indexName="idx_landfill" tableName="landfill" unique="true">
+			<column name="record_id"/>
+		</createIndex>
+
+		<addForeignKeyConstraint baseColumnNames="record_id"
+								 baseTableName="landfill"
+								 constraintName="fk_landfill_record"
+								 referencedColumnNames="id"
+								 referencedTableName="records"/>
+
+		<addForeignKeyConstraint baseColumnNames="ea_id"
+								 baseTableName="landfill"
+								 constraintName="fk_landfill_unique_identifier"
+								 referencedColumnNames="id"
+								 referencedTableName="unique_identifiers"/>
+
+		<addForeignKeyConstraint baseColumnNames="site_id"
+								 baseTableName="landfill"
+								 constraintName="fk_landfill_site"
+								 referencedColumnNames="id"
+								 referencedTableName="sites"/>
+
+		<addForeignKeyConstraint baseColumnNames="return_type_id"
+								 baseTableName="landfill"
+								 constraintName="fk_landfill_return_type"
+								 referencedColumnNames="id"
+								 referencedTableName="return_types"/>
+
+		<addForeignKeyConstraint baseColumnNames="parameter_id"
+								 baseTableName="landfill"
+								 constraintName="fk_landfill_parameter"
+								 referencedColumnNames="id"
+								 referencedTableName="parameters"/>
+
+		<addForeignKeyConstraint baseColumnNames="text_value_id"
+								 baseTableName="landfill"
+								 constraintName="fk_landfill_text_value"
+								 referencedColumnNames="id"
+								 referencedTableName="text_values"/>
+
+		<addForeignKeyConstraint baseColumnNames="qualifier_id"
+								 baseTableName="landfill"
+								 constraintName="fk_landfill_qualifier"
+								 referencedColumnNames="id"
+								 referencedTableName="qualifiers"/>
+
+		<addForeignKeyConstraint baseColumnNames="unit_id"
+								 baseTableName="landfill"
+								 constraintName="fk_landfill_unit"
+								 referencedColumnNames="id"
+								 referencedTableName="units"/>
+
+		<addForeignKeyConstraint baseColumnNames="reference_period_id"
+								 baseTableName="landfill"
+								 constraintName="fk_landfill_reference_period"
+								 referencedColumnNames="id"
+								 referencedTableName="reference_periods"/>
+
+		<addForeignKeyConstraint baseColumnNames="method_or_standard_id"
+								 baseTableName="landfill"
+								 constraintName="fk_landfill_method_or_standard"
+								 referencedColumnNames="id"
+								 referencedTableName="methods_or_standards"/>
+
+		<!--
+		****************************************************************
+		Measurements - prototype
+		****************************************************************
+		-->
+		<createTable tableName="measurements">
+
+			<column name="record_id" type="bigserial">
+				<constraints nullable="false"/>
+			</column>
+
+			<column name="parameter_id" type="bigint">
+				<constraints nullable="false"/>
+			</column>
+
+			<column name="value" type="numeric">
+				<constraints nullable="false"/>
+			</column>
+
+		</createTable>
+
+		<addForeignKeyConstraint baseColumnNames="record_id"
+								 baseTableName="measurements"
+								 constraintName="fk_measurements_record"
+								 referencedColumnNames="id"
+								 referencedTableName="records"/>
+
+		<addForeignKeyConstraint baseColumnNames="parameter_id"
+								 baseTableName="measurements"
+								 constraintName="fk_measurements_parameter"
+								 referencedColumnNames="id"
+								 referencedTableName="parameters"/>
+
+		<!--
+		****************************************************************
+		Rollback
+		****************************************************************
+		-->
+
+		<rollback>
+			<dropTable tableName="measurements"/>
+			<dropTable tableName="landfill"/>
+			<dropTable tableName="status"/>
+			<dropTable tableName="records"/>
+			<dropTable tableName="datasets"/>
+			<dropTable tableName="users"/>
+		</rollback>
+
+	</changeSet>
+
+</databaseChangeLog>

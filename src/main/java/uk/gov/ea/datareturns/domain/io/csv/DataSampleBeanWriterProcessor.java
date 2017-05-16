@@ -3,7 +3,7 @@ package uk.gov.ea.datareturns.domain.io.csv;
 import com.univocity.parsers.common.processor.RowWriterProcessor;
 import com.univocity.parsers.csv.CsvWriter;
 import com.univocity.parsers.csv.CsvWriterSettings;
-import uk.gov.ea.datareturns.domain.model.DataSample;
+import uk.gov.ea.datareturns.domain.validation.model.DataSample;
 
 /**
  * Univocity {@link RowWriterProcessor} extension for data returns

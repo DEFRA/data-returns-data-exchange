@@ -4,8 +4,8 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import org.apache.commons.collections4.ComparatorUtils;
 import org.apache.commons.lang3.StringUtils;
-import uk.gov.ea.datareturns.domain.model.DataSample;
-import uk.gov.ea.datareturns.domain.model.fields.impl.EaId;
+import uk.gov.ea.datareturns.domain.validation.model.DataSample;
+import uk.gov.ea.datareturns.domain.validation.model.fields.impl.ds.EaId;
 
 import java.util.*;
 

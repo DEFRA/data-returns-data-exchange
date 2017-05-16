@@ -1,8 +1,8 @@
 package uk.gov.ea.datareturns.domain.jpa.hierarchy.implementations;
 
 import org.springframework.stereotype.Component;
-import uk.gov.ea.datareturns.domain.jpa.dao.*;
-import uk.gov.ea.datareturns.domain.jpa.entities.*;
+import uk.gov.ea.datareturns.domain.jpa.dao.masterdata.*;
+import uk.gov.ea.datareturns.domain.jpa.entities.masterdata.impl.*;
 import uk.gov.ea.datareturns.domain.jpa.hierarchy.Hierarchy;
 import uk.gov.ea.datareturns.domain.jpa.hierarchy.HierarchyGroupLevel;
 import uk.gov.ea.datareturns.domain.jpa.hierarchy.HierarchyLevel;

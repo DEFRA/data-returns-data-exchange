@@ -5,18 +5,15 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.dao.DataAccessException;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 import uk.gov.ea.datareturns.App;
-import uk.gov.ea.datareturns.domain.dto.PermitLookupDto;
-import uk.gov.ea.datareturns.domain.jpa.dao.SiteDao;
-import uk.gov.ea.datareturns.domain.jpa.dao.UniqueIdentifierAliasDao;
-import uk.gov.ea.datareturns.domain.jpa.dao.UniqueIdentifierDao;
-import uk.gov.ea.datareturns.domain.jpa.entities.Site;
-import uk.gov.ea.datareturns.domain.jpa.entities.UniqueIdentifier;
-import uk.gov.ea.datareturns.domain.jpa.entities.UniqueIdentifierAlias;
-import uk.gov.ea.datareturns.domain.jpa.service.Search;
+import uk.gov.ea.datareturns.domain.dto.impl.PermitLookupDto;
+import uk.gov.ea.datareturns.domain.jpa.service.SitePermitService;
 import uk.gov.ea.datareturns.domain.processors.SearchProcessor;
 
 import javax.inject.Inject;
@@ -31,37 +28,26 @@ import java.util.Set;
 @ActiveProfiles("IntegrationTests")
 public class PermitLookupTests {
 
+    protected static final Logger LOGGER = LoggerFactory.getLogger(PermitLookupTests.class);
+
     private static final String TEST_SITE_NAME = "TEST_SITE_NAME";
     private static final String UNIQUE_ID = "UNIQUE_ID";
     private static final String UNIQUE_ID_ALIAS = "UNIQUE_ID_ALIAS";
 
-    @Inject private SiteDao siteDao;
-    @Inject private UniqueIdentifierDao uniqueIdentifierDao;
-    @Inject private UniqueIdentifierAliasDao uniqueIdentifierAliasDao;
-    private SearchProcessor searchProcessor;
-    private Search search;
+    @Inject private SitePermitService sitePermitService;
+    @Inject private SearchProcessor searchProcessor;
 
     @Before
     public void initialize() throws IOException {
-        Site site = new Site();
-        site.setName(TEST_SITE_NAME);
+        try {
+        LOGGER.info("Initialize tests");
 
-        siteDao.add(site);
-        site = siteDao.getByName(TEST_SITE_NAME);
+        sitePermitService.removePermitSiteAndAliases(UNIQUE_ID);
+        sitePermitService.addNewPermitAndSite(UNIQUE_ID, TEST_SITE_NAME, new String [] { UNIQUE_ID_ALIAS });
 
-        UniqueIdentifier uniqueIdentifier = new UniqueIdentifier();
-        uniqueIdentifier.setName(UNIQUE_ID);
-        uniqueIdentifier.setSite(site);
-        uniqueIdentifierDao.add(uniqueIdentifier);
-        uniqueIdentifier = uniqueIdentifierDao.getByName(UNIQUE_ID);
-
-        UniqueIdentifierAlias uniqueIdentifierAlias = new UniqueIdentifierAlias();
-        uniqueIdentifierAlias.setName(UNIQUE_ID_ALIAS);
-        uniqueIdentifierAlias.setUniqueIdentifier(uniqueIdentifier);
-        uniqueIdentifierAliasDao.add(uniqueIdentifierAlias);
-
-        search = new Search(siteDao);
-        searchProcessor = new SearchProcessor(search, uniqueIdentifierDao, siteDao);
+        } catch (DataAccessException e) {
+            LOGGER.warn("Cannot add the test data: " + e.getMessage());
+        }
     }
 
     @Test
@@ -94,14 +80,11 @@ public class PermitLookupTests {
 
     @After
     public void cleanUp() {
-        Site site = siteDao.getByName(TEST_SITE_NAME);
-        UniqueIdentifier uniqueIdentifier = uniqueIdentifierDao.getByName(UNIQUE_ID);
-        UniqueIdentifierAlias uniqueIdentifierAlias = uniqueIdentifierAliasDao.getByName(UNIQUE_ID_ALIAS);
-
-        uniqueIdentifierAliasDao.removeById(uniqueIdentifierAlias.getId());
-        uniqueIdentifierDao.removeById(uniqueIdentifier.getId());
-        siteDao.removeById(site.getId());
-
+        try {
+            LOGGER.info("Cleanup tests");
+            sitePermitService.removePermitSiteAndAliases(UNIQUE_ID);
+        } catch (DataAccessException e) {
+            LOGGER.warn("Cannot remove the test data: " + e.getMessage());
+        }
     }
-
 }

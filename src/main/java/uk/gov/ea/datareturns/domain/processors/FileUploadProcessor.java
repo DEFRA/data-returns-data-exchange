@@ -11,10 +11,10 @@ import uk.gov.ea.datareturns.config.ProcessorSettings;
 import uk.gov.ea.datareturns.domain.exceptions.*;
 import uk.gov.ea.datareturns.domain.io.csv.DataReturnsCSVProcessor;
 import uk.gov.ea.datareturns.domain.io.zip.DataReturnsZipFileModel;
-import uk.gov.ea.datareturns.domain.model.DataSample;
-import uk.gov.ea.datareturns.domain.model.fields.impl.EaId;
-import uk.gov.ea.datareturns.domain.model.rules.FileType;
-import uk.gov.ea.datareturns.domain.model.validation.DataSampleValidator;
+import uk.gov.ea.datareturns.domain.validation.model.DataSample;
+import uk.gov.ea.datareturns.domain.validation.model.fields.impl.ds.EaId;
+import uk.gov.ea.datareturns.domain.validation.rules.FileType;
+import uk.gov.ea.datareturns.domain.validation.model.validation.DataSampleValidator;
 import uk.gov.ea.datareturns.domain.result.*;
 import uk.gov.ea.datareturns.domain.storage.StorageProvider;
 

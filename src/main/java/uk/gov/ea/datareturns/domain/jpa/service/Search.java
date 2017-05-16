@@ -16,8 +16,10 @@ import org.apache.lucene.store.RAMDirectory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
-import uk.gov.ea.datareturns.domain.jpa.dao.SiteDao;
-import uk.gov.ea.datareturns.domain.jpa.entities.Site;
+import org.springframework.util.Assert;
+import uk.gov.ea.datareturns.distributedtransaction.DistributedTransactionService;
+import uk.gov.ea.datareturns.domain.jpa.dao.masterdata.SiteDao;
+import uk.gov.ea.datareturns.domain.jpa.entities.masterdata.impl.Site;
 
 import javax.inject.Inject;
 import java.io.IOException;
@@ -35,13 +37,14 @@ public class Search {
     protected static final Logger LOGGER = LoggerFactory.getLogger(Search.class);
 
     private static final String SITE = "site";
-    private final Directory INDEX = new RAMDirectory();
+    private static final Directory INDEX = new RAMDirectory();
 
     final List<String> stopWords = Arrays.asList(); // Empty stop words list
     final CharArraySet stopSet = new CharArraySet(stopWords, true);
 
     private final StandardAnalyzer STANDARD_ANALYZER = new StandardAnalyzer(stopSet);
-    private IndexReader reader = null;
+
+    private volatile IndexReader reader = null;
     private IndexSearcher searcher = null;
     private QueryParser queryParser = null;
     private final SiteDao siteDao;
@@ -53,36 +56,55 @@ public class Search {
      * @throws IOException
      */
     @Inject
-    public Search(SiteDao siteDao) throws IOException {
+    public Search(SiteDao siteDao, DistributedTransactionService distributedTransactionService) throws IOException {
         this.siteDao = siteDao;
-        initialize();
     }
 
-    /**
-     * Can be called to reinitialize the data after a change to the data
-     * @throws IOException
-     */
-    public void initialize()  {
-        LOGGER.info("Initializing permit lookup tool");
+    public void initialize() {
+        LOGGER.info("Initializing site/permit indexes");
+        // Close the readers of the index - the reader stays open
+        // until the index is refreshed
+
+        IndexWriter writer = null;
         try {
+            if (reader != null) {
+                reader.close();
+            }
+            // Create a new index writer
             IndexWriterConfig config = new IndexWriterConfig(STANDARD_ANALYZER);
-            IndexWriter writer = new IndexWriter(INDEX, config);
+            writer = new IndexWriter(INDEX, config);
+            writer.deleteAll();
 
             // Collect the site, permit and permit alias into single documents and add them to the index
-            for(Site site : siteDao.list()) {
+            for (Site site : siteDao.list()) {
                 Document document = new Document();
                 document.add(new TextField(SITE, site.getName(), Field.Store.YES));
                 writer.addDocument(document);
             }
+
+            writer.commit();
+            Assert.isTrue(writer.numDocs() == siteDao.list().size());
             writer.close();
 
+            // Set up the reader which remains open until a refresh
             // For performance the searcher is shared across multiple searches -
             // because the index does not change. The index reader will be left open
             reader = DirectoryReader.open(INDEX);
             searcher = new IndexSearcher(reader);
             queryParser = new QueryParser(SITE, STANDARD_ANALYZER);
-        } catch (IOException e) {
-            LOGGER.error("Error initializing permit lookup tool: " + e.getMessage());
+
+            Assert.isTrue(reader.numDocs() == siteDao.list().size());
+
+        } catch (Exception e) {
+            LOGGER.error("Error creating lucene index: " + e.getMessage());
+        } finally {
+            if (writer != null) {
+                try {
+                    writer.close();
+                } catch (IOException e) {
+                    LOGGER.error("Error closing lucene index: " + e.getMessage());
+                }
+            }
         }
     }
 
@@ -92,6 +114,12 @@ public class Search {
      * @return List of searched sites
      */
     public List<Pair<String, String[]>> searchSite(String search)  {
+        // Initialize on demand
+        if (reader == null) {
+            initialize();
+        }
+
+        // Do index search
         List<Pair<String, String[]>> results = new ArrayList<>();
         try {
             Query query = queryParser.parse(search);
@@ -99,6 +127,8 @@ public class Search {
 
             TopDocs docs = searcher.search(query, hitsPerPage);
             ScoreDoc[] hits = docs.scoreDocs;
+
+            // Process hits
             for(int i=0; i < hits.length; ++i) {
                 int docId = hits[i].doc;
                 Document d = searcher.doc(docId);
@@ -129,4 +159,20 @@ public class Search {
         }
     }
 
+    /**
+     * Added to make the lucene index use the same on-demand methodology as teh generic caches
+     */
+    public void clearIndexes() {
+        if (reader != null) {
+            try {
+                LOGGER.info("Clear site-permit index");
+                if (reader != null) {
+                    reader.close();
+                    reader = null;
+                }
+            } catch (IOException e) {
+                LOGGER.warn("Error clearing site-permit index: " + e);
+            }
+        }
+    }
 }

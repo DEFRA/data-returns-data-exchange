@@ -1,7 +1,7 @@
 package uk.gov.ea.datareturns.domain.jpa.hierarchy;
 
-import uk.gov.ea.datareturns.domain.jpa.dao.EntityDao;
-import uk.gov.ea.datareturns.domain.jpa.entities.ControlledListsList;
+import uk.gov.ea.datareturns.domain.jpa.dao.masterdata.EntityDao;
+import uk.gov.ea.datareturns.domain.jpa.entities.masterdata.impl.ControlledListsList;
 
 /**
  * Represents a level in the hierarchy where grouping functions may be used. Groups are indicated by

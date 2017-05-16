@@ -9,10 +9,10 @@ import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.stereotype.Component;
-import uk.gov.ea.datareturns.domain.dto.ControlledListsDto;
-import uk.gov.ea.datareturns.domain.jpa.dao.EntityDao;
-import uk.gov.ea.datareturns.domain.jpa.entities.ControlledListEntity;
-import uk.gov.ea.datareturns.domain.jpa.entities.ControlledListsList;
+import uk.gov.ea.datareturns.domain.dto.impl.ControlledListsDto;
+import uk.gov.ea.datareturns.domain.jpa.dao.masterdata.EntityDao;
+import uk.gov.ea.datareturns.domain.jpa.entities.masterdata.ControlledListEntity;
+import uk.gov.ea.datareturns.domain.jpa.entities.masterdata.impl.ControlledListsList;
 import uk.gov.ea.datareturns.domain.jpa.hierarchy.Hierarchy;
 import uk.gov.ea.datareturns.domain.jpa.hierarchy.HierarchyLevel;
 

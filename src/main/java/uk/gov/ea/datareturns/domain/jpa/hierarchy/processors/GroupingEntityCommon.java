@@ -5,9 +5,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
-import uk.gov.ea.datareturns.domain.jpa.dao.AliasingEntityDao;
-import uk.gov.ea.datareturns.domain.jpa.dao.EntityDao;
-import uk.gov.ea.datareturns.domain.jpa.dao.Key;
+import uk.gov.ea.datareturns.domain.jpa.dao.masterdata.AliasingEntityDao;
+import uk.gov.ea.datareturns.domain.jpa.dao.masterdata.EntityDao;
+import uk.gov.ea.datareturns.domain.jpa.dao.masterdata.Key;
 import uk.gov.ea.datareturns.domain.jpa.hierarchy.Hierarchy;
 import uk.gov.ea.datareturns.util.CachingSupplier;
 

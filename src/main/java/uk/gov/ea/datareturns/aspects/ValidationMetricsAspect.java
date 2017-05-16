@@ -9,10 +9,11 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Configurable;
 import org.springframework.stereotype.Component;
 import uk.gov.ea.datareturns.config.metrics.InfluxDBFacade;
-import uk.gov.ea.datareturns.domain.jpa.entities.UniqueIdentifier;
-import uk.gov.ea.datareturns.domain.model.DataSample;
-import uk.gov.ea.datareturns.domain.model.MessageCodes;
-import uk.gov.ea.datareturns.domain.model.rules.FieldDefinition;
+import uk.gov.ea.datareturns.domain.jpa.entities.masterdata.impl.UniqueIdentifier;
+import uk.gov.ea.datareturns.domain.validation.model.DataSample;
+import uk.gov.ea.datareturns.domain.validation.model.MessageCodes;
+import uk.gov.ea.datareturns.domain.validation.model.fields.impl.ds.EaId;
+import uk.gov.ea.datareturns.domain.validation.model.rules.FieldDefinition;
 import uk.gov.ea.datareturns.domain.result.ValidationErrorType;
 import uk.gov.ea.datareturns.domain.result.ValidationErrors;
 import uk.gov.ea.datareturns.util.Environment;
@@ -72,7 +73,7 @@ public class ValidationMetricsAspect {
     }
 
     /**
-     * Write validation metrics for each {@link uk.gov.ea.datareturns.domain.model.fields.impl.EaId} used.
+     * Write validation metrics for each {@link EaId} used.
      *
      * @param timestamp the timestamp of the validation event
      * @param model the model being validated

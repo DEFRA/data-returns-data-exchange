@@ -13,8 +13,8 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import uk.gov.ea.datareturns.domain.exceptions.*;
 import uk.gov.ea.datareturns.domain.io.csv.generic.exceptions.InconsistentRowException;
-import uk.gov.ea.datareturns.domain.model.DataSample;
-import uk.gov.ea.datareturns.domain.model.rules.FieldDefinition;
+import uk.gov.ea.datareturns.domain.validation.model.DataSample;
+import uk.gov.ea.datareturns.domain.validation.model.rules.FieldDefinition;
 
 import javax.inject.Inject;
 import java.io.ByteArrayInputStream;

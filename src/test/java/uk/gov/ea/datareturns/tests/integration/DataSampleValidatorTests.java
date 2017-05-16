@@ -11,9 +11,9 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 import uk.gov.ea.datareturns.App;
-import uk.gov.ea.datareturns.domain.model.DataSample;
-import uk.gov.ea.datareturns.domain.model.fields.impl.*;
-import uk.gov.ea.datareturns.domain.model.validation.ValidationGroups;
+import uk.gov.ea.datareturns.domain.validation.model.DataSample;
+import uk.gov.ea.datareturns.domain.validation.model.fields.impl.ds.*;
+import uk.gov.ea.datareturns.domain.validation.model.validation.ValidationGroups;
 
 import javax.inject.Inject;
 import javax.validation.ConstraintViolation;

@@ -1,7 +1,7 @@
 package uk.gov.ea.datareturns.domain.io.csv;
 
 import uk.gov.ea.datareturns.domain.exceptions.AbstractValidationException;
-import uk.gov.ea.datareturns.domain.model.DataSample;
+import uk.gov.ea.datareturns.domain.validation.model.DataSample;
 
 import java.io.File;
 import java.io.IOException;
