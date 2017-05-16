@@ -1,5 +1,6 @@
 package uk.gov.ea.datareturns.web.resource;
 
+import io.swagger.annotations.*;
 import org.glassfish.jersey.media.multipart.FormDataContentDisposition;
 import org.glassfish.jersey.media.multipart.FormDataParam;
 import org.hibernate.validator.constraints.NotEmpty;
@@ -15,10 +16,7 @@ import uk.gov.ea.datareturns.domain.result.DataExchangeResult;
 import uk.gov.ea.datareturns.web.filters.FilenameAuthorization;
 
 import javax.inject.Inject;
-import javax.ws.rs.Consumes;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
+import javax.ws.rs.*;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 import java.io.File;
@@ -35,8 +33,10 @@ import static javax.ws.rs.core.MediaType.MULTIPART_FORM_DATA;
 @Path("/data-exchange/")
 @Component
 @Scope(ConfigurableBeanFactory.SCOPE_SINGLETON)
+@Api(description = "Data exchange resource")
 public class DataExchangeResource {
-    private static final Logger LOGGER = LoggerFactory.getLogger(DataExchangeResource.class);
+    private static final Logger LOGGER = LoggerFactory
+            .getLogger(DataExchangeResource.class);
 
     private final ApplicationContext context;
 
@@ -63,9 +63,14 @@ public class DataExchangeResource {
     @Consumes(MULTIPART_FORM_DATA)
     @Produces(APPLICATION_JSON)
     @FilenameAuthorization
+    @ApiOperation(value = "Upload a DEP compliant CSV file",
+            notes = "These are API operation notes",
+            response = DataExchangeResult.class)
+    @Deprecated
     public Response uploadFile(
             @FormDataParam("fileUpload") final InputStream is,
-            @FormDataParam("fileUpload") final FormDataContentDisposition fileDetail) throws Exception {
+            @FormDataParam("fileUpload") final FormDataContentDisposition fileDetail)
+            throws Exception {
         LOGGER.debug("/data-exchange/upload request received");
 
         // Define the client file name.  Make sure we strip path information to protect against naughty clients
@@ -75,7 +80,8 @@ public class DataExchangeResource {
             clientFilename = file.getName();
         }
 
-        final FileUploadProcessor processor = this.context.getBean(FileUploadProcessor.class);
+        final FileUploadProcessor processor = this.context
+                .getBean(FileUploadProcessor.class);
         processor.setClientFilename(clientFilename);
         processor.setInputStream(is);
 
@@ -102,13 +108,29 @@ public class DataExchangeResource {
     @Consumes(MULTIPART_FORM_DATA)
     @Produces(APPLICATION_JSON)
     @FilenameAuthorization
+    @ApiResponses(value = {
+            @ApiResponse(code = 404, message = "No file found for `fileKey`"),
+            @ApiResponse(code = 400, message = "Bad request...."),
+    })
+    @ApiOperation(value = "Upload a DEP compliant CSV file",
+            notes = "These are API operation notes",
+            response = DataExchangeResult.class)
+    @Deprecated
     public Response completeUpload(
-            @NotEmpty @FormDataParam("fileKey") final String orgFileKey,
-            @NotEmpty @FormDataParam("userEmail") final String userEmail,
-            @NotEmpty @FormDataParam("orgFileName") final String orgFileName) throws Exception {
+            @ApiParam(value = "The file key to submit",
+                    required = true
+            )
+            @NotEmpty @FormParam("fileKey") final String orgFileKey,
+            @ApiParam(value = "The user email address",
+                    required = true
+            )
+            @NotEmpty @FormParam("userEmail") final String userEmail,
+            @NotEmpty @FormDataParam("orgFileName") final String orgFileName)
+            throws Exception {
         LOGGER.debug("/data-exchange/complete request received");
 
-        final FileCompletionProcessor processor = this.context.getBean(FileCompletionProcessor.class);
+        final FileCompletionProcessor processor = this.context
+                .getBean(FileCompletionProcessor.class);
         processor.setOriginalFilename(orgFileName);
         processor.setStoredFileKey(orgFileKey);
         processor.setUserEmail(userEmail);
