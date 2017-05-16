@@ -1,7 +1,7 @@
 package uk.gov.ea.datareturns.web.resource.v1.model.dataset;
 
 /**
- * Dataset submissions status
+ * DatasetEntity submissions status
  *
  * @author Sam Gardner-Dell
  */

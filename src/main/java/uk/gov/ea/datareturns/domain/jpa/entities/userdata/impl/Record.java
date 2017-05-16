@@ -6,7 +6,6 @@ import uk.gov.ea.datareturns.domain.jpa.entities.userdata.Metadata;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
-import java.util.Date;
 
 /**
  * @author Graham
@@ -33,22 +32,17 @@ public class Record implements Metadata {
 
     @ManyToOne(optional=false)
     @JoinColumn(name = "dataset_id", referencedColumnName = "id")
-    private Dataset dataset;
+    private DatasetEntity dataset;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "status")
     private RecordStatus recordStatus;
 
-    // Note: hibernate does not support LocalDataTime yet
-    // TODO look into this
     @Basic @Column(name = "create_date", nullable = false)
     private LocalDateTime createDate;
 
     @Basic @Column(name = "last_changed_date", nullable = false)
     private LocalDateTime lastChangedDate;
-
-    @Basic @Column(name = "etag", nullable = false)
-    private String etag;
 
     @Basic @Column(name = "json", length = 16000)
     private String json;
@@ -72,11 +66,11 @@ public class Record implements Metadata {
         this.identifier = identifier;
     }
 
-    public Dataset getDataset() {
+    public DatasetEntity getDataset() {
         return dataset;
     }
 
-    public void setDataset(Dataset dataset) {
+    public void setDataset(DatasetEntity dataset) {
         this.dataset = dataset;
     }
 
@@ -102,14 +96,6 @@ public class Record implements Metadata {
 
     public void setLastChangedDate(LocalDateTime lastChangedDate) {
         this.lastChangedDate = lastChangedDate;
-    }
-
-    public String getEtag() {
-        return etag;
-    }
-
-    public void setEtag(String etag) {
-        this.etag = etag;
     }
 
     public String getJson() {
@@ -163,7 +149,6 @@ public class Record implements Metadata {
                 ", recordStatus=" + recordStatus +
                 ", createDate=" + createDate +
                 ", lastChangedDate=" + lastChangedDate +
-                ", etag='" + etag + '\'' +
                 ", json='" + json + '\'' +
                 ", validationResult=" + validationResult +
                 '}';

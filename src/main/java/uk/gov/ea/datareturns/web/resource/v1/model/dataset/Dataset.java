@@ -7,7 +7,7 @@ import uk.gov.ea.datareturns.web.resource.v1.model.common.EntityBase;
 import java.io.Serializable;
 
 /**
- * Dataset entity
+ * DatasetEntity entity
  *
  * @author Sam Gardner-Dell
  */

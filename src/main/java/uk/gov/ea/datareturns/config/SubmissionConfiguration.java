@@ -5,26 +5,29 @@ import org.springframework.context.annotation.Configuration;
 import uk.gov.ea.datareturns.domain.dto.impl.BasicMeasurementDto;
 import uk.gov.ea.datareturns.domain.dto.impl.LandfillMeasurementDto;
 import uk.gov.ea.datareturns.domain.jpa.dao.masterdata.*;
-import uk.gov.ea.datareturns.domain.jpa.dao.userdata.impl.DatasetDao;
-import uk.gov.ea.datareturns.domain.jpa.dao.userdata.impl.RecordDao;
-import uk.gov.ea.datareturns.domain.jpa.dao.userdata.impl.MeasurementDao;
-import uk.gov.ea.datareturns.domain.jpa.dao.userdata.impl.UserDao;
 import uk.gov.ea.datareturns.domain.jpa.dao.userdata.factories.AbstractMeasurementFactory;
-import uk.gov.ea.datareturns.domain.jpa.entities.userdata.impl.BasicMeasurement;
 import uk.gov.ea.datareturns.domain.jpa.dao.userdata.factories.impl.BasicMeasurementFactory;
-import uk.gov.ea.datareturns.domain.jpa.entities.userdata.impl.LandfillMeasurement;
 import uk.gov.ea.datareturns.domain.jpa.dao.userdata.factories.impl.LandfillMeasurementFactory;
+import uk.gov.ea.datareturns.domain.jpa.dao.userdata.impl.DatasetDao;
+import uk.gov.ea.datareturns.domain.jpa.dao.userdata.impl.MeasurementDao;
+import uk.gov.ea.datareturns.domain.jpa.dao.userdata.impl.RecordDao;
+import uk.gov.ea.datareturns.domain.jpa.dao.userdata.impl.UserDao;
+import uk.gov.ea.datareturns.domain.jpa.entities.userdata.impl.BasicMeasurement;
+import uk.gov.ea.datareturns.domain.jpa.entities.userdata.impl.LandfillMeasurement;
 import uk.gov.ea.datareturns.domain.jpa.service.SubmissionService;
-import uk.gov.ea.datareturns.domain.validation.newmodel.validator.MeasurementValidator;
 import uk.gov.ea.datareturns.domain.validation.basicmeasurement.BasicMeasurementFieldMessageMap;
+import uk.gov.ea.datareturns.domain.validation.basicmeasurement.BasicMeasurementMvo;
 import uk.gov.ea.datareturns.domain.validation.landfillmeasurement.LandfillMeasurementFieldMessageMap;
 import uk.gov.ea.datareturns.domain.validation.landfillmeasurement.LandfillMeasurementMvo;
+import uk.gov.ea.datareturns.domain.validation.newmodel.validator.MeasurementValidator;
 import uk.gov.ea.datareturns.domain.validation.newmodel.validator.MeasurementValidatorImpl;
 import uk.gov.ea.datareturns.domain.validation.newmodel.validator.MvoFactory;
-import uk.gov.ea.datareturns.domain.validation.basicmeasurement.BasicMeasurementMvo;
 
 import javax.inject.Inject;
 import javax.validation.Validator;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * @author Graham Willis
@@ -47,6 +50,11 @@ public class SubmissionConfiguration {
     private final UniqueIdentifierAliasDao uniqueIdentifierAliasDao;
     private final UniqueIdentifierDao uniqueIdentifierDao;
     private final UnitDao unitDao;
+
+    public enum SubmissionServiceProvider {
+        BASIC_VERSION_1,
+        LANDFILL_VERSION_1
+    }
 
     @Inject
     public SubmissionConfiguration(
@@ -198,6 +206,14 @@ public class SubmissionConfiguration {
                 landfillMeasurementDao(),
                 landfillMeasurementValidator(),
                 landfillMeasurementFactory());
+    }
+
+    @Bean(name = "submissionServiceMap")
+    public Map<SubmissionServiceProvider, SubmissionService> getSubmissionServiceMap() {
+        Map<SubmissionServiceProvider, SubmissionService> map = new HashMap<>();
+        map.put(SubmissionServiceProvider.LANDFILL_VERSION_1, landfillSubmissionService());
+        map.put(SubmissionServiceProvider.BASIC_VERSION_1, basicSubmissionService());
+        return Collections.unmodifiableMap(map);
     }
 
 }

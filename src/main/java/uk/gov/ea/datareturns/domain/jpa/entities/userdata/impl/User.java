@@ -4,6 +4,7 @@ import org.hibernate.annotations.GenericGenerator;
 import uk.gov.ea.datareturns.domain.jpa.entities.userdata.Metadata;
 
 import javax.persistence.*;
+import java.time.LocalDateTime;
 import java.util.Collection;
 
 /**
@@ -24,8 +25,14 @@ public class User implements Metadata {
     @Basic @Column(name = "identifier", nullable = false, length = 80)
     private String identifier;
 
-    @OneToMany(mappedBy="user",targetEntity=Dataset.class, fetch=FetchType.LAZY, cascade = CascadeType.REMOVE)
+    @OneToMany(mappedBy="user",targetEntity=DatasetEntity.class, fetch=FetchType.LAZY, cascade = CascadeType.REMOVE)
     private Collection datasets;
+
+    @Basic @Column(name = "create_date", nullable = false)
+    private LocalDateTime createDate;
+
+    @Basic @Column(name = "last_changed_date", nullable = false)
+    private LocalDateTime lastChangedDate;
 
     public Long getId() {
         return id;
@@ -49,6 +56,22 @@ public class User implements Metadata {
 
     public void setDatasets(Collection datasets) {
         this.datasets = datasets;
+    }
+
+    public LocalDateTime getCreateDate() {
+        return createDate;
+    }
+
+    public void setCreateDate(LocalDateTime createDate) {
+        this.createDate = createDate;
+    }
+
+    public LocalDateTime getLastChangedDate() {
+        return lastChangedDate;
+    }
+
+    public void setLastChangedDate(LocalDateTime lastChangedDate) {
+        this.lastChangedDate = lastChangedDate;
     }
 
     @Override

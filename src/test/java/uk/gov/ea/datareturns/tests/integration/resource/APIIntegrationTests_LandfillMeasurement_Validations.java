@@ -1,22 +1,21 @@
 package uk.gov.ea.datareturns.tests.integration.resource;
 
 import org.apache.commons.io.IOUtils;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 import uk.gov.ea.datareturns.App;
+import uk.gov.ea.datareturns.config.SubmissionConfiguration;
 import uk.gov.ea.datareturns.config.TestSettings;
 import uk.gov.ea.datareturns.domain.dto.impl.LandfillMeasurementDto;
-import uk.gov.ea.datareturns.domain.jpa.entities.userdata.impl.Dataset;
-import uk.gov.ea.datareturns.domain.jpa.entities.userdata.impl.LandfillMeasurement;
+import uk.gov.ea.datareturns.domain.jpa.entities.userdata.impl.DatasetEntity;
 import uk.gov.ea.datareturns.domain.jpa.entities.userdata.impl.Record;
 import uk.gov.ea.datareturns.domain.jpa.entities.userdata.impl.User;
 import uk.gov.ea.datareturns.domain.jpa.service.SubmissionService;
-import uk.gov.ea.datareturns.domain.validation.landfillmeasurement.LandfillMeasurementMvo;
 
+import javax.annotation.Resource;
 import javax.inject.Inject;
 import java.io.File;
 import java.io.IOException;
@@ -24,6 +23,7 @@ import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author Graham Willis
@@ -32,37 +32,45 @@ import java.util.List;
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = App.class)
 public class APIIntegrationTests_LandfillMeasurement_Validations {
-    @Inject
-    SubmissionService<LandfillMeasurementDto, LandfillMeasurement, LandfillMeasurementMvo> landfillSubmissionService;
+    private Map<SubmissionConfiguration.SubmissionServiceProvider, SubmissionService> submissionServiceMap;
+    private SubmissionService submissionService;
 
     @Inject private TestSettings testSettings;
 
     private final static String SUBMISSION_VALUES = "json/landfill-validation-value-txtvalue.json";
 
     private static final String USER_NAME = "Graham Willis";
+    private static final String ORIGINATOR_EMAIL = "graham.willis@email.com";
 
     private static User user;
-    private static Dataset dataset;
+    private static DatasetEntity dataset;
     private static List<LandfillMeasurementDto> samples;
+
+    @Resource(name="submissionServiceMap")
+    private void setSubmissionServiceMap(Map<SubmissionConfiguration.SubmissionServiceProvider, SubmissionService> submissionServiceMap) {
+        this.submissionServiceMap = submissionServiceMap;
+    }
 
     // Remove any old data and set a user and dataset for use in the tests
     @Before public void init() throws IOException {
-        if (landfillSubmissionService.getUser(USER_NAME) != null) {
-            landfillSubmissionService.removeUser(USER_NAME);
+        submissionService = submissionServiceMap.get(SubmissionConfiguration.SubmissionServiceProvider.LANDFILL_VERSION_1);
+
+        if (submissionService.getUser(USER_NAME) != null) {
+            submissionService.removeUser(USER_NAME);
         }
-        user = landfillSubmissionService.createUser(USER_NAME);
-        dataset = landfillSubmissionService.createDataset(user);
+        user = submissionService.createUser(USER_NAME);
+        dataset = submissionService.createDataset(ORIGINATOR_EMAIL, user);
     }
 
     // Create and validate a set of valid and invalid records
     @Test public void testValidateValueAndTxtValueRecords() throws IOException {
-        List<LandfillMeasurementDto> samples = landfillSubmissionService.parse(readTestFile(SUBMISSION_VALUES));
+        List<LandfillMeasurementDto> samples = submissionService.parse(readTestFile(SUBMISSION_VALUES));
         List<SubmissionService.DtoIdentifierPair<LandfillMeasurementDto>> list = new ArrayList<>();
         for (LandfillMeasurementDto sample : samples) {
             list.add(new SubmissionService.DtoIdentifierPair(sample));
         }
-        List<Record> records = landfillSubmissionService.createRecords(dataset, list);
-        landfillSubmissionService.validate(records);
+        List<Record> records = submissionService.createRecords(dataset, list);
+        submissionService.validate(records);
     }
 
     /**

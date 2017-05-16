@@ -31,7 +31,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 /**
- * Dataset resource tests
+ * DatasetEntity resource tests
  *
  * @author Sam Gardner-Dell
  */
@@ -111,7 +111,7 @@ public class DatasetResourceTests {
         HttpHeaders headers = new HttpHeaders();
         headers.setIfMatch(createResponse.getHeaders().getETag());
 
-        // Dataset properties to be added
+        // DatasetEntity properties to be added
         DatasetProperties props = new DatasetProperties();
         props.setOriginatorEmail("test@example.com");
 
@@ -141,7 +141,7 @@ public class DatasetResourceTests {
         HttpHeaders headers = new HttpHeaders();
         headers.setIfMatch("\"A_VALUE_THAT_SHOULD_NEVER_MATCH\"");
 
-        // Dataset properties to be added
+        // DatasetEntity properties to be added
         DatasetProperties props = new DatasetProperties();
         props.setOriginatorEmail("test@example.com");
 

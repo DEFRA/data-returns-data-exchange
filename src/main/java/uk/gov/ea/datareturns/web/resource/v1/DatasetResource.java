@@ -7,6 +7,9 @@ import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
+import uk.gov.ea.datareturns.config.SubmissionConfiguration;
+import uk.gov.ea.datareturns.domain.jpa.entities.userdata.impl.DatasetEntity;
+import uk.gov.ea.datareturns.domain.jpa.service.SubmissionService;
 import uk.gov.ea.datareturns.web.resource.v1.model.common.Preconditions;
 import uk.gov.ea.datareturns.web.resource.v1.model.common.references.EntityReference;
 import uk.gov.ea.datareturns.web.resource.v1.model.dataset.Dataset;
@@ -20,10 +23,12 @@ import uk.gov.ea.datareturns.web.resource.v1.model.responses.dataset.DatasetEnti
 import uk.gov.ea.datareturns.web.resource.v1.model.responses.dataset.DatasetListResponse;
 import uk.gov.ea.datareturns.web.resource.v1.model.responses.multistatus.MultiStatusResponse;
 
+import javax.annotation.Resource;
 import javax.inject.Inject;
 import javax.validation.constraints.Pattern;
 import javax.ws.rs.*;
 import javax.ws.rs.core.*;
+import java.time.ZoneOffset;
 import java.util.*;
 
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
@@ -34,8 +39,8 @@ import static javax.ws.rs.core.MediaType.APPLICATION_XML;
  *
  * @author Sam Gardner-Dell
  */
-@Api(description = "Dataset Resource",
-        tags = { "Dataset" },
+@Api(description = "DatasetEntity Resource",
+        tags = { "DatasetEntity" },
         // Specifying consumes/produces (again) here allows us to default the swagger ui to json
         consumes = APPLICATION_JSON + "," + APPLICATION_XML,
         produces = APPLICATION_JSON + "," + APPLICATION_XML
@@ -53,6 +58,16 @@ public class DatasetResource {
     private UriInfo uriInfo;
 
     private static Map<String, Dataset> DEMO_DATASET_STORE = new HashMap<>();
+    private SubmissionService submissionService;
+
+    /**
+     * Retrieves the appropriate versioned submission service
+     * @param submissionServiceMap
+     */
+    @Resource(name="submissionServiceMap")
+    private void setSubmissionService(Map<SubmissionConfiguration.SubmissionServiceProvider, SubmissionService> submissionServiceMap) {
+        this.submissionService = submissionServiceMap.get(SubmissionConfiguration.SubmissionServiceProvider.LANDFILL_VERSION_1);
+    }
 
     /**
      * {@link DatasetResource} constructor
@@ -170,7 +185,18 @@ public class DatasetResource {
 
         Response.ResponseBuilder rb;
 
-        Dataset dataset = DEMO_DATASET_STORE.get(datasetId);
+        Dataset dataset = null;
+        DatasetEntity dataSetEntity = submissionService.getDataset(datasetId);
+
+        if (dataSetEntity != null) {
+            dataset = new Dataset();
+            DatasetProperties datasetProperties = new DatasetProperties();
+            dataset.setId(dataSetEntity.getIdentifier());
+            dataset.setCreated(Date.from(dataSetEntity.getCreateDate().toInstant(ZoneOffset.UTC)));
+            datasetProperties.setOriginatorEmail(dataSetEntity.getOriginatorEmail());
+            dataset.setProperties(datasetProperties);
+        }
+
         if (dataset == null) {
             rb = Response.status(Response.Status.NOT_FOUND);
         } else {
@@ -193,7 +219,7 @@ public class DatasetResource {
      *
      * @param datasetId the unique identifier for the target dataset
      * @param preconditions conditional request structure
-     * @param datasetProperties user-defineable properties to associate with the Dataset
+     * @param datasetProperties user-defineable properties to associate with the DatasetEntity
      * @return a response containing an {@link DatasetEntityResponse} entity
      * @throws Exception if the request cannot be completed normally.
      */
@@ -245,19 +271,28 @@ public class DatasetResource {
         return rb;
     }
 
+    /**
+     * Persist or update a dataset
+     * @param datasetId
+     * @param datasetProperties
+     * @return DatasetEntityResponse
+     */
     private DatasetEntityResponse storeDataset(final String datasetId, final DatasetProperties datasetProperties) {
-        final String id = datasetId == null ? UUID.randomUUID().toString() : datasetId;
+        Dataset dataset = new Dataset();
         Response.Status status = Response.Status.OK;
-        Dataset dataset = DEMO_DATASET_STORE.get(id);
-        if (dataset == null) {
-            // Create new dataset
-            dataset = new Dataset();
-            dataset.setId(id);
-            dataset.setCreated(new Date());
-            DEMO_DATASET_STORE.put(id, dataset);
+        DatasetEntity dataSetEntity = submissionService.getDataset(datasetId);
+
+        if (dataSetEntity != null) {
+            dataSetEntity.setOriginatorEmail(datasetProperties.getOriginatorEmail());
+            submissionService.updateDataset(dataSetEntity);
+        } else {
+            submissionService.createDataset(datasetProperties.getOriginatorEmail(), datasetId);
             status = Response.Status.CREATED;
         }
+
+        dataset.setId(datasetId);
         dataset.setProperties(datasetProperties);
+
         return new DatasetEntityResponse(status, dataset);
     }
 

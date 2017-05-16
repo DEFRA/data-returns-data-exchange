@@ -4,6 +4,7 @@ import org.hibernate.annotations.GenericGenerator;
 import uk.gov.ea.datareturns.domain.jpa.entities.userdata.Metadata;
 
 import javax.persistence.*;
+import java.time.LocalDateTime;
 import java.util.Collection;
 
 /**
@@ -14,7 +15,7 @@ import java.util.Collection;
 @GenericGenerator(name = "idGenerator", strategy = "org.hibernate.id.enhanced.SequenceStyleGenerator", parameters = {
         @org.hibernate.annotations.Parameter(name = "sequence_name", value = "datasets_id_seq") }
 )
-public class Dataset implements Metadata {
+public class DatasetEntity implements Metadata {
 
     @Id @GeneratedValue(generator = "idGenerator")
     private Long id;
@@ -22,8 +23,8 @@ public class Dataset implements Metadata {
     @Basic @Column(name = "identifier", nullable = false, length = 80)
     private String identifier;
 
-    @Basic @Column(name = "filename", nullable = false, length = 500)
-    private String filename;
+    @Basic @Column(name = "originator_email", nullable = false, length = 500)
+    private String originatorEmail;
 
     @ManyToOne(optional=false)
     @JoinColumn(name = "user_id", referencedColumnName = "id")
@@ -31,6 +32,12 @@ public class Dataset implements Metadata {
 
     @OneToMany(mappedBy="dataset",targetEntity=Record.class, fetch=FetchType.LAZY, cascade = CascadeType.REMOVE)
     private Collection records;
+
+    @Basic @Column(name = "create_date", nullable = false)
+    private LocalDateTime createDate;
+
+    @Basic @Column(name = "last_changed_date", nullable = false)
+    private LocalDateTime lastChangedDate;
 
     public Long getId() {
         return id;
@@ -48,12 +55,12 @@ public class Dataset implements Metadata {
         this.identifier = identifier;
     }
 
-    public String getFilename() {
-        return filename;
+    public String getOriginatorEmail() {
+        return originatorEmail;
     }
 
-    public void setFilename(String filename) {
-        this.filename = filename;
+    public void setOriginatorEmail(String originatorEmail) {
+        this.originatorEmail = originatorEmail;
     }
 
     public User getUser() {
@@ -72,15 +79,31 @@ public class Dataset implements Metadata {
         this.records = records;
     }
 
+    public LocalDateTime getCreateDate() {
+        return createDate;
+    }
+
+    public void setCreateDate(LocalDateTime createDate) {
+        this.createDate = createDate;
+    }
+
+    public LocalDateTime getLastChangedDate() {
+        return lastChangedDate;
+    }
+
+    public void setLastChangedDate(LocalDateTime lastChangedDate) {
+        this.lastChangedDate = lastChangedDate;
+    }
+
     /*
-     * The dataset identifier is unique for a given user
-     */
+         * The dataset identifier is unique for a given user
+         */
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
-        Dataset dataset = (Dataset) o;
+        DatasetEntity dataset = (DatasetEntity) o;
 
         return identifier.equals(dataset.identifier) && user.equals(dataset.user);
 
@@ -95,10 +118,10 @@ public class Dataset implements Metadata {
 
     @Override
     public String toString() {
-        return "Dataset{" +
+        return "DatasetEntity{" +
                 "id=" + id +
                 ", identifier='" + identifier + '\'' +
-                ", filename='" + filename + '\'' +
+                ", originatorEmail='" + originatorEmail + '\'' +
                 ", user=" + user +
                 '}';
     }

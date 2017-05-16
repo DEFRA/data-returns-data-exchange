@@ -7,7 +7,7 @@ import uk.gov.ea.datareturns.web.resource.v1.model.responses.ResponseWrapper;
 import javax.ws.rs.core.Response;
 
 /**
- * Dataset entity response
+ * DatasetEntity entity response
  *
  * @author Sam Gardner-Dell
  */

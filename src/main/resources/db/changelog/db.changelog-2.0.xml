@@ -7,9 +7,8 @@
 		<runningAs username="${db.username}"/>
 	</preConditions>
 
-	<changeSet id="measurement data" author="Environment Agency">
-
-		<!--
+	<changeSet id="user data" author="Environment Agency">
+	  <!--
 		****************************************************************
 		User
 		****************************************************************
@@ -18,7 +17,16 @@
 			<column name="id" type="bigserial">
 				<constraints primaryKey="true" nullable="false"/>
 			</column>
+
 			<column name="identifier" type="varchar(80)">
+				<constraints nullable="false"/>
+			</column>
+
+			<column name="create_date" type="timestamp without timezone">
+				<constraints nullable="false"/>
+			</column>
+
+			<column name="last_changed_date" type="timestamp without timezone">
 				<constraints nullable="false"/>
 			</column>
 		</createTable>
@@ -27,11 +35,11 @@
 			<column name="identifier"/>
 		</createIndex>
 
-		<sql>insert into users (identifier) values ('SYSTEM')</sql>
+		<sql>insert into users (identifier, create_date, last_changed_date) values ('SYSTEM', current_timestamp, current_timestamp)</sql>
 
 		<!--
 		****************************************************************
-		Dataset
+		DatasetEntity
 		****************************************************************
 		-->
 		<createTable tableName="datasets">
@@ -48,8 +56,16 @@
 				<constraints nullable="false" unique="true"/>
 			</column>
 
-			<column name="filename" type="varchar(500)">
+			<column name="originator_email" type="varchar(500)">
 				<constraints nullable="true"/>
+			</column>
+
+			<column name="create_date" type="timestamp without timezone">
+				<constraints nullable="false"/>
+			</column>
+
+			<column name="last_changed_date" type="timestamp without timezone">
+				<constraints nullable="false"/>
 			</column>
 
 		</createTable>
@@ -94,10 +110,6 @@
 			</column>
 
 			<column name="last_changed_date" type="timestamp without timezone">
-				<constraints nullable="false"/>
-			</column>
-
-			<column name="etag" type="varchar(36)">
 				<constraints nullable="false"/>
 			</column>
 

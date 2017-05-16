@@ -8,12 +8,15 @@ import org.junit.runner.RunWith;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 import uk.gov.ea.datareturns.App;
+import uk.gov.ea.datareturns.config.SubmissionConfiguration;
 import uk.gov.ea.datareturns.config.TestSettings;
 import uk.gov.ea.datareturns.domain.dto.impl.LandfillMeasurementDto;
-import uk.gov.ea.datareturns.domain.jpa.entities.userdata.impl.*;
+import uk.gov.ea.datareturns.domain.jpa.entities.userdata.impl.DatasetEntity;
+import uk.gov.ea.datareturns.domain.jpa.entities.userdata.impl.Record;
+import uk.gov.ea.datareturns.domain.jpa.entities.userdata.impl.User;
 import uk.gov.ea.datareturns.domain.jpa.service.SubmissionService;
-import uk.gov.ea.datareturns.domain.validation.landfillmeasurement.LandfillMeasurementMvo;
 
+import javax.annotation.Resource;
 import javax.inject.Inject;
 import java.io.File;
 import java.io.IOException;
@@ -21,6 +24,7 @@ import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author Graham Willis
@@ -29,8 +33,9 @@ import java.util.List;
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = App.class)
 public class APIIntegrationTests_LandfillMeasurement {
-    @Inject
-    SubmissionService<LandfillMeasurementDto, LandfillMeasurement, LandfillMeasurementMvo> landfillSubmissionService;
+
+    private Map<SubmissionConfiguration.SubmissionServiceProvider, SubmissionService> submissionServiceMap;
+    private SubmissionService submissionService;
 
     @Inject private TestSettings testSettings;
 
@@ -38,20 +43,29 @@ public class APIIntegrationTests_LandfillMeasurement {
     private final static String SUBMISSION_FAILURE = "json/landfill-failure.json";
 
     private static final String USER_NAME = "Graham Willis";
+    private static final String ORIGINATOR_EMAIL = "graham.willis@email.com";
     private static final String[] RECORDS = { "BB001", "BB002", "BB003", "BB004" };
 
     private static User user;
-    private static Dataset dataset;
+    private static DatasetEntity dataset;
     private static List<LandfillMeasurementDto> samples;
+
+    @Resource(name="submissionServiceMap")
+    private void setSubmissionServiceMap(Map<SubmissionConfiguration.SubmissionServiceProvider, SubmissionService> submissionServiceMap) {
+        this.submissionServiceMap = submissionServiceMap;
+    }
 
     // Remove any old data and set a user and dataset for use in the tests
     @Before public void init() throws IOException {
-        if (landfillSubmissionService.getUser(USER_NAME) != null) {
-            landfillSubmissionService.removeUser(USER_NAME);
+        submissionService = submissionServiceMap.get(SubmissionConfiguration.SubmissionServiceProvider.LANDFILL_VERSION_1);
+
+        if (submissionService.getUser(USER_NAME) != null) {
+            submissionService.removeUser(USER_NAME);
         }
-        user = landfillSubmissionService.createUser(USER_NAME);
-        dataset = landfillSubmissionService.createDataset(user);
-        samples = landfillSubmissionService.parse(readTestFile(SUBMISSION_SUCCESS));
+
+        user = submissionService.createUser(USER_NAME);
+        dataset = submissionService.createDataset(ORIGINATOR_EMAIL, user);
+        samples = submissionService.parse(readTestFile(SUBMISSION_SUCCESS));
     }
 
     // Test the basic creation and removal of test records
@@ -60,14 +74,14 @@ public class APIIntegrationTests_LandfillMeasurement {
         for (String id : RECORDS) {
             list.add(new SubmissionService.DtoIdentifierPair<>(id));
         }
-        List<Record> records = landfillSubmissionService.createRecords(dataset, list);
+        List<Record> records = submissionService.createRecords(dataset, list);
         Assert.assertEquals(RECORDS.length, records.size());
         for (String id : RECORDS) {
-            Assert.assertTrue(landfillSubmissionService.recordExists(dataset, id));
-            Record rec = landfillSubmissionService.getRecord(dataset, id);
+            Assert.assertTrue(submissionService.recordExists(dataset, id));
+            Record rec = submissionService.getRecord(dataset, id);
             Assert.assertEquals(Record.RecordStatus.PERSISTED, rec.getRecordStatus());
-            landfillSubmissionService.removeRecord(dataset, id);
-            Assert.assertFalse(landfillSubmissionService.recordExists(dataset, id));
+            submissionService.removeRecord(dataset, id);
+            Assert.assertFalse(submissionService.recordExists(dataset, id));
         }
     }
 
@@ -79,7 +93,7 @@ public class APIIntegrationTests_LandfillMeasurement {
         for (String id : RECORDS) {
             list.add(new SubmissionService.DtoIdentifierPair(id));
         }
-        List<Record> records = landfillSubmissionService.createRecords(dataset, list);
+        List<Record> records = submissionService.createRecords(dataset, list);
         records.stream().forEach(r -> Assert.assertEquals(Record.RecordStatus.PERSISTED, r.getRecordStatus()));
     }
 
@@ -91,7 +105,7 @@ public class APIIntegrationTests_LandfillMeasurement {
         for (String id : RECORDS) {
             list.add(new SubmissionService.DtoIdentifierPair());
         }
-        List<Record> records = landfillSubmissionService.createRecords(dataset, list);
+        List<Record> records = submissionService.createRecords(dataset, list);
         records.stream().forEach(r -> Assert.assertEquals(Record.RecordStatus.PERSISTED, r.getRecordStatus()));
     }
 
@@ -103,7 +117,7 @@ public class APIIntegrationTests_LandfillMeasurement {
         for (LandfillMeasurementDto sample : samples) {
             list.add(new SubmissionService.DtoIdentifierPair(sample));
         }
-        List<Record> records = landfillSubmissionService.createRecords(dataset, list);
+        List<Record> records = submissionService.createRecords(dataset, list);
         records.stream().forEach(r -> Assert.assertEquals(Record.RecordStatus.PARSED, r.getRecordStatus()));
     }
 
@@ -116,7 +130,7 @@ public class APIIntegrationTests_LandfillMeasurement {
         for (LandfillMeasurementDto sample : samples) {
             list.add(new SubmissionService.DtoIdentifierPair(Integer.valueOf(i++).toString(), sample));
         }
-        List<Record> records = landfillSubmissionService.createRecords(dataset, list);
+        List<Record> records = submissionService.createRecords(dataset, list);
         records.stream().forEach(r -> Assert.assertEquals(Record.RecordStatus.PARSED, r.getRecordStatus()));
     }
 
@@ -127,14 +141,14 @@ public class APIIntegrationTests_LandfillMeasurement {
         for (String id : RECORDS) {
             list.add(new SubmissionService.DtoIdentifierPair(id));
         }
-        List<Record> records = landfillSubmissionService.createRecords(dataset, list);
+        List<Record> records = submissionService.createRecords(dataset, list);
         records.stream().forEach(r -> Assert.assertEquals(Record.RecordStatus.PERSISTED, r.getRecordStatus()));
 
         list = new ArrayList<>();
         for (int i = 0; i < Math.min(RECORDS.length, samples.size()); i++) {
             list.add(new SubmissionService.DtoIdentifierPair(RECORDS[i], samples.get(i)));
         }
-        records = landfillSubmissionService.createRecords(dataset, list);
+        records = submissionService.createRecords(dataset, list);
         records.stream().forEach(r -> Assert.assertEquals(Record.RecordStatus.PARSED, r.getRecordStatus()));
     }
 
@@ -144,8 +158,8 @@ public class APIIntegrationTests_LandfillMeasurement {
         for (LandfillMeasurementDto sample : samples) {
             list.add(new SubmissionService.DtoIdentifierPair(sample));
         }
-        List<Record> records = landfillSubmissionService.createRecords(dataset, list);
-        landfillSubmissionService.validate(records);
+        List<Record> records = submissionService.createRecords(dataset, list);
+        submissionService.validate(records);
         records.stream().forEach(r -> Assert.assertEquals(Record.RecordStatus.VALID, r.getRecordStatus()));
     }
 
@@ -155,36 +169,36 @@ public class APIIntegrationTests_LandfillMeasurement {
         for (LandfillMeasurementDto sample : samples) {
             list.add(new SubmissionService.DtoIdentifierPair(sample));
         }
-        List<Record> records = landfillSubmissionService.createRecords(dataset, list);
-        landfillSubmissionService.validate(records);
+        List<Record> records = submissionService.createRecords(dataset, list);
+        submissionService.validate(records);
         records.stream().forEach(r -> Assert.assertEquals(Record.RecordStatus.VALID, r.getRecordStatus()));
-        landfillSubmissionService.submit(records);
+        submissionService.submit(records);
         records.stream().forEach(r -> Assert.assertEquals(Record.RecordStatus.SUBMITTED, r.getRecordStatus()));
     }
 
     // Create and validate a set of valid and invalid records
     @Test public void createAndValidateValidAndInvalidRecords() throws IOException {
-        List<LandfillMeasurementDto> samples = landfillSubmissionService.parse(readTestFile(SUBMISSION_FAILURE));
+        List<LandfillMeasurementDto> samples = submissionService.parse(readTestFile(SUBMISSION_FAILURE));
         List<SubmissionService.DtoIdentifierPair<LandfillMeasurementDto>> list = new ArrayList<>();
         for (LandfillMeasurementDto sample : samples) {
             list.add(new SubmissionService.DtoIdentifierPair(sample));
         }
-        List<Record> records = landfillSubmissionService.createRecords(dataset, list);
-        landfillSubmissionService.validate(records);
+        List<Record> records = submissionService.createRecords(dataset, list);
+        submissionService.validate(records);
         Assert.assertEquals(1, records.stream().filter(r -> r.getRecordStatus() == Record.RecordStatus.VALID).count());
         Assert.assertEquals(3, records.stream().filter(r -> r.getRecordStatus() == Record.RecordStatus.INVALID).count());
     }
 
     // Create and validate a set of valid and invalid records and submit them
     @Test public void createAndValidateValidAndInvalidAndSubmitRecords() throws IOException {
-        List<LandfillMeasurementDto> samples = landfillSubmissionService.parse(readTestFile(SUBMISSION_FAILURE));
+        List<LandfillMeasurementDto> samples = submissionService.parse(readTestFile(SUBMISSION_FAILURE));
         List<SubmissionService.DtoIdentifierPair<LandfillMeasurementDto>> list = new ArrayList<>();
         for (LandfillMeasurementDto sample : samples) {
             list.add(new SubmissionService.DtoIdentifierPair(sample));
         }
-        List<Record> records = landfillSubmissionService.createRecords(dataset, list);
-        landfillSubmissionService.validate(records);
-        landfillSubmissionService.submit(records);
+        List<Record> records = submissionService.createRecords(dataset, list);
+        submissionService.validate(records);
+        submissionService.submit(records);
         Assert.assertEquals(1, records.stream().filter(r -> r.getRecordStatus() == Record.RecordStatus.SUBMITTED).count());
         Assert.assertEquals(3, records.stream().filter(r -> r.getRecordStatus() == Record.RecordStatus.INVALID).count());
     }
@@ -195,17 +209,17 @@ public class APIIntegrationTests_LandfillMeasurement {
         for (LandfillMeasurementDto sample : samples) {
             list.add(new SubmissionService.DtoIdentifierPair(sample));
         }
-        List<Record> records = landfillSubmissionService.createRecords(dataset, list);
-        landfillSubmissionService.validate(records);
-        landfillSubmissionService.submit(records);
-        List<Record> recs = landfillSubmissionService.retrieve(dataset);
+        List<Record> records = submissionService.createRecords(dataset, list);
+        submissionService.validate(records);
+        submissionService.submit(records);
+        List<Record> recs = submissionService.retrieve(dataset);
         recs.stream().map(r -> r.getMeasurement()).map(m -> m.getRecord()).forEach(
                 r -> Assert.assertEquals(Record.RecordStatus.SUBMITTED, r.getRecordStatus()));
 
         Record r = recs.stream().findFirst().get();
         String id = r.getIdentifier();
 
-        Record r1 = landfillSubmissionService.retrieve(dataset, id);
+        Record r1 = submissionService.retrieve(dataset, id);
         Assert.assertEquals(r, r1);
     }
 

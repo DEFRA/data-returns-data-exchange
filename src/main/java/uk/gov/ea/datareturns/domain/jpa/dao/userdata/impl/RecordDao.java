@@ -36,7 +36,7 @@ public class RecordDao extends AbstractUserDataDao<Record> {
      * @param identifier The identifier
      * @return
      */
-    public Record get(Dataset dataset, String identifier) {
+    public Record get(DatasetEntity dataset, String identifier) {
         CriteriaBuilder cb = entityManager.getCriteriaBuilder();
         Metamodel m = entityManager.getMetamodel();
         CriteriaQuery<Record> cq = cb.createQuery(Record.class);
@@ -64,7 +64,7 @@ public class RecordDao extends AbstractUserDataDao<Record> {
      * @param dataset The dataset
      * @return a list of records
      */
-    public List<Record> list(Dataset dataset) {
+    public List<Record> list(DatasetEntity dataset) {
         CriteriaBuilder cb = entityManager.getCriteriaBuilder();
         Metamodel m = entityManager.getMetamodel();
         CriteriaQuery<Record> cq = cb.createQuery(Record.class);
@@ -80,12 +80,12 @@ public class RecordDao extends AbstractUserDataDao<Record> {
      * @param dataset
      * @param identifier
      */
-    public void remove(Dataset dataset, String identifier) {
+    public void remove(DatasetEntity dataset, String identifier) {
         Record record = get(dataset, identifier);
         remove(record.getId());
     }
 
-    public List<Record> listMeasurements(Dataset dataset) {
+    public List<Record> listMeasurements(DatasetEntity dataset) {
         CriteriaBuilder cb = entityManager.getCriteriaBuilder();
         CriteriaQuery<Record> cq = cb.createQuery(Record.class);
 
@@ -99,7 +99,7 @@ public class RecordDao extends AbstractUserDataDao<Record> {
         return tq.getResultList();
     }
 
-    public Record getMeasurement(Dataset dataset, String identifier) {
+    public Record getMeasurement(DatasetEntity dataset, String identifier) {
         CriteriaBuilder cb = entityManager.getCriteriaBuilder();
         CriteriaQuery<Record> cq = cb.createQuery(Record.class);
 

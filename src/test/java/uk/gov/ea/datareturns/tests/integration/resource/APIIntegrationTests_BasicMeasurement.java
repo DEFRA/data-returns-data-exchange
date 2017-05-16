@@ -8,12 +8,16 @@ import org.junit.runner.RunWith;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 import uk.gov.ea.datareturns.App;
+import uk.gov.ea.datareturns.config.SubmissionConfiguration;
 import uk.gov.ea.datareturns.config.TestSettings;
 import uk.gov.ea.datareturns.domain.dto.impl.BasicMeasurementDto;
-import uk.gov.ea.datareturns.domain.jpa.entities.userdata.impl.*;
+import uk.gov.ea.datareturns.domain.jpa.entities.userdata.impl.BasicMeasurement;
+import uk.gov.ea.datareturns.domain.jpa.entities.userdata.impl.DatasetEntity;
+import uk.gov.ea.datareturns.domain.jpa.entities.userdata.impl.Record;
+import uk.gov.ea.datareturns.domain.jpa.entities.userdata.impl.User;
 import uk.gov.ea.datareturns.domain.jpa.service.SubmissionService;
-import uk.gov.ea.datareturns.domain.validation.basicmeasurement.BasicMeasurementMvo;
 
+import javax.annotation.Resource;
 import javax.inject.Inject;
 import java.io.File;
 import java.io.IOException;
@@ -22,6 +26,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author Graham Willis
@@ -30,8 +35,8 @@ import java.util.List;
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = App.class)
 public class APIIntegrationTests_BasicMeasurement {
-    @Inject
-    SubmissionService<BasicMeasurementDto, BasicMeasurement, BasicMeasurementMvo> submissionService;
+
+    private SubmissionService submissionService = null;
 
     @Inject private TestSettings testSettings;
 
@@ -39,21 +44,30 @@ public class APIIntegrationTests_BasicMeasurement {
     private final static String SUBMISSION_FAILURE = "json/measurements-fail.json";
 
     private static final String USER_NAME = "Graham Willis";
-    private static final String DATASET_ID = "Dataset name";
+    private static final String ORIGINATOR_EMAIL = "graham.willis@email.com";
+    private static final String DATASET_ID = "DatasetEntity name";
     private static final String[] RECORDS = { "AA0001", "AA002", "AA003" };
 
     private static User user;
-    private static Dataset dataset;
+    private static DatasetEntity dataset;
 
     private static List<BasicMeasurementDto> samples;
+    private Map<SubmissionConfiguration.SubmissionServiceProvider, SubmissionService> submissionServiceMap;
+
+    @Resource(name="submissionServiceMap")
+    private void setSubmissionServiceMap(Map<SubmissionConfiguration.SubmissionServiceProvider, SubmissionService> submissionServiceMap) {
+        this.submissionServiceMap = submissionServiceMap;
+    }
 
     // Remove any old data and set a user and dataset for use in the tests
     @Before public void init() throws IOException {
+        submissionService = submissionServiceMap.get(SubmissionConfiguration.SubmissionServiceProvider.BASIC_VERSION_1);
+
         if (submissionService.getUser(USER_NAME) != null) {
             submissionService.removeUser(USER_NAME);
         }
         user = submissionService.createUser(USER_NAME);
-        dataset = submissionService.createDataset(user);
+        dataset = submissionService.createDataset(ORIGINATOR_EMAIL, user);
         samples = submissionService.parse(readTestFile(SUBMISSION_SUCCESS));
     }
 
@@ -70,15 +84,15 @@ public class APIIntegrationTests_BasicMeasurement {
 
     @Test
     public void createSystemManagedDataset() {
-        Dataset dataset = submissionService.createDataset();
+        DatasetEntity dataset = submissionService.createDataset(ORIGINATOR_EMAIL);
         Assert.assertEquals(dataset.getUser().getIdentifier(), User.SYSTEM);
     }
 
     @Test
     public void createUserManagedDatasetAutonamed() {
-        Dataset dataset = submissionService.createDataset(user);
+        DatasetEntity dataset = submissionService.createDataset(ORIGINATOR_EMAIL, user);
         Assert.assertEquals(dataset.getUser().getIdentifier(), USER_NAME);
-        List<Dataset> datasets = submissionService.getDatasets(user);
+        List<DatasetEntity> datasets = submissionService.getDatasets(user);
         Assert.assertEquals(2, datasets.size());
         submissionService.removeDataset(datasets.get(1).getIdentifier());
         datasets = submissionService.getDatasets(user);
@@ -87,7 +101,7 @@ public class APIIntegrationTests_BasicMeasurement {
 
     @Test
     public void createUserManagedDatasetNamed() {
-        Dataset dataset = submissionService.createDataset(user, DATASET_ID);
+        DatasetEntity dataset = submissionService.createDataset(ORIGINATOR_EMAIL, DATASET_ID, user);
         Assert.assertEquals(dataset.getUser().getIdentifier(), USER_NAME);
         Assert.assertEquals(dataset.getIdentifier(), DATASET_ID);
     }
