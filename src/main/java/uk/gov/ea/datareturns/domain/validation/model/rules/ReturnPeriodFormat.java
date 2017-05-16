@@ -1,4 +1,4 @@
-package uk.gov.ea.datareturns.domain.validation.rules;
+package uk.gov.ea.datareturns.domain.validation.model.rules;
 
 import org.apache.commons.lang3.StringUtils;
 

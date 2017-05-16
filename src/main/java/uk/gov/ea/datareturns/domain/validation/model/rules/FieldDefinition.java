@@ -10,7 +10,7 @@ import java.util.LinkedHashSet;
 import java.util.Set;
 
 /**
- * Provides definitions for all fields defined in the DEP
+ * Provides definitions for all entityfields defined in the DEP
  *
  * @author Sam Gardner-Dell
  */
@@ -83,7 +83,7 @@ public enum FieldDefinition {
     public static final Set<String> ALL_FIELD_NAMES = Collections.unmodifiableSet(
             new LinkedHashSet<>(Arrays.asList(ALL_FIELD_NAMES_ARR)));
 
-    /** The set of fields which must always be present in the source data */
+    /** The set of entityfields which must always be present in the source data */
     public final static Set<FieldDefinition> MANDATORY_FIELDS = Collections.unmodifiableSet(new LinkedHashSet<>(
             Arrays.asList(EA_ID, Site_Name, Rtn_Type, Mon_Date, Mon_Point, Parameter)));
 

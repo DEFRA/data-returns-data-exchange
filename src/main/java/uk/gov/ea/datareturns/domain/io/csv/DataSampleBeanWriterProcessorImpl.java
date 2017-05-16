@@ -65,7 +65,7 @@ public class DataSampleBeanWriterProcessorImpl extends BeanWriterProcessor<DataS
      *
      * @param record the record to be serialized
      * @param headers All field names used to produce records in a given destination. May be null if no headers have been defined in {@link CommonSettings#getHeaders()}
-     * @param indexesToWrite The indexes of the headers that are actually being written. May be null if no fields have been selected using {@link CommonSettings#selectFields(String...)} or {@link CommonSettings#selectIndexes(Integer...)}
+     * @param indexesToWrite The indexes of the headers that are actually being written. May be null if no entityfields have been selected using {@link CommonSettings#selectFields(String...)} or {@link CommonSettings#selectIndexes(Integer...)}
      * @return a row of objects containing the values extracted from the java bean
      */
     @Override

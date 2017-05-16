@@ -23,9 +23,9 @@ import java.nio.file.Files;
 public class DataReturnsZipFileModelTests {
     public final static String FILE_TEST_INPUT = "success.csv";
 
-    public final static String FILE_TEST_OUTPUT1 = "required-fields-only.csv";
+    public final static String FILE_TEST_OUTPUT1 = "required-entityfields-only.csv";
 
-    public final static String FILE_TEST_OUTPUT2 = "required-fields-missing.csv";
+    public final static String FILE_TEST_OUTPUT2 = "required-entityfields-missing.csv";
 
     private static File tempFolder;
 

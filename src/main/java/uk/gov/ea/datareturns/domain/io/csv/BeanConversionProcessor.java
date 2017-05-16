@@ -58,7 +58,7 @@ public class BeanConversionProcessor<T> implements RowProcessor {
     }
 
     /**
-     * Create an instance of the bean (with parameterized type T) and set the data from the current row into the appropriate fields
+     * Create an instance of the bean (with parameterized type T) and set the data from the current row into the appropriate entityfields
      *
      * @param row a String array with the data from the current processor row.
      * @param context the context the {@link ParsingContext} of the operation
@@ -67,7 +67,7 @@ public class BeanConversionProcessor<T> implements RowProcessor {
     public T createBean(final String[] row, final ParsingContext context) {
         T instance = null;
         try {
-            // Check for inconsistent number of fields in a row with respect to the defined headers
+            // Check for inconsistent number of entityfields in a row with respect to the defined headers
             if (row.length != context.headers().length) {
                 throw new InconsistentRowException(
                         String.format("Record %d contains %d entries but the header has %d.",

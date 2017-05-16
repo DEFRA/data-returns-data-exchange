@@ -1,19 +1,18 @@
 package uk.gov.ea.datareturns.domain.validation.landfillmeasurement.fields;
 
-import uk.gov.ea.datareturns.domain.validation.landfillmeasurement.LandfillMeasurementMvo;
-import uk.gov.ea.datareturns.domain.validation.model.MessageCodes;
-import uk.gov.ea.datareturns.domain.validation.model.fields.FieldValue;
-import uk.gov.ea.datareturns.domain.validation.model.validation.auditors.controlledlist.ReturnPeriodAuditor;
-import uk.gov.ea.datareturns.domain.validation.model.validation.constraints.controlledlist.ControlledList;
-import uk.gov.ea.datareturns.domain.validation.rules.ReturnPeriodFormat;
+import uk.gov.ea.datareturns.domain.validation.landfillmeasurement.LandfillMeasurementFieldMessageMap;
+import uk.gov.ea.datareturns.domain.validation.newmodel.auditors.controlledlist.ReturnPeriodAuditorNew;
+import uk.gov.ea.datareturns.domain.validation.newmodel.constraints.controlledlist.ControlledList;
+import uk.gov.ea.datareturns.domain.validation.newmodel.entityfields.FieldValue;
+import uk.gov.ea.datareturns.domain.validation.newmodel.rules.ReturnPeriodFormat;
 
 /**
  * Name of date range covering the entire return.
  *
  * @author Sam Gardner-Dell Created by sam on 04/10/16.
  */
-public class ReturnPeriod implements FieldValue<LandfillMeasurementMvo, String> {
-    @ControlledList(auditor = ReturnPeriodAuditor.class, message = MessageCodes.ControlledList.Rtn_Period)
+public class ReturnPeriod implements FieldValue<String> {
+    @ControlledList(auditor = ReturnPeriodAuditorNew.class, message = LandfillMeasurementFieldMessageMap.ControlledList.Rtn_Period)
     private final String inputValue;
     private final String value;
 
@@ -35,8 +34,5 @@ public class ReturnPeriod implements FieldValue<LandfillMeasurementMvo, String> 
         return this.value;
     }
 
-    @Override public String transform(LandfillMeasurementMvo record) {
-        return this.value;
-    }
 }
 

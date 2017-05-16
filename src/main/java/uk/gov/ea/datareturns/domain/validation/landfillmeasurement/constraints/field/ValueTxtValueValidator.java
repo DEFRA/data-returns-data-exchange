@@ -1,9 +1,9 @@
-package uk.gov.ea.datareturns.domain.validation.landfillmeasurement.constraints.impl;
+package uk.gov.ea.datareturns.domain.validation.landfillmeasurement.constraints.field;
 
-import uk.gov.ea.datareturns.domain.validation.model.MessageCodes;
-import uk.gov.ea.datareturns.domain.validation.model.fields.FieldValue;
+import uk.gov.ea.datareturns.domain.validation.landfillmeasurement.LandfillMeasurementFieldMessageMap;
 import uk.gov.ea.datareturns.domain.validation.landfillmeasurement.LandfillMeasurementMvo;
-import uk.gov.ea.datareturns.domain.validation.landfillmeasurement.constraints.ValueTxtValue;
+import uk.gov.ea.datareturns.domain.validation.landfillmeasurement.constraints.annotations.ValueTxtValue;
+import uk.gov.ea.datareturns.domain.validation.newmodel.entityfields.FieldValue;
 
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
@@ -26,9 +26,9 @@ public class ValueTxtValueValidator implements ConstraintValidator<ValueTxtValue
 
         String error = null;
         if (!hasValue && !hasTxtValue) {
-            error = MessageCodes.Missing.RequireValueOrTxtValue;
+            error = LandfillMeasurementFieldMessageMap.Missing.RequireValueOrTxtValue;
         } else if (hasValue && hasTxtValue) {
-            error = MessageCodes.Conflict.RequireValueOrTxtValue;
+            error = LandfillMeasurementFieldMessageMap.Conflict.RequireValueOrTxtValue;
         }
 
         if (error != null) {

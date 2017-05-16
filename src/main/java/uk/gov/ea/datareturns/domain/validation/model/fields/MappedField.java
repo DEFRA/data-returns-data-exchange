@@ -5,7 +5,7 @@ import uk.gov.ea.datareturns.domain.validation.model.rules.FieldDefinition;
 import java.lang.annotation.*;
 
 /**
- * The {@link MappedField} annotation can be used to specify how Javabean fields map to fields in a file (such as CSV headings)
+ * The {@link MappedField} annotation can be used to specify how Javabean entityfields map to entityfields in a file (such as CSV headings)
  */
 @Target({ ElementType.FIELD })
 @Retention(RetentionPolicy.RUNTIME)

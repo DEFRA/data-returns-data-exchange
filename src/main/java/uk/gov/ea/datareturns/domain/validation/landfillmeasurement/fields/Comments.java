@@ -1,18 +1,16 @@
 package uk.gov.ea.datareturns.domain.validation.landfillmeasurement.fields;
 
-import org.apache.commons.lang3.StringUtils;
 import org.hibernate.validator.constraints.Length;
-import uk.gov.ea.datareturns.domain.validation.landfillmeasurement.LandfillMeasurementMvo;
-import uk.gov.ea.datareturns.domain.validation.model.MessageCodes;
-import uk.gov.ea.datareturns.domain.validation.model.fields.FieldValue;
+import uk.gov.ea.datareturns.domain.validation.landfillmeasurement.LandfillMeasurementFieldMessageMap;
+import uk.gov.ea.datareturns.domain.validation.newmodel.entityfields.FieldValue;
 
 /**
  * Free-text comments about the row of data
  *
  * @author Sam Gardner-Dell
  */
-public class Comments implements FieldValue<LandfillMeasurementMvo, String> {
-    @Length(max = 255, message = MessageCodes.Length.Comments)
+public class Comments implements FieldValue<String> {
+    @Length(max = 255, message = LandfillMeasurementFieldMessageMap.Length.Comments)
     private final String inputValue;
 
     /**
@@ -30,9 +28,5 @@ public class Comments implements FieldValue<LandfillMeasurementMvo, String> {
 
     @Override public String getValue() {
         return inputValue;
-    }
-
-    @Override public String transform(LandfillMeasurementMvo record) {
-        return StringUtils.trim(getValue());
     }
 }

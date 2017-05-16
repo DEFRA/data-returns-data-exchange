@@ -1,7 +1,7 @@
 package uk.gov.ea.datareturns.domain.validation.model.validation.auditors.controlledlist;
 
 import org.springframework.stereotype.Component;
-import uk.gov.ea.datareturns.domain.validation.rules.ReturnPeriodFormat;
+import uk.gov.ea.datareturns.domain.validation.model.rules.ReturnPeriodFormat;
 import uk.gov.ea.datareturns.domain.validation.model.validation.constraints.controlledlist.ControlledListAuditor;
 
 import java.util.Objects;
@@ -20,7 +20,7 @@ public class ReturnPeriodAuditor implements ControlledListAuditor {
     }
 
     /* (non-Javadoc)
-     * @see uk.gov.ea.datareturns.domain.validation.model.validation.constraints.ControlledListAuditor#isValid(java.lang.Object)
+     * @see uk.gov.ea.datareturns.domain.validation.model.validation.entityfields.ControlledListAuditor#isValid(java.lang.Object)
      */
     @Override
     public boolean isValid(final Object value) {

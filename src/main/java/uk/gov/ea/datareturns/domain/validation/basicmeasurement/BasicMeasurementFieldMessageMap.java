@@ -1,30 +1,32 @@
 package uk.gov.ea.datareturns.domain.validation.basicmeasurement;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import uk.gov.ea.datareturns.domain.validation.FieldMessageMap;
-import uk.gov.ea.datareturns.domain.validation.landfillmeasurement.LandfillMeasurementFieldMessageMap;
-import uk.gov.ea.datareturns.domain.validation.landfillmeasurement.LandfillMeasurementMvo;
-import uk.gov.ea.datareturns.domain.validation.landfillmeasurement.fields.*;
-import uk.gov.ea.datareturns.domain.validation.model.fields.FieldValue;
-
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import uk.gov.ea.datareturns.domain.validation.newmodel.validator.FieldMessageMap;
+import uk.gov.ea.datareturns.domain.validation.basicmeasurement.fields.*;
 
 /**
- * The field mapping for landfill measurements
+ * The field mapping for basic measurements
  */
-public class BasicMeasurementFieldMessageMap implements FieldMessageMap<BasicMeasurementMvo> {
+public class BasicMeasurementFieldMessageMap extends FieldMessageMap<BasicMeasurementMvo> {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(BasicMeasurementFieldMessageMap.class);
-    private static Class<BasicMeasurementMvo> measurementMvoClass = BasicMeasurementMvo.class;
+    public class Incorrect {
+        public final static String Value = "{BM9040-Incorrect}";
+    }
 
-    @Override
-    public List<FieldValue<BasicMeasurementMvo, ?>> getFieldDependencies(BasicMeasurementMvo measurement, String message) {
-        //PropertyDescriptor pd = BeanUtils.getPropertyDescriptor(measurementMvoClass, property);
-        //Method getter = pd.getReadMethod();
-        return null;
+    public class Missing {
+        public final static String Parameter = "{BM9030-Missing}";
+    }
+
+    public class ControlledList {
+        public final static String Parameter = "{BM9030-Incorrect}";
+    }
+
+    public BasicMeasurementFieldMessageMap() {
+        super(BasicMeasurementMvo.class);
+        /*
+         * Add the (atomic) length errors to the map
+         */
+        add(BasicMeasurementFieldMessageMap.Incorrect.Value, Value.class);
+        add(BasicMeasurementFieldMessageMap.Missing.Parameter, Parameter.class);
+        add(BasicMeasurementFieldMessageMap.ControlledList.Parameter, Parameter.class);
     }
 }

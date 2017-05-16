@@ -3,7 +3,7 @@ package uk.gov.ea.datareturns.domain.exceptions;
 /**
  * Thrown if a structural error is encountered when trying to read a file.
  *
- * E.g. a row read from a CSV file has an inconsistent number of fields with respect to the header definitions
+ * E.g. a row read from a CSV file has an inconsistent number of entityfields with respect to the header definitions
  *
  * @author Sam Gardner-Dell
  */

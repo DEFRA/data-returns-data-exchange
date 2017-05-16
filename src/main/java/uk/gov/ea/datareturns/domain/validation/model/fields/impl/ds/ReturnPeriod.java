@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import uk.gov.ea.datareturns.domain.validation.model.DataSample;
 import uk.gov.ea.datareturns.domain.validation.model.MessageCodes;
 import uk.gov.ea.datareturns.domain.validation.model.fields.FieldValue;
-import uk.gov.ea.datareturns.domain.validation.rules.ReturnPeriodFormat;
+import uk.gov.ea.datareturns.domain.validation.model.rules.ReturnPeriodFormat;
 import uk.gov.ea.datareturns.domain.validation.model.validation.auditors.controlledlist.ReturnPeriodAuditor;
 import uk.gov.ea.datareturns.domain.validation.model.validation.constraints.controlledlist.ControlledList;
 

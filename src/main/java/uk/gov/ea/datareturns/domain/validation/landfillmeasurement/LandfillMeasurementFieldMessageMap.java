@@ -1,32 +1,12 @@
 package uk.gov.ea.datareturns.domain.validation.landfillmeasurement;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import uk.gov.ea.datareturns.domain.validation.FieldMessageMap;
+import uk.gov.ea.datareturns.domain.validation.newmodel.validator.FieldMessageMap;
 import uk.gov.ea.datareturns.domain.validation.landfillmeasurement.fields.*;
-import uk.gov.ea.datareturns.domain.validation.model.fields.FieldValue;
-
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.lang.reflect.Type;
-import java.util.*;
 
 /**
  * The field mapping for landfill measurements
  */
-public class LandfillMeasurementFieldMessageMap implements FieldMessageMap<LandfillMeasurementMvo> {
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(LandfillMeasurementFieldMessageMap.class);
-    private static Class<LandfillMeasurementMvo> measurementMvoClass = LandfillMeasurementMvo.class;
-    private static Map<Type, Method> typeMethodMap = new HashMap<>();
-
-    // Map of methods by there return types - they are fields and should be unique
-    static {
-        for (Method method : measurementMvoClass.getDeclaredMethods()) {
-            Type returnType = method.getGenericReturnType();
-            typeMethodMap.put(returnType, method);
-        }
-    }
+public class LandfillMeasurementFieldMessageMap extends FieldMessageMap<LandfillMeasurementMvo> {
 
     /**
      * The errors categorized as length errors
@@ -58,7 +38,6 @@ public class LandfillMeasurementFieldMessageMap implements FieldMessageMap<Landf
         public final static String RequireCommentsForTxtValue = "{DR9140-Missing}";
         public final static String RequireValueOrTxtValue = "{DR9999-Missing}";
         public final static String Mon_Date = "{DR9020-Missing}";
-        public final static String Rel_Trans = "{DR9170-Missing}";
     }
 
     /**
@@ -85,17 +64,8 @@ public class LandfillMeasurementFieldMessageMap implements FieldMessageMap<Landf
         public final static String UniqueIdentifierSiteConflict = "{DR9110-Conflict}";
     }
 
-    private final static Map<String, List<Class<? extends FieldValue>>> messageFieldsMap = new HashMap<>();
-
-    private static void add(String key, Class<? extends FieldValue<LandfillMeasurementMvo, ?>> ... values) {
-        if (messageFieldsMap.containsKey(key)) {
-            LOGGER.error("Initialization error: " + key + " already exists in messageFieldsMap");
-        } else {
-            messageFieldsMap.put(key, Arrays.asList(values));
-        }
-    }
-
-    static {
+    public LandfillMeasurementFieldMessageMap() {
+        super(LandfillMeasurementMvo.class);
         /*
          * Add the (atomic) length errors to the map
          */
@@ -117,6 +87,8 @@ public class LandfillMeasurementFieldMessageMap implements FieldMessageMap<Landf
         add(Missing.Rtn_Type, ReturnType.class);
         add(Missing.Site_Name, SiteName.class);
         add(Missing.Mon_Date, MonitoringDate.class);
+        add(Missing.RequireValueOrTxtValue, Value.class, TxtValue.class);
+        add(Missing.RequireCommentsForTxtValue, Comments.class);
 
         /*
          * Add the (atomic) controlled list errors to the map
@@ -130,30 +102,14 @@ public class LandfillMeasurementFieldMessageMap implements FieldMessageMap<Landf
         add(ControlledList.Rtn_Type, ReturnType.class);
         add(ControlledList.Txt_Value, TxtValue.class);
         add(ControlledList.Unit, Unit.class);
+
         /*
          * Add in the conflicts, optionally missing and dependency validations etc. The convention being applied is to
          * add first the primary data item - the header the error is being reported on and then
          * items in descending order of relevance.
          */
         add(Conflict.ProhibitUnitForTxtValue, Unit.class);
-        add(Missing.RequireCommentsForTxtValue, Comments.class);
         add(Conflict.RequireValueOrTxtValue, Value.class, TxtValue.class);
         add(Conflict.UniqueIdentifierSiteConflict, EaId.class, SiteName.class);
-    }
-
-    @Override
-    public List<FieldValue<LandfillMeasurementMvo, ?>> getFieldDependencies(LandfillMeasurementMvo measurement, String message) {
-        List<FieldValue<LandfillMeasurementMvo, ?>> result = new ArrayList<>();
-        List<Class<? extends FieldValue>> fieldClasses = messageFieldsMap.get(message);
-        for (Class<? extends FieldValue> fieldClass : fieldClasses) {
-            Method getter = typeMethodMap.get(fieldClass);
-            try {
-                FieldValue<LandfillMeasurementMvo, ?> field = (FieldValue<LandfillMeasurementMvo, ?>) getter.invoke(measurement);
-                result.add(field);
-            } catch (IllegalAccessException|InvocationTargetException e) {
-                LOGGER.error("Could not invoke a getter: " + fieldClass.getCanonicalName());
-            }
-        }
-        return result;
     }
 }

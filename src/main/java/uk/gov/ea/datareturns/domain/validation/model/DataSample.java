@@ -4,8 +4,6 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import uk.gov.ea.datareturns.domain.validation.model.fields.MappedField;
 import uk.gov.ea.datareturns.domain.validation.model.fields.impl.ds.*;
 import uk.gov.ea.datareturns.domain.validation.model.rules.FieldDefinition;
-import uk.gov.ea.datareturns.domain.validation.model.validation.ValidationGroups;
-import uk.gov.ea.datareturns.domain.validation.model.validation.constraints.factory.HierarchyValidator;
 import uk.gov.ea.datareturns.domain.validation.model.validation.constraints.factory.ValidRecord;
 
 import javax.validation.Valid;
@@ -16,7 +14,6 @@ import javax.validation.Valid;
  * @author Sam Gardner-Dell
  */
 @ValidRecord(value = DataSample.class)
-@HierarchyValidator(value = DataSample.class, groups = ValidationGroups.RecordTier.class)
 public class DataSample {
 
     /** The EA Unique Identifier (EA_ID) */

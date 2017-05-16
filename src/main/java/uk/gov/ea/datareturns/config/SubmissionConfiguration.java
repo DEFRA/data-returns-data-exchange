@@ -15,12 +15,12 @@ import uk.gov.ea.datareturns.domain.jpa.dao.userdata.factories.impl.BasicMeasure
 import uk.gov.ea.datareturns.domain.jpa.entities.userdata.impl.LandfillMeasurement;
 import uk.gov.ea.datareturns.domain.jpa.dao.userdata.factories.impl.LandfillMeasurementFactory;
 import uk.gov.ea.datareturns.domain.jpa.service.SubmissionService;
-import uk.gov.ea.datareturns.domain.validation.MeasurementValidator;
+import uk.gov.ea.datareturns.domain.validation.newmodel.validator.MeasurementValidator;
 import uk.gov.ea.datareturns.domain.validation.basicmeasurement.BasicMeasurementFieldMessageMap;
 import uk.gov.ea.datareturns.domain.validation.landfillmeasurement.LandfillMeasurementFieldMessageMap;
 import uk.gov.ea.datareturns.domain.validation.landfillmeasurement.LandfillMeasurementMvo;
-import uk.gov.ea.datareturns.domain.validation.MeasurementValidatorImpl;
-import uk.gov.ea.datareturns.domain.validation.MvoFactory;
+import uk.gov.ea.datareturns.domain.validation.newmodel.validator.MeasurementValidatorImpl;
+import uk.gov.ea.datareturns.domain.validation.newmodel.validator.MvoFactory;
 import uk.gov.ea.datareturns.domain.validation.basicmeasurement.BasicMeasurementMvo;
 
 import javax.inject.Inject;
@@ -93,7 +93,7 @@ public class SubmissionConfiguration {
     }
 
     /**
-     * The factory to create Basic measurement objects Mvo for validation
+     * The record to create Basic measurement objects Mvo for validation
      * @return
      */
     @Bean
@@ -102,7 +102,7 @@ public class SubmissionConfiguration {
     }
 
     /**
-     * A factory to create the measurement validation objects (mvo's) for the BasicMeasurement
+     * A record to create the measurement validation objects (mvo's) for the BasicMeasurement
      * @return
      */
     @Bean
@@ -148,7 +148,7 @@ public class SubmissionConfiguration {
     }
 
     /**
-     * The factory to create landfill measurement objects Mvo for validation
+     * The record to create landfill measurement objects Mvo for validation
      * @return
      */
     @Bean
@@ -168,7 +168,7 @@ public class SubmissionConfiguration {
     }
 
     /**
-     * A factory to create the measurement validation objects (mvo's) for the BasicMeasurement
+     * A record to create the measurement validation objects (mvo's) for the BasicMeasurement
      * @return
      */
     @Bean

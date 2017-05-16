@@ -1,19 +1,17 @@
 package uk.gov.ea.datareturns.domain.validation.model.fields;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import uk.gov.ea.datareturns.domain.jpa.dao.masterdata.EntityDao;
 import uk.gov.ea.datareturns.domain.jpa.dao.masterdata.Key;
 import uk.gov.ea.datareturns.domain.jpa.entities.masterdata.ControlledListEntity;
 
 /**
- * The {@link AbstractEntityValue} class provides the base {@link FieldValue} implementation for fields which are backed by
+ * The {@link AbstractEntityValue} class provides the base {@link FieldValue} implementation for entityfields which are backed by
  * a database entity
  *
  * @param <R>   Parmeterized type for the record the entity belongs to
  * @param <E>   Parmeterized type for the entity
  */
 public abstract class AbstractEntityValue<D extends EntityDao<E>, R, E extends ControlledListEntity> implements FieldValue<R, E> {
-    @JsonIgnore
     private E entity;
 
     /**

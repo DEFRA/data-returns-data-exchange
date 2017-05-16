@@ -3,22 +3,21 @@ package uk.gov.ea.datareturns.domain.validation.landfillmeasurement.fields;
 import org.hibernate.validator.constraints.NotBlank;
 import uk.gov.ea.datareturns.domain.jpa.dao.masterdata.EntityDao;
 import uk.gov.ea.datareturns.domain.jpa.dao.masterdata.ReturnTypeDao;
-import uk.gov.ea.datareturns.domain.validation.landfillmeasurement.LandfillMeasurementMvo;
-import uk.gov.ea.datareturns.domain.validation.model.MessageCodes;
-import uk.gov.ea.datareturns.domain.validation.model.fields.AbstractEntityValue;
-import uk.gov.ea.datareturns.domain.validation.model.validation.auditors.controlledlist.ReturnTypeAuditor;
-import uk.gov.ea.datareturns.domain.validation.model.validation.constraints.controlledlist.ControlledList;
+import uk.gov.ea.datareturns.domain.validation.landfillmeasurement.LandfillMeasurementFieldMessageMap;
+import uk.gov.ea.datareturns.domain.validation.newmodel.auditors.controlledlist.ReturnTypeAuditorNew;
+import uk.gov.ea.datareturns.domain.validation.newmodel.constraints.controlledlist.ControlledList;
+import uk.gov.ea.datareturns.domain.validation.newmodel.entityfields.AbstractEntityValue;
 
 /**
  * The return type describes the type of data being returned.
  *
  * @author Sam Gardner-Dell
  */
-public class ReturnType extends AbstractEntityValue<ReturnTypeDao, LandfillMeasurementMvo, uk.gov.ea.datareturns.domain.jpa.entities.masterdata.impl.ReturnType> {
+public class ReturnType extends AbstractEntityValue<ReturnTypeDao, uk.gov.ea.datareturns.domain.jpa.entities.masterdata.impl.ReturnType> {
     private static final ReturnTypeDao DAO = EntityDao.getDao(ReturnTypeDao.class);
 
-    @NotBlank(message = MessageCodes.Missing.Rtn_Type)
-    @ControlledList(auditor = ReturnTypeAuditor.class, message = MessageCodes.ControlledList.Rtn_Type)
+    @NotBlank(message = LandfillMeasurementFieldMessageMap.Missing.Rtn_Type)
+    @ControlledList(auditor = ReturnTypeAuditorNew.class, message = LandfillMeasurementFieldMessageMap.ControlledList.Rtn_Type)
     private final String inputValue;
 
     /**

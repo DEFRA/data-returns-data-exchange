@@ -1,6 +1,6 @@
-package uk.gov.ea.datareturns.domain.validation.landfillmeasurement.constraints;
+package uk.gov.ea.datareturns.domain.validation.landfillmeasurement.constraints.annotations;
 
-import uk.gov.ea.datareturns.domain.validation.landfillmeasurement.constraints.impl.ValueTxtValueValidator;
+import uk.gov.ea.datareturns.domain.validation.landfillmeasurement.constraints.field.ValueTxtValueValidator;
 
 import javax.validation.Constraint;
 import javax.validation.Payload;

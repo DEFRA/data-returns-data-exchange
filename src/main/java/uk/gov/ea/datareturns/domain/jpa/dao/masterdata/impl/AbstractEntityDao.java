@@ -178,7 +178,7 @@ public abstract class AbstractEntityDao<E extends ControlledListEntity> implemen
     }
 
     /**
-     * Enable DAO implementations to add functionality to make individual entity fields searchable
+     * Enable DAO implementations to add functionality to make individual entity entityfields searchable
      *
      * @param field the field identifier string
      * @param searchFunction the {@link SearchFunction} implementation to provide search functionality for a field

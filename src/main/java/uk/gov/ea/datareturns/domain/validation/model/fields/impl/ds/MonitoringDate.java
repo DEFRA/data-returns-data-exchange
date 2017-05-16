@@ -3,7 +3,7 @@ package uk.gov.ea.datareturns.domain.validation.model.fields.impl.ds;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import uk.gov.ea.datareturns.domain.validation.model.DataSample;
 import uk.gov.ea.datareturns.domain.validation.model.fields.FieldValue;
-import uk.gov.ea.datareturns.domain.validation.rules.DateFormat;
+import uk.gov.ea.datareturns.domain.validation.model.rules.DateFormat;
 import uk.gov.ea.datareturns.domain.validation.model.validation.constraints.field.ValidMonitoringDate;
 
 import java.time.Instant;

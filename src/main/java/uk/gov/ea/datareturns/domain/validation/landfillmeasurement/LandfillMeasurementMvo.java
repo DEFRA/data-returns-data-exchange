@@ -1,17 +1,15 @@
 package uk.gov.ea.datareturns.domain.validation.landfillmeasurement;
 
 import uk.gov.ea.datareturns.domain.dto.impl.LandfillMeasurementDto;
-import uk.gov.ea.datareturns.domain.validation.model.fields.MappedField;
 import uk.gov.ea.datareturns.domain.validation.landfillmeasurement.fields.*;
-import uk.gov.ea.datareturns.domain.validation.model.rules.FieldDefinition;
-import uk.gov.ea.datareturns.domain.validation.Mvo;
-import uk.gov.ea.datareturns.domain.validation.landfillmeasurement.constraints.ValueTxtValue;
+import uk.gov.ea.datareturns.domain.validation.newmodel.validator.Mvo;
+import uk.gov.ea.datareturns.domain.validation.landfillmeasurement.constraints.annotations.ValueTxtValue;
 
 import javax.validation.Valid;
 
 /**
  * @author Graham Willis
- * Object contaioning fields and hibernate validation annotations
+ * Object contaioning entityfields and hibernate validation annotations
  */
 @ValueTxtValue
 public class LandfillMeasurementMvo extends Mvo<LandfillMeasurementDto> {
@@ -66,7 +64,7 @@ public class LandfillMeasurementMvo extends Mvo<LandfillMeasurementDto> {
     public LandfillMeasurementMvo(LandfillMeasurementDto dto) {
         super(dto);
 
-        // Initialize the fields for validation
+        // Initialize the entityfields for validation
         eaId = new EaId(dto.getEaId());
         siteName = new SiteName(dto.getSiteName());
         returnType = new ReturnType(dto.getReturnType());

@@ -5,7 +5,7 @@ import javax.validation.Payload;
 import java.lang.annotation.*;
 
 /**
- * Annotation to enable hibernate validator based validation of records based on the factory pattern
+ * Annotation to enable hibernate validator based validation of records based on the record pattern
  *
  * @author Sam Gardner-Dell
  */
@@ -18,7 +18,7 @@ public @interface ValidRecord {
      * Default constraint violation template
      * @return the constraint violation template
      */
-    String message() default "{uk.gov.ea.datareturns.domain.validation.model.validation.constraints.factory}";
+    String message() default "{uk.gov.ea.datareturns.domain.validation.model.validation.entityfields.record}";
 
     /**
      * Validation groups

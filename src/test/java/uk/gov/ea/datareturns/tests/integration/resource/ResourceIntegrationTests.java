@@ -94,9 +94,9 @@ public class ResourceIntegrationTests {
 
     public final static String FILE_CSV_INVALID_VALUE_CHARS = "invalid-value-field-chars.csv";
 
-    public final static String FILE_CSV_REQUIRED_FIELDS_ONLY = "required-fields-only.csv";
+    public final static String FILE_CSV_REQUIRED_FIELDS_ONLY = "required-entityfields-only.csv";
 
-    public final static String FILE_CSV_REQUIRED_FIELDS_MISSING = "required-fields-missing.csv";
+    public final static String FILE_CSV_REQUIRED_FIELDS_MISSING = "required-entityfields-missing.csv";
 
     public final static String FILE_CSV_DATE_FORMAT = "date-format-test.csv";
 
@@ -183,7 +183,7 @@ public class ResourceIntegrationTests {
 
     /**
      * Tests that the backend will load a csv file which only contains the
-     * mandatory fields.
+     * mandatory entityfields.
      */
     @Test
     public void testRequiredFieldsOnly() {
@@ -208,7 +208,7 @@ public class ResourceIntegrationTests {
     }
 
     /**
-     * Tests that the backend will throw out CSV files which contain rows with inconsistent number of fields with respect to headers
+     * Tests that the backend will throw out CSV files which contain rows with inconsistent number of entityfields with respect to headers
      */
     @Test
     public void testInconsistentRows() {
@@ -238,7 +238,7 @@ public class ResourceIntegrationTests {
 
     /**
      * Tests that the backend won't load a csv file that does not include all
-     * mandatory fields.
+     * mandatory entityfields.
      */
     @Test
     public void testRequiredFieldsMissing() {
