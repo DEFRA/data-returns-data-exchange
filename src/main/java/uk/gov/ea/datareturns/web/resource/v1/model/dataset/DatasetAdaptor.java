@@ -23,7 +23,9 @@ public class DatasetAdaptor implements EntityAdaptor<Dataset, DatasetEntity> {
     public DatasetEntity convert(Dataset dataset) {
         DatasetEntity datasetEntity = new DatasetEntity();
         datasetEntity.setIdentifier(dataset.getId());
-        datasetEntity.setOriginatorEmail(dataset.getProperties().getOriginatorEmail());
+        if (dataset.getProperties() != null) {
+            datasetEntity.setOriginatorEmail(dataset.getProperties().getOriginatorEmail());
+        }
         return datasetEntity;
     }
 
@@ -33,8 +35,9 @@ public class DatasetAdaptor implements EntityAdaptor<Dataset, DatasetEntity> {
             return convert(dataset);
         }
         datasetEntity.setIdentifier(dataset.getId());
-        datasetEntity.setOriginatorEmail(dataset.getProperties().getOriginatorEmail());
-
+        if (dataset.getProperties() != null) {
+            datasetEntity.setOriginatorEmail(dataset.getProperties().getOriginatorEmail());
+        }
         return datasetEntity;
     }
 

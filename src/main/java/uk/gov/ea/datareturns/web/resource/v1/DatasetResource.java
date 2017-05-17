@@ -95,10 +95,11 @@ public class DatasetResource {
     public Response listDatasets() throws Exception {
 
         List<EntityReference> result = new ArrayList<>();
+        List<DatasetEntity> datasets = submissionService.getDatasets();
 
-        for (String id : DEMO_DATASET_STORE.keySet()) {
+        for (DatasetEntity dataset : datasets) {
             UriBuilder ub = uriInfo.getAbsolutePathBuilder();
-            result.add(new EntityReference(id, ub.path(id).build().toASCIIString()));
+            result.add(new EntityReference(dataset.getIdentifier(), ub.path(dataset.getIdentifier()).build().toASCIIString()));
         }
         Response.Status responseStatus = Response.Status.OK;
         DatasetListResponse rw = new DatasetListResponse(responseStatus, result);
@@ -269,20 +270,22 @@ public class DatasetResource {
      * @param datasetProperties
      * @return DatasetEntityResponse
      */
-    private DatasetEntityResponse storeDataset(final DatasetEntity dataSetEntity, String datasetId, final DatasetProperties datasetProperties) {
+    private DatasetEntityResponse storeDataset(final DatasetEntity datasetEntity, String datasetId, final DatasetProperties datasetProperties) {
         Dataset dataset = new Dataset();
         dataset.setId(datasetId);
         dataset.setProperties(datasetProperties);
-        DatasetEntity newDatasetEntity = DatasetAdaptor.getInstance().merge(dataSetEntity, dataset);
+        DatasetEntity newDatasetEntity = DatasetAdaptor.getInstance().merge(datasetEntity, dataset);
 
         Response.Status status = Response.Status.OK;
 
-        if (dataSetEntity != null) {
+        if (datasetEntity != null) {
             submissionService.updateDataset(newDatasetEntity);
         } else {
             submissionService.createDataset(newDatasetEntity);
             status = Response.Status.CREATED;
         }
+
+        dataset.setCreated(Date.from(newDatasetEntity.getCreateDate().toInstant(ZoneOffset.UTC)));
 
         return new DatasetEntityResponse(status, dataset);
     }
