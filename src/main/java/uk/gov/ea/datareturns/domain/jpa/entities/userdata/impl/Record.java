@@ -5,6 +5,7 @@ import uk.gov.ea.datareturns.domain.jpa.entities.userdata.AbstractMeasurement;
 import uk.gov.ea.datareturns.domain.jpa.entities.userdata.Metadata;
 
 import javax.persistence.*;
+import java.time.Instant;
 import java.time.LocalDateTime;
 
 /**
@@ -39,10 +40,10 @@ public class Record implements Metadata {
     private RecordStatus recordStatus;
 
     @Basic @Column(name = "create_date", nullable = false)
-    private LocalDateTime createDate;
+    private Instant createDate;
 
     @Basic @Column(name = "last_changed_date", nullable = false)
-    private LocalDateTime lastChangedDate;
+    private Instant lastChangedDate;
 
     @Basic @Column(name = "json", length = 16000)
     private String json;
@@ -82,19 +83,19 @@ public class Record implements Metadata {
         this.recordStatus = recordStatus;
     }
 
-    public LocalDateTime getCreateDate() {
+    public Instant getCreateDate() {
         return createDate;
     }
 
-    public void setCreateDate(LocalDateTime createDate) {
+    public void setCreateDate(Instant createDate) {
         this.createDate = createDate;
     }
 
-    public LocalDateTime getLastChangedDate() {
+    public Instant getLastChangedDate() {
         return lastChangedDate;
     }
 
-    public void setLastChangedDate(LocalDateTime lastChangedDate) {
+    public void setLastChangedDate(Instant lastChangedDate) {
         this.lastChangedDate = lastChangedDate;
     }
 

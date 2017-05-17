@@ -22,6 +22,7 @@ import uk.gov.ea.datareturns.domain.validation.newmodel.validator.MvoFactory;
 import uk.gov.ea.datareturns.domain.validation.newmodel.validator.result.ValidationResult;
 
 import java.io.IOException;
+import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -235,7 +236,7 @@ public class SubmissionService<D extends MeasurementDto, M extends AbstractMeasu
                             m.getKey().setValidationResult(result);
                             m.getKey().setRecordStatus(Record.RecordStatus.INVALID);
                         }
-                        m.getKey().setLastChangedDate(LocalDateTime.now());
+                        m.getKey().setLastChangedDate(Instant.now());
                         recordDao.merge(m.getKey());
                     } catch (JsonProcessingException e) {
                         LOGGER.error("Error de-serializing stored JSON: " + e.getMessage());
@@ -262,7 +263,7 @@ public class SubmissionService<D extends MeasurementDto, M extends AbstractMeasu
                         r.setMeasurement(submission);
                         r.setRecordStatus(Record.RecordStatus.SUBMITTED);
                         r.getMeasurement().setRecord(r);
-                        r.setLastChangedDate(LocalDateTime.now());
+                        r.setLastChangedDate(Instant.now());
                         measurementDao.persist(submission);
                         recordDao.merge(r);
                     } catch (IOException e) {
@@ -311,7 +312,7 @@ public class SubmissionService<D extends MeasurementDto, M extends AbstractMeasu
         if (newRecordStatus == Record.RecordStatus.CREATED) {
             return recordDao.persist(record);
         } else {
-            record.setLastChangedDate(LocalDateTime.now());
+            record.setLastChangedDate(Instant.now());
             recordDao.merge(record);
             return record;
         }
@@ -365,8 +366,8 @@ public class SubmissionService<D extends MeasurementDto, M extends AbstractMeasu
             record.setDataset(dataset);
             record.setIdentifier(identifier);
             record.setRecordStatus(Record.RecordStatus.CREATED);
-            record.setCreateDate(LocalDateTime.now());
-            record.setLastChangedDate(LocalDateTime.now());
+            record.setCreateDate(Instant.now());
+            record.setLastChangedDate(Instant.now());
         }
         return record;
     }
@@ -391,8 +392,8 @@ public class SubmissionService<D extends MeasurementDto, M extends AbstractMeasu
     public User createUser(String identifier) {
         User user = new User();
         user.setIdentifier(identifier);
-        user.setCreateDate(LocalDateTime.now());
-        user.setLastChangedDate(LocalDateTime.now());
+        user.setCreateDate(Instant.now());
+        user.setLastChangedDate(Instant.now());
         userDao.persist(user);
         return user;
     }
@@ -466,16 +467,16 @@ public class SubmissionService<D extends MeasurementDto, M extends AbstractMeasu
         dataset.setIdentifier(identifier);
         dataset.setUser(user);
         dataset.setOriginatorEmail(originatorEmail);
-        dataset.setCreateDate(LocalDateTime.now());
-        dataset.setLastChangedDate(LocalDateTime.now());
+        dataset.setCreateDate(Instant.now());
+        dataset.setLastChangedDate(Instant.now());
         datasetDao.persist(dataset);
         return dataset;
     }
 
     @Transactional
     public void createDataset(DatasetEntity newDatasetEntity) {
-        newDatasetEntity.setCreateDate(LocalDateTime.now());
-        newDatasetEntity.setLastChangedDate(LocalDateTime.now());
+        newDatasetEntity.setCreateDate(Instant.now());
+        newDatasetEntity.setLastChangedDate(Instant.now());
         if (newDatasetEntity.getUser() == null) {
             newDatasetEntity.setUser(getSystemUser());
         }
@@ -484,7 +485,7 @@ public class SubmissionService<D extends MeasurementDto, M extends AbstractMeasu
 
     @Transactional
     public void updateDataset(DatasetEntity datasetEntity) {
-        datasetEntity.setLastChangedDate(LocalDateTime.now());
+        datasetEntity.setLastChangedDate(Instant.now());
         datasetDao.merge(datasetEntity);
     }
 

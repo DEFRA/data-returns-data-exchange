@@ -54,7 +54,7 @@ public class DatasetResource {
     @Context
     private UriInfo uriInfo;
 
-    private SubmissionService submissionService;
+    private SubmissionService<?, ?, ?> submissionService;
 
     /**
      * Retrieves the appropriate versioned submission service
@@ -241,7 +241,7 @@ public class DatasetResource {
             rb = preconditions.evaluatePreconditions();
         } else {
             Dataset existingDataset = DatasetAdaptor.getInstance().convert(datasetEntity);
-            Date lastModified = Date.from(datasetEntity.getLastChangedDate().toInstant(ZoneOffset.UTC));
+            Date lastModified = Date.from(datasetEntity.getLastChangedDate());
             rb = preconditions.evaluatePreconditions(lastModified, Preconditions.createEtag(existingDataset));
         }
 
@@ -277,7 +277,7 @@ public class DatasetResource {
             status = Response.Status.CREATED;
         }
 
-        dataset.setCreated(Date.from(newDatasetEntity.getCreateDate().toInstant(ZoneOffset.UTC)));
+        dataset.setCreated(Date.from(newDatasetEntity.getCreateDate()));
 
         return new DatasetEntityResponse(status, dataset);
     }

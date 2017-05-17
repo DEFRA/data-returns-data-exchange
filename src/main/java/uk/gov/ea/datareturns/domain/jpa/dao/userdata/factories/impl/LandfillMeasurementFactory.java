@@ -62,7 +62,7 @@ public class LandfillMeasurementFactory implements AbstractMeasurementFactory<La
         measurement.setSite(siteDao.getByName((Key.relaxed(dto.getSiteName()))));
         measurement.setReturnType(returnTypeDao.getByName(Key.relaxed((dto.getReturnType()))));
         MonitoringDate monDate = new MonitoringDate(dto.getMonitoringDate());
-        measurement.setMonDate(LocalDateTime.ofInstant(monDate.getInstant(), ZoneOffset.UTC));
+        measurement.setMonDate(monDate.getInstant());
         measurement.setMonPoint(dto.getMonitoringPoint());
         measurement.setParameter(parameterDao.getByNameOrAlias(Key.relaxed(dto.getParameter())));
         measurement.setNumericValue(new BigDecimal(dto.getValue()));

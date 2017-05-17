@@ -4,7 +4,7 @@ import org.hibernate.annotations.GenericGenerator;
 import uk.gov.ea.datareturns.domain.jpa.entities.userdata.Metadata;
 
 import javax.persistence.*;
-import java.time.LocalDateTime;
+import java.time.Instant;
 import java.util.Collection;
 
 /**
@@ -34,10 +34,10 @@ public class DatasetEntity implements Metadata {
     private Collection records;
 
     @Basic @Column(name = "create_date", nullable = false)
-    private LocalDateTime createDate;
+    private Instant createDate;
 
     @Basic @Column(name = "last_changed_date", nullable = false)
-    private LocalDateTime lastChangedDate;
+    private Instant lastChangedDate;
 
     public Long getId() {
         return id;
@@ -79,19 +79,19 @@ public class DatasetEntity implements Metadata {
         this.records = records;
     }
 
-    public LocalDateTime getCreateDate() {
+    public Instant getCreateDate() {
         return createDate;
     }
 
-    public void setCreateDate(LocalDateTime createDate) {
+    public void setCreateDate(Instant createDate) {
         this.createDate = createDate;
     }
 
-    public LocalDateTime getLastChangedDate() {
+    public Instant getLastChangedDate() {
         return lastChangedDate;
     }
 
-    public void setLastChangedDate(LocalDateTime lastChangedDate) {
+    public void setLastChangedDate(Instant lastChangedDate) {
         this.lastChangedDate = lastChangedDate;
     }
 
