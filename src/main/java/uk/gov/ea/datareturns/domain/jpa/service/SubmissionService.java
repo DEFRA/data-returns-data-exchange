@@ -472,6 +472,19 @@ public class SubmissionService<D extends MeasurementDto, M extends AbstractMeasu
         return dataset;
     }
 
+    @Transactional
+    public void createDataset(DatasetEntity newDatasetEntity) {
+        newDatasetEntity.setCreateDate(LocalDateTime.now());
+        newDatasetEntity.setLastChangedDate(LocalDateTime.now());
+        datasetDao.persist(newDatasetEntity);
+    }
+
+    @Transactional
+    public void updateDataset(DatasetEntity datasetEntity) {
+        datasetEntity.setLastChangedDate(LocalDateTime.now());
+        datasetDao.merge(datasetEntity);
+    }
+
     @Transactional(readOnly = true)
     public List<DatasetEntity> getDatasets(User user) {
         return datasetDao.list(user);
@@ -502,9 +515,4 @@ public class SubmissionService<D extends MeasurementDto, M extends AbstractMeasu
         return datasetDao.get(user, datasetId);
     }
 
-    @Transactional
-    public void updateDataset(DatasetEntity datasetEntity) {
-        datasetEntity.setLastChangedDate(LocalDateTime.now());
-        datasetDao.merge(datasetEntity);
-    }
 }

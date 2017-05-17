@@ -12,10 +12,7 @@ import uk.gov.ea.datareturns.domain.jpa.entities.userdata.impl.DatasetEntity;
 import uk.gov.ea.datareturns.domain.jpa.service.SubmissionService;
 import uk.gov.ea.datareturns.web.resource.v1.model.common.Preconditions;
 import uk.gov.ea.datareturns.web.resource.v1.model.common.references.EntityReference;
-import uk.gov.ea.datareturns.web.resource.v1.model.dataset.Dataset;
-import uk.gov.ea.datareturns.web.resource.v1.model.dataset.DatasetProperties;
-import uk.gov.ea.datareturns.web.resource.v1.model.dataset.DatasetStatus;
-import uk.gov.ea.datareturns.web.resource.v1.model.dataset.DatasetSubmissionStatus;
+import uk.gov.ea.datareturns.web.resource.v1.model.dataset.*;
 import uk.gov.ea.datareturns.web.resource.v1.model.request.BatchDatasetRequest;
 import uk.gov.ea.datareturns.web.resource.v1.model.request.BatchDatasetRequestItem;
 import uk.gov.ea.datareturns.web.resource.v1.model.responses.ErrorResponse;
@@ -138,12 +135,13 @@ public class DatasetResource {
             throws Exception {
 
         MultiStatusResponse multiResponse = new MultiStatusResponse();
+        DatasetEntity datasetEntity = null;
         for (BatchDatasetRequestItem request : batchRequest.getRequests()) {
             MultiStatusResponse.Response response = new MultiStatusResponse.Response();
-
-            Response.ResponseBuilder rb = checkStoragePreconditions(request.getDatasetId(), request.getPreconditions());
+            datasetEntity = submissionService.getDataset(request.getDatasetId());
+            Response.ResponseBuilder rb = checkStoragePreconditions(datasetEntity, request.getPreconditions());
             if (rb == null) {
-                DatasetEntityResponse responseEntity = storeDataset(request.getDatasetId(), request.getProperties());
+                DatasetEntityResponse responseEntity = storeDataset(datasetEntity, request.getDatasetId(), request.getProperties());
                 UriBuilder ub = uriInfo.getAbsolutePathBuilder();
                 response.setId(request.getDatasetId());
                 response.setCode(responseEntity.getMeta().getStatus());
@@ -185,17 +183,8 @@ public class DatasetResource {
 
         Response.ResponseBuilder rb;
 
-        Dataset dataset = null;
         DatasetEntity dataSetEntity = submissionService.getDataset(datasetId);
-
-        if (dataSetEntity != null) {
-            dataset = new Dataset();
-            DatasetProperties datasetProperties = new DatasetProperties();
-            dataset.setId(dataSetEntity.getIdentifier());
-            dataset.setCreated(Date.from(dataSetEntity.getCreateDate().toInstant(ZoneOffset.UTC)));
-            datasetProperties.setOriginatorEmail(dataSetEntity.getOriginatorEmail());
-            dataset.setProperties(datasetProperties);
-        }
+        Dataset dataset = DatasetAdaptor.getInstance().convert(dataSetEntity);
 
         if (dataset == null) {
             rb = Response.status(Response.Status.NOT_FOUND);
@@ -245,10 +234,12 @@ public class DatasetResource {
     )
             throws Exception {
 
-        Response.ResponseBuilder rb = checkStoragePreconditions(datasetId, preconditions);
+        DatasetEntity datasetEntity = submissionService.getDataset(datasetId);
+
+        Response.ResponseBuilder rb = checkStoragePreconditions(datasetEntity, preconditions);
         if (rb == null) {
             // Preconditions passed, serve resource
-            DatasetEntityResponse responseEntity = storeDataset(datasetId, datasetProperties);
+            DatasetEntityResponse responseEntity = storeDataset(datasetEntity, datasetId, datasetProperties);
             rb = Response.status(responseEntity.getMeta().getStatus())
                     .entity(responseEntity)
                     .tag(Preconditions.createEtag(responseEntity.getData()));
@@ -256,10 +247,11 @@ public class DatasetResource {
         return rb.build();
     }
 
-    private Response.ResponseBuilder checkStoragePreconditions(final String datasetId, Preconditions preconditions) {
-        Dataset existingDataset = DEMO_DATASET_STORE.get(datasetId);
+    private Response.ResponseBuilder checkStoragePreconditions(final DatasetEntity datasetEntity, Preconditions preconditions) {
+        Dataset existingDataset = DatasetAdaptor.getInstance().convert(datasetEntity);
+
         Response.ResponseBuilder rb;
-        if (existingDataset == null) {
+        if (datasetEntity == null) {
             rb = preconditions.evaluatePreconditions();
         } else {
             rb = preconditions.evaluatePreconditions(new Date(), Preconditions.createEtag(existingDataset));
@@ -277,21 +269,20 @@ public class DatasetResource {
      * @param datasetProperties
      * @return DatasetEntityResponse
      */
-    private DatasetEntityResponse storeDataset(final String datasetId, final DatasetProperties datasetProperties) {
+    private DatasetEntityResponse storeDataset(final DatasetEntity dataSetEntity, String datasetId, final DatasetProperties datasetProperties) {
         Dataset dataset = new Dataset();
-        Response.Status status = Response.Status.OK;
-        DatasetEntity dataSetEntity = submissionService.getDataset(datasetId);
-
-        if (dataSetEntity != null) {
-            dataSetEntity.setOriginatorEmail(datasetProperties.getOriginatorEmail());
-            submissionService.updateDataset(dataSetEntity);
-        } else {
-            submissionService.createDataset(datasetProperties.getOriginatorEmail(), datasetId);
-            status = Response.Status.CREATED;
-        }
-
         dataset.setId(datasetId);
         dataset.setProperties(datasetProperties);
+        DatasetEntity newDatasetEntity = DatasetAdaptor.getInstance().merge(dataSetEntity, dataset);
+
+        Response.Status status = Response.Status.OK;
+
+        if (dataSetEntity != null) {
+            submissionService.updateDataset(newDatasetEntity);
+        } else {
+            submissionService.createDataset(newDatasetEntity);
+            status = Response.Status.CREATED;
+        }
 
         return new DatasetEntityResponse(status, dataset);
     }
@@ -323,8 +314,10 @@ public class DatasetResource {
             throws Exception {
         Response.ResponseBuilder rb;
 
-        Dataset dataset = DEMO_DATASET_STORE.get(datasetId);
-        if (dataset == null) {
+        DatasetEntity datasetEntity = submissionService.getDataset(datasetId);
+        Dataset dataset = DatasetAdaptor.getInstance().convert(datasetEntity);
+
+        if (datasetEntity == null) {
             rb = Response.status(Response.Status.NOT_FOUND);
         } else {
             EntityTag eTag = Preconditions.createEtag(dataset);
@@ -333,7 +326,7 @@ public class DatasetResource {
 
             if (rb == null) {
                 // Preconditions passed, delete the resource
-                DEMO_DATASET_STORE.remove(datasetId);
+                submissionService.removeDataset(datasetId);
                 rb = Response.status(Response.Status.NO_CONTENT);
             }
         }
