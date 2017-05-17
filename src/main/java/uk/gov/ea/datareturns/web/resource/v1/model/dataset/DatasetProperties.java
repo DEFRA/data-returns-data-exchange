@@ -1,8 +1,8 @@
 package uk.gov.ea.datareturns.web.resource.v1.model.dataset;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.annotations.ApiModel;
 
-import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import java.io.Serializable;
 
@@ -14,8 +14,7 @@ import java.io.Serializable;
 @ApiModel(description = "User defined fields for a dataset")
 @XmlRootElement(name = "properties")
 public class DatasetProperties implements Serializable {
-
-    @XmlElement(name = "originator_email")
+    @JsonProperty("originator_email")
     private String originatorEmail;
 
     public DatasetProperties() {

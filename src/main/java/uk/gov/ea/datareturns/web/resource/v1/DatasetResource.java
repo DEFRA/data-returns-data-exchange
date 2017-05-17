@@ -167,13 +167,13 @@ public class DatasetResource {
     @GET
     @Path("/{dataset_id}")
     @ApiOperation(value = "Retrieve dataset details",
-            notes = "**Retrieve the details for the given `dataset_id`**",
-            response = DatasetEntityResponse.class
+            notes = "**Retrieve the details for the given `dataset_id`**"
     )
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "OK"),
+            @ApiResponse(code = 200, message = "OK", response = DatasetEntityResponse.class),
             @ApiResponse(code = 304, message = "Not Modified - see conditional request documentation"),
-            @ApiResponse(code = 404, message = "Not Found - The `dataset_id` parameter did not match a known resource")
+            @ApiResponse(code = 404, message = "Not Found - The `dataset_id` parameter did not match a known resource",
+                    response = ErrorResponse.class)
     })
     public Response getDataset(
             @PathParam("dataset_id")
@@ -218,12 +218,11 @@ public class DatasetResource {
     @ApiOperation(value = "Create or update a dataset",
             notes = "**Create or update the properties associated with the dataset for the specified `dataset_id`**\n"
                     + "#### Note\n"
-                    + "* This operation does not effect the records stored within an existing dataset.",
-            response = DatasetEntityResponse.class
+                    + "* This operation does not effect the records stored within an existing dataset."
     )
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "OK - an existing dataset was successfully updated."),
-            @ApiResponse(code = 201, message = "Created - a new dataset was created and can now accept records."),
+            @ApiResponse(code = 200, message = "OK - an existing dataset was successfully updated.", response = DatasetEntityResponse.class),
+            @ApiResponse(code = 201, message = "Created - a new dataset was created and can now accept records.", response = DatasetEntityResponse.class),
             @ApiResponse(code = 412, message = "Precondition Failed - see conditional request documentation")
     })
     public Response putDataset(
@@ -358,7 +357,28 @@ public class DatasetResource {
             @Pattern(regexp = "[A-Za-z0-9_-]+")
             @ApiParam("The unique identifier for the target dataset") final String datasetId)
             throws Exception {
-        return Response.status(Response.Status.OK).entity("magic").build();
+
+        DatasetStatus testStatus = new DatasetStatus();
+
+        // Submission status
+        DatasetSubmissionStatus submissionStatus = new DatasetSubmissionStatus();
+        submissionStatus.setStatus(DatasetSubmissionStatus.Status.UNSUBMITTED);
+        testStatus.setSubmission(submissionStatus);
+
+        // Substitution status
+        DatasetSubstitutions substitutions = new DatasetSubstitutions();
+        for (int i = 0; i < 20; i += 2 + Math.round(Math.random())) {
+            substitutions.addSubstitution("record" + i, "EA_ID", "12345", "AB1234CD");
+            substitutions.addSubstitution("record" + (i + 1), "EA_ID", "98765", "ZY9876BA");
+        }
+        for (int i = 0; i < 20; i += 1 + Math.round(Math.random() * 2)) {
+            substitutions.addSubstitution("record" + i, "Parameter", "CO2", "Carbon Dioxide");
+        }
+        testStatus.setSubstitutions(substitutions);
+
+        // Validation status
+        // TODO
+        return Response.status(Response.Status.OK).entity(testStatus).build();
     }
 
     /**

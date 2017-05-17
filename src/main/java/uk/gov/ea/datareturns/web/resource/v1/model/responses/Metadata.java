@@ -1,6 +1,7 @@
 package uk.gov.ea.datareturns.web.resource.v1.model.responses;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.annotations.ApiModelProperty;
 
 /**
@@ -9,23 +10,23 @@ import io.swagger.annotations.ApiModelProperty;
  * @author Sam Gardner-Dell
  */
 public class Metadata {
-
     @ApiModelProperty(example = "200", value = "The API HTTP status code")
     private int status;
+
+    @JsonProperty("error")
     @JsonInclude(JsonInclude.Include.NON_NULL)
-    private String errorDescription;
+    private String error;
 
     public Metadata() {
-
     }
 
     public Metadata(int status) {
         this.status = status;
     }
 
-    public Metadata(int status, String errorDescription) {
+    public Metadata(int status, String error) {
         this.status = status;
-        this.errorDescription = errorDescription;
+        this.error = error;
     }
 
     public int getStatus() {
@@ -36,11 +37,11 @@ public class Metadata {
         this.status = status;
     }
 
-    public String getErrorDescription() {
-        return errorDescription;
+    public String getError() {
+        return error;
     }
 
-    public void setErrorDescription(String errorDescription) {
-        this.errorDescription = errorDescription;
+    public void setError(String error) {
+        this.error = error;
     }
 }

@@ -21,6 +21,6 @@ public class DatasetSubmissionStatus {
     }
 
     public enum Status {
-        UNSUBMITTED, SUBMITTED, RECEIVED
+        UNSUBMITTED, SUBMITTED, PROCESSING
     }
 }

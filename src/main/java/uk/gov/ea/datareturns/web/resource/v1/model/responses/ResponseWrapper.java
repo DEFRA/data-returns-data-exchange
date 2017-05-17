@@ -1,5 +1,6 @@
 package uk.gov.ea.datareturns.web.resource.v1.model.responses;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.annotations.ApiModel;
 
 import javax.ws.rs.core.Response;
@@ -12,7 +13,9 @@ import javax.ws.rs.core.Response;
  */
 @ApiModel(value = "Default response wrapper object")
 public abstract class ResponseWrapper<T> {
+    @JsonProperty("meta")
     private Metadata meta;
+    @JsonProperty("data")
     private T data;
 
     public ResponseWrapper() {

@@ -116,7 +116,7 @@ public class MonitorProEmailerTests {
     }
 
     private static File getTestFile(final String location) throws URISyntaxException {
-        final URL fileURL = LocalStorageProviderTests.class.getResource(location);
+        final URL fileURL = MonitorProEmailerTests.class.getResource(location);
         return new File(fileURL.toURI());
     }
 }

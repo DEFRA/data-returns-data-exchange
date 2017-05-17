@@ -214,9 +214,9 @@ public class DatasetResourceTests {
                 Assert.assertEquals(response.getStatusCodeValue(), metadata.getStatus());
 
                 if (expected.is2xxSuccessful()) {
-                    Assert.assertNull(metadata.getErrorDescription());
+                    Assert.assertNull(metadata.getError());
                 } else {
-                    Assert.assertNotNull(metadata.getErrorDescription());
+                    Assert.assertNotNull(metadata.getError());
                 }
             }
         }

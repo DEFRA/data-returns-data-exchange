@@ -13,7 +13,8 @@ import java.io.Serializable;
  */
 @ApiModel(parent = EntityBase.class)
 public class Dataset extends EntityBase implements Serializable {
-    @ApiModelProperty(name = "datasetProperties")
+    // TODO: Raised bug in swagger-ui as a field named "properties" is not correctly rendered in documentation - https://github.com/swagger-api/swagger-ui/issues/3091
+    @ApiModelProperty(name = "properties")
     private DatasetProperties properties;
 
     public Dataset() {
