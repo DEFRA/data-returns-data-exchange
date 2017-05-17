@@ -4,7 +4,6 @@ import io.swagger.annotations.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
-import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import uk.gov.ea.datareturns.config.SubmissionConfiguration;
@@ -21,12 +20,14 @@ import uk.gov.ea.datareturns.web.resource.v1.model.responses.dataset.DatasetList
 import uk.gov.ea.datareturns.web.resource.v1.model.responses.multistatus.MultiStatusResponse;
 
 import javax.annotation.Resource;
-import javax.inject.Inject;
 import javax.validation.constraints.Pattern;
 import javax.ws.rs.*;
 import javax.ws.rs.core.*;
 import java.time.ZoneOffset;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
 
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 import static javax.ws.rs.core.MediaType.APPLICATION_XML;
@@ -49,31 +50,19 @@ import static javax.ws.rs.core.MediaType.APPLICATION_XML;
 @Scope(ConfigurableBeanFactory.SCOPE_SINGLETON)
 public class DatasetResource {
     private static final Logger LOGGER = LoggerFactory.getLogger(DatasetResource.class);
-    private final ApplicationContext context;
 
     @Context
     private UriInfo uriInfo;
 
-    private static Map<String, Dataset> DEMO_DATASET_STORE = new HashMap<>();
     private SubmissionService submissionService;
 
     /**
      * Retrieves the appropriate versioned submission service
      * @param submissionServiceMap
      */
-    @Resource(name="submissionServiceMap")
+    @Resource(name = "submissionServiceMap")
     private void setSubmissionService(Map<SubmissionConfiguration.SubmissionServiceProvider, SubmissionService> submissionServiceMap) {
         this.submissionService = submissionServiceMap.get(SubmissionConfiguration.SubmissionServiceProvider.LANDFILL_VERSION_1);
-    }
-
-    /**
-     * {@link DatasetResource} constructor
-     *
-     * @param context the spring application context
-     */
-    @Inject
-    public DatasetResource(final ApplicationContext context) {
-        this.context = context;
     }
 
     /**
@@ -136,10 +125,9 @@ public class DatasetResource {
             throws Exception {
 
         MultiStatusResponse multiResponse = new MultiStatusResponse();
-        DatasetEntity datasetEntity = null;
         for (BatchDatasetRequestItem request : batchRequest.getRequests()) {
             MultiStatusResponse.Response response = new MultiStatusResponse.Response();
-            datasetEntity = submissionService.getDataset(request.getDatasetId());
+            DatasetEntity datasetEntity = submissionService.getDataset(request.getDatasetId());
             Response.ResponseBuilder rb = checkStoragePreconditions(datasetEntity, request.getPreconditions());
             if (rb == null) {
                 DatasetEntityResponse responseEntity = storeDataset(datasetEntity, request.getDatasetId(), request.getProperties());
@@ -248,13 +236,13 @@ public class DatasetResource {
     }
 
     private Response.ResponseBuilder checkStoragePreconditions(final DatasetEntity datasetEntity, Preconditions preconditions) {
-        Dataset existingDataset = DatasetAdaptor.getInstance().convert(datasetEntity);
-
         Response.ResponseBuilder rb;
         if (datasetEntity == null) {
             rb = preconditions.evaluatePreconditions();
         } else {
-            rb = preconditions.evaluatePreconditions(new Date(), Preconditions.createEtag(existingDataset));
+            Dataset existingDataset = DatasetAdaptor.getInstance().convert(datasetEntity);
+            Date lastModified = Date.from(datasetEntity.getLastChangedDate().toInstant(ZoneOffset.UTC));
+            rb = preconditions.evaluatePreconditions(lastModified, Preconditions.createEtag(existingDataset));
         }
 
         if (rb != null) {
@@ -269,17 +257,22 @@ public class DatasetResource {
      * @param datasetProperties
      * @return DatasetEntityResponse
      */
-    private DatasetEntityResponse storeDataset(final DatasetEntity datasetEntity, String datasetId, final DatasetProperties datasetProperties) {
-        Dataset dataset = new Dataset();
-        dataset.setId(datasetId);
-        dataset.setProperties(datasetProperties);
-        DatasetEntity newDatasetEntity = DatasetAdaptor.getInstance().merge(datasetEntity, dataset);
-
+    private DatasetEntityResponse storeDataset(final DatasetEntity datasetEntity, String datasetId,
+            final DatasetProperties datasetProperties) {
+        Dataset dataset;
+        DatasetEntity newDatasetEntity;
         Response.Status status = Response.Status.OK;
-
         if (datasetEntity != null) {
+            dataset = DatasetAdaptor.getInstance().convert(datasetEntity);
+            dataset.setProperties(datasetProperties);
+            newDatasetEntity = DatasetAdaptor.getInstance().merge(datasetEntity, dataset);
             submissionService.updateDataset(newDatasetEntity);
         } else {
+            dataset = new Dataset();
+            dataset.setId(datasetId);
+            dataset.setProperties(datasetProperties);
+
+            newDatasetEntity = DatasetAdaptor.getInstance().merge(datasetEntity, dataset);
             submissionService.createDataset(newDatasetEntity);
             status = Response.Status.CREATED;
         }

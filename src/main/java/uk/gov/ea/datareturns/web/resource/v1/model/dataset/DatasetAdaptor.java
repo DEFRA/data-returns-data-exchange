@@ -6,14 +6,15 @@ import uk.gov.ea.datareturns.web.resource.v1.model.common.EntityAdaptor;
 import java.time.ZoneOffset;
 import java.util.Date;
 
-
 /**
  * @author Graham Willis
  */
 public class DatasetAdaptor implements EntityAdaptor<Dataset, DatasetEntity> {
 
-    private static final DatasetAdaptor datasetAdaptor= new DatasetAdaptor();
-    private DatasetAdaptor() {}
+    private static final DatasetAdaptor datasetAdaptor = new DatasetAdaptor();
+
+    private DatasetAdaptor() {
+    }
 
     public static DatasetAdaptor getInstance() {
         return datasetAdaptor;
@@ -48,11 +49,16 @@ public class DatasetAdaptor implements EntityAdaptor<Dataset, DatasetEntity> {
         }
 
         Dataset dataset = new Dataset();
-        DatasetProperties datasetProperties = new DatasetProperties();
         dataset.setId(datasetEntity.getIdentifier());
         dataset.setCreated(Date.from(datasetEntity.getCreateDate().toInstant(ZoneOffset.UTC)));
-        datasetProperties.setOriginatorEmail(datasetEntity.getOriginatorEmail());
-        dataset.setProperties(datasetProperties);
+
+        // TODO: Graham, this feels a little hacky but will do for now - would be nice to have a properties object associated
+        // with the dataset entity so we could test for its existence instead of checking the originator email
+        if (datasetEntity.getOriginatorEmail() != null) {
+            DatasetProperties datasetProperties = new DatasetProperties();
+            datasetProperties.setOriginatorEmail(datasetEntity.getOriginatorEmail());
+            dataset.setProperties(datasetProperties);
+        }
 
         return dataset;
     }

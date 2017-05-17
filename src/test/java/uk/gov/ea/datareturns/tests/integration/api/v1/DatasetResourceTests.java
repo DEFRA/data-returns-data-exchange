@@ -1,6 +1,5 @@
 package uk.gov.ea.datareturns.tests.integration.api.v1;
 
-import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -50,18 +49,16 @@ public class DatasetResourceTests {
     public void beforeTest() {
         DatasetRequest.configure(restTemplate, port);
         // Ensure no datasets exist prior to each test
-        ResponseEntity<DatasetListResponse> list = DatasetRequest.build(HttpStatus.OK).listDatasets();
-        Assert.assertTrue(list.getBody().getData().getItems().isEmpty());
-    }
 
-    @After
-    public void afterTest() {
         // Clear down all datasets after each test
         ResponseEntity<DatasetListResponse> list = DatasetRequest.build(HttpStatus.OK).listDatasets();
         for (EntityReference ref : list.getBody().getData().getItems()) {
             String dsId = ref.getId();
             DatasetRequest.build(HttpStatus.NO_CONTENT).deleteDataset(dsId);
         }
+
+        ResponseEntity<DatasetListResponse> updatedList = DatasetRequest.build(HttpStatus.OK).listDatasets();
+        Assert.assertTrue("Expected dataset list to be empty before each test.", updatedList.getBody().getData().getItems().isEmpty());
     }
 
     @Test
