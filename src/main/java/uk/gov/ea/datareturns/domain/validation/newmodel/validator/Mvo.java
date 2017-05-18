@@ -1,6 +1,6 @@
 package uk.gov.ea.datareturns.domain.validation.newmodel.validator;
 
-import uk.gov.ea.datareturns.domain.dto.MeasurementDto;
+import uk.gov.ea.datareturns.web.resource.ObservationSerializationBean;
 
 /**
  * @author Graham Willis
@@ -10,7 +10,7 @@ import uk.gov.ea.datareturns.domain.dto.MeasurementDto;
  * and responsible for defining the specific validations applicabe for a given measurement
  * type
  */
-public abstract class Mvo<D extends MeasurementDto> {
+public abstract class Mvo<D extends ObservationSerializationBean> {
     protected final D dto;
 
     protected Mvo(D dto) {

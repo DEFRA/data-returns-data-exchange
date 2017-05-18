@@ -10,11 +10,11 @@ import org.springframework.test.context.junit4.SpringRunner;
 import uk.gov.ea.datareturns.App;
 import uk.gov.ea.datareturns.config.SubmissionConfiguration;
 import uk.gov.ea.datareturns.config.TestSettings;
-import uk.gov.ea.datareturns.domain.dto.impl.LandfillMeasurementDto;
 import uk.gov.ea.datareturns.domain.jpa.entities.userdata.impl.DatasetEntity;
 import uk.gov.ea.datareturns.domain.jpa.entities.userdata.impl.Record;
 import uk.gov.ea.datareturns.domain.jpa.entities.userdata.impl.User;
 import uk.gov.ea.datareturns.domain.jpa.service.SubmissionService;
+import uk.gov.ea.datareturns.web.resource.v1.model.record.payload.DataSamplePayload;
 
 import javax.annotation.Resource;
 import javax.inject.Inject;
@@ -48,7 +48,7 @@ public class APIIntegrationTests_DataSampleEntity {
 
     private static User user;
     private static DatasetEntity dataset;
-    private static List<LandfillMeasurementDto> samples;
+    private static List<DataSamplePayload> samples;
 
     @Resource(name="submissionServiceMap")
     private void setSubmissionServiceMap(Map<SubmissionConfiguration.SubmissionServiceProvider, SubmissionService> submissionServiceMap) {
@@ -74,7 +74,7 @@ public class APIIntegrationTests_DataSampleEntity {
 
     // Test the basic creation and removal of test records
     @Test public void createTestRemoveRecords() {
-        List<SubmissionService.DtoIdentifierPair<LandfillMeasurementDto>> list = new ArrayList<>();
+        List<SubmissionService.DtoIdentifierPair<DataSamplePayload>> list = new ArrayList<>();
         for (String id : RECORDS) {
             list.add(new SubmissionService.DtoIdentifierPair<>(id));
         }
@@ -93,7 +93,7 @@ public class APIIntegrationTests_DataSampleEntity {
     // and with a user identifier. The records
     // should all have a status of PERSISTED
     @Test public void createNewUserRecords() {
-        List<SubmissionService.DtoIdentifierPair<LandfillMeasurementDto>> list = new ArrayList<>();
+        List<SubmissionService.DtoIdentifierPair<DataSamplePayload>> list = new ArrayList<>();
         for (String id : RECORDS) {
             list.add(new SubmissionService.DtoIdentifierPair(id));
         }
@@ -105,7 +105,7 @@ public class APIIntegrationTests_DataSampleEntity {
     // and with a user identifier. The records
     // should all have a status of PERSISTED
     @Test public void createNewSystemRecords() {
-        List<SubmissionService.DtoIdentifierPair<LandfillMeasurementDto>> list = new ArrayList<>();
+        List<SubmissionService.DtoIdentifierPair<DataSamplePayload>> list = new ArrayList<>();
         for (String id : RECORDS) {
             list.add(new SubmissionService.DtoIdentifierPair());
         }
@@ -117,8 +117,8 @@ public class APIIntegrationTests_DataSampleEntity {
     // and with a system identifier. The records
     // should all have a status of PARSED
     @Test public void createNewSystemRecordsWithSample() {
-        List<SubmissionService.DtoIdentifierPair<LandfillMeasurementDto>> list = new ArrayList<>();
-        for (LandfillMeasurementDto sample : samples) {
+        List<SubmissionService.DtoIdentifierPair<DataSamplePayload>> list = new ArrayList<>();
+        for (DataSamplePayload sample : samples) {
             list.add(new SubmissionService.DtoIdentifierPair(sample));
         }
         List<Record> records = submissionService.createRecords(dataset, list);
@@ -129,9 +129,9 @@ public class APIIntegrationTests_DataSampleEntity {
     // and with a user identifier. The records
     // should all have a status of PARSED
     @Test public void createNewUserRecordsWithSample() {
-        List<SubmissionService.DtoIdentifierPair<LandfillMeasurementDto>> list = new ArrayList<>();
+        List<SubmissionService.DtoIdentifierPair<DataSamplePayload>> list = new ArrayList<>();
         int i = 0;
-        for (LandfillMeasurementDto sample : samples) {
+        for (DataSamplePayload sample : samples) {
             list.add(new SubmissionService.DtoIdentifierPair(Integer.valueOf(i++).toString(), sample));
         }
         List<Record> records = submissionService.createRecords(dataset, list);
@@ -141,7 +141,7 @@ public class APIIntegrationTests_DataSampleEntity {
     // Create a set of records and then associate data samples with them
     // as a secondary step
     @Test public void createNewUserRecordsAndAddSample() {
-        List<SubmissionService.DtoIdentifierPair<LandfillMeasurementDto>> list = new ArrayList<>();
+        List<SubmissionService.DtoIdentifierPair<DataSamplePayload>> list = new ArrayList<>();
         for (String id : RECORDS) {
             list.add(new SubmissionService.DtoIdentifierPair(id));
         }
@@ -158,8 +158,8 @@ public class APIIntegrationTests_DataSampleEntity {
 
     // Create and validate a set of valid records
     @Test public void createAndValidateValidRecords() {
-        List<SubmissionService.DtoIdentifierPair<LandfillMeasurementDto>> list = new ArrayList<>();
-        for (LandfillMeasurementDto sample : samples) {
+        List<SubmissionService.DtoIdentifierPair<DataSamplePayload>> list = new ArrayList<>();
+        for (DataSamplePayload sample : samples) {
             list.add(new SubmissionService.DtoIdentifierPair(sample));
         }
         List<Record> records = submissionService.createRecords(dataset, list);
@@ -169,8 +169,8 @@ public class APIIntegrationTests_DataSampleEntity {
 
     // Create a valid set of records and submit them
     @Test public void createValidateAndSubmitRecords() {
-        List<SubmissionService.DtoIdentifierPair<LandfillMeasurementDto>> list = new ArrayList<>();
-        for (LandfillMeasurementDto sample : samples) {
+        List<SubmissionService.DtoIdentifierPair<DataSamplePayload>> list = new ArrayList<>();
+        for (DataSamplePayload sample : samples) {
             list.add(new SubmissionService.DtoIdentifierPair(sample));
         }
         List<Record> records = submissionService.createRecords(dataset, list);
@@ -182,9 +182,9 @@ public class APIIntegrationTests_DataSampleEntity {
 
     // Create and validate a set of valid and invalid records
     @Test public void createAndValidateValidAndInvalidRecords() throws IOException {
-        List<LandfillMeasurementDto> samples = submissionService.parse(readTestFile(SUBMISSION_FAILURE));
-        List<SubmissionService.DtoIdentifierPair<LandfillMeasurementDto>> list = new ArrayList<>();
-        for (LandfillMeasurementDto sample : samples) {
+        List<DataSamplePayload> samples = submissionService.parse(readTestFile(SUBMISSION_FAILURE));
+        List<SubmissionService.DtoIdentifierPair<DataSamplePayload>> list = new ArrayList<>();
+        for (DataSamplePayload sample : samples) {
             list.add(new SubmissionService.DtoIdentifierPair(sample));
         }
         List<Record> records = submissionService.createRecords(dataset, list);
@@ -195,9 +195,9 @@ public class APIIntegrationTests_DataSampleEntity {
 
     // Create and validate a set of valid and invalid records and submit them
     @Test public void createAndValidateValidAndInvalidAndSubmitRecords() throws IOException {
-        List<LandfillMeasurementDto> samples = submissionService.parse(readTestFile(SUBMISSION_FAILURE));
-        List<SubmissionService.DtoIdentifierPair<LandfillMeasurementDto>> list = new ArrayList<>();
-        for (LandfillMeasurementDto sample : samples) {
+        List<DataSamplePayload> samples = submissionService.parse(readTestFile(SUBMISSION_FAILURE));
+        List<SubmissionService.DtoIdentifierPair<DataSamplePayload>> list = new ArrayList<>();
+        for (DataSamplePayload sample : samples) {
             list.add(new SubmissionService.DtoIdentifierPair(sample));
         }
         List<Record> records = submissionService.createRecords(dataset, list);
@@ -209,8 +209,8 @@ public class APIIntegrationTests_DataSampleEntity {
 
     // Create and validate a set of valid records, submit and retrieve them by dataset and dataset/identifier
     @Test public void createAndValidateAndSubmitAndRetrieveRecords() throws IOException {
-        List<SubmissionService.DtoIdentifierPair<LandfillMeasurementDto>> list = new ArrayList<>();
-        for (LandfillMeasurementDto sample : samples) {
+        List<SubmissionService.DtoIdentifierPair<DataSamplePayload>> list = new ArrayList<>();
+        for (DataSamplePayload sample : samples) {
             list.add(new SubmissionService.DtoIdentifierPair(sample));
         }
         List<Record> records = submissionService.createRecords(dataset, list);

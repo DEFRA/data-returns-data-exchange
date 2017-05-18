@@ -1,16 +1,13 @@
 package uk.gov.ea.datareturns.domain.dto.impl;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import uk.gov.ea.datareturns.domain.dto.MeasurementDto;
-
-import java.math.BigDecimal;
-import java.util.Date;
+import uk.gov.ea.datareturns.web.resource.ObservationSerializationBean;
 
 /**
  * @Author Graham Willis
  * The landfill measurement dto class mapping the user JSON
  */
-public class LandfillMeasurementDto implements MeasurementDto {
+public class LandfillMeasurementDto implements ObservationSerializationBean {
     @JsonProperty("EA_ID")
     private String eaId;
 

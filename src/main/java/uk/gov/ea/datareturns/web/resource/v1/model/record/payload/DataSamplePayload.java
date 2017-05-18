@@ -1,8 +1,8 @@
 package uk.gov.ea.datareturns.web.resource.v1.model.record.payload;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.annotations.ApiModel;
-
-import javax.xml.bind.annotation.XmlElement;
+import uk.gov.ea.datareturns.web.resource.ObservationSerializationBean;
 
 /**
  * Payload containing DEP compliant monitoring data
@@ -10,61 +10,61 @@ import javax.xml.bind.annotation.XmlElement;
  * @author Sam Gardner-Dell
  */
 @ApiModel(value = "DataSamplePayload", description = "DEP v3.0 compliant monitoring data payload")
-public class DataSamplePayload extends Payload {
+public class DataSamplePayload extends Payload implements ObservationSerializationBean {
     /** The EA Unique Identifier (EA_ID) */
-    @XmlElement(name = "EA_ID")
+    @JsonProperty("EA_ID")
     private String eaId;
 
     /** The site name (Site_Name) */
-    @XmlElement(name = "Site_Name")
+    @JsonProperty("Site_Name")
     private String siteName;
 
     /** The return type (Rtn_Type) */
-    @XmlElement(name = "Rtn_Type")
+    @JsonProperty("Rtn_Type")
     private String returnType;
 
     /** The monitoring date (Mon_Date) */
-    @XmlElement(name = "Mon_Date")
+    @JsonProperty("Mon_Date")
     private String monitoringDate;
 
     /** The return period  (Rtn_Period) */
-    @XmlElement(name = "Rtn_Period")
+    @JsonProperty("Rtn_Period")
     private String returnPeriod;
 
     /** The monitoring point (Mon_Point) */
-    @XmlElement(name = "Mon_Point")
+    @JsonProperty("Mon_Point")
     private String monitoringPoint;
 
     /** Parameter value (Parameter) */
-    @XmlElement(name = "Parameter")
+    @JsonProperty("Parameter")
     private String parameter;
 
     /** Value (Value) */
-    @XmlElement(name = "Value")
+    @JsonProperty("Value")
     private String value;
 
     /** Textual value (Txt_Value) */
-    @XmlElement(name = "Txt_Value")
+    @JsonProperty("Txt_Value")
     private String textValue;
 
     /** Qualifier value (Qualifier) */
-    @XmlElement(name = "Qualifier")
+    @JsonProperty("Qualifier")
     private String qualifier;
 
     /** Unit of measurement (Unit) */
-    @XmlElement(name = "Unit")
+    @JsonProperty("Unit")
     private String unit;
 
     /** Reference period */
-    @XmlElement(name = "Ref_Period")
+    @JsonProperty("Ref_Period")
     private String referencePeriod;
 
     /** Method or standard used (Meth_Stand) */
-    @XmlElement(name = "Meth_Stand")
+    @JsonProperty("Meth_Stand")
     private String methStand;
 
     /** Record comments (Comments) */
-    @XmlElement(name = "Comments")
+    @JsonProperty("Comments")
     private String comments;
 
     public String getEaId() {

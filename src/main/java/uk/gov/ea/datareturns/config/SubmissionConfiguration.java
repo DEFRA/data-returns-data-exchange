@@ -3,7 +3,6 @@ package uk.gov.ea.datareturns.config;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import uk.gov.ea.datareturns.domain.dto.impl.BasicMeasurementDto;
-import uk.gov.ea.datareturns.domain.dto.impl.LandfillMeasurementDto;
 import uk.gov.ea.datareturns.domain.jpa.dao.masterdata.*;
 import uk.gov.ea.datareturns.domain.jpa.dao.userdata.factories.AbstractObservationFactory;
 import uk.gov.ea.datareturns.domain.jpa.dao.userdata.factories.impl.BasicMeasurementFactory;
@@ -17,11 +16,12 @@ import uk.gov.ea.datareturns.domain.jpa.entities.userdata.impl.DataSampleEntity;
 import uk.gov.ea.datareturns.domain.jpa.service.SubmissionService;
 import uk.gov.ea.datareturns.domain.validation.basicmeasurement.BasicMeasurementFieldMessageMap;
 import uk.gov.ea.datareturns.domain.validation.basicmeasurement.BasicMeasurementMvo;
-import uk.gov.ea.datareturns.domain.validation.landfillmeasurement.LandfillMeasurementFieldMessageMap;
-import uk.gov.ea.datareturns.domain.validation.landfillmeasurement.LandfillMeasurementMvo;
-import uk.gov.ea.datareturns.domain.validation.newmodel.validator.MeasurementValidator;
-import uk.gov.ea.datareturns.domain.validation.newmodel.validator.MeasurementValidatorImpl;
+import uk.gov.ea.datareturns.domain.validation.datasample.DataSampleFieldMessageMap;
+import uk.gov.ea.datareturns.domain.validation.datasample.DataSampleMvo;
+import uk.gov.ea.datareturns.domain.validation.newmodel.validator.ObservationValidator;
+import uk.gov.ea.datareturns.domain.validation.newmodel.validator.ObservationValidatorImpl;
 import uk.gov.ea.datareturns.domain.validation.newmodel.validator.MvoFactory;
+import uk.gov.ea.datareturns.web.resource.v1.model.record.payload.DataSamplePayload;
 
 import javax.inject.Inject;
 import javax.validation.Validator;
@@ -92,9 +92,12 @@ public class SubmissionConfiguration {
         this.unitDao = unitDao;
     }
 
-    /**
-     * Set up the DataSample submission service
-     */
+    /******************************************************************************************************************
+     *
+     * Set up the BasicMeasurement submission service - this is a proof-of-concept to ensure that secondary
+     * observation patterns are truly viable
+     *
+     ******************************************************************************************************************/
 
     /**
      * The data access object for the BasicMeasurement Entity
@@ -128,8 +131,8 @@ public class SubmissionConfiguration {
      * @return
      */
     @Bean
-    public MeasurementValidator<BasicMeasurementMvo> basicMeasurementValidator() {
-        return new MeasurementValidatorImpl<>(this.validator, BasicMeasurementMvo.class, new BasicMeasurementFieldMessageMap());
+    public ObservationValidator<BasicMeasurementMvo> basicMeasurementValidator() {
+        return new ObservationValidatorImpl<>(this.validator, BasicMeasurementMvo.class, new BasicMeasurementFieldMessageMap());
     }
 
     /**
@@ -141,7 +144,6 @@ public class SubmissionConfiguration {
         return new SubmissionService<>(
                 BasicMeasurementDto.class,
                 BasicMeasurementDto[].class,
-                BasicMeasurement.class,
                 mvoFactory(),
                 userDao,
                 datasetDao,
@@ -151,8 +153,15 @@ public class SubmissionConfiguration {
                 basicMeasurementFactory());
     }
 
+    /******************************************************************************************************************
+     *
+     * Set up the DataSample submission service - this covers landfill submissions and is expected to extend
+     * into other sectors
+     *
+     ******************************************************************************************************************/
+
     /**
-     * The data access object for the data sample observation
+     * Create the data access object Dao for database persistence of the DataSampleEntity class
      * @return
      */
     @Bean
@@ -165,7 +174,7 @@ public class SubmissionConfiguration {
      * @return
      */
     @Bean
-    public AbstractObservationFactory<DataSampleEntity, LandfillMeasurementDto> dataSampleEntityFactory() {
+    public AbstractObservationFactory<DataSampleEntity, DataSamplePayload> dataSampleEntityFactory() {
         return new DataSampleFactory(
                 methodOrStandardDao,
                 parameterDao,
@@ -181,12 +190,12 @@ public class SubmissionConfiguration {
     }
 
     /**
-     * A record to create the measurement validation objects (mvo's) for the BasicMeasurement
+     * A factory to create the measurement validation objects (mvo's) for the DataSampleEntity
      * @return
      */
     @Bean
-    public MvoFactory<LandfillMeasurementDto, LandfillMeasurementMvo> dataSampleMvoFactory() {
-        return new MvoFactory<>(LandfillMeasurementMvo.class);
+    public MvoFactory<DataSamplePayload, DataSampleMvo> dataSampleMvoFactory() {
+        return new MvoFactory<>(DataSampleMvo.class);
     }
 
     /**
@@ -194,16 +203,15 @@ public class SubmissionConfiguration {
      * @return
      */
     @Bean
-    public MeasurementValidator<LandfillMeasurementMvo> dataSampleValidator() {
-        return new MeasurementValidatorImpl<>(this.validator, LandfillMeasurementMvo.class, new LandfillMeasurementFieldMessageMap());
+    public ObservationValidator<DataSampleMvo> dataSampleValidator() {
+        return new ObservationValidatorImpl<>(this.validator, DataSampleMvo.class, new DataSampleFieldMessageMap());
     }
 
     @Bean
-    public SubmissionService<LandfillMeasurementDto, DataSampleEntity, LandfillMeasurementMvo>dataSampleSubmissionService() {
+    public SubmissionService<DataSamplePayload, DataSampleEntity, DataSampleMvo>dataSampleSubmissionService() {
         return new SubmissionService<>(
-                LandfillMeasurementDto.class,
-                LandfillMeasurementDto[].class,
-                DataSampleEntity.class,
+                DataSamplePayload.class,
+                DataSamplePayload[].class,
                 dataSampleMvoFactory(),
                 userDao,
                 datasetDao,

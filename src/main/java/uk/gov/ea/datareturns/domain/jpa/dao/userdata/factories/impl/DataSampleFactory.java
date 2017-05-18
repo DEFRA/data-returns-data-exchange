@@ -1,10 +1,10 @@
 package uk.gov.ea.datareturns.domain.jpa.dao.userdata.factories.impl;
 
-import uk.gov.ea.datareturns.domain.dto.impl.LandfillMeasurementDto;
 import uk.gov.ea.datareturns.domain.jpa.dao.masterdata.*;
 import uk.gov.ea.datareturns.domain.jpa.dao.userdata.factories.AbstractObservationFactory;
 import uk.gov.ea.datareturns.domain.jpa.entities.userdata.impl.DataSampleEntity;
 import uk.gov.ea.datareturns.domain.validation.model.fields.impl.ds.MonitoringDate;
+import uk.gov.ea.datareturns.web.resource.v1.model.record.payload.DataSamplePayload;
 
 import java.math.BigDecimal;
 
@@ -12,7 +12,7 @@ import java.math.BigDecimal;
  * @author Graham Willis
  * Boilerplate to generate instances of the hibernate persistence entity
  */
-public class DataSampleFactory implements AbstractObservationFactory<DataSampleEntity, LandfillMeasurementDto> {
+public class DataSampleFactory implements AbstractObservationFactory<DataSampleEntity, DataSamplePayload> {
 
     private final MethodOrStandardDao methodOrStandardDao;
     private final ParameterDao parameterDao;
@@ -53,20 +53,20 @@ public class DataSampleFactory implements AbstractObservationFactory<DataSampleE
     }
 
     @Override
-    public DataSampleEntity create(LandfillMeasurementDto dto) {
+    public DataSampleEntity create(DataSamplePayload payload) {
         DataSampleEntity measurement = new DataSampleEntity();
 
-        measurement.setUniqueIdentifier(uniqueIdentifierDao.getByNameOrAlias(Key.relaxed(dto.getEaId())));
-        measurement.setSite(siteDao.getByName((Key.relaxed(dto.getSiteName()))));
-        measurement.setReturnType(returnTypeDao.getByName(Key.relaxed((dto.getReturnType()))));
-        MonitoringDate monDate = new MonitoringDate(dto.getMonitoringDate());
+        measurement.setUniqueIdentifier(uniqueIdentifierDao.getByNameOrAlias(Key.relaxed(payload.getEaId())));
+        measurement.setSite(siteDao.getByName((Key.relaxed(payload.getSiteName()))));
+        measurement.setReturnType(returnTypeDao.getByName(Key.relaxed((payload.getReturnType()))));
+        MonitoringDate monDate = new MonitoringDate(payload.getMonitoringDate());
         measurement.setMonDate(monDate.getInstant());
-        measurement.setMonPoint(dto.getMonitoringPoint());
-        measurement.setParameter(parameterDao.getByNameOrAlias(Key.relaxed(dto.getParameter())));
-        measurement.setNumericValue(new BigDecimal(dto.getValue()));
-        measurement.setTextValue(textValueDao.getByName(Key.relaxed((dto.getTextValue()))));
-        measurement.setQualifier(qualifierDao.getByName(Key.relaxed((dto.getQualifier()))));
-        measurement.setUnit(unitDao.getByName(Key.relaxed((dto.getUnit()))));
+        measurement.setMonPoint(payload.getMonitoringPoint());
+        measurement.setParameter(parameterDao.getByNameOrAlias(Key.relaxed(payload.getParameter())));
+        measurement.setNumericValue(new BigDecimal(payload.getValue()));
+        measurement.setTextValue(textValueDao.getByName(Key.relaxed((payload.getTextValue()))));
+        measurement.setQualifier(qualifierDao.getByName(Key.relaxed((payload.getQualifier()))));
+        measurement.setUnit(unitDao.getByName(Key.relaxed((payload.getUnit()))));
 
         return measurement;
     }

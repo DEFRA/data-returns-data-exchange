@@ -1,5 +1,6 @@
 [
   {
+    "payload_type": "DataSample",
     "EA_ID": "42355",
     "Site_Name": "Biffa - Marchington Landfill Site",
     "Rtn_Type": "Landfill gas borehole",
@@ -12,6 +13,7 @@
     "Ref_Period": "Instantaneous"
   },
   {
+    "payload_type": "DataSample",
     "EA_ID": "42355",
     "Site_Name": "Biffa - Marchington Landfill Site",
     "Rtn_Type": "Landfill gas borehole",
@@ -24,6 +26,7 @@
     "Ref_Period": "Instantaneous"
   },
   {
+    "payload_type": "DataSample",
     "EA_ID": "42355",
     "Site_Name": "Biffa - Marchington Landfill Site",
     "Rtn_Type": "Landfill gas borehole",
@@ -36,6 +39,7 @@
     "Ref_Period": "Instantaneous"
   },
   {
+    "payload_type": "DataSample",
     "EA_ID": "42355",
     "Site_Name": "Biffa - Marchington Landfill Site",
     "Rtn_Type": "Landfill gas borehole",

@@ -1,6 +1,7 @@
 package uk.gov.ea.datareturns.web.resource.v1.model.record.payload;
 
 import io.swagger.annotations.ApiModel;
+import uk.gov.ea.datareturns.web.resource.ObservationSerializationBean;
 
 import javax.xml.bind.annotation.XmlRootElement;
 
@@ -11,7 +12,7 @@ import javax.xml.bind.annotation.XmlRootElement;
  */
 @XmlRootElement(name = "Demo")
 @ApiModel(value = "Demo", description = "Demonstration payload")
-public final class DemonstrationAlternativePayload extends Payload {
+public final class DemonstrationAlternativePayload extends Payload implements ObservationSerializationBean {
 
     private String test;
 

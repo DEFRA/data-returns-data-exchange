@@ -1,7 +1,7 @@
 package uk.gov.ea.datareturns.domain.validation.newmodel.constraints.field;
 
 import org.apache.commons.lang3.StringUtils;
-import uk.gov.ea.datareturns.domain.validation.landfillmeasurement.fields.MonitoringDate;
+import uk.gov.ea.datareturns.domain.validation.datasample.fields.MonitoringDate;
 
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;

@@ -1,15 +1,13 @@
 package uk.gov.ea.datareturns.domain.dto.impl;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import uk.gov.ea.datareturns.domain.dto.MeasurementDto;
-
-import java.math.BigDecimal;
+import uk.gov.ea.datareturns.web.resource.ObservationSerializationBean;
 
 /**
  * @Author Graham Willis
  * Basic measurement class (prototype)
  */
-public class BasicMeasurementDto implements MeasurementDto {
+public class BasicMeasurementDto implements ObservationSerializationBean {
     @JsonProperty("Parameter")
     private String parameter;
 

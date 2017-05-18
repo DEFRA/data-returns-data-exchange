@@ -13,6 +13,7 @@ import javax.xml.bind.annotation.XmlRootElement;
  *
  * @author Sam Gardner-Dell
  */
+
 @XmlRootElement(name = "payload")
 @ApiModel(
         description = "Payload base type",

@@ -3,7 +3,7 @@ package uk.gov.ea.datareturns.domain.validation.newmodel.validator;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import uk.gov.ea.datareturns.domain.dto.MeasurementDto;
+import uk.gov.ea.datareturns.web.resource.ObservationSerializationBean;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
@@ -14,7 +14,7 @@ import java.lang.reflect.InvocationTargetException;
  * and responsible for defining the specific validations applicabe for a given measurement
  * type
  */
-public class MvoFactory<D extends MeasurementDto, V extends Mvo> {
+public class MvoFactory<D extends ObservationSerializationBean, V extends Mvo> {
     private static final Logger LOGGER = LoggerFactory.getLogger(MvoFactory.class);
 
     private final Class<V> mvoClass;

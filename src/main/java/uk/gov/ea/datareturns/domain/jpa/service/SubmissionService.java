@@ -6,7 +6,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.transaction.annotation.Transactional;
-import uk.gov.ea.datareturns.domain.dto.MeasurementDto;
+import uk.gov.ea.datareturns.web.resource.ObservationSerializationBean;
 import uk.gov.ea.datareturns.domain.jpa.dao.userdata.factories.AbstractObservationFactory;
 import uk.gov.ea.datareturns.domain.jpa.dao.userdata.impl.DatasetDao;
 import uk.gov.ea.datareturns.domain.jpa.dao.userdata.impl.ObservationDao;
@@ -16,7 +16,7 @@ import uk.gov.ea.datareturns.domain.jpa.entities.userdata.AbstractObservation;
 import uk.gov.ea.datareturns.domain.jpa.entities.userdata.impl.DatasetEntity;
 import uk.gov.ea.datareturns.domain.jpa.entities.userdata.impl.Record;
 import uk.gov.ea.datareturns.domain.jpa.entities.userdata.impl.User;
-import uk.gov.ea.datareturns.domain.validation.newmodel.validator.MeasurementValidator;
+import uk.gov.ea.datareturns.domain.validation.newmodel.validator.ObservationValidator;
 import uk.gov.ea.datareturns.domain.validation.newmodel.validator.Mvo;
 import uk.gov.ea.datareturns.domain.validation.newmodel.validator.MvoFactory;
 import uk.gov.ea.datareturns.domain.validation.newmodel.validator.result.ValidationResult;
@@ -47,43 +47,41 @@ import java.util.stream.Collectors;
  *         <p>
  *         The service is created by the submission service configuration
  */
-public class SubmissionService<D extends MeasurementDto, M extends AbstractObservation, V extends Mvo> {
+public class SubmissionService<D extends ObservationSerializationBean, M extends AbstractObservation, V extends Mvo> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(SubmissionService.class);
 
-    private final Class<D> measurementDtoClass;
-    private final Class<D[]> measurementDtoArrayClass;
+    private final Class<D> observationSerializationBeanClass;
+    private final Class<D[]> observationSerializationBeanArrayClass;
     private final MvoFactory<D, V> mvoFactory;
     private final UserDao userDao;
     private final DatasetDao datasetDao;
     private final RecordDao recordDao;
     private final ObservationDao<M> measurementDao;
-    private final MeasurementValidator<V> validator;
+    private final ObservationValidator<V> validator;
     private final AbstractObservationFactory<M, D> abstractObservationFactory;
 
     private final static ObjectMapper mapper = new ObjectMapper();
 
     /**
-     * @param measurementDtoClass Class of the data transfer object
-     * @param measurementClass    The class of the measurement entity to persist
+     * @param observationSerializationBeanClass Class of the data transfer object
      * @param userDao             The user data access object
      * @param datasetDao          The dataset data access object
      * @param recordDao           The record data access object
      * @param validator           The validator to be used
      */
-    public SubmissionService(Class<D> measurementDtoClass,
-                             Class<D[]> measurementDtoArrayClass,
-                             Class<M> measurementClass,
+    public SubmissionService(Class<D> observationSerializationBeanClass,
+                             Class<D[]> observationSerializationBeanArrayClass,
                              MvoFactory<D, V> mvoFactory,
                              UserDao userDao,
                              DatasetDao datasetDao,
                              RecordDao recordDao,
                              ObservationDao<M> submissionDao,
-                             MeasurementValidator<V> validator,
+                             ObservationValidator<V> validator,
                              AbstractObservationFactory<M, D> abstractObservationFactory) {
 
-        this.measurementDtoClass = measurementDtoClass;
-        this.measurementDtoArrayClass = measurementDtoArrayClass;
+        this.observationSerializationBeanClass = observationSerializationBeanClass;
+        this.observationSerializationBeanArrayClass = observationSerializationBeanArrayClass;
         this.mvoFactory = mvoFactory;
         this.userDao = userDao;
         this.datasetDao = datasetDao;
@@ -92,7 +90,7 @@ public class SubmissionService<D extends MeasurementDto, M extends AbstractObser
         this.validator = validator;
         this.abstractObservationFactory = abstractObservationFactory;
 
-        LOGGER.info("Initializing submission service for datum type: " + measurementDtoClass.getSimpleName());
+        LOGGER.info("Initializing submission service for datum type: " + observationSerializationBeanClass.getSimpleName());
         mapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
         mapper.enable(DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY);
 
@@ -138,7 +136,7 @@ public class SubmissionService<D extends MeasurementDto, M extends AbstractObser
      */
     public List<D> parse(String json) {
         try {
-            return Arrays.asList(mapper.readValue(json, measurementDtoArrayClass));
+            return Arrays.asList(mapper.readValue(json, observationSerializationBeanArrayClass));
         } catch (IOException e) {
             LOGGER.info("Cannot parse JSON: " + json + ": " + e.getMessage());
             return null;
@@ -212,7 +210,7 @@ public class SubmissionService<D extends MeasurementDto, M extends AbstractObser
                         r -> {
                             D dto;
                             try {
-                                dto = mapper.readValue(r.getJson(), measurementDtoClass);
+                                dto = mapper.readValue(r.getJson(), observationSerializationBeanClass);
                             } catch (IOException e) {
                                 LOGGER.error("Error de-serializing stored JSON: " + e.getMessage());
                                 return null;
@@ -258,7 +256,7 @@ public class SubmissionService<D extends MeasurementDto, M extends AbstractObser
                 .filter(r -> r.getRecordStatus() == Record.RecordStatus.VALID)
                 .forEach(r -> {
                     try {
-                        M submission = abstractObservationFactory.create(mapper.readValue(r.getJson(), measurementDtoClass));
+                        M submission = abstractObservationFactory.create(mapper.readValue(r.getJson(), observationSerializationBeanClass));
                         r.setMeasurement(submission);
                         r.setRecordStatus(Record.RecordStatus.SUBMITTED);
                         r.getMeasurement().setRecord(r);
