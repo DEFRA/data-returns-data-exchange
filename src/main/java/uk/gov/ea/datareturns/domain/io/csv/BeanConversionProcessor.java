@@ -70,7 +70,7 @@ public class BeanConversionProcessor<T> implements RowProcessor {
             // Check for inconsistent number of entityfields in a row with respect to the defined headers
             if (row.length != context.headers().length) {
                 throw new InconsistentRowException(
-                        String.format("Record %d contains %d entries but the header has %d.",
+                        String.format("RecordEntity %d contains %d entries but the header has %d.",
                                 context.currentRecord(), row.length, context.headers().length));
             }
             instance = beanClass.newInstance();

@@ -60,7 +60,7 @@ public enum FieldDefinition {
     /** Method or standard used (Meth_Stand) */
     Meth_Stand("Meth_Stand", MethodOrStandard.class),
 
-    /** Record comments (Comments) */
+    /** RecordEntity comments (Comments) */
     Comments("Comments", uk.gov.ea.datareturns.domain.validation.model.fields.impl.ds.Comments.class),
 
     /** Commercial in confidence data (CiC) */

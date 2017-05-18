@@ -87,7 +87,7 @@ public class DataReturnsCSVProcessorImpl implements DataReturnsCSVProcessor {
             throw new FileStructureException(e.getMessage());
         } catch (final Throwable e) {
             LOGGER.warn("Unexpected exception while parsing CSV file.", e);
-            throw new FileTypeUnsupportedException("Unable to parse CSV file.  File content is not valid CSV data.");
+            throw new FileTypeUnsupportedException("Unable to parseJsonArray CSV file.  File content is not valid CSV data.");
         }
         final String[] headers = rowProcessor.getHeaders();
 

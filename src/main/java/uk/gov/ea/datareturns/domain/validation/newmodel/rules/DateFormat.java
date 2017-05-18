@@ -41,7 +41,7 @@ public final class DateFormat {
     }
 
     /**
-     * Attempts to parse the given string as a date-only value
+     * Attempts to parseJsonArray the given string as a date-only value
      *
      * @param value the value to be parsed
      * @return a valid {@link LocalDate} if the date could be parsed, null otherwise
@@ -52,7 +52,7 @@ public final class DateFormat {
         for (final String format : DATE_FORMATS) {
             try {
                 parsedDate = LocalDate.parse(value, DateTimeFormatter.ofPattern(format));
-                // We managed to parse a date against one of the recognised formats, break from loop
+                // We managed to parseJsonArray a date against one of the recognised formats, break from loop
                 break;
             } catch (final DateTimeParseException e) {
                 parsedDate = null;
@@ -62,7 +62,7 @@ public final class DateFormat {
     }
 
     /**
-     * Attempts to parse the given string as a date-time value
+     * Attempts to parseJsonArray the given string as a date-time value
      *
      * @param value the value to be parsed
      * @return a valid {@link LocalDateTime} if the date could be parsed, null otherwise
@@ -72,7 +72,7 @@ public final class DateFormat {
         for (final String format : DATE_TIME_FORMATS) {
             try {
                 parsedDate = LocalDateTime.parse(value, DateTimeFormatter.ofPattern(format));
-                // We managed to parse a date against one of the recognised formats, break from loop
+                // We managed to parseJsonArray a date against one of the recognised formats, break from loop
                 break;
             } catch (final DateTimeParseException e) {
                 parsedDate = null;

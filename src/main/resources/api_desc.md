@@ -105,21 +105,21 @@ Operations on a dataset are performed by making API calls to the `/datasets`
 path.
 
 ### Record
-A dataset is composed of many requests. A record has a payload containing a
+A dataset is composed of many requests. A recordEntity has a payload containing a
 specific data-type.
 
-Operations on a record are performed by making API calls to the
+Operations on a recordEntity are performed by making API calls to the
 `/datasets/{dataset_id}/requests` path.
 
 ### Payload
-The record payload, allows for the submission of different data types
+The recordEntity payload, allows for the submission of different data types
 through a common API.
 
 Currently the only supported payload is the DataSample.
 
 #### DataSample
-A DataSample represents a specific measurement or observation.  It is
-currently the only type of record supported by this API.
+A DataSample represents a specific abstractObservation or observation.  It is
+currently the only type of recordEntity supported by this API.
 In a DEP compliant CSV file this is a row of data.
 
 ### Definitions
@@ -281,7 +281,7 @@ Each link contains a pair of attributes:
   - Document potential relationships in more detail
    - self
    - dataset
-   - record
+   - recordEntity
    - field
    - definition
    - etc
@@ -302,7 +302,7 @@ using the the HTTP/1.1 Conditional Requests specification ([RFC7232]
 (https://tools.ietf.org/html/rfc7232))
 
 ### ETag (Entity Tag)
-When an entity (such as a dataset or record) is created or modified, the API
+When an entity (such as a dataset or recordEntity) is created or modified, the API
 will generate a unique hash to be associated with the entity. This provides
 a unique fingerprint of the entity data and any change will result in a
 completely new fingerprint being associated with the entity.
@@ -350,7 +350,7 @@ server.
 #### Conditional PUT/POST requests
 A conditional request to create or update an entity resource can be used to
 avoid the 'lost update problem'.  Lost updates can occur when two different
-clients attempt to modify the same record without checking for consistency
+clients attempt to modify the same recordEntity without checking for consistency
 before writing:
   1. Client A reads record1
   2. Client B reads record1
@@ -474,7 +474,7 @@ of multiple requests using a single PUT/POST call to the
   * GET /datasets/sampledataset/code
 4. Look up validation definition (should be cached by the consumer)
   * GET /definitions/DataSample/validation/DR9050
-5. Correct a record
+5. Correct a recordEntity
   * PUT /datasets/sampledataset/requests/record2
 6. Submit the dataset to the Environment Agency
   * PUT /datasets/sampledataset/code

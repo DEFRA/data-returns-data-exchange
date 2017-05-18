@@ -6,7 +6,7 @@ import uk.gov.ea.datareturns.web.resource.v1.model.record.payload.Payload;
 import uk.gov.ea.datareturns.web.resource.v1.model.common.EntityBase;
 
 /**
- * Record entity
+ * RecordEntity entity
  *
  * @author Sam Gardner-Dell
  */

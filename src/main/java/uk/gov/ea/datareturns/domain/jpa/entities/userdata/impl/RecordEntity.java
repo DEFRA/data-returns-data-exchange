@@ -15,7 +15,7 @@ import java.time.Instant;
 @GenericGenerator(name = "idGenerator", strategy = "org.hibernate.id.enhanced.SequenceStyleGenerator", parameters = {
         @org.hibernate.annotations.Parameter(name = "sequence_name", value = "records_id_seq") }
 )
-public class Record implements Metadata {
+public class RecordEntity implements Metadata {
 
     public enum RecordStatus {
         CREATED, PERSISTED, PARSED, INVALID, VALID, SUBMITTED
@@ -24,8 +24,8 @@ public class Record implements Metadata {
     @Id @GeneratedValue(generator = "idGenerator")
     private Long id;
 
-    @OneToOne(cascade = { CascadeType.REMOVE }, mappedBy = "record")
-    private AbstractObservation measurement;
+    @OneToOne(cascade = { CascadeType.REMOVE }, mappedBy = "recordEntity")
+    private AbstractObservation abstractObservation;
 
     @Basic @Column(name = "identifier", nullable = false, length = 80)
     private String identifier;
@@ -114,22 +114,23 @@ public class Record implements Metadata {
         this.validationResult = validationResult;
     }
 
+    public AbstractObservation getAbstractObservation() {
+        return abstractObservation;
+    }
+
+    public void setAbstractObservation(AbstractObservation abstractObservation) {
+        this.abstractObservation = abstractObservation;
+    }
+
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
-        Record record = (Record) o;
+        RecordEntity recordEntity = (RecordEntity) o;
 
-        return identifier.equals(record.identifier) && dataset.equals(record.dataset);
-    }
-
-    public AbstractObservation getMeasurement() {
-        return measurement;
-    }
-
-    public void setMeasurement(AbstractObservation measurement) {
-        this.measurement = measurement;
+        return identifier.equals(recordEntity.identifier) && dataset.equals(recordEntity.dataset);
     }
 
     @Override
@@ -141,9 +142,9 @@ public class Record implements Metadata {
 
     @Override
     public String toString() {
-        return "Record{" +
+        return "RecordEntity{" +
                 "id=" + id +
-                ", measurement=" + measurement +
+                ", abstractObservation=" + abstractObservation +
                 ", identifier='" + identifier + '\'' +
                 ", dataset=" + dataset +
                 ", recordStatus=" + recordStatus +

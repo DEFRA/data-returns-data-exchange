@@ -203,7 +203,7 @@ public class ProcessorIntegrationTests {
     /**
      * For a given output CSV file, check that the values in the specified column match those that are expected
      *
-     * @param csvFile the CSV file to parse
+     * @param csvFile the CSV file to parseJsonArray
      * @param columnName the column header of the data to be checked
      * @param expectedValues the expected values to be found in the column (in document order)
      */
@@ -215,14 +215,14 @@ public class ProcessorIntegrationTests {
             // Ensure that the expected values and column data match exactly (including order)
             Assertions.assertThat(expectedValues).containsExactlyElementsOf(columnData);
         } catch (final TextParsingException e) {
-            throw new AssertionError("Unable to parse output CSV file.", e);
+            throw new AssertionError("Unable to parseJsonArray output CSV file.", e);
         }
     }
 
     /**
      * For a given output CSV file, check that the values in the specified column are contained by the list expected
      *
-     * @param csvFile the CSV file to parse
+     * @param csvFile the CSV file to parseJsonArray
      * @param columnName the column header of the data to be checked
      * @param allowedValues the expected values
      */
@@ -231,7 +231,7 @@ public class ProcessorIntegrationTests {
             final List<String> columnData = CSVColumnReader.readColumn(csvFile, columnName);
             Assertions.assertThat(allowedValues).containsAll(columnData);
         } catch (final TextParsingException e) {
-            throw new AssertionError("Unable to parse output CSV file.", e);
+            throw new AssertionError("Unable to parseJsonArray output CSV file.", e);
         }
     }
 

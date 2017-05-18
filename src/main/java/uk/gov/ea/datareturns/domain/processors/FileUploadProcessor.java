@@ -135,7 +135,7 @@ public class FileUploadProcessor extends AbstractReturnsProcessor<DataExchangeRe
                 final String fileKey = this.storage.storeTemporaryData(zipFile);
                 result.getUploadResult().setFileKey(fileKey);
 
-                // Construct a parse result to return to the client
+                // Construct a parseJsonArray result to return to the client
                 result.setParseResult(new ParseResult(model));
             } else {
                 if (LOGGER.isDebugEnabled()) {

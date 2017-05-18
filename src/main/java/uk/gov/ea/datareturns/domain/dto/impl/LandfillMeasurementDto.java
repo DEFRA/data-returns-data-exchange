@@ -59,7 +59,7 @@ public class LandfillMeasurementDto implements ObservationSerializationBean {
     @JsonProperty("Meth_Stand")
     private String methStand;
 
-    /** Record comments (Comments) */
+    /** RecordEntity comments (Comments) */
     @JsonProperty("Comments")
     private String comments;
 

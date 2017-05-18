@@ -7,7 +7,7 @@ import uk.gov.ea.datareturns.web.resource.v1.model.responses.ResponseWrapper;
 import javax.ws.rs.core.Response;
 
 /**
- * Record entity response
+ * RecordEntity entity response
  *
  * @author Sam Gardner-Dell
  */

@@ -11,7 +11,7 @@ import uk.gov.ea.datareturns.App;
 import uk.gov.ea.datareturns.config.SubmissionConfiguration;
 import uk.gov.ea.datareturns.config.TestSettings;
 import uk.gov.ea.datareturns.domain.jpa.entities.userdata.impl.DatasetEntity;
-import uk.gov.ea.datareturns.domain.jpa.entities.userdata.impl.Record;
+import uk.gov.ea.datareturns.domain.jpa.entities.userdata.impl.RecordEntity;
 import uk.gov.ea.datareturns.domain.jpa.entities.userdata.impl.User;
 import uk.gov.ea.datareturns.domain.jpa.service.SubmissionService;
 import uk.gov.ea.datareturns.web.resource.v1.model.record.payload.DataSamplePayload;
@@ -69,21 +69,21 @@ public class APIIntegrationTests_DataSampleEntity {
         dataset.setOriginatorEmail(ORIGINATOR_EMAIL);
         dataset.setUser(user);
         submissionService.createDataset(dataset);
-        samples = submissionService.parse(readTestFile(SUBMISSION_SUCCESS));
+        samples = submissionService.parseJsonArray(readTestFile(SUBMISSION_SUCCESS));
     }
 
     // Test the basic creation and removal of test records
     @Test public void createTestRemoveRecords() {
-        List<SubmissionService.DtoIdentifierPair<DataSamplePayload>> list = new ArrayList<>();
+        List<SubmissionService.ObservationIdentifierPair<DataSamplePayload>> list = new ArrayList<>();
         for (String id : RECORDS) {
-            list.add(new SubmissionService.DtoIdentifierPair<>(id));
+            list.add(new SubmissionService.ObservationIdentifierPair<>(id));
         }
-        List<Record> records = submissionService.createRecords(dataset, list);
-        Assert.assertEquals(RECORDS.length, records.size());
+        List<RecordEntity> recordEntities = submissionService.createRecords(dataset, list);
+        Assert.assertEquals(RECORDS.length, recordEntities.size());
         for (String id : RECORDS) {
             Assert.assertTrue(submissionService.recordExists(dataset, id));
-            Record rec = submissionService.getRecord(dataset, id);
-            Assert.assertEquals(Record.RecordStatus.PERSISTED, rec.getRecordStatus());
+            RecordEntity rec = submissionService.getRecord(dataset, id);
+            Assert.assertEquals(RecordEntity.RecordStatus.PERSISTED, rec.getRecordStatus());
             submissionService.removeRecord(dataset, id);
             Assert.assertFalse(submissionService.recordExists(dataset, id));
         }
@@ -93,137 +93,137 @@ public class APIIntegrationTests_DataSampleEntity {
     // and with a user identifier. The records
     // should all have a status of PERSISTED
     @Test public void createNewUserRecords() {
-        List<SubmissionService.DtoIdentifierPair<DataSamplePayload>> list = new ArrayList<>();
+        List<SubmissionService.ObservationIdentifierPair<DataSamplePayload>> list = new ArrayList<>();
         for (String id : RECORDS) {
-            list.add(new SubmissionService.DtoIdentifierPair(id));
+            list.add(new SubmissionService.ObservationIdentifierPair(id));
         }
-        List<Record> records = submissionService.createRecords(dataset, list);
-        records.stream().forEach(r -> Assert.assertEquals(Record.RecordStatus.PERSISTED, r.getRecordStatus()));
+        List<RecordEntity> recordEntities = submissionService.createRecords(dataset, list);
+        recordEntities.stream().forEach(r -> Assert.assertEquals(RecordEntity.RecordStatus.PERSISTED, r.getRecordStatus()));
     }
 
     // Create a set of new records with no associated data sample
     // and with a user identifier. The records
     // should all have a status of PERSISTED
     @Test public void createNewSystemRecords() {
-        List<SubmissionService.DtoIdentifierPair<DataSamplePayload>> list = new ArrayList<>();
+        List<SubmissionService.ObservationIdentifierPair<DataSamplePayload>> list = new ArrayList<>();
         for (String id : RECORDS) {
-            list.add(new SubmissionService.DtoIdentifierPair());
+            list.add(new SubmissionService.ObservationIdentifierPair());
         }
-        List<Record> records = submissionService.createRecords(dataset, list);
-        records.stream().forEach(r -> Assert.assertEquals(Record.RecordStatus.PERSISTED, r.getRecordStatus()));
+        List<RecordEntity> recordEntities = submissionService.createRecords(dataset, list);
+        recordEntities.stream().forEach(r -> Assert.assertEquals(RecordEntity.RecordStatus.PERSISTED, r.getRecordStatus()));
     }
 
     // Create a set of new records using the associated data sample
     // and with a system identifier. The records
     // should all have a status of PARSED
     @Test public void createNewSystemRecordsWithSample() {
-        List<SubmissionService.DtoIdentifierPair<DataSamplePayload>> list = new ArrayList<>();
+        List<SubmissionService.ObservationIdentifierPair<DataSamplePayload>> list = new ArrayList<>();
         for (DataSamplePayload sample : samples) {
-            list.add(new SubmissionService.DtoIdentifierPair(sample));
+            list.add(new SubmissionService.ObservationIdentifierPair(sample));
         }
-        List<Record> records = submissionService.createRecords(dataset, list);
-        records.stream().forEach(r -> Assert.assertEquals(Record.RecordStatus.PARSED, r.getRecordStatus()));
+        List<RecordEntity> recordEntities = submissionService.createRecords(dataset, list);
+        recordEntities.stream().forEach(r -> Assert.assertEquals(RecordEntity.RecordStatus.PARSED, r.getRecordStatus()));
     }
 
     // Create a set of new records using the associated data sample
     // and with a user identifier. The records
     // should all have a status of PARSED
     @Test public void createNewUserRecordsWithSample() {
-        List<SubmissionService.DtoIdentifierPair<DataSamplePayload>> list = new ArrayList<>();
+        List<SubmissionService.ObservationIdentifierPair<DataSamplePayload>> list = new ArrayList<>();
         int i = 0;
         for (DataSamplePayload sample : samples) {
-            list.add(new SubmissionService.DtoIdentifierPair(Integer.valueOf(i++).toString(), sample));
+            list.add(new SubmissionService.ObservationIdentifierPair(Integer.valueOf(i++).toString(), sample));
         }
-        List<Record> records = submissionService.createRecords(dataset, list);
-        records.stream().forEach(r -> Assert.assertEquals(Record.RecordStatus.PARSED, r.getRecordStatus()));
+        List<RecordEntity> recordEntities = submissionService.createRecords(dataset, list);
+        recordEntities.stream().forEach(r -> Assert.assertEquals(RecordEntity.RecordStatus.PARSED, r.getRecordStatus()));
     }
 
     // Create a set of records and then associate data samples with them
     // as a secondary step
     @Test public void createNewUserRecordsAndAddSample() {
-        List<SubmissionService.DtoIdentifierPair<DataSamplePayload>> list = new ArrayList<>();
+        List<SubmissionService.ObservationIdentifierPair<DataSamplePayload>> list = new ArrayList<>();
         for (String id : RECORDS) {
-            list.add(new SubmissionService.DtoIdentifierPair(id));
+            list.add(new SubmissionService.ObservationIdentifierPair(id));
         }
-        List<Record> records = submissionService.createRecords(dataset, list);
-        records.stream().forEach(r -> Assert.assertEquals(Record.RecordStatus.PERSISTED, r.getRecordStatus()));
+        List<RecordEntity> recordEntities = submissionService.createRecords(dataset, list);
+        recordEntities.stream().forEach(r -> Assert.assertEquals(RecordEntity.RecordStatus.PERSISTED, r.getRecordStatus()));
 
         list = new ArrayList<>();
         for (int i = 0; i < Math.min(RECORDS.length, samples.size()); i++) {
-            list.add(new SubmissionService.DtoIdentifierPair(RECORDS[i], samples.get(i)));
+            list.add(new SubmissionService.ObservationIdentifierPair(RECORDS[i], samples.get(i)));
         }
-        records = submissionService.createRecords(dataset, list);
-        records.stream().forEach(r -> Assert.assertEquals(Record.RecordStatus.PARSED, r.getRecordStatus()));
+        recordEntities = submissionService.createRecords(dataset, list);
+        recordEntities.stream().forEach(r -> Assert.assertEquals(RecordEntity.RecordStatus.PARSED, r.getRecordStatus()));
     }
 
     // Create and validate a set of valid records
     @Test public void createAndValidateValidRecords() {
-        List<SubmissionService.DtoIdentifierPair<DataSamplePayload>> list = new ArrayList<>();
+        List<SubmissionService.ObservationIdentifierPair<DataSamplePayload>> list = new ArrayList<>();
         for (DataSamplePayload sample : samples) {
-            list.add(new SubmissionService.DtoIdentifierPair(sample));
+            list.add(new SubmissionService.ObservationIdentifierPair(sample));
         }
-        List<Record> records = submissionService.createRecords(dataset, list);
-        submissionService.validate(records);
-        records.stream().forEach(r -> Assert.assertEquals(Record.RecordStatus.VALID, r.getRecordStatus()));
+        List<RecordEntity> recordEntities = submissionService.createRecords(dataset, list);
+        submissionService.validate(recordEntities);
+        recordEntities.stream().forEach(r -> Assert.assertEquals(RecordEntity.RecordStatus.VALID, r.getRecordStatus()));
     }
 
     // Create a valid set of records and submit them
     @Test public void createValidateAndSubmitRecords() {
-        List<SubmissionService.DtoIdentifierPair<DataSamplePayload>> list = new ArrayList<>();
+        List<SubmissionService.ObservationIdentifierPair<DataSamplePayload>> list = new ArrayList<>();
         for (DataSamplePayload sample : samples) {
-            list.add(new SubmissionService.DtoIdentifierPair(sample));
+            list.add(new SubmissionService.ObservationIdentifierPair(sample));
         }
-        List<Record> records = submissionService.createRecords(dataset, list);
-        submissionService.validate(records);
-        records.stream().forEach(r -> Assert.assertEquals(Record.RecordStatus.VALID, r.getRecordStatus()));
-        submissionService.submit(records);
-        records.stream().forEach(r -> Assert.assertEquals(Record.RecordStatus.SUBMITTED, r.getRecordStatus()));
+        List<RecordEntity> recordEntities = submissionService.createRecords(dataset, list);
+        submissionService.validate(recordEntities);
+        recordEntities.stream().forEach(r -> Assert.assertEquals(RecordEntity.RecordStatus.VALID, r.getRecordStatus()));
+        submissionService.submit(recordEntities);
+        recordEntities.stream().forEach(r -> Assert.assertEquals(RecordEntity.RecordStatus.SUBMITTED, r.getRecordStatus()));
     }
 
     // Create and validate a set of valid and invalid records
     @Test public void createAndValidateValidAndInvalidRecords() throws IOException {
-        List<DataSamplePayload> samples = submissionService.parse(readTestFile(SUBMISSION_FAILURE));
-        List<SubmissionService.DtoIdentifierPair<DataSamplePayload>> list = new ArrayList<>();
+        List<DataSamplePayload> samples = submissionService.parseJsonArray(readTestFile(SUBMISSION_FAILURE));
+        List<SubmissionService.ObservationIdentifierPair<DataSamplePayload>> list = new ArrayList<>();
         for (DataSamplePayload sample : samples) {
-            list.add(new SubmissionService.DtoIdentifierPair(sample));
+            list.add(new SubmissionService.ObservationIdentifierPair(sample));
         }
-        List<Record> records = submissionService.createRecords(dataset, list);
-        submissionService.validate(records);
-        Assert.assertEquals(1, records.stream().filter(r -> r.getRecordStatus() == Record.RecordStatus.VALID).count());
-        Assert.assertEquals(3, records.stream().filter(r -> r.getRecordStatus() == Record.RecordStatus.INVALID).count());
+        List<RecordEntity> recordEntities = submissionService.createRecords(dataset, list);
+        submissionService.validate(recordEntities);
+        Assert.assertEquals(1, recordEntities.stream().filter(r -> r.getRecordStatus() == RecordEntity.RecordStatus.VALID).count());
+        Assert.assertEquals(3, recordEntities.stream().filter(r -> r.getRecordStatus() == RecordEntity.RecordStatus.INVALID).count());
     }
 
     // Create and validate a set of valid and invalid records and submit them
     @Test public void createAndValidateValidAndInvalidAndSubmitRecords() throws IOException {
-        List<DataSamplePayload> samples = submissionService.parse(readTestFile(SUBMISSION_FAILURE));
-        List<SubmissionService.DtoIdentifierPair<DataSamplePayload>> list = new ArrayList<>();
+        List<DataSamplePayload> samples = submissionService.parseJsonArray(readTestFile(SUBMISSION_FAILURE));
+        List<SubmissionService.ObservationIdentifierPair<DataSamplePayload>> list = new ArrayList<>();
         for (DataSamplePayload sample : samples) {
-            list.add(new SubmissionService.DtoIdentifierPair(sample));
+            list.add(new SubmissionService.ObservationIdentifierPair(sample));
         }
-        List<Record> records = submissionService.createRecords(dataset, list);
-        submissionService.validate(records);
-        submissionService.submit(records);
-        Assert.assertEquals(1, records.stream().filter(r -> r.getRecordStatus() == Record.RecordStatus.SUBMITTED).count());
-        Assert.assertEquals(3, records.stream().filter(r -> r.getRecordStatus() == Record.RecordStatus.INVALID).count());
+        List<RecordEntity> recordEntities = submissionService.createRecords(dataset, list);
+        submissionService.validate(recordEntities);
+        submissionService.submit(recordEntities);
+        Assert.assertEquals(1, recordEntities.stream().filter(r -> r.getRecordStatus() == RecordEntity.RecordStatus.SUBMITTED).count());
+        Assert.assertEquals(3, recordEntities.stream().filter(r -> r.getRecordStatus() == RecordEntity.RecordStatus.INVALID).count());
     }
 
     // Create and validate a set of valid records, submit and retrieve them by dataset and dataset/identifier
     @Test public void createAndValidateAndSubmitAndRetrieveRecords() throws IOException {
-        List<SubmissionService.DtoIdentifierPair<DataSamplePayload>> list = new ArrayList<>();
+        List<SubmissionService.ObservationIdentifierPair<DataSamplePayload>> list = new ArrayList<>();
         for (DataSamplePayload sample : samples) {
-            list.add(new SubmissionService.DtoIdentifierPair(sample));
+            list.add(new SubmissionService.ObservationIdentifierPair(sample));
         }
-        List<Record> records = submissionService.createRecords(dataset, list);
-        submissionService.validate(records);
-        submissionService.submit(records);
-        List<Record> recs = submissionService.retrieve(dataset);
-        recs.stream().map(r -> r.getMeasurement()).map(m -> m.getRecord()).forEach(
-                r -> Assert.assertEquals(Record.RecordStatus.SUBMITTED, r.getRecordStatus()));
+        List<RecordEntity> recordEntities = submissionService.createRecords(dataset, list);
+        submissionService.validate(recordEntities);
+        submissionService.submit(recordEntities);
+        List<RecordEntity> recs = submissionService.retrieve(dataset);
+        recs.stream().map(r -> r.getAbstractObservation()).map(m -> m.getRecordEntity()).forEach(
+                r -> Assert.assertEquals(RecordEntity.RecordStatus.SUBMITTED, r.getRecordStatus()));
 
-        Record r = recs.stream().findFirst().get();
+        RecordEntity r = recs.stream().findFirst().get();
         String id = r.getIdentifier();
 
-        Record r1 = submissionService.retrieve(dataset, id);
+        RecordEntity r1 = submissionService.retrieve(dataset, id);
         Assert.assertEquals(r, r1);
     }
 

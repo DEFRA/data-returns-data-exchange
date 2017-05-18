@@ -76,7 +76,7 @@ public class ValidationResult {
             this.errorMessage = errorMessage;
         }
 
-        // Record the details from the field value
+        // RecordEntity the details from the field value
         public void add(FieldValue<?> fieldValue) {
             if (fieldValue != null) {
 

@@ -19,7 +19,7 @@ import java.util.List;
  */
 @Repository
 @Scope(ConfigurableBeanFactory.SCOPE_SINGLETON)
-public class RecordDao extends AbstractUserDataDao<Record> {
+public class RecordDao extends AbstractUserDataDao<RecordEntity> {
 
     /**
      * Let the Dao class know the type of entity in order that type-safe
@@ -27,7 +27,7 @@ public class RecordDao extends AbstractUserDataDao<Record> {
      *
      */
     public RecordDao() {
-        super(Record.class);
+        super(RecordEntity.class);
     }
 
     /**
@@ -36,22 +36,22 @@ public class RecordDao extends AbstractUserDataDao<Record> {
      * @param identifier The identifier
      * @return
      */
-    public Record get(DatasetEntity dataset, String identifier) {
+    public RecordEntity get(DatasetEntity dataset, String identifier) {
         CriteriaBuilder cb = entityManager.getCriteriaBuilder();
         Metamodel m = entityManager.getMetamodel();
-        CriteriaQuery<Record> cq = cb.createQuery(Record.class);
-        Root<Record> record = cq.from(m.entity(Record.class));
+        CriteriaQuery<RecordEntity> cq = cb.createQuery(RecordEntity.class);
+        Root<RecordEntity> record = cq.from(m.entity(RecordEntity.class));
 
         cq.select(record);
         cq.where(
-                cb.equal(record.get(Record_.identifier), identifier),
-                cb.equal(record.get(Record_.dataset), dataset)
+                cb.equal(record.get(RecordEntity_.identifier), identifier),
+                cb.equal(record.get(RecordEntity_.dataset), dataset)
         );
 
-        TypedQuery<Record> q = entityManager.createQuery(cq);
+        TypedQuery<RecordEntity> q = entityManager.createQuery(cq);
 
         try {
-            Record r = q.getSingleResult();
+            RecordEntity r = q.getSingleResult();
             return r;
         } catch (NoResultException e) {
             // If there are no results just return null
@@ -64,14 +64,14 @@ public class RecordDao extends AbstractUserDataDao<Record> {
      * @param dataset The dataset
      * @return a list of records
      */
-    public List<Record> list(DatasetEntity dataset) {
+    public List<RecordEntity> list(DatasetEntity dataset) {
         CriteriaBuilder cb = entityManager.getCriteriaBuilder();
         Metamodel m = entityManager.getMetamodel();
-        CriteriaQuery<Record> cq = cb.createQuery(Record.class);
-        Root<Record> record = cq.from(m.entity(Record.class));
-        cq.where(cb.equal(record.get(Record_.dataset), dataset));
+        CriteriaQuery<RecordEntity> cq = cb.createQuery(RecordEntity.class);
+        Root<RecordEntity> record = cq.from(m.entity(RecordEntity.class));
+        cq.where(cb.equal(record.get(RecordEntity_.dataset), dataset));
         cq.select(record);
-        TypedQuery<Record> q = entityManager.createQuery(cq);
+        TypedQuery<RecordEntity> q = entityManager.createQuery(cq);
         return q.getResultList();
     }
 
@@ -81,38 +81,38 @@ public class RecordDao extends AbstractUserDataDao<Record> {
      * @param identifier
      */
     public void remove(DatasetEntity dataset, String identifier) {
-        Record record = get(dataset, identifier);
-        remove(record.getId());
+        RecordEntity recordEntity = get(dataset, identifier);
+        remove(recordEntity.getId());
     }
 
-    public List<Record> listMeasurements(DatasetEntity dataset) {
+    public List<RecordEntity> listMeasurements(DatasetEntity dataset) {
         CriteriaBuilder cb = entityManager.getCriteriaBuilder();
-        CriteriaQuery<Record> cq = cb.createQuery(Record.class);
+        CriteriaQuery<RecordEntity> cq = cb.createQuery(RecordEntity.class);
 
-        Root<Record> record = cq.from(Record.class);
+        Root<RecordEntity> record = cq.from(RecordEntity.class);
 
         cq.select(record);
-        cq.where(cb.equal(record.get(Record_.dataset), dataset));
-        cq.orderBy(cb.desc(record.get(Record_.id)));
+        cq.where(cb.equal(record.get(RecordEntity_.dataset), dataset));
+        cq.orderBy(cb.desc(record.get(RecordEntity_.id)));
 
-        TypedQuery<Record> tq = this.entityManager.createQuery(cq);
+        TypedQuery<RecordEntity> tq = this.entityManager.createQuery(cq);
         return tq.getResultList();
     }
 
-    public Record getMeasurement(DatasetEntity dataset, String identifier) {
+    public RecordEntity getMeasurement(DatasetEntity dataset, String identifier) {
         CriteriaBuilder cb = entityManager.getCriteriaBuilder();
-        CriteriaQuery<Record> cq = cb.createQuery(Record.class);
+        CriteriaQuery<RecordEntity> cq = cb.createQuery(RecordEntity.class);
 
-        Root<Record> record = cq.from(Record.class);
+        Root<RecordEntity> record = cq.from(RecordEntity.class);
 
         cq.select(record);
         cq.where(
-                cb.equal(record.get(Record_.dataset), dataset),
-                cb.equal(record.get(Record_.identifier), identifier)
+                cb.equal(record.get(RecordEntity_.dataset), dataset),
+                cb.equal(record.get(RecordEntity_.identifier), identifier)
         );
-        cq.orderBy(cb.desc(record.get(Record_.id)));
+        cq.orderBy(cb.desc(record.get(RecordEntity_.id)));
 
-        TypedQuery<Record> tq = this.entityManager.createQuery(cq);
+        TypedQuery<RecordEntity> tq = this.entityManager.createQuery(cq);
 
         return tq.getSingleResult();
     }

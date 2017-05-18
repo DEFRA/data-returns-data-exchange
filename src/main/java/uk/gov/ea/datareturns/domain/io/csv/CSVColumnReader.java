@@ -23,7 +23,7 @@ public final class CSVColumnReader {
     /**
      * Read the values from a single column of a CSV file
      *
-     * @param csvFile the CSV file from which to parse values
+     * @param csvFile the CSV file from which to parseJsonArray values
      * @param columnName the name (column heading) of the particular column to be read
      * @return a {@link List} of {@link String}s containing the data read from the specified column
      * @throws TextParsingException if an problem occurs reading data from the CSV file
@@ -45,7 +45,7 @@ public final class CSVColumnReader {
         try {
             columnData = rowProcessor.getColumn(columnName);
         } catch (final NullPointerException e) {
-            // NullPointerException thrown by univocity parser if attempting to parse an empty or header-only file (how naff!)  We really
+            // NullPointerException thrown by univocity parser if attempting to parseJsonArray an empty or header-only file (how naff!)  We really
             // don't want these exceptions being thrown past this method and returning an empty List in this instance is the correct behaviour.
             columnData = Collections.emptyList();
         }

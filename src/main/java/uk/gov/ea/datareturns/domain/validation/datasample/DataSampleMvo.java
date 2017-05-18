@@ -53,7 +53,7 @@ public class DataSampleMvo extends Mvo<DataSamplePayload> {
     /** Method or standard used (Meth_Stand) */
     @Valid private MethodOrStandard methStand;
 
-    /** Record comments (Comments) */
+    /** RecordEntity comments (Comments) */
     @Valid private Comments comments;
 
     /**

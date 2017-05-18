@@ -8,11 +8,15 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import uk.gov.ea.datareturns.config.SubmissionConfiguration;
+import uk.gov.ea.datareturns.domain.jpa.entities.userdata.impl.DataSampleEntity;
+import uk.gov.ea.datareturns.domain.jpa.entities.userdata.impl.DatasetEntity;
+import uk.gov.ea.datareturns.domain.jpa.entities.userdata.impl.RecordEntity;
 import uk.gov.ea.datareturns.domain.jpa.service.SubmissionService;
 import uk.gov.ea.datareturns.web.resource.v1.model.common.Preconditions;
 import uk.gov.ea.datareturns.web.resource.v1.model.common.references.EntityReference;
 import uk.gov.ea.datareturns.web.resource.v1.model.common.references.Link;
 import uk.gov.ea.datareturns.web.resource.v1.model.record.Record;
+import uk.gov.ea.datareturns.web.resource.v1.model.record.RecordAdaptor;
 import uk.gov.ea.datareturns.web.resource.v1.model.record.payload.DataSamplePayload;
 import uk.gov.ea.datareturns.web.resource.v1.model.record.payload.Payload;
 import uk.gov.ea.datareturns.web.resource.v1.model.request.BatchRecordRequest;
@@ -56,6 +60,7 @@ import static javax.ws.rs.core.MediaType.APPLICATION_XML;
 public class RecordResource {
     private static final Logger LOGGER = LoggerFactory.getLogger(RecordResource.class);
     private final ApplicationContext context;
+    private final RecordAdaptor recordAdaptor;
     @Context
     private UriInfo uriInfo;
 
@@ -76,7 +81,8 @@ public class RecordResource {
      * @param context the spring application context
      */
     @Inject
-    public RecordResource(final ApplicationContext context) {
+    public RecordResource(final ApplicationContext context, RecordAdaptor recordAdaptor) {
+        this.recordAdaptor = recordAdaptor;
         this.context = context;
     }
 
@@ -244,11 +250,20 @@ public class RecordResource {
     )
             throws Exception {
 
-        // Create new record
-        Record record = new Record();
+        DatasetEntity datasetEntity = submissionService.getDataset(datasetId);
+
+        if (datasetEntity == null) {
+            return Response.status(Response.Status.NOT_FOUND).build();
+        }
+
+        // Create and validate the records
+        RecordEntity recordEntity = submissionService.createRecord(datasetEntity, new SubmissionService.ObservationIdentifierPair(recordId, payload));
+        submissionService.validate(recordEntity);
+
+        Record record = recordAdaptor.convert(recordEntity);
         record.setId(recordId);
         record.setCreated(new Date());
-        record.setPayload(payload);
+
         resolveLinks(datasetId, record);
         RecordEntityResponse response = new RecordEntityResponse(Response.Status.OK, record);
         return Response.status(Response.Status.OK).entity(response).build();

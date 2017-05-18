@@ -9,7 +9,7 @@ import javax.ws.rs.core.Response;
 import java.util.List;
 
 /**
- * Record listing response
+ * RecordEntity listing response
  *
  * @author Sam Gardner-Dell
  */

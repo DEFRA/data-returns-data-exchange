@@ -1,6 +1,6 @@
 package uk.gov.ea.datareturns.domain.jpa.entities.userdata;
 
-import uk.gov.ea.datareturns.domain.jpa.entities.userdata.impl.Record;
+import uk.gov.ea.datareturns.domain.jpa.entities.userdata.impl.RecordEntity;
 
 import javax.persistence.*;
 
@@ -14,13 +14,13 @@ public abstract class AbstractObservation implements Userdata {
     @Id
     @OneToOne(optional = false)
     @JoinColumn(name = "record_id", referencedColumnName = "id")
-    private Record record;
+    private RecordEntity recordEntity;
 
-    public Record getRecord() {
-        return record;
+    public RecordEntity getRecordEntity() {
+        return recordEntity;
     }
-    public void setRecord(Record record) {
-        this.record = record;
+    public void setRecordEntity(RecordEntity recordEntity) {
+        this.recordEntity = recordEntity;
     }
 
     @Override
@@ -30,11 +30,11 @@ public abstract class AbstractObservation implements Userdata {
 
         AbstractObservation that = (AbstractObservation) o;
 
-        return record.equals(that.record);
+        return recordEntity.equals(that.recordEntity);
     }
 
     @Override
     public int hashCode() {
-        return record.hashCode();
+        return recordEntity.hashCode();
     }
 }

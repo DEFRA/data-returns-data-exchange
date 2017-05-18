@@ -81,7 +81,7 @@ public class DataSample {
     @JsonProperty("Meth_Stand")
     private MethodOrStandard methStand;
 
-    /** Record comments (Comments) */
+    /** RecordEntity comments (Comments) */
     @Valid @MappedField(FieldDefinition.Comments)
     @JsonProperty("Comments")
     private Comments comments;

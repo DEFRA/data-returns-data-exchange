@@ -29,7 +29,7 @@ public class MonitoringDate implements FieldValue<Instant> {
     /**
      * Create a new {@link MonitoringDate} for the given String
      *
-     * @param monitoringDate the String to attempt to parse to create a MonitoringDate.
+     * @param monitoringDate the String to attempt to parseJsonArray to create a MonitoringDate.
      */
     public MonitoringDate(final String monitoringDate) {
         this.inputValue = monitoringDate;

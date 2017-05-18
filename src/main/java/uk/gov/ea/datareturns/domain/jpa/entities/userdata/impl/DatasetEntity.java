@@ -30,7 +30,7 @@ public class DatasetEntity implements Metadata {
     @JoinColumn(name = "user_id", referencedColumnName = "id")
     private User user;
 
-    @OneToMany(mappedBy="dataset",targetEntity=Record.class, fetch=FetchType.LAZY, cascade = CascadeType.REMOVE)
+    @OneToMany(mappedBy="dataset",targetEntity=RecordEntity.class, fetch=FetchType.LAZY, cascade = CascadeType.REMOVE)
     private Collection records;
 
     @Basic @Column(name = "create_date", nullable = false)
