@@ -66,8 +66,11 @@ public class APIIntegrationTests_BasicMeasurement {
         if (submissionService.getUser(USER_NAME) != null) {
             submissionService.removeUser(USER_NAME);
         }
+
         user = submissionService.createUser(USER_NAME);
-        dataset = submissionService.createDataset(ORIGINATOR_EMAIL, user);
+        dataset = new DatasetEntity();
+        dataset.setUser(user);
+        submissionService.createDataset(dataset);
         samples = submissionService.parse(readTestFile(SUBMISSION_SUCCESS));
     }
 
@@ -84,26 +87,43 @@ public class APIIntegrationTests_BasicMeasurement {
 
     @Test
     public void createSystemManagedDataset() {
-        DatasetEntity dataset = submissionService.createDataset(ORIGINATOR_EMAIL);
+        DatasetEntity dataset = new DatasetEntity();
+        dataset.setOriginatorEmail(ORIGINATOR_EMAIL);
+        submissionService.createDataset(dataset);
         Assert.assertEquals(dataset.getUser().getIdentifier(), User.SYSTEM);
     }
 
     @Test
     public void createUserManagedDatasetAutonamed() {
-        DatasetEntity dataset = submissionService.createDataset(ORIGINATOR_EMAIL, user);
+        DatasetEntity dataset = new DatasetEntity();
+        dataset.setOriginatorEmail(ORIGINATOR_EMAIL);
+        dataset.setUser(user);
+        submissionService.createDataset(dataset);
+
         Assert.assertEquals(dataset.getUser().getIdentifier(), USER_NAME);
         List<DatasetEntity> datasets = submissionService.getDatasets(user);
         Assert.assertEquals(2, datasets.size());
-        submissionService.removeDataset(datasets.get(1).getIdentifier());
-        datasets = submissionService.getDatasets(user);
-        Assert.assertEquals(1, datasets.size());
     }
 
     @Test
     public void createUserManagedDatasetNamed() {
-        DatasetEntity dataset = submissionService.createDataset(ORIGINATOR_EMAIL, DATASET_ID, user);
-        Assert.assertEquals(dataset.getUser().getIdentifier(), USER_NAME);
-        Assert.assertEquals(dataset.getIdentifier(), DATASET_ID);
+        DatasetEntity dataset = new DatasetEntity();
+        dataset.setOriginatorEmail(ORIGINATOR_EMAIL);
+        dataset.setUser(user);
+        dataset.setIdentifier(DATASET_ID);
+        submissionService.createDataset(dataset);
+
+        List<DatasetEntity> datasets = submissionService.getDatasets(user);
+        Assert.assertEquals(2, datasets.size());
+
+        DatasetEntity ds = submissionService.getDataset(DATASET_ID, user);
+
+        Assert.assertEquals(ds.getUser().getIdentifier(), USER_NAME);
+        Assert.assertEquals(ds.getIdentifier(), DATASET_ID);
+
+        submissionService.removeDataset(DATASET_ID, user);
+        datasets = submissionService.getDatasets(user);
+        Assert.assertEquals(1, datasets.size());
     }
 
     @Test public void createTestRemoveRecords() {

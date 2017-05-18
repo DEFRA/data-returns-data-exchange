@@ -31,7 +31,7 @@ import java.util.Map;
  */
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = App.class)
-public class APIIntegrationTests_LandfillMeasurement_Validations {
+public class APIIntegrationTests_DataSampleEntity_Validations {
     private Map<SubmissionConfiguration.SubmissionServiceProvider, SubmissionService> submissionServiceMap;
     private SubmissionService submissionService;
 
@@ -53,13 +53,17 @@ public class APIIntegrationTests_LandfillMeasurement_Validations {
 
     // Remove any old data and set a user and dataset for use in the tests
     @Before public void init() throws IOException {
-        submissionService = submissionServiceMap.get(SubmissionConfiguration.SubmissionServiceProvider.LANDFILL_VERSION_1);
+        submissionService = submissionServiceMap.get(SubmissionConfiguration.SubmissionServiceProvider.DATA_SAMPLE_V1);
 
         if (submissionService.getUser(USER_NAME) != null) {
             submissionService.removeUser(USER_NAME);
         }
         user = submissionService.createUser(USER_NAME);
-        dataset = submissionService.createDataset(ORIGINATOR_EMAIL, user);
+
+        dataset = new DatasetEntity();
+        dataset.setOriginatorEmail(ORIGINATOR_EMAIL);
+        dataset.setUser(user);
+        submissionService.createDataset(dataset);
     }
 
     // Create and validate a set of valid and invalid records
@@ -82,7 +86,7 @@ public class APIIntegrationTests_LandfillMeasurement_Validations {
     private String readTestFile(String testFileName) throws IOException {
         final String testFilesLocation = this.testSettings.getTestFilesLocation();
         final File testFile = new File(testFilesLocation, testFileName);
-        InputStream inputStream = APIIntegrationTests_LandfillMeasurement_Validations.class.getResourceAsStream(testFile.getAbsolutePath());
+        InputStream inputStream = APIIntegrationTests_DataSampleEntity_Validations.class.getResourceAsStream(testFile.getAbsolutePath());
         return IOUtils.toString(inputStream, StandardCharsets.UTF_8);
     }
 }

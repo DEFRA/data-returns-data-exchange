@@ -2,7 +2,7 @@ package uk.gov.ea.datareturns.domain.jpa.entities.userdata.impl;
 
 import uk.gov.ea.datareturns.domain.jpa.entities.masterdata.impl.*;
 import uk.gov.ea.datareturns.domain.jpa.entities.masterdata.impl.Parameter;
-import uk.gov.ea.datareturns.domain.jpa.entities.userdata.AbstractMeasurement;
+import uk.gov.ea.datareturns.domain.jpa.entities.userdata.AbstractObservation;
 
 import javax.persistence.*;
 import java.math.BigDecimal;
@@ -12,8 +12,8 @@ import java.time.Instant;
  * @author Graham Willis
  */
 @Entity
-@Table(name = "landfill")
-public class LandfillMeasurement extends AbstractMeasurement {
+@Table(name = "data_sample")
+public class DataSampleEntity extends AbstractObservation {
 
     @ManyToOne(optional = false)
     @JoinColumn(name = "ea_id", referencedColumnName = "id")
@@ -180,7 +180,7 @@ public class LandfillMeasurement extends AbstractMeasurement {
 
     @Override
     public String toString() {
-        return "LandfillMeasurement{" +
+        return "DataSampleEntity{" +
                 "uniqueIdentifier=" + uniqueIdentifier +
                 ", site=" + site +
                 ", returnType=" + returnType +

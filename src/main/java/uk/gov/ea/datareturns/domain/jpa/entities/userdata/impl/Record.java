@@ -1,12 +1,11 @@
 package uk.gov.ea.datareturns.domain.jpa.entities.userdata.impl;
 
 import org.hibernate.annotations.GenericGenerator;
-import uk.gov.ea.datareturns.domain.jpa.entities.userdata.AbstractMeasurement;
+import uk.gov.ea.datareturns.domain.jpa.entities.userdata.AbstractObservation;
 import uk.gov.ea.datareturns.domain.jpa.entities.userdata.Metadata;
 
 import javax.persistence.*;
 import java.time.Instant;
-import java.time.LocalDateTime;
 
 /**
  * @author Graham
@@ -26,7 +25,7 @@ public class Record implements Metadata {
     private Long id;
 
     @OneToOne(cascade = { CascadeType.REMOVE }, mappedBy = "record")
-    private AbstractMeasurement measurement;
+    private AbstractObservation measurement;
 
     @Basic @Column(name = "identifier", nullable = false, length = 80)
     private String identifier;
@@ -125,11 +124,11 @@ public class Record implements Metadata {
         return identifier.equals(record.identifier) && dataset.equals(record.dataset);
     }
 
-    public AbstractMeasurement getMeasurement() {
+    public AbstractObservation getMeasurement() {
         return measurement;
     }
 
-    public void setMeasurement(AbstractMeasurement measurement) {
+    public void setMeasurement(AbstractObservation measurement) {
         this.measurement = measurement;
     }
 

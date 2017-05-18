@@ -9,7 +9,7 @@ import javax.persistence.*;
  */
 @Entity
 @Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
-public abstract class AbstractMeasurement implements Userdata {
+public abstract class AbstractObservation implements Userdata {
 
     @Id
     @OneToOne(optional = false)
@@ -28,7 +28,7 @@ public abstract class AbstractMeasurement implements Userdata {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
-        AbstractMeasurement that = (AbstractMeasurement) o;
+        AbstractObservation that = (AbstractObservation) o;
 
         return record.equals(that.record);
     }

@@ -5,15 +5,15 @@ import org.springframework.context.annotation.Configuration;
 import uk.gov.ea.datareturns.domain.dto.impl.BasicMeasurementDto;
 import uk.gov.ea.datareturns.domain.dto.impl.LandfillMeasurementDto;
 import uk.gov.ea.datareturns.domain.jpa.dao.masterdata.*;
-import uk.gov.ea.datareturns.domain.jpa.dao.userdata.factories.AbstractMeasurementFactory;
+import uk.gov.ea.datareturns.domain.jpa.dao.userdata.factories.AbstractObservationFactory;
 import uk.gov.ea.datareturns.domain.jpa.dao.userdata.factories.impl.BasicMeasurementFactory;
-import uk.gov.ea.datareturns.domain.jpa.dao.userdata.factories.impl.LandfillMeasurementFactory;
+import uk.gov.ea.datareturns.domain.jpa.dao.userdata.factories.impl.DataSampleFactory;
 import uk.gov.ea.datareturns.domain.jpa.dao.userdata.impl.DatasetDao;
-import uk.gov.ea.datareturns.domain.jpa.dao.userdata.impl.MeasurementDao;
+import uk.gov.ea.datareturns.domain.jpa.dao.userdata.impl.ObservationDao;
 import uk.gov.ea.datareturns.domain.jpa.dao.userdata.impl.RecordDao;
 import uk.gov.ea.datareturns.domain.jpa.dao.userdata.impl.UserDao;
 import uk.gov.ea.datareturns.domain.jpa.entities.userdata.impl.BasicMeasurement;
-import uk.gov.ea.datareturns.domain.jpa.entities.userdata.impl.LandfillMeasurement;
+import uk.gov.ea.datareturns.domain.jpa.entities.userdata.impl.DataSampleEntity;
 import uk.gov.ea.datareturns.domain.jpa.service.SubmissionService;
 import uk.gov.ea.datareturns.domain.validation.basicmeasurement.BasicMeasurementFieldMessageMap;
 import uk.gov.ea.datareturns.domain.validation.basicmeasurement.BasicMeasurementMvo;
@@ -53,7 +53,8 @@ public class SubmissionConfiguration {
 
     public enum SubmissionServiceProvider {
         BASIC_VERSION_1,
-        LANDFILL_VERSION_1
+        LANDFILL_VERSION_1,
+        DATA_SAMPLE_V1
     }
 
     @Inject
@@ -92,12 +93,16 @@ public class SubmissionConfiguration {
     }
 
     /**
+     * Set up the DataSample submission service
+     */
+
+    /**
      * The data access object for the BasicMeasurement Entity
      * @return
      */
     @Bean
-    public MeasurementDao<BasicMeasurement> basicMeasuementDao() {
-        return new MeasurementDao<>(BasicMeasurement.class);
+    public ObservationDao<BasicMeasurement> basicMeasuementDao() {
+        return new ObservationDao<>(BasicMeasurement.class);
     }
 
     /**
@@ -105,7 +110,7 @@ public class SubmissionConfiguration {
      * @return
      */
     @Bean
-    public AbstractMeasurementFactory<BasicMeasurement, BasicMeasurementDto> basicMeasurementFactory() {
+    public AbstractObservationFactory<BasicMeasurement, BasicMeasurementDto> basicMeasurementFactory() {
         return new BasicMeasurementFactory(parameterDao);
     }
 
@@ -147,12 +152,12 @@ public class SubmissionConfiguration {
     }
 
     /**
-     * The data access object for the Landfill measurement Entity
+     * The data access object for the data sample observation
      * @return
      */
     @Bean
-    public MeasurementDao<LandfillMeasurement> landfillMeasurementDao() {
-        return new MeasurementDao<>(LandfillMeasurement.class);
+    public ObservationDao<DataSampleEntity> dataSampleDao() {
+        return new ObservationDao<>(DataSampleEntity.class);
     }
 
     /**
@@ -160,8 +165,8 @@ public class SubmissionConfiguration {
      * @return
      */
     @Bean
-    public AbstractMeasurementFactory<LandfillMeasurement, LandfillMeasurementDto> landfillMeasurementFactory() {
-        return new LandfillMeasurementFactory(
+    public AbstractObservationFactory<DataSampleEntity, LandfillMeasurementDto> dataSampleEntityFactory() {
+        return new DataSampleFactory(
                 methodOrStandardDao,
                 parameterDao,
                 qualifierDao,
@@ -180,7 +185,7 @@ public class SubmissionConfiguration {
      * @return
      */
     @Bean
-    public MvoFactory<LandfillMeasurementDto, LandfillMeasurementMvo> landfillMvoFactory() {
+    public MvoFactory<LandfillMeasurementDto, LandfillMeasurementMvo> dataSampleMvoFactory() {
         return new MvoFactory<>(LandfillMeasurementMvo.class);
     }
 
@@ -189,30 +194,30 @@ public class SubmissionConfiguration {
      * @return
      */
     @Bean
-    public MeasurementValidator<LandfillMeasurementMvo> landfillMeasurementValidator() {
+    public MeasurementValidator<LandfillMeasurementMvo> dataSampleValidator() {
         return new MeasurementValidatorImpl<>(this.validator, LandfillMeasurementMvo.class, new LandfillMeasurementFieldMessageMap());
     }
 
     @Bean
-    public SubmissionService<LandfillMeasurementDto, LandfillMeasurement, LandfillMeasurementMvo> landfillSubmissionService() {
+    public SubmissionService<LandfillMeasurementDto, DataSampleEntity, LandfillMeasurementMvo>dataSampleSubmissionService() {
         return new SubmissionService<>(
                 LandfillMeasurementDto.class,
                 LandfillMeasurementDto[].class,
-                LandfillMeasurement.class,
-                landfillMvoFactory(),
+                DataSampleEntity.class,
+                dataSampleMvoFactory(),
                 userDao,
                 datasetDao,
                 recordDao,
-                landfillMeasurementDao(),
-                landfillMeasurementValidator(),
-                landfillMeasurementFactory());
+                dataSampleDao(),
+                dataSampleValidator(),
+                dataSampleEntityFactory());
     }
 
     @Bean(name = "submissionServiceMap")
     public Map<SubmissionServiceProvider, SubmissionService> getSubmissionServiceMap() {
         Map<SubmissionServiceProvider, SubmissionService> map = new HashMap<>();
-        map.put(SubmissionServiceProvider.LANDFILL_VERSION_1, landfillSubmissionService());
         map.put(SubmissionServiceProvider.BASIC_VERSION_1, basicSubmissionService());
+        map.put(SubmissionServiceProvider.DATA_SAMPLE_V1, dataSampleSubmissionService());
         return Collections.unmodifiableMap(map);
     }
 

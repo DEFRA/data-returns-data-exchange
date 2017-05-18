@@ -7,12 +7,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.transaction.annotation.Transactional;
 import uk.gov.ea.datareturns.domain.dto.MeasurementDto;
-import uk.gov.ea.datareturns.domain.jpa.dao.userdata.factories.AbstractMeasurementFactory;
+import uk.gov.ea.datareturns.domain.jpa.dao.userdata.factories.AbstractObservationFactory;
 import uk.gov.ea.datareturns.domain.jpa.dao.userdata.impl.DatasetDao;
-import uk.gov.ea.datareturns.domain.jpa.dao.userdata.impl.MeasurementDao;
+import uk.gov.ea.datareturns.domain.jpa.dao.userdata.impl.ObservationDao;
 import uk.gov.ea.datareturns.domain.jpa.dao.userdata.impl.RecordDao;
 import uk.gov.ea.datareturns.domain.jpa.dao.userdata.impl.UserDao;
-import uk.gov.ea.datareturns.domain.jpa.entities.userdata.AbstractMeasurement;
+import uk.gov.ea.datareturns.domain.jpa.entities.userdata.AbstractObservation;
 import uk.gov.ea.datareturns.domain.jpa.entities.userdata.impl.DatasetEntity;
 import uk.gov.ea.datareturns.domain.jpa.entities.userdata.impl.Record;
 import uk.gov.ea.datareturns.domain.jpa.entities.userdata.impl.User;
@@ -23,7 +23,6 @@ import uk.gov.ea.datareturns.domain.validation.newmodel.validator.result.Validat
 
 import java.io.IOException;
 import java.time.Instant;
-import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -48,7 +47,7 @@ import java.util.stream.Collectors;
  *         <p>
  *         The service is created by the submission service configuration
  */
-public class SubmissionService<D extends MeasurementDto, M extends AbstractMeasurement, V extends Mvo> {
+public class SubmissionService<D extends MeasurementDto, M extends AbstractObservation, V extends Mvo> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(SubmissionService.class);
 
@@ -58,9 +57,9 @@ public class SubmissionService<D extends MeasurementDto, M extends AbstractMeasu
     private final UserDao userDao;
     private final DatasetDao datasetDao;
     private final RecordDao recordDao;
-    private final MeasurementDao<M> measurementDao;
+    private final ObservationDao<M> measurementDao;
     private final MeasurementValidator<V> validator;
-    private final AbstractMeasurementFactory<M, D> abstractMeasurementFactory;
+    private final AbstractObservationFactory<M, D> abstractObservationFactory;
 
     private final static ObjectMapper mapper = new ObjectMapper();
 
@@ -79,9 +78,9 @@ public class SubmissionService<D extends MeasurementDto, M extends AbstractMeasu
                              UserDao userDao,
                              DatasetDao datasetDao,
                              RecordDao recordDao,
-                             MeasurementDao<M> submissionDao,
+                             ObservationDao<M> submissionDao,
                              MeasurementValidator<V> validator,
-                             AbstractMeasurementFactory<M, D> abstractMeasurementFactory) {
+                             AbstractObservationFactory<M, D> abstractObservationFactory) {
 
         this.measurementDtoClass = measurementDtoClass;
         this.measurementDtoArrayClass = measurementDtoArrayClass;
@@ -91,7 +90,7 @@ public class SubmissionService<D extends MeasurementDto, M extends AbstractMeasu
         this.recordDao = recordDao;
         this.measurementDao = submissionDao;
         this.validator = validator;
-        this.abstractMeasurementFactory = abstractMeasurementFactory;
+        this.abstractObservationFactory = abstractObservationFactory;
 
         LOGGER.info("Initializing submission service for datum type: " + measurementDtoClass.getSimpleName());
         mapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
@@ -246,7 +245,7 @@ public class SubmissionService<D extends MeasurementDto, M extends AbstractMeasu
 
     /**
      * Submit a set of valid records - this writes the data from the stored JSON into the
-     * relation database structures - it creates an instance of a class inheriting AbstractMeasurement
+     * relation database structures - it creates an instance of a class inheriting AbstractObservation
      * and associates it with the record.
      * <p>
      * It will ignore all records that are invalid
@@ -259,7 +258,7 @@ public class SubmissionService<D extends MeasurementDto, M extends AbstractMeasu
                 .filter(r -> r.getRecordStatus() == Record.RecordStatus.VALID)
                 .forEach(r -> {
                     try {
-                        M submission = abstractMeasurementFactory.create(mapper.readValue(r.getJson(), measurementDtoClass));
+                        M submission = abstractObservationFactory.create(mapper.readValue(r.getJson(), measurementDtoClass));
                         r.setMeasurement(submission);
                         r.setRecordStatus(Record.RecordStatus.SUBMITTED);
                         r.getMeasurement().setRecord(r);
@@ -424,59 +423,17 @@ public class SubmissionService<D extends MeasurementDto, M extends AbstractMeasu
      ****************************************************************************************/
 
     /**
-     * Create a new dataset where the identifier and user is managed by the system
+     * Create a persisted dataset from a detached entity
      *
-     * @return the new dataset
+     * @param newDatasetEntity
      */
-    @Transactional
-    public DatasetEntity createDataset(String originatorEmail) {
-        return createDataset(originatorEmail, UUID.randomUUID().toString(), getSystemUser());
-    }
-
-    /**
-     * Create a new dataset for a given user where the identifier is managed by the system
-     *
-     * @param user The owner of the dataset
-     * @return The new dataset
-     */
-    @Transactional
-    public DatasetEntity createDataset(String originatorEmail, User user) {
-        return createDataset(originatorEmail, UUID.randomUUID().toString(), user);
-    }
-
-    /**
-     * Create a new dataset for the system user with a managed identifier
-     *
-     * @return The new dataset
-     */
-    @Transactional
-    public DatasetEntity createDataset(String originatorEmail, String identifier) {
-        return (identifier != null) ? createDataset(originatorEmail, identifier, getSystemUser())
-                                    : createDataset(originatorEmail);
-    }
-
-    /**
-     * Create a new dataset for a given user where the identifier is given by the user
-     * @param user
-     * @param identifier
-     * @return The new dataset
-     */
-    @Transactional
-    public DatasetEntity createDataset(String originatorEmail, String identifier, User user) {
-        DatasetEntity dataset = new DatasetEntity();
-        dataset.setIdentifier(identifier);
-        dataset.setUser(user);
-        dataset.setOriginatorEmail(originatorEmail);
-        dataset.setCreateDate(Instant.now());
-        dataset.setLastChangedDate(Instant.now());
-        datasetDao.persist(dataset);
-        return dataset;
-    }
-
     @Transactional
     public void createDataset(DatasetEntity newDatasetEntity) {
         newDatasetEntity.setCreateDate(Instant.now());
         newDatasetEntity.setLastChangedDate(Instant.now());
+        if (newDatasetEntity.getIdentifier() == null) {
+            newDatasetEntity.setIdentifier(UUID.randomUUID().toString());
+        }
         if (newDatasetEntity.getUser() == null) {
             newDatasetEntity.setUser(getSystemUser());
         }
@@ -504,14 +461,9 @@ public class SubmissionService<D extends MeasurementDto, M extends AbstractMeasu
         datasetDao.remove(getSystemUser(), identifier);
     }
 
-    @Transactional(readOnly = true)
-    public boolean datasetExists(String datasetId) {
-        return datasetExists(datasetId, getSystemUser());
-    }
-
-    @Transactional(readOnly = true)
-    public boolean datasetExists(String datasetId, User user) {
-        return datasetDao.get(user, datasetId) != null;
+    @Transactional
+    public void removeDataset(String identifier, User user) {
+        datasetDao.remove(user, identifier);
     }
 
     @Transactional(readOnly = true)

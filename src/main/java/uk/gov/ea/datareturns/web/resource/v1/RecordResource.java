@@ -7,6 +7,8 @@ import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
+import uk.gov.ea.datareturns.config.SubmissionConfiguration;
+import uk.gov.ea.datareturns.domain.jpa.service.SubmissionService;
 import uk.gov.ea.datareturns.web.resource.v1.model.common.Preconditions;
 import uk.gov.ea.datareturns.web.resource.v1.model.common.references.EntityReference;
 import uk.gov.ea.datareturns.web.resource.v1.model.common.references.Link;
@@ -19,6 +21,7 @@ import uk.gov.ea.datareturns.web.resource.v1.model.responses.multistatus.MultiSt
 import uk.gov.ea.datareturns.web.resource.v1.model.responses.record.RecordEntityResponse;
 import uk.gov.ea.datareturns.web.resource.v1.model.responses.record.RecordListResponse;
 
+import javax.annotation.Resource;
 import javax.inject.Inject;
 import javax.validation.constraints.Pattern;
 import javax.ws.rs.*;
@@ -29,6 +32,7 @@ import javax.ws.rs.core.UriInfo;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 import static javax.ws.rs.core.MediaType.APPLICATION_XML;
@@ -54,6 +58,17 @@ public class RecordResource {
     private final ApplicationContext context;
     @Context
     private UriInfo uriInfo;
+
+    private SubmissionService<?, ?, ?> submissionService;
+
+    /**
+     * Retrieves the appropriate versioned submission service
+     * @param submissionServiceMap
+     */
+    @Resource(name = "submissionServiceMap")
+    private void setSubmissionService(Map<SubmissionConfiguration.SubmissionServiceProvider, SubmissionService> submissionServiceMap) {
+        this.submissionService = submissionServiceMap.get(SubmissionConfiguration.SubmissionServiceProvider.DATA_SAMPLE_V1);
+    }
 
     /**
      * Create a new {@link RecordResource} RESTful service

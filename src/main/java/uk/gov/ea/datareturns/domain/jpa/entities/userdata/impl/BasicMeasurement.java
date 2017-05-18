@@ -1,7 +1,7 @@
 package uk.gov.ea.datareturns.domain.jpa.entities.userdata.impl;
 
 import uk.gov.ea.datareturns.domain.jpa.entities.masterdata.impl.Parameter;
-import uk.gov.ea.datareturns.domain.jpa.entities.userdata.AbstractMeasurement;
+import uk.gov.ea.datareturns.domain.jpa.entities.userdata.AbstractObservation;
 
 import javax.persistence.*;
 import java.math.BigDecimal;
@@ -11,7 +11,7 @@ import java.math.BigDecimal;
  */
 @Entity
 @Table(name = "measurements")
-public class BasicMeasurement extends AbstractMeasurement {
+public class BasicMeasurement extends AbstractObservation {
 
     @ManyToOne(optional = false)
     @JoinColumn(name = "parameter_id", referencedColumnName = "id")

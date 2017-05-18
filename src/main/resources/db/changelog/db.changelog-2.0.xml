@@ -136,10 +136,10 @@
 
 		<!--
 		****************************************************************
-		Landfill
+		Data Sample
 		****************************************************************
 		-->
-		<createTable tableName="landfill">
+		<createTable tableName="data_sample">
 
 			<column name="record_id" type="bigserial">
 				<constraints nullable="false"/>
@@ -203,67 +203,67 @@
 
 		</createTable>
 
-		<createIndex indexName="idx_landfill" tableName="landfill" unique="true">
+		<createIndex indexName="idx_data_sample" tableName="data_sample" unique="true">
 			<column name="record_id"/>
 		</createIndex>
 
 		<addForeignKeyConstraint baseColumnNames="record_id"
-								 baseTableName="landfill"
-								 constraintName="fk_landfill_record"
+								 baseTableName="data_sample"
+								 constraintName="fk_data_sample_record"
 								 referencedColumnNames="id"
 								 referencedTableName="records"/>
 
 		<addForeignKeyConstraint baseColumnNames="ea_id"
-								 baseTableName="landfill"
-								 constraintName="fk_landfill_unique_identifier"
+								 baseTableName="data_sample"
+								 constraintName="fk_data_sample_unique_identifier"
 								 referencedColumnNames="id"
 								 referencedTableName="unique_identifiers"/>
 
 		<addForeignKeyConstraint baseColumnNames="site_id"
-								 baseTableName="landfill"
-								 constraintName="fk_landfill_site"
+								 baseTableName="data_sample"
+								 constraintName="fk_data_sample_site"
 								 referencedColumnNames="id"
 								 referencedTableName="sites"/>
 
 		<addForeignKeyConstraint baseColumnNames="return_type_id"
-								 baseTableName="landfill"
-								 constraintName="fk_landfill_return_type"
+								 baseTableName="data_sample"
+								 constraintName="fk_data_sample_return_type"
 								 referencedColumnNames="id"
 								 referencedTableName="return_types"/>
 
 		<addForeignKeyConstraint baseColumnNames="parameter_id"
-								 baseTableName="landfill"
-								 constraintName="fk_landfill_parameter"
+								 baseTableName="data_sample"
+								 constraintName="fk_data_sample_parameter"
 								 referencedColumnNames="id"
 								 referencedTableName="parameters"/>
 
 		<addForeignKeyConstraint baseColumnNames="text_value_id"
-								 baseTableName="landfill"
-								 constraintName="fk_landfill_text_value"
+								 baseTableName="data_sample"
+								 constraintName="fk_data_sample_text_value"
 								 referencedColumnNames="id"
 								 referencedTableName="text_values"/>
 
 		<addForeignKeyConstraint baseColumnNames="qualifier_id"
-								 baseTableName="landfill"
-								 constraintName="fk_landfill_qualifier"
+								 baseTableName="data_sample"
+								 constraintName="fk_data_sample_qualifier"
 								 referencedColumnNames="id"
 								 referencedTableName="qualifiers"/>
 
 		<addForeignKeyConstraint baseColumnNames="unit_id"
-								 baseTableName="landfill"
-								 constraintName="fk_landfill_unit"
+								 baseTableName="data_sample"
+								 constraintName="fk_data_sample_unit"
 								 referencedColumnNames="id"
 								 referencedTableName="units"/>
 
 		<addForeignKeyConstraint baseColumnNames="reference_period_id"
-								 baseTableName="landfill"
-								 constraintName="fk_landfill_reference_period"
+								 baseTableName="data_sample"
+								 constraintName="fk_data_sample_reference_period"
 								 referencedColumnNames="id"
 								 referencedTableName="reference_periods"/>
 
 		<addForeignKeyConstraint baseColumnNames="method_or_standard_id"
-								 baseTableName="landfill"
-								 constraintName="fk_landfill_method_or_standard"
+								 baseTableName="data_sample"
+								 constraintName="fk_data_sample_method_or_standard"
 								 referencedColumnNames="id"
 								 referencedTableName="methods_or_standards"/>
 
@@ -308,7 +308,7 @@
 
 		<rollback>
 			<dropTable tableName="measurements"/>
-			<dropTable tableName="landfill"/>
+			<dropTable tableName="data_sample"/>
 			<dropTable tableName="status"/>
 			<dropTable tableName="records"/>
 			<dropTable tableName="datasets"/>

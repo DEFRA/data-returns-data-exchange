@@ -2,19 +2,17 @@ package uk.gov.ea.datareturns.domain.jpa.dao.userdata.factories.impl;
 
 import uk.gov.ea.datareturns.domain.dto.impl.LandfillMeasurementDto;
 import uk.gov.ea.datareturns.domain.jpa.dao.masterdata.*;
-import uk.gov.ea.datareturns.domain.jpa.dao.userdata.factories.AbstractMeasurementFactory;
-import uk.gov.ea.datareturns.domain.jpa.entities.userdata.impl.LandfillMeasurement;
+import uk.gov.ea.datareturns.domain.jpa.dao.userdata.factories.AbstractObservationFactory;
+import uk.gov.ea.datareturns.domain.jpa.entities.userdata.impl.DataSampleEntity;
 import uk.gov.ea.datareturns.domain.validation.model.fields.impl.ds.MonitoringDate;
 
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
-import java.time.ZoneOffset;
 
 /**
  * @author Graham Willis
  * Boilerplate to generate instances of the hibernate persistence entity
  */
-public class LandfillMeasurementFactory implements AbstractMeasurementFactory<LandfillMeasurement, LandfillMeasurementDto> {
+public class DataSampleFactory implements AbstractObservationFactory<DataSampleEntity, LandfillMeasurementDto> {
 
     private final MethodOrStandardDao methodOrStandardDao;
     private final ParameterDao parameterDao;
@@ -28,7 +26,7 @@ public class LandfillMeasurementFactory implements AbstractMeasurementFactory<La
     private final UniqueIdentifierDao uniqueIdentifierDao;
     private final UnitDao unitDao;
 
-    public LandfillMeasurementFactory(
+    public DataSampleFactory(
         MethodOrStandardDao methodOrStandardDao,
         ParameterDao parameterDao,
         QualifierDao qualifierDao,
@@ -55,8 +53,8 @@ public class LandfillMeasurementFactory implements AbstractMeasurementFactory<La
     }
 
     @Override
-    public LandfillMeasurement create(LandfillMeasurementDto dto) {
-        LandfillMeasurement measurement = new LandfillMeasurement();
+    public DataSampleEntity create(LandfillMeasurementDto dto) {
+        DataSampleEntity measurement = new DataSampleEntity();
 
         measurement.setUniqueIdentifier(uniqueIdentifierDao.getByNameOrAlias(Key.relaxed(dto.getEaId())));
         measurement.setSite(siteDao.getByName((Key.relaxed(dto.getSiteName()))));
