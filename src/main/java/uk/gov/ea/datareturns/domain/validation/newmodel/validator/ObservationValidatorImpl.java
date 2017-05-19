@@ -1,26 +1,28 @@
 package uk.gov.ea.datareturns.domain.validation.newmodel.validator;
 
-import uk.gov.ea.datareturns.domain.validation.newmodel.entityfields.FieldValue;
-import uk.gov.ea.datareturns.domain.validation.newmodel.validator.result.ValidationResult;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import uk.gov.ea.datareturns.domain.jpa.dao.userdata.impl.ValidationErrorDao;
+import uk.gov.ea.datareturns.domain.jpa.entities.userdata.impl.ValidationError;
 
 import javax.inject.Inject;
 import javax.validation.ConstraintViolation;
 import javax.validation.Validator;
 import java.lang.annotation.Annotation;
-import java.util.List;
+import java.util.HashSet;
 import java.util.Set;
 
 /**
  * @author Graham Willis
  */
 public class ObservationValidatorImpl<V extends Mvo> implements ObservationValidator<V> {
+    private static final Logger LOGGER = LoggerFactory.getLogger(ObservationValidatorImpl.class);
 
     /** validator instance */
     private final Validator instanceValidator;
+    private final ValidationErrorDao validationErrorDao;
     /** flag to indicate if the instanceValidator has been fully initialised */
     private boolean initialised = false;
-
-    private FieldMessageMap<V> fieldMessageMap;
 
     /**
      * Instantiates a new {@link Mvo} instanceValidator.
@@ -28,23 +30,24 @@ public class ObservationValidatorImpl<V extends Mvo> implements ObservationValid
      * @param validator the hibernate instanceValidator instance
      */
     @Inject
-    public ObservationValidatorImpl(final Validator validator, final Class<V> mvoClass, FieldMessageMap<V> fieldMessageMap) {
+    public ObservationValidatorImpl(final Validator validator, ValidationErrorDao validationErrorDao) {
         this.instanceValidator = validator;
-        this.fieldMessageMap = fieldMessageMap;
+        this.validationErrorDao = validationErrorDao;
     }
 
-    public ValidationResult validateMeasurement(V measurement) {
-        final ValidationResult validationResult = new ValidationResult();
-        final Set<ConstraintViolation<V>> violations = validate(measurement);
+    public Set<ValidationError> validateObservation(V observation) {
+        final Set<ValidationError> errors = new HashSet<>();
+        final Set<ConstraintViolation<V>> violations = validate(observation);
         for (final ConstraintViolation<V> violation : violations) {
-            ValidationResult.ValidationError error = validationResult.forViolation(violation);
-            List<FieldValue<?>> fieldValues = fieldMessageMap.getFieldDependencies(measurement, violation.getMessageTemplate());
-            for (FieldValue<?> fieldValue : fieldValues) {
-                error.add(fieldValue);
+            ValidationError error = validationErrorDao.get(violation.getMessageTemplate());
+            if (error == null) {
+                LOGGER.error("Unknown message template discovered: " + violation.getMessageTemplate());
+            } else {
+                errors.add(error);
             }
         }
 
-        return validationResult;
+        return errors;
     }
 
     /**
@@ -54,7 +57,6 @@ public class ObservationValidatorImpl<V extends Mvo> implements ObservationValid
      * {@link javax.validation.ConstraintValidator#initialize(Annotation)} method being called more than once.
      *
      * @param measurement the measurement to be validated
-     * @param <V> the type of the measurement
      * @return a set of constraint violations detailing any validation errors that were found
      */
     private Set<ConstraintViolation<V>> validate(V measurement) {

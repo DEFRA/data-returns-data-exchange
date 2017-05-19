@@ -1,6 +1,5 @@
 package uk.gov.ea.datareturns.domain.validation.basicmeasurement.fields;
 
-import uk.gov.ea.datareturns.domain.validation.basicmeasurement.BasicMeasurementFieldMessageMap;
 import uk.gov.ea.datareturns.domain.validation.newmodel.entityfields.FieldValue;
 import uk.gov.ea.datareturns.util.TextUtils;
 
@@ -10,7 +9,7 @@ import javax.validation.constraints.Pattern;
  * A numerical value of a measurement.
  */
 public class Value implements FieldValue<String> {
-    @Pattern(regexp = "([<>]?\\s*-?(\\d+\\.)?(\\d)+)", message = BasicMeasurementFieldMessageMap.Incorrect.Value)
+    @Pattern(regexp = "([<>]?\\s*-?(\\d+\\.)?(\\d)+)", message = "DR9040-Incorrect")
     private final String inputValue;
 
     /**

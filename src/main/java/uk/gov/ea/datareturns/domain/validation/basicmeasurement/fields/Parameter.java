@@ -4,7 +4,6 @@ package uk.gov.ea.datareturns.domain.validation.basicmeasurement.fields;
 import org.hibernate.validator.constraints.NotBlank;
 import uk.gov.ea.datareturns.domain.jpa.dao.masterdata.EntityDao;
 import uk.gov.ea.datareturns.domain.jpa.dao.masterdata.ParameterDao;
-import uk.gov.ea.datareturns.domain.validation.basicmeasurement.BasicMeasurementFieldMessageMap;
 import uk.gov.ea.datareturns.domain.validation.newmodel.auditors.controlledlist.ParameterAuditorNew;
 import uk.gov.ea.datareturns.domain.validation.newmodel.constraints.controlledlist.ControlledList;
 import uk.gov.ea.datareturns.domain.validation.newmodel.entityfields.AbstractAliasingEntityValue;
@@ -17,8 +16,8 @@ import uk.gov.ea.datareturns.domain.validation.newmodel.entityfields.AbstractAli
 public class Parameter extends AbstractAliasingEntityValue<uk.gov.ea.datareturns.domain.jpa.entities.masterdata.impl.Parameter> {
     private static final ParameterDao DAO = EntityDao.getDao(ParameterDao.class);
 
-    @NotBlank(message = BasicMeasurementFieldMessageMap.Missing.Parameter)
-    @ControlledList(auditor = ParameterAuditorNew.class, message = BasicMeasurementFieldMessageMap.ControlledList.Parameter)
+    @NotBlank(message = "DR9030-Missing")
+    @ControlledList(auditor = ParameterAuditorNew.class, message = "DR9030-Incorrect")
     private final String inputValue;
 
     /**

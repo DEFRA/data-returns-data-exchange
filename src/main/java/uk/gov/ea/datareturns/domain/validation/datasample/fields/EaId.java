@@ -6,11 +6,10 @@ import uk.gov.ea.datareturns.domain.jpa.dao.masterdata.EntityDao;
 import uk.gov.ea.datareturns.domain.jpa.dao.masterdata.Key;
 import uk.gov.ea.datareturns.domain.jpa.dao.masterdata.UniqueIdentifierDao;
 import uk.gov.ea.datareturns.domain.jpa.entities.masterdata.impl.UniqueIdentifier;
-import uk.gov.ea.datareturns.domain.validation.datasample.DataSampleFieldMessageMap;
-import uk.gov.ea.datareturns.domain.validation.newmodel.entityfields.AbstractEntityValue;
-import uk.gov.ea.datareturns.domain.validation.newmodel.rules.EaIdType;
 import uk.gov.ea.datareturns.domain.validation.newmodel.auditors.controlledlist.UniqueIdentifierAuditorNew;
 import uk.gov.ea.datareturns.domain.validation.newmodel.constraints.controlledlist.ControlledList;
+import uk.gov.ea.datareturns.domain.validation.newmodel.entityfields.AbstractEntityValue;
+import uk.gov.ea.datareturns.domain.validation.newmodel.rules.EaIdType;
 
 /**
  * Models details about an EA Unique Identifier (EA_ID)
@@ -20,8 +19,8 @@ import uk.gov.ea.datareturns.domain.validation.newmodel.constraints.controlledli
 public class EaId extends AbstractEntityValue<UniqueIdentifierDao, UniqueIdentifier> implements Comparable<EaId> {
     private static final UniqueIdentifierDao DAO = EntityDao.getDao(UniqueIdentifierDao.class);
 
-    @NotBlank(message = DataSampleFieldMessageMap.Missing.EA_ID)
-    @ControlledList(auditor = UniqueIdentifierAuditorNew.class, message = DataSampleFieldMessageMap.ControlledList.EA_ID)
+    @NotBlank(message = "DR9000-Missing")
+    @ControlledList(auditor = UniqueIdentifierAuditorNew.class, message = "DR9000-Incorrect")
     private String identifier;
 
     private EaIdType type;

@@ -1,7 +1,6 @@
 package uk.gov.ea.datareturns.domain.validation.datasample.constraints.record;
 
 import org.springframework.stereotype.Component;
-import uk.gov.ea.datareturns.domain.validation.datasample.DataSampleFieldMessageMap;
 import uk.gov.ea.datareturns.domain.validation.datasample.DataSampleMvo;
 import uk.gov.ea.datareturns.domain.validation.newmodel.constraints.record.RecordConstraintValidator;
 import uk.gov.ea.datareturns.domain.validation.newmodel.entityfields.FieldValue;
@@ -19,7 +18,7 @@ public class RequireUnitForValueNew implements RecordConstraintValidator<DataSam
         boolean hasUnit = FieldValue.isNotEmpty(record.getUnit());
         if (hasValue && !hasUnit) {
             context.disableDefaultConstraintViolation();
-            context.buildConstraintViolationWithTemplate(DataSampleFieldMessageMap.Missing.Unit);
+            context.buildConstraintViolationWithTemplate("DR9050-Conflict");
             return false;
         }
         return true;

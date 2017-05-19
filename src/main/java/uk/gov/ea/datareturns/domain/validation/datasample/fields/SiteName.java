@@ -1,7 +1,6 @@
 package uk.gov.ea.datareturns.domain.validation.datasample.fields;
 
 import org.hibernate.validator.constraints.NotBlank;
-import uk.gov.ea.datareturns.domain.validation.datasample.DataSampleFieldMessageMap;
 import uk.gov.ea.datareturns.domain.validation.newmodel.entityfields.FieldValue;
 
 /**
@@ -11,7 +10,7 @@ import uk.gov.ea.datareturns.domain.validation.newmodel.entityfields.FieldValue;
  */
 public class SiteName implements FieldValue<String> {
 
-    @NotBlank(message = DataSampleFieldMessageMap.Missing.Site_Name)
+    @NotBlank(message = "DR9110-Missing")
     private final String inputValue;
 
     /**

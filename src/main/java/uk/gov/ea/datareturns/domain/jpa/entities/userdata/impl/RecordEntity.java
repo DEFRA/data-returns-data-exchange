@@ -6,6 +6,7 @@ import uk.gov.ea.datareturns.domain.jpa.entities.userdata.Metadata;
 
 import javax.persistence.*;
 import java.time.Instant;
+import java.util.Set;
 
 /**
  * @author Graham
@@ -47,8 +48,11 @@ public class RecordEntity implements Metadata {
     @Basic @Column(name = "json", length = 16000)
     private String json;
 
-    @Basic @Column(name = "validation_result", length = 16000)
-    private String validationResult;
+    @ManyToMany
+    @JoinTable(name="record_validation_errors",
+            joinColumns=@JoinColumn(name="record_id", referencedColumnName="id"),
+            inverseJoinColumns=@JoinColumn(name="error", referencedColumnName="error"))
+    public Set<ValidationError> validationErrors;
 
     public Long getId() {
         return id;
@@ -106,14 +110,6 @@ public class RecordEntity implements Metadata {
         this.json = json;
     }
 
-    public String getValidationResult() {
-        return validationResult;
-    }
-
-    public void setValidationResult(String validationResult) {
-        this.validationResult = validationResult;
-    }
-
     public AbstractObservation getAbstractObservation() {
         return abstractObservation;
     }
@@ -122,6 +118,13 @@ public class RecordEntity implements Metadata {
         this.abstractObservation = abstractObservation;
     }
 
+    public Set<ValidationError> getValidationErrors() {
+        return validationErrors;
+    }
+
+    public void setValidationErrors(Set<ValidationError> validationErrors) {
+        this.validationErrors = validationErrors;
+    }
 
     @Override
     public boolean equals(Object o) {
@@ -151,7 +154,7 @@ public class RecordEntity implements Metadata {
                 ", createDate=" + createDate +
                 ", lastChangedDate=" + lastChangedDate +
                 ", json='" + json + '\'' +
-                ", validationResult=" + validationResult +
+                ", validationErrors=" + validationErrors +
                 '}';
     }
 }

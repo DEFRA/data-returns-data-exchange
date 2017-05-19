@@ -15,10 +15,10 @@ import uk.gov.ea.datareturns.domain.jpa.entities.userdata.AbstractObservation;
 import uk.gov.ea.datareturns.domain.jpa.entities.userdata.impl.DatasetEntity;
 import uk.gov.ea.datareturns.domain.jpa.entities.userdata.impl.RecordEntity;
 import uk.gov.ea.datareturns.domain.jpa.entities.userdata.impl.User;
+import uk.gov.ea.datareturns.domain.jpa.entities.userdata.impl.ValidationError;
 import uk.gov.ea.datareturns.domain.validation.newmodel.validator.Mvo;
 import uk.gov.ea.datareturns.domain.validation.newmodel.validator.MvoFactory;
 import uk.gov.ea.datareturns.domain.validation.newmodel.validator.ObservationValidator;
-import uk.gov.ea.datareturns.domain.validation.newmodel.validator.result.ValidationResult;
 import uk.gov.ea.datareturns.web.resource.ObservationSerializationBean;
 
 import java.io.IOException;
@@ -261,21 +261,17 @@ public class SubmissionService<D extends ObservationSerializationBean, M extends
                 LOGGER.error("Error de-serializing stored JSON: " + e.getMessage());
             }
             validationObject = mvoFactory.create(observationSerializationBean);
-            ValidationResult validationResult = validator.validateMeasurement(validationObject);
+            Set<ValidationError> validationErrors = validator.validateObservation(validationObject);
 
-            try {
-                if (validationResult.isValid()) {
-                    record.setRecordStatus(RecordEntity.RecordStatus.VALID);
-                } else {
-                    String result = mapper.writeValueAsString(validationResult);
-                    record.setValidationResult(result);
-                    record.setRecordStatus(RecordEntity.RecordStatus.INVALID);
-                }
-                record.setLastChangedDate(Instant.now());
-                recordDao.merge(record);
-            } catch (JsonProcessingException e) {
-                LOGGER.error("Error de-serializing stored JSON: " + e.getMessage());
+            if (validationErrors.size() == 0) {
+                record.setRecordStatus(RecordEntity.RecordStatus.VALID);
+            } else {
+                //String result = mapper.writeValueAsString(validationResult);
+                record.setValidationErrors(validationErrors);
+                record.setRecordStatus(RecordEntity.RecordStatus.INVALID);
             }
+            record.setLastChangedDate(Instant.now());
+            recordDao.merge(record);
         }
     }
 
@@ -311,20 +307,15 @@ public class SubmissionService<D extends ObservationSerializationBean, M extends
         mvos.entrySet().stream()
                 .filter(Objects::nonNull)
                 .forEach(m -> {
-                    ValidationResult validationResult = validator.validateMeasurement(m.getValue());
-                    try {
-                        if (validationResult.isValid()) {
-                            m.getKey().setRecordStatus(RecordEntity.RecordStatus.VALID);
-                        } else {
-                            String result = mapper.writeValueAsString(validationResult);
-                            m.getKey().setValidationResult(result);
-                            m.getKey().setRecordStatus(RecordEntity.RecordStatus.INVALID);
-                        }
-                        m.getKey().setLastChangedDate(Instant.now());
-                        recordDao.merge(m.getKey());
-                    } catch (JsonProcessingException e) {
-                        LOGGER.error("Error de-serializing stored JSON: " + e.getMessage());
+                    Set<ValidationError> validationErrors = validator.validateObservation(m.getValue());
+                    if (validationErrors.size() == 0) {
+                        m.getKey().setRecordStatus(RecordEntity.RecordStatus.VALID);
+                    } else {
+                        m.getKey().setValidationErrors(validationErrors);
+                        m.getKey().setRecordStatus(RecordEntity.RecordStatus.INVALID);
                     }
+                    m.getKey().setLastChangedDate(Instant.now());
+                    recordDao.merge(m.getKey());
                 });
     }
 

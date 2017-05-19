@@ -7,10 +7,7 @@ import uk.gov.ea.datareturns.domain.jpa.dao.masterdata.*;
 import uk.gov.ea.datareturns.domain.jpa.dao.userdata.factories.AbstractObservationFactory;
 import uk.gov.ea.datareturns.domain.jpa.dao.userdata.factories.impl.BasicMeasurementFactory;
 import uk.gov.ea.datareturns.domain.jpa.dao.userdata.factories.impl.DataSampleFactory;
-import uk.gov.ea.datareturns.domain.jpa.dao.userdata.impl.DatasetDao;
-import uk.gov.ea.datareturns.domain.jpa.dao.userdata.impl.ObservationDao;
-import uk.gov.ea.datareturns.domain.jpa.dao.userdata.impl.RecordDao;
-import uk.gov.ea.datareturns.domain.jpa.dao.userdata.impl.UserDao;
+import uk.gov.ea.datareturns.domain.jpa.dao.userdata.impl.*;
 import uk.gov.ea.datareturns.domain.jpa.entities.userdata.AbstractObservation;
 import uk.gov.ea.datareturns.domain.jpa.entities.userdata.impl.BasicMeasurement;
 import uk.gov.ea.datareturns.domain.jpa.entities.userdata.impl.DataSampleEntity;
@@ -39,6 +36,7 @@ import java.util.Map;
 public class SubmissionConfiguration {
 
     private final Validator validator;
+    private final ValidationErrorDao validationErrorDao;
     private final DatasetDao datasetDao;
     private final UserDao userDao;
     private final RecordDao recordDao;
@@ -63,6 +61,7 @@ public class SubmissionConfiguration {
     @Inject
     public SubmissionConfiguration(
             Validator validator,
+            ValidationErrorDao validationErrorDao,
             DatasetDao datasetDao,
             UserDao userDao,
             RecordDao recordDao,
@@ -79,6 +78,7 @@ public class SubmissionConfiguration {
             UnitDao unitDao
     ) {
         this.validator = validator;
+        this.validationErrorDao = validationErrorDao;
         this.datasetDao = datasetDao;
         this.userDao = userDao;
         this.recordDao = recordDao;
@@ -135,7 +135,7 @@ public class SubmissionConfiguration {
      */
     @Bean
     public ObservationValidator<BasicMeasurementMvo> basicMeasurementValidator() {
-        return new ObservationValidatorImpl<>(this.validator, BasicMeasurementMvo.class, new BasicMeasurementFieldMessageMap());
+        return new ObservationValidatorImpl<>(this.validator, validationErrorDao);
     }
 
     /**
@@ -207,7 +207,7 @@ public class SubmissionConfiguration {
      */
     @Bean
     public ObservationValidator<DataSampleMvo> dataSampleValidator() {
-        return new ObservationValidatorImpl<>(this.validator, DataSampleMvo.class, new DataSampleFieldMessageMap());
+        return new ObservationValidatorImpl<>(this.validator, validationErrorDao);
     }
 
     @Bean

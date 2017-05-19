@@ -2,7 +2,6 @@ package uk.gov.ea.datareturns.domain.validation.datasample.constraints.record;
 
 import org.apache.commons.lang3.StringUtils;
 import uk.gov.ea.datareturns.domain.jpa.entities.masterdata.impl.UniqueIdentifier;
-import uk.gov.ea.datareturns.domain.validation.datasample.DataSampleFieldMessageMap;
 import uk.gov.ea.datareturns.domain.validation.datasample.DataSampleMvo;
 import uk.gov.ea.datareturns.domain.validation.datasample.fields.EaId;
 import uk.gov.ea.datareturns.domain.validation.datasample.fields.SiteName;
@@ -31,7 +30,7 @@ public class SiteAndUniqueIdentifierValidatorNew implements RecordConstraintVali
 
         if (eaIdEntity != null && !StringUtils.equalsIgnoreCase(eaId.getEntity().getSite().getName(), site.getValue())) {
             context.disableDefaultConstraintViolation();
-            context.buildConstraintViolationWithTemplate(DataSampleFieldMessageMap.Conflict.UniqueIdentifierSiteConflict).addConstraintViolation();
+            context.buildConstraintViolationWithTemplate("DR9110-Conflict").addConstraintViolation();
             return false;
         }
         return true;

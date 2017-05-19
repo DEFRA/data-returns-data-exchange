@@ -70,7 +70,7 @@
 				<constraints nullable="false" foreignKeyName="fk_site" references="sites(id)"/>
 			</column>
 			<column name="name" type="varchar(18)">
-				<constraints nullable="false" unique="true"/>
+				<constraints nullable="false"/>
 			</column>
 		</createTable>
 		<rollback>
@@ -102,7 +102,7 @@
 				<constraints nullable="false" foreignKeyName="fk_unique" references="unique_identifiers(id)"/>
 			</column>
 			<column name="name" type="varchar(18)">
-				<constraints nullable="false" unique="true"/>
+				<constraints nullable="false"/>
 			</column>
 		</createTable>
 		<rollback>
@@ -130,10 +130,10 @@
 				<constraints primaryKey="true" nullable="false"/>
 			</column>
 			<column name="name" type="varchar(80)">
-				<constraints nullable="false" unique="true"/>
+				<constraints nullable="false"/>
 			</column>
 			<column name="sector" type="varchar(20)">
-				<constraints nullable="false" unique="false"/>
+				<constraints nullable="false"/>
 			</column>
 		</createTable>
 		<rollback>
@@ -247,7 +247,7 @@
 				<constraints primaryKey="true"/>
 			</column>
 			<column name="name" type="varchar(150)">
-				<constraints nullable="false" unique="true"/>
+				<constraints nullable="false"/>
 			</column>
 			<column name="preferred" type="varchar(150)"/>
 			<column name="type" type="varchar(100)"/>
@@ -310,7 +310,7 @@
 				<constraints primaryKey="true" nullable="false"/>
 			</column>
 			<column name="name" type="varchar(10)">
-				<constraints nullable="false" unique="true"/>
+				<constraints nullable="false"/>
 			</column>
 			<column name="preferred" type="varchar(10)"/>
 			<column name="long_name" type="varchar(50)"/>
@@ -387,7 +387,7 @@
 				<constraints primaryKey="true" nullable="false"/>
 			</column>
 			<column name="name" type="varchar(30)">
-				<constraints nullable="false" unique="true"/>
+				<constraints nullable="false"/>
 			</column>
 			<column name="notes" type="varchar(250)"/>
 		</createTable>
@@ -435,7 +435,7 @@
 				<constraints primaryKey="true" nullable="false"/>
 			</column>
 			<column name="name" type="varchar(100)">
-				<constraints nullable="false" unique="true"/>
+				<constraints nullable="false"/>
 			</column>
 			<column name="notes" type="varchar(100)"></column>
 			<column name="type" type="varchar(50)"></column>
@@ -493,7 +493,7 @@
 				<constraints primaryKey="true" nullable="false"/>
 			</column>
 			<column name="name" type="varchar(100)">
-				<constraints nullable="false" unique="true"/>
+				<constraints nullable="false"/>
 			</column>
 			<column name="preferred" type="varchar(100)" />
 			<column name="notes" type="varchar(250)"/>
@@ -554,7 +554,7 @@
 				<constraints primaryKey="true" nullable="false"/>
 			</column>
 			<column name="name" type="varchar(20)">
-				<constraints nullable="false" unique="true"/>
+				<constraints nullable="false"/>
 			</column>
 			<column name="definition" type="varchar(600)"></column>
 			<column name="example" type="varchar(20)"></column>
@@ -608,7 +608,7 @@
 				<constraints primaryKey="true" nullable="false"/>
 			</column>
 			<column name="name" type="varchar(30)">
-				<constraints nullable="false" unique="true"/>
+				<constraints nullable="false"/>
 			</column>
 			<column name="preferred" type="varchar(30)"/>
 		</createTable>
@@ -713,7 +713,7 @@
 				<constraints primaryKey="true" nullable="false"/>
 			</column>
 			<column name="name" type="varchar(50)">
-				<constraints nullable="false" unique="true"/>
+				<constraints nullable="false"/>
 			</column>
 		</createTable>
 		<rollback>

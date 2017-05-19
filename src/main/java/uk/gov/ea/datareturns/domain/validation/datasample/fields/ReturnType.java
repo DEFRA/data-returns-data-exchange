@@ -3,7 +3,6 @@ package uk.gov.ea.datareturns.domain.validation.datasample.fields;
 import org.hibernate.validator.constraints.NotBlank;
 import uk.gov.ea.datareturns.domain.jpa.dao.masterdata.EntityDao;
 import uk.gov.ea.datareturns.domain.jpa.dao.masterdata.ReturnTypeDao;
-import uk.gov.ea.datareturns.domain.validation.datasample.DataSampleFieldMessageMap;
 import uk.gov.ea.datareturns.domain.validation.newmodel.auditors.controlledlist.ReturnTypeAuditorNew;
 import uk.gov.ea.datareturns.domain.validation.newmodel.constraints.controlledlist.ControlledList;
 import uk.gov.ea.datareturns.domain.validation.newmodel.entityfields.AbstractEntityValue;
@@ -16,8 +15,8 @@ import uk.gov.ea.datareturns.domain.validation.newmodel.entityfields.AbstractEnt
 public class ReturnType extends AbstractEntityValue<ReturnTypeDao, uk.gov.ea.datareturns.domain.jpa.entities.masterdata.impl.ReturnType> {
     private static final ReturnTypeDao DAO = EntityDao.getDao(ReturnTypeDao.class);
 
-    @NotBlank(message = DataSampleFieldMessageMap.Missing.Rtn_Type)
-    @ControlledList(auditor = ReturnTypeAuditorNew.class, message = DataSampleFieldMessageMap.ControlledList.Rtn_Type)
+    @NotBlank(message = "DR9010-Missing")
+    @ControlledList(auditor = ReturnTypeAuditorNew.class, message = "DR9010-Incorrect")
     private final String inputValue;
 
     /**

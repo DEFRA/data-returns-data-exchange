@@ -2,7 +2,6 @@ package uk.gov.ea.datareturns.domain.validation.datasample.fields;
 
 import org.hibernate.validator.constraints.Length;
 import org.hibernate.validator.constraints.NotBlank;
-import uk.gov.ea.datareturns.domain.validation.datasample.DataSampleFieldMessageMap;
 import uk.gov.ea.datareturns.domain.validation.newmodel.entityfields.FieldValue;
 
 /**
@@ -11,8 +10,8 @@ import uk.gov.ea.datareturns.domain.validation.newmodel.entityfields.FieldValue;
  * @author Sam Gardner-Dell
  */
 public class MonitoringPoint implements FieldValue<String> {
-    @NotBlank(message = DataSampleFieldMessageMap.Missing.Mon_Point)
-    @Length(max = 50, message = DataSampleFieldMessageMap.Length.Mon_Point)
+    @NotBlank(message = "DR9060-Missing")
+    @Length(max = 50, message = "DR9060-Length")
     private String monitoringPoint;
 
     /**

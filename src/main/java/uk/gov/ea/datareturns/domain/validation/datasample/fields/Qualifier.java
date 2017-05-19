@@ -2,7 +2,6 @@ package uk.gov.ea.datareturns.domain.validation.datasample.fields;
 
 import uk.gov.ea.datareturns.domain.jpa.dao.masterdata.EntityDao;
 import uk.gov.ea.datareturns.domain.jpa.dao.masterdata.QualifierDao;
-import uk.gov.ea.datareturns.domain.validation.datasample.DataSampleFieldMessageMap;
 import uk.gov.ea.datareturns.domain.validation.newmodel.auditors.controlledlist.QualifierAuditorNew;
 import uk.gov.ea.datareturns.domain.validation.newmodel.constraints.controlledlist.ControlledList;
 import uk.gov.ea.datareturns.domain.validation.newmodel.entityfields.AbstractEntityValue;
@@ -15,7 +14,7 @@ import uk.gov.ea.datareturns.domain.validation.newmodel.entityfields.AbstractEnt
 public class Qualifier extends AbstractEntityValue<QualifierDao, uk.gov.ea.datareturns.domain.jpa.entities.masterdata.impl.Qualifier> {
     private static final QualifierDao DAO = EntityDao.getDao(QualifierDao.class);
 
-    @ControlledList(auditor = QualifierAuditorNew.class, message = DataSampleFieldMessageMap.ControlledList.Qualifier)
+    @ControlledList(auditor = QualifierAuditorNew.class, message = "DR9180-Incorrect")
     private final String inputValue;
 
     /**

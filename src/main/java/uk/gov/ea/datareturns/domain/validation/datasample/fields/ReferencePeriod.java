@@ -2,7 +2,6 @@ package uk.gov.ea.datareturns.domain.validation.datasample.fields;
 
 import uk.gov.ea.datareturns.domain.jpa.dao.masterdata.EntityDao;
 import uk.gov.ea.datareturns.domain.jpa.dao.masterdata.ReferencePeriodDao;
-import uk.gov.ea.datareturns.domain.validation.datasample.DataSampleFieldMessageMap;
 import uk.gov.ea.datareturns.domain.validation.newmodel.auditors.controlledlist.ReferencePeriodAuditorNew;
 import uk.gov.ea.datareturns.domain.validation.newmodel.constraints.controlledlist.ControlledList;
 import uk.gov.ea.datareturns.domain.validation.newmodel.entityfields.AbstractAliasingEntityValue;
@@ -14,7 +13,7 @@ import uk.gov.ea.datareturns.domain.validation.newmodel.entityfields.AbstractAli
  */
 public class ReferencePeriod extends AbstractAliasingEntityValue<uk.gov.ea.datareturns.domain.jpa.entities.masterdata.impl.ReferencePeriod> {
     private static final ReferencePeriodDao DAO = EntityDao.getDao(ReferencePeriodDao.class);
-    @ControlledList(auditor = ReferencePeriodAuditorNew.class, message = DataSampleFieldMessageMap.ControlledList.Ref_Period)
+    @ControlledList(auditor = ReferencePeriodAuditorNew.class, message = "DR9090-Incorrect")
     private final String inputValue;
 
     /**

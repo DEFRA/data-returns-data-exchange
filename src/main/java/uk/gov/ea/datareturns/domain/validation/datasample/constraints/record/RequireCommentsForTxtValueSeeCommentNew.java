@@ -1,7 +1,6 @@
 package uk.gov.ea.datareturns.domain.validation.datasample.constraints.record;
 
 import org.springframework.stereotype.Component;
-import uk.gov.ea.datareturns.domain.validation.datasample.DataSampleFieldMessageMap;
 import uk.gov.ea.datareturns.domain.validation.datasample.DataSampleMvo;
 import uk.gov.ea.datareturns.domain.validation.newmodel.constraints.record.RecordConstraintValidator;
 import uk.gov.ea.datareturns.domain.validation.newmodel.entityfields.FieldValue;
@@ -22,7 +21,7 @@ public class RequireCommentsForTxtValueSeeCommentNew implements RecordConstraint
         boolean hasComment = FieldValue.isNotEmpty(record.getComments());
         if (seeCommentSet && !hasComment) {
             context.disableDefaultConstraintViolation();
-            context.buildConstraintViolationWithTemplate(DataSampleFieldMessageMap.Missing.RequireCommentsForTxtValue).addConstraintViolation();
+            context.buildConstraintViolationWithTemplate("DR9140-Missing").addConstraintViolation();
             return false;
         }
         return true;

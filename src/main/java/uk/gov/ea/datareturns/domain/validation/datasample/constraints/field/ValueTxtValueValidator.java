@@ -1,7 +1,6 @@
 package uk.gov.ea.datareturns.domain.validation.datasample.constraints.field;
 
 import uk.gov.ea.datareturns.domain.validation.datasample.DataSampleMvo;
-import uk.gov.ea.datareturns.domain.validation.datasample.DataSampleFieldMessageMap;
 import uk.gov.ea.datareturns.domain.validation.datasample.constraints.annotations.ValueTxtValue;
 import uk.gov.ea.datareturns.domain.validation.newmodel.entityfields.FieldValue;
 
@@ -26,9 +25,9 @@ public class ValueTxtValueValidator implements ConstraintValidator<ValueTxtValue
 
         String error = null;
         if (!hasValue && !hasTxtValue) {
-            error = DataSampleFieldMessageMap.Missing.RequireValueOrTxtValue;
+            error = "DR9999-Missing";
         } else if (hasValue && hasTxtValue) {
-            error = DataSampleFieldMessageMap.Conflict.RequireValueOrTxtValue;
+            error = "DR9999-Conflict";
         }
 
         if (error != null) {

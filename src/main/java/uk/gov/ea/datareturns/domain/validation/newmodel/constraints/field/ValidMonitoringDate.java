@@ -1,7 +1,5 @@
 package uk.gov.ea.datareturns.domain.validation.newmodel.constraints.field;
 
-import uk.gov.ea.datareturns.domain.validation.model.MessageCodes;
-
 import javax.validation.Constraint;
 import javax.validation.Payload;
 import java.lang.annotation.*;
@@ -22,13 +20,13 @@ public @interface ValidMonitoringDate {
      * Default message template for violations
      * @return the message template to use for violations
      */
-    String message() default MessageCodes.Incorrect.Mon_Date;
+    String message() default "DR9020-Incorrect";
 
     /**
      * The message template to use for missing dates
      * @return the message template to use for violations
      */
-    String missingMessage() default MessageCodes.Missing.Mon_Date;
+    String missingMessage() default "DR9020-Missing";
 
     /**
      * Validation groups

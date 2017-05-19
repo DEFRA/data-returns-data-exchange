@@ -53,7 +53,7 @@
 			</column>
 
 			<column name="identifier" type="varchar(80)">
-				<constraints nullable="false" unique="true"/>
+				<constraints nullable="false"/>
 			</column>
 
 			<column name="originator_email" type="varchar(500)">
@@ -98,7 +98,7 @@
 			</column>
 
 			<column name="identifier" type="varchar(80)">
-				<constraints nullable="false" unique="true"/>
+				<constraints nullable="false"/>
 			</column>
 
 			<column name="status" type="varchar(10)">
@@ -117,10 +117,6 @@
 				<constraints nullable="true"/>
 			</column>
 
-			<column name="validation_result" type="varchar(16000)">
-				<constraints nullable="true"/>
-			</column>
-
 		</createTable>
 
 		<createIndex indexName="idx_records" tableName="records" unique="true">
@@ -133,6 +129,71 @@
 								 constraintName="fk_record_dataset"
 								 referencedColumnNames="id"
 								 referencedTableName="datasets"/>
+
+		<!--
+		****************************************************************
+		Validation errors
+		****************************************************************
+		-->
+		<createTable tableName="validation_errors">
+
+			<column name="error" type="varchar(20)">
+				<constraints primaryKey="true" nullable="false"/>
+			</column>
+
+			<column name="message" type="varchar(300)"/>
+
+		</createTable>
+
+		<loadData file="/db/data/ValidationErrors.csv" tableName="validation_errors"/>
+
+		<!--
+		****************************************************************
+		Validation errors fields
+		****************************************************************
+		-->
+		<createTable tableName="validation_error_fields">
+
+			<column name="error" type="varchar(20)">
+				<constraints primaryKey="true" nullable="false"/>
+			</column>
+
+			<column name="field" type="varchar(20)">
+				<constraints primaryKey="true" nullable="false"/>
+			</column>
+
+		</createTable>
+
+		<loadData file="/db/data/ValidationErrorFields.csv" tableName="validation_error_fields"/>
+
+		<!--
+		****************************************************************
+		Record validation errors
+		****************************************************************
+		-->
+		<createTable tableName="record_validation_errors">
+
+			<column name="record_id" type="bigserial">
+				<constraints primaryKey="true" nullable="false"/>
+			</column>
+
+			<column name="error" type="varchar(20)">
+				<constraints primaryKey="true" nullable="false"/>
+			</column>
+
+		</createTable>
+
+		<addForeignKeyConstraint baseColumnNames="record_id"
+														 baseTableName="record_validation_errors"
+														 constraintName="fk_record_validation_errors_records"
+														 referencedColumnNames="id"
+														 referencedTableName="records"/>
+
+		<addForeignKeyConstraint baseColumnNames="error"
+														 baseTableName="record_validation_errors"
+														 constraintName="fk_record_validation_errors_errors"
+														 referencedColumnNames="error"
+														 referencedTableName="validation_errors"/>
 
 		<!--
 		****************************************************************
@@ -307,6 +368,9 @@
 		-->
 
 		<rollback>
+			<dropTable tableName="record_validation_error_fields"/>
+			<dropTable tableName="record_validation_errors"/>
+			<dropTable tableName="validation_errors"/>
 			<dropTable tableName="measurements"/>
 			<dropTable tableName="data_sample"/>
 			<dropTable tableName="status"/>
