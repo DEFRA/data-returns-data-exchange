@@ -5,7 +5,6 @@ import io.swagger.annotations.ApiModelProperty;
 
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlRootElement;
-import java.util.Objects;
 
 /**
  * HATEOAS link to a related resource
@@ -37,7 +36,7 @@ public class Link {
         return this;
     }
 
-    @ApiModelProperty(example = "self|dataset|record|status|definition", value = "The relationship to the target of the link")
+    @ApiModelProperty(example = "self", value = "The relationship to the target of the link")
     public String getRel() {
         return rel;
     }
@@ -54,52 +53,12 @@ public class Link {
         return this;
     }
 
-    @ApiModelProperty(example = "/api/v1/....", value = "The URL describing the linked resource")
+    @ApiModelProperty(example = "https://server/path/to/resource", value = "The URL describing the linked resource")
     public String getHref() {
         return href;
     }
 
     public void setHref(String href) {
         this.href = href;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (o == null || getClass() != o.getClass()) {
-            return false;
-        }
-        Link link = (Link) o;
-        return Objects.equals(rel, link.rel) &&
-                Objects.equals(href, link.href);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(rel, href);
-    }
-
-    @Override
-    public String toString() {
-        StringBuilder sb = new StringBuilder();
-        sb.append("class Link {\n");
-
-        sb.append("    rel: ").append(toIndentedString(rel)).append("\n");
-        sb.append("    href: ").append(toIndentedString(href)).append("\n");
-        sb.append("}");
-        return sb.toString();
-    }
-
-    /**
-     * Convert the given object to string with each line indented by 4 spaces
-     * (except the first line).
-     */
-    private String toIndentedString(Object o) {
-        if (o == null) {
-            return "null";
-        }
-        return o.toString().replace("\n", "\n    ");
     }
 }

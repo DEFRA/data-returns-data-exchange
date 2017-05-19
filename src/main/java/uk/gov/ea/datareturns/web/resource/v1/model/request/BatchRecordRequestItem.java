@@ -1,10 +1,10 @@
 package uk.gov.ea.datareturns.web.resource.v1.model.request;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.annotations.ApiModelProperty;
-import uk.gov.ea.datareturns.web.resource.v1.model.record.payload.Payload;
 import uk.gov.ea.datareturns.web.resource.v1.model.common.Preconditions;
+import uk.gov.ea.datareturns.web.resource.v1.model.record.payload.Payload;
 
-import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
 /**
@@ -14,11 +14,11 @@ import javax.xml.bind.annotation.XmlRootElement;
  */
 @XmlRootElement(name = "request")
 public class BatchRecordRequestItem {
-    @XmlElement(name = "record_id")
+    @JsonProperty("record_id")
     @ApiModelProperty(name = "record_id", notes = "The target `record_id`")
     private String recordId;
 
-    @XmlElement(name = "preconditions")
+    @JsonProperty("preconditions")
     @ApiModelProperty(name = "preconditions", notes = "Support for RFC7232 conditional requests based on last modification time")
     private Preconditions preconditions;
 
@@ -26,7 +26,6 @@ public class BatchRecordRequestItem {
     private Payload payload;
 
     public BatchRecordRequestItem() {
-
     }
 
     public String getRecordId() {

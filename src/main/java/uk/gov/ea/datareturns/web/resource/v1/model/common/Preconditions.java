@@ -1,8 +1,10 @@
 package uk.gov.ea.datareturns.web.resource.v1.model.common;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.annotations.ApiModelProperty;
 import org.apache.commons.codec.binary.Hex;
 import org.apache.commons.lang3.StringUtils;
+import uk.gov.ea.datareturns.web.resource.v1.model.responses.ErrorResponse;
 
 import javax.ws.rs.HeaderParam;
 import javax.ws.rs.ProcessingException;
@@ -10,7 +12,6 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.EntityTag;
 import javax.ws.rs.core.Request;
 import javax.ws.rs.core.Response;
-import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -35,22 +36,22 @@ public class Preconditions {
     private Request request;
 
     @HeaderParam("If-Modified-Since")
-    @XmlElement(name = "if_modified_since")
+    @JsonProperty("if_modified_since")
     @ApiModelProperty(name = "if_modified_since", notes = "Support for RFC7232 conditional requests based on last modification time")
     private Date ifModifiedSince;
 
     @HeaderParam("If-Unmodified-Since")
-    @XmlElement(name = "if_unmodified_since")
+    @JsonProperty("if_unmodified_since")
     @ApiModelProperty(name = "if_unmodified_since", notes = "Support for RFC7232 conditional requests based on last modification time")
     private Date ifUnmodifiedSince;
 
     @HeaderParam("If-Match")
-    @XmlElement(name = "if_match")
+    @JsonProperty("if_match")
     @ApiModelProperty(name = "if_match", notes = "Support for RFC7232 conditional requests based on ETag")
     private String ifMatch;
 
     @HeaderParam("If-None-Match")
-    @XmlElement(name = "if_none_match")
+    @JsonProperty("if_none_match")
     @ApiModelProperty(name = "if_none_match", notes = "Support for RFC7232 conditional requests based on ETag")
     private String ifNoneMatch;
 
@@ -115,6 +116,9 @@ public class Preconditions {
                 rb = Response.status(Response.Status.PRECONDITION_FAILED);
             }
         }
+        if (rb != null) {
+            rb.entity(ErrorResponse.PRECONDITION_FAILED);
+        }
         return rb;
     }
 
@@ -157,6 +161,10 @@ public class Preconditions {
                     }
                 }
             }
+        }
+
+        if (rb != null) {
+            rb.entity(ErrorResponse.PRECONDITION_FAILED);
         }
         return rb;
     }

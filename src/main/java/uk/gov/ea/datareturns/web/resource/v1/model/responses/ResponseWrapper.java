@@ -2,8 +2,11 @@ package uk.gov.ea.datareturns.web.resource.v1.model.responses;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.annotations.ApiModel;
+import uk.gov.ea.datareturns.web.resource.v1.model.common.EntityBase;
+import uk.gov.ea.datareturns.web.resource.v1.model.common.Preconditions;
 
 import javax.ws.rs.core.Response;
+import javax.xml.bind.annotation.XmlRootElement;
 
 /**
  * Base class for API responses, provides a consistent response envelope
@@ -11,21 +14,23 @@ import javax.ws.rs.core.Response;
  *
  * @author Sam Gardner-Dell
  */
-@ApiModel(value = "Default response wrapper object")
+@ApiModel(description = "Default response wrapper object")
+@XmlRootElement(name = "response")
 public abstract class ResponseWrapper<T> {
-    @JsonProperty("meta")
     private Metadata meta;
-    @JsonProperty("data")
-    private T data;
 
     public ResponseWrapper() {
     }
 
-    public ResponseWrapper(Response.Status status, T data) {
-        this.meta = new Metadata(status.getStatusCode());
-        this.data = data;
+    public ResponseWrapper(int status) {
+        this.meta = new Metadata(status);
     }
 
+    public ResponseWrapper(Response.Status status) {
+        this(status.getStatusCode());
+    }
+
+    @JsonProperty("meta")
     public Metadata getMeta() {
         return meta;
     }
@@ -34,11 +39,20 @@ public abstract class ResponseWrapper<T> {
         this.meta = meta;
     }
 
-    public T getData() {
-        return data;
-    }
+    @JsonProperty("data")
+    public abstract T getData();
 
-    public void setData(T data) {
-        this.data = data;
+    public abstract void setData(T data);
+
+    public final Response.ResponseBuilder toResponseBuilder() {
+        Response.ResponseBuilder rb = Response.status(getMeta().getStatus());
+        rb.entity(this);
+
+        if (getData() instanceof EntityBase) {
+            EntityBase entity = (EntityBase) getData();
+            rb.tag(Preconditions.createEtag(entity));
+            rb.lastModified(entity.getLastModified());
+        }
+        return rb;
     }
 }

@@ -2,6 +2,8 @@ package uk.gov.ea.datareturns.web.resource.v1.model.common.references;
 
 import io.swagger.annotations.ApiModel;
 
+import javax.xml.bind.annotation.XmlRootElement;
+
 /**
  * Reference to an entity
  *
@@ -10,6 +12,7 @@ import io.swagger.annotations.ApiModel;
 @ApiModel(
         description = "Reference to an API entity such as a dataset or record."
 )
+@XmlRootElement(name = "reference")
 public class EntityReference {
     private String id = null;
 

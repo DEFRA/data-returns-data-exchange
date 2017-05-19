@@ -20,9 +20,10 @@ import uk.gov.ea.datareturns.web.resource.v1.model.record.payload.DataSamplePayl
 import uk.gov.ea.datareturns.web.resource.v1.model.record.payload.Payload;
 import uk.gov.ea.datareturns.web.resource.v1.model.request.BatchRecordRequest;
 import uk.gov.ea.datareturns.web.resource.v1.model.request.BatchRecordRequestItem;
+import uk.gov.ea.datareturns.web.resource.v1.model.responses.EntityListResponse;
+import uk.gov.ea.datareturns.web.resource.v1.model.responses.ErrorResponse;
 import uk.gov.ea.datareturns.web.resource.v1.model.responses.multistatus.MultiStatusResponse;
 import uk.gov.ea.datareturns.web.resource.v1.model.responses.record.RecordEntityResponse;
-import uk.gov.ea.datareturns.web.resource.v1.model.responses.record.RecordListResponse;
 
 import javax.annotation.Resource;
 import javax.inject.Inject;
@@ -88,16 +89,15 @@ public class RecordResource {
      * List all records for the given dataset_id
      *
      * @param datasetId the unique identifier for the target dataset
-     * @return a response containing an {@link RecordListResponse} entity
+     * @return a response containing an {@link EntityListResponse} entity
      * @throws Exception if the request cannot be completed normally.
      */
     @GET
     @ApiOperation(value = "List records",
-            notes = "This operation will list all records for the given `dataset_id`.",
-            response = RecordListResponse.class
+            notes = "This operation will list all records for the given `dataset_id`."
     )
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "OK"),
+            @ApiResponse(code = 200, message = "OK", response = EntityListResponse.class),
             @ApiResponse(code = 404, message = "Not Found - The `dataset_id` parameter did not match a known resource") })
     public Response listRecords(
             @PathParam("dataset_id") @Pattern(regexp = "[A-Za-z0-9_-]+")
@@ -117,9 +117,8 @@ public class RecordResource {
             UriBuilder ub = uriInfo.getAbsolutePathBuilder();
             result.add(new EntityReference(record.getIdentifier(), ub.path(record.getIdentifier()).build().toASCIIString()));
         }
-        Response.Status responseStatus = Response.Status.OK;
-        RecordListResponse rw = new RecordListResponse(responseStatus, result);
-        return Response.status(responseStatus).entity(rw).build();
+        EntityListResponse rw = new EntityListResponse(result);
+        return rw.toResponseBuilder().build();
     }
 
     /**
@@ -145,6 +144,11 @@ public class RecordResource {
                     code = 207,
                     message = "Multi-Status - responses to each create/update request are encoded in the response body",
                     response = MultiStatusResponse.class
+            ),
+            @ApiResponse(
+                    code = 400,
+                    message = "Bad Request - no request items could be extracted from the request body.",
+                    response = ErrorResponse.class
             ),
             @ApiResponse(code = 404, message = "Not Found - The `dataset_id` parameter did not match a known resource.")
     })

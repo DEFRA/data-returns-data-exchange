@@ -13,11 +13,22 @@ import javax.ws.rs.core.Response;
  */
 @ApiModel(parent = ResponseWrapper.class)
 public class RecordEntityResponse extends ResponseWrapper<Record> {
+    private Record data;
+
     public RecordEntityResponse() {
         super();
     }
 
     public RecordEntityResponse(Response.Status status, Record data) {
-        super(status, data);
+        super(status);
+        this.data = data;
+    }
+
+    @Override public Record getData() {
+        return data;
+    }
+
+    @Override public void setData(Record data) {
+        this.data = data;
     }
 }

@@ -14,16 +14,15 @@ import uk.gov.ea.datareturns.web.resource.v1.model.common.references.EntityRefer
 import uk.gov.ea.datareturns.web.resource.v1.model.dataset.*;
 import uk.gov.ea.datareturns.web.resource.v1.model.request.BatchDatasetRequest;
 import uk.gov.ea.datareturns.web.resource.v1.model.request.BatchDatasetRequestItem;
+import uk.gov.ea.datareturns.web.resource.v1.model.responses.EntityListResponse;
 import uk.gov.ea.datareturns.web.resource.v1.model.responses.ErrorResponse;
 import uk.gov.ea.datareturns.web.resource.v1.model.responses.dataset.DatasetEntityResponse;
-import uk.gov.ea.datareturns.web.resource.v1.model.responses.dataset.DatasetListResponse;
 import uk.gov.ea.datareturns.web.resource.v1.model.responses.multistatus.MultiStatusResponse;
 
 import javax.annotation.Resource;
 import javax.validation.constraints.Pattern;
 import javax.ws.rs.*;
 import javax.ws.rs.core.*;
-import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -37,8 +36,8 @@ import static javax.ws.rs.core.MediaType.APPLICATION_XML;
  *
  * @author Sam Gardner-Dell
  */
-@Api(description = "DatasetEntity Resource",
-        tags = { "DatasetEntity" },
+@Api(description = "Dataset Resource",
+        tags = { "Datasets" },
         // Specifying consumes/produces (again) here allows us to default the swagger ui to json
         consumes = APPLICATION_JSON + "," + APPLICATION_XML,
         produces = APPLICATION_JSON + "," + APPLICATION_XML
@@ -68,7 +67,7 @@ public class DatasetResource {
     /**
      * List the available datasets
      *
-     * @return a response containing an {@link DatasetListResponse} entity
+     * @return a response containing an {@link EntityListResponse} entity
      * @throws Exception if the request cannot be completed normally.
      */
     @GET
@@ -76,10 +75,10 @@ public class DatasetResource {
             notes = "This operation will list all datasets previously created by the API consumer.  Multiple API consumers (using "
                     + "different authentication credentials) may use datasets with the same `dataset_id` and these will operate "
                     + "independently of each other.",
-            response = DatasetListResponse.class
+            response = EntityListResponse.class
     )
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "OK", response = DatasetListResponse.class)
+            @ApiResponse(code = 200, message = "OK", response = EntityListResponse.class)
     })
     public Response listDatasets() throws Exception {
 
@@ -90,9 +89,8 @@ public class DatasetResource {
             UriBuilder ub = uriInfo.getAbsolutePathBuilder();
             result.add(new EntityReference(dataset.getIdentifier(), ub.path(dataset.getIdentifier()).build().toASCIIString()));
         }
-        Response.Status responseStatus = Response.Status.OK;
-        DatasetListResponse rw = new DatasetListResponse(responseStatus, result);
-        return Response.status(responseStatus).entity(rw).build();
+        EntityListResponse rw = new EntityListResponse(result);
+        return rw.toResponseBuilder().build();
     }
 
     /**
@@ -117,6 +115,11 @@ public class DatasetResource {
                     code = 207,
                     message = "Multi-Status - responses to each create/update request are encoded in the response body",
                     response = MultiStatusResponse.class
+            ),
+            @ApiResponse(
+                    code = 400,
+                    message = "Bad Request - no request items could be extracted from the request body.",
+                    response = ErrorResponse.class
             )
     })
     public Response postDatasets(
@@ -124,24 +127,44 @@ public class DatasetResource {
     )
             throws Exception {
 
-        MultiStatusResponse multiResponse = new MultiStatusResponse();
-        for (BatchDatasetRequestItem request : batchRequest.getRequests()) {
-            MultiStatusResponse.Response response = new MultiStatusResponse.Response();
-            DatasetEntity datasetEntity = submissionService.getDataset(request.getDatasetId());
-            Response.ResponseBuilder rb = checkStoragePreconditions(datasetEntity, request.getPreconditions());
-            if (rb == null) {
-                DatasetEntityResponse responseEntity = storeDataset(datasetEntity, request.getDatasetId(), request.getProperties());
+        Response.ResponseBuilder rb;
+
+        if (batchRequest.getRequests().isEmpty()) {
+            rb = ErrorResponse.MULTISTATUS_REQUEST_EMPTY.toResponseBuilder();
+        } else {
+            MultiStatusResponse multiResponse = new MultiStatusResponse();
+
+            for (BatchDatasetRequestItem request : batchRequest.getRequests()) {
                 UriBuilder ub = uriInfo.getAbsolutePathBuilder();
-                response.setId(request.getDatasetId());
-                response.setCode(responseEntity.getMeta().getStatus());
-                response.setHref(ub.path(responseEntity.getData().getId()).build().toASCIIString());
-            } else {
-                response.setId(request.getDatasetId());
-                response.setCode(rb.build().getStatus());
+                DatasetEntity datasetEntity = submissionService.getDataset(request.getDatasetId());
+                MultiStatusResponse.Response responseItem = new MultiStatusResponse.Response();
+                responseItem.setId(request.getDatasetId());
+
+                Response.ResponseBuilder tempRb = checkStoragePreconditions(datasetEntity, request.getPreconditions());
+                if (tempRb == null) {
+                    // Preconditions passed, service the request
+                    DatasetEntityResponse storeResult = storeDataset(datasetEntity, request.getDatasetId(), request.getProperties());
+                    Dataset dataset = storeResult.getData();
+
+                    responseItem.setCode(storeResult.getMeta().getStatus());
+                    responseItem.setHref(ub.path(dataset.getId()).build().toASCIIString());
+                    responseItem.setEntityTag(Preconditions.createEtag(dataset).toString());
+                    responseItem.setLastModified(dataset.getLastModified());
+                } else {
+                    // Preconditions failed, build a response item from the ResponseBuilder returned by the preconditions checks
+                    Response response = tempRb.build();
+                    responseItem.setCode(response.getStatus());
+
+                    if (datasetEntity != null) {
+                        // Entity does exist so populate the href
+                        responseItem.setHref(ub.path(request.getDatasetId()).build().toASCIIString());
+                    }
+                }
+                multiResponse.addResponse(responseItem);
             }
-            multiResponse.addResponse(response);
+            rb = multiResponse.toResponseBuilder();
         }
-        return Response.status(207).entity(multiResponse).build();
+        return rb.build();
     }
 
     /**
@@ -160,8 +183,11 @@ public class DatasetResource {
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "OK", response = DatasetEntityResponse.class),
             @ApiResponse(code = 304, message = "Not Modified - see conditional request documentation"),
-            @ApiResponse(code = 404, message = "Not Found - The `dataset_id` parameter did not match a known resource",
-                    response = ErrorResponse.class)
+            @ApiResponse(
+                    code = 404,
+                    message = "Not Found - The `dataset_id` parameter did not match a known resource",
+                    response = ErrorResponse.class
+            )
     })
     public Response getDataset(
             @PathParam("dataset_id")
@@ -176,17 +202,14 @@ public class DatasetResource {
         Dataset dataset = DatasetAdaptor.getInstance().convert(dataSetEntity);
 
         if (dataset == null) {
-            rb = Response.status(Response.Status.NOT_FOUND);
+            rb = ErrorResponse.DATASET_NOT_FOUND.toResponseBuilder();
         } else {
             EntityTag eTag = Preconditions.createEtag(dataset);
-            // TODO: Support last modified
-            rb = preconditions.evaluatePreconditions(new Date(), eTag);
+            rb = preconditions.evaluatePreconditions(dataset.getLastModified(), eTag);
             if (rb == null) {
                 // Preconditions passed, serve resource
                 DatasetEntityResponse responseWrapper = new DatasetEntityResponse(Response.Status.OK, dataset);
-                rb = Response.status(responseWrapper.getMeta().getStatus())
-                        .entity(responseWrapper)
-                        .tag(eTag);
+                rb = responseWrapper.toResponseBuilder();
             }
         }
         return rb.build();
@@ -211,7 +234,11 @@ public class DatasetResource {
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "OK - an existing dataset was successfully updated.", response = DatasetEntityResponse.class),
             @ApiResponse(code = 201, message = "Created - a new dataset was created and can now accept records.", response = DatasetEntityResponse.class),
-            @ApiResponse(code = 412, message = "Precondition Failed - see conditional request documentation")
+            @ApiResponse(
+                    code = 412,
+                    message = "Precondition Failed - see conditional request documentation",
+                    response = ErrorResponse.class
+            )
     })
     public Response putDataset(
             @PathParam("dataset_id")
@@ -228,25 +255,21 @@ public class DatasetResource {
         if (rb == null) {
             // Preconditions passed, serve resource
             DatasetEntityResponse responseEntity = storeDataset(datasetEntity, datasetId, datasetProperties);
-            rb = Response.status(responseEntity.getMeta().getStatus())
-                    .entity(responseEntity)
-                    .tag(Preconditions.createEtag(responseEntity.getData()));
+            rb = responseEntity.toResponseBuilder();
         }
         return rb.build();
     }
 
     private Response.ResponseBuilder checkStoragePreconditions(final DatasetEntity datasetEntity, Preconditions preconditions) {
-        Response.ResponseBuilder rb;
-        if (datasetEntity == null) {
-            rb = preconditions.evaluatePreconditions();
-        } else {
-            Dataset existingDataset = DatasetAdaptor.getInstance().convert(datasetEntity);
-            Date lastModified = Date.from(datasetEntity.getLastChangedDate());
-            rb = preconditions.evaluatePreconditions(lastModified, Preconditions.createEtag(existingDataset));
-        }
-
-        if (rb != null) {
-            rb.entity(new ErrorResponse(Response.Status.PRECONDITION_FAILED, "A request precondition failed."));
+        Response.ResponseBuilder rb = null;
+        if (preconditions != null) {
+            if (datasetEntity == null) {
+                rb = preconditions.evaluatePreconditions();
+            } else {
+                Dataset existingDataset = DatasetAdaptor.getInstance().convert(datasetEntity);
+                Date lastModified = Date.from(datasetEntity.getLastChangedDate());
+                rb = preconditions.evaluatePreconditions(lastModified, Preconditions.createEtag(existingDataset));
+            }
         }
         return rb;
     }
@@ -271,14 +294,11 @@ public class DatasetResource {
             dataset = new Dataset();
             dataset.setId(datasetId);
             dataset.setProperties(datasetProperties);
-
             newDatasetEntity = DatasetAdaptor.getInstance().merge(datasetEntity, dataset);
             submissionService.createDataset(newDatasetEntity);
             status = Response.Status.CREATED;
         }
-
-        dataset.setCreated(Date.from(newDatasetEntity.getCreateDate()));
-
+        dataset = DatasetAdaptor.getInstance().convert(newDatasetEntity);
         return new DatasetEntityResponse(status, dataset);
     }
 
@@ -297,9 +317,16 @@ public class DatasetResource {
     )
     @ApiResponses(value = {
             @ApiResponse(code = 204, message = "No Content - an existing dataset was successfully deleted."),
-            @ApiResponse(code = 404, message = "Not Found - The `dataset_id` parameter did not match a known dataset"),
-            @ApiResponse(code = 412, message = "Precondition Failed - see conditional request documentation")
-
+            @ApiResponse(
+                    code = 404,
+                    message = "Not Found - The `dataset_id` parameter did not match a known resource",
+                    response = ErrorResponse.class
+            ),
+            @ApiResponse(
+                    code = 412,
+                    message = "Precondition Failed - see conditional request documentation",
+                    response = ErrorResponse.class
+            )
     })
     public Response deleteDataset(
             @PathParam("dataset_id")
@@ -313,11 +340,10 @@ public class DatasetResource {
         Dataset dataset = DatasetAdaptor.getInstance().convert(datasetEntity);
 
         if (datasetEntity == null) {
-            rb = Response.status(Response.Status.NOT_FOUND);
+            rb = ErrorResponse.DATASET_NOT_FOUND.toResponseBuilder();
         } else {
             EntityTag eTag = Preconditions.createEtag(dataset);
-
-            rb = preconditions.evaluatePreconditions(new Date(), eTag);
+            rb = preconditions.evaluatePreconditions(dataset.getLastModified(), eTag);
 
             if (rb == null) {
                 // Preconditions passed, delete the resource

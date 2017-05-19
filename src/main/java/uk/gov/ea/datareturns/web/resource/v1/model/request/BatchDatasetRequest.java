@@ -20,6 +20,10 @@ public class BatchDatasetRequest {
     public BatchDatasetRequest() {
     }
 
+    public BatchDatasetRequest(List<BatchDatasetRequestItem> requests) {
+        this.requests = requests;
+    }
+
     public List<BatchDatasetRequestItem> getRequests() {
         return requests;
     }
