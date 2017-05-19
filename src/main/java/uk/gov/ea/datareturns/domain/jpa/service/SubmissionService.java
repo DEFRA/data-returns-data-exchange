@@ -6,8 +6,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.transaction.annotation.Transactional;
-import uk.gov.ea.datareturns.domain.jpa.entities.userdata.impl.RecordEntity;
-import uk.gov.ea.datareturns.web.resource.ObservationSerializationBean;
 import uk.gov.ea.datareturns.domain.jpa.dao.userdata.factories.AbstractObservationFactory;
 import uk.gov.ea.datareturns.domain.jpa.dao.userdata.impl.DatasetDao;
 import uk.gov.ea.datareturns.domain.jpa.dao.userdata.impl.ObservationDao;
@@ -15,12 +13,13 @@ import uk.gov.ea.datareturns.domain.jpa.dao.userdata.impl.RecordDao;
 import uk.gov.ea.datareturns.domain.jpa.dao.userdata.impl.UserDao;
 import uk.gov.ea.datareturns.domain.jpa.entities.userdata.AbstractObservation;
 import uk.gov.ea.datareturns.domain.jpa.entities.userdata.impl.DatasetEntity;
+import uk.gov.ea.datareturns.domain.jpa.entities.userdata.impl.RecordEntity;
 import uk.gov.ea.datareturns.domain.jpa.entities.userdata.impl.User;
-import uk.gov.ea.datareturns.domain.validation.newmodel.validator.ObservationValidator;
 import uk.gov.ea.datareturns.domain.validation.newmodel.validator.Mvo;
 import uk.gov.ea.datareturns.domain.validation.newmodel.validator.MvoFactory;
+import uk.gov.ea.datareturns.domain.validation.newmodel.validator.ObservationValidator;
 import uk.gov.ea.datareturns.domain.validation.newmodel.validator.result.ValidationResult;
-import uk.gov.ea.datareturns.web.resource.v1.model.record.payload.Payload;
+import uk.gov.ea.datareturns.web.resource.ObservationSerializationBean;
 
 import java.io.IOException;
 import java.time.Instant;
@@ -173,6 +172,17 @@ public class SubmissionService<D extends ObservationSerializationBean, M extends
     }
 
     /**
+     * Retrieve a single record null if not found
+     * @param dataset A dataset
+     * @param identifier A record identifier
+     * @return the record
+     */
+    @Transactional(readOnly = true)
+    public RecordEntity getRecord(DatasetEntity dataset, String identifier) {
+        return recordDao.get(dataset, identifier);
+    }
+
+    /**
      * Remove a record using its identifier
      *
      * @param dataset    The dataset
@@ -181,6 +191,15 @@ public class SubmissionService<D extends ObservationSerializationBean, M extends
     @Transactional
     public void removeRecord(DatasetEntity dataset, String identifier) {
         recordDao.remove(dataset, identifier);
+    }
+
+    /**
+     * Remove a given record
+     * @param recordEntity
+     */
+    @Transactional
+    public void removeRecord(RecordEntity recordEntity) {
+        recordDao.remove(recordEntity);
     }
 
     /**
@@ -352,7 +371,7 @@ public class SubmissionService<D extends ObservationSerializationBean, M extends
      * @return
      */
     private RecordEntity createOrResetRecord(DatasetEntity dataset, String identifier, D observationSerializationBean) {
-        RecordEntity recordEntity = getRecord(dataset, identifier);
+        RecordEntity recordEntity = getOrCreateRecord(dataset, identifier);
         RecordEntity.RecordStatus newRecordStatus = recordEntity.getRecordStatus();
 
         if (newRecordStatus == RecordEntity.RecordStatus.SUBMITTED) {
@@ -411,20 +430,20 @@ public class SubmissionService<D extends ObservationSerializationBean, M extends
      * @param dataset
      * @return The initialized record
      */
-    private RecordEntity getRecord(DatasetEntity dataset) {
-        return getRecord(dataset, UUID.randomUUID().toString());
+    private RecordEntity getOrCreateRecord(DatasetEntity dataset) {
+        return getOrCreateRecord(dataset, UUID.randomUUID().toString());
     }
 
     /**
      * Returns either a new and initialized record for a dataset and identifier
      * or if the identified record already exists it returns the existing record
-     * It does not persist the record
+     * It does not persist the record.
      *
      * @param dataset
      * @param identifier
      * @return
      */
-    public RecordEntity getRecord(DatasetEntity dataset, String identifier) {
+    private RecordEntity getOrCreateRecord(DatasetEntity dataset, String identifier) {
         RecordEntity recordEntity = recordDao.get(dataset, identifier);
         if (recordEntity == null) {
             recordEntity = new RecordEntity();

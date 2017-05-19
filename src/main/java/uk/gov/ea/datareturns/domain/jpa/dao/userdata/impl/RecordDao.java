@@ -85,6 +85,14 @@ public class RecordDao extends AbstractUserDataDao<RecordEntity> {
         remove(recordEntity.getId());
     }
 
+    /**
+     * Remove a given record
+     * @param recordEntity
+     */
+    public void remove(RecordEntity recordEntity) {
+        remove(recordEntity.getId());
+    }
+
     public List<RecordEntity> listMeasurements(DatasetEntity dataset) {
         CriteriaBuilder cb = entityManager.getCriteriaBuilder();
         CriteriaQuery<RecordEntity> cq = cb.createQuery(RecordEntity.class);

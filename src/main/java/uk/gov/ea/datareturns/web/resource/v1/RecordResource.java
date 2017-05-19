@@ -8,7 +8,6 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import uk.gov.ea.datareturns.config.SubmissionConfiguration;
-import uk.gov.ea.datareturns.domain.jpa.entities.userdata.impl.DataSampleEntity;
 import uk.gov.ea.datareturns.domain.jpa.entities.userdata.impl.DatasetEntity;
 import uk.gov.ea.datareturns.domain.jpa.entities.userdata.impl.RecordEntity;
 import uk.gov.ea.datareturns.domain.jpa.service.SubmissionService;
@@ -34,7 +33,6 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriBuilder;
 import javax.ws.rs.core.UriInfo;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -64,7 +62,7 @@ public class RecordResource {
     @Context
     private UriInfo uriInfo;
 
-    private SubmissionService<?, ?, ?> submissionService;
+    private SubmissionService<DataSamplePayload, ?, ?> submissionService;
 
     /**
      * Retrieves the appropriate versioned submission service
@@ -106,10 +104,18 @@ public class RecordResource {
             @ApiParam("The unique identifier for the target dataset") final String datasetId)
             throws Exception {
 
+        DatasetEntity datasetEntity = submissionService.getDataset(datasetId);
+
+        if (datasetEntity == null) {
+            return Response.status(Response.Status.NOT_FOUND).build();
+        }
+
+        List<RecordEntity> records = submissionService.getRecords(datasetEntity);
+
         List<EntityReference> result = new ArrayList<>();
-        for (String name : new String[] { "Record1", "Record2", "Record3" }) {
+        for (RecordEntity record : records ) {
             UriBuilder ub = uriInfo.getAbsolutePathBuilder();
-            result.add(new EntityReference(name, ub.path(name).build().toASCIIString()));
+            result.add(new EntityReference(record.getIdentifier(), ub.path(record.getIdentifier()).build().toASCIIString()));
         }
         Response.Status responseStatus = Response.Status.OK;
         RecordListResponse rw = new RecordListResponse(responseStatus, result);
@@ -150,6 +156,22 @@ public class RecordResource {
     )
             throws Exception {
 
+        DatasetEntity datasetEntity = submissionService.getDataset(datasetId);
+
+        if (datasetEntity == null) {
+            return Response.status(Response.Status.NOT_FOUND).build();
+        }
+
+        List<SubmissionService.ObservationIdentifierPair<DataSamplePayload>> list = new ArrayList<>();
+
+        for (BatchRecordRequestItem request : batchRequest.getRequests()) {
+            list.add(new SubmissionService.ObservationIdentifierPair(request.getRecordId(), request.getPayload()));
+        }
+
+        // Create and validate records
+        List<RecordEntity> recordEntities = submissionService.createRecords(datasetEntity, list);
+        submissionService.validate(recordEntities);
+
         MultiStatusResponse multiResponse = new MultiStatusResponse();
         for (BatchRecordRequestItem request : batchRequest.getRequests()) {
             UriBuilder ub = uriInfo.getAbsolutePathBuilder();
@@ -160,7 +182,6 @@ public class RecordResource {
             multiResponse.addResponse(response);
         }
 
-        // TODO: Bulk creation operation
         return Response.status(207).entity(multiResponse).build();
     }
 
@@ -198,15 +219,20 @@ public class RecordResource {
     )
             throws Exception {
 
-        DataSamplePayload payload = new DataSamplePayload();
-        payload.setEaId("AB1234CD");
-        payload.setSiteName("Test site");
+        DatasetEntity datasetEntity = submissionService.getDataset(datasetId);
 
-        Record record = new Record();
-        record.setId(recordId);
-        record.setCreated(new Date());
-        record.setPayload(payload);
-        resolveLinks(datasetId, record);
+        if (datasetEntity == null) {
+            return Response.status(Response.Status.NOT_FOUND).build();
+        }
+
+        RecordEntity recordEntity = submissionService.getRecord(datasetEntity, recordId);
+
+        if (recordEntity == null) {
+            return Response.status(Response.Status.NOT_FOUND).build();
+        }
+
+        Record record = recordAdaptor.convert(recordEntity);
+        resolveLinks(datasetEntity.getIdentifier(), record);
 
         RecordEntityResponse responseWrapper = new RecordEntityResponse(Response.Status.OK, record);
         return Response.status(Response.Status.OK).entity(responseWrapper).build();
@@ -261,9 +287,6 @@ public class RecordResource {
         submissionService.validate(recordEntity);
 
         Record record = recordAdaptor.convert(recordEntity);
-        record.setId(recordId);
-        record.setCreated(new Date());
-
         resolveLinks(datasetId, record);
         RecordEntityResponse response = new RecordEntityResponse(Response.Status.OK, record);
         return Response.status(Response.Status.OK).entity(response).build();
@@ -302,6 +325,21 @@ public class RecordResource {
             @BeanParam Preconditions preconditions
     )
             throws Exception {
+
+        DatasetEntity datasetEntity = submissionService.getDataset(datasetId);
+
+        if (datasetEntity == null) {
+            return Response.status(Response.Status.NOT_FOUND).build();
+        }
+
+        RecordEntity recordEntity = submissionService.getRecord(datasetEntity, recordId);
+
+        if (recordEntity == null) {
+            return Response.status(Response.Status.NOT_FOUND).build();
+        }
+
+        submissionService.removeRecord(recordEntity);
+
         return Response.status(Response.Status.NO_CONTENT).build();
     }
 
