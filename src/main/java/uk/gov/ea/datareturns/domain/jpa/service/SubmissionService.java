@@ -351,6 +351,29 @@ public class SubmissionService<D extends ObservationSerializationBean, M extends
     }
 
     /**
+     * Submit a set of valid recordEntities - this writes the data from the stored JSON into the
+     * relation database structures - it creates an instance of a class inheriting AbstractObservation
+     * and associates it with the record.
+     * <p>
+     * It will ignore all recordEntities that are invalid
+     *
+     * @param recordEntities
+     */
+    @Transactional
+    public void evaluateSubstitutes(List<RecordEntity> recordEntities) {
+        recordEntities.stream()
+            .filter(r -> r.getRecordStatus() == RecordEntity.RecordStatus.VALID)
+            .forEach(r -> {
+                try {
+                    M submission = abstractObservationFactory.create(mapper.readValue(r.getJson(), observationSerializationBeanClass));
+                    LOGGER.info(submission.toString());
+                } catch (IOException e) {
+                    LOGGER.error("Error de-serializing stored JSON: " + e.getMessage());
+                }
+            });
+    }
+
+    /**
      * Creates a new record on a given identifier OR resets a record
      * on a given identifier if it already exists.
      * <p>

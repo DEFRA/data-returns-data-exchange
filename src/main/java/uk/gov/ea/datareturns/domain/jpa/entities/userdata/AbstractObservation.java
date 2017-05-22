@@ -3,6 +3,8 @@ package uk.gov.ea.datareturns.domain.jpa.entities.userdata;
 import uk.gov.ea.datareturns.domain.jpa.entities.userdata.impl.RecordEntity;
 
 import javax.persistence.*;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * @author Graham Willis
@@ -36,5 +38,40 @@ public abstract class AbstractObservation implements Userdata {
     @Override
     public int hashCode() {
         return recordEntity.hashCode();
+    }
+
+    @Transient
+    private Set<EntitySubstitution> entitySubstitutions = new HashSet<>();
+
+    public static class EntitySubstitution {
+        private final String entity;
+        private final String submitted;
+        private final String preferred;
+
+        public EntitySubstitution(String entity, String submitted, String preferred) {
+            this.entity = entity;
+            this.submitted = submitted;
+            this.preferred = preferred;
+        }
+
+        public String getEntity() {
+            return entity;
+        }
+
+        public String getSubmitted() {
+            return submitted;
+        }
+
+        public String getPreferred() {
+            return preferred;
+        }
+    }
+
+    public void addSubstution(String entity, String submitted, String preferred) {
+        entitySubstitutions.add(new EntitySubstitution(entity, submitted, preferred));
+    }
+
+    public Set<EntitySubstitution> getEntitySubstitutions() {
+        return entitySubstitutions;
     }
 }

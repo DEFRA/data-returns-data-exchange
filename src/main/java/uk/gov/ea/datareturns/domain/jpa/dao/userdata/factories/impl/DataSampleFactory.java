@@ -2,6 +2,7 @@ package uk.gov.ea.datareturns.domain.jpa.dao.userdata.factories.impl;
 
 import uk.gov.ea.datareturns.domain.jpa.dao.masterdata.*;
 import uk.gov.ea.datareturns.domain.jpa.dao.userdata.factories.AbstractObservationFactory;
+import uk.gov.ea.datareturns.domain.jpa.entities.masterdata.impl.Parameter;
 import uk.gov.ea.datareturns.domain.jpa.entities.userdata.impl.DataSampleEntity;
 import uk.gov.ea.datareturns.domain.validation.model.fields.impl.ds.MonitoringDate;
 import uk.gov.ea.datareturns.web.resource.v1.model.record.payload.DataSamplePayload;
@@ -68,6 +69,15 @@ public class DataSampleFactory implements AbstractObservationFactory<DataSampleE
         measurement.setQualifier(qualifierDao.getByName(Key.relaxed((payload.getQualifier()))));
         measurement.setUnit(unitDao.getByName(Key.relaxed((payload.getUnit()))));
 
+        Parameter parameter = parameterDao.getByAliasName(Key.relaxed(payload.getParameter()));
+        if (parameter != null) {
+            measurement.setParameter(parameter);
+            measurement.addSubstution("Parameter", parameter.getName(), parameter.getPreferred());
+        } else {
+            measurement.setParameter(parameterDao.getByName(Key.relaxed(payload.getParameter())));
+        }
+
         return measurement;
     }
+
 }

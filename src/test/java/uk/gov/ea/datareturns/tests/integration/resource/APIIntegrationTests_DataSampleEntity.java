@@ -41,6 +41,7 @@ public class APIIntegrationTests_DataSampleEntity {
 
     private final static String SUBMISSION_SUCCESS = "json/landfill-success.json";
     private final static String SUBMISSION_FAILURE = "json/landfill-failure.json";
+    private final static String SUBSTITUTIONS = "json/landfill-substitutions.json";
 
     private static final String USER_NAME = "Graham Willis";
     private static final String ORIGINATOR_EMAIL = "graham.willis@email.com";
@@ -179,6 +180,20 @@ public class APIIntegrationTests_DataSampleEntity {
         submissionService.submit(recordEntities);
         recordEntities.stream().forEach(r -> Assert.assertEquals(RecordEntity.RecordStatus.SUBMITTED, r.getRecordStatus()));
     }
+
+    @Test public void createValidateAndDetermineSubstitutions() throws IOException {
+        List<DataSamplePayload> samples = submissionService.parseJsonArray(readTestFile(SUBSTITUTIONS));
+        List<SubmissionService.ObservationIdentifierPair<DataSamplePayload>> list = new ArrayList<>();
+        for (DataSamplePayload sample : samples) {
+            list.add(new SubmissionService.ObservationIdentifierPair(sample));
+        }
+        List<RecordEntity> recordEntities = submissionService.createRecords(dataset, list);
+        submissionService.validate(recordEntities);
+        recordEntities.stream().forEach(r -> Assert.assertEquals(RecordEntity.RecordStatus.VALID, r.getRecordStatus()));
+        submissionService.evaluateSubstitutes(recordEntities);
+        //recordEntities.stream().forEach(r -> Assert.assertEquals(RecordEntity.RecordStatus.SUBMITTED, r.getRecordStatus()));
+    }
+
 
     // Create and validate a set of valid and invalid records
     @Test public void createAndValidateValidAndInvalidRecords() throws IOException {
