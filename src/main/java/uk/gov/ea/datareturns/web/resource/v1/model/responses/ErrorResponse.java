@@ -11,11 +11,12 @@ public class ErrorResponse extends ResponseWrapper<Object> {
 
     public static final ErrorResponse DATASET_NOT_FOUND = new ErrorResponse(
             Response.Status.NOT_FOUND, "No dataset was found for the given dataset_id.");
+    public static final ErrorResponse RECORD_NOT_FOUND = new ErrorResponse(
+            Response.Status.NOT_FOUND, "No record was found for the given record_id.");
     public static final ErrorResponse PRECONDITION_FAILED = new ErrorResponse(
             Response.Status.PRECONDITION_FAILED, "A request precondition failed.");
     public static final ErrorResponse MULTISTATUS_REQUEST_EMPTY = new ErrorResponse(
             Response.Status.BAD_REQUEST, "No request items could be extracted from the request body.");
-
 
     @SuppressWarnings("unused")
     public ErrorResponse() {
@@ -32,10 +33,5 @@ public class ErrorResponse extends ResponseWrapper<Object> {
     }
 
     @Override public void setData(Object data) {
-
     }
-//
-//    public static Response.ResponseBuilder toResponseBuilder(ErrorResponse errorResponse) {
-//        return Response.status(errorResponse.getMeta().getStatus()).entity(errorResponse);
-//    }
 }

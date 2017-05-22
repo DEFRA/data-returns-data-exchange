@@ -178,11 +178,8 @@ public class Preconditions {
         if (StringUtils.isNotEmpty(this.ifMatch)) {
             if (eTag.isWeak()) {
                 rb = Response.status(Response.Status.PRECONDITION_FAILED);
-            } else {
-                EntityTag matchTag = EntityTag.valueOf(this.ifMatch);
-                if (!"*".equals(this.ifMatch) && !eTag.equals(matchTag)) {
-                    rb = Response.status(Response.Status.PRECONDITION_FAILED);
-                }
+            } else if (!"*".equals(this.ifMatch) && !eTag.equals(EntityTag.valueOf(this.ifMatch))) {
+                rb = Response.status(Response.Status.PRECONDITION_FAILED);
             }
         }
         return rb;

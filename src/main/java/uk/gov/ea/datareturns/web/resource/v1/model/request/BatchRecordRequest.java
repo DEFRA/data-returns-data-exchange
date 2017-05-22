@@ -20,6 +20,10 @@ public class BatchRecordRequest {
     public BatchRecordRequest() {
     }
 
+    public BatchRecordRequest(List<BatchRecordRequestItem> requests) {
+        this.requests = requests;
+    }
+
     public List<BatchRecordRequestItem> getRequests() {
         return requests;
     }

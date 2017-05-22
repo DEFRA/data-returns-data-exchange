@@ -38,9 +38,9 @@ public class RecordAdaptor implements EntityAdaptor<Record, RecordEntity> {
         Record record = new Record();
         record.setId(recordEntity.getIdentifier());
         record.setCreated(Date.from(recordEntity.getCreateDate()));
+        record.setLastModified(Date.from(recordEntity.getLastChangedDate()));
         DataSamplePayload dataSamplePayload = submissionService.parseJsonObject(recordEntity.getJson());
         record.setPayload(dataSamplePayload);
-
         return record;
     }
 

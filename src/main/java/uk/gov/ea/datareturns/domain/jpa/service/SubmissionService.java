@@ -71,14 +71,14 @@ public class SubmissionService<D extends ObservationSerializationBean, M extends
      * @param validator           The validator to be used
      */
     public SubmissionService(Class<D> observationSerializationBeanClass,
-                             Class<D[]> observationSerializationBeanArrayClass,
-                             MvoFactory<D, V> mvoFactory,
-                             UserDao userDao,
-                             DatasetDao datasetDao,
-                             RecordDao recordDao,
-                             ObservationDao<M> submissionDao,
-                             ObservationValidator<V> validator,
-                             AbstractObservationFactory<M, D> abstractObservationFactory) {
+            Class<D[]> observationSerializationBeanArrayClass,
+            MvoFactory<D, V> mvoFactory,
+            UserDao userDao,
+            DatasetDao datasetDao,
+            RecordDao recordDao,
+            ObservationDao<M> submissionDao,
+            ObservationValidator<V> validator,
+            AbstractObservationFactory<M, D> abstractObservationFactory) {
 
         this.observationSerializationBeanClass = observationSerializationBeanClass;
         this.observationSerializationBeanArrayClass = observationSerializationBeanArrayClass;
@@ -283,7 +283,7 @@ public class SubmissionService<D extends ObservationSerializationBean, M extends
      * @param recordEntities The recordEntities to validate
      */
     @Transactional
-    public void validate(List<RecordEntity> recordEntities) {
+    public void validate(Collection<RecordEntity> recordEntities) {
         // Deserialize the list of samples from the JSON
         // field in the record and pass store in a map
         Map<RecordEntity, V> mvos = recordEntities.stream()
@@ -441,8 +441,10 @@ public class SubmissionService<D extends ObservationSerializationBean, M extends
             recordEntity.setDataset(dataset);
             recordEntity.setIdentifier(identifier);
             recordEntity.setRecordStatus(RecordEntity.RecordStatus.CREATED);
-            recordEntity.setCreateDate(Instant.now());
-            recordEntity.setLastChangedDate(Instant.now());
+
+            Instant timestamp = Instant.now();
+            recordEntity.setCreateDate(timestamp);
+            recordEntity.setLastChangedDate(timestamp);
         }
         return recordEntity;
     }
@@ -505,8 +507,9 @@ public class SubmissionService<D extends ObservationSerializationBean, M extends
      */
     @Transactional
     public void createDataset(DatasetEntity newDatasetEntity) {
-        newDatasetEntity.setCreateDate(Instant.now());
-        newDatasetEntity.setLastChangedDate(Instant.now());
+        Instant timestamp = Instant.now();
+        newDatasetEntity.setCreateDate(timestamp);
+        newDatasetEntity.setLastChangedDate(timestamp);
         if (newDatasetEntity.getIdentifier() == null) {
             newDatasetEntity.setIdentifier(UUID.randomUUID().toString());
         }

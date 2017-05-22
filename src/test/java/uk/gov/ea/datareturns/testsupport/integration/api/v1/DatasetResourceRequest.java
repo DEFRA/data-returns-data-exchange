@@ -43,7 +43,7 @@ public class DatasetResourceRequest extends AbstractResourceRequest {
     }
 
     public ResponseEntity<MultiStatusResponse> postDatasets(BatchDatasetRequest request) {
-        return post(uri(DatasetResource.class, "postDatasets"), request, MultiStatusResponse.class);
+        return postBatchRequest(uri(DatasetResource.class, "postDatasets"), request);
     }
 
     public ResponseEntity<?> deleteDataset(String datasetId) {

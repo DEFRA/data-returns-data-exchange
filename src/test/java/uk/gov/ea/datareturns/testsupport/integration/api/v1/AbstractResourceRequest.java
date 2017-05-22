@@ -7,6 +7,7 @@ import uk.gov.ea.datareturns.web.config.JerseyConfig;
 import uk.gov.ea.datareturns.web.resource.v1.model.responses.ErrorResponse;
 import uk.gov.ea.datareturns.web.resource.v1.model.responses.Metadata;
 import uk.gov.ea.datareturns.web.resource.v1.model.responses.ResponseWrapper;
+import uk.gov.ea.datareturns.web.resource.v1.model.responses.multistatus.MultiStatusResponse;
 
 import javax.ws.rs.Path;
 import javax.ws.rs.core.UriBuilder;
@@ -15,11 +16,14 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.regex.Pattern;
 
 /**
  * Created by sam on 18/05/17.
  */
 public abstract class AbstractResourceRequest {
+
+    private static final Pattern MULTI_RESPONSE_STATUS_PATTERN = Pattern.compile("^HTTP/1.1\\s\\d{3}\\s(.*)");
 
     private final int port;
     private final TestRestTemplate template;
@@ -53,6 +57,27 @@ public abstract class AbstractResourceRequest {
             Assert.assertNotNull(response.getBody());
         }
         return response;
+    }
+
+    public ResponseEntity<MultiStatusResponse> postBatchRequest(URI uri, Object requestEntity) {
+        ResponseEntity<MultiStatusResponse> multiResponse = post(uri, requestEntity, MultiStatusResponse.class);
+
+        for (MultiStatusResponse.Response response : multiResponse.getBody().getData()) {
+            Assert.assertTrue(MULTI_RESPONSE_STATUS_PATTERN.matcher(response.getStatus()).matches());
+
+            Assert.assertNotNull(response.getId());
+
+            HttpStatus status = HttpStatus.valueOf(response.getCode());
+            if (status.is2xxSuccessful()) {
+                Assert.assertNotNull(response.getEntityTag());
+                Assert.assertNotNull(response.getLastModified());
+                Assert.assertNotNull(response.getHref());
+            } else {
+                Assert.assertNull(response.getEntityTag());
+                Assert.assertNull(response.getLastModified());
+            }
+        }
+        return multiResponse;
     }
 
     protected ResponseEntity<?> delete(URI uri) {
@@ -114,7 +139,7 @@ public abstract class AbstractResourceRequest {
     }
 
     protected URI uri(Class resource, String methodName) {
-        return uri(resource, methodName, null);
+        return this.uri(resource, methodName, null);
     }
 
     public abstract AbstractResourceRequest withHeaders(HttpHeaders headers);
