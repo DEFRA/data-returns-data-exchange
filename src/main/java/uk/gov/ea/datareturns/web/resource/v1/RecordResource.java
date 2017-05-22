@@ -199,6 +199,7 @@ public class RecordResource {
             Map<String, RecordEntity> recordEntities = submissionService.createRecords(datasetEntity, submissible)
                     .stream()
                     .collect(Collectors.toMap(RecordEntity::getIdentifier, e -> e));
+
             submissionService.validate(recordEntities.values());
 
             // Build the responses

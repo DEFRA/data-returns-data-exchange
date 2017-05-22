@@ -153,6 +153,9 @@ public class SubmissionService<D extends ObservationSerializationBean, M extends
      */
     public D parseJsonObject(String json) {
         try {
+            if (json == null || json.isEmpty()) {
+                return null;
+            }
             return (mapper.readValue(json, observationSerializationBeanClass));
         } catch (IOException e) {
             LOGGER.info("Cannot parseJsonArray JSON: " + json + ": " + e.getMessage());
@@ -254,7 +257,7 @@ public class SubmissionService<D extends ObservationSerializationBean, M extends
         D observationSerializationBean = null;
         V validationObject;
 
-        if (!record.getJson().isEmpty()) {
+        if (record.getJson() != null && !record.getJson().isEmpty()) {
             try {
                 observationSerializationBean = mapper.readValue(record.getJson(), observationSerializationBeanClass);
             } catch (IOException e) {
@@ -287,7 +290,7 @@ public class SubmissionService<D extends ObservationSerializationBean, M extends
         // Deserialize the list of samples from the JSON
         // field in the record and pass store in a map
         Map<RecordEntity, V> mvos = recordEntities.stream()
-                .filter(r -> !r.getJson().isEmpty())
+                .filter(r -> r.getJson() != null && !r.getJson().isEmpty())
                 .collect(Collectors.toMap(
                         r -> r,
                         r -> {

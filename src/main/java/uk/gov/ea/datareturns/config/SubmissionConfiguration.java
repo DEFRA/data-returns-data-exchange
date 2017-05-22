@@ -8,19 +8,14 @@ import uk.gov.ea.datareturns.domain.jpa.dao.userdata.factories.AbstractObservati
 import uk.gov.ea.datareturns.domain.jpa.dao.userdata.factories.impl.BasicMeasurementFactory;
 import uk.gov.ea.datareturns.domain.jpa.dao.userdata.factories.impl.DataSampleFactory;
 import uk.gov.ea.datareturns.domain.jpa.dao.userdata.impl.*;
-import uk.gov.ea.datareturns.domain.jpa.entities.userdata.AbstractObservation;
 import uk.gov.ea.datareturns.domain.jpa.entities.userdata.impl.BasicMeasurement;
 import uk.gov.ea.datareturns.domain.jpa.entities.userdata.impl.DataSampleEntity;
 import uk.gov.ea.datareturns.domain.jpa.service.SubmissionService;
-import uk.gov.ea.datareturns.domain.validation.basicmeasurement.BasicMeasurementFieldMessageMap;
 import uk.gov.ea.datareturns.domain.validation.basicmeasurement.BasicMeasurementMvo;
-import uk.gov.ea.datareturns.domain.validation.datasample.DataSampleFieldMessageMap;
 import uk.gov.ea.datareturns.domain.validation.datasample.DataSampleMvo;
-import uk.gov.ea.datareturns.domain.validation.newmodel.validator.Mvo;
+import uk.gov.ea.datareturns.domain.validation.newmodel.validator.MvoFactory;
 import uk.gov.ea.datareturns.domain.validation.newmodel.validator.ObservationValidator;
 import uk.gov.ea.datareturns.domain.validation.newmodel.validator.ObservationValidatorImpl;
-import uk.gov.ea.datareturns.domain.validation.newmodel.validator.MvoFactory;
-import uk.gov.ea.datareturns.web.resource.ObservationSerializationBean;
 import uk.gov.ea.datareturns.web.resource.v1.model.record.payload.DataSamplePayload;
 
 import javax.inject.Inject;
