@@ -4,10 +4,10 @@ import org.junit.Assert;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.http.*;
 import uk.gov.ea.datareturns.web.config.JerseyConfig;
-import uk.gov.ea.datareturns.web.resource.v1.model.responses.ErrorResponse;
-import uk.gov.ea.datareturns.web.resource.v1.model.responses.Metadata;
-import uk.gov.ea.datareturns.web.resource.v1.model.responses.ResponseWrapper;
-import uk.gov.ea.datareturns.web.resource.v1.model.responses.multistatus.MultiStatusResponse;
+import uk.gov.ea.datareturns.web.resource.v1.model.response.ErrorResponse;
+import uk.gov.ea.datareturns.web.resource.v1.model.response.Metadata;
+import uk.gov.ea.datareturns.web.resource.v1.model.response.ResponseWrapper;
+import uk.gov.ea.datareturns.web.resource.v1.model.response.MultiStatusResponse;
 
 import javax.ws.rs.Path;
 import javax.ws.rs.core.UriBuilder;

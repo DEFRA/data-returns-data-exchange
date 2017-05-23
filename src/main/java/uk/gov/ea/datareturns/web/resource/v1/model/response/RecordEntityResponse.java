@@ -1,8 +1,7 @@
-package uk.gov.ea.datareturns.web.resource.v1.model.responses.record;
+package uk.gov.ea.datareturns.web.resource.v1.model.response;
 
 import io.swagger.annotations.ApiModel;
 import uk.gov.ea.datareturns.web.resource.v1.model.record.Record;
-import uk.gov.ea.datareturns.web.resource.v1.model.responses.ResponseWrapper;
 
 import javax.ws.rs.core.Response;
 

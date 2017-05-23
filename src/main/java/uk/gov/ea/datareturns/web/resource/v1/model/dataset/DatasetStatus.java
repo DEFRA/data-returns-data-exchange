@@ -13,7 +13,7 @@ public class DatasetStatus {
 
     private DatasetSubmissionStatus submission;
 
-    private DatasetValidationStatus validity;
+    private DatasetValidity validity;
 
     @JsonProperty("substitutions")
     @JsonUnwrapped
@@ -32,11 +32,11 @@ public class DatasetStatus {
         this.submission = submission;
     }
 
-    public DatasetValidationStatus getValidity() {
+    public DatasetValidity getValidity() {
         return validity;
     }
 
-    public void setValidity(DatasetValidationStatus validity) {
+    public void setValidity(DatasetValidity validity) {
         this.validity = validity;
     }
 

@@ -5,6 +5,8 @@ import io.swagger.annotations.ApiModelProperty;
 
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlRootElement;
+import java.io.Serializable;
+import java.util.Objects;
 
 /**
  * HATEOAS link to a related resource
@@ -13,7 +15,7 @@ import javax.xml.bind.annotation.XmlRootElement;
  */
 @ApiModel(description = "HATEOAS link to a related resource")
 @XmlRootElement(name = "link")
-public class Link {
+public class Link implements Serializable {
     @XmlAttribute
     private String rel = null;
     @XmlAttribute
@@ -60,5 +62,19 @@ public class Link {
 
     public void setHref(String href) {
         this.href = href;
+    }
+
+    @Override public boolean equals(Object o) {
+        if (this == o)
+            return true;
+        if (o == null || getClass() != o.getClass())
+            return false;
+        Link link = (Link) o;
+        return Objects.equals(rel, link.rel) &&
+                Objects.equals(href, link.href);
+    }
+
+    @Override public int hashCode() {
+        return Objects.hash(rel, href);
     }
 }

@@ -17,9 +17,9 @@ import uk.gov.ea.datareturns.web.resource.v1.model.record.Record;
 import uk.gov.ea.datareturns.web.resource.v1.model.record.payload.DataSamplePayload;
 import uk.gov.ea.datareturns.web.resource.v1.model.request.BatchRecordRequest;
 import uk.gov.ea.datareturns.web.resource.v1.model.request.BatchRecordRequestItem;
-import uk.gov.ea.datareturns.web.resource.v1.model.responses.dataset.DatasetEntityResponse;
-import uk.gov.ea.datareturns.web.resource.v1.model.responses.multistatus.MultiStatusResponse;
-import uk.gov.ea.datareturns.web.resource.v1.model.responses.record.RecordEntityResponse;
+import uk.gov.ea.datareturns.web.resource.v1.model.response.DatasetEntityResponse;
+import uk.gov.ea.datareturns.web.resource.v1.model.response.MultiStatusResponse;
+import uk.gov.ea.datareturns.web.resource.v1.model.response.RecordEntityResponse;
 
 import java.util.*;
 import java.util.function.Function;
@@ -373,7 +373,7 @@ public class RecordResourceTests extends AbstractDataResourceTests {
         int count = 10;
         Map<String, MultiStatusResponse.Response> records = new LinkedHashMap<>();
 
-        // Issue a batch POST datasetRequest and record the responses
+        // Issue a batch POST datasetRequest and record the response
         List<BatchRecordRequestItem> requests = new ArrayList<>();
         for (int i = 0; i < count; i++) {
             final String recordId = "record_" + i;
@@ -388,7 +388,7 @@ public class RecordResourceTests extends AbstractDataResourceTests {
         }
         ResponseEntity<MultiStatusResponse> createResponse = recordRequest(HttpStatus.MULTI_STATUS)
                 .postRecords(target.getId(), new BatchRecordRequest(requests));
-        // Test the responses and store each one in the records map
+        // Test the response and store each one in the records map
         List<MultiStatusResponse.Response> responses = createResponse.getBody().getData();
         for (int i = 0; i < responses.size(); i++) {
             final MultiStatusResponse.Response response = responses.get(i);

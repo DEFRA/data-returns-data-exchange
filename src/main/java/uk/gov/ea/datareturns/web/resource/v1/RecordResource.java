@@ -11,6 +11,7 @@ import uk.gov.ea.datareturns.config.SubmissionConfiguration;
 import uk.gov.ea.datareturns.domain.jpa.entities.userdata.impl.DatasetEntity;
 import uk.gov.ea.datareturns.domain.jpa.entities.userdata.impl.RecordEntity;
 import uk.gov.ea.datareturns.domain.jpa.service.SubmissionService;
+import uk.gov.ea.datareturns.web.resource.v1.model.common.Linker;
 import uk.gov.ea.datareturns.web.resource.v1.model.common.Preconditions;
 import uk.gov.ea.datareturns.web.resource.v1.model.common.references.EntityReference;
 import uk.gov.ea.datareturns.web.resource.v1.model.common.references.Link;
@@ -20,10 +21,10 @@ import uk.gov.ea.datareturns.web.resource.v1.model.record.payload.DataSamplePayl
 import uk.gov.ea.datareturns.web.resource.v1.model.record.payload.Payload;
 import uk.gov.ea.datareturns.web.resource.v1.model.request.BatchRecordRequest;
 import uk.gov.ea.datareturns.web.resource.v1.model.request.BatchRecordRequestItem;
-import uk.gov.ea.datareturns.web.resource.v1.model.responses.EntityListResponse;
-import uk.gov.ea.datareturns.web.resource.v1.model.responses.ErrorResponse;
-import uk.gov.ea.datareturns.web.resource.v1.model.responses.multistatus.MultiStatusResponse;
-import uk.gov.ea.datareturns.web.resource.v1.model.responses.record.RecordEntityResponse;
+import uk.gov.ea.datareturns.web.resource.v1.model.response.EntityListResponse;
+import uk.gov.ea.datareturns.web.resource.v1.model.response.ErrorResponse;
+import uk.gov.ea.datareturns.web.resource.v1.model.response.MultiStatusResponse;
+import uk.gov.ea.datareturns.web.resource.v1.model.response.RecordEntityResponse;
 
 import javax.annotation.Resource;
 import javax.inject.Inject;
@@ -31,7 +32,6 @@ import javax.validation.constraints.Pattern;
 import javax.ws.rs.*;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
-import javax.ws.rs.core.UriBuilder;
 import javax.ws.rs.core.UriInfo;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -51,8 +51,8 @@ import static javax.ws.rs.core.MediaType.APPLICATION_XML;
         produces = APPLICATION_JSON + "," + APPLICATION_XML
 )
 @Path("/datasets/{dataset_id}/records")
-@Consumes({ APPLICATION_XML, APPLICATION_JSON })
-@Produces({ APPLICATION_XML, APPLICATION_JSON })
+@Consumes({ APPLICATION_JSON, APPLICATION_XML })
+@Produces({ APPLICATION_JSON, APPLICATION_XML })
 @Component
 @Scope(ConfigurableBeanFactory.SCOPE_SINGLETON)
 public class RecordResource {
@@ -117,8 +117,7 @@ public class RecordResource {
             List<RecordEntity> records = submissionService.getRecords(datasetEntity);
             List<EntityReference> result = new ArrayList<>();
             for (RecordEntity record : records) {
-                UriBuilder ub = uriInfo.getAbsolutePathBuilder();
-                result.add(new EntityReference(record.getIdentifier(), ub.path(record.getIdentifier()).build().toASCIIString()));
+                result.add(new EntityReference(record.getIdentifier(), Linker.info(uriInfo).record(datasetId, record.getIdentifier())));
             }
             EntityListResponse rw = new EntityListResponse(result);
             rb = rw.toResponseBuilder();
@@ -202,10 +201,9 @@ public class RecordResource {
 
             submissionService.validate(recordEntities.values());
 
-            // Build the responses
+            // Build the response
             MultiStatusResponse multiResponse = new MultiStatusResponse();
             for (BatchRecordRequestItem request : batchRequest.getRequests()) {
-                UriBuilder ub = uriInfo.getAbsolutePathBuilder();
                 MultiStatusResponse.Response responseItem = new MultiStatusResponse.Response();
                 responseItem.setId(request.getRecordId());
 
@@ -217,7 +215,7 @@ public class RecordResource {
                     Record record = recordAdaptor.convert(recordEntity);
 
                     responseItem.setCode(responses.get(request.getRecordId()).getStatusCode());
-                    responseItem.setHref(ub.path(datasetId).path(request.getRecordId()).build().toASCIIString());
+                    responseItem.setHref(Linker.info(uriInfo).record(datasetId, request.getRecordId()));
                     responseItem.setEntityTag(Preconditions.createEtag(record).toString());
                     responseItem.setLastModified(record.getLastModified());
                 } else {
@@ -227,7 +225,7 @@ public class RecordResource {
 
                     if (recordEntity != null) {
                         // Entity does exist so populate the href
-                        responseItem.setHref(ub.path(request.getRecordId()).build().toASCIIString());
+                        responseItem.setHref(Linker.info(uriInfo).record(datasetId, request.getRecordId()));
                     }
                 }
                 multiResponse.addResponse(responseItem);
@@ -452,10 +450,9 @@ public class RecordResource {
     }
 
     private void resolveLinks(String datasetId, Record record) {
-        UriBuilder ub = uriInfo.getAbsolutePathBuilder();
         List<Link> links = new ArrayList<>();
-        links.add(new Link("self", ub.build().toASCIIString()));
-        links.add(new Link("dataset", uriInfo.getBaseUriBuilder().path(DatasetResource.class).path(datasetId).build().toASCIIString()));
+        links.add(new Link("self", Linker.info(uriInfo).record(datasetId, record.getId())));
+        links.add(new Link("dataset", Linker.info(uriInfo).dataset(datasetId)));
         record.setLinks(links);
     }
 }

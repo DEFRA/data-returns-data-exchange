@@ -5,6 +5,9 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import io.swagger.annotations.ApiModel;
 
 import javax.xml.bind.annotation.XmlRootElement;
+import java.util.Arrays;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * Base class for record data payload.
@@ -28,8 +31,10 @@ import javax.xml.bind.annotation.XmlRootElement;
         @JsonSubTypes.Type(name = "DataSample", value = DataSamplePayload.class),
         @JsonSubTypes.Type(name = "Demo", value = DemonstrationAlternativePayload.class)
 })
-
 public abstract class Payload {
+    public static final Map<String, Class<?>> TYPES = Arrays.stream(Payload.class.getAnnotation(JsonSubTypes.class).value())
+            .collect(Collectors.toMap(JsonSubTypes.Type::name, JsonSubTypes.Type::value));
+
     public Payload() {
     }
 }

@@ -8,9 +8,9 @@ import uk.gov.ea.datareturns.web.resource.v1.DatasetResource;
 import uk.gov.ea.datareturns.web.resource.v1.model.dataset.Dataset;
 import uk.gov.ea.datareturns.web.resource.v1.model.dataset.DatasetProperties;
 import uk.gov.ea.datareturns.web.resource.v1.model.request.BatchDatasetRequest;
-import uk.gov.ea.datareturns.web.resource.v1.model.responses.EntityListResponse;
-import uk.gov.ea.datareturns.web.resource.v1.model.responses.dataset.DatasetEntityResponse;
-import uk.gov.ea.datareturns.web.resource.v1.model.responses.multistatus.MultiStatusResponse;
+import uk.gov.ea.datareturns.web.resource.v1.model.response.EntityListResponse;
+import uk.gov.ea.datareturns.web.resource.v1.model.response.DatasetEntityResponse;
+import uk.gov.ea.datareturns.web.resource.v1.model.response.MultiStatusResponse;
 
 import java.net.URI;
 import java.util.HashMap;

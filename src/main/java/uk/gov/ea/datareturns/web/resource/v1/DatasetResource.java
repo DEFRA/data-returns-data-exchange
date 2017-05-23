@@ -11,22 +11,28 @@ import uk.gov.ea.datareturns.domain.jpa.entities.userdata.AbstractObservation;
 import uk.gov.ea.datareturns.domain.jpa.entities.userdata.impl.DatasetEntity;
 import uk.gov.ea.datareturns.domain.jpa.entities.userdata.impl.RecordEntity;
 import uk.gov.ea.datareturns.domain.jpa.service.SubmissionService;
+import uk.gov.ea.datareturns.web.resource.v1.model.common.Linker;
 import uk.gov.ea.datareturns.web.resource.v1.model.common.Preconditions;
 import uk.gov.ea.datareturns.web.resource.v1.model.common.references.EntityReference;
 import uk.gov.ea.datareturns.web.resource.v1.model.dataset.*;
 import uk.gov.ea.datareturns.web.resource.v1.model.request.BatchDatasetRequest;
 import uk.gov.ea.datareturns.web.resource.v1.model.request.BatchDatasetRequestItem;
-import uk.gov.ea.datareturns.web.resource.v1.model.responses.EntityListResponse;
-import uk.gov.ea.datareturns.web.resource.v1.model.responses.ErrorResponse;
-import uk.gov.ea.datareturns.web.resource.v1.model.responses.dataset.DatasetEntityResponse;
-import uk.gov.ea.datareturns.web.resource.v1.model.responses.multistatus.MultiStatusResponse;
+import uk.gov.ea.datareturns.web.resource.v1.model.response.DatasetEntityResponse;
+import uk.gov.ea.datareturns.web.resource.v1.model.response.EntityListResponse;
+import uk.gov.ea.datareturns.web.resource.v1.model.response.ErrorResponse;
+import uk.gov.ea.datareturns.web.resource.v1.model.response.MultiStatusResponse;
 
 import javax.annotation.Resource;
 import javax.validation.constraints.Pattern;
 import javax.ws.rs.*;
-import javax.ws.rs.core.*;
-import java.util.*;
-import java.util.stream.Collectors;
+import javax.ws.rs.core.Context;
+import javax.ws.rs.core.EntityTag;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.UriInfo;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
 
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 import static javax.ws.rs.core.MediaType.APPLICATION_XML;
@@ -43,8 +49,8 @@ import static javax.ws.rs.core.MediaType.APPLICATION_XML;
         produces = APPLICATION_JSON + "," + APPLICATION_XML
 )
 @Path("/datasets")
-@Consumes({ APPLICATION_XML, APPLICATION_JSON })
-@Produces({ APPLICATION_XML, APPLICATION_JSON })
+@Consumes({ APPLICATION_JSON, APPLICATION_XML })
+@Produces({ APPLICATION_JSON, APPLICATION_XML })
 @Component
 @Scope(ConfigurableBeanFactory.SCOPE_SINGLETON)
 public class DatasetResource {
@@ -86,8 +92,7 @@ public class DatasetResource {
         List<DatasetEntity> datasets = submissionService.getDatasets();
 
         for (DatasetEntity dataset : datasets) {
-            UriBuilder ub = uriInfo.getAbsolutePathBuilder();
-            result.add(new EntityReference(dataset.getIdentifier(), ub.path(dataset.getIdentifier()).build().toASCIIString()));
+            result.add(new EntityReference(dataset.getIdentifier(), Linker.info(uriInfo).dataset(dataset.getIdentifier())));
         }
         EntityListResponse rw = new EntityListResponse(result);
         return rw.toResponseBuilder().build();
@@ -135,7 +140,6 @@ public class DatasetResource {
             MultiStatusResponse multiResponse = new MultiStatusResponse();
 
             for (BatchDatasetRequestItem request : batchRequest.getRequests()) {
-                UriBuilder ub = uriInfo.getAbsolutePathBuilder();
                 DatasetEntity datasetEntity = submissionService.getDataset(request.getDatasetId());
                 MultiStatusResponse.Response responseItem = new MultiStatusResponse.Response();
                 responseItem.setId(request.getDatasetId());
@@ -147,7 +151,7 @@ public class DatasetResource {
                     Dataset dataset = storeResult.getData();
 
                     responseItem.setCode(storeResult.getMeta().getStatus());
-                    responseItem.setHref(ub.path(dataset.getId()).build().toASCIIString());
+                    responseItem.setHref(Linker.info(uriInfo).dataset(dataset.getId()));
                     responseItem.setEntityTag(Preconditions.createEtag(dataset).toString());
                     responseItem.setLastModified(dataset.getLastModified());
                 } else {
@@ -157,7 +161,7 @@ public class DatasetResource {
 
                     if (datasetEntity != null) {
                         // Entity does exist so populate the href
-                        responseItem.setHref(ub.path(request.getDatasetId()).build().toASCIIString());
+                        responseItem.setHref(Linker.info(uriInfo).dataset(request.getDatasetId()));
                     }
                 }
                 multiResponse.addResponse(responseItem);
@@ -377,6 +381,8 @@ public class DatasetResource {
             @ApiParam("The unique identifier for the target dataset") final String datasetId)
             throws Exception {
 
+        Linker linker = Linker.info(uriInfo);
+
         DatasetEntity datasetEntity = submissionService.getDataset(datasetId);
 
         // TODO plugin the dataset status
@@ -394,7 +400,8 @@ public class DatasetResource {
 
         for (RecordEntity recordEntity : recordEntities) {
             if (recordEntity.getAbstractObservation() != null) {
-                for (AbstractObservation.EntitySubstitution entitySubstitution : recordEntity.getAbstractObservation().getEntitySubstitutions()) {
+                for (AbstractObservation.EntitySubstitution entitySubstitution : recordEntity.getAbstractObservation()
+                        .getEntitySubstitutions()) {
                     substitutions.addSubstitution(recordEntity.getIdentifier(),
                             entitySubstitution.getEntity(),
                             entitySubstitution.getSubmitted(),
@@ -404,6 +411,21 @@ public class DatasetResource {
         }
 
         datasetStatus.setSubstitutions(substitutions);
+
+        DatasetValidity validity = new DatasetValidity();
+        String payloadType = "DataSample";
+        for (String constraintId : new String[] { "DR9999-Missing", "DR9050-Missing" }) {
+            for (int i = 0; i < 10; i++) {
+                String testRecordId = "test_id_" + i;
+
+                EntityReference validationRef = new EntityReference(constraintId, linker.constraint(payloadType, constraintId));
+                EntityReference recordRef = new EntityReference(testRecordId, linker.record(datasetId, testRecordId));
+
+                validity.addViolation(validationRef, recordRef);
+            }
+        }
+        datasetStatus.setValidity(validity);
+
         return Response.status(Response.Status.OK).entity(datasetStatus).build();
     }
 

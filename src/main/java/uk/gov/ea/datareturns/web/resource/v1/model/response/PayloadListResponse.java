@@ -1,40 +1,38 @@
-package uk.gov.ea.datareturns.web.resource.v1.model.responses;
+package uk.gov.ea.datareturns.web.resource.v1.model.response;
 
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlElementWrapper;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
-import uk.gov.ea.datareturns.web.resource.v1.model.common.references.EntityReference;
 
 import javax.ws.rs.core.Response;
-import java.util.List;
+import java.util.Collection;
 
 /**
- * DatasetEntity list response
+ * Payload list response
  *
  * @author Sam Gardner-Dell
  */
 @ApiModel(parent = ResponseWrapper.class)
-public class EntityListResponse extends ResponseWrapper<List<EntityReference>> {
-    private List<EntityReference> data;
+public class PayloadListResponse extends ResponseWrapper<Collection<String>> {
+    private Collection<String> data;
 
-    public EntityListResponse() {
+    public PayloadListResponse() {
 
     }
-
-    public EntityListResponse(List<EntityReference> data) {
+    public PayloadListResponse(Collection<String> data) {
         super(Response.Status.OK);
         this.data = data;
     }
 
     @ApiModelProperty(name = "data")
     @JacksonXmlElementWrapper(localName = "data")
-    @JacksonXmlProperty(localName = "reference")
-    @Override public List<EntityReference> getData() {
+    @JacksonXmlProperty(localName = "payload_type")
+    @Override public Collection<String> getData() {
         return data;
     }
 
-    @Override public void setData(List<EntityReference> data) {
+    @Override public void setData(Collection<String> data) {
         this.data = data;
     }
 }

@@ -11,8 +11,8 @@ import uk.gov.ea.datareturns.testsupport.integration.api.v1.DatasetResourceReque
 import uk.gov.ea.datareturns.testsupport.integration.api.v1.RecordResourceRequest;
 import uk.gov.ea.datareturns.web.resource.v1.model.common.references.EntityReference;
 import uk.gov.ea.datareturns.web.resource.v1.model.dataset.Dataset;
-import uk.gov.ea.datareturns.web.resource.v1.model.responses.EntityListResponse;
-import uk.gov.ea.datareturns.web.resource.v1.model.responses.dataset.DatasetEntityResponse;
+import uk.gov.ea.datareturns.web.resource.v1.model.response.EntityListResponse;
+import uk.gov.ea.datareturns.web.resource.v1.model.response.DatasetEntityResponse;
 
 import javax.inject.Inject;
 import java.util.UUID;

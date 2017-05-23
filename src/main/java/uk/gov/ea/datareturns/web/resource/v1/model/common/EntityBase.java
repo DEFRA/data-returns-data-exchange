@@ -21,7 +21,7 @@ public abstract class EntityBase implements Serializable {
 
     @JacksonXmlElementWrapper(localName = "links")
     @JacksonXmlProperty(localName = "link")
-    private transient List<Link> links;
+    private List<Link> links;
 
     @JsonProperty("created")
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", timezone = "GMT")

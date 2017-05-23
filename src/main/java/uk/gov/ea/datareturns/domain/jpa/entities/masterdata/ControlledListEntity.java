@@ -1,6 +1,6 @@
 package uk.gov.ea.datareturns.domain.jpa.entities.masterdata;
 
-import uk.gov.ea.datareturns.domain.validation.model.fields.FieldValue;
+import java.io.Serializable;
 
 /**
  * Created by graham on 26/07/16.
@@ -9,7 +9,7 @@ import uk.gov.ea.datareturns.domain.validation.model.fields.FieldValue;
  * of ControlledListsList. Controlled lists
  * can be requested gby a REST api call
  */
-public interface ControlledListEntity<T extends FieldValue> {
+public interface ControlledListEntity extends Serializable {
     Long getId();
 
     void setId(final Long id);

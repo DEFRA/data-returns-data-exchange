@@ -1,4 +1,4 @@
-package uk.gov.ea.datareturns.web.resource.v1.model.responses.multistatus;
+package uk.gov.ea.datareturns.web.resource.v1.model.response;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonGetter;
@@ -8,7 +8,6 @@ import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
 import io.swagger.annotations.ApiModelProperty;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.HttpStatus;
-import uk.gov.ea.datareturns.web.resource.v1.model.responses.ResponseWrapper;
 
 import javax.xml.bind.annotation.XmlRootElement;
 import java.util.ArrayList;

@@ -17,9 +17,9 @@ import uk.gov.ea.datareturns.web.resource.v1.model.dataset.Dataset;
 import uk.gov.ea.datareturns.web.resource.v1.model.dataset.DatasetProperties;
 import uk.gov.ea.datareturns.web.resource.v1.model.request.BatchDatasetRequest;
 import uk.gov.ea.datareturns.web.resource.v1.model.request.BatchDatasetRequestItem;
-import uk.gov.ea.datareturns.web.resource.v1.model.responses.EntityListResponse;
-import uk.gov.ea.datareturns.web.resource.v1.model.responses.dataset.DatasetEntityResponse;
-import uk.gov.ea.datareturns.web.resource.v1.model.responses.multistatus.MultiStatusResponse;
+import uk.gov.ea.datareturns.web.resource.v1.model.response.EntityListResponse;
+import uk.gov.ea.datareturns.web.resource.v1.model.response.DatasetEntityResponse;
+import uk.gov.ea.datareturns.web.resource.v1.model.response.MultiStatusResponse;
 
 import java.util.*;
 import java.util.function.Function;
@@ -333,7 +333,7 @@ public class DatasetResourceTests extends  AbstractDataResourceTests {
     private Map<String, MultiStatusResponse.Response> executeBatchCreateRequestTest(int count) {
         Map<String, MultiStatusResponse.Response> datasets = new LinkedHashMap<>();
 
-        // Issue a batch POST datasetRequest and record the responses
+        // Issue a batch POST datasetRequest and record the response
         List<BatchDatasetRequestItem> requests = new ArrayList<>();
         for (int i = 0; i < count; i++) {
             BatchDatasetRequestItem request = new BatchDatasetRequestItem();

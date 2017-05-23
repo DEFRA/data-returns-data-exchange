@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.annotations.ApiModelProperty;
 import org.apache.commons.codec.binary.Hex;
 import org.apache.commons.lang3.StringUtils;
-import uk.gov.ea.datareturns.web.resource.v1.model.responses.ErrorResponse;
+import uk.gov.ea.datareturns.web.resource.v1.model.response.ErrorResponse;
 
 import javax.ws.rs.HeaderParam;
 import javax.ws.rs.ProcessingException;

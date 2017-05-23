@@ -11,8 +11,8 @@ import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * @author Graham Willis
@@ -32,7 +32,7 @@ public class ValidationErrorDao {
     }
 
     public List<ValidationError> list() {
-        return getCache().defaultView().values().stream().collect(Collectors.toList());
+        return new ArrayList<>(getCache().defaultView().values());
     }
 
     protected EntityCache<String, ValidationError> cacheBuilder() {

@@ -13,9 +13,9 @@ public class ValidationError {
 
     @Basic String message;
 
-    @ElementCollection
-    @CollectionTable(name = "validation_error_fields", joinColumns = @JoinColumn(name="error"))
-    @Column(name="field")
+    @ElementCollection(fetch = FetchType.EAGER)
+    @CollectionTable(name = "validation_error_fields", joinColumns = @JoinColumn(name = "error"))
+    @Column(name = "field")
     Set<String> fields;
 
     public String getError() {

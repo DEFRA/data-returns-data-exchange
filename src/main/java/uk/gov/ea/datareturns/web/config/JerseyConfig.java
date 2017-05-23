@@ -1,6 +1,7 @@
 package uk.gov.ea.datareturns.web.config;
 
 import com.fasterxml.jackson.jaxrs.xml.JacksonJaxbXMLProvider;
+import io.swagger.annotations.Api;
 import io.swagger.jaxrs.config.BeanConfig;
 import io.swagger.jaxrs.listing.ApiListingResource;
 import io.swagger.jaxrs.listing.SwaggerSerializers;
@@ -15,6 +16,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.ClassPathScanningCandidateComponentProvider;
+import org.springframework.core.type.filter.AnnotationTypeFilter;
 import org.springframework.core.type.filter.AssignableTypeFilter;
 import org.springframework.stereotype.Component;
 import uk.gov.ea.datareturns.web.filters.AuthorizationFilterFileUpload;
@@ -22,8 +24,6 @@ import uk.gov.ea.datareturns.web.resource.ControlledListResource;
 import uk.gov.ea.datareturns.web.resource.DataExchangeResource;
 import uk.gov.ea.datareturns.web.resource.LoggingTestResource;
 import uk.gov.ea.datareturns.web.resource.PermitLookupResource;
-import uk.gov.ea.datareturns.web.resource.v1.DatasetResource;
-import uk.gov.ea.datareturns.web.resource.v1.RecordResource;
 
 import javax.inject.Inject;
 import javax.ws.rs.ApplicationPath;
@@ -70,8 +70,11 @@ public class JerseyConfig extends ResourceConfig {
         register(context.getBean(LoggingTestResource.class));
         register(context.getBean(PermitLookupResource.class));
 
-        register(context.getBean(DatasetResource.class));
-        register(context.getBean(RecordResource.class));
+        // Use spring scanner to discover API resources
+        final ClassPathScanningCandidateComponentProvider scanner = new ClassPathScanningCandidateComponentProvider(false);
+        scanner.addIncludeFilter(new AnnotationTypeFilter(Api.class));
+        registerBeans(scanner.findCandidateComponents("uk.gov.ea.datareturns.web.resource.v1"));
+
         // Access through /<Jersey's @ApplicationPath>/application.wadl (/api/v1/application.wadl)
         this.register(WadlResource.class);
     }
@@ -80,14 +83,16 @@ public class JerseyConfig extends ResourceConfig {
         // Use spring scanner to discover ExceptionMapper classes
         final ClassPathScanningCandidateComponentProvider scanner = new ClassPathScanningCandidateComponentProvider(false);
         scanner.addIncludeFilter(new AssignableTypeFilter(ExceptionMapper.class));
-        final Set<BeanDefinition> result = scanner.findCandidateComponents("uk.gov.ea.datareturns.web.exceptionmappers");
+        registerBeans(scanner.findCandidateComponents("uk.gov.ea.datareturns.web.exceptionmappers"));
+    }
 
-        for (final BeanDefinition defintion : result) {
+    private void registerBeans(Set<BeanDefinition> definitions) {
+        for (final BeanDefinition definition : definitions) {
             try {
-                LOGGER.info("Registering JAX-RS Exception Mapper: " + defintion.getBeanClassName());
-                register(Class.forName(defintion.getBeanClassName()));
+                LOGGER.info("Registering " + definition.getBeanClassName() + " with JAX-RS application");
+                register(Class.forName(definition.getBeanClassName()));
             } catch (final ClassNotFoundException e) {
-                LOGGER.error("Failed to register exception mapper.", e);
+                LOGGER.error("Failed to register bean " + definition.getBeanClassName(), e);
             }
         }
     }
