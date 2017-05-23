@@ -7,9 +7,13 @@ package uk.gov.ea.datareturns.web.resource.v1.model.common;
 import uk.gov.ea.datareturns.web.resource.v1.DatasetResource;
 import uk.gov.ea.datareturns.web.resource.v1.DefinitionsResource;
 import uk.gov.ea.datareturns.web.resource.v1.RecordResource;
+import uk.gov.ea.datareturns.web.resource.v1.model.common.references.Link;
+import uk.gov.ea.datareturns.web.resource.v1.model.record.Record;
 
 import javax.ws.rs.core.UriBuilder;
 import javax.ws.rs.core.UriInfo;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Linker {
 
@@ -53,6 +57,16 @@ public class Linker {
         ub.resolveTemplate("constraint_id", contraintId);
         return ub.build().toASCIIString();
     }
+
+
+    public void resolve(String datasetId, Record record) {
+        List<Link> links = new ArrayList<>();
+        links.add(new Link("self", Linker.info(uriInfo).record(datasetId, record.getId())));
+        links.add(new Link("dataset", Linker.info(uriInfo).dataset(datasetId)));
+        record.setLinks(links);
+    }
+
+
 
     public static Linker info(UriInfo uriInfo) {
         Linker l = new Linker(uriInfo);

@@ -26,7 +26,6 @@ import javax.annotation.Resource;
 import javax.validation.constraints.Pattern;
 import javax.ws.rs.*;
 import javax.ws.rs.core.Context;
-import javax.ws.rs.core.EntityTag;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 import java.util.ArrayList;
@@ -144,7 +143,7 @@ public class DatasetResource {
                 MultiStatusResponse.Response responseItem = new MultiStatusResponse.Response();
                 responseItem.setId(request.getDatasetId());
 
-                Response.ResponseBuilder tempRb = checkStoragePreconditions(datasetEntity, request.getPreconditions());
+                Response.ResponseBuilder tempRb = checkPreconditions(datasetEntity, request.getPreconditions());
                 if (tempRb == null) {
                     // Preconditions passed, service the request
                     DatasetEntityResponse storeResult = storeDataset(datasetEntity, request.getDatasetId(), request.getProperties());
@@ -201,17 +200,15 @@ public class DatasetResource {
             throws Exception {
 
         Response.ResponseBuilder rb;
-
         DatasetEntity dataSetEntity = submissionService.getDataset(datasetId);
-        Dataset dataset = DatasetAdaptor.getInstance().convert(dataSetEntity);
 
-        if (dataset == null) {
+        if (dataSetEntity == null) {
             rb = ErrorResponse.DATASET_NOT_FOUND.toResponseBuilder();
         } else {
-            EntityTag eTag = Preconditions.createEtag(dataset);
-            rb = preconditions.evaluatePreconditions(dataset.getLastModified(), eTag);
+            rb = checkPreconditions(dataSetEntity, preconditions);
             if (rb == null) {
                 // Preconditions passed, serve resource
+                Dataset dataset = DatasetAdaptor.getInstance().convert(dataSetEntity);
                 DatasetEntityResponse responseWrapper = new DatasetEntityResponse(Response.Status.OK, dataset);
                 rb = responseWrapper.toResponseBuilder();
             }
@@ -255,55 +252,13 @@ public class DatasetResource {
 
         DatasetEntity datasetEntity = submissionService.getDataset(datasetId);
 
-        Response.ResponseBuilder rb = checkStoragePreconditions(datasetEntity, preconditions);
+        Response.ResponseBuilder rb = checkPreconditions(datasetEntity, preconditions);
         if (rb == null) {
             // Preconditions passed, serve resource
             DatasetEntityResponse responseEntity = storeDataset(datasetEntity, datasetId, datasetProperties);
             rb = responseEntity.toResponseBuilder();
         }
         return rb.build();
-    }
-
-    private Response.ResponseBuilder checkStoragePreconditions(final DatasetEntity datasetEntity, Preconditions preconditions) {
-        Response.ResponseBuilder rb = null;
-        if (preconditions != null) {
-            if (datasetEntity == null) {
-                rb = preconditions.evaluatePreconditions();
-            } else {
-                Dataset existingDataset = DatasetAdaptor.getInstance().convert(datasetEntity);
-                Date lastModified = Date.from(datasetEntity.getLastChangedDate());
-                rb = preconditions.evaluatePreconditions(lastModified, Preconditions.createEtag(existingDataset));
-            }
-        }
-        return rb;
-    }
-
-    /**
-     * Persist or update a dataset
-     * @param datasetId
-     * @param datasetProperties
-     * @return DatasetEntityResponse
-     */
-    private DatasetEntityResponse storeDataset(final DatasetEntity datasetEntity, String datasetId,
-            final DatasetProperties datasetProperties) {
-        Dataset dataset;
-        DatasetEntity newDatasetEntity;
-        Response.Status status = Response.Status.OK;
-        if (datasetEntity != null) {
-            dataset = DatasetAdaptor.getInstance().convert(datasetEntity);
-            dataset.setProperties(datasetProperties);
-            newDatasetEntity = DatasetAdaptor.getInstance().merge(datasetEntity, dataset);
-            submissionService.updateDataset(newDatasetEntity);
-        } else {
-            dataset = new Dataset();
-            dataset.setId(datasetId);
-            dataset.setProperties(datasetProperties);
-            newDatasetEntity = DatasetAdaptor.getInstance().merge(datasetEntity, dataset);
-            submissionService.createDataset(newDatasetEntity);
-            status = Response.Status.CREATED;
-        }
-        dataset = DatasetAdaptor.getInstance().convert(newDatasetEntity);
-        return new DatasetEntityResponse(status, dataset);
     }
 
     /**
@@ -341,14 +296,10 @@ public class DatasetResource {
         Response.ResponseBuilder rb;
 
         DatasetEntity datasetEntity = submissionService.getDataset(datasetId);
-        Dataset dataset = DatasetAdaptor.getInstance().convert(datasetEntity);
-
         if (datasetEntity == null) {
             rb = ErrorResponse.DATASET_NOT_FOUND.toResponseBuilder();
         } else {
-            EntityTag eTag = Preconditions.createEtag(dataset);
-            rb = preconditions.evaluatePreconditions(dataset.getLastModified(), eTag);
-
+            rb = checkPreconditions(datasetEntity, preconditions);
             if (rb == null) {
                 // Preconditions passed, delete the resource
                 submissionService.removeDataset(datasetId);
@@ -454,5 +405,47 @@ public class DatasetResource {
             @ApiParam("The requested status.") final DatasetSubmissionStatus status)
             throws Exception {
         return Response.status(Response.Status.OK).entity("magic").build();
+    }
+
+    private Response.ResponseBuilder checkPreconditions(final DatasetEntity datasetEntity, Preconditions preconditions) {
+        Response.ResponseBuilder rb = null;
+        if (preconditions != null) {
+            if (datasetEntity == null) {
+                rb = preconditions.evaluatePreconditions();
+            } else {
+                Dataset existingDataset = DatasetAdaptor.getInstance().convert(datasetEntity);
+                Date lastModified = Date.from(datasetEntity.getLastChangedDate());
+                rb = preconditions.evaluatePreconditions(lastModified, Preconditions.createEtag(existingDataset));
+            }
+        }
+        return rb;
+    }
+
+    /**
+     * Persist or update a dataset
+     * @param datasetId
+     * @param datasetProperties
+     * @return DatasetEntityResponse
+     */
+    private DatasetEntityResponse storeDataset(final DatasetEntity datasetEntity, String datasetId,
+            final DatasetProperties datasetProperties) {
+        Dataset dataset;
+        DatasetEntity newDatasetEntity;
+        Response.Status status = Response.Status.OK;
+        if (datasetEntity != null) {
+            dataset = DatasetAdaptor.getInstance().convert(datasetEntity);
+            dataset.setProperties(datasetProperties);
+            newDatasetEntity = DatasetAdaptor.getInstance().merge(datasetEntity, dataset);
+            submissionService.updateDataset(newDatasetEntity);
+        } else {
+            dataset = new Dataset();
+            dataset.setId(datasetId);
+            dataset.setProperties(datasetProperties);
+            newDatasetEntity = DatasetAdaptor.getInstance().merge(datasetEntity, dataset);
+            submissionService.createDataset(newDatasetEntity);
+            status = Response.Status.CREATED;
+        }
+        dataset = DatasetAdaptor.getInstance().convert(newDatasetEntity);
+        return new DatasetEntityResponse(status, dataset);
     }
 }
