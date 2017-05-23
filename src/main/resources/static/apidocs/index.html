@@ -71,12 +71,11 @@
 <script src="./swagger-ui-standalone-preset.js"> </script>
 <script>
 window.onload = function() {
-    // TODO: Redownload the swagger-ui dist once https://github.com/swagger-api/swagger-ui/issues/2907 is fixed
   // Build a system
   const ui = SwaggerUIBundle({
     url: "/api/v1/swagger.json",
-    dom_id: '#swagger-ui',
     validatorUrl: null,
+    dom_id: '#swagger-ui',
     presets: [
       SwaggerUIBundle.presets.apis,
       SwaggerUIStandalonePreset
@@ -85,11 +84,9 @@ window.onload = function() {
       SwaggerUIBundle.plugins.DownloadUrl
     ],
     layout: "StandaloneLayout"
-  });
+  })
 
-  window.ui = ui;
-
-  window.swaggerUi = ui;
+  window.ui = ui
 }
 </script>
 </body>
