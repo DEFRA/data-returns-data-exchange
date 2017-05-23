@@ -19,6 +19,8 @@ import uk.gov.ea.datareturns.domain.validation.newmodel.rules.EaIdType;
 public class EaId extends AbstractEntityValue<UniqueIdentifierDao, UniqueIdentifier> implements Comparable<EaId> {
     private static final UniqueIdentifierDao DAO = EntityDao.getDao(UniqueIdentifierDao.class);
 
+    public static final String FIELD_NAME = "EA_ID";
+
     @NotBlank(message = "DR9000-Missing")
     @ControlledList(auditor = UniqueIdentifierAuditorNew.class, message = "DR9000-Incorrect")
     private String identifier;

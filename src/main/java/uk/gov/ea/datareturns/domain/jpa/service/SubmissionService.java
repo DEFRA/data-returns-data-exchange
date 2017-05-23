@@ -25,6 +25,7 @@ import java.io.IOException;
 import java.time.Instant;
 import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * @author Graham Willis
@@ -360,17 +361,20 @@ public class SubmissionService<D extends ObservationSerializationBean, M extends
      * @param recordEntities
      */
     @Transactional
-    public void evaluateSubstitutes(List<RecordEntity> recordEntities) {
-        recordEntities.stream()
-            .filter(r -> r.getRecordStatus() == RecordEntity.RecordStatus.VALID)
-            .forEach(r -> {
-                try {
-                    M submission = abstractObservationFactory.create(mapper.readValue(r.getJson(), observationSerializationBeanClass));
-                    LOGGER.info(submission.toString());
-                } catch (IOException e) {
-                    LOGGER.error("Error de-serializing stored JSON: " + e.getMessage());
-                }
-            });
+    public List<RecordEntity> evaluateSubstitutes(List<RecordEntity> recordEntities) {
+        return recordEntities.stream()
+                .filter(r -> r.getRecordStatus() == RecordEntity.RecordStatus.VALID)
+                .map(r -> {
+                    try {
+                        M submission = abstractObservationFactory.create(mapper.readValue(r.getJson(), observationSerializationBeanClass));
+                        r.setAbstractObservation(submission);
+                        return r;
+                    } catch (IOException e) {
+                        LOGGER.error("Error de-serializing stored JSON: " + e.getMessage());
+                        return r;
+                  }
+                })
+                .collect(Collectors.toList());
     }
 
     /**

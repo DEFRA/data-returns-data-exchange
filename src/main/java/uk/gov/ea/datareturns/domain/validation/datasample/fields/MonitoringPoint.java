@@ -10,6 +10,8 @@ import uk.gov.ea.datareturns.domain.validation.newmodel.entityfields.FieldValue;
  * @author Sam Gardner-Dell
  */
 public class MonitoringPoint implements FieldValue<String> {
+    public static final String FIELD_NAME = "Mon_Point";
+
     @NotBlank(message = "DR9060-Missing")
     @Length(max = 50, message = "DR9060-Length")
     private String monitoringPoint;

@@ -28,6 +28,7 @@ public class RecordAdaptor implements EntityAdaptor<Record, RecordEntity> {
         this.submissionService = submissionServiceMap.get(SubmissionConfiguration.SubmissionServiceProvider.DATA_SAMPLE_V1);
     }
 
+    // TODO - not used here...sort out
     @Override
     public RecordEntity convert(Record record) {
         return null;

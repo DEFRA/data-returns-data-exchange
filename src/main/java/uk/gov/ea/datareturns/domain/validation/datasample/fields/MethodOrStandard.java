@@ -15,6 +15,8 @@ public class MethodOrStandard
         extends AbstractEntityValue<MethodOrStandardDao, uk.gov.ea.datareturns.domain.jpa.entities.masterdata.impl.MethodOrStandard> {
     private static final MethodOrStandardDao DAO = EntityDao.getDao(MethodOrStandardDao.class);
 
+    public static final String FIELD_NAME = "Meth_Stand";
+
     @ControlledList(auditor = MethodOrStandardAuditorNew.class, message = "DR9100-Incorrect")
     private final String inputValue;
 

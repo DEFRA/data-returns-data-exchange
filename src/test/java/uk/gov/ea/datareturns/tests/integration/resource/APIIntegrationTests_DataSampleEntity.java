@@ -10,6 +10,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 import uk.gov.ea.datareturns.App;
 import uk.gov.ea.datareturns.config.SubmissionConfiguration;
 import uk.gov.ea.datareturns.config.TestSettings;
+import uk.gov.ea.datareturns.domain.jpa.entities.userdata.AbstractObservation;
 import uk.gov.ea.datareturns.domain.jpa.entities.userdata.impl.DatasetEntity;
 import uk.gov.ea.datareturns.domain.jpa.entities.userdata.impl.RecordEntity;
 import uk.gov.ea.datareturns.domain.jpa.entities.userdata.impl.User;
@@ -25,6 +26,8 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * @author Graham Willis
@@ -190,10 +193,11 @@ public class APIIntegrationTests_DataSampleEntity {
         List<RecordEntity> recordEntities = submissionService.createRecords(dataset, list);
         submissionService.validate(recordEntities);
         recordEntities.stream().forEach(r -> Assert.assertEquals(RecordEntity.RecordStatus.VALID, r.getRecordStatus()));
-        submissionService.evaluateSubstitutes(recordEntities);
-        //recordEntities.stream().forEach(r -> Assert.assertEquals(RecordEntity.RecordStatus.SUBMITTED, r.getRecordStatus()));
+        recordEntities = submissionService.evaluateSubstitutes(recordEntities);
+        Assert.assertEquals(3, recordEntities.get(0).getAbstractObservation().getEntitySubstitutions().size());
+        List<Set<AbstractObservation.EntitySubstitution>> substitutions = recordEntities.stream().map(RecordEntity::getAbstractObservation).map(AbstractObservation::getEntitySubstitutions).distinct().collect(Collectors.toList());
+        Assert.assertEquals(3, substitutions.size());
     }
-
 
     // Create and validate a set of valid and invalid records
     @Test public void createAndValidateValidAndInvalidRecords() throws IOException {

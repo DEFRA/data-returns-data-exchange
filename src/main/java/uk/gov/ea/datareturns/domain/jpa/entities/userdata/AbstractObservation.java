@@ -65,6 +65,26 @@ public abstract class AbstractObservation implements Userdata {
         public String getPreferred() {
             return preferred;
         }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+
+            EntitySubstitution that = (EntitySubstitution) o;
+
+            if (entity != null ? !entity.equals(that.entity) : that.entity != null) return false;
+            if (submitted != null ? !submitted.equals(that.submitted) : that.submitted != null) return false;
+            return preferred != null ? preferred.equals(that.preferred) : that.preferred == null;
+        }
+
+        @Override
+        public int hashCode() {
+            int result = entity != null ? entity.hashCode() : 0;
+            result = 31 * result + (submitted != null ? submitted.hashCode() : 0);
+            result = 31 * result + (preferred != null ? preferred.hashCode() : 0);
+            return result;
+        }
     }
 
     public void addSubstution(String entity, String submitted, String preferred) {

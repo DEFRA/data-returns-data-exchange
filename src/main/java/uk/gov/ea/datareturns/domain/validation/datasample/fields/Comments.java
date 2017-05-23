@@ -9,6 +9,9 @@ import uk.gov.ea.datareturns.domain.validation.newmodel.entityfields.FieldValue;
  * @author Sam Gardner-Dell
  */
 public class Comments implements FieldValue<String> {
+
+    public static final String FIELD_NAME = "Comments";
+
     @Length(max = 255, message = "DR9140-Length")
     private final String inputValue;
 

@@ -12,6 +12,7 @@ import uk.gov.ea.datareturns.domain.validation.newmodel.entityfields.AbstractAli
  * @author Sam Gardner-Dell
  */
 public class ReferencePeriod extends AbstractAliasingEntityValue<uk.gov.ea.datareturns.domain.jpa.entities.masterdata.impl.ReferencePeriod> {
+    public static final String FIELD_NAME = "Ref_Period";
     private static final ReferencePeriodDao DAO = EntityDao.getDao(ReferencePeriodDao.class);
     @ControlledList(auditor = ReferencePeriodAuditorNew.class, message = "DR9090-Incorrect")
     private final String inputValue;

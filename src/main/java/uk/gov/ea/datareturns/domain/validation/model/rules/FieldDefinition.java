@@ -14,6 +14,7 @@ import java.util.Set;
  *
  * @author Sam Gardner-Dell
  */
+// TODO - GMW remove - this is redundant in the new API
 public enum FieldDefinition {
     /** The EA Unique Identifier (EA_ID) */
     EA_ID("EA_ID", EaId.class),

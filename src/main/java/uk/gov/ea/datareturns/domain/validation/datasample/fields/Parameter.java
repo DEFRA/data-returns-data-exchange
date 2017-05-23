@@ -14,6 +14,7 @@ import uk.gov.ea.datareturns.domain.validation.newmodel.entityfields.AbstractAli
  * @author Sam Gardner-Dell
  */
 public class Parameter extends AbstractAliasingEntityValue<uk.gov.ea.datareturns.domain.jpa.entities.masterdata.impl.Parameter> {
+    public static final String FIELD_NAME = "Parameter";
     private static final ParameterDao DAO = EntityDao.getDao(ParameterDao.class);
 
     @NotBlank(message = "DR9030-Missing")

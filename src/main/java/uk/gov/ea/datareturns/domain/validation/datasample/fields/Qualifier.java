@@ -12,6 +12,7 @@ import uk.gov.ea.datareturns.domain.validation.newmodel.entityfields.AbstractEnt
  * @author Sam Gardner-Dell
  */
 public class Qualifier extends AbstractEntityValue<QualifierDao, uk.gov.ea.datareturns.domain.jpa.entities.masterdata.impl.Qualifier> {
+    public static final String FIELD_NAME = "Qualifier";
     private static final QualifierDao DAO = EntityDao.getDao(QualifierDao.class);
 
     @ControlledList(auditor = QualifierAuditorNew.class, message = "DR9180-Incorrect")

@@ -12,6 +12,7 @@ import uk.gov.ea.datareturns.domain.validation.newmodel.entityfields.AbstractAli
  * @author Sam Gardner-Dell
  */
 public class Unit extends AbstractAliasingEntityValue<uk.gov.ea.datareturns.domain.jpa.entities.masterdata.impl.Unit> {
+    public static final String FIELD_NAME = "Unit";
     private static final UnitDao DAO = EntityDao.getDao(UnitDao.class);
 
     @ControlledList(auditor = UnitAuditorNew.class, message = "DR9050-Incorrect")

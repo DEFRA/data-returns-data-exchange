@@ -13,6 +13,7 @@ import uk.gov.ea.datareturns.domain.validation.newmodel.entityfields.AbstractEnt
  * @author Sam Gardner-Dell
  */
 public class ReturnType extends AbstractEntityValue<ReturnTypeDao, uk.gov.ea.datareturns.domain.jpa.entities.masterdata.impl.ReturnType> {
+    public static final String FIELD_NAME = "Rtn_Type";
     private static final ReturnTypeDao DAO = EntityDao.getDao(ReturnTypeDao.class);
 
     @NotBlank(message = "DR9010-Missing")

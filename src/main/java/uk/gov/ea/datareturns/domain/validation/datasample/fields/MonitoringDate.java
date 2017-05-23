@@ -17,6 +17,7 @@ import java.time.ZoneOffset;
  */
 @ValidMonitoringDate
 public class MonitoringDate implements FieldValue<Instant> {
+    public static final String FIELD_NAME = "Mon_Date";
     /** The {@link Instant} representing the date that was specified */
     private Instant instant;
     /** Flag to store if the time was specified as part of the date */

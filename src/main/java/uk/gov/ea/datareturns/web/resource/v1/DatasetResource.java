@@ -7,7 +7,9 @@ import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import uk.gov.ea.datareturns.config.SubmissionConfiguration;
+import uk.gov.ea.datareturns.domain.jpa.entities.userdata.AbstractObservation;
 import uk.gov.ea.datareturns.domain.jpa.entities.userdata.impl.DatasetEntity;
+import uk.gov.ea.datareturns.domain.jpa.entities.userdata.impl.RecordEntity;
 import uk.gov.ea.datareturns.domain.jpa.service.SubmissionService;
 import uk.gov.ea.datareturns.web.resource.v1.model.common.Preconditions;
 import uk.gov.ea.datareturns.web.resource.v1.model.common.references.EntityReference;
@@ -23,10 +25,8 @@ import javax.annotation.Resource;
 import javax.validation.constraints.Pattern;
 import javax.ws.rs.*;
 import javax.ws.rs.core.*;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.stream.Collectors;
 
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 import static javax.ws.rs.core.MediaType.APPLICATION_XML;
@@ -377,27 +377,34 @@ public class DatasetResource {
             @ApiParam("The unique identifier for the target dataset") final String datasetId)
             throws Exception {
 
-        DatasetStatus testStatus = new DatasetStatus();
+        DatasetEntity datasetEntity = submissionService.getDataset(datasetId);
+
+        // TODO plugin the dataset status
+        DatasetStatus datasetStatus = new DatasetStatus();
 
         // Submission status
         DatasetSubmissionStatus submissionStatus = new DatasetSubmissionStatus();
         submissionStatus.setStatus(DatasetSubmissionStatus.Status.UNSUBMITTED);
-        testStatus.setSubmission(submissionStatus);
+        datasetStatus.setSubmission(submissionStatus);
 
         // Substitution status
+        List<RecordEntity> recordEntities = submissionService.getRecords(datasetEntity);
+        recordEntities = submissionService.evaluateSubstitutes(recordEntities);
         DatasetSubstitutions substitutions = new DatasetSubstitutions();
-        for (int i = 0; i < 20; i += 2 + Math.round(Math.random())) {
-            substitutions.addSubstitution("record" + i, "EA_ID", "12345", "AB1234CD");
-            substitutions.addSubstitution("record" + (i + 1), "EA_ID", "98765", "ZY9876BA");
-        }
-        for (int i = 0; i < 20; i += 1 + Math.round(Math.random() * 2)) {
-            substitutions.addSubstitution("record" + i, "Parameter", "CO2", "Carbon Dioxide");
-        }
-        testStatus.setSubstitutions(substitutions);
 
-        // Validation status
-        // TODO
-        return Response.status(Response.Status.OK).entity(testStatus).build();
+        for (RecordEntity recordEntity : recordEntities) {
+            if (recordEntity.getAbstractObservation() != null) {
+                for (AbstractObservation.EntitySubstitution entitySubstitution : recordEntity.getAbstractObservation().getEntitySubstitutions()) {
+                    substitutions.addSubstitution(recordEntity.getIdentifier(),
+                            entitySubstitution.getEntity(),
+                            entitySubstitution.getSubmitted(),
+                            entitySubstitution.getPreferred());
+                }
+            }
+        }
+
+        datasetStatus.setSubstitutions(substitutions);
+        return Response.status(Response.Status.OK).entity(datasetStatus).build();
     }
 
     /**

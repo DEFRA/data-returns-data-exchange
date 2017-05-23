@@ -13,6 +13,8 @@ import uk.gov.ea.datareturns.domain.validation.newmodel.entityfields.AbstractAli
  * @author Sam Gardner-Dell
  */
 public class TxtValue extends AbstractAliasingEntityValue<TextValue> {
+    public static final String FIELD_NAME = "Txt_Value";
+
     private static final TextValueDao DAO = EntityDao.getDao(TextValueDao.class);
     @ControlledList(auditor = TxtValueAuditorNew.class, message = "DR9080-Incorrect")
     private final String inputValue;

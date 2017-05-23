@@ -9,6 +9,7 @@ import uk.gov.ea.datareturns.domain.validation.newmodel.entityfields.FieldValue;
  * @author Sam Gardner-Dell
  */
 public class SiteName implements FieldValue<String> {
+    public static final String FIELD_NAME = "Site_Name";
 
     @NotBlank(message = "DR9110-Missing")
     private final String inputValue;

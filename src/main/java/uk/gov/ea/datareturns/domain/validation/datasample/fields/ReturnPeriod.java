@@ -11,6 +11,7 @@ import uk.gov.ea.datareturns.domain.validation.newmodel.rules.ReturnPeriodFormat
  * @author Sam Gardner-Dell Created by sam on 04/10/16.
  */
 public class ReturnPeriod implements FieldValue<String> {
+    public static final String FIELD_NAME = "Rtn_Period";
     @ControlledList(auditor = ReturnPeriodAuditorNew.class, message = "DR9070-Incorrect")
     private final String inputValue;
     private final String value;
