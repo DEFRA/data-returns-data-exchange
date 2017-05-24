@@ -7,25 +7,22 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.transaction.annotation.Transactional;
 import uk.gov.ea.datareturns.domain.jpa.dao.userdata.factories.AbstractObservationFactory;
-import uk.gov.ea.datareturns.domain.jpa.dao.userdata.impl.DatasetDao;
 import uk.gov.ea.datareturns.domain.jpa.dao.userdata.impl.ObservationDao;
 import uk.gov.ea.datareturns.domain.jpa.dao.userdata.impl.RecordDao;
-import uk.gov.ea.datareturns.domain.jpa.dao.userdata.impl.UserDao;
 import uk.gov.ea.datareturns.domain.jpa.entities.userdata.AbstractObservation;
 import uk.gov.ea.datareturns.domain.jpa.entities.userdata.impl.DatasetEntity;
 import uk.gov.ea.datareturns.domain.jpa.entities.userdata.impl.RecordEntity;
-import uk.gov.ea.datareturns.domain.jpa.entities.userdata.impl.User;
 import uk.gov.ea.datareturns.domain.jpa.entities.userdata.impl.ValidationError;
 import uk.gov.ea.datareturns.domain.validation.newmodel.validator.Mvo;
-import uk.gov.ea.datareturns.domain.validation.newmodel.validator.MvoFactory;
+import uk.gov.ea.datareturns.domain.validation.newmodel.validator.NewMvoFactory;
 import uk.gov.ea.datareturns.domain.validation.newmodel.validator.ObservationValidator;
-import uk.gov.ea.datareturns.web.resource.ObservationSerializationBean;
+import uk.gov.ea.datareturns.web.resource.v1.model.record.payload.DataSamplePayload;
+import uk.gov.ea.datareturns.web.resource.v1.model.record.payload.Payload;
 
 import java.io.IOException;
 import java.time.Instant;
 import java.util.*;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 /**
  * @author Graham Willis
@@ -48,53 +45,32 @@ import java.util.stream.Stream;
  *         <p>
  *         The service is created by the submission service configuration
  */
-public class SubmissionService<D extends ObservationSerializationBean, M extends AbstractObservation, V extends Mvo> {
+@SuppressWarnings("Duplicates")
+public class SubmissionService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(SubmissionService.class);
 
-    private final Class<D> observationSerializationBeanClass;
-    private final Class<D[]> observationSerializationBeanArrayClass;
-    private final MvoFactory<D, V> mvoFactory;
-    private final UserDao userDao;
-    private final DatasetDao datasetDao;
+    private final NewMvoFactory mvoFactory;
     private final RecordDao recordDao;
-    private final ObservationDao<M> measurementDao;
-    private final ObservationValidator<V> validator;
-    private final AbstractObservationFactory<M, D> abstractObservationFactory;
-
+    private final ObservationDao observationDao;
+    private final ObservationValidator<Mvo> validator;
     private final static ObjectMapper mapper = new ObjectMapper();
 
-    /**
-     * @param observationSerializationBeanClass Class of the data transfer object
-     * @param userDao             The user data access object
-     * @param datasetDao          The dataset data access object
-     * @param recordDao           The record data access object
-     * @param validator           The validator to be used
-     */
-    public SubmissionService(Class<D> observationSerializationBeanClass,
-            Class<D[]> observationSerializationBeanArrayClass,
-            MvoFactory<D, V> mvoFactory,
-            UserDao userDao,
-            DatasetDao datasetDao,
-            RecordDao recordDao,
-            ObservationDao<M> submissionDao,
-            ObservationValidator<V> validator,
-            AbstractObservationFactory<M, D> abstractObservationFactory) {
+    public SubmissionService(NewMvoFactory mvoFactory,
+                             RecordDao recordDao,
+                             ObservationDao observationDao,
+                             ObservationValidator<Mvo> validator) {
 
-        this.observationSerializationBeanClass = observationSerializationBeanClass;
-        this.observationSerializationBeanArrayClass = observationSerializationBeanArrayClass;
+
         this.mvoFactory = mvoFactory;
-        this.userDao = userDao;
-        this.datasetDao = datasetDao;
         this.recordDao = recordDao;
-        this.measurementDao = submissionDao;
         this.validator = validator;
-        this.abstractObservationFactory = abstractObservationFactory;
+        this.observationDao = observationDao;
 
-        LOGGER.info("Initializing submission service for datum type: " + observationSerializationBeanClass.getSimpleName());
+        LOGGER.info("Initializing submissions service: ");
         mapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
         mapper.enable(DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY);
-
+        mapper.enableDefaultTyping();
     }
 
     /****************************************************************************************
@@ -103,7 +79,7 @@ public class SubmissionService<D extends ObservationSerializationBean, M extends
      * Bulk record and submission centric operations require a the use of nested class to
      * couple given identifiers and observationSerializationBeans either of which may be given as null
      ****************************************************************************************/
-    public static class ObservationIdentifierPair<D> {
+    public static class ObservationIdentifierPair<D extends Payload> {
         final String identifier;
         final D datum;
 
@@ -126,7 +102,6 @@ public class SubmissionService<D extends ObservationSerializationBean, M extends
             this.identifier = UUID.randomUUID().toString();
             this.datum = null;
         }
-
     }
 
     /**
@@ -136,30 +111,20 @@ public class SubmissionService<D extends ObservationSerializationBean, M extends
      * @param json The json string to parseJsonArray
      * @return A list of data transfer objects
      */
-    public List<D> parseJsonArray(String json) {
+    public List<Payload> parseJsonArray(String json) {
         try {
-            return Arrays.asList(mapper.readValue(json, observationSerializationBeanArrayClass));
+            return Arrays.asList(mapper.readValue(json, Payload[].class));
         } catch (IOException e) {
-            LOGGER.info("Cannot parseJsonArray JSON: " + json + ": " + e.getMessage());
+            LOGGER.info("Cannot parse json array: " + json + ": " + e.getMessage());
             return null;
         }
     }
 
-    /**
-     * Parse a JSON string and create the data transfer objects. Used primarily for testing
-     * as jersey will be responsible for the initial deserialization of messages
-     *
-     * @param json The json string to parseJsonArray
-     * @return A list of data transfer objects
-     */
-    public D parseJsonObject(String json) {
+    public Payload parseJsonObject(String json) {
         try {
-            if (json == null || json.isEmpty()) {
-                return null;
-            }
-            return (mapper.readValue(json, observationSerializationBeanClass));
+            return mapper.readValue(json, Payload.class);
         } catch (IOException e) {
-            LOGGER.info("Cannot parseJsonArray JSON: " + json + ": " + e.getMessage());
+            LOGGER.info("Cannot parse json: " + json + ": " + e.getMessage());
             return null;
         }
     }
@@ -227,7 +192,7 @@ public class SubmissionService<D extends ObservationSerializationBean, M extends
      * @return A list of records
      */
     @Transactional
-    public List<RecordEntity> createRecords(DatasetEntity dataset, List<ObservationIdentifierPair<D>> datumIdentifierPairs) {
+    public <D extends Payload> List<RecordEntity> createRecords(DatasetEntity dataset, List<ObservationIdentifierPair<D>> datumIdentifierPairs) {
         return datumIdentifierPairs.stream()
                 .map(p -> createOrResetRecord(dataset, p.identifier, p.datum))
                 .collect(Collectors.toList());
@@ -243,7 +208,7 @@ public class SubmissionService<D extends ObservationSerializationBean, M extends
      * @return A list of records
      */
     @Transactional
-    public RecordEntity createRecord(DatasetEntity dataset, ObservationIdentifierPair<D> datumIdentifierPair) {
+    public <D extends Payload> RecordEntity createRecord(DatasetEntity dataset, ObservationIdentifierPair<D> datumIdentifierPair) {
         return createOrResetRecord(dataset, datumIdentifierPair.identifier, datumIdentifierPair.datum);
     }
 
@@ -255,25 +220,24 @@ public class SubmissionService<D extends ObservationSerializationBean, M extends
      */
     @Transactional
     public void validate(RecordEntity record) {
-        D observationSerializationBean = null;
-        V validationObject;
-
+        Payload payload = null;
         if (record.getJson() != null && !record.getJson().isEmpty()) {
             try {
-                observationSerializationBean = mapper.readValue(record.getJson(), observationSerializationBeanClass);
+                payload = mapper.readValue(record.getJson(), Payload.class);
             } catch (IOException e) {
                 LOGGER.error("Error de-serializing stored JSON: " + e.getMessage());
             }
-            validationObject = mvoFactory.create(observationSerializationBean);
+            Mvo validationObject = mvoFactory.create(payload);
+
             Set<ValidationError> validationErrors = validator.validateObservation(validationObject);
 
             if (validationErrors.size() == 0) {
                 record.setRecordStatus(RecordEntity.RecordStatus.VALID);
             } else {
-                //String result = mapper.writeValueAsString(validationResult);
                 record.setValidationErrors(validationErrors);
                 record.setRecordStatus(RecordEntity.RecordStatus.INVALID);
             }
+
             record.setLastChangedDate(Instant.now());
             recordDao.merge(record);
         }
@@ -290,19 +254,21 @@ public class SubmissionService<D extends ObservationSerializationBean, M extends
     public void validate(Collection<RecordEntity> recordEntities) {
         // Deserialize the list of samples from the JSON
         // field in the record and pass store in a map
-        Map<RecordEntity, V> mvos = recordEntities.stream()
+        Map<RecordEntity, Mvo> mvos = recordEntities.stream()
                 .filter(r -> r.getJson() != null && !r.getJson().isEmpty())
                 .collect(Collectors.toMap(
                         r -> r,
                         r -> {
-                            D observationSerializationBean;
+                            Payload payload;
                             try {
-                                observationSerializationBean = mapper.readValue(r.getJson(), observationSerializationBeanClass);
+                                payload = mapper.readValue(r.getJson(), Payload.class);
                             } catch (IOException e) {
                                 LOGGER.error("Error de-serializing stored JSON: " + e.getMessage());
                                 return null;
                             }
-                            return mvoFactory.create(observationSerializationBean);
+
+                            // Create a validation object MVO using the factory
+                            return mvoFactory.create(payload);
                         }
                 ));
 
@@ -338,12 +304,14 @@ public class SubmissionService<D extends ObservationSerializationBean, M extends
                 .filter(r -> r.getRecordStatus() == RecordEntity.RecordStatus.VALID)
                 .forEach(r -> {
                     try {
-                        M submission = abstractObservationFactory.create(mapper.readValue(r.getJson(), observationSerializationBeanClass));
+                        Payload payload = mapper.readValue(r.getJson(), Payload.class);
+                        AbstractObservationFactory factory = AbstractObservationFactory.factoryFor(payload.getClass());
+                        AbstractObservation submission = factory.create(payload);
                         r.setAbstractObservation(submission);
                         r.setRecordStatus(RecordEntity.RecordStatus.SUBMITTED);
                         r.getAbstractObservation().setRecordEntity(r);
                         r.setLastChangedDate(Instant.now());
-                        measurementDao.persist(submission);
+                        observationDao.persist(submission);
                         recordDao.merge(r);
                     } catch (IOException e) {
                         LOGGER.error("Error de-serializing stored JSON: " + e.getMessage());
@@ -366,13 +334,14 @@ public class SubmissionService<D extends ObservationSerializationBean, M extends
                 .filter(r -> r.getRecordStatus() == RecordEntity.RecordStatus.VALID)
                 .map(r -> {
                     try {
-                        M submission = abstractObservationFactory.create(mapper.readValue(r.getJson(), observationSerializationBeanClass));
+                        Payload payload = mapper.readValue(r.getJson(), Payload.class);
+                        AbstractObservation submission = AbstractObservationFactory.factoryFor(payload.getClass()).create(payload);
                         r.setAbstractObservation(submission);
                         return r;
                     } catch (IOException e) {
                         LOGGER.error("Error de-serializing stored JSON: " + e.getMessage());
                         return r;
-                  }
+                    }
                 })
                 .collect(Collectors.toList());
     }
@@ -391,7 +360,7 @@ public class SubmissionService<D extends ObservationSerializationBean, M extends
      *
      * @return
      */
-    private RecordEntity createOrResetRecord(DatasetEntity dataset, String identifier, D observationSerializationBean) {
+    private <D extends Payload> RecordEntity createOrResetRecord(DatasetEntity dataset, String identifier, D observationSerializationBean) {
         RecordEntity recordEntity = getOrCreateRecord(dataset, identifier);
         RecordEntity.RecordStatus newRecordStatus = recordEntity.getRecordStatus();
 
@@ -477,112 +446,6 @@ public class SubmissionService<D extends ObservationSerializationBean, M extends
             recordEntity.setLastChangedDate(timestamp);
         }
         return recordEntity;
-    }
-
-    /**
-     * Get the default (system) user
-     *
-     * @return
-     */
-    @Transactional(readOnly = true)
-    public User getSystemUser() {
-        return userDao.getSystemUser();
-    }
-
-    /**
-     * Create a new user
-     *
-     * @param identifier The username
-     * @return The user
-     */
-    @Transactional
-    public User createUser(String identifier) {
-        User user = new User();
-        user.setIdentifier(identifier);
-        user.setCreateDate(Instant.now());
-        user.setLastChangedDate(Instant.now());
-        userDao.persist(user);
-        return user;
-    }
-
-    /**
-     * Get a user entity from its identifier
-     *
-     * @param identifier
-     * @return
-     */
-    @Transactional(readOnly = true)
-    public User getUser(String identifier) {
-        return userDao.get(identifier);
-    }
-
-    /**
-     * Remove a user entity by its identifier
-     *
-     * @param identifier
-     */
-    @Transactional
-    public void removeUser(String identifier) {
-        userDao.remove(identifier);
-    }
-
-    /****************************************************************************************
-     * DatasetEntity centric operations
-     ****************************************************************************************/
-
-    /**
-     * Create a persisted dataset from a detached entity
-     *
-     * @param newDatasetEntity
-     */
-    @Transactional
-    public void createDataset(DatasetEntity newDatasetEntity) {
-        Instant timestamp = Instant.now();
-        newDatasetEntity.setCreateDate(timestamp);
-        newDatasetEntity.setLastChangedDate(timestamp);
-        if (newDatasetEntity.getIdentifier() == null) {
-            newDatasetEntity.setIdentifier(UUID.randomUUID().toString());
-        }
-        if (newDatasetEntity.getUser() == null) {
-            newDatasetEntity.setUser(getSystemUser());
-        }
-        datasetDao.persist(newDatasetEntity);
-    }
-
-    @Transactional
-    public void updateDataset(DatasetEntity datasetEntity) {
-        datasetEntity.setLastChangedDate(Instant.now());
-        datasetDao.merge(datasetEntity);
-    }
-
-    @Transactional(readOnly = true)
-    public List<DatasetEntity> getDatasets(User user) {
-        return datasetDao.list(user);
-    }
-
-    @Transactional(readOnly = true)
-    public List<DatasetEntity> getDatasets() {
-        return datasetDao.list(getSystemUser());
-    }
-
-    @Transactional
-    public void removeDataset(String identifier) {
-        datasetDao.remove(getSystemUser(), identifier);
-    }
-
-    @Transactional
-    public void removeDataset(String identifier, User user) {
-        datasetDao.remove(user, identifier);
-    }
-
-    @Transactional(readOnly = true)
-    public DatasetEntity getDataset(String datasetId) {
-        return getDataset(datasetId, getSystemUser());
-    }
-
-    @Transactional(readOnly = true)
-    public DatasetEntity getDataset(String datasetId, User user) {
-        return datasetDao.get(user, datasetId);
     }
 
 }

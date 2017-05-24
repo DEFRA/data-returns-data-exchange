@@ -5,6 +5,8 @@ import uk.gov.ea.datareturns.domain.jpa.dao.masterdata.Key;
 import uk.gov.ea.datareturns.domain.jpa.dao.masterdata.ParameterDao;
 import uk.gov.ea.datareturns.domain.jpa.dao.userdata.factories.AbstractObservationFactory;
 import uk.gov.ea.datareturns.domain.jpa.entities.userdata.impl.BasicMeasurement;
+import uk.gov.ea.datareturns.web.resource.v1.model.record.payload.DataSamplePayload;
+import uk.gov.ea.datareturns.web.resource.v1.model.record.payload.DemonstrationAlternativePayload;
 
 import java.math.BigDecimal;
 
@@ -12,15 +14,15 @@ import java.math.BigDecimal;
  * @author Graham Willis
  * Used to generate instances of the hibernate persistence entity
  */
-public class BasicMeasurementFactory implements AbstractObservationFactory<BasicMeasurement, BasicMeasurementDto> {
+public class BasicMeasurementFactory extends AbstractObservationFactory<BasicMeasurement, DemonstrationAlternativePayload> {
 
     private final ParameterDao parameterDao;
 
     public BasicMeasurementFactory(ParameterDao parameterDao) {
+        super(DemonstrationAlternativePayload.class);
         this.parameterDao = parameterDao;
     }
 
-    @Override
     public BasicMeasurement create(BasicMeasurementDto dto) {
         BasicMeasurement basicMeasurement = new BasicMeasurement();
 
@@ -28,5 +30,10 @@ public class BasicMeasurementFactory implements AbstractObservationFactory<Basic
         basicMeasurement.setNumericValue(new BigDecimal(dto.getValue()));
 
         return basicMeasurement;
+    }
+
+    @Override
+    public BasicMeasurement create(DemonstrationAlternativePayload payload) {
+        return null;
     }
 }

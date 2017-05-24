@@ -10,6 +10,7 @@ import uk.gov.ea.datareturns.config.SubmissionConfiguration;
 import uk.gov.ea.datareturns.domain.jpa.entities.userdata.AbstractObservation;
 import uk.gov.ea.datareturns.domain.jpa.entities.userdata.impl.DatasetEntity;
 import uk.gov.ea.datareturns.domain.jpa.entities.userdata.impl.RecordEntity;
+import uk.gov.ea.datareturns.domain.jpa.service.DatasetService;
 import uk.gov.ea.datareturns.domain.jpa.service.SubmissionService;
 import uk.gov.ea.datareturns.web.resource.v1.model.common.Linker;
 import uk.gov.ea.datareturns.web.resource.v1.model.common.Preconditions;
@@ -23,6 +24,7 @@ import uk.gov.ea.datareturns.web.resource.v1.model.response.ErrorResponse;
 import uk.gov.ea.datareturns.web.resource.v1.model.response.MultiStatusResponse;
 
 import javax.annotation.Resource;
+import javax.inject.Inject;
 import javax.validation.constraints.Pattern;
 import javax.ws.rs.*;
 import javax.ws.rs.core.Context;
@@ -53,21 +55,22 @@ import static javax.ws.rs.core.MediaType.APPLICATION_XML;
 @Component
 @Scope(ConfigurableBeanFactory.SCOPE_SINGLETON)
 public class DatasetResource {
-    private static final Logger LOGGER = LoggerFactory.getLogger(DatasetResource.class);
+    private final DatasetService datasetService;
 
     @Context
     private UriInfo uriInfo;
+    private SubmissionService submissionService;
 
-    private SubmissionService<?, ?, ?> submissionService;
+    @Inject
+    DatasetResource(DatasetService datasetService, SubmissionService submissionService) {
+        this.datasetService = datasetService;
+        this.submissionService = submissionService;
+    }
 
     /**
      * Retrieves the appropriate versioned submission service
      * @param submissionServiceMap
      */
-    @Resource(name = "submissionServiceMap")
-    private void setSubmissionService(Map<SubmissionConfiguration.SubmissionServiceProvider, SubmissionService> submissionServiceMap) {
-        this.submissionService = submissionServiceMap.get(SubmissionConfiguration.SubmissionServiceProvider.DATA_SAMPLE_V1);
-    }
 
     /**
      * List the available datasets
@@ -88,7 +91,7 @@ public class DatasetResource {
     public Response listDatasets() throws Exception {
 
         List<EntityReference> result = new ArrayList<>();
-        List<DatasetEntity> datasets = submissionService.getDatasets();
+        List<DatasetEntity> datasets = datasetService.getDatasets();
 
         for (DatasetEntity dataset : datasets) {
             result.add(new EntityReference(dataset.getIdentifier(), Linker.info(uriInfo).dataset(dataset.getIdentifier())));
@@ -139,7 +142,7 @@ public class DatasetResource {
             MultiStatusResponse multiResponse = new MultiStatusResponse();
 
             for (BatchDatasetRequestItem request : batchRequest.getRequests()) {
-                DatasetEntity datasetEntity = submissionService.getDataset(request.getDatasetId());
+                DatasetEntity datasetEntity = datasetService.getDataset(request.getDatasetId());
                 MultiStatusResponse.Response responseItem = new MultiStatusResponse.Response();
                 responseItem.setId(request.getDatasetId());
 
@@ -200,7 +203,7 @@ public class DatasetResource {
             throws Exception {
 
         Response.ResponseBuilder rb;
-        DatasetEntity dataSetEntity = submissionService.getDataset(datasetId);
+        DatasetEntity dataSetEntity = datasetService.getDataset(datasetId);
 
         if (dataSetEntity == null) {
             rb = ErrorResponse.DATASET_NOT_FOUND.toResponseBuilder();
@@ -250,7 +253,7 @@ public class DatasetResource {
     )
             throws Exception {
 
-        DatasetEntity datasetEntity = submissionService.getDataset(datasetId);
+        DatasetEntity datasetEntity = datasetService.getDataset(datasetId);
 
         Response.ResponseBuilder rb = checkPreconditions(datasetEntity, preconditions);
         if (rb == null) {
@@ -295,14 +298,14 @@ public class DatasetResource {
             throws Exception {
         Response.ResponseBuilder rb;
 
-        DatasetEntity datasetEntity = submissionService.getDataset(datasetId);
+        DatasetEntity datasetEntity = datasetService.getDataset(datasetId);
         if (datasetEntity == null) {
             rb = ErrorResponse.DATASET_NOT_FOUND.toResponseBuilder();
         } else {
             rb = checkPreconditions(datasetEntity, preconditions);
             if (rb == null) {
                 // Preconditions passed, delete the resource
-                submissionService.removeDataset(datasetId);
+                datasetService.removeDataset(datasetId);
                 rb = Response.status(Response.Status.NO_CONTENT);
             }
         }
@@ -334,7 +337,7 @@ public class DatasetResource {
 
         Linker linker = Linker.info(uriInfo);
 
-        DatasetEntity datasetEntity = submissionService.getDataset(datasetId);
+        DatasetEntity datasetEntity = datasetService.getDataset(datasetId);
 
         // TODO plugin the dataset status
         DatasetStatus datasetStatus = new DatasetStatus();
@@ -436,13 +439,13 @@ public class DatasetResource {
             dataset = DatasetAdaptor.getInstance().convert(datasetEntity);
             dataset.setProperties(datasetProperties);
             newDatasetEntity = DatasetAdaptor.getInstance().merge(datasetEntity, dataset);
-            submissionService.updateDataset(newDatasetEntity);
+            datasetService.updateDataset(newDatasetEntity);
         } else {
             dataset = new Dataset();
             dataset.setId(datasetId);
             dataset.setProperties(datasetProperties);
             newDatasetEntity = DatasetAdaptor.getInstance().merge(datasetEntity, dataset);
-            submissionService.createDataset(newDatasetEntity);
+            datasetService.createDataset(newDatasetEntity);
             status = Response.Status.CREATED;
         }
         dataset = DatasetAdaptor.getInstance().convert(newDatasetEntity);

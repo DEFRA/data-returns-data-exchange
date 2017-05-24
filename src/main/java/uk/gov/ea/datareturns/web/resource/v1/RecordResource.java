@@ -10,6 +10,7 @@ import org.springframework.stereotype.Component;
 import uk.gov.ea.datareturns.config.SubmissionConfiguration;
 import uk.gov.ea.datareturns.domain.jpa.entities.userdata.impl.DatasetEntity;
 import uk.gov.ea.datareturns.domain.jpa.entities.userdata.impl.RecordEntity;
+import uk.gov.ea.datareturns.domain.jpa.service.DatasetService;
 import uk.gov.ea.datareturns.domain.jpa.service.SubmissionService;
 import uk.gov.ea.datareturns.web.resource.v1.model.common.Linker;
 import uk.gov.ea.datareturns.web.resource.v1.model.common.Preconditions;
@@ -58,20 +59,11 @@ public class RecordResource {
     private static final Logger LOGGER = LoggerFactory.getLogger(RecordResource.class);
     private final ApplicationContext context;
     private final RecordAdaptor recordAdaptor;
+    private final SubmissionService submissionService;
+    private final DatasetService datasetService;
+
     @Context
     private UriInfo uriInfo;
-
-    // TODO: Graham, we are hard-coded to DataSamplePayload here, we should use a factory inside the service layer to prevent this
-    private SubmissionService<DataSamplePayload, ?, ?> submissionService;
-
-    /**
-     * Retrieves the appropriate versioned submission service
-     * @param submissionServiceMap
-     */
-    @Resource(name = "submissionServiceMap")
-    private void setSubmissionService(Map<SubmissionConfiguration.SubmissionServiceProvider, SubmissionService> submissionServiceMap) {
-        this.submissionService = submissionServiceMap.get(SubmissionConfiguration.SubmissionServiceProvider.DATA_SAMPLE_V1);
-    }
 
     /**
      * Create a new {@link RecordResource} RESTful service
@@ -79,9 +71,11 @@ public class RecordResource {
      * @param context the spring application context
      */
     @Inject
-    public RecordResource(final ApplicationContext context, RecordAdaptor recordAdaptor) {
+    public RecordResource(final ApplicationContext context, RecordAdaptor recordAdaptor, DatasetService datasetService, SubmissionService submissionService) {
         this.recordAdaptor = recordAdaptor;
         this.context = context;
+        this.datasetService = datasetService;
+        this.submissionService = submissionService;
     }
 
     /**
@@ -108,7 +102,7 @@ public class RecordResource {
             @ApiParam("The unique identifier for the target dataset") final String datasetId)
             throws Exception {
 
-        DatasetEntity datasetEntity = submissionService.getDataset(datasetId);
+        DatasetEntity datasetEntity = datasetService.getDataset(datasetId);
         Response.ResponseBuilder rb;
         if (datasetEntity == null) {
             rb = ErrorResponse.DATASET_NOT_FOUND.toResponseBuilder();
@@ -164,7 +158,7 @@ public class RecordResource {
             throws Exception {
 
         Response.ResponseBuilder rb;
-        DatasetEntity datasetEntity = submissionService.getDataset(datasetId);
+        DatasetEntity datasetEntity = datasetService.getDataset(datasetId);
 
         if (datasetEntity == null) {
             rb = ErrorResponse.DATASET_NOT_FOUND.toResponseBuilder();
@@ -275,7 +269,7 @@ public class RecordResource {
             throws Exception {
 
         Response.ResponseBuilder rb;
-        DatasetEntity datasetEntity = submissionService.getDataset(datasetId);
+        DatasetEntity datasetEntity = datasetService.getDataset(datasetId);
 
         if (datasetEntity == null) {
             rb = ErrorResponse.DATASET_NOT_FOUND.toResponseBuilder();
@@ -340,7 +334,7 @@ public class RecordResource {
             throws Exception {
 
         Response.ResponseBuilder rb;
-        DatasetEntity datasetEntity = submissionService.getDataset(datasetId);
+        DatasetEntity datasetEntity = datasetService.getDataset(datasetId);
 
         if (datasetEntity == null) {
             rb = ErrorResponse.DATASET_NOT_FOUND.toResponseBuilder();
@@ -403,7 +397,7 @@ public class RecordResource {
             throws Exception {
 
         Response.ResponseBuilder rb;
-        DatasetEntity datasetEntity = submissionService.getDataset(datasetId);
+        DatasetEntity datasetEntity = datasetService.getDataset(datasetId);
 
         if (datasetEntity == null) {
             rb = ErrorResponse.DATASET_NOT_FOUND.toResponseBuilder();

@@ -12,7 +12,7 @@ import javax.xml.bind.annotation.XmlRootElement;
  */
 @XmlRootElement(name = "Demo")
 @ApiModel(value = "Demo", description = "Demonstration payload")
-public final class DemonstrationAlternativePayload extends Payload implements ObservationSerializationBean {
+public final class DemonstrationAlternativePayload extends Payload {
 
     private String test;
 

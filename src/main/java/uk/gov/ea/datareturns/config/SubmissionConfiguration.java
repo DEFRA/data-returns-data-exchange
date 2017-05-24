@@ -2,27 +2,19 @@ package uk.gov.ea.datareturns.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import uk.gov.ea.datareturns.domain.dto.impl.BasicMeasurementDto;
 import uk.gov.ea.datareturns.domain.jpa.dao.masterdata.*;
 import uk.gov.ea.datareturns.domain.jpa.dao.userdata.factories.AbstractObservationFactory;
-import uk.gov.ea.datareturns.domain.jpa.dao.userdata.factories.impl.BasicMeasurementFactory;
 import uk.gov.ea.datareturns.domain.jpa.dao.userdata.factories.impl.DataSampleFactory;
 import uk.gov.ea.datareturns.domain.jpa.dao.userdata.impl.*;
-import uk.gov.ea.datareturns.domain.jpa.entities.userdata.impl.BasicMeasurement;
 import uk.gov.ea.datareturns.domain.jpa.entities.userdata.impl.DataSampleEntity;
+import uk.gov.ea.datareturns.domain.jpa.service.DatasetService;
 import uk.gov.ea.datareturns.domain.jpa.service.SubmissionService;
-import uk.gov.ea.datareturns.domain.validation.basicmeasurement.BasicMeasurementMvo;
 import uk.gov.ea.datareturns.domain.validation.datasample.DataSampleMvo;
-import uk.gov.ea.datareturns.domain.validation.newmodel.validator.MvoFactory;
-import uk.gov.ea.datareturns.domain.validation.newmodel.validator.ObservationValidator;
-import uk.gov.ea.datareturns.domain.validation.newmodel.validator.ObservationValidatorImpl;
+import uk.gov.ea.datareturns.domain.validation.newmodel.validator.*;
 import uk.gov.ea.datareturns.web.resource.v1.model.record.payload.DataSamplePayload;
 
 import javax.inject.Inject;
 import javax.validation.Validator;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * @author Graham Willis
@@ -90,81 +82,13 @@ public class SubmissionConfiguration {
         this.unitDao = unitDao;
     }
 
-    /******************************************************************************************************************
-     *
-     * Set up the BasicMeasurement submission service - this is a proof-of-concept to ensure that secondary
-     * observation patterns are truly viable
-     *
-     ******************************************************************************************************************/
-
-    /**
-     * The data access object for the BasicMeasurement Entity
-     * @return
-     */
-    @Bean
-    public ObservationDao<BasicMeasurement> basicMeasuementDao() {
-        return new ObservationDao<>(BasicMeasurement.class);
-    }
-
-    /**
-     * The record to create Basic measurement objects Mvo for validation
-     * @return
-     */
-    @Bean
-    public AbstractObservationFactory<BasicMeasurement, BasicMeasurementDto> basicMeasurementFactory() {
-        return new BasicMeasurementFactory(parameterDao);
-    }
-
-    /**
-     * A record to create the measurement validation objects (mvo's) for the BasicMeasurement
-     * @return
-     */
-    @Bean
-    public MvoFactory<BasicMeasurementDto, BasicMeasurementMvo> mvoFactory() {
-        return new MvoFactory<>(BasicMeasurementMvo.class);
-    }
-
-    /**
-     * Create the validator
-     * @return
-     */
-    @Bean
-    public ObservationValidator<BasicMeasurementMvo> basicMeasurementValidator() {
-        return new ObservationValidatorImpl<>(this.validator, validationErrorDao);
-    }
-
-    /**
-     * Tie it all together in the service bean
-     * @return
-     */
-    @Bean
-    public SubmissionService<BasicMeasurementDto, BasicMeasurement, BasicMeasurementMvo> basicSubmissionService() {
-        return new SubmissionService<>(
-                BasicMeasurementDto.class,
-                BasicMeasurementDto[].class,
-                mvoFactory(),
-                userDao,
-                datasetDao,
-                recordDao,
-                basicMeasuementDao(),
-                basicMeasurementValidator(),
-                basicMeasurementFactory());
-    }
-
-    /******************************************************************************************************************
-     *
-     * Set up the DataSample submission service - this covers landfill submissions and is expected to extend
-     * into other sectors
-     *
-     ******************************************************************************************************************/
-
     /**
      * Create the data access object Dao for database persistence of the DataSampleEntity class
      * @return
      */
     @Bean
-    public ObservationDao<DataSampleEntity> dataSampleDao() {
-        return new ObservationDao<>(DataSampleEntity.class);
+    public ObservationDao observationDao() {
+        return new ObservationDao();
     }
 
     /**
@@ -188,15 +112,6 @@ public class SubmissionConfiguration {
     }
 
     /**
-     * A factory to create the measurement validation objects (mvo's) for the DataSampleEntity
-     * @return
-     */
-    @Bean
-    public MvoFactory<DataSamplePayload, DataSampleMvo> dataSampleMvoFactory() {
-        return new MvoFactory<>(DataSampleMvo.class);
-    }
-
-    /**
      * Create the validator
      * @return
      */
@@ -206,25 +121,22 @@ public class SubmissionConfiguration {
     }
 
     @Bean
-    public SubmissionService<DataSamplePayload, DataSampleEntity, DataSampleMvo>dataSampleSubmissionService() {
-        return new SubmissionService<>(
-                DataSamplePayload.class,
-                DataSamplePayload[].class,
-                dataSampleMvoFactory(),
-                userDao,
-                datasetDao,
-                recordDao,
-                dataSampleDao(),
-                dataSampleValidator(),
-                dataSampleEntityFactory());
+    public DatasetService datasetService() {
+        return new DatasetService(userDao, datasetDao);
     }
 
-    @Bean(name = "submissionServiceMap")
-    public Map<SubmissionServiceProvider, SubmissionService> getSubmissionServiceMap() {
-        Map<SubmissionServiceProvider, SubmissionService> map = new HashMap<>();
-        map.put(SubmissionServiceProvider.BASIC_VERSION_1, basicSubmissionService());
-        map.put(SubmissionServiceProvider.DATA_SAMPLE_V1, dataSampleSubmissionService());
-        return Collections.unmodifiableMap(map);
+    @Bean
+    public ObservationValidator<Mvo> mvoValidator() {
+        return new MvoValidator(this.validator, validationErrorDao);
     }
 
+    @Bean
+    public NewMvoFactory newMvoFactory() {
+        return new NewMvoFactory();
+    }
+
+    @Bean
+    public SubmissionService submissionsService() {
+        return new SubmissionService(newMvoFactory(), recordDao, observationDao(), mvoValidator());
+    }
 }

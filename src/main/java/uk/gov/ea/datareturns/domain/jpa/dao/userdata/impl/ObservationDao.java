@@ -6,14 +6,13 @@ import uk.gov.ea.datareturns.domain.jpa.entities.userdata.AbstractObservation;
 /**
  * @author Graham Willis
  */
-public class ObservationDao<M extends AbstractObservation> extends AbstractUserDataDao<M> {
+public class ObservationDao extends AbstractUserDataDao<AbstractObservation> {
 
     /**
      * Let the Dao class know the type of entity in order that type-safe
      * hibernate operations can be performed
-     *
      */
-    public ObservationDao(Class<M> cls) {
-        super(cls);
+    public ObservationDao() {
+        super(AbstractObservation.class);
     }
 }

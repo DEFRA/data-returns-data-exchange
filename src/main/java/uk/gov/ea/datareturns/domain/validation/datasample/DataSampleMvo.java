@@ -4,6 +4,7 @@ import uk.gov.ea.datareturns.domain.validation.datasample.constraints.annotation
 import uk.gov.ea.datareturns.domain.validation.datasample.fields.*;
 import uk.gov.ea.datareturns.domain.validation.newmodel.validator.Mvo;
 import uk.gov.ea.datareturns.web.resource.v1.model.record.payload.DataSamplePayload;
+import uk.gov.ea.datareturns.web.resource.v1.model.record.payload.Payload;
 
 import javax.validation.Valid;
 
@@ -12,7 +13,7 @@ import javax.validation.Valid;
  * Object contaioning entityfields and hibernate validation annotations
  */
 @ValueTxtValue
-public class DataSampleMvo extends Mvo<DataSamplePayload> {
+public class DataSampleMvo extends Mvo {
 
     /** The EA Unique Identifier (EA_ID) */
     @Valid private EaId eaId;

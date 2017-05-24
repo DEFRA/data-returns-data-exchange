@@ -10,7 +10,7 @@ import uk.gov.ea.datareturns.web.resource.ObservationSerializationBean;
  * @author Sam Gardner-Dell
  */
 @ApiModel(value = "DataSamplePayload", description = "DEP v3.0 compliant monitoring data payload")
-public class DataSamplePayload extends Payload implements ObservationSerializationBean {
+public class DataSamplePayload extends Payload {
     /** The EA Unique Identifier (EA_ID) */
     @JsonProperty("EA_ID")
     private String eaId;

@@ -19,7 +19,7 @@ spring:
     driverClassName: ${db.driver}
   jpa:
     database-platform: ${db.dialect}
-    show-sql: true
+    show-sql: false
     hibernate.jdbc.batch_size: 200
 
 # Congiguration for authorization hashing

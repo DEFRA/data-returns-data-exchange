@@ -17,7 +17,7 @@ import java.math.BigDecimal;
  * @author Graham Willis
  * Boilerplate to generate instances of the hibernate persistence entity
  */
-public class DataSampleFactory implements AbstractObservationFactory<DataSampleEntity, DataSamplePayload> {
+public class DataSampleFactory extends AbstractObservationFactory<DataSampleEntity, DataSamplePayload> {
 
     private final MethodOrStandardDao methodOrStandardDao;
     private final ParameterDao parameterDao;
@@ -44,6 +44,8 @@ public class DataSampleFactory implements AbstractObservationFactory<DataSampleE
         UniqueIdentifierDao uniqueIdentifierDao,
         UnitDao unitDao
     ) {
+        super(DataSamplePayload.class);
+
         this.methodOrStandardDao = methodOrStandardDao;
         this.parameterDao = parameterDao;
         this.qualifierDao = qualifierDao;
@@ -57,7 +59,6 @@ public class DataSampleFactory implements AbstractObservationFactory<DataSampleE
         this.unitDao = unitDao;
     }
 
-    @Override
     public DataSampleEntity create(DataSamplePayload payload) {
         // Set up an observation with teh entity objects and also logging any substitutions made
         DataSampleEntity dataSampleEntity = new DataSampleEntity();

@@ -8,16 +8,16 @@ import org.junit.runner.RunWith;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 import uk.gov.ea.datareturns.App;
-import uk.gov.ea.datareturns.config.SubmissionConfiguration;
 import uk.gov.ea.datareturns.config.TestSettings;
 import uk.gov.ea.datareturns.domain.jpa.entities.userdata.AbstractObservation;
 import uk.gov.ea.datareturns.domain.jpa.entities.userdata.impl.DatasetEntity;
 import uk.gov.ea.datareturns.domain.jpa.entities.userdata.impl.RecordEntity;
 import uk.gov.ea.datareturns.domain.jpa.entities.userdata.impl.User;
+import uk.gov.ea.datareturns.domain.jpa.service.DatasetService;
 import uk.gov.ea.datareturns.domain.jpa.service.SubmissionService;
 import uk.gov.ea.datareturns.web.resource.v1.model.record.payload.DataSamplePayload;
+import uk.gov.ea.datareturns.web.resource.v1.model.record.payload.Payload;
 
-import javax.annotation.Resource;
 import javax.inject.Inject;
 import java.io.File;
 import java.io.IOException;
@@ -25,7 +25,6 @@ import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -37,10 +36,9 @@ import java.util.stream.Collectors;
 @SpringBootTest(classes = App.class)
 public class APIIntegrationTests_DataSampleEntity {
 
-    private Map<SubmissionConfiguration.SubmissionServiceProvider, SubmissionService> submissionServiceMap;
-    private SubmissionService submissionService;
-
     @Inject private TestSettings testSettings;
+    @Inject private DatasetService datasetService;
+    @Inject private SubmissionService submissionService;
 
     private final static String SUBMISSION_SUCCESS = "json/landfill-success.json";
     private final static String SUBMISSION_FAILURE = "json/landfill-failure.json";
@@ -52,27 +50,20 @@ public class APIIntegrationTests_DataSampleEntity {
 
     private static User user;
     private static DatasetEntity dataset;
-    private static List<DataSamplePayload> samples;
-
-    @Resource(name="submissionServiceMap")
-    private void setSubmissionServiceMap(Map<SubmissionConfiguration.SubmissionServiceProvider, SubmissionService> submissionServiceMap) {
-        this.submissionServiceMap = submissionServiceMap;
-    }
+    private static List<Payload> samples;
 
     // Remove any old data and set a user and dataset for use in the tests
     @Before public void init() throws IOException {
-        submissionService = submissionServiceMap.get(SubmissionConfiguration.SubmissionServiceProvider.DATA_SAMPLE_V1);
-
-        if (submissionService.getUser(USER_NAME) != null) {
-            submissionService.removeUser(USER_NAME);
+        if (datasetService.getUser(USER_NAME) != null) {
+            datasetService.removeUser(USER_NAME);
         }
 
-        user = submissionService.createUser(USER_NAME);
+        user = datasetService.createUser(USER_NAME);
 
         dataset = new DatasetEntity();
         dataset.setOriginatorEmail(ORIGINATOR_EMAIL);
         dataset.setUser(user);
-        submissionService.createDataset(dataset);
+        datasetService.createDataset(dataset);
         samples = submissionService.parseJsonArray(readTestFile(SUBMISSION_SUCCESS));
     }
 
@@ -122,7 +113,7 @@ public class APIIntegrationTests_DataSampleEntity {
     // should all have a status of PARSED
     @Test public void createNewSystemRecordsWithSample() {
         List<SubmissionService.ObservationIdentifierPair<DataSamplePayload>> list = new ArrayList<>();
-        for (DataSamplePayload sample : samples) {
+        for (Payload sample : samples) {
             list.add(new SubmissionService.ObservationIdentifierPair(sample));
         }
         List<RecordEntity> recordEntities = submissionService.createRecords(dataset, list);
@@ -135,7 +126,7 @@ public class APIIntegrationTests_DataSampleEntity {
     @Test public void createNewUserRecordsWithSample() {
         List<SubmissionService.ObservationIdentifierPair<DataSamplePayload>> list = new ArrayList<>();
         int i = 0;
-        for (DataSamplePayload sample : samples) {
+        for (Payload sample : samples) {
             list.add(new SubmissionService.ObservationIdentifierPair(Integer.valueOf(i++).toString(), sample));
         }
         List<RecordEntity> recordEntities = submissionService.createRecords(dataset, list);
@@ -145,7 +136,7 @@ public class APIIntegrationTests_DataSampleEntity {
     // Create a set of records and then associate data samples with them
     // as a secondary step
     @Test public void createNewUserRecordsAndAddSample() {
-        List<SubmissionService.ObservationIdentifierPair<DataSamplePayload>> list = new ArrayList<>();
+        List<SubmissionService.ObservationIdentifierPair<Payload>> list = new ArrayList<>();
         for (String id : RECORDS) {
             list.add(new SubmissionService.ObservationIdentifierPair(id));
         }
@@ -163,7 +154,7 @@ public class APIIntegrationTests_DataSampleEntity {
     // Create and validate a set of valid records
     @Test public void createAndValidateValidRecords() {
         List<SubmissionService.ObservationIdentifierPair<DataSamplePayload>> list = new ArrayList<>();
-        for (DataSamplePayload sample : samples) {
+        for (Payload sample : samples) {
             list.add(new SubmissionService.ObservationIdentifierPair(sample));
         }
         List<RecordEntity> recordEntities = submissionService.createRecords(dataset, list);
@@ -174,7 +165,7 @@ public class APIIntegrationTests_DataSampleEntity {
     // Create a valid set of records and submit them
     @Test public void createValidateAndSubmitRecords() {
         List<SubmissionService.ObservationIdentifierPair<DataSamplePayload>> list = new ArrayList<>();
-        for (DataSamplePayload sample : samples) {
+        for (Payload sample : samples) {
             list.add(new SubmissionService.ObservationIdentifierPair(sample));
         }
         List<RecordEntity> recordEntities = submissionService.createRecords(dataset, list);
@@ -185,9 +176,9 @@ public class APIIntegrationTests_DataSampleEntity {
     }
 
     @Test public void createValidateAndDetermineSubstitutions() throws IOException {
-        List<DataSamplePayload> samples = submissionService.parseJsonArray(readTestFile(SUBSTITUTIONS));
+        List<Payload> samples = submissionService.parseJsonArray(readTestFile(SUBSTITUTIONS));
         List<SubmissionService.ObservationIdentifierPair<DataSamplePayload>> list = new ArrayList<>();
-        for (DataSamplePayload sample : samples) {
+        for (Payload sample : samples) {
             list.add(new SubmissionService.ObservationIdentifierPair(sample));
         }
         List<RecordEntity> recordEntities = submissionService.createRecords(dataset, list);
@@ -201,9 +192,9 @@ public class APIIntegrationTests_DataSampleEntity {
 
     // Create and validate a set of valid and invalid records
     @Test public void createAndValidateValidAndInvalidRecords() throws IOException {
-        List<DataSamplePayload> samples = submissionService.parseJsonArray(readTestFile(SUBMISSION_FAILURE));
+        List<Payload> samples = submissionService.parseJsonArray(readTestFile(SUBMISSION_FAILURE));
         List<SubmissionService.ObservationIdentifierPair<DataSamplePayload>> list = new ArrayList<>();
-        for (DataSamplePayload sample : samples) {
+        for (Payload sample : samples) {
             list.add(new SubmissionService.ObservationIdentifierPair(sample));
         }
         List<RecordEntity> recordEntities = submissionService.createRecords(dataset, list);
@@ -214,9 +205,9 @@ public class APIIntegrationTests_DataSampleEntity {
 
     // Create and validate a set of valid and invalid records and submit them
     @Test public void createAndValidateValidAndInvalidAndSubmitRecords() throws IOException {
-        List<DataSamplePayload> samples = submissionService.parseJsonArray(readTestFile(SUBMISSION_FAILURE));
+        List<Payload> samples = submissionService.parseJsonArray(readTestFile(SUBMISSION_FAILURE));
         List<SubmissionService.ObservationIdentifierPair<DataSamplePayload>> list = new ArrayList<>();
-        for (DataSamplePayload sample : samples) {
+        for (Payload sample : samples) {
             list.add(new SubmissionService.ObservationIdentifierPair(sample));
         }
         List<RecordEntity> recordEntities = submissionService.createRecords(dataset, list);
@@ -229,7 +220,7 @@ public class APIIntegrationTests_DataSampleEntity {
     // Create and validate a set of valid records, submit and retrieve them by dataset and dataset/identifier
     @Test public void createAndValidateAndSubmitAndRetrieveRecords() throws IOException {
         List<SubmissionService.ObservationIdentifierPair<DataSamplePayload>> list = new ArrayList<>();
-        for (DataSamplePayload sample : samples) {
+        for (Payload sample : samples) {
             list.add(new SubmissionService.ObservationIdentifierPair(sample));
         }
         List<RecordEntity> recordEntities = submissionService.createRecords(dataset, list);

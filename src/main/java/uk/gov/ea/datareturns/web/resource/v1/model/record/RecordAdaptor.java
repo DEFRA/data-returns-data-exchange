@@ -6,8 +6,10 @@ import uk.gov.ea.datareturns.domain.jpa.entities.userdata.impl.RecordEntity;
 import uk.gov.ea.datareturns.domain.jpa.service.SubmissionService;
 import uk.gov.ea.datareturns.web.resource.v1.model.common.EntityAdaptor;
 import uk.gov.ea.datareturns.web.resource.v1.model.record.payload.DataSamplePayload;
+import uk.gov.ea.datareturns.web.resource.v1.model.record.payload.Payload;
 
 import javax.annotation.Resource;
+import javax.inject.Inject;
 import java.util.Date;
 import java.util.Map;
 
@@ -17,18 +19,9 @@ import java.util.Map;
 @Component
 public class RecordAdaptor implements EntityAdaptor<Record, RecordEntity> {
 
-    private SubmissionService<DataSamplePayload, ?, ?> submissionService;
+    @Inject
+    private SubmissionService submissionService;
 
-    /**
-     * Retrieves the appropriate versioned submission service
-     * @param submissionServiceMap
-     */
-    @Resource(name = "submissionServiceMap")
-    private void setSubmissionService(Map<SubmissionConfiguration.SubmissionServiceProvider, SubmissionService> submissionServiceMap) {
-        this.submissionService = submissionServiceMap.get(SubmissionConfiguration.SubmissionServiceProvider.DATA_SAMPLE_V1);
-    }
-
-    // TODO - not used here...sort out
     @Override
     public RecordEntity convert(Record record) {
         return null;
@@ -40,7 +33,7 @@ public class RecordAdaptor implements EntityAdaptor<Record, RecordEntity> {
         record.setId(recordEntity.getIdentifier());
         record.setCreated(Date.from(recordEntity.getCreateDate()));
         record.setLastModified(Date.from(recordEntity.getLastChangedDate()));
-        DataSamplePayload dataSamplePayload = submissionService.parseJsonObject(recordEntity.getJson());
+        Payload dataSamplePayload = submissionService.parseJsonObject(recordEntity.getJson());
         record.setPayload(dataSamplePayload);
         return record;
     }
