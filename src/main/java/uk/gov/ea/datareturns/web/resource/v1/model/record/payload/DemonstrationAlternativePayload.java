@@ -1,7 +1,7 @@
 package uk.gov.ea.datareturns.web.resource.v1.model.record.payload;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.annotations.ApiModel;
-import uk.gov.ea.datareturns.web.resource.ObservationSerializationBean;
 
 import javax.xml.bind.annotation.XmlRootElement;
 
@@ -12,9 +12,13 @@ import javax.xml.bind.annotation.XmlRootElement;
  */
 @XmlRootElement(name = "Demo")
 @ApiModel(value = "Demo", description = "Demonstration payload")
-public final class DemonstrationAlternativePayload extends Payload implements ObservationSerializationBean {
+public final class DemonstrationAlternativePayload extends Payload {
 
+    @JsonProperty("test")
     private String test;
+
+    @JsonProperty("test_int")
+    private int testInt;
 
     public String getTest() {
         return test;
@@ -22,5 +26,13 @@ public final class DemonstrationAlternativePayload extends Payload implements Ob
 
     public void setTest(String test) {
         this.test = test;
+    }
+
+    public int getTestInt() {
+        return testInt;
+    }
+
+    public void setTestInt(int testInt) {
+        this.testInt = testInt;
     }
 }

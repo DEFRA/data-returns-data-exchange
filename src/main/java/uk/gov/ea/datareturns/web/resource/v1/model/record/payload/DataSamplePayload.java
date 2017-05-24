@@ -2,7 +2,6 @@ package uk.gov.ea.datareturns.web.resource.v1.model.record.payload;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.annotations.ApiModel;
-import uk.gov.ea.datareturns.web.resource.ObservationSerializationBean;
 
 /**
  * Payload containing DEP compliant monitoring data
@@ -10,7 +9,7 @@ import uk.gov.ea.datareturns.web.resource.ObservationSerializationBean;
  * @author Sam Gardner-Dell
  */
 @ApiModel(value = "DataSamplePayload", description = "DEP v3.0 compliant monitoring data payload")
-public class DataSamplePayload extends Payload implements ObservationSerializationBean {
+public class DataSamplePayload extends Payload  {
     /** The EA Unique Identifier (EA_ID) */
     @JsonProperty("EA_ID")
     private String eaId;
