@@ -43,16 +43,12 @@ submission of environmental data.
   number of unsubmitted datasets and/or the number of requests that can be
   added to a dataset?
 - #### TODO
-  - Rework PUT/POST method definitions to allow for submission of multiple
-  requests in one call
-    - https://developers.facebook.com/docs/graph-api/making-multiple-requests
   - Determine how "allowed values" search/filter functionality should work
    as the frontend has different requirements for different list types
    (permit lookup tool vs the controlled lists) yet the API should provide a
    consistent search/filter functionality regardless of the list type.  The
    frontend will have to make a slightly different API call for the
    different list types to maintain the current functionality.
-  - Refine data model
   - Document best practices that API consumers should use e.g. using the
   conditional requests functionality to avoid downloading controlled list
   definitions all the time.
@@ -79,9 +75,6 @@ submission of environmental data.
   REST resources (Jersey resources) and generate the swagger.json file
   automatically
   https://github.com/kongchen/swagger-maven-plugin
-  - Records to be validated immediately when they are inserted into a
-  dataset - this allows the validation (an expensive operation) to
-  be load balanced if data is uploaded in chunks.
   - Need to determine how we are going to manage validation error
   definitions. Currently there are help snippets in the frontend but a good
   API design would also make these available via the API.  Don't really
@@ -105,21 +98,21 @@ Operations on a dataset are performed by making API calls to the `/datasets`
 path.
 
 ### Record
-A dataset is composed of many requests. A recordEntity has a payload containing a
+A dataset is composed of many requests. A record has a payload containing a
 specific data-type.
 
-Operations on a recordEntity are performed by making API calls to the
+Operations on a record are performed by making API calls to the
 `/datasets/{dataset_id}/requests` path.
 
 ### Payload
-The recordEntity payload, allows for the submission of different data types
+The record payload, allows for the submission of different data types
 through a common API.
 
 Currently the only supported payload is the DataSample.
 
 #### DataSample
-A DataSample represents a specific abstractObservation or observation.  It is
-currently the only type of recordEntity supported by this API.
+A DataSample represents a specific measurement or observation.  It is
+currently the only type of record supported by this API.
 In a DEP compliant CSV file this is a row of data.
 
 ### Definitions
@@ -256,7 +249,7 @@ An example of a typical responses containing hypermedia links under the
 `links` key:
 ```json
 {
-  meta: {}
+  meta: {},
   data: {
     id: "record123",
     links: [
@@ -281,7 +274,7 @@ Each link contains a pair of attributes:
   - Document potential relationships in more detail
    - self
    - dataset
-   - recordEntity
+   - record
    - field
    - definition
    - etc
@@ -302,7 +295,7 @@ using the the HTTP/1.1 Conditional Requests specification ([RFC7232]
 (https://tools.ietf.org/html/rfc7232))
 
 ### ETag (Entity Tag)
-When an entity (such as a dataset or recordEntity) is created or modified, the API
+When an entity (such as a dataset or record) is created or modified, the API
 will generate a unique hash to be associated with the entity. This provides
 a unique fingerprint of the entity data and any change will result in a
 completely new fingerprint being associated with the entity.
@@ -350,7 +343,7 @@ server.
 #### Conditional PUT/POST requests
 A conditional request to create or update an entity resource can be used to
 avoid the 'lost update problem'.  Lost updates can occur when two different
-clients attempt to modify the same recordEntity without checking for consistency
+clients attempt to modify the same record without checking for consistency
 before writing:
   1. Client A reads record1
   2. Client B reads record1
@@ -474,7 +467,7 @@ of multiple requests using a single PUT/POST call to the
   * GET /datasets/sampledataset/code
 4. Look up validation definition (should be cached by the consumer)
   * GET /definitions/DataSample/validation/DR9050
-5. Correct a recordEntity
+5. Correct a record
   * PUT /datasets/sampledataset/requests/record2
 6. Submit the dataset to the Environment Agency
   * PUT /datasets/sampledataset/code
