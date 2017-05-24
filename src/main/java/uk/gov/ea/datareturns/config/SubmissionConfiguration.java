@@ -3,18 +3,19 @@ package uk.gov.ea.datareturns.config;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import uk.gov.ea.datareturns.domain.jpa.dao.masterdata.*;
-import uk.gov.ea.datareturns.domain.jpa.dao.userdata.factories.AbstractObservationFactory;
+import uk.gov.ea.datareturns.domain.jpa.dao.userdata.factories.AbstractPayloadEntityFactory;
+import uk.gov.ea.datareturns.domain.jpa.dao.userdata.factories.impl.AlternativeFactory;
 import uk.gov.ea.datareturns.domain.jpa.dao.userdata.factories.impl.DataSampleFactory;
 import uk.gov.ea.datareturns.domain.jpa.dao.userdata.impl.*;
+import uk.gov.ea.datareturns.domain.jpa.entities.userdata.impl.AlternativePayload;
 import uk.gov.ea.datareturns.domain.jpa.entities.userdata.impl.DataSampleEntity;
 import uk.gov.ea.datareturns.domain.jpa.service.DatasetService;
 import uk.gov.ea.datareturns.domain.jpa.service.SubmissionService;
-import uk.gov.ea.datareturns.domain.validation.datasample.DataSampleMvo;
 import uk.gov.ea.datareturns.domain.validation.newmodel.validator.*;
 import uk.gov.ea.datareturns.web.resource.v1.model.record.payload.DataSamplePayload;
+import uk.gov.ea.datareturns.web.resource.v1.model.record.payload.DemonstrationAlternativePayload;
 
 import javax.inject.Inject;
-import javax.validation.Validator;
 
 /**
  * @author Graham Willis
@@ -22,7 +23,7 @@ import javax.validation.Validator;
 @Configuration
 public class SubmissionConfiguration {
 
-    private final Validator validator;
+    private final javax.validation.Validator validator;
     private final ValidationErrorDao validationErrorDao;
     private final DatasetDao datasetDao;
     private final UserDao userDao;
@@ -39,15 +40,9 @@ public class SubmissionConfiguration {
     private final UniqueIdentifierDao uniqueIdentifierDao;
     private final UnitDao unitDao;
 
-    public enum SubmissionServiceProvider {
-        BASIC_VERSION_1,
-        LANDFILL_VERSION_1,
-        DATA_SAMPLE_V1
-    }
-
     @Inject
     public SubmissionConfiguration(
-            Validator validator,
+            javax.validation.Validator validator,
             ValidationErrorDao validationErrorDao,
             DatasetDao datasetDao,
             UserDao userDao,
@@ -87,16 +82,16 @@ public class SubmissionConfiguration {
      * @return
      */
     @Bean
-    public ObservationDao observationDao() {
-        return new ObservationDao();
+    public PayloadEntityDao observationDao() {
+        return new PayloadEntityDao();
     }
 
     /**
-     * The record to create landfill measurement objects Mvo for validation
+     * The record to create landfill measurement objects AbstractValidationObject for validation
      * @return
      */
     @Bean
-    public AbstractObservationFactory<DataSampleEntity, DataSamplePayload> dataSampleEntityFactory() {
+    public AbstractPayloadEntityFactory<DataSampleEntity, DataSamplePayload> dataSampleEntityFactory() {
         return new DataSampleFactory(
                 methodOrStandardDao,
                 parameterDao,
@@ -111,13 +106,9 @@ public class SubmissionConfiguration {
                 unitDao);
     }
 
-    /**
-     * Create the validator
-     * @return
-     */
     @Bean
-    public ObservationValidator<DataSampleMvo> dataSampleValidator() {
-        return new ObservationValidatorImpl<>(this.validator, validationErrorDao);
+    public AbstractPayloadEntityFactory<AlternativePayload, DemonstrationAlternativePayload> alternativeFactory() {
+        return new AlternativeFactory();
     }
 
     @Bean
@@ -126,13 +117,13 @@ public class SubmissionConfiguration {
     }
 
     @Bean
-    public ObservationValidator<Mvo> mvoValidator() {
-        return new MvoValidator(this.validator, validationErrorDao);
+    public Validator<AbstractValidationObject> mvoValidator() {
+        return new ValidatorImpl(this.validator, validationErrorDao);
     }
 
     @Bean
-    public NewMvoFactory newMvoFactory() {
-        return new NewMvoFactory();
+    public ValidationObjectFactory newMvoFactory() {
+        return new ValidationObjectFactory();
     }
 
     @Bean

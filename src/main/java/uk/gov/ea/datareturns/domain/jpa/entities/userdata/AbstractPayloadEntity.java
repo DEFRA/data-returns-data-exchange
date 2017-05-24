@@ -11,7 +11,7 @@ import java.util.Set;
  */
 @Entity
 @Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
-public abstract class AbstractObservation implements Userdata {
+public abstract class AbstractPayloadEntity implements Userdata {
 
     @Id
     @OneToOne(optional = false)
@@ -30,7 +30,7 @@ public abstract class AbstractObservation implements Userdata {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
-        AbstractObservation that = (AbstractObservation) o;
+        AbstractPayloadEntity that = (AbstractPayloadEntity) o;
 
         return recordEntity.equals(that.recordEntity);
     }

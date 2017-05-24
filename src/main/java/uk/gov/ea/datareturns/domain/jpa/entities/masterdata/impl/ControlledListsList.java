@@ -46,7 +46,7 @@ public enum ControlledListsList {
                 add(new DisplayHeaderDto("name", "Unit"));
                 add(new DisplayHeaderDto("aliases", "Alternatives"));
                 add(new DisplayHeaderDto("longName", "Long Name"));
-                add(new DisplayHeaderDto("type", "BasicMeasurement Type"));
+                add(new DisplayHeaderDto("type", "AlternativePayload Type"));
                 add(new DisplayHeaderDto("unicode", "Unicode"));
                 add(new DisplayHeaderDto("description", "Definition"));
             }})),

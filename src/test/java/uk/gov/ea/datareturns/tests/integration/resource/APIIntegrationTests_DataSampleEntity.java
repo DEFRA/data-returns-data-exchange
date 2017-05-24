@@ -9,7 +9,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 import uk.gov.ea.datareturns.App;
 import uk.gov.ea.datareturns.config.TestSettings;
-import uk.gov.ea.datareturns.domain.jpa.entities.userdata.AbstractObservation;
+import uk.gov.ea.datareturns.domain.jpa.entities.userdata.AbstractPayloadEntity;
 import uk.gov.ea.datareturns.domain.jpa.entities.userdata.impl.DatasetEntity;
 import uk.gov.ea.datareturns.domain.jpa.entities.userdata.impl.RecordEntity;
 import uk.gov.ea.datareturns.domain.jpa.entities.userdata.impl.User;
@@ -186,7 +186,7 @@ public class APIIntegrationTests_DataSampleEntity {
         recordEntities.stream().forEach(r -> Assert.assertEquals(RecordEntity.RecordStatus.VALID, r.getRecordStatus()));
         recordEntities = submissionService.evaluateSubstitutes(recordEntities);
         Assert.assertEquals(3, recordEntities.get(0).getAbstractObservation().getEntitySubstitutions().size());
-        List<Set<AbstractObservation.EntitySubstitution>> substitutions = recordEntities.stream().map(RecordEntity::getAbstractObservation).map(AbstractObservation::getEntitySubstitutions).distinct().collect(Collectors.toList());
+        List<Set<AbstractPayloadEntity.EntitySubstitution>> substitutions = recordEntities.stream().map(RecordEntity::getAbstractObservation).map(AbstractPayloadEntity::getEntitySubstitutions).distinct().collect(Collectors.toList());
         Assert.assertEquals(3, substitutions.size());
     }
 

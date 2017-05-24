@@ -1,13 +1,10 @@
 package uk.gov.ea.datareturns.web.resource.v1;
 
 import io.swagger.annotations.*;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
-import uk.gov.ea.datareturns.config.SubmissionConfiguration;
-import uk.gov.ea.datareturns.domain.jpa.entities.userdata.AbstractObservation;
+import uk.gov.ea.datareturns.domain.jpa.entities.userdata.AbstractPayloadEntity;
 import uk.gov.ea.datareturns.domain.jpa.entities.userdata.impl.DatasetEntity;
 import uk.gov.ea.datareturns.domain.jpa.entities.userdata.impl.RecordEntity;
 import uk.gov.ea.datareturns.domain.jpa.service.DatasetService;
@@ -23,7 +20,6 @@ import uk.gov.ea.datareturns.web.resource.v1.model.response.EntityListResponse;
 import uk.gov.ea.datareturns.web.resource.v1.model.response.ErrorResponse;
 import uk.gov.ea.datareturns.web.resource.v1.model.response.MultiStatusResponse;
 
-import javax.annotation.Resource;
 import javax.inject.Inject;
 import javax.validation.constraints.Pattern;
 import javax.ws.rs.*;
@@ -33,7 +29,6 @@ import javax.ws.rs.core.UriInfo;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
 
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 import static javax.ws.rs.core.MediaType.APPLICATION_XML;
@@ -354,7 +349,7 @@ public class DatasetResource {
 
         for (RecordEntity recordEntity : recordEntities) {
             if (recordEntity.getAbstractObservation() != null) {
-                for (AbstractObservation.EntitySubstitution entitySubstitution : recordEntity.getAbstractObservation()
+                for (AbstractPayloadEntity.EntitySubstitution entitySubstitution : recordEntity.getAbstractObservation()
                         .getEntitySubstitutions()) {
                     substitutions.addSubstitution(recordEntity.getIdentifier(),
                             entitySubstitution.getEntity(),

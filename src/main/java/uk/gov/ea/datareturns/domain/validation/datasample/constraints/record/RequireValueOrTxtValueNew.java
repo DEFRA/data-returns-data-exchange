@@ -1,7 +1,7 @@
 package uk.gov.ea.datareturns.domain.validation.datasample.constraints.record;
 
 import org.springframework.stereotype.Component;
-import uk.gov.ea.datareturns.domain.validation.datasample.DataSampleMvo;
+import uk.gov.ea.datareturns.domain.validation.datasample.DataSampleValidationObject;
 import uk.gov.ea.datareturns.domain.validation.newmodel.constraints.record.RecordConstraintValidator;
 import uk.gov.ea.datareturns.domain.validation.newmodel.entityfields.FieldValue;
 
@@ -11,9 +11,9 @@ import javax.validation.ConstraintValidatorContext;
  * Created by sam on 12/10/16.
  */
 @Component
-public class RequireValueOrTxtValueNew implements RecordConstraintValidator<DataSampleMvo> {
+public class RequireValueOrTxtValueNew implements RecordConstraintValidator<DataSampleValidationObject> {
     @Override
-    public boolean isValid(DataSampleMvo record, final ConstraintValidatorContext context) {
+    public boolean isValid(DataSampleValidationObject record, final ConstraintValidatorContext context) {
         boolean hasValue = FieldValue.isNotEmpty(record.getValue());
         boolean hasTxtValue = FieldValue.isNotEmpty(record.getTextValue());
 

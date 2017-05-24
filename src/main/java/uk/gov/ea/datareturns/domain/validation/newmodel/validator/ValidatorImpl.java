@@ -7,7 +7,6 @@ import uk.gov.ea.datareturns.domain.jpa.entities.userdata.impl.ValidationError;
 
 import javax.inject.Inject;
 import javax.validation.ConstraintViolation;
-import javax.validation.Validator;
 import java.lang.annotation.Annotation;
 import java.util.HashSet;
 import java.util.Set;
@@ -15,30 +14,30 @@ import java.util.Set;
 /**
  * @author Graham Willis
  */
-public class MvoValidator implements ObservationValidator<Mvo> {
-    private static final Logger LOGGER = LoggerFactory.getLogger(MvoValidator.class);
+public class ValidatorImpl implements Validator<AbstractValidationObject> {
+    private static final Logger LOGGER = LoggerFactory.getLogger(ValidatorImpl.class);
 
     /** validator instance */
-    private final Validator instanceValidator;
+    private final javax.validation.Validator instanceValidator;
     private final ValidationErrorDao validationErrorDao;
     /** flag to indicate if the instanceValidator has been fully initialised */
     private boolean initialised = false;
 
     /**
-     * Instantiates a new {@link Mvo} instanceValidator.
+     * Instantiates a new {@link AbstractValidationObject} instanceValidator.
      *
      * @param validator the hibernate instanceValidator instance
      */
     @Inject
-    public MvoValidator(final Validator validator, ValidationErrorDao validationErrorDao) {
+    public ValidatorImpl(final javax.validation.Validator validator, ValidationErrorDao validationErrorDao) {
         this.instanceValidator = validator;
         this.validationErrorDao = validationErrorDao;
     }
 
-    public Set<ValidationError> validateObservation(Mvo mvo) {
+    public Set<ValidationError> validateValidationObject(AbstractValidationObject validationObject) {
         final Set<ValidationError> errors = new HashSet<>();
-        final Set<ConstraintViolation<Mvo>> violations = validate(mvo);
-        for (final ConstraintViolation<Mvo> violation : violations) {
+        final Set<ConstraintViolation<AbstractValidationObject>> violations = validate(validationObject);
+        for (final ConstraintViolation<AbstractValidationObject> violation : violations) {
             ValidationError error = validationErrorDao.get(violation.getMessageTemplate());
             if (error == null) {
                 LOGGER.error("Unknown message template discovered: " + violation.getMessageTemplate());
@@ -59,8 +58,8 @@ public class MvoValidator implements ObservationValidator<Mvo> {
      * @param mvo the measurement to be validated
      * @return a set of constraint violations detailing any validation errors that were found
      */
-    private Set<ConstraintViolation<Mvo>> validate(Mvo mvo) {
-        Set<ConstraintViolation<Mvo>> violations;
+    private Set<ConstraintViolation<AbstractValidationObject>> validate(AbstractValidationObject mvo) {
+        Set<ConstraintViolation<AbstractValidationObject>> violations;
         if (initialised) {
             // Avoid synchronisation if initialised
             violations = this.instanceValidator.validate(mvo);

@@ -7,10 +7,10 @@ import java.util.Set;
 /**
  * @author Graham Willis
  */
-public interface ObservationValidator<V extends Mvo> {
+public interface Validator<V extends AbstractValidationObject> {
 
     /**
      * Validate a measurement object recording using the javax validation standard
      */
-    Set<ValidationError> validateObservation(V observation);
+    Set<ValidationError> validateValidationObject(V validationObject);
 }

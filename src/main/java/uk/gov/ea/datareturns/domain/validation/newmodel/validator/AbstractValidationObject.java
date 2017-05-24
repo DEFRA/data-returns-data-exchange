@@ -10,10 +10,10 @@ import uk.gov.ea.datareturns.web.resource.v1.model.record.payload.Payload;
  * and responsible for defining the specific validations applicabe for a given measurement
  * type
  */
-public abstract class Mvo {
+public abstract class AbstractValidationObject {
     protected final Payload payload;
 
-    protected Mvo(Payload payload) {
+    protected AbstractValidationObject(Payload payload) {
         this.payload = payload;
     }
 }

@@ -1,7 +1,7 @@
 package uk.gov.ea.datareturns.domain.jpa.entities.userdata.impl;
 
 import org.hibernate.annotations.GenericGenerator;
-import uk.gov.ea.datareturns.domain.jpa.entities.userdata.AbstractObservation;
+import uk.gov.ea.datareturns.domain.jpa.entities.userdata.AbstractPayloadEntity;
 import uk.gov.ea.datareturns.domain.jpa.entities.userdata.Metadata;
 
 import javax.persistence.*;
@@ -26,7 +26,7 @@ public class RecordEntity implements Metadata {
     private Long id;
 
     @OneToOne(cascade = { CascadeType.REMOVE }, mappedBy = "recordEntity")
-    private AbstractObservation abstractObservation;
+    private AbstractPayloadEntity abstractObservation;
 
     @Basic @Column(name = "identifier", nullable = false, length = 80)
     private String identifier;
@@ -110,11 +110,11 @@ public class RecordEntity implements Metadata {
         this.json = json;
     }
 
-    public AbstractObservation getAbstractObservation() {
+    public AbstractPayloadEntity getAbstractObservation() {
         return abstractObservation;
     }
 
-    public void setAbstractObservation(AbstractObservation abstractObservation) {
+    public void setAbstractObservation(AbstractPayloadEntity abstractObservation) {
         this.abstractObservation = abstractObservation;
     }
 

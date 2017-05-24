@@ -2,9 +2,8 @@ package uk.gov.ea.datareturns.domain.validation.datasample;
 
 import uk.gov.ea.datareturns.domain.validation.datasample.constraints.annotations.ValueTxtValue;
 import uk.gov.ea.datareturns.domain.validation.datasample.fields.*;
-import uk.gov.ea.datareturns.domain.validation.newmodel.validator.Mvo;
+import uk.gov.ea.datareturns.domain.validation.newmodel.validator.AbstractValidationObject;
 import uk.gov.ea.datareturns.web.resource.v1.model.record.payload.DataSamplePayload;
-import uk.gov.ea.datareturns.web.resource.v1.model.record.payload.Payload;
 
 import javax.validation.Valid;
 
@@ -13,7 +12,7 @@ import javax.validation.Valid;
  * Object contaioning entityfields and hibernate validation annotations
  */
 @ValueTxtValue
-public class DataSampleMvo extends Mvo {
+public class DataSampleValidationObject extends AbstractValidationObject {
 
     /** The EA Unique Identifier (EA_ID) */
     @Valid private EaId eaId;
@@ -62,10 +61,9 @@ public class DataSampleMvo extends Mvo {
      *
      * @param payload
      */
-    public DataSampleMvo(DataSamplePayload payload) {
+    public DataSampleValidationObject(DataSamplePayload payload) {
         super(payload);
 
-        // Initialize the entityfields for validation
         eaId = new EaId(payload.getEaId());
         siteName = new SiteName(payload.getSiteName());
         returnType = new ReturnType(payload.getReturnType());
@@ -196,7 +194,7 @@ public class DataSampleMvo extends Mvo {
 
     @Override
     public String toString() {
-        return "DataSampleMvo{" +
+        return "DataSampleValidationObject{" +
                 "eaId=" + eaId +
                 ", siteName=" + siteName +
                 ", returnType=" + returnType +

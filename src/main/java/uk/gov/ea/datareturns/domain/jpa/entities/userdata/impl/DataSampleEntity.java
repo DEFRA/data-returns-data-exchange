@@ -2,7 +2,7 @@ package uk.gov.ea.datareturns.domain.jpa.entities.userdata.impl;
 
 import uk.gov.ea.datareturns.domain.jpa.entities.masterdata.impl.*;
 import uk.gov.ea.datareturns.domain.jpa.entities.masterdata.impl.Parameter;
-import uk.gov.ea.datareturns.domain.jpa.entities.userdata.AbstractObservation;
+import uk.gov.ea.datareturns.domain.jpa.entities.userdata.AbstractPayloadEntity;
 
 import javax.persistence.*;
 import java.math.BigDecimal;
@@ -13,7 +13,7 @@ import java.time.Instant;
  */
 @Entity
 @Table(name = "data_sample")
-public class DataSampleEntity extends AbstractObservation {
+public class DataSampleEntity extends AbstractPayloadEntity {
 
     @ManyToOne(optional = false)
     @JoinColumn(name = "ea_id", referencedColumnName = "id")

@@ -1,6 +1,6 @@
 package uk.gov.ea.datareturns.domain.validation.datasample.constraints.field;
 
-import uk.gov.ea.datareturns.domain.validation.datasample.DataSampleMvo;
+import uk.gov.ea.datareturns.domain.validation.datasample.DataSampleValidationObject;
 import uk.gov.ea.datareturns.domain.validation.datasample.constraints.annotations.ValueTxtValue;
 import uk.gov.ea.datareturns.domain.validation.newmodel.entityfields.FieldValue;
 
@@ -10,7 +10,7 @@ import javax.validation.ConstraintValidatorContext;
 /**
  * Created by graham on 11/05/17.
  */
-public class ValueTxtValueValidator implements ConstraintValidator<ValueTxtValue, DataSampleMvo> {
+public class ValueTxtValueValidator implements ConstraintValidator<ValueTxtValue, DataSampleValidationObject> {
 
 
     @Override
@@ -19,7 +19,7 @@ public class ValueTxtValueValidator implements ConstraintValidator<ValueTxtValue
     }
 
     @Override
-    public boolean isValid(DataSampleMvo landfillMeasurementMvo, ConstraintValidatorContext constraintValidatorContext) {
+    public boolean isValid(DataSampleValidationObject landfillMeasurementMvo, ConstraintValidatorContext constraintValidatorContext) {
         boolean hasValue = FieldValue.isNotEmpty(landfillMeasurementMvo.getValue());
         boolean hasTxtValue = FieldValue.isNotEmpty(landfillMeasurementMvo.getTextValue());
 

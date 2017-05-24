@@ -1,7 +1,7 @@
 package uk.gov.ea.datareturns.domain.jpa.dao.userdata.factories.impl;
 
 import uk.gov.ea.datareturns.domain.jpa.dao.masterdata.*;
-import uk.gov.ea.datareturns.domain.jpa.dao.userdata.factories.AbstractObservationFactory;
+import uk.gov.ea.datareturns.domain.jpa.dao.userdata.factories.AbstractPayloadEntityFactory;
 import uk.gov.ea.datareturns.domain.jpa.entities.masterdata.impl.Parameter;
 import uk.gov.ea.datareturns.domain.jpa.entities.masterdata.impl.TextValue;
 import uk.gov.ea.datareturns.domain.jpa.entities.masterdata.impl.UniqueIdentifierAlias;
@@ -17,7 +17,7 @@ import java.math.BigDecimal;
  * @author Graham Willis
  * Boilerplate to generate instances of the hibernate persistence entity
  */
-public class DataSampleFactory extends AbstractObservationFactory<DataSampleEntity, DataSamplePayload> {
+public class DataSampleFactory extends AbstractPayloadEntityFactory<DataSampleEntity, DataSamplePayload> {
 
     private final MethodOrStandardDao methodOrStandardDao;
     private final ParameterDao parameterDao;

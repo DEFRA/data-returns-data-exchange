@@ -6,17 +6,16 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.transaction.annotation.Transactional;
-import uk.gov.ea.datareturns.domain.jpa.dao.userdata.factories.AbstractObservationFactory;
-import uk.gov.ea.datareturns.domain.jpa.dao.userdata.impl.ObservationDao;
+import uk.gov.ea.datareturns.domain.jpa.dao.userdata.factories.AbstractPayloadEntityFactory;
+import uk.gov.ea.datareturns.domain.jpa.dao.userdata.impl.PayloadEntityDao;
 import uk.gov.ea.datareturns.domain.jpa.dao.userdata.impl.RecordDao;
-import uk.gov.ea.datareturns.domain.jpa.entities.userdata.AbstractObservation;
+import uk.gov.ea.datareturns.domain.jpa.entities.userdata.AbstractPayloadEntity;
 import uk.gov.ea.datareturns.domain.jpa.entities.userdata.impl.DatasetEntity;
 import uk.gov.ea.datareturns.domain.jpa.entities.userdata.impl.RecordEntity;
 import uk.gov.ea.datareturns.domain.jpa.entities.userdata.impl.ValidationError;
-import uk.gov.ea.datareturns.domain.validation.newmodel.validator.Mvo;
-import uk.gov.ea.datareturns.domain.validation.newmodel.validator.NewMvoFactory;
-import uk.gov.ea.datareturns.domain.validation.newmodel.validator.ObservationValidator;
-import uk.gov.ea.datareturns.web.resource.v1.model.record.payload.DataSamplePayload;
+import uk.gov.ea.datareturns.domain.validation.newmodel.validator.AbstractValidationObject;
+import uk.gov.ea.datareturns.domain.validation.newmodel.validator.ValidationObjectFactory;
+import uk.gov.ea.datareturns.domain.validation.newmodel.validator.Validator;
 import uk.gov.ea.datareturns.web.resource.v1.model.record.payload.Payload;
 
 import java.io.IOException;
@@ -50,16 +49,16 @@ public class SubmissionService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(SubmissionService.class);
 
-    private final NewMvoFactory mvoFactory;
+    private final ValidationObjectFactory mvoFactory;
     private final RecordDao recordDao;
-    private final ObservationDao observationDao;
-    private final ObservationValidator<Mvo> validator;
+    private final PayloadEntityDao observationDao;
+    private final Validator<AbstractValidationObject> validator;
     private final static ObjectMapper mapper = new ObjectMapper();
 
-    public SubmissionService(NewMvoFactory mvoFactory,
+    public SubmissionService(ValidationObjectFactory mvoFactory,
                              RecordDao recordDao,
-                             ObservationDao observationDao,
-                             ObservationValidator<Mvo> validator) {
+                             PayloadEntityDao observationDao,
+                             Validator<AbstractValidationObject> validator) {
 
 
         this.mvoFactory = mvoFactory;
@@ -227,9 +226,9 @@ public class SubmissionService {
             } catch (IOException e) {
                 LOGGER.error("Error de-serializing stored JSON: " + e.getMessage());
             }
-            Mvo validationObject = mvoFactory.create(payload);
+            AbstractValidationObject validationObject = mvoFactory.create(payload);
 
-            Set<ValidationError> validationErrors = validator.validateObservation(validationObject);
+            Set<ValidationError> validationErrors = validator.validateValidationObject(validationObject);
 
             if (validationErrors.size() == 0) {
                 record.setRecordStatus(RecordEntity.RecordStatus.VALID);
@@ -254,7 +253,7 @@ public class SubmissionService {
     public void validate(Collection<RecordEntity> recordEntities) {
         // Deserialize the list of samples from the JSON
         // field in the record and pass store in a map
-        Map<RecordEntity, Mvo> mvos = recordEntities.stream()
+        Map<RecordEntity, AbstractValidationObject> mvos = recordEntities.stream()
                 .filter(r -> r.getJson() != null && !r.getJson().isEmpty())
                 .collect(Collectors.toMap(
                         r -> r,
@@ -272,12 +271,12 @@ public class SubmissionService {
                         }
                 ));
 
-        // Validate the Mvo measurement record and store the result of the validation
+        // Validate the AbstractValidationObject measurement record and store the result of the validation
         // as the validation result serialized to json
         mvos.entrySet().stream()
                 .filter(Objects::nonNull)
                 .forEach(m -> {
-                    Set<ValidationError> validationErrors = validator.validateObservation(m.getValue());
+                    Set<ValidationError> validationErrors = validator.validateValidationObject(m.getValue());
                     if (validationErrors.size() == 0) {
                         m.getKey().setRecordStatus(RecordEntity.RecordStatus.VALID);
                     } else {
@@ -291,7 +290,7 @@ public class SubmissionService {
 
     /**
      * Submit a set of valid recordEntities - this writes the data from the stored JSON into the
-     * relation database structures - it creates an instance of a class inheriting AbstractObservation
+     * relation database structures - it creates an instance of a class inheriting AbstractPayloadEntity
      * and associates it with the record.
      * <p>
      * It will ignore all recordEntities that are invalid
@@ -305,8 +304,8 @@ public class SubmissionService {
                 .forEach(r -> {
                     try {
                         Payload payload = mapper.readValue(r.getJson(), Payload.class);
-                        AbstractObservationFactory factory = AbstractObservationFactory.factoryFor(payload.getClass());
-                        AbstractObservation submission = factory.create(payload);
+                        AbstractPayloadEntityFactory factory = AbstractPayloadEntityFactory.factoryFor(payload.getClass());
+                        AbstractPayloadEntity submission = factory.create(payload);
                         r.setAbstractObservation(submission);
                         r.setRecordStatus(RecordEntity.RecordStatus.SUBMITTED);
                         r.getAbstractObservation().setRecordEntity(r);
@@ -321,7 +320,7 @@ public class SubmissionService {
 
     /**
      * Submit a set of valid recordEntities - this writes the data from the stored JSON into the
-     * relation database structures - it creates an instance of a class inheriting AbstractObservation
+     * relation database structures - it creates an instance of a class inheriting AbstractPayloadEntity
      * and associates it with the record.
      * <p>
      * It will ignore all recordEntities that are invalid
@@ -335,7 +334,7 @@ public class SubmissionService {
                 .map(r -> {
                     try {
                         Payload payload = mapper.readValue(r.getJson(), Payload.class);
-                        AbstractObservation submission = AbstractObservationFactory.factoryFor(payload.getClass()).create(payload);
+                        AbstractPayloadEntity submission = AbstractPayloadEntityFactory.factoryFor(payload.getClass()).create(payload);
                         r.setAbstractObservation(submission);
                         return r;
                     } catch (IOException e) {

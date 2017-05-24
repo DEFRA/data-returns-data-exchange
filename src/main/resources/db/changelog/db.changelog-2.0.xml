@@ -330,23 +330,11 @@
 
 		<!--
 		****************************************************************
-		Measurements - prototype
+		Alternative payload - prototype
 		****************************************************************
 		-->
-		<createTable tableName="measurements">
-
-			<column name="record_id" type="bigserial">
-				<constraints nullable="false"/>
-			</column>
-
-			<column name="parameter_id" type="bigint">
-				<constraints nullable="false"/>
-			</column>
-
-			<column name="value" type="numeric">
-				<constraints nullable="false"/>
-			</column>
-
+		<createTable tableName="alternatives">
+			<column name="test" type="varchar(100"/>
 		</createTable>
 
 		<addForeignKeyConstraint baseColumnNames="record_id"
