@@ -1,10 +1,8 @@
 package uk.gov.ea.datareturns.web.exceptionmappers;
 
-import uk.gov.ea.datareturns.domain.exceptions.ApplicationExceptionType;
-import uk.gov.ea.datareturns.domain.result.ExceptionMessageContainer;
+import uk.gov.ea.datareturns.web.resource.v1.model.response.ErrorResponse;
 
 import javax.ws.rs.ClientErrorException;
-import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.ExceptionMapper;
 import javax.ws.rs.ext.Provider;
@@ -24,7 +22,7 @@ public class WebClientExceptionMapper implements ExceptionMapper<ClientErrorExce
      */
     @Override
     public Response toResponse(final ClientErrorException exception) {
-        final ExceptionMessageContainer entity = new ExceptionMessageContainer(ApplicationExceptionType.CLIENT_FAILURE, exception.toString());
-        return Response.fromResponse(exception.getResponse()).entity(entity).type(MediaType.APPLICATION_JSON_TYPE).build();
+        ErrorResponse entity = new ErrorResponse(exception.getResponse().getStatus(), exception.toString());
+        return Response.fromResponse(exception.getResponse()).entity(entity).build();
     }
 }

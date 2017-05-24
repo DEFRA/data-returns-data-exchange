@@ -2,10 +2,8 @@ package uk.gov.ea.datareturns.web.exceptionmappers;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import uk.gov.ea.datareturns.domain.exceptions.ApplicationExceptionType;
-import uk.gov.ea.datareturns.domain.result.ExceptionMessageContainer;
+import uk.gov.ea.datareturns.web.resource.v1.model.response.ErrorResponse;
 
-import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.ext.ExceptionMapper;
@@ -33,9 +31,6 @@ public class UnhandledExceptionMapper implements ExceptionMapper<Throwable> {
     @Override
     public Response toResponse(final Throwable exception) {
         LOGGER.error("He's Dead Jim", exception);
-        final Status status = Status.INTERNAL_SERVER_ERROR;
-        final ExceptionMessageContainer entity = new ExceptionMessageContainer(ApplicationExceptionType.SYSTEM_FAILURE,
-                exception.toString());
-        return Response.status(status).entity(entity).type(MediaType.APPLICATION_JSON_TYPE).build();
+        return new ErrorResponse(Status.INTERNAL_SERVER_ERROR, exception.toString()).toResponseBuilder().build();
     }
 }
