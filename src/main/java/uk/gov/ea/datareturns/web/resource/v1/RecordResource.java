@@ -328,7 +328,7 @@ public class RecordResource {
                 // Preconditions passed, create/update the record
                 RecordEntity recordEntity = submissionService
                         .createRecord(datasetEntity, new SubmissionService.ObservationIdentifierPair(recordId, payload));
-                submissionService.validate(existingEntity);
+                submissionService.validate(recordEntity);
 
                 Response.Status status = existingEntity != null ? Response.Status.OK : Response.Status.CREATED;
                 Record record = fromEntity(datasetId, recordEntity);
