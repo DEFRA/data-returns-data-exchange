@@ -33,6 +33,8 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 import java.util.*;
+import java.util.function.Function;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
@@ -107,21 +109,16 @@ public class RecordResource {
             @PathParam("dataset_id") @Pattern(regexp = "[A-Za-z0-9_-]+")
             @ApiParam("The unique identifier for the target dataset") final String datasetId)
             throws Exception {
-
-        DatasetEntity datasetEntity = submissionService.getDataset(datasetId);
-        Response.ResponseBuilder rb;
-        if (datasetEntity == null) {
-            rb = ErrorResponse.DATASET_NOT_FOUND.toResponseBuilder();
-        } else {
-            List<RecordEntity> records = submissionService.getRecords(datasetEntity);
-            List<EntityReference> result = new ArrayList<>();
-            for (RecordEntity record : records) {
-                result.add(new EntityReference(record.getIdentifier(), Linker.info(uriInfo).record(datasetId, record.getIdentifier())));
-            }
-            EntityListResponse rw = new EntityListResponse(result);
-            rb = rw.toResponseBuilder();
-        }
-        return rb.build();
+        return onDataset(datasetId, datasetEntity ->
+                new EntityListResponse(
+                        submissionService.getRecords(datasetEntity).stream()
+                                .map((entity) -> {
+                                    String uri = Linker.info(uriInfo).record(datasetId, entity.getIdentifier());
+                                    return new EntityReference(entity.getIdentifier(), uri);
+                                })
+                                .collect(Collectors.toList())
+                ).toResponseBuilder()
+        ).build();
     }
 
     /**
@@ -163,81 +160,81 @@ public class RecordResource {
     )
             throws Exception {
 
-        Response.ResponseBuilder rb;
-        DatasetEntity datasetEntity = submissionService.getDataset(datasetId);
+        return onDataset(datasetId, datasetEntity -> {
+            Response.ResponseBuilder rb;
+            if (batchRequest.getRequests().isEmpty()) {
+                rb = ErrorResponse.MULTISTATUS_REQUEST_EMPTY.toResponseBuilder();
+            } else {
+                Map<String, RecordEntity> recordEntities = new HashMap<>();
+                Map<String, Response.ResponseBuilder> preconditionFailures = new HashMap<>();
+                Map<String, Response.Status> responses = new HashMap<>();
 
-        if (datasetEntity == null) {
-            rb = ErrorResponse.DATASET_NOT_FOUND.toResponseBuilder();
-        } else if (batchRequest.getRequests().isEmpty()) {
-            rb = ErrorResponse.MULTISTATUS_REQUEST_EMPTY.toResponseBuilder();
-        } else {
+                // TODO: Graham, we are hard-coded to DataSamplePayload here, we should use a factory inside the service layer to prevent this
 
-            Map<String, RecordEntity> recordEntities = new HashMap<>();
-            Map<String, Response.ResponseBuilder> preconditionFailures = new HashMap<>();
-            Map<String, Response.Status> responses = new HashMap<>();
+                // Build requests for the service layer
+                List<SubmissionService.ObservationIdentifierPair<DataSamplePayload>> submissible = new ArrayList<>();
+                for (BatchRecordRequestItem request : batchRequest.getRequests()) {
+                    RecordEntity recordEntity = submissionService.getRecord(datasetEntity, request.getRecordId());
 
-            // TODO: Graham, we are hard-coded to DataSamplePayload here, we should use a factory inside the service layer to prevent this
+                    // Store default response status
+                    Response.Status defaultResponse = recordEntity != null ? Response.Status.OK : Response.Status.CREATED;
+                    responses.put(request.getRecordId(), defaultResponse);
 
-            // Build requests for the service layer
-            List<SubmissionService.ObservationIdentifierPair<DataSamplePayload>> submissible = new ArrayList<>();
-            for (BatchRecordRequestItem request : batchRequest.getRequests()) {
-                RecordEntity recordEntity = submissionService.getRecord(datasetEntity, request.getRecordId());
+                    // Store existing entity
+                    recordEntities.put(request.getRecordId(), recordEntity);
 
-                // Store default response status
-                Response.Status defaultResponse = recordEntity != null ? Response.Status.OK : Response.Status.CREATED;
-                responses.put(request.getRecordId(), defaultResponse);
-
-                // Store existing entity
-                recordEntities.put(request.getRecordId(), recordEntity);
-
-                // Check preconditions, building a list of submissable entries and any precondition failures
-                Response.ResponseBuilder failureResponse = checkPreconditions(datasetId, recordEntity, request.getPreconditions());
-                if (failureResponse == null) {
-                    submissible.add(new SubmissionService.ObservationIdentifierPair(request.getRecordId(), request.getPayload()));
-                } else {
-                    preconditionFailures.put(request.getRecordId(), failureResponse);
-                }
-            }
-
-            // Create and validate records (update the recordEntities map with the latest version)
-            recordEntities.putAll(submissionService.createRecords(datasetEntity, submissible)
-                    .stream()
-                    .collect(Collectors.toMap(RecordEntity::getIdentifier, e -> e)));
-
-            submissionService.validate(recordEntities.values());
-
-            // Build the response
-            MultiStatusResponse multiResponse = new MultiStatusResponse();
-            for (BatchRecordRequestItem request : batchRequest.getRequests()) {
-                MultiStatusResponse.Response responseItem = new MultiStatusResponse.Response();
-                responseItem.setId(request.getRecordId());
-
-                RecordEntity recordEntity = recordEntities.get(request.getRecordId());
-                Response.ResponseBuilder failureResponse = preconditionFailures.get(request.getRecordId());
-
-                if (failureResponse == null) {
-                    // Preconditions passed, service the request
-                    Record record = fromEntity(datasetId, recordEntity);
-
-                    responseItem.setCode(responses.get(request.getRecordId()).getStatusCode());
-                    responseItem.setHref(Linker.info(uriInfo).record(datasetId, request.getRecordId()));
-                    responseItem.setEntityTag(Preconditions.createEtag(record).toString());
-                    responseItem.setLastModified(record.getLastModified());
-                } else {
-                    // Preconditions failed, build a response item from the ResponseBuilder returned by the preconditions checks
-                    Response response = failureResponse.build();
-                    responseItem.setCode(response.getStatus());
-
-                    if (recordEntity != null) {
-                        // Entity does exist so populate the href
-                        responseItem.setHref(Linker.info(uriInfo).record(datasetId, request.getRecordId()));
+                    // Check preconditions, building a list of submissable entries and any precondition failures
+                    Response.ResponseBuilder failureResponse = onPreconditionsPass(datasetId, recordEntity, request.getPreconditions(),
+                            () -> {
+                                // Preconditions passed, add a new submissible
+                                submissible
+                                        .add(new SubmissionService.ObservationIdentifierPair(request.getRecordId(), request.getPayload()));
+                                return null;
+                            });
+                    if (failureResponse != null) {
+                        preconditionFailures.put(request.getRecordId(), failureResponse);
                     }
                 }
-                multiResponse.addResponse(responseItem);
+
+                // Create and validate records (update the recordEntities map with the latest version)
+                recordEntities.putAll(submissionService.createRecords(datasetEntity, submissible)
+                        .stream()
+                        .collect(Collectors.toMap(RecordEntity::getIdentifier, e -> e)));
+                submissionService.validate(recordEntities.values());
+
+                // Build the response
+                MultiStatusResponse multiResponse = new MultiStatusResponse();
+                for (BatchRecordRequestItem request : batchRequest.getRequests()) {
+                    MultiStatusResponse.Response responseItem = new MultiStatusResponse.Response();
+                    responseItem.setId(request.getRecordId());
+
+                    RecordEntity recordEntity = recordEntities.get(request.getRecordId());
+                    Response.ResponseBuilder failureResponse = preconditionFailures.get(request.getRecordId());
+
+                    if (failureResponse == null) {
+                        // Preconditions passed, service the request
+                        Record record = fromEntity(datasetId, recordEntity);
+
+                        responseItem.setCode(responses.get(request.getRecordId()).getStatusCode());
+                        responseItem.setHref(Linker.info(uriInfo).record(datasetId, request.getRecordId()));
+                        responseItem.setEntityTag(Preconditions.createEtag(record).toString());
+                        responseItem.setLastModified(record.getLastModified());
+                    } else {
+                        // Preconditions failed, build a response item from the ResponseBuilder returned by the preconditions checks
+                        Response response = failureResponse.build();
+                        responseItem.setCode(response.getStatus());
+
+                        if (recordEntity != null) {
+                            // Entity does exist so populate the href
+                            responseItem.setHref(Linker.info(uriInfo).record(datasetId, request.getRecordId()));
+                        }
+                    }
+                    multiResponse.addResponse(responseItem);
+                }
+                rb = multiResponse.toResponseBuilder();
             }
-            rb = multiResponse.toResponseBuilder();
-        }
-        return rb.build();
+            return rb;
+        }).build();
     }
 
     /**
@@ -273,26 +270,13 @@ public class RecordResource {
             @BeanParam Preconditions preconditions
     )
             throws Exception {
-
-        Response.ResponseBuilder rb;
-        DatasetEntity datasetEntity = submissionService.getDataset(datasetId);
-
-        if (datasetEntity == null) {
-            rb = ErrorResponse.DATASET_NOT_FOUND.toResponseBuilder();
-        } else {
-            RecordEntity recordEntity = submissionService.getRecord(datasetEntity, recordId);
-            if (recordEntity == null) {
-                rb = ErrorResponse.RECORD_NOT_FOUND.toResponseBuilder();
-            } else {
-                rb = checkPreconditions(datasetId, recordEntity, preconditions);
-                if (rb == null) {
-                    Record record = fromEntity(datasetId, recordEntity);
-                    RecordEntityResponse responseWrapper = new RecordEntityResponse(Response.Status.OK, record);
-                    rb = responseWrapper.toResponseBuilder();
-                }
-            }
-        }
-        return rb.build();
+        return onDataset(datasetId, (datasetEntity) ->
+                onRecord(datasetEntity, recordId, (recordEntity) ->
+                        onPreconditionsPass(datasetId, recordEntity, preconditions, () ->
+                                new RecordEntityResponse(Response.Status.OK, fromEntity(datasetId, recordEntity)).toResponseBuilder()
+                        )
+                )
+        ).build();
     }
 
     /**
@@ -338,29 +322,19 @@ public class RecordResource {
             @BeanParam Preconditions preconditions
     )
             throws Exception {
-
-        Response.ResponseBuilder rb;
-        DatasetEntity datasetEntity = submissionService.getDataset(datasetId);
-
-        if (datasetEntity == null) {
-            rb = ErrorResponse.DATASET_NOT_FOUND.toResponseBuilder();
-        } else {
+        return onDataset(datasetId, (datasetEntity) -> {
             RecordEntity existingEntity = submissionService.getRecord(datasetEntity, recordId);
-
-            Response.Status entityResponseStatus = existingEntity != null ? Response.Status.OK : Response.Status.CREATED;
-            rb = checkPreconditions(datasetId, existingEntity, preconditions);
-            if (rb == null) {
+            return onPreconditionsPass(datasetId, existingEntity, preconditions, () -> {
                 // Preconditions passed, create/update the record
-                existingEntity = submissionService
+                RecordEntity recordEntity = submissionService
                         .createRecord(datasetEntity, new SubmissionService.ObservationIdentifierPair(recordId, payload));
                 submissionService.validate(existingEntity);
 
-                Record record = fromEntity(datasetId, existingEntity);
-                RecordEntityResponse response = new RecordEntityResponse(entityResponseStatus, record);
-                rb = response.toResponseBuilder();
-            }
-        }
-        return rb.build();
+                Response.Status status = existingEntity != null ? Response.Status.OK : Response.Status.CREATED;
+                Record record = fromEntity(datasetId, recordEntity);
+                return new RecordEntityResponse(status, record).toResponseBuilder();
+            });
+        }).build();
     }
 
     /**
@@ -401,26 +375,15 @@ public class RecordResource {
             @BeanParam Preconditions preconditions
     )
             throws Exception {
-
-        Response.ResponseBuilder rb;
-        DatasetEntity datasetEntity = submissionService.getDataset(datasetId);
-
-        if (datasetEntity == null) {
-            rb = ErrorResponse.DATASET_NOT_FOUND.toResponseBuilder();
-        } else {
-            RecordEntity recordEntity = submissionService.getRecord(datasetEntity, recordId);
-            if (recordEntity == null) {
-                rb = ErrorResponse.RECORD_NOT_FOUND.toResponseBuilder();
-            } else {
-                rb = checkPreconditions(datasetId, recordEntity, preconditions);
-                if (rb == null) {
-                    // Preconditions passed, delete the record
-                    submissionService.removeRecord(recordEntity);
-                    rb = Response.status(Response.Status.NO_CONTENT);
-                }
-            }
-        }
-        return rb.build();
+        return onDataset(datasetId, (datasetEntity) ->
+                onRecord(datasetEntity, recordId, (recordEntity) ->
+                        onPreconditionsPass(datasetId, recordEntity, preconditions, () -> {
+                            // Preconditions passed, delete the record
+                            submissionService.removeRecord(recordEntity);
+                            return Response.status(Response.Status.NO_CONTENT);
+                        })
+                )
+        ).build();
     }
 
     private Record fromEntity(String datasetId, RecordEntity entity) {
@@ -430,8 +393,20 @@ public class RecordResource {
 
     }
 
-    private Response.ResponseBuilder checkPreconditions(final String datasetId, final RecordEntity recordEntity, Preconditions
-            preconditions) {
+    private Response.ResponseBuilder onDataset(String datasetId, Function<DatasetEntity, Response.ResponseBuilder> handler) {
+        DatasetEntity datasetEntity = submissionService.getDataset(datasetId);
+        return (datasetEntity == null) ? ErrorResponse.DATASET_NOT_FOUND.toResponseBuilder() : handler.apply(datasetEntity);
+    }
+
+    private Response.ResponseBuilder onRecord(DatasetEntity datasetEntity, String recordId, Function<RecordEntity, Response
+            .ResponseBuilder> handler) {
+        RecordEntity recordEntity = submissionService.getRecord(datasetEntity, recordId);
+        return (recordEntity == null) ? ErrorResponse.RECORD_NOT_FOUND.toResponseBuilder() : handler.apply(recordEntity);
+    }
+
+    private Response.ResponseBuilder onPreconditionsPass(final String datasetId, final RecordEntity recordEntity, Preconditions
+            preconditions, Supplier<Response
+            .ResponseBuilder> handler) {
         Response.ResponseBuilder rb = null;
         if (preconditions != null) {
             if (recordEntity == null) {
@@ -441,6 +416,9 @@ public class RecordResource {
                 Date lastModified = Date.from(recordEntity.getLastChangedDate());
                 rb = preconditions.evaluatePreconditions(lastModified, Preconditions.createEtag(existingRecord));
             }
+        }
+        if (rb == null) {
+            rb = handler.get();
         }
         return rb;
     }

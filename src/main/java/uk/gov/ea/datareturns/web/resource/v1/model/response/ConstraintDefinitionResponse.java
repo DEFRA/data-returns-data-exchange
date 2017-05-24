@@ -18,8 +18,8 @@ public class ConstraintDefinitionResponse extends ResponseWrapper<ConstraintDefi
         super();
     }
 
-    public ConstraintDefinitionResponse(Response.Status status, ConstraintDefinition data) {
-        super(status);
+    public ConstraintDefinitionResponse(ConstraintDefinition data) {
+        super(Response.Status.OK);
         this.data = data;
     }
 

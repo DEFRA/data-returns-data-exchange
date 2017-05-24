@@ -5,17 +5,14 @@ import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.http.*;
 import uk.gov.ea.datareturns.web.config.JerseyConfig;
 import uk.gov.ea.datareturns.web.resource.v1.model.response.ErrorResponse;
-import uk.gov.ea.datareturns.web.resource.v1.model.response.Metadata;
-import uk.gov.ea.datareturns.web.resource.v1.model.response.ResponseWrapper;
 import uk.gov.ea.datareturns.web.resource.v1.model.response.MultiStatusResponse;
+import uk.gov.ea.datareturns.web.resource.v1.model.response.ResponseMetadata;
+import uk.gov.ea.datareturns.web.resource.v1.model.response.ResponseWrapper;
 
 import javax.ws.rs.Path;
 import javax.ws.rs.core.UriBuilder;
 import java.net.URI;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.regex.Pattern;
 
 /**
@@ -87,7 +84,13 @@ public abstract class AbstractResourceRequest {
 
     protected <T extends ResponseWrapper> ResponseEntity<T> executeRequest(URI uri, HttpMethod method, Object requestEntity,
             Class<T> responseType) {
-        HttpEntity<?> entity = new HttpEntity<>(requestEntity, headers);
+        HttpHeaders requestHeaders = new HttpHeaders();
+        if (headers != null && !headers.isEmpty()) {
+            requestHeaders.putAll(headers);
+        }
+        requestHeaders.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
+
+        HttpEntity<?> entity = new HttpEntity<>(requestEntity, requestHeaders);
         ResponseEntity<T> responseEntity = template.exchange(uri, method, entity, responseType);
         testResponse(expected, responseEntity);
         return responseEntity;
@@ -106,7 +109,7 @@ public abstract class AbstractResourceRequest {
         } else {
             // Test response body
             Assert.assertNotNull(response.getBody());
-            Metadata metadata = response.getBody().getMeta();
+            ResponseMetadata metadata = response.getBody().getMeta();
             Assert.assertEquals(response.getStatusCodeValue(), metadata.getStatus());
 
             if (expected.is2xxSuccessful()) {

@@ -9,7 +9,7 @@ import io.swagger.annotations.ApiModelProperty;
  *
  * @author Sam Gardner-Dell
  */
-public class Metadata {
+public class ResponseMetadata {
     @ApiModelProperty(example = "200", value = "The API HTTP status code")
     private int status;
 
@@ -17,14 +17,14 @@ public class Metadata {
     @JsonInclude(JsonInclude.Include.NON_NULL)
     private String error;
 
-    public Metadata() {
+    public ResponseMetadata() {
     }
 
-    public Metadata(int status) {
+    public ResponseMetadata(int status) {
         this.status = status;
     }
 
-    public Metadata(int status, String error) {
+    public ResponseMetadata(int status, String error) {
         this.status = status;
         this.error = error;
     }

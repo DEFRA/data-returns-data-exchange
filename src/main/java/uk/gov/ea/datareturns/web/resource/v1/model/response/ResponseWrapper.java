@@ -17,13 +17,13 @@ import javax.xml.bind.annotation.XmlRootElement;
 @ApiModel(description = "Default response wrapper object")
 @XmlRootElement(name = "response")
 public abstract class ResponseWrapper<T> {
-    private Metadata meta;
+    private ResponseMetadata meta;
 
     public ResponseWrapper() {
     }
 
     public ResponseWrapper(int status) {
-        this.meta = new Metadata(status);
+        this.meta = new ResponseMetadata(status);
     }
 
     public ResponseWrapper(Response.Status status) {
@@ -31,11 +31,11 @@ public abstract class ResponseWrapper<T> {
     }
 
     @JsonProperty("meta")
-    public Metadata getMeta() {
+    public ResponseMetadata getMeta() {
         return meta;
     }
 
-    public void setMeta(Metadata meta) {
+    public void setMeta(ResponseMetadata meta) {
         this.meta = meta;
     }
 

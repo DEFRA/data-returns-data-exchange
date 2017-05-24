@@ -61,12 +61,10 @@ public class Linker {
 
     public void resolve(String datasetId, Record record) {
         List<Link> links = new ArrayList<>();
-        links.add(new Link("self", Linker.info(uriInfo).record(datasetId, record.getId())));
-        links.add(new Link("dataset", Linker.info(uriInfo).dataset(datasetId)));
+        links.add(new Link("self", record(datasetId, record.getId())));
+        links.add(new Link("dataset", dataset(datasetId)));
         record.setLinks(links);
     }
-
-
 
     public static Linker info(UriInfo uriInfo) {
         Linker l = new Linker(uriInfo);
