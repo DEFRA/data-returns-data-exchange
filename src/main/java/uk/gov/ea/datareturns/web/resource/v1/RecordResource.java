@@ -390,7 +390,6 @@ public class RecordResource {
         Record record = recordAdaptor.convert(entity);
         Linker.info(uriInfo).resolve(datasetId, record);
         return record;
-
     }
 
     private Response.ResponseBuilder onDataset(String datasetId, Function<DatasetEntity, Response.ResponseBuilder> handler) {

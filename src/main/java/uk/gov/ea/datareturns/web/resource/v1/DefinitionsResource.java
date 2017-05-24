@@ -14,6 +14,7 @@ import uk.gov.ea.datareturns.web.resource.ControlledListResource;
 import uk.gov.ea.datareturns.web.resource.v1.model.common.Linker;
 import uk.gov.ea.datareturns.web.resource.v1.model.common.Preconditions;
 import uk.gov.ea.datareturns.web.resource.v1.model.common.references.EntityReference;
+import uk.gov.ea.datareturns.web.resource.v1.model.common.references.PayloadReference;
 import uk.gov.ea.datareturns.web.resource.v1.model.definitions.ConstraintDefinition;
 import uk.gov.ea.datareturns.web.resource.v1.model.definitions.FieldDefinition;
 import uk.gov.ea.datareturns.web.resource.v1.model.record.payload.Payload;
@@ -87,8 +88,15 @@ public class DefinitionsResource {
             @ApiResponse(code = 200, message = "OK", response = PayloadListResponse.class)
     })
     public Response listPayloads() throws Exception {
-        PayloadListResponse response = new PayloadListResponse(Payload.TYPES.keySet());
-        return response.toResponseBuilder().build();
+        return new PayloadListResponse(
+                Payload.TYPES.keySet().stream()
+                        .map((type) -> {
+                            PayloadReference ref = new PayloadReference(type);
+                            Linker.info(uriInfo).resolve(ref);
+                            return ref;
+                        })
+                        .collect(Collectors.toList())
+        ).toResponseBuilder().build();
     }
 
     /**

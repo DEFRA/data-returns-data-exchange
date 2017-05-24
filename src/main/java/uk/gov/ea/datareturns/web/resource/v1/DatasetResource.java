@@ -196,7 +196,7 @@ public class DatasetResource {
             throws Exception {
         return onDataset(datasetId, datasetEntity ->
                 onPreconditionsPass(datasetEntity, preconditions, () -> {
-                    Dataset dataset = DatasetAdaptor.getInstance().convert(datasetEntity);
+                    Dataset dataset = fromEntity(datasetEntity);
                     return new DatasetEntityResponse(Response.Status.OK, dataset).toResponseBuilder();
                 })
         ).build();
@@ -401,7 +401,7 @@ public class DatasetResource {
             submissionService.createDataset(newDatasetEntity);
             status = Response.Status.CREATED;
         }
-        dataset = DatasetAdaptor.getInstance().convert(newDatasetEntity);
+        dataset = fromEntity(newDatasetEntity);
         return new DatasetEntityResponse(status, dataset);
     }
 
@@ -449,6 +449,13 @@ public class DatasetResource {
         return datasetStatus;
     }
 
+    private Dataset fromEntity(DatasetEntity entity) {
+        Dataset dataset = DatasetAdaptor.getInstance().convert(entity);
+        Linker.info(uriInfo).resolve(dataset);
+        return dataset;
+    }
+
+
     private Response.ResponseBuilder onDataset(String datasetId, Function<DatasetEntity, Response.ResponseBuilder> handler) {
         DatasetEntity datasetEntity = submissionService.getDataset(datasetId);
         return (datasetEntity == null) ? ErrorResponse.DATASET_NOT_FOUND.toResponseBuilder() : handler.apply(datasetEntity);
@@ -461,7 +468,7 @@ public class DatasetResource {
             if (datasetEntity == null) {
                 rb = preconditions.evaluatePreconditions();
             } else {
-                Dataset existingDataset = DatasetAdaptor.getInstance().convert(datasetEntity);
+                Dataset existingDataset = fromEntity(datasetEntity);
                 Date lastModified = Date.from(datasetEntity.getLastChangedDate());
                 rb = preconditions.evaluatePreconditions(lastModified, Preconditions.createEtag(existingDataset));
             }
