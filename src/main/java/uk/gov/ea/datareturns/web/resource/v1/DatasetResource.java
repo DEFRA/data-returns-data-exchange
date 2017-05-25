@@ -6,10 +6,10 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
-import uk.gov.ea.datareturns.config.SubmissionConfiguration;
-import uk.gov.ea.datareturns.domain.jpa.entities.userdata.AbstractObservation;
+import uk.gov.ea.datareturns.domain.jpa.entities.userdata.AbstractPayloadEntity;
 import uk.gov.ea.datareturns.domain.jpa.entities.userdata.impl.DatasetEntity;
 import uk.gov.ea.datareturns.domain.jpa.entities.userdata.impl.RecordEntity;
+import uk.gov.ea.datareturns.domain.jpa.service.DatasetService;
 import uk.gov.ea.datareturns.domain.jpa.service.SubmissionService;
 import uk.gov.ea.datareturns.web.resource.v1.model.common.Linker;
 import uk.gov.ea.datareturns.web.resource.v1.model.common.Preconditions;
@@ -19,7 +19,7 @@ import uk.gov.ea.datareturns.web.resource.v1.model.request.BatchDatasetRequest;
 import uk.gov.ea.datareturns.web.resource.v1.model.request.BatchDatasetRequestItem;
 import uk.gov.ea.datareturns.web.resource.v1.model.response.*;
 
-import javax.annotation.Resource;
+import javax.inject.Inject;
 import javax.validation.constraints.Pattern;
 import javax.ws.rs.*;
 import javax.ws.rs.core.Context;
@@ -27,7 +27,6 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
 import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
@@ -57,16 +56,11 @@ public class DatasetResource {
     @Context
     private UriInfo uriInfo;
 
-    private SubmissionService<?, ?, ?> submissionService;
+    @Inject
+    private SubmissionService submissionService;
 
-    /**
-     * Retrieves the appropriate versioned submission service
-     * @param submissionServiceMap
-     */
-    @Resource(name = "submissionServiceMap")
-    private void setSubmissionService(Map<SubmissionConfiguration.SubmissionServiceProvider, SubmissionService> submissionServiceMap) {
-        this.submissionService = submissionServiceMap.get(SubmissionConfiguration.SubmissionServiceProvider.DATA_SAMPLE_V1);
-    }
+    @Inject
+    private DatasetService datasetService;
 
     /**
      * List the available datasets
@@ -86,7 +80,7 @@ public class DatasetResource {
     })
     public Response listDatasets() throws Exception {
         return new EntityListResponse(
-                submissionService.getDatasets().stream()
+                datasetService.getDatasets().stream()
                         .map((entity -> new EntityReference(entity.getIdentifier(), Linker.info(uriInfo).dataset(entity.getIdentifier()))))
                         .collect(Collectors.toList())
         ).toResponseBuilder().build();
@@ -134,7 +128,7 @@ public class DatasetResource {
             MultiStatusResponse multiResponse = new MultiStatusResponse();
 
             for (BatchDatasetRequestItem request : batchRequest.getRequests()) {
-                DatasetEntity datasetEntity = submissionService.getDataset(request.getDatasetId());
+                DatasetEntity datasetEntity = datasetService.getDataset(request.getDatasetId());
                 MultiStatusResponse.Response responseItem = new MultiStatusResponse.Response();
                 responseItem.setId(request.getDatasetId());
 
@@ -235,7 +229,7 @@ public class DatasetResource {
             final DatasetProperties datasetProperties
     )
             throws Exception {
-        DatasetEntity datasetEntity = submissionService.getDataset(datasetId);
+        DatasetEntity datasetEntity = datasetService.getDataset(datasetId);
         return onPreconditionsPass(datasetEntity, preconditions, () -> {
             // Preconditions passed, process request
             return storeDataset(datasetEntity, datasetId, datasetProperties).toResponseBuilder();
@@ -277,7 +271,7 @@ public class DatasetResource {
         return onDataset(datasetId, datasetEntity ->
                 onPreconditionsPass(datasetEntity, preconditions, () -> {
                     // Preconditions passed, delete the resource
-                    submissionService.removeDataset(datasetId);
+                    datasetService.removeDataset(datasetId);
                     return Response.status(Response.Status.NO_CONTENT);
                 })
         ).build();
@@ -392,13 +386,13 @@ public class DatasetResource {
             dataset = DatasetAdaptor.getInstance().convert(datasetEntity);
             dataset.setProperties(datasetProperties);
             newDatasetEntity = DatasetAdaptor.getInstance().merge(datasetEntity, dataset);
-            submissionService.updateDataset(newDatasetEntity);
+            datasetService.updateDataset(newDatasetEntity);
         } else {
             dataset = new Dataset();
             dataset.setId(datasetId);
             dataset.setProperties(datasetProperties);
             newDatasetEntity = DatasetAdaptor.getInstance().merge(datasetEntity, dataset);
-            submissionService.createDataset(newDatasetEntity);
+            datasetService.createDataset(newDatasetEntity);
             status = Response.Status.CREATED;
         }
         dataset = fromEntity(newDatasetEntity);
@@ -419,8 +413,8 @@ public class DatasetResource {
         List<RecordEntity> recordEntities = submissionService.getRecords(datasetEntity);
         recordEntities = submissionService.evaluateSubstitutes(recordEntities);
         for (RecordEntity recordEntity : recordEntities) {
-            if (recordEntity.getAbstractObservation() != null) {
-                for (AbstractObservation.EntitySubstitution entitySubstitution : recordEntity.getAbstractObservation()
+            if (recordEntity.getAbstractPayloadEntity() != null) {
+                for (AbstractPayloadEntity.EntitySubstitution entitySubstitution : recordEntity.getAbstractPayloadEntity()
                         .getEntitySubstitutions()) {
                     substitutions.addSubstitution(recordEntity.getIdentifier(),
                             entitySubstitution.getEntity(),
@@ -457,7 +451,7 @@ public class DatasetResource {
 
 
     private Response.ResponseBuilder onDataset(String datasetId, Function<DatasetEntity, Response.ResponseBuilder> handler) {
-        DatasetEntity datasetEntity = submissionService.getDataset(datasetId);
+        DatasetEntity datasetEntity = datasetService.getDataset(datasetId);
         return (datasetEntity == null) ? ErrorResponse.DATASET_NOT_FOUND.toResponseBuilder() : handler.apply(datasetEntity);
     }
 

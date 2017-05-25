@@ -3,9 +3,9 @@ package uk.gov.ea.datareturns.web.resource.v1.model.record.payload;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import io.swagger.annotations.ApiModel;
-import uk.gov.ea.datareturns.web.resource.ObservationSerializationBean;
 
 import javax.xml.bind.annotation.XmlRootElement;
+import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -32,7 +32,7 @@ import java.util.stream.Collectors;
         @JsonSubTypes.Type(name = "DataSample", value = DataSamplePayload.class),
         @JsonSubTypes.Type(name = "Demo", value = DemonstrationAlternativePayload.class)
 })
-public abstract class Payload implements ObservationSerializationBean {
+public abstract class Payload implements Serializable {
     public static final Map<String, Class<?>> TYPES = Arrays.stream(Payload.class.getAnnotation(JsonSubTypes.class).value())
             .collect(Collectors.toMap(JsonSubTypes.Type::name, JsonSubTypes.Type::value));
 

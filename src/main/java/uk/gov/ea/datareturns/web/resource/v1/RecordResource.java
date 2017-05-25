@@ -7,16 +7,15 @@ import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
-import uk.gov.ea.datareturns.config.SubmissionConfiguration;
 import uk.gov.ea.datareturns.domain.jpa.entities.userdata.impl.DatasetEntity;
 import uk.gov.ea.datareturns.domain.jpa.entities.userdata.impl.RecordEntity;
+import uk.gov.ea.datareturns.domain.jpa.service.DatasetService;
 import uk.gov.ea.datareturns.domain.jpa.service.SubmissionService;
 import uk.gov.ea.datareturns.web.resource.v1.model.common.Linker;
 import uk.gov.ea.datareturns.web.resource.v1.model.common.Preconditions;
 import uk.gov.ea.datareturns.web.resource.v1.model.common.references.EntityReference;
 import uk.gov.ea.datareturns.web.resource.v1.model.record.Record;
 import uk.gov.ea.datareturns.web.resource.v1.model.record.RecordAdaptor;
-import uk.gov.ea.datareturns.web.resource.v1.model.record.payload.DataSamplePayload;
 import uk.gov.ea.datareturns.web.resource.v1.model.record.payload.Payload;
 import uk.gov.ea.datareturns.web.resource.v1.model.request.BatchRecordRequest;
 import uk.gov.ea.datareturns.web.resource.v1.model.request.BatchRecordRequestItem;
@@ -25,7 +24,6 @@ import uk.gov.ea.datareturns.web.resource.v1.model.response.ErrorResponse;
 import uk.gov.ea.datareturns.web.resource.v1.model.response.MultiStatusResponse;
 import uk.gov.ea.datareturns.web.resource.v1.model.response.RecordEntityResponse;
 
-import javax.annotation.Resource;
 import javax.inject.Inject;
 import javax.validation.constraints.Pattern;
 import javax.ws.rs.*;
@@ -63,17 +61,8 @@ public class RecordResource {
     @Context
     private UriInfo uriInfo;
 
-    // TODO: Graham, we are hard-coded to DataSamplePayload here, we should use a factory inside the service layer to prevent this
-    private SubmissionService<DataSamplePayload, ?, ?> submissionService;
-
-    /**
-     * Retrieves the appropriate versioned submission service
-     * @param submissionServiceMap
-     */
-    @Resource(name = "submissionServiceMap")
-    private void setSubmissionService(Map<SubmissionConfiguration.SubmissionServiceProvider, SubmissionService> submissionServiceMap) {
-        this.submissionService = submissionServiceMap.get(SubmissionConfiguration.SubmissionServiceProvider.DATA_SAMPLE_V1);
-    }
+    private SubmissionService submissionService;
+    private DatasetService datasetService;
 
     /**
      * Create a new {@link RecordResource} RESTful service
@@ -81,9 +70,13 @@ public class RecordResource {
      * @param context the spring application context
      */
     @Inject
-    public RecordResource(final ApplicationContext context, RecordAdaptor recordAdaptor) {
+    public RecordResource(final ApplicationContext context, RecordAdaptor recordAdaptor,
+                          SubmissionService submissionService, DatasetService datasetService) {
+
         this.recordAdaptor = recordAdaptor;
         this.context = context;
+        this.submissionService = submissionService;
+        this.datasetService = datasetService;
     }
 
     /**
@@ -169,10 +162,8 @@ public class RecordResource {
                 Map<String, Response.ResponseBuilder> preconditionFailures = new HashMap<>();
                 Map<String, Response.Status> responses = new HashMap<>();
 
-                // TODO: Graham, we are hard-coded to DataSamplePayload here, we should use a factory inside the service layer to prevent this
-
                 // Build requests for the service layer
-                List<SubmissionService.ObservationIdentifierPair<DataSamplePayload>> submissible = new ArrayList<>();
+                List<SubmissionService.PayloadIdentifier<Payload>> payloadIdentifiers = new ArrayList<>();
                 for (BatchRecordRequestItem request : batchRequest.getRequests()) {
                     RecordEntity recordEntity = submissionService.getRecord(datasetEntity, request.getRecordId());
 
@@ -183,12 +174,12 @@ public class RecordResource {
                     // Store existing entity
                     recordEntities.put(request.getRecordId(), recordEntity);
 
-                    // Check preconditions, building a list of submissable entries and any precondition failures
+                    // Check preconditions, building a list of entries and any precondition failures
                     Response.ResponseBuilder failureResponse = onPreconditionsPass(datasetId, recordEntity, request.getPreconditions(),
                             () -> {
                                 // Preconditions passed, add a new submissible
-                                submissible
-                                        .add(new SubmissionService.ObservationIdentifierPair(request.getRecordId(), request.getPayload()));
+                                payloadIdentifiers
+                                        .add(new SubmissionService.PayloadIdentifier(request.getRecordId(), request.getPayload()));
                                 return null;
                             });
                     if (failureResponse != null) {
@@ -197,7 +188,7 @@ public class RecordResource {
                 }
 
                 // Create and validate records (update the recordEntities map with the latest version)
-                recordEntities.putAll(submissionService.createRecords(datasetEntity, submissible)
+                recordEntities.putAll(submissionService.createRecords(datasetEntity, payloadIdentifiers)
                         .stream()
                         .collect(Collectors.toMap(RecordEntity::getIdentifier, e -> e)));
                 submissionService.validate(recordEntities.values());
@@ -327,7 +318,7 @@ public class RecordResource {
             return onPreconditionsPass(datasetId, existingEntity, preconditions, () -> {
                 // Preconditions passed, create/update the record
                 RecordEntity recordEntity = submissionService
-                        .createRecord(datasetEntity, new SubmissionService.ObservationIdentifierPair(recordId, payload));
+                        .createRecord(datasetEntity, new SubmissionService.PayloadIdentifier<>(recordId, payload));
                 submissionService.validate(recordEntity);
 
                 Response.Status status = existingEntity != null ? Response.Status.OK : Response.Status.CREATED;
@@ -393,7 +384,7 @@ public class RecordResource {
     }
 
     private Response.ResponseBuilder onDataset(String datasetId, Function<DatasetEntity, Response.ResponseBuilder> handler) {
-        DatasetEntity datasetEntity = submissionService.getDataset(datasetId);
+        DatasetEntity datasetEntity = datasetService.getDataset(datasetId);
         return (datasetEntity == null) ? ErrorResponse.DATASET_NOT_FOUND.toResponseBuilder() : handler.apply(datasetEntity);
     }
 
