@@ -353,25 +353,25 @@ public class DatasetResource {
             @ApiParam("The requested status.") final DatasetSubmissionStatus requestedStatus)
             throws Exception {
         return onDataset(datasetId, datasetEntity -> {
-            DatasetStatus existingStatus = buildDatasetStatus(datasetEntity);
+            // Submit the data - only valid records may be submitted
+            submissionService.submit(submissionService.getRecords(datasetEntity));
+
+            // Build the status
+            DatasetStatus datasetStatus = buildDatasetStatus(datasetEntity);
 
             // Check state transition
-            DatasetSubmissionStatus.Status submissionStatus = existingStatus.getSubmission().getStatus();
+            DatasetSubmissionStatus.Status submissionStatus = datasetStatus.getSubmission().getStatus();
             if (!submissionStatus.canTransition(requestedStatus.getStatus())) {
                 return ErrorResponse.SUBMISSION_INVALID_STATE_CHANGE.toResponseBuilder();
             }
             if (datasetEntity.getOriginatorEmail() == null) {
                 return ErrorResponse.UNSUBMITTABLE_BAD_ORIGINATOR.toResponseBuilder();
             }
-            if (!existingStatus.getValidity().isValid()) {
+            if (!datasetStatus.getValidity().isValid()) {
                 return ErrorResponse.UNSUBMITTABLE_VALIDATION_ERRORS.toResponseBuilder();
             }
 
-            DatasetStatus newDatasetStatus = existingStatus;
-            newDatasetStatus.setSubmission(requestedStatus);
-            // Submit the data
-            submissionService.submit(submissionService.getRecords(datasetEntity));
-            return new DatasetStatusResponse(newDatasetStatus).toResponseBuilder();
+            return new DatasetStatusResponse(datasetStatus).toResponseBuilder();
         }).build();
 
     }
@@ -416,6 +416,7 @@ public class DatasetResource {
         submissionStatus.setStatus(DatasetSubmissionStatus.Status.UNSUBMITTED);
 
         // If we have records on the dataset and they are all submitted the dataset status is SUBMITTED
+        // We cannot SUBMIT an empty dataset
         if (recordEntities.size() != 0 && recordEntities.size() == recordEntities.stream().filter(r -> r.getRecordStatus() == RecordEntity.RecordStatus.SUBMITTED).count()) {
             submissionStatus.setStatus(DatasetSubmissionStatus.Status.SUBMITTED);
         }

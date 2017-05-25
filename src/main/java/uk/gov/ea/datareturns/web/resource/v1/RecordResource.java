@@ -143,7 +143,12 @@ public class RecordResource {
                     message = "Bad Request - no request items could be extracted from the request body.",
                     response = ErrorResponse.class
             ),
-            @ApiResponse(code = 404, message = "Not Found - The `dataset_id` parameter did not match a known resource.")
+            @ApiResponse(code = 404, message = "Not Found - The `dataset_id` parameter did not match a known resource."),
+            @ApiResponse(
+                    code = 403,
+                    message = "Forbidden - the dataset is already submitted and cannot be ammended",
+                    response = ErrorResponse.class
+            )
     })
     public Response postRecords(
             @PathParam("dataset_id")
@@ -171,7 +176,7 @@ public class RecordResource {
                     if (recordEntity == null) {
                         defaultResponse = Response.Status.CREATED;
                     } else if (recordEntity.getRecordStatus() == RecordEntity.RecordStatus.SUBMITTED) {
-                        defaultResponse = Response.Status.CONFLICT;
+                        defaultResponse = Response.Status.FORBIDDEN;
                     } else {
                         defaultResponse = Response.Status.OK;
                     }
@@ -314,6 +319,11 @@ public class RecordResource {
                     code = 412,
                     message = "Precondition Failed - see conditional request documentation",
                     response = ErrorResponse.class
+            ),
+            @ApiResponse(
+                    code = 403,
+                    message = "Forbidden - the dataset is already submitted and cannot be ammended",
+                    response = ErrorResponse.class
             )
     })
     public Response putRecord(
@@ -339,12 +349,12 @@ public class RecordResource {
                 if (existingEntity == null) {
                     status = Response.Status.CREATED;
                 } else if (existingEntity.getRecordStatus() == RecordEntity.RecordStatus.SUBMITTED) {
-                    status = Response.Status.CONFLICT;
+                    status = Response.Status.FORBIDDEN;
                     record = fromEntity(datasetId, existingEntity);
                 }
 
                 // Preconditions passed, create/update the record
-                if (status != Response.Status.CONFLICT) {
+                if (status != Response.Status.FORBIDDEN) {
                     RecordEntity recordEntity = submissionService
                             .createRecord(datasetEntity, new SubmissionService.PayloadIdentifier<>(recordId, payload));
 

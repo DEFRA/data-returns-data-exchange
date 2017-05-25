@@ -345,7 +345,7 @@ public class SubmissionService {
     @Transactional
     public List<RecordEntity> evaluateSubstitutes(List<RecordEntity> recordEntities) {
         return recordEntities.stream()
-                .filter(r -> r.getRecordStatus() == RecordEntity.RecordStatus.VALID)
+                .filter(r -> r.getRecordStatus() == RecordEntity.RecordStatus.VALID ||  r.getRecordStatus() == RecordEntity.RecordStatus.SUBMITTED)
                 .map(r -> {
                     try {
                         Payload payload = mapper.readValue(r.getJson(), Payload.class);
