@@ -111,7 +111,7 @@ public class SubmissionService {
      */
     public List<Payload> parseJsonArray(String json) {
         try {
-            return Arrays.asList(mapper.readValue(json, Payload[].class));
+            return (json != null) ? Arrays.asList(mapper.readValue(json, Payload[].class)) : null;
         } catch (IOException e) {
             LOGGER.info("Cannot parse json array: " + json + ": " + e.getMessage());
             return null;
@@ -120,7 +120,7 @@ public class SubmissionService {
 
     public Payload parseJsonObject(String json) {
         try {
-            return mapper.readValue(json, Payload.class);
+            return (json != null) ? mapper.readValue(json, Payload.class) : null;
         } catch (IOException e) {
             LOGGER.info("Cannot parse json: " + json + ": " + e.getMessage());
             return null;
