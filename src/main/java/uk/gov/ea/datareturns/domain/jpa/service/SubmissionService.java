@@ -303,9 +303,9 @@ public class SubmissionService {
                         Payload payload = mapper.readValue(r.getJson(), Payload.class);
                         AbstractPayloadEntityFactory factory = AbstractPayloadEntityFactory.factoryFor(payload.getClass());
                         AbstractPayloadEntity submission = factory.create(payload);
-                        r.setAbstractObservation(submission);
+                        r.setAbstractPayloadEntity(submission);
                         r.setRecordStatus(RecordEntity.RecordStatus.SUBMITTED);
-                        r.getAbstractObservation().setRecordEntity(r);
+                        r.getAbstractPayloadEntity().setRecordEntity(r);
                         r.setLastChangedDate(Instant.now());
                         payloadEntityDao.persist(submission);
                         recordDao.merge(r);
@@ -332,7 +332,7 @@ public class SubmissionService {
                     try {
                         Payload payload = mapper.readValue(r.getJson(), Payload.class);
                         AbstractPayloadEntity submission = AbstractPayloadEntityFactory.factoryFor(payload.getClass()).create(payload);
-                        r.setAbstractObservation(submission);
+                        r.setAbstractPayloadEntity(submission);
                         return r;
                     } catch (IOException e) {
                         LOGGER.error("Error de-serializing stored JSON: " + e.getMessage());

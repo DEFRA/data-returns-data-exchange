@@ -26,7 +26,7 @@ public class RecordEntity implements Metadata {
     private Long id;
 
     @OneToOne(cascade = { CascadeType.REMOVE }, mappedBy = "recordEntity")
-    private AbstractPayloadEntity abstractObservation;
+    private AbstractPayloadEntity abstractPayloadEntity;
 
     @Basic @Column(name = "identifier", nullable = false, length = 80)
     private String identifier;
@@ -110,12 +110,12 @@ public class RecordEntity implements Metadata {
         this.json = json;
     }
 
-    public AbstractPayloadEntity getAbstractObservation() {
-        return abstractObservation;
+    public AbstractPayloadEntity getAbstractPayloadEntity() {
+        return abstractPayloadEntity;
     }
 
-    public void setAbstractObservation(AbstractPayloadEntity abstractObservation) {
-        this.abstractObservation = abstractObservation;
+    public void setAbstractPayloadEntity(AbstractPayloadEntity abstractPayloadEntity) {
+        this.abstractPayloadEntity = abstractPayloadEntity;
     }
 
     public Set<ValidationError> getValidationErrors() {
@@ -147,7 +147,7 @@ public class RecordEntity implements Metadata {
     public String toString() {
         return "RecordEntity{" +
                 "id=" + id +
-                ", abstractObservation=" + abstractObservation +
+                ", abstractPayloadEntity=" + abstractPayloadEntity +
                 ", identifier='" + identifier + '\'' +
                 ", dataset=" + dataset +
                 ", recordStatus=" + recordStatus +

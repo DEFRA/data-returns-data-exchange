@@ -334,20 +334,18 @@
 		****************************************************************
 		-->
 		<createTable tableName="alternatives">
-			<column name="test" type="varchar(100"/>
+			<column name="record_id" type="bigserial">
+				<constraints nullable="false"/>
+			</column>
+
+			<column name="test" type="varchar(100)"/>
 		</createTable>
 
 		<addForeignKeyConstraint baseColumnNames="record_id"
-								 baseTableName="measurements"
-								 constraintName="fk_measurements_record"
+								 baseTableName="alternatives"
+								 constraintName="fk_alternatives_record"
 								 referencedColumnNames="id"
 								 referencedTableName="records"/>
-
-		<addForeignKeyConstraint baseColumnNames="parameter_id"
-								 baseTableName="measurements"
-								 constraintName="fk_measurements_parameter"
-								 referencedColumnNames="id"
-								 referencedTableName="parameters"/>
 
 		<!--
 		****************************************************************
@@ -359,7 +357,7 @@
 			<dropTable tableName="record_validation_error_fields"/>
 			<dropTable tableName="record_validation_errors"/>
 			<dropTable tableName="validation_errors"/>
-			<dropTable tableName="measurements"/>
+			<dropTable tableName="alternatives"/>
 			<dropTable tableName="data_sample"/>
 			<dropTable tableName="status"/>
 			<dropTable tableName="records"/>
