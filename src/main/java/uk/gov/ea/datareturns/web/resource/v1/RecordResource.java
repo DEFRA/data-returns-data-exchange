@@ -7,7 +7,6 @@ import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
-import uk.gov.ea.datareturns.config.SubmissionConfiguration;
 import uk.gov.ea.datareturns.domain.jpa.entities.userdata.impl.DatasetEntity;
 import uk.gov.ea.datareturns.domain.jpa.entities.userdata.impl.RecordEntity;
 import uk.gov.ea.datareturns.domain.jpa.service.DatasetService;
@@ -26,7 +25,6 @@ import uk.gov.ea.datareturns.web.resource.v1.model.response.ErrorResponse;
 import uk.gov.ea.datareturns.web.resource.v1.model.response.MultiStatusResponse;
 import uk.gov.ea.datareturns.web.resource.v1.model.response.RecordEntityResponse;
 
-import javax.annotation.Resource;
 import javax.inject.Inject;
 import javax.validation.constraints.Pattern;
 import javax.ws.rs.*;
@@ -173,7 +171,7 @@ public class RecordResource {
             // TODO: Graham, we are hard-coded to DataSamplePayload here, we should use a factory inside the service layer to prevent this
 
             // Build requests for the service layer
-            List<SubmissionService.ObservationIdentifierPair<DataSamplePayload>> submissible = new ArrayList<>();
+            List<SubmissionService.PayloadIdentifier<DataSamplePayload>> submissible = new ArrayList<>();
             for (BatchRecordRequestItem request : batchRequest.getRequests()) {
                 RecordEntity recordEntity = submissionService.getRecord(datasetEntity, request.getRecordId());
 
@@ -187,7 +185,7 @@ public class RecordResource {
                 // Check preconditions, building a list of submissable entries and any precondition failures
                 Response.ResponseBuilder failureResponse = checkPreconditions(datasetId, recordEntity, request.getPreconditions());
                 if (failureResponse == null) {
-                    submissible.add(new SubmissionService.ObservationIdentifierPair(request.getRecordId(), request.getPayload()));
+                    submissible.add(new SubmissionService.PayloadIdentifier(request.getRecordId(), request.getPayload()));
                 } else {
                     preconditionFailures.put(request.getRecordId(), failureResponse);
                 }
@@ -346,7 +344,7 @@ public class RecordResource {
             if (rb == null) {
                 // Preconditions passed, create/update the record
                 existingEntity = submissionService
-                        .createRecord(datasetEntity, new SubmissionService.ObservationIdentifierPair(recordId, payload));
+                        .createRecord(datasetEntity, new SubmissionService.PayloadIdentifier(recordId, payload));
                 submissionService.validate(existingEntity);
 
                 Record record = fromEntity(datasetId, existingEntity);

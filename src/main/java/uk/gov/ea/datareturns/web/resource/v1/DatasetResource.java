@@ -348,8 +348,8 @@ public class DatasetResource {
         DatasetSubstitutions substitutions = new DatasetSubstitutions();
 
         for (RecordEntity recordEntity : recordEntities) {
-            if (recordEntity.getAbstractObservation() != null) {
-                for (AbstractPayloadEntity.EntitySubstitution entitySubstitution : recordEntity.getAbstractObservation()
+            if (recordEntity.getAbstractPayloadEntity() != null) {
+                for (AbstractPayloadEntity.EntitySubstitution entitySubstitution : recordEntity.getAbstractPayloadEntity()
                         .getEntitySubstitutions()) {
                     substitutions.addSubstitution(recordEntity.getIdentifier(),
                             entitySubstitution.getEntity(),

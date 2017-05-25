@@ -82,7 +82,7 @@ public class SubmissionConfiguration {
      * @return
      */
     @Bean
-    public PayloadEntityDao observationDao() {
+    public PayloadEntityDao payloadEntityDao() {
         return new PayloadEntityDao();
     }
 
@@ -117,17 +117,17 @@ public class SubmissionConfiguration {
     }
 
     @Bean
-    public Validator<AbstractValidationObject> mvoValidator() {
+    public Validator<AbstractValidationObject> validationObjectValidator() {
         return new ValidatorImpl(this.validator, validationErrorDao);
     }
 
     @Bean
-    public ValidationObjectFactory newMvoFactory() {
+    public ValidationObjectFactory validationObjectFactory() {
         return new ValidationObjectFactory();
     }
 
     @Bean
     public SubmissionService submissionsService() {
-        return new SubmissionService(newMvoFactory(), recordDao, observationDao(), mvoValidator());
+        return new SubmissionService(validationObjectFactory(), recordDao, payloadEntityDao(), validationObjectValidator());
     }
 }

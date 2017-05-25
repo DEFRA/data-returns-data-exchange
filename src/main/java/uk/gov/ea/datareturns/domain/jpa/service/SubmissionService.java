@@ -28,7 +28,7 @@ import java.util.stream.Collectors;
  *         A submission service is responsible for managing the lifecycle of a submission:
  *         <p>
  *         (1) CREATED. A submission record is created in the system which may have an identifier
- *         set by the user or generated automatically by the system. There is no observationSerializationBean (submission data)
+ *         set by the user or generated automatically by the system. There is no payload bean (submission data)
  *         associated with a record at this point.
  *         <p>
  *         (2) PARSED. The use supplies a Json string which is parsed as valid json for the
@@ -44,27 +44,26 @@ import java.util.stream.Collectors;
  *         <p>
  *         The service is created by the submission service configuration
  */
-@SuppressWarnings("Duplicates")
 public class SubmissionService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(SubmissionService.class);
 
-    private final ValidationObjectFactory mvoFactory;
+    private final ValidationObjectFactory validationObjectFactory;
     private final RecordDao recordDao;
-    private final PayloadEntityDao observationDao;
+    private final PayloadEntityDao payloadEntityDao;
     private final Validator<AbstractValidationObject> validator;
     private final static ObjectMapper mapper = new ObjectMapper();
 
-    public SubmissionService(ValidationObjectFactory mvoFactory,
+    public SubmissionService(ValidationObjectFactory validationObjectFactory,
                              RecordDao recordDao,
-                             PayloadEntityDao observationDao,
+                             PayloadEntityDao payloadEntityDao,
                              Validator<AbstractValidationObject> validator) {
 
 
-        this.mvoFactory = mvoFactory;
+        this.validationObjectFactory = validationObjectFactory;
         this.recordDao = recordDao;
         this.validator = validator;
-        this.observationDao = observationDao;
+        this.payloadEntityDao = payloadEntityDao;
 
         LOGGER.info("Initializing submissions service: ");
         mapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
@@ -76,28 +75,28 @@ public class SubmissionService {
      * RecordEntity and submission centric operations
      *
      * Bulk record and submission centric operations require a the use of nested class to
-     * couple given identifiers and observationSerializationBeans either of which may be given as null
+     * couple given identifiers and payload either of which either may be given as null
      ****************************************************************************************/
-    public static class ObservationIdentifierPair<D extends Payload> {
+    public static class PayloadIdentifier<D extends Payload> {
         final String identifier;
         final D datum;
 
-        public ObservationIdentifierPair(String identifier, D datum) {
+        public PayloadIdentifier(String identifier, D datum) {
             this.identifier = identifier;
             this.datum = datum;
         }
 
-        public ObservationIdentifierPair(D datum) {
+        public PayloadIdentifier(D datum) {
             this.identifier = UUID.randomUUID().toString();
             this.datum = datum;
         }
 
-        public ObservationIdentifierPair(String identifier) {
+        public PayloadIdentifier(String identifier) {
             this.identifier = identifier;
             this.datum = null;
         }
 
-        public ObservationIdentifierPair() {
+        public PayloadIdentifier() {
             this.identifier = UUID.randomUUID().toString();
             this.datum = null;
         }
@@ -191,7 +190,7 @@ public class SubmissionService {
      * @return A list of records
      */
     @Transactional
-    public <D extends Payload> List<RecordEntity> createRecords(DatasetEntity dataset, List<ObservationIdentifierPair<D>> datumIdentifierPairs) {
+    public <D extends Payload> List<RecordEntity> createRecords(DatasetEntity dataset, List<PayloadIdentifier<D>> datumIdentifierPairs) {
         return datumIdentifierPairs.stream()
                 .map(p -> createOrResetRecord(dataset, p.identifier, p.datum))
                 .collect(Collectors.toList());
@@ -203,19 +202,17 @@ public class SubmissionService {
      * is specified or PARSED if a datum is specified
      *
      * @param dataset
-     * @param datumIdentifierPair
+     * @param payloadIdentifier
      * @return A list of records
      */
     @Transactional
-    public <D extends Payload> RecordEntity createRecord(DatasetEntity dataset, ObservationIdentifierPair<D> datumIdentifierPair) {
-        return createOrResetRecord(dataset, datumIdentifierPair.identifier, datumIdentifierPair.datum);
+    public <D extends Payload> RecordEntity createRecord(DatasetEntity dataset, PayloadIdentifier<D> payloadIdentifier) {
+        return createOrResetRecord(dataset, payloadIdentifier.identifier, payloadIdentifier.datum);
     }
 
     /**
-     * Validate a recordEntity which has been created with a sample (observationSerializationBean)
-     * The validation is against the associated validation object (MVO)
-     *
-     * @param record The record entity to validate
+     *  Validate a recordEntity which has been created with a sample payload
+     * @param record
      */
     @Transactional
     public void validate(RecordEntity record) {
@@ -226,7 +223,7 @@ public class SubmissionService {
             } catch (IOException e) {
                 LOGGER.error("Error de-serializing stored JSON: " + e.getMessage());
             }
-            AbstractValidationObject validationObject = mvoFactory.create(payload);
+            AbstractValidationObject validationObject = validationObjectFactory.create(payload);
 
             Set<ValidationError> validationErrors = validator.validateValidationObject(validationObject);
 
@@ -244,7 +241,7 @@ public class SubmissionService {
 
     /**
      * Validate a set of recordEntities which have been created with samples
-     * The validation is against the associated validation object (MVO)
+     * The validation is against the associated validation object
      * The JSON stored in the record by the
      *
      * @param recordEntities The recordEntities to validate
@@ -253,7 +250,7 @@ public class SubmissionService {
     public void validate(Collection<RecordEntity> recordEntities) {
         // Deserialize the list of samples from the JSON
         // field in the record and pass store in a map
-        Map<RecordEntity, AbstractValidationObject> mvos = recordEntities.stream()
+        Map<RecordEntity, AbstractValidationObject> recordEntityAbstractValidationObjectMap = recordEntities.stream()
                 .filter(r -> r.getJson() != null && !r.getJson().isEmpty())
                 .collect(Collectors.toMap(
                         r -> r,
@@ -266,14 +263,14 @@ public class SubmissionService {
                                 return null;
                             }
 
-                            // Create a validation object MVO using the factory
-                            return mvoFactory.create(payload);
+                            // Create a validation object using the factory
+                            return validationObjectFactory.create(payload);
                         }
                 ));
 
         // Validate the AbstractValidationObject measurement record and store the result of the validation
         // as the validation result serialized to json
-        mvos.entrySet().stream()
+        recordEntityAbstractValidationObjectMap.entrySet().stream()
                 .filter(Objects::nonNull)
                 .forEach(m -> {
                     Set<ValidationError> validationErrors = validator.validateValidationObject(m.getValue());
@@ -310,7 +307,7 @@ public class SubmissionService {
                         r.setRecordStatus(RecordEntity.RecordStatus.SUBMITTED);
                         r.getAbstractObservation().setRecordEntity(r);
                         r.setLastChangedDate(Instant.now());
-                        observationDao.persist(submission);
+                        payloadEntityDao.persist(submission);
                         recordDao.merge(r);
                     } catch (IOException e) {
                         LOGGER.error("Error de-serializing stored JSON: " + e.getMessage());
@@ -359,7 +356,7 @@ public class SubmissionService {
      *
      * @return
      */
-    private <D extends Payload> RecordEntity createOrResetRecord(DatasetEntity dataset, String identifier, D observationSerializationBean) {
+    private <D extends Payload> RecordEntity createOrResetRecord(DatasetEntity dataset, String identifier, D payload) {
         RecordEntity recordEntity = getOrCreateRecord(dataset, identifier);
         RecordEntity.RecordStatus newRecordStatus = recordEntity.getRecordStatus();
 
@@ -368,13 +365,13 @@ public class SubmissionService {
         }
 
         // If we have a data transfer object, associated
-        if (observationSerializationBean != null) {
+        if (payload != null) {
             try {
-                String json = mapper.writeValueAsString(observationSerializationBean);
+                String json = mapper.writeValueAsString(payload);
                 recordEntity.setJson(json);
                 recordEntity.setRecordStatus(RecordEntity.RecordStatus.PARSED);
             } catch (JsonProcessingException e) {
-                LOGGER.error("Cannot serialize to Json: " + observationSerializationBean.toString());
+                LOGGER.error("Cannot serialize to Json: " + payload.toString());
             }
         } else {
             recordEntity.setRecordStatus(RecordEntity.RecordStatus.PERSISTED);
@@ -392,7 +389,7 @@ public class SubmissionService {
     }
 
     /**
-     * Returns a submitted measurements for a dataset and identifier
+     * Returns a submitted record entity for a dataset and identifier
      *
      * @param dataset
      */
@@ -402,7 +399,7 @@ public class SubmissionService {
     }
 
     /**
-     * Returns the set of submitted measurements in a dataset
+     * Returns the set of submitted record entities in a dataset
      *
      * @param dataset
      */

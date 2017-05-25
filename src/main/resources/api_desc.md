@@ -118,7 +118,7 @@ through a common API.
 Currently the only supported payload is the DataSample.
 
 #### DataSample
-A DataSample represents a specific abstractObservation or observation.  It is
+A DataSample represents a specific abstractPayloadEntity or observation.  It is
 currently the only type of recordEntity supported by this API.
 In a DEP compliant CSV file this is a row of data.
 

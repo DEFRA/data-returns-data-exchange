@@ -1,7 +1,6 @@
 package uk.gov.ea.datareturns.web.resource.v1.model.record.payload;
 
 import io.swagger.annotations.ApiModel;
-import uk.gov.ea.datareturns.web.resource.ObservationSerializationBean;
 
 import javax.xml.bind.annotation.XmlRootElement;
 

@@ -114,7 +114,7 @@ monitorProEmail:
   subjectUpperAlphaNumericUniqueId: EA LFP HA ZZ TEST LIST
   # Email message body - note, use two linebreaks to generate a single linebreak in the output.
   body: >
-    Data Returns received a abstractObservation for EA Identifier {{EA_ID}}.
+    Data Returns received a abstractPayloadEntity for EA Identifier {{EA_ID}}.
 
     The original file {{originatorFilename}} was uploaded to Data Returns by {{originatorEmail}} on {{currentDate}}.
 

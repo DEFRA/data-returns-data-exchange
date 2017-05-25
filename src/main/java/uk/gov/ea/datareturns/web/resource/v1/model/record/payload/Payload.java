@@ -3,7 +3,6 @@ package uk.gov.ea.datareturns.web.resource.v1.model.record.payload;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import io.swagger.annotations.ApiModel;
-import uk.gov.ea.datareturns.web.resource.ObservationSerializationBean;
 
 import javax.xml.bind.annotation.XmlRootElement;
 import java.util.Arrays;

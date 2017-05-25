@@ -2,7 +2,6 @@ package uk.gov.ea.datareturns.web.resource.v1.model.record.payload;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.annotations.ApiModel;
-import uk.gov.ea.datareturns.web.resource.ObservationSerializationBean;
 
 /**
  * Payload containing DEP compliant monitoring data
