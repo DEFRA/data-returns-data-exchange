@@ -21,6 +21,10 @@ import java.util.List;
 @Scope(ConfigurableBeanFactory.SCOPE_SINGLETON)
 public class RecordDao extends AbstractUserDataDao<RecordEntity> {
 
+    public enum FetchType {
+        FETCH_INVALID, FETCH_BASE
+    }
+
     /**
      * Let the Dao class know the type of entity in order that type-safe
      * hibernate operations can be performed
@@ -62,16 +66,31 @@ public class RecordDao extends AbstractUserDataDao<RecordEntity> {
     /**
      * Get a list of the records for a given dataset
      * @param dataset The dataset
+     * @param fetchType
      * @return a list of records
      */
-    public List<RecordEntity> list(DatasetEntity dataset) {
+    public List<RecordEntity> list(DatasetEntity dataset, FetchType fetchType) {
         CriteriaBuilder cb = entityManager.getCriteriaBuilder();
         Metamodel m = entityManager.getMetamodel();
         CriteriaQuery<RecordEntity> cq = cb.createQuery(RecordEntity.class);
         Root<RecordEntity> record = cq.from(m.entity(RecordEntity.class));
         cq.where(cb.equal(record.get(RecordEntity_.dataset), dataset));
+
+        if (fetchType == FetchType.FETCH_INVALID) {
+            record.fetch(RecordEntity_.validationErrors);
+            cq.where(
+                    cb.equal(record.get(RecordEntity_.recordStatus), RecordEntity.RecordStatus.INVALID),
+                    cb.equal(record.get(RecordEntity_.dataset), dataset)
+            );
+        } else if (fetchType == FetchType.FETCH_BASE) {
+            cq.where(cb.equal(record.get(RecordEntity_.dataset), dataset));
+        }
+
+        cq.orderBy(cb.desc(record.get(RecordEntity_.id)));
         cq.select(record);
+
         TypedQuery<RecordEntity> q = entityManager.createQuery(cq);
+
         return q.getResultList();
     }
 
@@ -93,36 +112,4 @@ public class RecordDao extends AbstractUserDataDao<RecordEntity> {
         remove(recordEntity.getId());
     }
 
-    public List<RecordEntity> listMeasurements(DatasetEntity dataset) {
-        CriteriaBuilder cb = entityManager.getCriteriaBuilder();
-        CriteriaQuery<RecordEntity> cq = cb.createQuery(RecordEntity.class);
-
-        Root<RecordEntity> record = cq.from(RecordEntity.class);
-
-        cq.select(record);
-        cq.where(cb.equal(record.get(RecordEntity_.dataset), dataset));
-        cq.orderBy(cb.desc(record.get(RecordEntity_.id)));
-
-        TypedQuery<RecordEntity> tq = this.entityManager.createQuery(cq);
-        return tq.getResultList();
-    }
-
-    public RecordEntity getMeasurement(DatasetEntity dataset, String identifier) {
-        CriteriaBuilder cb = entityManager.getCriteriaBuilder();
-        CriteriaQuery<RecordEntity> cq = cb.createQuery(RecordEntity.class);
-
-        Root<RecordEntity> record = cq.from(RecordEntity.class);
-
-        cq.select(record);
-        cq.where(
-                cb.equal(record.get(RecordEntity_.dataset), dataset),
-                cb.equal(record.get(RecordEntity_.identifier), identifier)
-        );
-        cq.orderBy(cb.desc(record.get(RecordEntity_.id)));
-
-        TypedQuery<RecordEntity> tq = this.entityManager.createQuery(cq);
-
-        return tq.getSingleResult();
-    }
-
-}
+ }

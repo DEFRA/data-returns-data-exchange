@@ -9,12 +9,16 @@ import org.springframework.stereotype.Component;
 import uk.gov.ea.datareturns.domain.jpa.entities.userdata.AbstractPayloadEntity;
 import uk.gov.ea.datareturns.domain.jpa.entities.userdata.impl.DatasetEntity;
 import uk.gov.ea.datareturns.domain.jpa.entities.userdata.impl.RecordEntity;
+import uk.gov.ea.datareturns.domain.jpa.entities.userdata.impl.ValidationError;
 import uk.gov.ea.datareturns.domain.jpa.service.DatasetService;
 import uk.gov.ea.datareturns.domain.jpa.service.SubmissionService;
 import uk.gov.ea.datareturns.web.resource.v1.model.common.Linker;
 import uk.gov.ea.datareturns.web.resource.v1.model.common.Preconditions;
 import uk.gov.ea.datareturns.web.resource.v1.model.common.references.EntityReference;
 import uk.gov.ea.datareturns.web.resource.v1.model.dataset.*;
+import uk.gov.ea.datareturns.web.resource.v1.model.record.Record;
+import uk.gov.ea.datareturns.web.resource.v1.model.record.RecordAdaptor;
+import uk.gov.ea.datareturns.web.resource.v1.model.record.payload.Payload;
 import uk.gov.ea.datareturns.web.resource.v1.model.request.BatchDatasetRequest;
 import uk.gov.ea.datareturns.web.resource.v1.model.request.BatchDatasetRequestItem;
 import uk.gov.ea.datareturns.web.resource.v1.model.response.*;
@@ -62,6 +66,8 @@ public class DatasetResource {
     @Inject
     private DatasetService datasetService;
 
+    @Inject
+    RecordAdaptor recordAdaptor;
     /**
      * List the available datasets
      *
@@ -361,7 +367,6 @@ public class DatasetResource {
                 return ErrorResponse.UNSUBMITTABLE_VALIDATION_ERRORS.toResponseBuilder();
             }
 
-            // TODO: Actually submit the data and build a new DatasetStatus object for the response
             DatasetStatus newDatasetStatus = existingStatus;
             newDatasetStatus.setSubmission(requestedStatus);
             // Submit the data
@@ -403,14 +408,21 @@ public class DatasetResource {
         Linker linker = Linker.info(uriInfo);
         DatasetStatus datasetStatus = new DatasetStatus();
 
-        // Submission status
+        // Get the list of records
+        List<RecordEntity> recordEntities = submissionService.getRecords(datasetEntity);
+
+        // Evaluate submission status
         DatasetSubmissionStatus submissionStatus = new DatasetSubmissionStatus();
         submissionStatus.setStatus(DatasetSubmissionStatus.Status.UNSUBMITTED);
+
+        // If we have records on the dataset and they are all submitted the dataset status is SUBMITTED
+        if (recordEntities.size() != 0 && recordEntities.size() == recordEntities.stream().filter(r -> r.getRecordStatus() == RecordEntity.RecordStatus.SUBMITTED).count()) {
+            submissionStatus.setStatus(DatasetSubmissionStatus.Status.SUBMITTED);
+        }
         datasetStatus.setSubmission(submissionStatus);
 
-        // Substitution status
+        // Evaluate substitutions
         DatasetSubstitutions substitutions = new DatasetSubstitutions();
-        List<RecordEntity> recordEntities = submissionService.getRecords(datasetEntity);
         recordEntities = submissionService.evaluateSubstitutes(recordEntities);
         for (RecordEntity recordEntity : recordEntities) {
             if (recordEntity.getAbstractPayloadEntity() != null) {
@@ -425,21 +437,19 @@ public class DatasetResource {
         }
         datasetStatus.setSubstitutions(substitutions);
 
-        // Validation status
-        // TODO: Graham, link with submission service.
+        // Process the validations
         DatasetValidity validity = new DatasetValidity();
-        String payloadType = "DataSample";
-        for (String constraintId : new String[] { "DR9999-Missing", "DR9050-Missing" }) {
-            for (int i = 0; i < 10; i++) {
-                String testRecordId = "test_id_" + i;
-
-                EntityReference validationRef = new EntityReference(constraintId, linker.constraint(payloadType, constraintId));
-                EntityReference recordRef = new EntityReference(testRecordId, linker.record(datasetEntity.getIdentifier(), testRecordId));
-
+        for(RecordEntity recordEntity : submissionService.getInvalidRecords(datasetEntity)) {
+            Record record = recordAdaptor.convert(recordEntity);
+            for (ValidationError validationError : recordEntity.getValidationErrors()) {
+                EntityReference validationRef = new EntityReference(validationError.getError(), linker.constraint(Payload.NAMES.get(record.getPayload().getClass()), validationError.getError()));
+                EntityReference recordRef = new EntityReference(recordEntity.getIdentifier(), linker.record(datasetEntity.getIdentifier(), recordEntity.getIdentifier()));
                 validity.addViolation(validationRef, recordRef);
             }
         }
+
         datasetStatus.setValidity(validity);
+
         return datasetStatus;
     }
 
@@ -448,7 +458,6 @@ public class DatasetResource {
         Linker.info(uriInfo).resolve(dataset);
         return dataset;
     }
-
 
     private Response.ResponseBuilder onDataset(String datasetId, Function<DatasetEntity, Response.ResponseBuilder> handler) {
         DatasetEntity datasetEntity = datasetService.getDataset(datasetId);

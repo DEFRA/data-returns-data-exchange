@@ -135,7 +135,18 @@ public class SubmissionService {
      */
     @Transactional(readOnly = true)
     public List<RecordEntity> getRecords(DatasetEntity dataset) {
-        return recordDao.list(dataset);
+        return recordDao.list(dataset, RecordDao.FetchType.FETCH_BASE);
+    }
+
+    /**
+     * This returns a list of the invalid records for a dataset
+     * with an eager fetch on the validation errors
+     * @param dataset
+     * @return List of records
+     */
+    @Transactional(readOnly = true)
+    public List<RecordEntity> getInvalidRecords(DatasetEntity dataset) {
+        return recordDao.list(dataset, RecordDao.FetchType.FETCH_INVALID);
     }
 
     /**
@@ -255,7 +266,9 @@ public class SubmissionService {
                 .collect(Collectors.toMap(
                         r -> r,
                         r -> {
+
                             Payload payload;
+
                             try {
                                 payload = mapper.readValue(r.getJson(), Payload.class);
                             } catch (IOException e) {
@@ -265,6 +278,7 @@ public class SubmissionService {
 
                             // Create a validation object using the factory
                             return validationObjectFactory.create(payload);
+
                         }
                 ));
 
@@ -273,13 +287,16 @@ public class SubmissionService {
         recordEntityAbstractValidationObjectMap.entrySet().stream()
                 .filter(Objects::nonNull)
                 .forEach(m -> {
+
                     Set<ValidationError> validationErrors = validator.validateValidationObject(m.getValue());
+
                     if (validationErrors.size() == 0) {
                         m.getKey().setRecordStatus(RecordEntity.RecordStatus.VALID);
                     } else {
                         m.getKey().setValidationErrors(validationErrors);
                         m.getKey().setRecordStatus(RecordEntity.RecordStatus.INVALID);
                     }
+
                     m.getKey().setLastChangedDate(Instant.now());
                     recordDao.merge(m.getKey());
                 });
@@ -307,6 +324,7 @@ public class SubmissionService {
                         r.setRecordStatus(RecordEntity.RecordStatus.SUBMITTED);
                         r.getAbstractPayloadEntity().setRecordEntity(r);
                         r.setLastChangedDate(Instant.now());
+                        r.setValidationErrors(null);
                         payloadEntityDao.persist(submission);
                         recordDao.merge(r);
                     } catch (IOException e) {
@@ -395,7 +413,7 @@ public class SubmissionService {
      */
     @Transactional(readOnly = true)
     public RecordEntity retrieve(DatasetEntity dataset, String id) {
-        return recordDao.getMeasurement(dataset, id);
+        return recordDao.get(dataset, id);
     }
 
     /**
@@ -405,19 +423,7 @@ public class SubmissionService {
      */
     @Transactional(readOnly = true)
     public List<RecordEntity> retrieve(DatasetEntity dataset) {
-        return recordDao.listMeasurements(dataset);
-    }
-
-    /**
-     * Returns a new and initialized record for a given dataset
-     * with a system generated identifier
-     * It does not persist the record
-     *
-     * @param dataset
-     * @return The initialized record
-     */
-    private RecordEntity getOrCreateRecord(DatasetEntity dataset) {
-        return getOrCreateRecord(dataset, UUID.randomUUID().toString());
+        return recordDao.list(dataset, RecordDao.FetchType.FETCH_BASE);
     }
 
     /**

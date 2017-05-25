@@ -166,9 +166,17 @@ public class RecordResource {
                 List<SubmissionService.PayloadIdentifier<Payload>> payloadIdentifiers = new ArrayList<>();
                 for (BatchRecordRequestItem request : batchRequest.getRequests()) {
                     RecordEntity recordEntity = submissionService.getRecord(datasetEntity, request.getRecordId());
+                    Response.Status defaultResponse;
+
+                    if (recordEntity == null) {
+                        defaultResponse = Response.Status.CREATED;
+                    } else if (recordEntity.getRecordStatus() == RecordEntity.RecordStatus.SUBMITTED) {
+                        defaultResponse = Response.Status.CONFLICT;
+                    } else {
+                        defaultResponse = Response.Status.OK;
+                    }
 
                     // Store default response status
-                    Response.Status defaultResponse = recordEntity != null ? Response.Status.OK : Response.Status.CREATED;
                     responses.put(request.getRecordId(), defaultResponse);
 
                     // Store existing entity
@@ -177,21 +185,29 @@ public class RecordResource {
                     // Check preconditions, building a list of entries and any precondition failures
                     Response.ResponseBuilder failureResponse = onPreconditionsPass(datasetId, recordEntity, request.getPreconditions(),
                             () -> {
-                                // Preconditions passed, add a new submissible
+                                // Preconditions passed, add a new PayloadIdentifier
                                 payloadIdentifiers
                                         .add(new SubmissionService.PayloadIdentifier(request.getRecordId(), request.getPayload()));
                                 return null;
                             });
+
                     if (failureResponse != null) {
                         preconditionFailures.put(request.getRecordId(), failureResponse);
                     }
                 }
 
-                // Create and validate records (update the recordEntities map with the latest version)
+                // Create and validate records if they are not already submitted
                 recordEntities.putAll(submissionService.createRecords(datasetEntity, payloadIdentifiers)
                         .stream()
+                        .filter(r -> r.getRecordStatus() != RecordEntity.RecordStatus.SUBMITTED)
                         .collect(Collectors.toMap(RecordEntity::getIdentifier, e -> e)));
-                submissionService.validate(recordEntities.values());
+
+                submissionService.validate(recordEntities
+                        .values()
+                        .stream()
+                        .filter(r -> r.getRecordStatus() != RecordEntity.RecordStatus.SUBMITTED)
+                        .collect(Collectors.toList())
+                );
 
                 // Build the response
                 MultiStatusResponse multiResponse = new MultiStatusResponse();
@@ -316,13 +332,26 @@ public class RecordResource {
         return onDataset(datasetId, (datasetEntity) -> {
             RecordEntity existingEntity = submissionService.getRecord(datasetEntity, recordId);
             return onPreconditionsPass(datasetId, existingEntity, preconditions, () -> {
-                // Preconditions passed, create/update the record
-                RecordEntity recordEntity = submissionService
-                        .createRecord(datasetEntity, new SubmissionService.PayloadIdentifier<>(recordId, payload));
-                submissionService.validate(recordEntity);
+                Response.Status status = Response.Status.OK;
+                Record record = null;
 
-                Response.Status status = existingEntity != null ? Response.Status.OK : Response.Status.CREATED;
-                Record record = fromEntity(datasetId, recordEntity);
+                // If it already exists then we have a conflict
+                if (existingEntity == null) {
+                    status = Response.Status.CREATED;
+                } else if (existingEntity.getRecordStatus() == RecordEntity.RecordStatus.SUBMITTED) {
+                    status = Response.Status.CONFLICT;
+                    record = fromEntity(datasetId, existingEntity);
+                }
+
+                // Preconditions passed, create/update the record
+                if (status != Response.Status.CONFLICT) {
+                    RecordEntity recordEntity = submissionService
+                            .createRecord(datasetEntity, new SubmissionService.PayloadIdentifier<>(recordId, payload));
+
+                    submissionService.validate(recordEntity);
+                    record = fromEntity(datasetId, recordEntity);
+                }
+
                 return new RecordEntityResponse(status, record).toResponseBuilder();
             });
         }).build();

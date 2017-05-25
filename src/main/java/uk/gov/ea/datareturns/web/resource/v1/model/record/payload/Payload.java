@@ -36,6 +36,9 @@ public abstract class Payload implements Serializable {
     public static final Map<String, Class<?>> TYPES = Arrays.stream(Payload.class.getAnnotation(JsonSubTypes.class).value())
             .collect(Collectors.toMap(JsonSubTypes.Type::name, JsonSubTypes.Type::value));
 
+    // Get a reverse map (we have to have a 1-1 here)
+    public static final Map<Class<?>, String> NAMES = TYPES.entrySet().stream().collect(Collectors.toMap(t -> t.getValue(), t -> t.getKey()));
+
     public Payload() {
     }
 }
