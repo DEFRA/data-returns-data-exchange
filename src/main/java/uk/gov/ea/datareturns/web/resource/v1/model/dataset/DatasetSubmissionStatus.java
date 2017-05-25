@@ -1,7 +1,7 @@
 package uk.gov.ea.datareturns.web.resource.v1.model.dataset;
 
 /**
- * DatasetEntity submissions status
+ * Dataset submissions status
  *
  * @author Sam Gardner-Dell
  */
@@ -21,6 +21,12 @@ public class DatasetSubmissionStatus {
     }
 
     public enum Status {
-        UNSUBMITTED, SUBMITTED, PROCESSING
+        UNSUBMITTED,
+        SUBMITTED,
+        PROCESSING;
+
+        public boolean canTransition(Status newStatus) {
+            return this.ordinal() < newStatus.ordinal();
+        }
     }
 }

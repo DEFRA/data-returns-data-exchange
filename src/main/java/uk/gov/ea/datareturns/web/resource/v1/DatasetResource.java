@@ -1,13 +1,15 @@
 package uk.gov.ea.datareturns.web.resource.v1;
 
 import io.swagger.annotations.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
-import uk.gov.ea.datareturns.domain.jpa.entities.userdata.AbstractPayloadEntity;
+import uk.gov.ea.datareturns.config.SubmissionConfiguration;
+import uk.gov.ea.datareturns.domain.jpa.entities.userdata.AbstractObservation;
 import uk.gov.ea.datareturns.domain.jpa.entities.userdata.impl.DatasetEntity;
 import uk.gov.ea.datareturns.domain.jpa.entities.userdata.impl.RecordEntity;
-import uk.gov.ea.datareturns.domain.jpa.service.DatasetService;
 import uk.gov.ea.datareturns.domain.jpa.service.SubmissionService;
 import uk.gov.ea.datareturns.web.resource.v1.model.common.Linker;
 import uk.gov.ea.datareturns.web.resource.v1.model.common.Preconditions;
@@ -15,20 +17,20 @@ import uk.gov.ea.datareturns.web.resource.v1.model.common.references.EntityRefer
 import uk.gov.ea.datareturns.web.resource.v1.model.dataset.*;
 import uk.gov.ea.datareturns.web.resource.v1.model.request.BatchDatasetRequest;
 import uk.gov.ea.datareturns.web.resource.v1.model.request.BatchDatasetRequestItem;
-import uk.gov.ea.datareturns.web.resource.v1.model.response.DatasetEntityResponse;
-import uk.gov.ea.datareturns.web.resource.v1.model.response.EntityListResponse;
-import uk.gov.ea.datareturns.web.resource.v1.model.response.ErrorResponse;
-import uk.gov.ea.datareturns.web.resource.v1.model.response.MultiStatusResponse;
+import uk.gov.ea.datareturns.web.resource.v1.model.response.*;
 
-import javax.inject.Inject;
+import javax.annotation.Resource;
 import javax.validation.constraints.Pattern;
 import javax.ws.rs.*;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
+import java.util.function.Function;
+import java.util.function.Supplier;
+import java.util.stream.Collectors;
 
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 import static javax.ws.rs.core.MediaType.APPLICATION_XML;
@@ -50,22 +52,21 @@ import static javax.ws.rs.core.MediaType.APPLICATION_XML;
 @Component
 @Scope(ConfigurableBeanFactory.SCOPE_SINGLETON)
 public class DatasetResource {
-    private final DatasetService datasetService;
+    private static final Logger LOGGER = LoggerFactory.getLogger(DatasetResource.class);
 
     @Context
     private UriInfo uriInfo;
-    private SubmissionService submissionService;
 
-    @Inject
-    DatasetResource(DatasetService datasetService, SubmissionService submissionService) {
-        this.datasetService = datasetService;
-        this.submissionService = submissionService;
-    }
+    private SubmissionService<?, ?, ?> submissionService;
 
     /**
      * Retrieves the appropriate versioned submission service
      * @param submissionServiceMap
      */
+    @Resource(name = "submissionServiceMap")
+    private void setSubmissionService(Map<SubmissionConfiguration.SubmissionServiceProvider, SubmissionService> submissionServiceMap) {
+        this.submissionService = submissionServiceMap.get(SubmissionConfiguration.SubmissionServiceProvider.DATA_SAMPLE_V1);
+    }
 
     /**
      * List the available datasets
@@ -84,15 +85,11 @@ public class DatasetResource {
             @ApiResponse(code = 200, message = "OK", response = EntityListResponse.class)
     })
     public Response listDatasets() throws Exception {
-
-        List<EntityReference> result = new ArrayList<>();
-        List<DatasetEntity> datasets = datasetService.getDatasets();
-
-        for (DatasetEntity dataset : datasets) {
-            result.add(new EntityReference(dataset.getIdentifier(), Linker.info(uriInfo).dataset(dataset.getIdentifier())));
-        }
-        EntityListResponse rw = new EntityListResponse(result);
-        return rw.toResponseBuilder().build();
+        return new EntityListResponse(
+                submissionService.getDatasets().stream()
+                        .map((entity -> new EntityReference(entity.getIdentifier(), Linker.info(uriInfo).dataset(entity.getIdentifier()))))
+                        .collect(Collectors.toList())
+        ).toResponseBuilder().build();
     }
 
     /**
@@ -137,12 +134,11 @@ public class DatasetResource {
             MultiStatusResponse multiResponse = new MultiStatusResponse();
 
             for (BatchDatasetRequestItem request : batchRequest.getRequests()) {
-                DatasetEntity datasetEntity = datasetService.getDataset(request.getDatasetId());
+                DatasetEntity datasetEntity = submissionService.getDataset(request.getDatasetId());
                 MultiStatusResponse.Response responseItem = new MultiStatusResponse.Response();
                 responseItem.setId(request.getDatasetId());
 
-                Response.ResponseBuilder tempRb = checkPreconditions(datasetEntity, request.getPreconditions());
-                if (tempRb == null) {
+                Response.ResponseBuilder failureResponse = onPreconditionsPass(datasetEntity, request.getPreconditions(), () -> {
                     // Preconditions passed, service the request
                     DatasetEntityResponse storeResult = storeDataset(datasetEntity, request.getDatasetId(), request.getProperties());
                     Dataset dataset = storeResult.getData();
@@ -151,9 +147,11 @@ public class DatasetResource {
                     responseItem.setHref(Linker.info(uriInfo).dataset(dataset.getId()));
                     responseItem.setEntityTag(Preconditions.createEtag(dataset).toString());
                     responseItem.setLastModified(dataset.getLastModified());
-                } else {
+                    return null;
+                });
+                if (failureResponse != null) {
                     // Preconditions failed, build a response item from the ResponseBuilder returned by the preconditions checks
-                    Response response = tempRb.build();
+                    Response response = failureResponse.build();
                     responseItem.setCode(response.getStatus());
 
                     if (datasetEntity != null) {
@@ -196,22 +194,12 @@ public class DatasetResource {
             @ApiParam("The unique identifier for the target dataset") final String datasetId,
             @BeanParam Preconditions preconditions)
             throws Exception {
-
-        Response.ResponseBuilder rb;
-        DatasetEntity dataSetEntity = datasetService.getDataset(datasetId);
-
-        if (dataSetEntity == null) {
-            rb = ErrorResponse.DATASET_NOT_FOUND.toResponseBuilder();
-        } else {
-            rb = checkPreconditions(dataSetEntity, preconditions);
-            if (rb == null) {
-                // Preconditions passed, serve resource
-                Dataset dataset = DatasetAdaptor.getInstance().convert(dataSetEntity);
-                DatasetEntityResponse responseWrapper = new DatasetEntityResponse(Response.Status.OK, dataset);
-                rb = responseWrapper.toResponseBuilder();
-            }
-        }
-        return rb.build();
+        return onDataset(datasetId, datasetEntity ->
+                onPreconditionsPass(datasetEntity, preconditions, () -> {
+                    Dataset dataset = fromEntity(datasetEntity);
+                    return new DatasetEntityResponse(Response.Status.OK, dataset).toResponseBuilder();
+                })
+        ).build();
     }
 
     /**
@@ -247,16 +235,11 @@ public class DatasetResource {
             final DatasetProperties datasetProperties
     )
             throws Exception {
-
-        DatasetEntity datasetEntity = datasetService.getDataset(datasetId);
-
-        Response.ResponseBuilder rb = checkPreconditions(datasetEntity, preconditions);
-        if (rb == null) {
-            // Preconditions passed, serve resource
-            DatasetEntityResponse responseEntity = storeDataset(datasetEntity, datasetId, datasetProperties);
-            rb = responseEntity.toResponseBuilder();
-        }
-        return rb.build();
+        DatasetEntity datasetEntity = submissionService.getDataset(datasetId);
+        return onPreconditionsPass(datasetEntity, preconditions, () -> {
+            // Preconditions passed, process request
+            return storeDataset(datasetEntity, datasetId, datasetProperties).toResponseBuilder();
+        }).build();
     }
 
     /**
@@ -291,20 +274,13 @@ public class DatasetResource {
             @ApiParam("The unique identifier for the target dataset") final String datasetId,
             @BeanParam Preconditions preconditions)
             throws Exception {
-        Response.ResponseBuilder rb;
-
-        DatasetEntity datasetEntity = datasetService.getDataset(datasetId);
-        if (datasetEntity == null) {
-            rb = ErrorResponse.DATASET_NOT_FOUND.toResponseBuilder();
-        } else {
-            rb = checkPreconditions(datasetEntity, preconditions);
-            if (rb == null) {
-                // Preconditions passed, delete the resource
-                datasetService.removeDataset(datasetId);
-                rb = Response.status(Response.Status.NO_CONTENT);
-            }
-        }
-        return rb.build();
+        return onDataset(datasetId, datasetEntity ->
+                onPreconditionsPass(datasetEntity, preconditions, () -> {
+                    // Preconditions passed, delete the resource
+                    submissionService.removeDataset(datasetId);
+                    return Response.status(Response.Status.NO_CONTENT);
+                })
+        ).build();
     }
 
     /**
@@ -321,61 +297,21 @@ public class DatasetResource {
                     + "Status information includes details such as any validation errors and the submission status"
     )
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "OK", response = DatasetStatus.class),
-            @ApiResponse(code = 404, message = "Not Found - The `dataset_id` parameter did not match a known dataset")
+            @ApiResponse(code = 200, message = "OK", response = DatasetStatusResponse.class),
+            @ApiResponse(
+                    code = 404,
+                    message = "Not Found - The `dataset_id` parameter did not match a known resource",
+                    response = ErrorResponse.class
+            )
     })
     public Response getDatasetStatus(
             @PathParam("dataset_id")
             @Pattern(regexp = "[A-Za-z0-9_-]+")
             @ApiParam("The unique identifier for the target dataset") final String datasetId)
             throws Exception {
-
-        Linker linker = Linker.info(uriInfo);
-
-        DatasetEntity datasetEntity = datasetService.getDataset(datasetId);
-
-        // TODO plugin the dataset status
-        DatasetStatus datasetStatus = new DatasetStatus();
-
-        // Submission status
-        DatasetSubmissionStatus submissionStatus = new DatasetSubmissionStatus();
-        submissionStatus.setStatus(DatasetSubmissionStatus.Status.UNSUBMITTED);
-        datasetStatus.setSubmission(submissionStatus);
-
-        // Substitution status
-        List<RecordEntity> recordEntities = submissionService.getRecords(datasetEntity);
-        recordEntities = submissionService.evaluateSubstitutes(recordEntities);
-        DatasetSubstitutions substitutions = new DatasetSubstitutions();
-
-        for (RecordEntity recordEntity : recordEntities) {
-            if (recordEntity.getAbstractPayloadEntity() != null) {
-                for (AbstractPayloadEntity.EntitySubstitution entitySubstitution : recordEntity.getAbstractPayloadEntity()
-                        .getEntitySubstitutions()) {
-                    substitutions.addSubstitution(recordEntity.getIdentifier(),
-                            entitySubstitution.getEntity(),
-                            entitySubstitution.getSubmitted(),
-                            entitySubstitution.getPreferred());
-                }
-            }
-        }
-
-        datasetStatus.setSubstitutions(substitutions);
-
-        DatasetValidity validity = new DatasetValidity();
-        String payloadType = "DataSample";
-        for (String constraintId : new String[] { "DR9999-Missing", "DR9050-Missing" }) {
-            for (int i = 0; i < 10; i++) {
-                String testRecordId = "test_id_" + i;
-
-                EntityReference validationRef = new EntityReference(constraintId, linker.constraint(payloadType, constraintId));
-                EntityReference recordRef = new EntityReference(testRecordId, linker.record(datasetId, testRecordId));
-
-                validity.addViolation(validationRef, recordRef);
-            }
-        }
-        datasetStatus.setValidity(validity);
-
-        return Response.status(Response.Status.OK).entity(datasetStatus).build();
+        return onDataset(datasetId, datasetEntity ->
+                new DatasetStatusResponse(buildDatasetStatus(datasetEntity)).toResponseBuilder()
+        ).build();
     }
 
     /**
@@ -390,33 +326,55 @@ public class DatasetResource {
     @ApiOperation(value = "Set dataset status",
             notes = "**Set the dataset status information for the specified `dataset_id`**\n\n"
                     + "- can be used to submit a dataset to the environment agency"
-
     )
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "OK", response = DatasetStatus.class),
-            @ApiResponse(code = 404, message = "Not Found - The `dataset_id` parameter did not match a known dataset")
+            @ApiResponse(code = 200, message = "OK", response = DatasetStatusResponse.class),
+            @ApiResponse(
+                    code = 400,
+                    message = "Bad Request - Either the new status was invalid or the state transition was not allowed.",
+                    response = ErrorResponse.class
+            ),
+            @ApiResponse(
+                    code = 404,
+                    message = "Not Found - The `dataset_id` parameter did not match a known resource",
+                    response = ErrorResponse.class
+            ),
+            @ApiResponse(
+                    code = 409,
+                    message = "Conflict - The dataset is not currently submittable.  Either there are validation errors or required "
+                            + "information is missing.",
+                    response = ErrorResponse.class
+            )
     })
     public Response setDatasetStatus(
             @PathParam("dataset_id")
             @Pattern(regexp = "[A-Za-z0-9_-]+")
             @ApiParam("The unique identifier for the target dataset") final String datasetId,
-            @ApiParam("The requested status.") final DatasetSubmissionStatus status)
+            @ApiParam("The requested status.") final DatasetSubmissionStatus requestedStatus)
             throws Exception {
-        return Response.status(Response.Status.OK).entity("magic").build();
-    }
+        return onDataset(datasetId, datasetEntity -> {
+            DatasetStatus existingStatus = buildDatasetStatus(datasetEntity);
 
-    private Response.ResponseBuilder checkPreconditions(final DatasetEntity datasetEntity, Preconditions preconditions) {
-        Response.ResponseBuilder rb = null;
-        if (preconditions != null) {
-            if (datasetEntity == null) {
-                rb = preconditions.evaluatePreconditions();
-            } else {
-                Dataset existingDataset = DatasetAdaptor.getInstance().convert(datasetEntity);
-                Date lastModified = Date.from(datasetEntity.getLastChangedDate());
-                rb = preconditions.evaluatePreconditions(lastModified, Preconditions.createEtag(existingDataset));
+            // Check state transition
+            DatasetSubmissionStatus.Status submissionStatus = existingStatus.getSubmission().getStatus();
+            if (!submissionStatus.canTransition(requestedStatus.getStatus())) {
+                return ErrorResponse.SUBMISSION_INVALID_STATE_CHANGE.toResponseBuilder();
             }
-        }
-        return rb;
+            if (datasetEntity.getOriginatorEmail() == null) {
+                return ErrorResponse.UNSUBMITTABLE_BAD_ORIGINATOR.toResponseBuilder();
+            }
+            if (!existingStatus.getValidity().isValid()) {
+                return ErrorResponse.UNSUBMITTABLE_VALIDATION_ERRORS.toResponseBuilder();
+            }
+
+            // TODO: Actually submit the data and build a new DatasetStatus object for the response
+            DatasetStatus newDatasetStatus = existingStatus;
+            newDatasetStatus.setSubmission(requestedStatus);
+            // Submit the data
+            submissionService.submit(submissionService.getRecords(datasetEntity));
+            return new DatasetStatusResponse(newDatasetStatus).toResponseBuilder();
+        }).build();
+
     }
 
     /**
@@ -434,16 +392,90 @@ public class DatasetResource {
             dataset = DatasetAdaptor.getInstance().convert(datasetEntity);
             dataset.setProperties(datasetProperties);
             newDatasetEntity = DatasetAdaptor.getInstance().merge(datasetEntity, dataset);
-            datasetService.updateDataset(newDatasetEntity);
+            submissionService.updateDataset(newDatasetEntity);
         } else {
             dataset = new Dataset();
             dataset.setId(datasetId);
             dataset.setProperties(datasetProperties);
             newDatasetEntity = DatasetAdaptor.getInstance().merge(datasetEntity, dataset);
-            datasetService.createDataset(newDatasetEntity);
+            submissionService.createDataset(newDatasetEntity);
             status = Response.Status.CREATED;
         }
-        dataset = DatasetAdaptor.getInstance().convert(newDatasetEntity);
+        dataset = fromEntity(newDatasetEntity);
         return new DatasetEntityResponse(status, dataset);
+    }
+
+    private DatasetStatus buildDatasetStatus(final DatasetEntity datasetEntity) {
+        Linker linker = Linker.info(uriInfo);
+        DatasetStatus datasetStatus = new DatasetStatus();
+
+        // Submission status
+        DatasetSubmissionStatus submissionStatus = new DatasetSubmissionStatus();
+        submissionStatus.setStatus(DatasetSubmissionStatus.Status.UNSUBMITTED);
+        datasetStatus.setSubmission(submissionStatus);
+
+        // Substitution status
+        DatasetSubstitutions substitutions = new DatasetSubstitutions();
+        List<RecordEntity> recordEntities = submissionService.getRecords(datasetEntity);
+        recordEntities = submissionService.evaluateSubstitutes(recordEntities);
+        for (RecordEntity recordEntity : recordEntities) {
+            if (recordEntity.getAbstractObservation() != null) {
+                for (AbstractObservation.EntitySubstitution entitySubstitution : recordEntity.getAbstractObservation()
+                        .getEntitySubstitutions()) {
+                    substitutions.addSubstitution(recordEntity.getIdentifier(),
+                            entitySubstitution.getEntity(),
+                            entitySubstitution.getSubmitted(),
+                            entitySubstitution.getPreferred());
+                }
+            }
+        }
+        datasetStatus.setSubstitutions(substitutions);
+
+        // Validation status
+        // TODO: Graham, link with submission service.
+        DatasetValidity validity = new DatasetValidity();
+        String payloadType = "DataSample";
+        for (String constraintId : new String[] { "DR9999-Missing", "DR9050-Missing" }) {
+            for (int i = 0; i < 10; i++) {
+                String testRecordId = "test_id_" + i;
+
+                EntityReference validationRef = new EntityReference(constraintId, linker.constraint(payloadType, constraintId));
+                EntityReference recordRef = new EntityReference(testRecordId, linker.record(datasetEntity.getIdentifier(), testRecordId));
+
+                validity.addViolation(validationRef, recordRef);
+            }
+        }
+        datasetStatus.setValidity(validity);
+        return datasetStatus;
+    }
+
+    private Dataset fromEntity(DatasetEntity entity) {
+        Dataset dataset = DatasetAdaptor.getInstance().convert(entity);
+        Linker.info(uriInfo).resolve(dataset);
+        return dataset;
+    }
+
+
+    private Response.ResponseBuilder onDataset(String datasetId, Function<DatasetEntity, Response.ResponseBuilder> handler) {
+        DatasetEntity datasetEntity = submissionService.getDataset(datasetId);
+        return (datasetEntity == null) ? ErrorResponse.DATASET_NOT_FOUND.toResponseBuilder() : handler.apply(datasetEntity);
+    }
+
+    private Response.ResponseBuilder onPreconditionsPass(final DatasetEntity datasetEntity, Preconditions preconditions, Supplier<Response
+            .ResponseBuilder> handler) {
+        Response.ResponseBuilder rb = null;
+        if (preconditions != null) {
+            if (datasetEntity == null) {
+                rb = preconditions.evaluatePreconditions();
+            } else {
+                Dataset existingDataset = fromEntity(datasetEntity);
+                Date lastModified = Date.from(datasetEntity.getLastChangedDate());
+                rb = preconditions.evaluatePreconditions(lastModified, Preconditions.createEtag(existingDataset));
+            }
+        }
+        if (rb == null) {
+            rb = handler.get();
+        }
+        return rb;
     }
 }

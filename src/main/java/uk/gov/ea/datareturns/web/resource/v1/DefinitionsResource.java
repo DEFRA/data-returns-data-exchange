@@ -14,6 +14,7 @@ import uk.gov.ea.datareturns.web.resource.ControlledListResource;
 import uk.gov.ea.datareturns.web.resource.v1.model.common.Linker;
 import uk.gov.ea.datareturns.web.resource.v1.model.common.Preconditions;
 import uk.gov.ea.datareturns.web.resource.v1.model.common.references.EntityReference;
+import uk.gov.ea.datareturns.web.resource.v1.model.common.references.PayloadReference;
 import uk.gov.ea.datareturns.web.resource.v1.model.definitions.ConstraintDefinition;
 import uk.gov.ea.datareturns.web.resource.v1.model.definitions.FieldDefinition;
 import uk.gov.ea.datareturns.web.resource.v1.model.record.payload.Payload;
@@ -26,14 +27,16 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 import java.lang.reflect.Field;
-import java.util.*;
+import java.util.LinkedHashMap;
+import java.util.Map;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 import static javax.ws.rs.core.MediaType.APPLICATION_XML;
 
 /**
- * RESTful resource to manage dataset entities.
+ * RESTful resource to provide business object definitions
  *
  * @author Sam Gardner-Dell
  */
@@ -85,8 +88,15 @@ public class DefinitionsResource {
             @ApiResponse(code = 200, message = "OK", response = PayloadListResponse.class)
     })
     public Response listPayloads() throws Exception {
-        PayloadListResponse response = new PayloadListResponse(Payload.TYPES.keySet());
-        return response.toResponseBuilder().build();
+        return new PayloadListResponse(
+                Payload.TYPES.keySet().stream()
+                        .map((type) -> {
+                            PayloadReference ref = new PayloadReference(type);
+                            Linker.info(uriInfo).resolve(ref);
+                            return ref;
+                        })
+                        .collect(Collectors.toList())
+        ).toResponseBuilder().build();
     }
 
     /**
@@ -116,22 +126,13 @@ public class DefinitionsResource {
             @ApiParam("The payload type for which to return fields") final String payloadType,
             @BeanParam Preconditions preconditions)
             throws Exception {
-
-        Class<?> payloadClass = Payload.TYPES.get(payloadType);
-
-        Response.ResponseBuilder rb;
-        if (payloadClass == null) {
-            rb = ErrorResponse.PAYLOAD_TYPE_NOT_FOUND.toResponseBuilder();
-        } else {
-            List<EntityReference> refs = new ArrayList<>();
-            Collection<String> fields = getFields(payloadClass).keySet();
-            for (String fieldId : fields) {
-                refs.add(new EntityReference(fieldId, Linker.info(uriInfo).field(payloadType, fieldId)));
-            }
-            EntityListResponse response = new EntityListResponse(refs);
-            rb = response.toResponseBuilder();
-        }
-        return rb.build();
+        return onPayloadType(payloadType, (payloadClass) ->
+                new EntityListResponse(
+                        getFields(payloadClass).keySet().stream()
+                                .map((fieldId) -> new EntityReference(fieldId, Linker.info(uriInfo).field(payloadType, fieldId)))
+                                .collect(Collectors.toList())
+                ).toResponseBuilder()
+        ).build();
     }
 
     /**
@@ -167,37 +168,10 @@ public class DefinitionsResource {
             @ApiParam("The name of the field defined for the given payload type") final String fieldId,
             @BeanParam Preconditions preconditions)
             throws Exception {
-
-        // TODO: IMPLEMENT CONDITIONAL REQUEST HANDLING FOR FIELD ENTITIES
-        Class<?> payloadClass = Payload.TYPES.get(payloadType);
-
-        Response.ResponseBuilder rb;
-        if (payloadClass == null) {
-            rb = ErrorResponse.PAYLOAD_TYPE_NOT_FOUND.toResponseBuilder();
-        } else {
-            Map<String, Field> fields = getFields(payloadClass);
-            Field field = fields.get(fieldId);
-
-            if (field == null) {
-                rb = ErrorResponse.FIELD_NOT_FOUND.toResponseBuilder();
-            } else {
-                FieldDefinition definition = new FieldDefinition();
-                definition.setId(fieldId);
-                // TODO: Description
-                definition.setDescription("A useful description for " + fieldId);
-                definition.setType(field.getType().getSimpleName());
-
-                ControlledListsList controlledList = ControlledListsList.getByPath(fieldId);
-                // Check we have a registered controlled list type
-                if (controlledList != null) {
-                    definition.setAllowed(controlledListProcessor.getListData(controlledList, null).getRight());
-                }
-
-                FieldDefinitionResponse response = new FieldDefinitionResponse(Response.Status.OK, definition);
-                rb = response.toResponseBuilder();
-            }
-        }
-        return rb.build();
+        return onPayloadType(payloadType, (payloadClass) ->
+                onField(payloadClass, fieldId, (fieldDefinition) ->
+                        new FieldDefinitionResponse(Response.Status.OK, fieldDefinition).toResponseBuilder())
+        ).build();
     }
 
     /**
@@ -226,21 +200,17 @@ public class DefinitionsResource {
             @ApiParam("The payload type the target field belongs to.") final String payloadType)
             throws Exception {
 
-        // TODO: Graham, service layer needs to support different payload types.
-        Class<?> payloadClass = Payload.TYPES.get(payloadType);
-
-        Response.ResponseBuilder rb;
-        if (payloadClass == null) {
-            rb = ErrorResponse.PAYLOAD_TYPE_NOT_FOUND.toResponseBuilder();
-        } else {
-            List<EntityReference> refs = validationErrorDao.list().stream()
-                    .map((constraint) ->
-                            new EntityReference(constraint.getError(), Linker.info(uriInfo).constraint(payloadType, constraint.getError()))
-                    )
-                    .collect(Collectors.toList());
-            rb = new EntityListResponse(refs).toResponseBuilder();
-        }
-        return rb.build();
+        return onPayloadType(payloadType, (payloadClass) ->
+                new EntityListResponse(
+                        // TODO: Graham, service layer needs to support different payload types.
+                        validationErrorDao.list().stream()
+                                .map((constraint) -> {
+                                    String uri = Linker.info(uriInfo).constraint(payloadType, constraint.getError());
+                                    return new EntityReference(constraint.getError(), uri);
+                                })
+                                .collect(Collectors.toList())
+                ).toResponseBuilder()
+        ).build();
     }
 
     /**
@@ -276,35 +246,59 @@ public class DefinitionsResource {
             @ApiParam("The unique identifier for the target contraint.") final String constraintId
     )
             throws Exception {
+        return onPayloadType(payloadType, (payloadClass) ->
+                onConstraint(payloadType, constraintId, (constraintDefinition) ->
+                        new ConstraintDefinitionResponse(constraintDefinition).toResponseBuilder()
+                )
+        ).build();
+    }
 
-        // TODO: Graham, service layer needs to support different payload types.
+    private Response.ResponseBuilder onPayloadType(String payloadType, Function<Class<?>, Response.ResponseBuilder> handler) {
         Class<?> payloadClass = Payload.TYPES.get(payloadType);
+        return (payloadClass == null) ? ErrorResponse.PAYLOAD_TYPE_NOT_FOUND.toResponseBuilder() : handler.apply(payloadClass);
+    }
+
+    private Response.ResponseBuilder onConstraint(String payloadType, String constraintId, Function<ConstraintDefinition, Response
+            .ResponseBuilder> handler) {
+        ConstraintDefinition definition = validationErrorDao.list().stream()
+                .filter((constraint) -> constraint.getError().equals(constraintId))
+                .findFirst()
+                .map((constraint) -> {
+                    ConstraintDefinition def = new ConstraintDefinition();
+                    def.setId(constraint.getError());
+                    def.setDescription(constraint.getMessage());
+                    def.setFields(constraint.getFields().stream()
+                            .map((fieldId) -> new EntityReference(fieldId, Linker.info(uriInfo).field(payloadType, fieldId)))
+                            .collect(Collectors.toList()));
+                    return def;
+                })
+                .orElse(null);
+        return (definition == null) ? ErrorResponse.CONSTRAINT_NOT_FOUND.toResponseBuilder() : handler.apply(definition);
+    }
+
+    private Response.ResponseBuilder onField(Class<?> payloadClass, String fieldId, Function<FieldDefinition, Response
+            .ResponseBuilder> handler) {
+        Map<String, Field> fields = getFields(payloadClass);
+        Field field = fields.get(fieldId);
 
         Response.ResponseBuilder rb;
-        if (payloadClass == null) {
-            rb = ErrorResponse.PAYLOAD_TYPE_NOT_FOUND.toResponseBuilder();
+        if (field == null) {
+            rb = ErrorResponse.FIELD_NOT_FOUND.toResponseBuilder();
         } else {
-            ConstraintDefinition definition = validationErrorDao.list().stream()
-                    .filter((constraint) -> constraint.getError().equals(constraintId))
-                    .findFirst()
-                    .map((constraint) -> {
-                        ConstraintDefinition def = new ConstraintDefinition();
-                        def.setId(constraint.getError());
-                        def.setDescription(constraint.getMessage());
-                        def.setFields(constraint.getFields().stream()
-                                .map((fieldId) -> new EntityReference(fieldId, Linker.info(uriInfo).field(payloadType, fieldId)))
-                                .collect(Collectors.toList()));
-                        return def;
-                    })
-                    .orElse(null);
+            FieldDefinition definition = new FieldDefinition();
+            definition.setId(fieldId);
+            definition.setDescription("A useful description for " + fieldId);
+            definition.setType(field.getType().getSimpleName());
 
-            if (definition == null) {
-                rb = ErrorResponse.CONSTRAINT_NOT_FOUND.toResponseBuilder();
-            } else {
-                rb = new ConstraintDefinitionResponse(Response.Status.OK, definition).toResponseBuilder();
+            ControlledListsList controlledList = ControlledListsList.getByPath(fieldId);
+            // Check we have a registered controlled list type
+            if (controlledList != null) {
+                definition.setAllowed(controlledListProcessor.getListData(controlledList, null).getRight());
             }
+
+            rb = handler.apply(definition);
         }
-        return rb.build();
+        return rb;
     }
 
     private Map<String, Field> getFields(Class<?> payloadClass) {
