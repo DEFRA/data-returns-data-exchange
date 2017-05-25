@@ -16,6 +16,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.ClassPathScanningCandidateComponentProvider;
+import org.springframework.core.io.support.PropertiesLoaderUtils;
 import org.springframework.core.type.filter.AnnotationTypeFilter;
 import org.springframework.core.type.filter.AssignableTypeFilter;
 import org.springframework.stereotype.Component;
@@ -54,7 +55,7 @@ public class JerseyConfig extends ResourceConfig {
     @Inject
     public JerseyConfig(final ApplicationContext context) {
         super();
-        super.setApplicationName("Data Returns RESTful API");
+        super.setApplicationName("Data Returns API");
         this.context = context;
         registerExceptionMappers();
         registerEndpoints();
@@ -129,12 +130,22 @@ public class JerseyConfig extends ResourceConfig {
         } catch (IOException e) {
             LOGGER.error("Unable to read api_desc.md", e);
         }
+
+
+
         config.setLicense("OGL v3.0");
         config.setLicenseUrl("http://www.nationalarchives.gov.uk/doc/open-government-licence/version/3/");
-        config.setTitle("Data Returns RESTful API");
-        config.setVersion("v1");
+        config.setTitle("Data Returns API");
+        String version = "UNKNOWN";
+        try {
+            version = PropertiesLoaderUtils.loadAllProperties("version.properties").getProperty("version");
+        } catch (IOException e) {
+            LOGGER.error("Unable to read version.properties");
+        }
+
+        config.setVersion(version);
         config.setSchemes(new String[] { "http", "https" });
-        config.setBasePath("/api/v1");
+        config.setBasePath(APPLICATION_PATH);
         config.setResourcePackage("uk.gov.ea.datareturns.web.resource.v1");
         config.setPrettyPrint(true);
         config.setScan(true);

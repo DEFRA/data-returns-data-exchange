@@ -10,7 +10,7 @@ import javax.ws.rs.core.Response;
 import java.util.List;
 
 /**
- * DatasetEntity list response
+ * EntityReference list response
  *
  * @author Sam Gardner-Dell
  */

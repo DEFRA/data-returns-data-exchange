@@ -4,7 +4,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>data-returns-data-exchange</groupId>
 	<artifactId>data-returns-data-exchange</artifactId>
-	<version>1.0-SNAPSHOT</version>
+	<version>1.0.0</version>
 	<packaging>jar</packaging>
 	<name>data-returns-data-exchange</name>
 	<url>http://maven.apache.org</url>
