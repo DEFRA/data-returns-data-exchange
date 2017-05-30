@@ -8,7 +8,7 @@ import io.swagger.annotations.ApiModel;
  *
  * @author Sam Gardner-Dell
  */
-@ApiModel(value = "DataSamplePayload", description = "DEP v3.0 compliant monitoring data payload")
+@ApiModel(value = "DataSamplePayload", description = "DEP v3.0 compliant monitoring data payload", parent = Payload.class)
 public class DataSamplePayload extends Payload  {
     /** The EA Unique Identifier (EA_ID) */
     @JsonProperty("EA_ID")

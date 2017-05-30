@@ -8,7 +8,7 @@ import io.swagger.annotations.ApiModel;
  *
  * @author Sam Gardner-Dell
  */
-@ApiModel(value = "DemonstrationAlternativePayload", description = "Demonstration payload")
+@ApiModel(value = "DemonstrationAlternativePayload", description = "Demonstration payload", parent = Payload.class)
 public final class DemonstrationAlternativePayload extends Payload {
 
     @JsonProperty("test")

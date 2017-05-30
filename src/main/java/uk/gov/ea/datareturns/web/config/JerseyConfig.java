@@ -131,8 +131,6 @@ public class JerseyConfig extends ResourceConfig {
             LOGGER.error("Unable to read api_desc.md", e);
         }
 
-
-
         config.setLicense("OGL v3.0");
         config.setLicenseUrl("http://www.nationalarchives.gov.uk/doc/open-government-licence/version/3/");
         config.setTitle("Data Returns API");
