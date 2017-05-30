@@ -31,18 +31,18 @@ public abstract class AbstractUserDataDao<E extends Userdata>  {
 
     public E persist(E entity) {
         entityManager.persist(entity);
-        LOGGER.info("Adding: " + entityClass.getSimpleName() + ": " + entity.toString());
+//        LOGGER.debug("Adding: " + entityClass.getSimpleName() + ": " + entity.toString());
         return entity;
     }
 
     public void remove(long id) {
         E entity = entityManager.find(entityClass, id);
-        LOGGER.info("Removing: " + entityClass.getSimpleName() + ": " + entity.toString());
+//        LOGGER.debug("Removing: " + entityClass.getSimpleName() + ": " + entity.toString());
         entityManager.remove(entity);
     }
 
     public void merge(E entity) {
-        LOGGER.info("Merging: " + entityClass.getSimpleName() + ": " + entity.toString());
+//        LOGGER.debug("Merging: " + entityClass.getSimpleName() + ": " + entity.toString());
         entityManager.merge(entity);
     }
 }
