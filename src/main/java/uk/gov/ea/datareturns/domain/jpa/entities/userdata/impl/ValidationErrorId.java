@@ -1,14 +1,15 @@
 package uk.gov.ea.datareturns.domain.jpa.entities.userdata.impl;
 
 import javax.persistence.*;
+import java.io.Serializable;
 
 /**
  * @author Graham Willis
  */
 @Embeddable
-public class ValidationErrorId {
+public class ValidationErrorId implements Serializable {
     @ManyToOne(optional=false)
-    @JoinColumn(name = "payload_type", referencedColumnName = "palyload_type_name")
+    @JoinColumn(name = "payload_type", referencedColumnName = "payload_type")
     private PayloadType payloadType;
 
     @Basic @Column(name = "error")
@@ -36,5 +37,24 @@ public class ValidationErrorId {
                 "payloadType=" + payloadType +
                 ", error='" + error + '\'' +
                 '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        ValidationErrorId that = (ValidationErrorId) o;
+
+        if (payloadType != null ? !payloadType.equals(that.payloadType) : that.payloadType != null) return false;
+        return error != null ? error.equals(that.error) : that.error == null;
+
+    }
+
+    @Override
+    public int hashCode() {
+        int result = payloadType != null ? payloadType.hashCode() : 0;
+        result = 31 * result + (error != null ? error.hashCode() : 0);
+        return result;
     }
 }

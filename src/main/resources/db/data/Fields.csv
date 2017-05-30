@@ -7,6 +7,7 @@ DataSamplePayload,Mon_Point
 DataSamplePayload,Parameter
 DataSamplePayload,Qualifier
 DataSamplePayload,Ref_Period
+DataSamplePayload,Rtn_Period
 DataSamplePayload,Rtn_Type
 DataSamplePayload,Site_Name
 DataSamplePayload,Txt_Value

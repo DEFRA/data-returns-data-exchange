@@ -12,10 +12,10 @@ public class ValidationError {
     @EmbeddedId private ValidationErrorId id;
     @Basic private String message;
 
-    @ManyToOne(optional=false)
+    @OneToMany
     @JoinColumns( {
             @JoinColumn(name = "payload_type", referencedColumnName = "payload_type"),
-            @JoinColumn(name = "field_name", referencedColumnName = "field_name")
+            @JoinColumn(name = "error", referencedColumnName = "error")
     })
     private Set<Field> fields;
 

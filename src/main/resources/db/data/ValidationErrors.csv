@@ -22,6 +22,7 @@ DataSamplePayload,DR9100-Incorrect,Method or Standard (Meth_Stand) must be suppl
 DataSamplePayload,DR9110-Incorrect,Site name may only contain alphanumeric characters and spaces.
 DataSamplePayload,DR9110-Length,Site name may only be 255 characters long
 DataSamplePayload,DR9110-Missing,Site name must be given.
+DataSamplePayload,DR9110-Conflict,Site name is incorrect for the EA_ID
 DataSamplePayload,DR9120-Length,Sample Reference (Smpl_Ref) values must be no more than 255 characters.
 DataSamplePayload,DR9120-Incorrect,Sample Reference (Smpl_Ref) values should only contain letters and numbers. Remove any symbols.
 DataSamplePayload,DR9130-Length,Sample By (Smpl_By) values must be no more than 255 characters.

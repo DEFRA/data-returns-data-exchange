@@ -1,7 +1,6 @@
-payload_type,error,field
+payload_type,error,field_name
 DataSamplePayload,DR9140-Length,Comments
 DataSamplePayload,DR9060-Length,Mon_Point
-DataSamplePayload,DR9060-Incorrect,Mon_Point
 DataSamplePayload,DR9040-Incorrect,Value
 DataSamplePayload,DR9020-Incorrect,Mon_Date
 DataSamplePayload,DR9000-Missing,EA_ID

@@ -49,9 +49,12 @@ public class RecordEntity implements Metadata {
     private String json;
 
     @ManyToMany
-    @JoinTable(name="record_validation_errors",
-            joinColumns=@JoinColumn(name="record_id", referencedColumnName="id"),
-            inverseJoinColumns=@JoinColumn(name="error", referencedColumnName="error"))
+    @JoinTable(name = "record_validation_errors", joinColumns =
+            @JoinColumn(name = "record_id", referencedColumnName = "id"), inverseJoinColumns = {
+            @JoinColumn(name = "payload_type", referencedColumnName = "payload_type"),
+            @JoinColumn(name = "error", referencedColumnName = "error")
+        }
+    )
     public Set<ValidationError> validationErrors;
 
     public Long getId() {

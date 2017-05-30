@@ -1,13 +1,14 @@
 package uk.gov.ea.datareturns.domain.jpa.entities.userdata.impl;
 
 import javax.persistence.*;
+import java.io.Serializable;
 
 /**
  * @author Graham Willis
  * Primary key class for field
  */
 @Embeddable
-public class FieldId {
+public class FieldId implements Serializable {
     @Basic
     @Column(name = "field_name")
     private String fieldName;
@@ -30,5 +31,24 @@ public class FieldId {
                 "fieldName='" + fieldName + '\'' +
                 ", payloadType=" + payloadType +
                 '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        FieldId fieldId = (FieldId) o;
+
+        if (fieldName != null ? !fieldName.equals(fieldId.fieldName) : fieldId.fieldName != null) return false;
+        return payloadType != null ? payloadType.equals(fieldId.payloadType) : fieldId.payloadType == null;
+
+    }
+
+    @Override
+    public int hashCode() {
+        int result = fieldName != null ? fieldName.hashCode() : 0;
+        result = 31 * result + (payloadType != null ? payloadType.hashCode() : 0);
+        return result;
     }
 }
