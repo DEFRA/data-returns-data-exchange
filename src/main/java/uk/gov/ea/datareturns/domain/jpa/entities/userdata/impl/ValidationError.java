@@ -9,21 +9,22 @@ import java.util.Set;
 @Entity
 @Table(name = "validation_errors")
 public class ValidationError {
-    @Id String error;
+    @EmbeddedId private ValidationErrorId id;
+    @Basic private String message;
 
-    @Basic String message;
+    @ManyToOne(optional=false)
+    @JoinColumns( {
+            @JoinColumn(name = "payload_type", referencedColumnName = "payload_type"),
+            @JoinColumn(name = "field_name", referencedColumnName = "field_name")
+    })
+    private Set<Field> fields;
 
-    @ElementCollection(fetch = FetchType.EAGER)
-    @CollectionTable(name = "validation_error_fields", joinColumns = @JoinColumn(name = "error"))
-    @Column(name = "field")
-    Set<String> fields;
-
-    public String getError() {
-        return error;
+    public ValidationErrorId getId() {
+        return id;
     }
 
-    public void setError(String error) {
-        this.error = error;
+    public void setId(ValidationErrorId id) {
+        this.id = id;
     }
 
     public String getMessage() {
@@ -34,19 +35,20 @@ public class ValidationError {
         this.message = message;
     }
 
-    public Set<String> getFields() {
+    public Set<Field> getFields() {
         return fields;
     }
 
-    public void setFields(Set<String> fields) {
+    public void setFields(Set<Field> fields) {
         this.fields = fields;
     }
 
     @Override
     public String toString() {
         return "ValidationError{" +
-                "error='" + error + '\'' +
-                "message='" + message + '\'' +
+                "id=" + id +
+                ", message='" + message + '\'' +
+                ", fields=" + fields +
                 '}';
     }
 }

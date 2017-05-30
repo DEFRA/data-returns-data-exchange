@@ -130,22 +130,67 @@
 								 referencedColumnNames="id"
 								 referencedTableName="datasets"/>
 
+
+		<!--
+		****************************************************************
+		Payload types
+		****************************************************************
+		-->
+		<createTable tableName="payload_types">
+			<column name="payload_type" type="varchar(100)">
+				<constraints primaryKey="true" nullable="false"/>
+			</column>
+		</createTable>
+
+		<loadData file="/db/data/PayloadTypes.csv" tableName="payload_types"/>
+
+		<!--
+		****************************************************************
+		Fields
+		****************************************************************
+		-->
+		<createTable tableName="fields">
+			<column name="payload_type" type="varchar(100)">
+				<constraints primaryKey="true" nullable="false"/>
+			</column>
+			<column name="field_name" type="varchar(100)">
+				<constraints primaryKey="true" nullable="false"/>
+			</column>
+		</createTable>
+
+		<loadData file="/db/data/Fields.csv" tableName="payload_types"/>
+
+		<addForeignKeyConstraint baseColumnNames="payload_type"
+														 baseTableName="fields"
+														 constraintName="fk_fields_payload"
+														 referencedColumnNames="payload_type"
+														 referencedTableName="payload_types"/>
+
 		<!--
 		****************************************************************
 		Validation errors
 		****************************************************************
 		-->
 		<createTable tableName="validation_errors">
+			<column name="payload_type" type="varchar(100)">
+				<constraints primaryKey="true" nullable="false"/>
+			</column>
 
 			<column name="error" type="varchar(20)">
 				<constraints primaryKey="true" nullable="false"/>
 			</column>
 
 			<column name="message" type="varchar(300)"/>
-
 		</createTable>
 
 		<loadData file="/db/data/ValidationErrors.csv" tableName="validation_errors"/>
+
+		<addForeignKeyConstraint baseColumnNames="payload_type"
+														 baseTableName="validation_errors"
+														 constraintName="fk_validation_errors_payload"
+														 referencedColumnNames="payload_type"
+														 referencedTableName="payload_types"/>
+
 
 		<!--
 		****************************************************************
@@ -153,6 +198,10 @@
 		****************************************************************
 		-->
 		<createTable tableName="validation_error_fields">
+
+			<column name="payload_type" type="varchar(100)">
+				<constraints primaryKey="true" nullable="false"/>
+			</column>
 
 			<column name="error" type="varchar(20)">
 				<constraints primaryKey="true" nullable="false"/>
@@ -163,6 +212,12 @@
 			</column>
 
 		</createTable>
+
+		<addForeignKeyConstraint baseColumnNames="payload_type"
+														 baseTableName="validation_error_fields"
+														 constraintName="fk_validation_error_fields_payload"
+														 referencedColumnNames="payload_type"
+														 referencedTableName="payload_types"/>
 
 		<loadData file="/db/data/ValidationErrorFields.csv" tableName="validation_error_fields"/>
 

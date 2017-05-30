@@ -1,35 +1,35 @@
-error,message
-DR9000-Missing,EA unique identifier (EA_ID) is a required field.
-DR9000-Incorrect,EA unique identifier (EA_ID) is not recognised. Check that the reference you've given is either 2 letters and 4 numbers (EPR permits) or a 5- or 6-figure number (older waste management licences)
-DR9000-Conflict,The Site_Name you gave does not match the one we have in our recordEntities for the EA_ID.
-DR9010-Missing,Return type (Rtn_Type) value is missing.  You must supply a return type exactly as it's given in the EA controlled list.
-DR9010-Incorrect,Return type (Rtn_Type) value is incorrect.  You must supply a return type exactly as it's given in the EA controlled list.
-DR9020-Missing,"Monitoring Date (Mon_Date) value is missing. You need to format the date using the format yyyy-mm-dd.  If also specifying time, use the format yyyy-mm-ddThh:mm:ss (eg 2015-10-31 or 2015-10-31T06:00:00)"
-DR9020-Incorrect,"Monitoring Date (Mon_Date) value is incorrect. You need to format the date using the format yyyy-mm-dd.  If also specifying time, use the format yyyy-mm-ddThh:mm:ss (eg 2015-10-31 or 2015-10-31T06:00:00)"
-DR9030-Missing,Parameter value is missing.  Parameter values must be supplied.
-DR9030-Incorrect,Parameter value is incorrect.  You must supply a parameter exactly as it's given in the EA controlled list.
-DR9040-Missing,Value field is missing.  Please refer to the DEP for further information with regard to supplying values.
-DR9040-Incorrect,Value field is incorrect.  Please refer to the DEP for further information with regard to supplying values.
-DR9050-Missing,Unit values must be supplied when the Value field is used
-DR9050-Incorrect,Unit value is incorrect.  You must supply units exactly as it\u2019s given in the EA controlled list.
-DR9050-Conflict,Units must not be used when the Txt_Value field is used
-DR9060-Missing,Monitoring Point (Mon_Point) values must be supplied
-DR9060-Length,Monitoring Point (Mon_Point) values must be no more than 30 characters.
-DR9070-Incorrect,Return period (Rtn_Period) must be supplied exactly as it's given in the EA controlled list.
-DR9080-Incorrect,Text value (Txt_Value) must be supplied exactly as it's given in the EA controlled list.
-DR9090-Incorrect,Reference Period (Ref_Period) must be supplied exactly as it\u2019s given in the EA controlled list.
-DR9100-Incorrect,Method or Standard (Meth_Stand) must be supplied exactly as it\u2019s given in the EA controlled list.
-DR9110-Incorrect,Site name may only contain alphanumeric characters and spaces.
-DR9110-Length,Site name may only be 255 characters long
-DR9110-Missing,Site name must be given.
-DR9120-Length,Sample Reference (Smpl_Ref) values must be no more than 255 characters.
-DR9120-Incorrect,Sample Reference (Smpl_Ref) values should only contain letters and numbers. Remove any symbols.
-DR9130-Length,Sample By (Smpl_By) values must be no more than 255 characters.
-DR9140-Length,Comments must not be more than 255 characters.
-DR9140-Missing,Comments must be given if the Txt_Value field is given as "See comment"
-DR9150-Length,Commercial In Confidence (CiC) values must not be more than 255 characters.
-DR9160-Length,Chemical Abstracts Service (CAS) values must not be more than 255 characters.
-R9170-Length,Recovery and Disposal Code (RD_Code) values must not be more than 255 characters.
-DR9180-Incorrect,Qualifiers (Qualifier) must be supplied exactly as given in the EA controlled list.
-DR9999-Missing,One of Value or Txt_Value must be specified
-DR9999-Conflict,Only one of Value and Txt_Value can be specified
+payload_type,error,message
+DataSamplePayload,DR9000-Missing,EA unique identifier (EA_ID) is a required field.
+DataSamplePayload,DR9000-Incorrect,EA unique identifier (EA_ID) is not recognised. Check that the reference you've given is either 2 letters and 4 numbers (EPR permits) or a 5- or 6-figure number (older waste management licences)
+DataSamplePayload,DR9000-Conflict,The Site_Name you gave does not match the one we have in our recordEntities for the EA_ID.
+DataSamplePayload,DR9010-Missing,Return type (Rtn_Type) value is missing.  You must supply a return type exactly as it's given in the EA controlled list.
+DataSamplePayload,DR9010-Incorrect,Return type (Rtn_Type) value is incorrect.  You must supply a return type exactly as it's given in the EA controlled list.
+DataSamplePayload,DR9020-Missing,"Monitoring Date (Mon_Date) value is missing. You need to format the date using the format yyyy-mm-dd.  If also specifying time, use the format yyyy-mm-ddThh:mm:ss (eg 2015-10-31 or 2015-10-31T06:00:00)"
+DataSamplePayload,DR9020-Incorrect,"Monitoring Date (Mon_Date) value is incorrect. You need to format the date using the format yyyy-mm-dd.  If also specifying time, use the format yyyy-mm-ddThh:mm:ss (eg 2015-10-31 or 2015-10-31T06:00:00)"
+DataSamplePayload,DR9030-Missing,Parameter value is missing.  Parameter values must be supplied.
+DataSamplePayload,DR9030-Incorrect,Parameter value is incorrect.  You must supply a parameter exactly as it's given in the EA controlled list.
+DataSamplePayload,DR9040-Missing,Value field is missing.  Please refer to the DEP for further information with regard to supplying values.
+DataSamplePayload,DR9040-Incorrect,Value field is incorrect.  Please refer to the DEP for further information with regard to supplying values.
+DataSamplePayload,DR9050-Missing,Unit values must be supplied when the Value field is used
+DataSamplePayload,DR9050-Incorrect,Unit value is incorrect.  You must supply units exactly as it\u2019s given in the EA controlled list.
+DataSamplePayload,DR9050-Conflict,Units must not be used when the Txt_Value field is used
+DataSamplePayload,DR9060-Missing,Monitoring Point (Mon_Point) values must be supplied
+DataSamplePayload,DR9060-Length,Monitoring Point (Mon_Point) values must be no more than 30 characters.
+DataSamplePayload,DR9070-Incorrect,Return period (Rtn_Period) must be supplied exactly as it's given in the EA controlled list.
+DataSamplePayload,DR9080-Incorrect,Text value (Txt_Value) must be supplied exactly as it's given in the EA controlled list.
+DataSamplePayload,DR9090-Incorrect,Reference Period (Ref_Period) must be supplied exactly as it\u2019s given in the EA controlled list.
+DataSamplePayload,DR9100-Incorrect,Method or Standard (Meth_Stand) must be supplied exactly as it\u2019s given in the EA controlled list.
+DataSamplePayload,DR9110-Incorrect,Site name may only contain alphanumeric characters and spaces.
+DataSamplePayload,DR9110-Length,Site name may only be 255 characters long
+DataSamplePayload,DR9110-Missing,Site name must be given.
+DataSamplePayload,DR9120-Length,Sample Reference (Smpl_Ref) values must be no more than 255 characters.
+DataSamplePayload,DR9120-Incorrect,Sample Reference (Smpl_Ref) values should only contain letters and numbers. Remove any symbols.
+DataSamplePayload,DR9130-Length,Sample By (Smpl_By) values must be no more than 255 characters.
+DataSamplePayload,DR9140-Length,Comments must not be more than 255 characters.
+DataSamplePayload,DR9140-Missing,"Comments must be given if the Txt_Value field is given as ""See comment"""
+DataSamplePayload,DR9150-Length,Commercial In Confidence (CiC) values must not be more than 255 characters.
+DataSamplePayload,DR9160-Length,Chemical Abstracts Service (CAS) values must not be more than 255 characters.
+DataSamplePayload,R9170-Length,Recovery and Disposal Code (RD_Code) values must not be more than 255 characters.
+DataSamplePayload,DR9180-Incorrect,Qualifiers (Qualifier) must be supplied exactly as given in the EA controlled list.
+DataSamplePayload,DR9999-Missing,One of Value or Txt_Value must be specified
+DataSamplePayload,DR9999-Conflict,Only one of Value and Txt_Value can be specified

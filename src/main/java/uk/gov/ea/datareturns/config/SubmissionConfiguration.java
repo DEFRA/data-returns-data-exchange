@@ -25,6 +25,7 @@ public class SubmissionConfiguration {
 
     private final javax.validation.Validator validator;
     private final ValidationErrorDao validationErrorDao;
+
     private final DatasetDao datasetDao;
     private final UserDao userDao;
     private final RecordDao recordDao;
@@ -39,11 +40,13 @@ public class SubmissionConfiguration {
     private final UniqueIdentifierAliasDao uniqueIdentifierAliasDao;
     private final UniqueIdentifierDao uniqueIdentifierDao;
     private final UnitDao unitDao;
+    private final PayloadTypeDao payloadTypeDao;
 
     @Inject
     public SubmissionConfiguration(
             javax.validation.Validator validator,
             ValidationErrorDao validationErrorDao,
+            PayloadTypeDao payloadTypeDao,
             DatasetDao datasetDao,
             UserDao userDao,
             RecordDao recordDao,
@@ -61,6 +64,7 @@ public class SubmissionConfiguration {
     ) {
         this.validator = validator;
         this.validationErrorDao = validationErrorDao;
+        this.payloadTypeDao = payloadTypeDao;
         this.datasetDao = datasetDao;
         this.userDao = userDao;
         this.recordDao = recordDao;
@@ -118,7 +122,7 @@ public class SubmissionConfiguration {
 
     @Bean
     public Validator<AbstractValidationObject> validationObjectValidator() {
-        return new ValidatorImpl(this.validator, validationErrorDao);
+        return new ValidatorImpl(this.validator, validationErrorDao, payloadTypeDao);
     }
 
     @Bean

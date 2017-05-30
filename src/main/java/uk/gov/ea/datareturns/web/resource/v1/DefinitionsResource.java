@@ -7,8 +7,12 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
+import uk.gov.ea.datareturns.domain.jpa.dao.userdata.impl.PayloadTypeDao;
 import uk.gov.ea.datareturns.domain.jpa.dao.userdata.impl.ValidationErrorDao;
 import uk.gov.ea.datareturns.domain.jpa.entities.masterdata.impl.ControlledListsList;
+import uk.gov.ea.datareturns.domain.jpa.entities.userdata.impl.PayloadType;
+import uk.gov.ea.datareturns.domain.jpa.entities.userdata.impl.ValidationError;
+import uk.gov.ea.datareturns.domain.jpa.entities.userdata.impl.ValidationErrorId;
 import uk.gov.ea.datareturns.domain.processors.ControlledListProcessor;
 import uk.gov.ea.datareturns.web.resource.ControlledListResource;
 import uk.gov.ea.datareturns.web.resource.v1.model.common.Linker;
@@ -61,6 +65,8 @@ public class DefinitionsResource {
     private final ControlledListProcessor controlledListProcessor;
     /** controlled list processor */
     private final ValidationErrorDao validationErrorDao;
+    /** Payload types */
+    private final PayloadTypeDao payloadTypeDao;
 
     /**
      * Create a new {@link ControlledListResource} RESTful service
@@ -68,9 +74,13 @@ public class DefinitionsResource {
      * @param controlledListProcessor the controlled list processor
      */
     @Inject
-    public DefinitionsResource(final ControlledListProcessor controlledListProcessor, final ValidationErrorDao validationErrorDao) {
+    public DefinitionsResource(final ControlledListProcessor controlledListProcessor,
+                               final ValidationErrorDao validationErrorDao,
+                               final PayloadTypeDao payloadTypeDao) {
+
         this.controlledListProcessor = controlledListProcessor;
         this.validationErrorDao = validationErrorDao;
+        this.payloadTypeDao = payloadTypeDao;
     }
 
     /**
@@ -205,8 +215,8 @@ public class DefinitionsResource {
                         // TODO: Graham, service layer needs to support different payload types.
                         validationErrorDao.list().stream()
                                 .map((constraint) -> {
-                                    String uri = Linker.info(uriInfo).constraint(payloadType, constraint.getError());
-                                    return new EntityReference(constraint.getError(), uri);
+                                    String uri = Linker.info(uriInfo).constraint(payloadType, constraint.getId().getError());
+                                    return new EntityReference(constraint.getId().getError(), uri);
                                 })
                                 .collect(Collectors.toList())
                 ).toResponseBuilder()
@@ -258,21 +268,22 @@ public class DefinitionsResource {
         return (payloadClass == null) ? ErrorResponse.PAYLOAD_TYPE_NOT_FOUND.toResponseBuilder() : handler.apply(payloadClass);
     }
 
-    private Response.ResponseBuilder onConstraint(String payloadType, String constraintId, Function<ConstraintDefinition, Response
+    private Response.ResponseBuilder onConstraint(String payloadTypeStr, String constraintId, Function<ConstraintDefinition, Response
             .ResponseBuilder> handler) {
-        ConstraintDefinition definition = validationErrorDao.list().stream()
-                .filter((constraint) -> constraint.getError().equals(constraintId))
-                .findFirst()
-                .map((constraint) -> {
-                    ConstraintDefinition def = new ConstraintDefinition();
-                    def.setId(constraint.getError());
-                    def.setDescription(constraint.getMessage());
-                    def.setFields(constraint.getFields().stream()
-                            .map((fieldId) -> new EntityReference(fieldId, Linker.info(uriInfo).field(payloadType, fieldId)))
+
+        PayloadType payloadType = payloadTypeDao.get(payloadTypeStr);
+        ValidationErrorId id = new ValidationErrorId();
+        id.setPayloadType(payloadType);
+        id.setError(constraintId);
+        ValidationError validationError = validationErrorDao.get(id);
+        ConstraintDefinition definition = new ConstraintDefinition();
+        definition.setId(validationError.getId().getError());
+        definition.setDescription(validationError.getMessage());
+        definition.setFields(validationError.getFields().stream()
+                            .map((field) -> new EntityReference(field.getId().getFieldName(), Linker.info(uriInfo).field(
+                                    payloadType.getPayloadTypeName(), field.getId().getFieldName())))
                             .collect(Collectors.toList()));
-                    return def;
-                })
-                .orElse(null);
+
         return (definition == null) ? ErrorResponse.CONSTRAINT_NOT_FOUND.toResponseBuilder() : handler.apply(definition);
     }
 

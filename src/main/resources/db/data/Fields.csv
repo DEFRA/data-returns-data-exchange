@@ -1,0 +1,14 @@
+payload_type,field_name
+DataSamplePayload,Comments
+DataSamplePayload,EA_ID
+DataSamplePayload,Meth_Stand
+DataSamplePayload,Mon_Date
+DataSamplePayload,Mon_Point
+DataSamplePayload,Parameter
+DataSamplePayload,Qualifier
+DataSamplePayload,Ref_Period
+DataSamplePayload,Rtn_Type
+DataSamplePayload,Site_Name
+DataSamplePayload,Txt_Value
+DataSamplePayload,Unit
+DataSamplePayload,Value

@@ -2,8 +2,11 @@ package uk.gov.ea.datareturns.domain.validation.newmodel.validator;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import uk.gov.ea.datareturns.domain.jpa.dao.userdata.impl.PayloadTypeDao;
 import uk.gov.ea.datareturns.domain.jpa.dao.userdata.impl.ValidationErrorDao;
+import uk.gov.ea.datareturns.domain.jpa.entities.userdata.impl.PayloadType;
 import uk.gov.ea.datareturns.domain.jpa.entities.userdata.impl.ValidationError;
+import uk.gov.ea.datareturns.domain.jpa.entities.userdata.impl.ValidationErrorId;
 
 import javax.inject.Inject;
 import javax.validation.ConstraintViolation;
@@ -20,6 +23,7 @@ public class ValidatorImpl implements Validator<AbstractValidationObject> {
     /** validator instance */
     private final javax.validation.Validator instanceValidator;
     private final ValidationErrorDao validationErrorDao;
+    private final PayloadTypeDao payloadTypeDao;
     /** flag to indicate if the instanceValidator has been fully initialised */
     private boolean initialised = false;
 
@@ -29,16 +33,21 @@ public class ValidatorImpl implements Validator<AbstractValidationObject> {
      * @param validator the hibernate instanceValidator instance
      */
     @Inject
-    public ValidatorImpl(final javax.validation.Validator validator, ValidationErrorDao validationErrorDao) {
+    public ValidatorImpl(final javax.validation.Validator validator, ValidationErrorDao validationErrorDao, PayloadTypeDao payloadTypeDao) {
         this.instanceValidator = validator;
         this.validationErrorDao = validationErrorDao;
+        this.payloadTypeDao = payloadTypeDao;
     }
 
     public Set<ValidationError> validateValidationObject(AbstractValidationObject validationObject) {
         final Set<ValidationError> errors = new HashSet<>();
         final Set<ConstraintViolation<AbstractValidationObject>> violations = validate(validationObject);
         for (final ConstraintViolation<AbstractValidationObject> violation : violations) {
-            ValidationError error = validationErrorDao.get(violation.getMessageTemplate());
+            ValidationErrorId id = new ValidationErrorId();
+            id.setError(violation.getMessageTemplate());
+            PayloadType payloadType = payloadTypeDao.get("fffff");//TODO
+            id.setPayloadType(payloadType);
+            ValidationError error = validationErrorDao.get(id);
             if (error == null) {
                 LOGGER.error("Unknown message template discovered: " + violation.getMessageTemplate());
             } else {
