@@ -7,9 +7,11 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
+import uk.gov.ea.datareturns.domain.jpa.dao.userdata.impl.FieldDao;
 import uk.gov.ea.datareturns.domain.jpa.dao.userdata.impl.PayloadTypeDao;
 import uk.gov.ea.datareturns.domain.jpa.dao.userdata.impl.ValidationErrorDao;
 import uk.gov.ea.datareturns.domain.jpa.entities.masterdata.impl.ControlledListsList;
+import uk.gov.ea.datareturns.domain.jpa.entities.userdata.impl.FieldEntity;
 import uk.gov.ea.datareturns.domain.jpa.entities.userdata.impl.PayloadType;
 import uk.gov.ea.datareturns.domain.jpa.entities.userdata.impl.ValidationError;
 import uk.gov.ea.datareturns.domain.jpa.entities.userdata.impl.ValidationErrorId;
@@ -67,6 +69,8 @@ public class DefinitionsResource {
     private final ValidationErrorDao validationErrorDao;
     /** Payload types */
     private final PayloadTypeDao payloadTypeDao;
+    /** Fields **/
+    private final FieldDao fieldDao;
 
     /**
      * Create a new {@link ControlledListResource} RESTful service
@@ -76,11 +80,13 @@ public class DefinitionsResource {
     @Inject
     public DefinitionsResource(final ControlledListProcessor controlledListProcessor,
                                final ValidationErrorDao validationErrorDao,
-                               final PayloadTypeDao payloadTypeDao) {
+                               final PayloadTypeDao payloadTypeDao,
+                               final FieldDao fieldDao) {
 
         this.controlledListProcessor = controlledListProcessor;
         this.validationErrorDao = validationErrorDao;
         this.payloadTypeDao = payloadTypeDao;
+        this.fieldDao = fieldDao;
     }
 
     /**
@@ -210,17 +216,17 @@ public class DefinitionsResource {
             @ApiParam("The payload type the target field belongs to.") final String payloadType)
             throws Exception {
 
-        return onPayloadType(payloadType, (payloadClass) ->
-                new EntityListResponse(
-                        // TODO: Graham, service layer needs to support different payload types.
-                        validationErrorDao.list().stream()
+        return onPayloadType(payloadType, (payloadClass) -> {
+            PayloadType payloadEntityType = payloadTypeDao.get(payloadType);
+                return new EntityListResponse(
+                        validationErrorDao.list(payloadEntityType).stream()
                                 .map((constraint) -> {
                                     String uri = Linker.info(uriInfo).constraint(payloadType, constraint.getId().getError());
                                     return new EntityReference(constraint.getId().getError(), uri);
                                 })
                                 .collect(Collectors.toList())
-                ).toResponseBuilder()
-        ).build();
+                ).toResponseBuilder();
+        }).build();
     }
 
     /**
@@ -289,16 +295,21 @@ public class DefinitionsResource {
 
     private Response.ResponseBuilder onField(Class<?> payloadClass, String fieldId, Function<FieldDefinition, Response
             .ResponseBuilder> handler) {
+
         Map<String, Field> fields = getFields(payloadClass);
         Field field = fields.get(fieldId);
+        String payloadTypeStr = Payload.NAMES.get(payloadClass);
+        PayloadType payloadEntityType = payloadTypeDao.get(payloadTypeStr);
+        FieldEntity fieldEntity = fieldDao.get(payloadEntityType, fieldId);
 
         Response.ResponseBuilder rb;
-        if (field == null) {
+        if (field == null || fieldEntity == null) {
             rb = ErrorResponse.FIELD_NOT_FOUND.toResponseBuilder();
         } else {
+
             FieldDefinition definition = new FieldDefinition();
-            definition.setId(fieldId);
-            definition.setDescription("A useful description for " + fieldId);
+            definition.setId(fieldEntity.getId().getFieldName());
+            definition.setDescription(fieldEntity.getDescription());
             definition.setType(field.getType().getSimpleName());
 
             ControlledListsList controlledList = ControlledListsList.getByPath(fieldId);

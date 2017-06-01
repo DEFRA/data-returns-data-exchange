@@ -25,6 +25,14 @@ public class FieldId implements Serializable {
         this.fieldName = fieldName;
     }
 
+    public PayloadType getPayloadType() {
+        return payloadType;
+    }
+
+    public void setPayloadType(PayloadType payloadType) {
+        this.payloadType = payloadType;
+    }
+
     @Override
     public String toString() {
         return "FieldId{" +

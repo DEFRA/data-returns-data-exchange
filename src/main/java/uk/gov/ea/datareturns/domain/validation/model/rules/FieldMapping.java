@@ -20,7 +20,7 @@ import java.util.Objects;
 public class FieldMapping {
     /** Class logger */
     private static final Logger LOGGER = LoggerFactory.getLogger(FieldMapping.class);
-    /** Java Field reference */
+    /** Java FieldEntity reference */
     private final Field field;
     /** MappedField annotation for the JavaBean field */
     private final MappedField mappedField;

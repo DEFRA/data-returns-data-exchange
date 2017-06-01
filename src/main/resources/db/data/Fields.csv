@@ -1,15 +1,17 @@
-payload_type,field_name
-DataSamplePayload,Comments
-DataSamplePayload,EA_ID
-DataSamplePayload,Meth_Stand
-DataSamplePayload,Mon_Date
-DataSamplePayload,Mon_Point
-DataSamplePayload,Parameter
-DataSamplePayload,Qualifier
-DataSamplePayload,Ref_Period
-DataSamplePayload,Rtn_Period
-DataSamplePayload,Rtn_Type
-DataSamplePayload,Site_Name
-DataSamplePayload,Txt_Value
-DataSamplePayload,Unit
-DataSamplePayload,Value
+payload_type,field_name,description
+DataSamplePayload,Comments,"Use this for comments about the row of data. For example, if you were unable to take a reading. You can also use this field if you wish to give your own system references to store with the results."
+DataSamplePayload,EA_ID,This is the permit or licence number that we have in our records.
+DataSamplePayload,Meth_Stand,The method or standard used for sampling.
+DataSamplePayload,Mon_Date,"The date and, optionally, the time you took the measurement."
+DataSamplePayload,Mon_Point,The sampling or emission point where the sample was taken.
+DataSamplePayload,Parameter,"The chemical substance, biological or physical parameter you're monitoring."
+DataSamplePayload,Qualifier,"Gives more information about the measurement, such as sample or operating condition, or the calculation used."
+DataSamplePayload,Ref_Period,"The reference period for the sample, as specified in your permit or licence. This explains how you took the measurement, for example, '24 hour total', 'Half hour average' or 'Monthly mean'."
+DataSamplePayload,Rtn_Period,"The week, month, quarter or year that your return covers."
+DataSamplePayload,Rtn_Type,"The type of data that you're reporting."
+DataSamplePayload,Site_Name,"The site name in our records. It's used to check that you used the correct EA_ID."
+DataSamplePayload,Txt_Value,"Used to enter text for a measurement, for example, ‘Yes’, ‘No’, 'No result' and 'See comments'."
+DataSamplePayload,Unit,"The unit for the measurement."
+DataSamplePayload,Value,"The numerical value of your measurement."
+DemonstrationAlternativePayload,test,Test field for alternative payload
+DemonstrationAlternativePayload,test_int, Test numeric field for alternative payload

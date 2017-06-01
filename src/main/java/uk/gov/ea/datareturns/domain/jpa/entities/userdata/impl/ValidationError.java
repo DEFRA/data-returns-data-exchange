@@ -27,7 +27,7 @@ public class ValidationError {
                 @JoinColumn(name = "field_name", referencedColumnName = "field_name")
         }
     )
-    private Set<Field> fields;
+    private Set<FieldEntity> fields;
 
     public ValidationErrorId getId() {
         return id;
@@ -45,11 +45,11 @@ public class ValidationError {
         this.message = message;
     }
 
-    public Set<Field> getFields() {
+    public Set<FieldEntity> getFields() {
         return fields;
     }
 
-    public void setFields(Set<Field> fields) {
+    public void setFields(Set<FieldEntity> fields) {
         this.fields = fields;
     }
 

@@ -7,8 +7,10 @@ import javax.persistence.*;
  */
 @Entity
 @Table(name = "fields")
-public class Field {
+public class FieldEntity {
     @EmbeddedId FieldId id;
+
+    @Basic public String description;
 
     public FieldId getId() {
         return id;
@@ -18,9 +20,17 @@ public class Field {
         this.id = id;
     }
 
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
     @Override
     public String toString() {
-        return "Field{" +
+        return "FieldEntity{" +
                 "id=" + id +
                 '}';
     }
