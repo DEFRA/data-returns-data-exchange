@@ -17,17 +17,11 @@ import java.util.Map;
  * @author Graham Willis
  */
 @Component
-public class RecordAdaptor implements EntityAdaptor<Record, RecordEntity> {
+public class RecordAdaptor {
 
     @Inject
     private SubmissionService submissionService;
 
-    @Override
-    public RecordEntity convert(Record record) {
-        return null;
-    }
-
-    @Override
     public Record convert(RecordEntity recordEntity) {
         Record record = new Record();
         record.setId(recordEntity.getIdentifier());
@@ -37,9 +31,4 @@ public class RecordAdaptor implements EntityAdaptor<Record, RecordEntity> {
         record.setPayload(dataSamplePayload);
         return record;
     }
-
-    @Override
-    public RecordEntity merge(RecordEntity recordEntity, Record record) {
-        return null;
-    }
-}
+ }

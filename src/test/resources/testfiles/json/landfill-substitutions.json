@@ -1,6 +1,6 @@
 [
   {
-    "payload_type": "DataSample",
+    "_payload_type": "DataSamplePayload",
     "EA_ID": "JP3393EE",
     "Site_Name": "East Of Molesey Road",
     "Rtn_Type": "Landfill gas borehole",
@@ -13,7 +13,7 @@
     "Unit": "TJm⁻³"
   },
   {
-    "payload_type": "DataSample",
+    "_payload_type": "DataSamplePayload",
     "EA_ID": "JP3393EE",
     "Site_Name": "East Of Molesey Road",
     "Rtn_Type": "Landfill gas borehole",
@@ -26,7 +26,7 @@
     "Unit": "TJm⁻³"
   },
   {
-    "payload_type": "DataSample",
+    "_payload_type": "DataSamplePayload",
     "EA_ID": "JP3393EE",
     "Site_Name": "East Of Molesey Road",
     "Rtn_Type": "Landfill gas borehole",
@@ -39,7 +39,7 @@
     "Unit": "TJm⁻³"
   },
   {
-    "payload_type": "DataSample",
+    "_payload_type": "DataSamplePayload",
     "EA_ID": "42355",
     "Site_Name": "Biffa - Marchington Landfill Site",
     "Rtn_Type": "Landfill gas borehole",

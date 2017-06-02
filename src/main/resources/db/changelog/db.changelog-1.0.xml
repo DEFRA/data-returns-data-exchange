@@ -40,6 +40,12 @@
 			<column name="name" type="varchar(80)">
 				<constraints nullable="false" unique="true"/>
 			</column>
+			<column name="create_date" type="timestamp without timezone" defaultValueComputed="current_timestamp">
+				<constraints nullable="false"/>
+			</column>
+			<column name="last_changed_date" type="timestamp without timezone" defaultValueComputed="current_timestamp">
+				<constraints nullable="false"/>
+			</column>
 		</createTable>
 		<rollback>
 			<dropTable tableName="sites"/>
@@ -70,6 +76,12 @@
 				<constraints nullable="false" foreignKeyName="fk_site" references="sites(id)"/>
 			</column>
 			<column name="name" type="varchar(18)">
+				<constraints nullable="false"/>
+			</column>
+			<column name="create_date" type="timestamp without timezone" defaultValueComputed="current_timestamp">
+				<constraints nullable="false"/>
+			</column>
+			<column name="last_changed_date" type="timestamp without timezone" defaultValueComputed="current_timestamp">
 				<constraints nullable="false"/>
 			</column>
 		</createTable>
@@ -104,6 +116,12 @@
 			<column name="name" type="varchar(18)">
 				<constraints nullable="false"/>
 			</column>
+			<column name="create_date" type="timestamp without timezone" defaultValueComputed="current_timestamp">
+				<constraints nullable="false"/>
+			</column>
+			<column name="last_changed_date" type="timestamp without timezone" defaultValueComputed="current_timestamp">
+				<constraints nullable="false"/>
+			</column>
 		</createTable>
 		<rollback>
 			<dropTable tableName="unique_identifier_aliases"/>
@@ -133,6 +151,12 @@
 				<constraints nullable="false"/>
 			</column>
 			<column name="sector" type="varchar(20)">
+				<constraints nullable="false"/>
+			</column>
+			<column name="create_date" type="timestamp without timezone" defaultValueComputed="current_timestamp">
+				<constraints nullable="false"/>
+			</column>
+			<column name="last_changed_date" type="timestamp without timezone" defaultValueComputed="current_timestamp">
 				<constraints nullable="false"/>
 			</column>
 		</createTable>
@@ -252,6 +276,12 @@
 			<column name="preferred" type="varchar(150)"/>
 			<column name="type" type="varchar(100)"/>
 			<column name="cas" type="varchar(50)"/>
+			<column name="create_date" type="timestamp without timezone" defaultValueComputed="current_timestamp">
+				<constraints nullable="false"/>
+			</column>
+			<column name="last_changed_date" type="timestamp without timezone" defaultValueComputed="current_timestamp">
+				<constraints nullable="false"/>
+			</column>
 		</createTable>
 		<rollback>
 			<dropTable tableName="parameters"/>
@@ -317,6 +347,12 @@
 			<column name="unicode" type="varchar(50)"/>
 			<column name="description" type="varchar(200)"/>
 			<column name="type" type="varchar(50)"/>
+			<column name="create_date" type="timestamp without timezone" defaultValueComputed="current_timestamp">
+				<constraints nullable="false"/>
+			</column>
+			<column name="last_changed_date" type="timestamp without timezone" defaultValueComputed="current_timestamp">
+				<constraints nullable="false"/>
+			</column>
 		</createTable>
 		<rollback>
 			<dropTable tableName="units"/>
@@ -390,6 +426,12 @@
 				<constraints nullable="false"/>
 			</column>
 			<column name="notes" type="varchar(250)"/>
+			<column name="create_date" type="timestamp without timezone" defaultValueComputed="current_timestamp">
+				<constraints nullable="false"/>
+			</column>
+			<column name="last_changed_date" type="timestamp without timezone" defaultValueComputed="current_timestamp">
+				<constraints nullable="false"/>
+			</column>
 		</createTable>
 		<rollback>
 			<dropTable tableName="methods_or_standards"/>
@@ -440,6 +482,12 @@
 			<column name="notes" type="varchar(100)"></column>
 			<column name="type" type="varchar(50)"></column>
 			<column name="singleormultiple" type="varchar(20)"></column>
+			<column name="create_date" type="timestamp without timezone" defaultValueComputed="current_timestamp">
+				<constraints nullable="false"/>
+			</column>
+			<column name="last_changed_date" type="timestamp without timezone" defaultValueComputed="current_timestamp">
+				<constraints nullable="false"/>
+			</column>
 		</createTable>
 		<rollback>
 			<dropTable tableName="qualifiers"/>
@@ -497,6 +545,12 @@
 			</column>
 			<column name="preferred" type="varchar(100)" />
 			<column name="notes" type="varchar(250)"/>
+			<column name="create_date" type="timestamp without timezone" defaultValueComputed="current_timestamp">
+				<constraints nullable="false"/>
+			</column>
+			<column name="last_changed_date" type="timestamp without timezone" defaultValueComputed="current_timestamp">
+				<constraints nullable="false"/>
+			</column>
 		</createTable>
 		<rollback>
 			<dropTable tableName="reference_periods"/>
@@ -558,6 +612,12 @@
 			</column>
 			<column name="definition" type="varchar(600)"></column>
 			<column name="example" type="varchar(20)"></column>
+			<column name="create_date" type="timestamp without timezone" defaultValueComputed="current_timestamp">
+				<constraints nullable="false"/>
+			</column>
+			<column name="last_changed_date" type="timestamp without timezone" defaultValueComputed="current_timestamp">
+				<constraints nullable="false"/>
+			</column>
 		</createTable>
 		<rollback>
 			<dropTable tableName="return_periods"/>
@@ -611,6 +671,12 @@
 				<constraints nullable="false"/>
 			</column>
 			<column name="preferred" type="varchar(30)"/>
+			<column name="create_date" type="timestamp without timezone" defaultValueComputed="current_timestamp">
+				<constraints nullable="false"/>
+			</column>
+			<column name="last_changed_date" type="timestamp without timezone" defaultValueComputed="current_timestamp">
+				<constraints nullable="false"/>
+			</column>
 		</createTable>
 		<rollback>
 			<dropTable tableName="text_values"/>
@@ -672,6 +738,12 @@
 			<column name="units" type="varchar(50)">
 				<constraints nullable="false" unique="false"/>
 			</column>
+			<column name="create_date" type="timestamp without timezone" defaultValueComputed="current_timestamp">
+				<constraints nullable="false"/>
+			</column>
+			<column name="last_changed_date" type="timestamp without timezone" defaultValueComputed="current_timestamp">
+				<constraints nullable="false"/>
+			</column>
 		</createTable>
 		<rollback>
 			<dropTable tableName="parameter_hierarchy"/>
@@ -713,6 +785,12 @@
 				<constraints primaryKey="true" nullable="false"/>
 			</column>
 			<column name="name" type="varchar(50)">
+				<constraints nullable="false"/>
+			</column>
+			<column name="create_date" type="timestamp without timezone" defaultValueComputed="current_timestamp">
+				<constraints nullable="false"/>
+			</column>
+			<column name="last_changed_date" type="timestamp without timezone" defaultValueComputed="current_timestamp">
 				<constraints nullable="false"/>
 			</column>
 		</createTable>

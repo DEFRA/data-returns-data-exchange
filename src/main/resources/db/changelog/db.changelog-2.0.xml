@@ -140,6 +140,15 @@
 			<column name="payload_type" type="varchar(100)">
 				<constraints primaryKey="true" nullable="false"/>
 			</column>
+
+			<column name="create_date" type="timestamp without timezone" defaultValueComputed="current_timestamp">
+				<constraints nullable="false"/>
+			</column>
+
+			<column name="last_changed_date" type="timestamp without timezone" defaultValueComputed="current_timestamp">
+				<constraints nullable="false"/>
+			</column>
+
 		</createTable>
 
 		<loadData file="/db/data/PayloadTypes.csv" tableName="payload_types"/>
@@ -161,15 +170,23 @@
 
 			<column name="description" type="varchar(500)"/>
 
+			<column name="create_date" type="timestamp without timezone" defaultValueComputed="current_timestamp">
+				<constraints nullable="false"/>
+			</column>
+
+			<column name="last_changed_date" type="timestamp without timezone" defaultValueComputed="current_timestamp">
+				<constraints nullable="false"/>
+			</column>
+
 		</createTable>
 
 		<loadData file="/db/data/Fields.csv" tableName="fields"/>
 
 		<addForeignKeyConstraint baseColumnNames="payload_type"
-														 baseTableName="fields"
-														 constraintName="fk_fields_payload"
-														 referencedColumnNames="payload_type"
-														 referencedTableName="payload_types"/>
+								 baseTableName="fields"
+								 constraintName="fk_fields_payload"
+								 referencedColumnNames="payload_type"
+								 referencedTableName="payload_types"/>
 
 		<!--
 		****************************************************************
@@ -186,15 +203,24 @@
 			</column>
 
 			<column name="message" type="varchar(300)"/>
+
+			<column name="create_date" type="timestamp without timezone" defaultValueComputed="current_timestamp">
+				<constraints nullable="false"/>
+			</column>
+
+			<column name="last_changed_date" type="timestamp without timezone" defaultValueComputed="current_timestamp">
+				<constraints nullable="false"/>
+			</column>
+
 		</createTable>
 
 		<loadData file="/db/data/ValidationErrors.csv" tableName="validation_errors"/>
 
 		<addForeignKeyConstraint baseColumnNames="payload_type"
-														 baseTableName="validation_errors"
-														 constraintName="fk_validation_errors_payload"
-														 referencedColumnNames="payload_type"
-														 referencedTableName="payload_types"/>
+								 baseTableName="validation_errors"
+								 constraintName="fk_validation_errors_payload"
+								 referencedColumnNames="payload_type"
+								 referencedTableName="payload_types"/>
 
 		<!--
 		****************************************************************
@@ -253,16 +279,16 @@
 		</createTable>
 
 		<addForeignKeyConstraint baseColumnNames="record_id"
-														 baseTableName="record_validation_errors"
-														 constraintName="fk_record_validation_errors_records"
-														 referencedColumnNames="id"
-														 referencedTableName="records"/>
+								 baseTableName="record_validation_errors"
+								 constraintName="fk_record_validation_errors_records"
+								 referencedColumnNames="id"
+								 referencedTableName="records"/>
 
 		<addForeignKeyConstraint baseColumnNames="payload_type, error"
-														 baseTableName="record_validation_errors"
-														 constraintName="fk_record_validation_errors_payload"
-														 referencedColumnNames="payload_type, error"
-														 referencedTableName="validation_errors"/>
+								 baseTableName="record_validation_errors"
+								 constraintName="fk_record_validation_errors_payload"
+								 referencedColumnNames="payload_type, error"
+								 referencedTableName="validation_errors"/>
 
 		<!--
 		****************************************************************

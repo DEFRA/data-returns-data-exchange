@@ -7,6 +7,7 @@ import uk.gov.ea.datareturns.domain.jpa.dao.userdata.impl.ValidationErrorDao;
 import uk.gov.ea.datareturns.domain.jpa.entities.userdata.impl.PayloadType;
 import uk.gov.ea.datareturns.domain.jpa.entities.userdata.impl.ValidationError;
 import uk.gov.ea.datareturns.domain.jpa.entities.userdata.impl.ValidationErrorId;
+import uk.gov.ea.datareturns.domain.validation.datasample.DataSampleValidationObject;
 
 import javax.inject.Inject;
 import javax.validation.ConstraintViolation;
@@ -45,7 +46,7 @@ public class ValidatorImpl implements Validator<AbstractValidationObject> {
         for (final ConstraintViolation<AbstractValidationObject> violation : violations) {
             ValidationErrorId id = new ValidationErrorId();
             id.setError(violation.getMessageTemplate());
-            PayloadType payloadType = payloadTypeDao.get("fffff");//TODO
+            PayloadType payloadType = payloadTypeDao.get((validationObject).payload.getPayloadType());//TODO
             id.setPayloadType(payloadType);
             ValidationError error = validationErrorDao.get(id);
             if (error == null) {
