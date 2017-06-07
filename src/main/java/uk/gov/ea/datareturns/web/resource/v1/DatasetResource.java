@@ -13,6 +13,7 @@ import uk.gov.ea.datareturns.domain.jpa.entities.userdata.impl.User;
 import uk.gov.ea.datareturns.domain.jpa.entities.userdata.impl.ValidationError;
 import uk.gov.ea.datareturns.domain.jpa.service.DatasetService;
 import uk.gov.ea.datareturns.domain.jpa.service.SubmissionService;
+import uk.gov.ea.datareturns.util.StopWatch;
 import uk.gov.ea.datareturns.web.resource.v1.model.common.Linker;
 import uk.gov.ea.datareturns.web.resource.v1.model.common.Preconditions;
 import uk.gov.ea.datareturns.web.resource.v1.model.common.references.EntityReference;
@@ -69,6 +70,7 @@ public class DatasetResource {
 
     @Inject
     RecordAdaptor recordAdaptor;
+
     /**
      * List the available datasets
      *
@@ -361,27 +363,23 @@ public class DatasetResource {
             @ApiParam("The requested status.") final DatasetSubmissionStatus requestedStatus)
             throws Exception {
         return onDataset(datasetId, datasetEntity -> {
-            // Submit the data - only valid records may be submitted
-            submissionService.submit(submissionService.getRecords(datasetEntity));
-
-            // Build the status
-            DatasetStatus datasetStatus = buildDatasetStatus(datasetEntity);
-
             // Check state transition
-            DatasetSubmissionStatus.Status submissionStatus = datasetStatus.getSubmission().getStatus();
-            if (!submissionStatus.canTransition(requestedStatus.getStatus())) {
+            DatasetSubmissionStatus submissionStatus = getSubmissionStatus(datasetEntity);
+            if (!submissionStatus.getStatus().canTransition(requestedStatus.getStatus())) {
                 return ErrorResponse.SUBMISSION_INVALID_STATE_CHANGE.toResponseBuilder();
             }
             if (datasetEntity.getOriginatorEmail() == null) {
                 return ErrorResponse.UNSUBMITTABLE_BAD_ORIGINATOR.toResponseBuilder();
             }
-            if (!datasetStatus.getValidity().isValid()) {
+            if (!submissionService.getInvalidRecords(datasetEntity).isEmpty()) {
                 return ErrorResponse.UNSUBMITTABLE_VALIDATION_ERRORS.toResponseBuilder();
             }
 
-            return new DatasetStatusResponse(datasetStatus).toResponseBuilder();
-        }).build();
+            // Submit the data - only valid records may be submitted
+            submissionService.submit(submissionService.getRecords(datasetEntity));
 
+            return new DatasetStatusResponse(buildDatasetStatus(datasetEntity)).toResponseBuilder();
+        }).build();
     }
 
     /**
@@ -413,24 +411,18 @@ public class DatasetResource {
     }
 
     private DatasetStatus buildDatasetStatus(final DatasetEntity datasetEntity) {
-        Linker linker = Linker.info(uriInfo);
         DatasetStatus datasetStatus = new DatasetStatus();
+        datasetStatus.setSubmission(getSubmissionStatus(datasetEntity));
+        datasetStatus.setSubstitutions(getSubstitutions(datasetEntity));
+        datasetStatus.setValidity(getValidity(datasetEntity));
+        return datasetStatus;
+    }
 
-        // Get the list of records
+    private DatasetSubstitutions getSubstitutions(final DatasetEntity datasetEntity) {
+        StopWatch sw = new StopWatch("substitutions");
+        sw.startTask("Retrieving substitutions");
+
         List<RecordEntity> recordEntities = submissionService.getRecords(datasetEntity);
-
-        // Evaluate submission status
-        DatasetSubmissionStatus submissionStatus = new DatasetSubmissionStatus();
-        submissionStatus.setStatus(DatasetSubmissionStatus.Status.UNSUBMITTED);
-
-        // If we have records on the dataset and they are all submitted the dataset status is SUBMITTED
-        // We cannot SUBMIT an empty dataset
-        if (recordEntities.size() != 0 && recordEntities.size() == recordEntities.stream().filter(r -> r.getRecordStatus() == RecordEntity.RecordStatus.SUBMITTED).count()) {
-            submissionStatus.setStatus(DatasetSubmissionStatus.Status.SUBMITTED);
-        }
-        datasetStatus.setSubmission(submissionStatus);
-
-        // Evaluate substitutions
         DatasetSubstitutions substitutions = new DatasetSubstitutions();
         recordEntities = submissionService.evaluateSubstitutes(recordEntities);
         for (RecordEntity recordEntity : recordEntities) {
@@ -444,22 +436,56 @@ public class DatasetResource {
                 }
             }
         }
-        datasetStatus.setSubstitutions(substitutions);
 
-        // Process the validations
+        sw.stopTask();
+        LOGGER.info(sw.prettyPrint());
+
+        return substitutions;
+    }
+
+    private DatasetSubmissionStatus getSubmissionStatus(final DatasetEntity datasetEntity) {
+        StopWatch sw = new StopWatch("submissionStatus");
+        sw.startTask("Determining submission state");
+
+        // TODO: Service layer should not implement submission status on the record.  A dataset is either submitted or it isn't, modelling
+        // the status on the record adds complexity, reduces performance and introduces potential for error.
+        List<RecordEntity> recordEntities = submissionService.getRecords(datasetEntity);
+        DatasetSubmissionStatus submissionStatus = new DatasetSubmissionStatus();
+        submissionStatus.setStatus(DatasetSubmissionStatus.Status.UNSUBMITTED);
+        if (recordEntities.size() != 0 && recordEntities.size() == recordEntities.stream()
+                .filter(r -> r.getRecordStatus() == RecordEntity.RecordStatus.SUBMITTED).count()) {
+            submissionStatus.setStatus(DatasetSubmissionStatus.Status.SUBMITTED);
+        }
+
+        sw.stopTask();
+        LOGGER.info(sw.prettyPrint());
+
+        return submissionStatus;
+    }
+
+    private DatasetValidity getValidity(final DatasetEntity datasetEntity) {
+        StopWatch sw = new StopWatch("validationStatus");
+        sw.startTask("Retrieving validation information");
+
+        Linker linker = Linker.info(uriInfo);
+        // TODO: Service layer should not implement submission status on the record.  A dataset is either submitted or it isn't, modelling
+        // the status on the record adds complexity, reduces performance and introduces potential for error.
         DatasetValidity validity = new DatasetValidity();
-        for(RecordEntity recordEntity : submissionService.getInvalidRecords(datasetEntity)) {
+        for (RecordEntity recordEntity : submissionService.getInvalidRecords(datasetEntity)) {
             Record record = recordAdaptor.convert(recordEntity);
             for (ValidationError validationError : recordEntity.getValidationErrors()) {
-                EntityReference validationRef = new EntityReference(validationError.getId().getError(), linker.constraint(Payload.NAMES.get(record.getPayload().getClass()), validationError.getId().getError()));
-                EntityReference recordRef = new EntityReference(recordEntity.getIdentifier(), linker.record(datasetEntity.getIdentifier(), recordEntity.getIdentifier()));
+                EntityReference validationRef = new EntityReference(validationError.getError(),
+                        linker.constraint(Payload.NAMES.get(record.getPayload().getClass()), validationError.getError()));
+                EntityReference recordRef = new EntityReference(recordEntity.getIdentifier(),
+                        linker.record(datasetEntity.getIdentifier(), recordEntity.getIdentifier()));
                 validity.addViolation(validationRef, recordRef);
             }
         }
 
-        datasetStatus.setValidity(validity);
+        sw.stopTask();
+        LOGGER.info(sw.prettyPrint());
 
-        return datasetStatus;
+        return validity;
     }
 
     private Dataset fromEntity(DatasetEntity entity) {
