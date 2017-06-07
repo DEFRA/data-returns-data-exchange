@@ -86,11 +86,9 @@ public class DatasetResource {
             @ApiResponse(code = 200, message = "OK", response = EntityListResponse.class)
     })
     public Response listDatasets(@BeanParam Preconditions preconditions) throws Exception {
-
         // TODO - the datasets are hardcoded from the system user - we will need to extract the user from the headers etc.
         // TODO - This could do with some optimization and rationalization.
         User user = datasetService.getSystemUser();
-
         List<DatasetEntity> datasets = datasetService.getDatasets(user);
 
         List<EntityReference> entityReferences = onDatasetList(datasets, (datasetEntity) -> new EntityReference(datasetEntity.getIdentifier(),
@@ -98,9 +96,8 @@ public class DatasetResource {
 
         return onPreconditionsPass(user, datasets, preconditions,
                 () -> new EntityListResponse(entityReferences).toResponseBuilder()
-                    .tag((Preconditions.createEtag(datasets))).lastModified(Date.from(user.getDatasetChangedDate()))
-        ).build();
-
+                    .tag((Preconditions.createEtag(datasets)))
+                        .lastModified(Date.from(user.getDatasetChangedDate()))).build();
     }
 
     /**
