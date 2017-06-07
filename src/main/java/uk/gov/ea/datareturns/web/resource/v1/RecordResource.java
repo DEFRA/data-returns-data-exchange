@@ -409,7 +409,7 @@ public class RecordResource {
                 onRecord(datasetEntity, recordId, (recordEntity) ->
                         onPreconditionsPass(datasetId, recordEntity, preconditions, () -> {
                             // Preconditions passed, delete the record
-                            submissionService.removeRecord(recordEntity);
+                            submissionService.removeRecord(datasetEntity, recordEntity.getIdentifier());
                             return Response.status(Response.Status.NO_CONTENT);
                         })
                 )

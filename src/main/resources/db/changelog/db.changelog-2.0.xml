@@ -29,6 +29,11 @@
 			<column name="last_changed_date" type="timestamp without timezone">
 				<constraints nullable="false"/>
 			</column>
+
+			<column name="dataset_changed_date" type="timestamp without timezone">
+				<constraints nullable="true"/>
+			</column>
+
 		</createTable>
 
 		<createIndex indexName="idx_user_identifier" tableName="users" unique="true">
@@ -66,6 +71,10 @@
 
 			<column name="last_changed_date" type="timestamp without timezone">
 				<constraints nullable="false"/>
+			</column>
+
+			<column name="record_changed_date" type="timestamp without timezone">
+				<constraints nullable="true"/>
 			</column>
 
 		</createTable>

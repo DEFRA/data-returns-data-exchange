@@ -39,6 +39,9 @@ public class DatasetEntity implements Metadata {
     @Basic @Column(name = "last_changed_date", nullable = false)
     private Instant lastChangedDate;
 
+    @Basic @Column(name = "record_changed_date", nullable = false)
+    private Instant recordChangedDate;
+
     public Long getId() {
         return id;
     }
@@ -95,9 +98,17 @@ public class DatasetEntity implements Metadata {
         this.lastChangedDate = lastChangedDate;
     }
 
+    public Instant getRecordChangedDate() {
+        return recordChangedDate;
+    }
+
+    public void setRecordChangedDate(Instant recordChangedDate) {
+        this.recordChangedDate = recordChangedDate;
+    }
+
     /*
-         * The dataset identifier is unique for a given user
-         */
+     * The dataset identifier is unique for a given user
+     */
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -106,7 +117,6 @@ public class DatasetEntity implements Metadata {
         DatasetEntity dataset = (DatasetEntity) o;
 
         return identifier.equals(dataset.identifier) && user.equals(dataset.user);
-
     }
 
     @Override

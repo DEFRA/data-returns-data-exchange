@@ -10,9 +10,11 @@ import uk.gov.ea.datareturns.App;
 import uk.gov.ea.datareturns.domain.jpa.entities.userdata.impl.DatasetEntity;
 import uk.gov.ea.datareturns.domain.jpa.entities.userdata.impl.User;
 import uk.gov.ea.datareturns.domain.jpa.service.DatasetService;
+import uk.gov.ea.datareturns.web.resource.v1.model.dataset.Dataset;
 
 import javax.inject.Inject;
 import java.io.IOException;
+import java.time.Instant;
 import java.util.List;
 
 /**
@@ -26,6 +28,7 @@ public class APIIntegrationTests_Dataset {
     @Inject private DatasetService datasetService;
 
     private static final String USER_NAME = "Graham Willis";
+    private static final String USER_NAME2 = "Graham Willis2";
     private static final String ORIGINATOR_EMAIL = "graham.willis@email.com";
     private static final String DATASET_ID = "DatasetEntity name";
 
@@ -37,6 +40,10 @@ public class APIIntegrationTests_Dataset {
 
         if (datasetService.getUser(USER_NAME) != null) {
             datasetService.removeUser(USER_NAME);
+        }
+
+        if (datasetService.getUser(USER_NAME2) != null) {
+            datasetService.removeUser(USER_NAME2);
         }
 
         user = datasetService.createUser(USER_NAME);
@@ -96,4 +103,40 @@ public class APIIntegrationTests_Dataset {
         datasets = datasetService.getDatasets(user);
         Assert.assertEquals(1, datasets.size());
     }
+
+    @Test
+    public void testThatDatasetAdditionDeletionAndModificationUpdateTheUserDatasetChangeDate() {
+        // Create new user
+        User user = datasetService.createUser(USER_NAME2);
+
+        //  Create new dataset
+        DatasetEntity dataset = new DatasetEntity();
+        dataset.setUser(user);
+        dataset.setIdentifier(DATASET_ID);
+        datasetService.createDataset(dataset);
+
+        // Test the dataset creation date is set on the user
+        user = datasetService.getUser(user.getIdentifier());
+        Instant createDate = user.getDatasetChangedDate();
+        Assert.assertNotNull(createDate);
+
+        // Modify the dataset
+        dataset.setOriginatorEmail("Some email");
+        datasetService.updateDataset(dataset);
+
+        // Test that the dataset modification date has been set
+        user = datasetService.getUser(user.getIdentifier());
+        Instant changeDate = user.getDatasetChangedDate();
+        Assert.assertNotNull(changeDate);
+        Assert.assertNotEquals(changeDate, createDate);
+
+        // Remove the dataset
+        datasetService.removeDataset(DATASET_ID, user);
+        user = datasetService.getUser(user.getIdentifier());
+        Instant deleteDate = user.getDatasetChangedDate();
+        Assert.assertNotNull(deleteDate);
+        Assert.assertNotEquals(changeDate, deleteDate);
+    }
+
+
 }

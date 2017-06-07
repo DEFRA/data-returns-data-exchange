@@ -9,6 +9,7 @@ import org.springframework.stereotype.Component;
 import uk.gov.ea.datareturns.domain.jpa.entities.userdata.AbstractPayloadEntity;
 import uk.gov.ea.datareturns.domain.jpa.entities.userdata.impl.DatasetEntity;
 import uk.gov.ea.datareturns.domain.jpa.entities.userdata.impl.RecordEntity;
+import uk.gov.ea.datareturns.domain.jpa.entities.userdata.impl.User;
 import uk.gov.ea.datareturns.domain.jpa.entities.userdata.impl.ValidationError;
 import uk.gov.ea.datareturns.domain.jpa.service.DatasetService;
 import uk.gov.ea.datareturns.domain.jpa.service.SubmissionService;
@@ -84,12 +85,22 @@ public class DatasetResource {
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "OK", response = EntityListResponse.class)
     })
-    public Response listDatasets() throws Exception {
-        return new EntityListResponse(
-                datasetService.getDatasets().stream()
-                        .map((entity -> new EntityReference(entity.getIdentifier(), Linker.info(uriInfo).dataset(entity.getIdentifier()))))
-                        .collect(Collectors.toList())
-        ).toResponseBuilder().build();
+    public Response listDatasets(@BeanParam Preconditions preconditions) throws Exception {
+
+        // TODO - the datasets are hardcoded from the system user - we will need to extract the user from the headers etc.
+        // TODO - This could do with some optimization and rationalization.
+        User user = datasetService.getSystemUser();
+
+        List<DatasetEntity> datasets = datasetService.getDatasets(user);
+
+        List<EntityReference> entityReferences = onDatasetList(datasets, (datasetEntity) -> new EntityReference(datasetEntity.getIdentifier(),
+                Linker.info(uriInfo).dataset(datasetEntity.getIdentifier())));
+
+        return onPreconditionsPass(user, datasets, preconditions,
+                () -> new EntityListResponse(entityReferences).toResponseBuilder()
+                    .tag((Preconditions.createEtag(datasets))).lastModified(Date.from(user.getDatasetChangedDate()))
+        ).build();
+
     }
 
     /**
@@ -482,4 +493,29 @@ public class DatasetResource {
         }
         return rb;
     }
+
+    // Precondition evaluator for the entity list held at user level
+    private Response.ResponseBuilder onPreconditionsPass(final User user, List<DatasetEntity> datasets,
+        Preconditions preconditions, Supplier<Response.ResponseBuilder> handler) {
+
+        Response.ResponseBuilder rb = null;
+        if (preconditions != null) {
+            if (user == null || datasets == null) {
+                rb = preconditions.evaluatePreconditions();
+            } else {
+                Date lastModified = Date.from(user.getDatasetChangedDate());
+                rb = preconditions.evaluatePreconditions(lastModified, Preconditions.createEtag(datasets));
+            }
+        }
+        if (rb == null) {
+            rb = handler.get();
+        }
+        return rb;
+    }
+
+    // The set of entity references from the set of dataset entities
+    private List<EntityReference> onDatasetList(List<DatasetEntity> datasetEntities, Function<DatasetEntity, EntityReference> handler) {
+        return datasetEntities.stream().map(e -> handler.apply(e)).collect(Collectors.toList());
+    }
+
 }

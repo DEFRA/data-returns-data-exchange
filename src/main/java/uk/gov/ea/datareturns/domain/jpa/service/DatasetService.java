@@ -93,12 +93,22 @@ public class DatasetService {
         if (newDatasetEntity.getUser() == null) {
             newDatasetEntity.setUser(getSystemUser());
         }
+
+        User user = userDao.get(newDatasetEntity.getUser().getIdentifier());
+        user.setDatasetChangedDate(timestamp);
+
+        userDao.merge(user);
         datasetDao.persist(newDatasetEntity);
     }
 
     @Transactional
     public void updateDataset(DatasetEntity datasetEntity) {
+        Instant timestamp = Instant.now();
         datasetEntity.setLastChangedDate(Instant.now());
+        User user = userDao.get(datasetEntity.getUser().getIdentifier());
+        user.setDatasetChangedDate(timestamp);
+
+        userDao.merge(user);
         datasetDao.merge(datasetEntity);
     }
 
@@ -114,11 +124,15 @@ public class DatasetService {
 
     @Transactional
     public void removeDataset(String identifier) {
-        datasetDao.remove(getSystemUser(), identifier);
+        removeDataset(identifier, getSystemUser());
     }
 
     @Transactional
     public void removeDataset(String identifier, User user) {
+        Instant timestamp = Instant.now();
+        User usrAtt = userDao.get(user.getIdentifier());
+        usrAtt.setDatasetChangedDate(timestamp);
+        userDao.merge(usrAtt);
         datasetDao.remove(user, identifier);
     }
 
@@ -131,6 +145,4 @@ public class DatasetService {
     public DatasetEntity getDataset(String datasetId, User user) {
         return datasetDao.get(user, datasetId);
     }
-
-
 }

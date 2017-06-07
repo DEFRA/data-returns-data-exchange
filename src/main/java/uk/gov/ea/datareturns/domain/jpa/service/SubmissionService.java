@@ -7,6 +7,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.transaction.annotation.Transactional;
 import uk.gov.ea.datareturns.domain.jpa.dao.userdata.factories.AbstractPayloadEntityFactory;
+import uk.gov.ea.datareturns.domain.jpa.dao.userdata.impl.DatasetDao;
 import uk.gov.ea.datareturns.domain.jpa.dao.userdata.impl.PayloadEntityDao;
 import uk.gov.ea.datareturns.domain.jpa.dao.userdata.impl.RecordDao;
 import uk.gov.ea.datareturns.domain.jpa.entities.userdata.AbstractPayloadEntity;
@@ -53,14 +54,17 @@ public class SubmissionService {
     private final PayloadEntityDao payloadEntityDao;
     private final Validator<AbstractValidationObject> validator;
     private final static ObjectMapper mapper = new ObjectMapper();
+    private final DatasetDao datasetDao;
 
     public SubmissionService(ValidationObjectFactory validationObjectFactory,
+                             DatasetDao datasetDao,
                              RecordDao recordDao,
                              PayloadEntityDao payloadEntityDao,
                              Validator<AbstractValidationObject> validator) {
 
 
         this.validationObjectFactory = validationObjectFactory;
+        this.datasetDao = datasetDao;
         this.recordDao = recordDao;
         this.validator = validator;
         this.payloadEntityDao = payloadEntityDao;
@@ -168,6 +172,8 @@ public class SubmissionService {
      */
     @Transactional
     public void removeRecord(DatasetEntity dataset, String identifier) {
+        dataset.setRecordChangedDate(Instant.now());
+        datasetDao.merge(dataset);
         recordDao.remove(dataset, identifier);
     }
 
@@ -175,10 +181,12 @@ public class SubmissionService {
      * Remove a given record
      * @param recordEntity
      */
-    @Transactional
-    public void removeRecord(RecordEntity recordEntity) {
-        recordDao.remove(recordEntity);
-    }
+    //@Transactional
+   // public void removeRecord(RecordEntity recordEntity) {
+   //     dataset.setRecordChangedDate(Instant.now());
+    //    datasetDao.merge(dataset);
+    //    recordDao.remove(recordEntity);
+    //}
 
     /**
      * Test if a record exists in a given dataset by its identifier
@@ -375,6 +383,8 @@ public class SubmissionService {
      * @return
      */
     private <D extends Payload> RecordEntity createOrResetRecord(DatasetEntity dataset, String identifier, D payload) {
+        Instant timestamp = Instant.now();
+
         RecordEntity recordEntity = getOrCreateRecord(dataset, identifier);
         RecordEntity.RecordStatus newRecordStatus = recordEntity.getRecordStatus();
 
@@ -396,6 +406,9 @@ public class SubmissionService {
             recordEntity.setJson(null);
         }
 
+        dataset.setRecordChangedDate(timestamp);
+        datasetDao.merge(dataset);
+
         // If its a new recordEntity persist it or otherwise merge
         if (newRecordStatus == RecordEntity.RecordStatus.CREATED) {
             return recordDao.persist(recordEntity);
@@ -404,6 +417,7 @@ public class SubmissionService {
             recordDao.merge(recordEntity);
             return recordEntity;
         }
+
     }
 
     /**

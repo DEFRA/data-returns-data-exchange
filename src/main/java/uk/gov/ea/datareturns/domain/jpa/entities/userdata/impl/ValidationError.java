@@ -1,6 +1,7 @@
 package uk.gov.ea.datareturns.domain.jpa.entities.userdata.impl;
 
 import javax.persistence.*;
+import java.time.Instant;
 import java.util.Set;
 
 /**
@@ -29,6 +30,12 @@ public class ValidationError {
     )
     private Set<FieldEntity> fields;
 
+    @Basic @Column(name = "create_date", nullable = false)
+    private Instant createDate;
+
+    @Basic @Column(name = "last_changed_date", nullable = false)
+    private Instant lastChangedDate;
+
     public ValidationErrorId getId() {
         return id;
     }
@@ -51,6 +58,22 @@ public class ValidationError {
 
     public void setFields(Set<FieldEntity> fields) {
         this.fields = fields;
+    }
+
+    public Instant getCreateDate() {
+        return createDate;
+    }
+
+    public void setCreateDate(Instant createDate) {
+        this.createDate = createDate;
+    }
+
+    public Instant getLastChangedDate() {
+        return lastChangedDate;
+    }
+
+    public void setLastChangedDate(Instant lastChangedDate) {
+        this.lastChangedDate = lastChangedDate;
     }
 
     @Override

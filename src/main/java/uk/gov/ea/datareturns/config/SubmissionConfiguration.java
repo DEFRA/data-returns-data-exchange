@@ -132,6 +132,6 @@ public class SubmissionConfiguration {
 
     @Bean
     public SubmissionService submissionsService() {
-        return new SubmissionService(validationObjectFactory(), recordDao, payloadEntityDao(), validationObjectValidator());
+        return new SubmissionService(validationObjectFactory(), datasetDao, recordDao, payloadEntityDao(), validationObjectValidator());
     }
 }

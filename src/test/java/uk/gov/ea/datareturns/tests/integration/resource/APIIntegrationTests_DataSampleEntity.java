@@ -23,6 +23,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -43,6 +44,7 @@ public class APIIntegrationTests_DataSampleEntity {
     private final static String SUBMISSION_SUCCESS = "json/landfill-success.json";
     private final static String SUBMISSION_FAILURE = "json/landfill-failure.json";
     private final static String SUBSTITUTIONS = "json/landfill-substitutions.json";
+    private static final String DATASET_ID = "DatasetEntity name";
 
     private static final String USER_NAME = "Graham Willis";
     private static final String ORIGINATOR_EMAIL = "graham.willis@email.com";
@@ -61,6 +63,7 @@ public class APIIntegrationTests_DataSampleEntity {
         user = datasetService.createUser(USER_NAME);
 
         dataset = new DatasetEntity();
+        dataset.setIdentifier(DATASET_ID);
         dataset.setOriginatorEmail(ORIGINATOR_EMAIL);
         dataset.setUser(user);
         datasetService.createDataset(dataset);
@@ -83,6 +86,49 @@ public class APIIntegrationTests_DataSampleEntity {
             Assert.assertFalse(submissionService.recordExists(dataset, id));
         }
     }
+
+    @Test
+    public void testThatRecordAdditionDeletionAndModificationUpdateTheDatasetChangeDate() {
+        List<SubmissionService.PayloadIdentifier<DataSamplePayload>> list = new ArrayList<>();
+        for (String id : RECORDS) {
+            list.add(new SubmissionService.PayloadIdentifier<>(id));
+        }
+        List<RecordEntity> recordEntities = submissionService.createRecords(dataset, list);
+        DatasetEntity datasetEntity = datasetService.getDataset(DATASET_ID, user);
+        Instant datasetEntityRecordCreateDate = datasetEntity.getRecordChangedDate();
+        Assert.assertNotNull(datasetEntityRecordCreateDate);
+
+        // Modify a record and therefore update the dataset changed date
+        list = new ArrayList<>();
+        for (int i = 0; i < Math.min(RECORDS.length, samples.size()); i++) {
+            list.add(new SubmissionService.PayloadIdentifier(RECORDS[i], samples.get(i)));
+        }
+        submissionService.createRecords(dataset, list);
+
+        datasetEntity = datasetService.getDataset(DATASET_ID, user);
+        Instant datasetEntityRecordChangeDate = datasetEntity.getRecordChangedDate();
+        Assert.assertNotNull(datasetEntityRecordChangeDate);
+        Assert.assertNotEquals(datasetEntityRecordChangeDate, datasetEntityRecordCreateDate);
+
+        // Validate the records - this should NOT set the dataset change date
+        submissionService.validate(recordEntities);
+        datasetEntity = datasetService.getDataset(DATASET_ID, user);
+        Instant datasetEntityRecordValidateDate = datasetEntity.getRecordChangedDate();
+        Assert.assertEquals(datasetEntityRecordValidateDate, datasetEntityRecordChangeDate);
+
+        // Submit the records - this should NOT set the dataset change date
+        submissionService.submit(recordEntities);
+        datasetEntity = datasetService.getDataset(DATASET_ID, user);
+        Instant datasetEntityRecordSubmitDate = datasetEntity.getRecordChangedDate();
+        Assert.assertEquals(datasetEntityRecordSubmitDate, datasetEntityRecordChangeDate);
+
+        // Delete a record and check that the dataset modification date has changed.
+        submissionService.removeRecord(datasetEntity, RECORDS[1]);
+        datasetEntity = datasetService.getDataset(DATASET_ID, user);
+        Instant datasetEntityRecordDeleteDate = datasetEntity.getRecordChangedDate();
+        Assert.assertNotEquals(datasetEntityRecordSubmitDate, datasetEntityRecordDeleteDate);
+    }
+
 
     // Create a set of new records with no associated data sample
     // and with a user identifier. The records
