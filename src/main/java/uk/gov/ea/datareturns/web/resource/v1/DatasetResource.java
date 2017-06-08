@@ -474,8 +474,8 @@ public class DatasetResource {
         for (RecordEntity recordEntity : submissionService.getInvalidRecords(datasetEntity)) {
             Record record = recordAdaptor.convert(recordEntity);
             for (ValidationError validationError : recordEntity.getValidationErrors()) {
-                EntityReference validationRef = new EntityReference(validationError.getError(),
-                        linker.constraint(Payload.NAMES.get(record.getPayload().getClass()), validationError.getError()));
+                EntityReference validationRef = new EntityReference(validationError.getId().getError(),
+                        linker.constraint(Payload.NAMES.get(record.getPayload().getClass()), validationError.getId().getError()));
                 EntityReference recordRef = new EntityReference(recordEntity.getIdentifier(),
                         linker.record(datasetEntity.getIdentifier(), recordEntity.getIdentifier()));
                 validity.addViolation(validationRef, recordRef);
