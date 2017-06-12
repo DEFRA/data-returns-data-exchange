@@ -57,11 +57,10 @@ public class SubmissionService {
     private final DatasetDao datasetDao;
 
     public SubmissionService(ValidationObjectFactory validationObjectFactory,
-                             DatasetDao datasetDao,
-                             RecordDao recordDao,
-                             PayloadEntityDao payloadEntityDao,
-                             Validator<AbstractValidationObject> validator) {
-
+            DatasetDao datasetDao,
+            RecordDao recordDao,
+            PayloadEntityDao payloadEntityDao,
+            Validator<AbstractValidationObject> validator) {
 
         this.validationObjectFactory = validationObjectFactory;
         this.datasetDao = datasetDao;
@@ -73,37 +72,6 @@ public class SubmissionService {
         mapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
         mapper.enable(DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY);
         mapper.enableDefaultTyping();
-    }
-
-    /****************************************************************************************
-     * RecordEntity and submission centric operations
-     *
-     * Bulk record and submission centric operations require a the use of nested class to
-     * couple given identifiers and payload either of which either may be given as null
-     ****************************************************************************************/
-    public static class PayloadIdentifier<D extends Payload> {
-        final String identifier;
-        final D datum;
-
-        public PayloadIdentifier(String identifier, D datum) {
-            this.identifier = identifier;
-            this.datum = datum;
-        }
-
-        public PayloadIdentifier(D datum) {
-            this.identifier = UUID.randomUUID().toString();
-            this.datum = datum;
-        }
-
-        public PayloadIdentifier(String identifier) {
-            this.identifier = identifier;
-            this.datum = null;
-        }
-
-        public PayloadIdentifier() {
-            this.identifier = UUID.randomUUID().toString();
-            this.datum = null;
-        }
     }
 
     /**
@@ -140,6 +108,18 @@ public class SubmissionService {
     @Transactional(readOnly = true)
     public List<RecordEntity> getRecords(DatasetEntity dataset) {
         return recordDao.list(dataset, RecordDao.FetchType.FETCH_BASE);
+    }
+
+    /**
+     * Retrieve records for the given dataset and identifiers
+     *
+     * @param dataset A dataset
+     * @param identifiers a collection of record identifiers to retrieve
+     * @return A {@link Map} of records identifiers to their {@link RecordEntity}
+     */
+    @Transactional(readOnly = true)
+    public Map<String, RecordEntity> getRecords(DatasetEntity dataset, Collection<String> identifiers) {
+        return recordDao.get(dataset, identifiers);
     }
 
     /**
@@ -182,8 +162,8 @@ public class SubmissionService {
      * @param recordEntity
      */
     //@Transactional
-   // public void removeRecord(RecordEntity recordEntity) {
-   //     dataset.setRecordChangedDate(Instant.now());
+    // public void removeRecord(RecordEntity recordEntity) {
+    //     dataset.setRecordChangedDate(Instant.now());
     //    datasetDao.merge(dataset);
     //    recordDao.remove(recordEntity);
     //}
@@ -204,15 +184,29 @@ public class SubmissionService {
      * The record status will be set to CREATED if no datum
      * is specified or PARSED if a datum is specified
      *
-     * @param dataset
-     * @param datumIdentifierPairs
-     * @return A list of records
+     * @param dataset the target dataset
+     * @param payloadMap a map of identifiers to the payload for that identifier
+     * @return a map of updated records
      */
     @Transactional
-    public <D extends Payload> List<RecordEntity> createRecords(DatasetEntity dataset, List<PayloadIdentifier<D>> datumIdentifierPairs) {
-        return datumIdentifierPairs.stream()
-                .map(p -> createOrResetRecord(dataset, p.identifier, p.datum))
-                .collect(Collectors.toList());
+    public <D extends Payload> Map<String, RecordEntity> createRecords(DatasetEntity dataset, Map<String, D> payloadMap) {
+        Map<String, RecordEntity> existingRecords = getRecords(dataset, payloadMap.keySet());
+
+        Map<String, RecordEntity> updatedRecords = new HashMap<>();
+        payloadMap.forEach((identifier, payload) -> {
+            RecordEntity recordEntity = existingRecords.get(identifier);
+            if (recordEntity == null) {
+                recordEntity = createRecord(dataset, identifier);
+            }
+            updatedRecords.put(identifier, updateRecord(recordEntity, payload));
+        });
+        // Update the dataset's record collection timestamp
+        dataset.setRecordChangedDate(Instant.now());
+        datasetDao.merge(dataset);
+
+        validate(updatedRecords.values());
+
+        return updatedRecords;
     }
 
     /**
@@ -220,13 +214,16 @@ public class SubmissionService {
      * The record status will be set to CREATED if no datum
      * is specified or PARSED if a datum is specified
      *
-     * @param dataset
-     * @param payloadIdentifier
-     * @return A list of records
+     * @param dataset the dataset to operate on
+     * @param identifier the identifier for the new record
+     * @param payload the payload to associate with the record
+     * @return the resultant {@link RecordEntity}
      */
     @Transactional
-    public <D extends Payload> RecordEntity createRecord(DatasetEntity dataset, PayloadIdentifier<D> payloadIdentifier) {
-        return createOrResetRecord(dataset, payloadIdentifier.identifier, payloadIdentifier.datum);
+    public <D extends Payload> RecordEntity createRecord(DatasetEntity dataset, String identifier, D payload) {
+        RecordEntity recordEntity = createOrResetRecord(dataset, identifier, payload);
+        validate(recordEntity);
+        return recordEntity;
     }
 
     /**
@@ -304,8 +301,6 @@ public class SubmissionService {
                         m.getKey().setValidationErrors(validationErrors);
                         m.getKey().setRecordStatus(RecordEntity.RecordStatus.INVALID);
                     }
-
-                    m.getKey().setLastChangedDate(Instant.now());
                     recordDao.merge(m.getKey());
                 });
     }
@@ -320,7 +315,7 @@ public class SubmissionService {
      * @param recordEntities
      */
     @Transactional
-    public void submit(List<RecordEntity> recordEntities) {
+    public void submit(Collection<RecordEntity> recordEntities) {
         recordEntities.stream()
                 .filter(r -> r.getRecordStatus() == RecordEntity.RecordStatus.VALID)
                 .forEach(r -> {
@@ -351,9 +346,10 @@ public class SubmissionService {
      * @param recordEntities
      */
     @Transactional
-    public List<RecordEntity> evaluateSubstitutes(List<RecordEntity> recordEntities) {
+    public List<RecordEntity> evaluateSubstitutes(Collection<RecordEntity> recordEntities) {
         return recordEntities.stream()
-                .filter(r -> r.getRecordStatus() == RecordEntity.RecordStatus.VALID ||  r.getRecordStatus() == RecordEntity.RecordStatus.SUBMITTED)
+                .filter(r -> r.getRecordStatus() == RecordEntity.RecordStatus.VALID
+                        || r.getRecordStatus() == RecordEntity.RecordStatus.SUBMITTED)
                 .map(r -> {
                     try {
                         Payload payload = mapper.readValue(r.getJson(), Payload.class);
@@ -392,6 +388,17 @@ public class SubmissionService {
             return recordEntity;
         }
 
+        recordEntity = updateRecord(recordEntity, payload);
+
+        dataset.setRecordChangedDate(timestamp);
+        datasetDao.merge(dataset);
+
+        return recordEntity;
+    }
+
+    private <D extends Payload> RecordEntity updateRecord(RecordEntity recordEntity, D payload) {
+        RecordEntity.RecordStatus newRecordStatus = recordEntity.getRecordStatus();
+
         // If we have a data transfer object, associated
         if (payload != null) {
             try {
@@ -406,9 +413,6 @@ public class SubmissionService {
             recordEntity.setJson(null);
         }
 
-        dataset.setRecordChangedDate(timestamp);
-        datasetDao.merge(dataset);
-
         // If its a new recordEntity persist it or otherwise merge
         if (newRecordStatus == RecordEntity.RecordStatus.CREATED) {
             return recordDao.persist(recordEntity);
@@ -417,7 +421,6 @@ public class SubmissionService {
             recordDao.merge(recordEntity);
             return recordEntity;
         }
-
     }
 
     /**
@@ -452,15 +455,20 @@ public class SubmissionService {
     private RecordEntity getOrCreateRecord(DatasetEntity dataset, String identifier) {
         RecordEntity recordEntity = recordDao.get(dataset, identifier);
         if (recordEntity == null) {
-            recordEntity = new RecordEntity();
-            recordEntity.setDataset(dataset);
-            recordEntity.setIdentifier(identifier);
-            recordEntity.setRecordStatus(RecordEntity.RecordStatus.CREATED);
-
-            Instant timestamp = Instant.now();
-            recordEntity.setCreateDate(timestamp);
-            recordEntity.setLastChangedDate(timestamp);
+            recordEntity = createRecord(dataset, identifier);
         }
+        return recordEntity;
+    }
+
+    private RecordEntity createRecord(DatasetEntity dataset, String identifier) {
+        RecordEntity recordEntity = new RecordEntity();
+        recordEntity.setDataset(dataset);
+        recordEntity.setIdentifier(identifier);
+        recordEntity.setRecordStatus(RecordEntity.RecordStatus.CREATED);
+
+        Instant timestamp = Instant.now();
+        recordEntity.setCreateDate(timestamp);
+        recordEntity.setLastChangedDate(timestamp);
         return recordEntity;
     }
 

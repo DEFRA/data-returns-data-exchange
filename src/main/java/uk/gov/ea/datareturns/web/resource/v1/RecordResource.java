@@ -11,6 +11,7 @@ import uk.gov.ea.datareturns.domain.jpa.entities.userdata.impl.DatasetEntity;
 import uk.gov.ea.datareturns.domain.jpa.entities.userdata.impl.RecordEntity;
 import uk.gov.ea.datareturns.domain.jpa.service.DatasetService;
 import uk.gov.ea.datareturns.domain.jpa.service.SubmissionService;
+import uk.gov.ea.datareturns.util.StopWatch;
 import uk.gov.ea.datareturns.web.resource.v1.model.common.Linker;
 import uk.gov.ea.datareturns.web.resource.v1.model.common.Preconditions;
 import uk.gov.ea.datareturns.web.resource.v1.model.common.references.EntityReference;
@@ -30,7 +31,10 @@ import javax.ws.rs.*;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
-import java.util.*;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
@@ -71,7 +75,7 @@ public class RecordResource {
      */
     @Inject
     public RecordResource(final ApplicationContext context, RecordAdaptor recordAdaptor,
-                          SubmissionService submissionService, DatasetService datasetService) {
+            SubmissionService submissionService, DatasetService datasetService) {
 
         this.recordAdaptor = recordAdaptor;
         this.context = context;
@@ -158,19 +162,27 @@ public class RecordResource {
     )
             throws Exception {
 
+        final StopWatch sw = new StopWatch("postRecords");
+
+        sw.startTask("Retrieving dataset");
         return onDataset(datasetId, datasetEntity -> {
+            sw.stopTask();
+            LOGGER.info("Fetched dataset: " + sw.getLastTaskTimeMillis());
+            sw.startTask("Pre-processing batch");
             Response.ResponseBuilder rb;
             if (batchRequest.getRequests().isEmpty()) {
                 rb = ErrorResponse.MULTISTATUS_REQUEST_EMPTY.toResponseBuilder();
             } else {
-                Map<String, RecordEntity> recordEntities = new HashMap<>();
+                List<String> recordIds = batchRequest.getRequests().stream().map(BatchRecordRequestItem::getRecordId)
+                        .collect(Collectors.toList());
+                Map<String, RecordEntity> recordEntities = submissionService.getRecords(datasetEntity, recordIds);
                 Map<String, Response.ResponseBuilder> preconditionFailures = new HashMap<>();
                 Map<String, Response.Status> responses = new HashMap<>();
+                Map<String, Payload> payloads = new HashMap<>();
 
                 // Build requests for the service layer
-                List<SubmissionService.PayloadIdentifier<Payload>> payloadIdentifiers = new ArrayList<>();
                 for (BatchRecordRequestItem request : batchRequest.getRequests()) {
-                    RecordEntity recordEntity = submissionService.getRecord(datasetEntity, request.getRecordId());
+                    RecordEntity recordEntity = recordEntities.get(request.getRecordId());
                     Response.Status defaultResponse;
 
                     if (recordEntity == null) {
@@ -191,8 +203,7 @@ public class RecordResource {
                     Response.ResponseBuilder failureResponse = onPreconditionsPass(datasetId, recordEntity, request.getPreconditions(),
                             () -> {
                                 // Preconditions passed, add a new PayloadIdentifier
-                                payloadIdentifiers
-                                        .add(new SubmissionService.PayloadIdentifier(request.getRecordId(), request.getPayload()));
+                                payloads.put(request.getRecordId(), request.getPayload());
                                 return null;
                             });
 
@@ -201,18 +212,16 @@ public class RecordResource {
                     }
                 }
 
-                // Create and validate records if they are not already submitted
-                recordEntities.putAll(submissionService.createRecords(datasetEntity, payloadIdentifiers)
-                        .stream()
-                        .filter(r -> r.getRecordStatus() != RecordEntity.RecordStatus.SUBMITTED)
-                        .collect(Collectors.toMap(RecordEntity::getIdentifier, e -> e)));
+                sw.stopTask();
+                LOGGER.info("Finished preprocessing: " + sw.getLastTaskTimeMillis());
+                sw.startTask("Merging records");
 
-                submissionService.validate(recordEntities
-                        .values()
-                        .stream()
-                        .filter(r -> r.getRecordStatus() != RecordEntity.RecordStatus.SUBMITTED)
-                        .collect(Collectors.toList())
-                );
+                // Create and validate records if they are not already submitted
+                recordEntities.putAll(submissionService.createRecords(datasetEntity, payloads));
+
+                sw.stopTask();
+                LOGGER.info("Fetched validating: " + sw.getLastTaskTimeMillis());
+                sw.startTask("Building response");
 
                 // Build the response
                 MultiStatusResponse multiResponse = new MultiStatusResponse();
@@ -244,6 +253,9 @@ public class RecordResource {
                     multiResponse.addResponse(responseItem);
                 }
                 rb = multiResponse.toResponseBuilder();
+
+                sw.stopTask();
+                LOGGER.info(sw.prettyPrint());
             }
             return rb;
         }).build();
@@ -355,10 +367,8 @@ public class RecordResource {
 
                 // Preconditions passed, create/update the record
                 if (status != Response.Status.FORBIDDEN) {
-                    RecordEntity recordEntity = submissionService
-                            .createRecord(datasetEntity, new SubmissionService.PayloadIdentifier<>(recordId, payload));
+                    RecordEntity recordEntity = submissionService.createRecord(datasetEntity, recordId, payload);
 
-                    submissionService.validate(recordEntity);
                     record = fromEntity(datasetId, recordEntity);
                 }
 

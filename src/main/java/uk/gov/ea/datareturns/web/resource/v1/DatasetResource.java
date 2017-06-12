@@ -471,7 +471,8 @@ public class DatasetResource {
         // TODO: Service layer should not implement submission status on the record.  A dataset is either submitted or it isn't, modelling
         // the status on the record adds complexity, reduces performance and introduces potential for error.
         DatasetValidity validity = new DatasetValidity();
-        for (RecordEntity recordEntity : submissionService.getInvalidRecords(datasetEntity)) {
+        List<RecordEntity> invalidRecords = submissionService.getInvalidRecords(datasetEntity);
+        for (RecordEntity recordEntity : invalidRecords) {
             Record record = recordAdaptor.convert(recordEntity);
             for (ValidationError validationError : recordEntity.getValidationErrors()) {
                 EntityReference validationRef = new EntityReference(validationError.getId().getError(),

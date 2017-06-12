@@ -4,7 +4,9 @@ import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Repository;
 import uk.gov.ea.datareturns.domain.jpa.dao.userdata.AbstractUserDataDao;
-import uk.gov.ea.datareturns.domain.jpa.entities.userdata.impl.*;
+import uk.gov.ea.datareturns.domain.jpa.entities.userdata.impl.DatasetEntity;
+import uk.gov.ea.datareturns.domain.jpa.entities.userdata.impl.RecordEntity;
+import uk.gov.ea.datareturns.domain.jpa.entities.userdata.impl.RecordEntity_;
 
 import javax.persistence.NoResultException;
 import javax.persistence.TypedQuery;
@@ -12,7 +14,11 @@ import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
 import javax.persistence.metamodel.Metamodel;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * @author Graham Willis
@@ -64,6 +70,31 @@ public class RecordDao extends AbstractUserDataDao<RecordEntity> {
     }
 
     /**
+     * Fetch a records for the given dataset and identifiers collection
+     * @param dataset the dataset the records belong to
+     * @param identifiers a collection of record identifiers to retrieve
+     * @return a {@link Map} or identifiers to their given records.
+     */
+    public Map<String, RecordEntity> get(DatasetEntity dataset, Collection<String> identifiers) {
+        CriteriaBuilder cb = entityManager.getCriteriaBuilder();
+        Metamodel m = entityManager.getMetamodel();
+        CriteriaQuery<RecordEntity> cq = cb.createQuery(RecordEntity.class);
+        Root<RecordEntity> record = cq.from(m.entity(RecordEntity.class));
+
+        cq.select(record);
+        cq.where(
+                cb.equal(record.get(RecordEntity_.dataset), dataset),
+                record.get(RecordEntity_.identifier).in(identifiers)
+        );
+        TypedQuery<RecordEntity> q = entityManager.createQuery(cq);
+        try {
+            return q.getResultList().stream().collect(Collectors.toMap(RecordEntity::getIdentifier, o -> o));
+        } catch (NoResultException e) {
+            return Collections.emptyMap();
+        }
+    }
+
+    /**
      * Get a list of the records for a given dataset
      * @param dataset The dataset
      * @param fetchType
@@ -85,12 +116,8 @@ public class RecordDao extends AbstractUserDataDao<RecordEntity> {
         } else if (fetchType == FetchType.FETCH_BASE) {
             cq.where(cb.equal(record.get(RecordEntity_.dataset), dataset));
         }
-
-        cq.orderBy(cb.desc(record.get(RecordEntity_.id)));
         cq.select(record);
-
         TypedQuery<RecordEntity> q = entityManager.createQuery(cq);
-
         return q.getResultList();
     }
 
@@ -112,4 +139,4 @@ public class RecordDao extends AbstractUserDataDao<RecordEntity> {
         remove(recordEntity.getId());
     }
 
- }
+}

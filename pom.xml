@@ -48,7 +48,7 @@
 		<!-- Library versions -->
 
 		<!-- Postgres version -->
-		<postgresql.version>9.4.1208</postgresql.version>
+		<postgresql.version>42.1.1</postgresql.version>
 
 		<!-- Hibernate validation -->
 		<hibernate-validator.version>5.3.4.Final</hibernate-validator.version>

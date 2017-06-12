@@ -153,11 +153,6 @@ public class RecordEntity implements Metadata {
                 ", abstractPayloadEntity=" + abstractPayloadEntity +
                 ", identifier='" + identifier + '\'' +
                 ", dataset=" + dataset +
-                ", recordStatus=" + recordStatus +
-                ", createDate=" + createDate +
-                ", lastChangedDate=" + lastChangedDate +
-                ", json='" + json + '\'' +
-                ", validationErrors=" + validationErrors +
                 '}';
     }
 }
