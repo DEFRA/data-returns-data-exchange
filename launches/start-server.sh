@@ -5,4 +5,4 @@ clear
 echo -e "Starting the Data Returns backend"
 cd ${base_dir}
 
-mvn -DskipTests=true spring-boot:run $1
+mvn -DskipTests=true spring-boot:run -Drun.arguments="$1"
