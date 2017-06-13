@@ -1,6 +1,7 @@
 package uk.gov.ea.datareturns.tests.integration.resource;
 
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.tuple.Pair;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -246,6 +247,15 @@ public class APIIntegrationTests_DataSampleEntity {
 
         RecordEntity r1 = submissionService.retrieve(dataset, id);
         Assert.assertEquals(r, r1);
+    }
+
+    @Test public void retrieveValidationErrors() throws IOException {
+        List<Payload> samples = submissionService.parseJsonArray(readTestFile(SUBMISSION_FAILURE));
+        Map<String, RecordEntity> recordEntities = submissionService
+                .createRecords(dataset, samples.stream().collect(Collectors.toMap(o -> UUID.randomUUID().toString(), o -> o)));
+        submissionService.submit(recordEntities.values());
+        List<Pair<String, String>> validationErrors = submissionService.retrieveValidationErrors(dataset);
+        Assert.assertEquals(3, validationErrors.size());
     }
 
     /**

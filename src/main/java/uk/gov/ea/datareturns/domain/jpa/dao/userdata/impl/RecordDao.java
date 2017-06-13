@@ -1,5 +1,7 @@
 package uk.gov.ea.datareturns.domain.jpa.dao.userdata.impl;
 
+import org.apache.commons.lang3.tuple.ImmutablePair;
+import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Repository;
@@ -8,8 +10,7 @@ import uk.gov.ea.datareturns.domain.jpa.entities.userdata.impl.DatasetEntity;
 import uk.gov.ea.datareturns.domain.jpa.entities.userdata.impl.RecordEntity;
 import uk.gov.ea.datareturns.domain.jpa.entities.userdata.impl.RecordEntity_;
 
-import javax.persistence.NoResultException;
-import javax.persistence.TypedQuery;
+import javax.persistence.*;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
@@ -119,6 +120,30 @@ public class RecordDao extends AbstractUserDataDao<RecordEntity> {
         cq.select(record);
         TypedQuery<RecordEntity> q = entityManager.createQuery(cq);
         return q.getResultList();
+    }
+
+    /**
+     * Retrieve the validation errors as a pair of strings; the record identifier and the error identifier
+     * for a give dataset
+     * @param dataset
+     * @return The validation errors for a record
+     */
+    public List<Pair<String, String>> getValidationErrors(DatasetEntity dataset) {
+        final String QRY_STR =
+                "select r.identifier, e.error" +
+                "  from records r"  +
+                "  join record_validation_errors e" +
+                "    on r.id = e.record_id" +
+                "  join datasets d" +
+                "    on r.dataset_id = d.id" +
+                " where d.identifier = :ds_id";
+
+        Query nativeQuery = entityManager
+                .createNativeQuery(QRY_STR, "selectValidationErrorsMapping");
+
+        nativeQuery.setParameter("ds_id", dataset.getIdentifier());
+
+        return nativeQuery.getResultList();
     }
 
     /**

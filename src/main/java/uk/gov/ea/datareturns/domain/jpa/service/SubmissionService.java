@@ -3,6 +3,7 @@ package uk.gov.ea.datareturns.domain.jpa.service;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.apache.commons.lang3.tuple.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.transaction.annotation.Transactional;
@@ -431,6 +432,12 @@ public class SubmissionService {
     @Transactional(readOnly = true)
     public RecordEntity retrieve(DatasetEntity dataset, String id) {
         return recordDao.get(dataset, id);
+    }
+
+
+    @Transactional(readOnly = true)
+    public List<Pair<String, String>> retrieveValidationErrors(DatasetEntity dataset) {
+        return recordDao.getValidationErrors(dataset);
     }
 
     /**

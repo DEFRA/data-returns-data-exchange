@@ -1,5 +1,7 @@
 package uk.gov.ea.datareturns.domain.jpa.entities.userdata.impl;
 
+import org.apache.commons.lang3.tuple.ImmutablePair;
+import org.apache.commons.lang3.tuple.Pair;
 import org.hibernate.annotations.GenericGenerator;
 import uk.gov.ea.datareturns.domain.jpa.entities.userdata.AbstractPayloadEntity;
 import uk.gov.ea.datareturns.domain.jpa.entities.userdata.Metadata;
@@ -16,6 +18,14 @@ import java.util.Set;
 @GenericGenerator(name = "idGenerator", strategy = "org.hibernate.id.enhanced.SequenceStyleGenerator", parameters = {
         @org.hibernate.annotations.Parameter(name = "sequence_name", value = "records_id_seq") }
 )
+@SqlResultSetMapping(
+        name = "selectValidationErrorsMapping",
+        classes = @ConstructorResult(
+                targetClass = ImmutablePair.class,
+                columns = {
+                        @ColumnResult(name = "identifier", type = String.class),
+                        @ColumnResult(name = "error", type = String.class)
+                }))
 public class RecordEntity implements Metadata {
 
     public enum RecordStatus {
