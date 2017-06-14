@@ -187,7 +187,7 @@ public class RecordResource {
 
                     if (recordEntity == null) {
                         defaultResponse = Response.Status.CREATED;
-                    } else if (recordEntity.getRecordStatus() == RecordEntity.RecordStatus.SUBMITTED) {
+                    } else if (datasetEntity.getStatus() == DatasetEntity.Status.SUBMITTED) {
                         defaultResponse = Response.Status.FORBIDDEN;
                     } else {
                         defaultResponse = Response.Status.OK;
@@ -360,7 +360,7 @@ public class RecordResource {
                 // If it already exists then we have a conflict
                 if (existingEntity == null) {
                     status = Response.Status.CREATED;
-                } else if (existingEntity.getRecordStatus() == RecordEntity.RecordStatus.SUBMITTED) {
+                } else if (datasetEntity.getStatus() == DatasetEntity.Status.SUBMITTED) {
                     status = Response.Status.FORBIDDEN;
                     record = fromEntity(datasetId, existingEntity);
                 }

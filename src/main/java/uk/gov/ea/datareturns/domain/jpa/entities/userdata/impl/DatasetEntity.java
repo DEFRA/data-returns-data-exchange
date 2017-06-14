@@ -2,6 +2,7 @@ package uk.gov.ea.datareturns.domain.jpa.entities.userdata.impl;
 
 import org.hibernate.annotations.GenericGenerator;
 import uk.gov.ea.datareturns.domain.jpa.entities.userdata.Metadata;
+import uk.gov.ea.datareturns.web.resource.v1.model.dataset.DatasetSubmissionStatus;
 
 import javax.persistence.*;
 import java.time.Instant;
@@ -17,6 +18,12 @@ import java.util.Collection;
 )
 public class DatasetEntity implements Metadata {
 
+    public enum Status {
+        UNSUBMITTED,
+        SUBMITTED,
+        PROCESSING
+    }
+
     @Id @GeneratedValue(generator = "idGenerator")
     private Long id;
 
@@ -29,6 +36,9 @@ public class DatasetEntity implements Metadata {
     @ManyToOne(optional=false)
     @JoinColumn(name = "user_id", referencedColumnName = "id")
     private User user;
+
+    @Enumerated(EnumType.STRING) @Column(name = "status", nullable = false)
+    private Status status;
 
     @OneToMany(mappedBy="dataset",targetEntity=RecordEntity.class, fetch=FetchType.LAZY, cascade = CascadeType.REMOVE)
     private Collection records;
@@ -72,6 +82,14 @@ public class DatasetEntity implements Metadata {
 
     public void setUser(User user) {
         this.user = user;
+    }
+
+    public Status getStatus() {
+        return status;
+    }
+
+    public void setStatus(Status status) {
+        this.status = status;
     }
 
     public Collection getRecords() {

@@ -61,6 +61,10 @@
 				<constraints nullable="false"/>
 			</column>
 
+			<column name="status" type="varchar(11)">
+				<constraints nullable="false"/>
+			</column>
+
 			<column name="originator_email" type="varchar(500)">
 				<constraints nullable="true"/>
 			</column>

@@ -77,6 +77,11 @@ public class RecordDao extends AbstractUserDataDao<RecordEntity> {
      * @return a {@link Map} or identifiers to their given records.
      */
     public Map<String, RecordEntity> get(DatasetEntity dataset, Collection<String> identifiers) {
+
+        if (identifiers == null || identifiers.isEmpty()) {
+            return Collections.emptyMap();
+        }
+
         CriteriaBuilder cb = entityManager.getCriteriaBuilder();
         Metamodel m = entityManager.getMetamodel();
         CriteriaQuery<RecordEntity> cq = cb.createQuery(RecordEntity.class);
@@ -88,6 +93,7 @@ public class RecordDao extends AbstractUserDataDao<RecordEntity> {
                 record.get(RecordEntity_.identifier).in(identifiers)
         );
         TypedQuery<RecordEntity> q = entityManager.createQuery(cq);
+
         try {
             return q.getResultList().stream().collect(Collectors.toMap(RecordEntity::getIdentifier, o -> o));
         } catch (NoResultException e) {

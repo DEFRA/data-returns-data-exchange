@@ -29,7 +29,7 @@ import java.util.Set;
 public class RecordEntity implements Metadata {
 
     public enum RecordStatus {
-        CREATED, PERSISTED, PARSED, INVALID, VALID, SUBMITTED
+        CREATED, PERSISTED, PARSED, INVALID, VALID
     }
 
     @Id @GeneratedValue(generator = "idGenerator")

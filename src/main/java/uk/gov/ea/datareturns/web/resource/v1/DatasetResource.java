@@ -444,21 +444,13 @@ public class DatasetResource {
     }
 
     private DatasetSubmissionStatus getSubmissionStatus(final DatasetEntity datasetEntity) {
-        StopWatch sw = new StopWatch("submissionStatus");
-        sw.startTask("Determining submission state");
-
-        // TODO: Service layer should not implement submission status on the record.  A dataset is either submitted or it isn't, modelling
-        // the status on the record adds complexity, reduces performance and introduces potential for error.
-        List<RecordEntity> recordEntities = submissionService.getRecords(datasetEntity);
         DatasetSubmissionStatus submissionStatus = new DatasetSubmissionStatus();
-        submissionStatus.setStatus(DatasetSubmissionStatus.Status.UNSUBMITTED);
-        if (recordEntities.size() != 0 && recordEntities.size() == recordEntities.stream()
-                .filter(r -> r.getRecordStatus() == RecordEntity.RecordStatus.SUBMITTED).count()) {
-            submissionStatus.setStatus(DatasetSubmissionStatus.Status.SUBMITTED);
-        }
 
-        sw.stopTask();
-        LOGGER.info(sw.prettyPrint());
+        if (datasetEntity.getStatus() == DatasetEntity.Status.SUBMITTED) {
+            submissionStatus.setStatus(DatasetSubmissionStatus.Status.SUBMITTED);
+        } else {
+            submissionStatus.setStatus(DatasetSubmissionStatus.Status.UNSUBMITTED);
+        }
 
         return submissionStatus;
     }
