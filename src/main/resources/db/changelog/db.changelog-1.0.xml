@@ -25,6 +25,7 @@
 
 	<!-- Last minute additional aliases -->
 	<property name="parameterAdditionalAliases" value="/db/data/parameters-alias-supplement.csv"/>
+	<property name="parameterAdditionalNames" value="/db/data/parameters-name-supplement.csv"/>
 
 	<preConditions>
 		<dbms type="${db.type}"/>
@@ -255,6 +256,27 @@
 			<sqlCheck expectedResult="0">select count(name) from parameters_alias_supplement</sqlCheck>
 		</preConditions>
 		<loadData file="${parameterAdditionalAliases}" tableName="parameters_alias_supplement"/>
+		<rollback>
+			<delete tableName="parameters_alias_supplement"></delete>
+		</rollback>
+	</changeSet>
+
+	<changeSet id="create-table: parameters_name_supplement" author="Environment Agency">
+		<createTable tableName="parameters_name_supplement">
+			<column name="name" type="varchar(150)"/>
+			<column name="type" type="varchar(100)"/>
+			<column name="alias" type="varchar(150)"/>
+			<column name="cas" type="varchar(50)"/>
+		</createTable>
+	</changeSet>
+
+	<changeSet id="load-data: parameters_name_supplement" author="Environment Agency">
+		<preConditions onFail="HALT">
+			<tableExists tableName="parameters_name_supplement"/>
+			<columnExists tableName="parameters_name_supplement" columnName="name"/>
+			<sqlCheck expectedResult="0">select count(name) from parameters_name_supplement</sqlCheck>
+		</preConditions>
+		<loadData file="${parameterAdditionalNames}" tableName="parameters_name_supplement"/>
 		<rollback>
 			<delete tableName="parameters_alias_supplement"></delete>
 		</rollback>
