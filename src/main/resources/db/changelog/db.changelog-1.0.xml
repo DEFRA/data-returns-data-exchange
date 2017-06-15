@@ -16,11 +16,15 @@
 	<property name="releasesAndTransfersFile" value="/db/data/ReleasesAndTransfers.csv"/>
 	<property name="parameterHierarchyFile" value="/db/data/ParameterHierarchy.csv"/>
 
+
 	<property name="WML" value="/db/data/stage_data_initialization/EA-WML.csv"/>
 	<property name="IPPC" value="/db/data/stage_data_initialization/IPPC.csv"/>
 	<property name="PRE" value="/db/data/stage_data_initialization/Pre-EA.csv"/>
 	<property name="EPR" value="/db/data/stage_data_initialization/EPR.csv"/>
 	<property name="TEST" value="/db/data/stage_data_initialization/Test-Permit.csv"/>
+
+	<!-- Last minute additional aliases -->
+	<property name="parameterAdditionalAliases" value="/db/data/parameters-alias-supplement.csv"/>
 
 	<preConditions>
 		<dbms type="${db.type}"/>
@@ -235,11 +239,32 @@
 		</update>
 	</changeSet>
 
+	<changeSet id="create-table: parameters_alias_supplement" author="Environment Agency">
+		<createTable tableName="parameters_alias_supplement">
+			<column name="name" type="varchar(150)"/>
+			<column name="alias" type="varchar(150)"/>
+			<column name="type" type="varchar(100)"/>
+			<column name="cas" type="varchar(50)"/>
+		</createTable>
+	</changeSet>
+
+	<changeSet id="load-data: parameters_alias_supplement" author="Environment Agency">
+		<preConditions onFail="HALT">
+			<tableExists tableName="parameters_alias_supplement"/>
+			<columnExists tableName="parameters_alias_supplement" columnName="name"/>
+			<sqlCheck expectedResult="0">select count(name) from parameters_alias_supplement</sqlCheck>
+		</preConditions>
+		<loadData file="${parameterAdditionalAliases}" tableName="parameters_alias_supplement"/>
+		<rollback>
+			<delete tableName="parameters_alias_supplement"></delete>
+		</rollback>
+	</changeSet>
+
 	<!-- 
 	****************************************************************
 	Parameters
 	****************************************************************
-  -->
+    -->
 
 	<changeSet id="create-table: parameters" author="Environment Agency">
 		<createTable tableName="parameters">
@@ -258,7 +283,7 @@
 		</rollback>
 	</changeSet>
 
-  <!-- Don't specify postgres here because liquibase silently fails. No comment. -->
+    <!-- Don't specify postgres here because liquibase silently fails. No comment. -->
 	<changeSet id="normalize: parameters" author="Environment Agency">
 		<sqlFile path="../sql/prepare-parameters.sql"
              relativeToChangelogFile="true"
