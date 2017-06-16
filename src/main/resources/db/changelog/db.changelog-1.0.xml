@@ -313,6 +313,14 @@
              stripComments="true"/>
 	</changeSet>
 
+	<!-- Don't specify postgres here because liquibase silently fails. No comment. -->
+	<changeSet id="supplement: parameters" author="Environment Agency">
+		<sqlFile path="../sql/parameters-supplement.sql"
+						 relativeToChangelogFile="true"
+						 splitStatements="true"
+						 stripComments="true"/>
+	</changeSet>
+
 	<changeSet id="create-index: parameters" author="Environment Agency">
 		<createIndex indexName="idx_parameters_name" tableName="parameters" unique="true">
 			<column name="name"/>
