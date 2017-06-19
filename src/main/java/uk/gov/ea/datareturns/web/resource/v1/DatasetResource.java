@@ -469,10 +469,10 @@ public class DatasetResource {
         List<Triple<String, String, String>> validationErrors
                 = submissionService.retrieveValidationErrors(datasetEntity);
 
-        // Group this by the record identifier
-        Map<Pair<String, String>, List<Triple<String, String, String>>> groupedValidationErrors = validationErrors
+        Map<Pair<String, String>, List<String>> groupedValidationErrors = validationErrors
                 .stream()
-                .collect(Collectors.groupingBy(p -> new ImmutablePair(p.getLeft(), p.getMiddle())));
+                .collect(Collectors.groupingBy(k -> new ImmutablePair(k.getLeft(), k.getMiddle()),
+                        Collectors.mapping(Triple::getRight, Collectors.toList())));
 
         Linker linker = Linker.info(uriInfo);
         DatasetValidity validity = new DatasetValidity();
@@ -484,11 +484,7 @@ public class DatasetResource {
                 // Extract the three fields
                 String recordId = pair.getLeft();
                 String payloadType = pair.getRight();
-                List<String> errors = groupedValidationErrors
-                        .get(pair)
-                        .stream()
-                        .map(Triple::getRight)
-                        .collect(Collectors.toList());
+                List<String> errors = groupedValidationErrors.get(pair);
 
                 EntityReference recordRef = new EntityReference(recordId,
                         linker.record(datasetEntity.getIdentifier(), recordId));
