@@ -458,6 +458,10 @@ public class DatasetResource {
     }
 
     private DatasetValidity getValidity(final DatasetEntity datasetEntity) {
+        StopWatch sw = new StopWatch("validity");
+        sw.stopTask();
+        sw.startTask("Getting record errors");
+
         List<Pair<String, String>> validationErrors = submissionService.retrieveValidationErrors(datasetEntity);
 
         // Group this by the record identifier
@@ -468,12 +472,18 @@ public class DatasetResource {
         Linker linker = Linker.info(uriInfo);
         DatasetValidity validity = new DatasetValidity();
 
+        sw.stopTask();
+
         if (!groupedValidationErrors.isEmpty()) {
 
+            sw.startTask("Getting record map");
             // Get a map of the record entities by the identifier for
             // all records with a validation error
             Map<String, RecordEntity> recordMap = submissionService
                     .getRecords(datasetEntity, groupedValidationErrors.keySet());
+
+            sw.stopTask();
+            sw.startTask("Creating result");
 
             // Iterate over the records
             for (String recordId : groupedValidationErrors.keySet()) {
@@ -496,6 +506,9 @@ public class DatasetResource {
                 }
             }
         }
+
+        sw.stopTask();
+        LOGGER.info(sw.prettyPrint());
 
         return validity;
     }
