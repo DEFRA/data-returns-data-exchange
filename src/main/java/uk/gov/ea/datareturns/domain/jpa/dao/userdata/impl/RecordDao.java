@@ -2,6 +2,7 @@ package uk.gov.ea.datareturns.domain.jpa.dao.userdata.impl;
 
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
+import org.apache.commons.lang3.tuple.Triple;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Repository;
@@ -134,9 +135,9 @@ public class RecordDao extends AbstractUserDataDao<RecordEntity> {
      * @param dataset
      * @return The validation errors for a record
      */
-    public List<Pair<String, String>> getValidationErrors(DatasetEntity dataset) {
+    public List<Triple<String, String, String>> getValidationErrors(DatasetEntity dataset) {
         final String QRY_STR =
-                "select r.identifier, e.error" +
+                "select r.identifier, r.payload_type, e.error" +
                 "  from records r"  +
                 "  join record_validation_errors e" +
                 "    on r.id = e.record_id" +

@@ -1,7 +1,9 @@
 package uk.gov.ea.datareturns.web.resource.v1;
 
 import io.swagger.annotations.*;
+import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
+import org.apache.commons.lang3.tuple.Triple;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
@@ -462,45 +464,38 @@ public class DatasetResource {
         sw.stopTask();
         sw.startTask("Getting record errors");
 
-        List<Pair<String, String>> validationErrors = submissionService.retrieveValidationErrors(datasetEntity);
+        // Retrieve the list of tuples containing the
+        // record identifier, the payload type and the error
+        List<Triple<String, String, String>> validationErrors
+                = submissionService.retrieveValidationErrors(datasetEntity);
 
         // Group this by the record identifier
-        Map<String, List<Pair<String, String>>> groupedValidationErrors = validationErrors
+        Map<Pair<String, String>, List<Triple<String, String, String>>> groupedValidationErrors = validationErrors
                 .stream()
-                .collect(Collectors.groupingBy(Pair::getLeft));
+                .collect(Collectors.groupingBy(p -> new ImmutablePair(p.getLeft(), p.getMiddle())));
 
         Linker linker = Linker.info(uriInfo);
         DatasetValidity validity = new DatasetValidity();
 
-        sw.stopTask();
-
         if (!groupedValidationErrors.isEmpty()) {
 
-            sw.startTask("Getting record map");
-            // Get a map of the record entities by the identifier for
-            // all records with a validation error
-            Map<String, RecordEntity> recordMap = submissionService
-                    .getRecords(datasetEntity, groupedValidationErrors.keySet());
-
-            sw.stopTask();
-            sw.startTask("Creating result");
-
             // Iterate over the records
-            for (String recordId : groupedValidationErrors.keySet()) {
+            for (Pair<String, String> pair : groupedValidationErrors.keySet()) {
+                // Extract the three fields
+                String recordId = pair.getLeft();
+                String payloadType = pair.getRight();
+                List<String> errors = groupedValidationErrors
+                        .get(pair)
+                        .stream()
+                        .map(Triple::getRight)
+                        .collect(Collectors.toList());
 
                 EntityReference recordRef = new EntityReference(recordId,
                         linker.record(datasetEntity.getIdentifier(), recordId));
 
-                // Find the payload type
-                Record record = recordAdaptor.convert(recordMap.get(recordId));
-                String payloadType = Payload.NAMES.get(record.getPayload().getClass());
-
-                // Iterate over the validation errors
-                List<Pair<String, String>> recordValidationErrors = groupedValidationErrors.get(recordId);
-
-                for (Pair<String, String> recordValidationError : recordValidationErrors) {
-                    EntityReference validationRef = new EntityReference(recordValidationError.getRight(),
-                            linker.constraint(payloadType, recordValidationError.getRight()));
+                for (String recordValidationError : errors) {
+                    EntityReference validationRef = new EntityReference(recordValidationError,
+                            linker.constraint(payloadType, recordValidationError));
 
                     validity.addViolation(validationRef, recordRef);
                 }

@@ -118,6 +118,10 @@
 				<constraints nullable="false"/>
 			</column>
 
+			<column name="payload_type" type="varchar(100)">
+				<constraints nullable="true"/>
+			</column>
+
 			<column name="create_date" type="timestamp without timezone">
 				<constraints nullable="false"/>
 			</column>

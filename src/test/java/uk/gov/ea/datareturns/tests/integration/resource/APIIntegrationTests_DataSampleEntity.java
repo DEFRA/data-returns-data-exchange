@@ -2,6 +2,7 @@ package uk.gov.ea.datareturns.tests.integration.resource;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.tuple.Pair;
+import org.apache.commons.lang3.tuple.Triple;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -263,7 +264,7 @@ public class APIIntegrationTests_DataSampleEntity {
         Map<String, RecordEntity> recordEntities = submissionService
                 .createRecords(dataset, samples.stream().collect(Collectors.toMap(o -> UUID.randomUUID().toString(), o -> o)));
         submissionService.submit(recordEntities.values());
-        List<Pair<String, String>> validationErrors = submissionService.retrieveValidationErrors(dataset);
+        List<Triple<String, String, String>> validationErrors = submissionService.retrieveValidationErrors(dataset);
         Assert.assertEquals(3, validationErrors.size());
     }
 

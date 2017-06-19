@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.lang3.tuple.Pair;
+import org.apache.commons.lang3.tuple.Triple;
 import org.apache.lucene.analysis.CharArrayMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -443,6 +444,7 @@ public class SubmissionService {
                 String json = mapper.writeValueAsString(payload);
                 recordEntity.setJson(json);
                 recordEntity.setRecordStatus(RecordEntity.RecordStatus.PARSED);
+                recordEntity.setPayloadType(payload.getPayloadType());
             } catch (JsonProcessingException e) {
                 LOGGER.error("Cannot serialize to Json: " + payload.toString());
             }
@@ -473,7 +475,7 @@ public class SubmissionService {
 
 
     @Transactional(readOnly = true)
-    public List<Pair<String, String>> retrieveValidationErrors(DatasetEntity dataset) {
+    public List<Triple<String, String, String>> retrieveValidationErrors(DatasetEntity dataset) {
         return recordDao.getValidationErrors(dataset);
     }
 

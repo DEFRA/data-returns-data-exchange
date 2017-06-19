@@ -1,6 +1,7 @@
 package uk.gov.ea.datareturns.domain.jpa.entities.userdata.impl;
 
 import org.apache.commons.lang3.tuple.ImmutablePair;
+import org.apache.commons.lang3.tuple.ImmutableTriple;
 import org.apache.commons.lang3.tuple.Pair;
 import org.hibernate.annotations.GenericGenerator;
 import uk.gov.ea.datareturns.domain.jpa.entities.userdata.AbstractPayloadEntity;
@@ -21,14 +22,15 @@ import java.util.Set;
 @SqlResultSetMapping(
         name = "selectValidationErrorsMapping",
         classes = @ConstructorResult(
-                targetClass = ImmutablePair.class,
+                targetClass = ImmutableTriple.class,
                 columns = {
                         @ColumnResult(name = "identifier", type = String.class),
+                        @ColumnResult(name = "payload_type", type = String.class),
                         @ColumnResult(name = "error", type = String.class)
                 }))
 public class RecordEntity implements Metadata {
 
-    public enum RecordStatus {
+     public enum RecordStatus {
         CREATED, PERSISTED, PARSED, INVALID, VALID
     }
 
@@ -40,6 +42,9 @@ public class RecordEntity implements Metadata {
 
     @Basic @Column(name = "identifier", nullable = false, length = 80)
     private String identifier;
+
+    @Basic @Column(name = "payload_type", length = 100)
+    private String payloadType;
 
     @ManyToOne(optional=false)
     @JoinColumn(name = "dataset_id", referencedColumnName = "id")
@@ -113,6 +118,14 @@ public class RecordEntity implements Metadata {
 
     public void setLastChangedDate(Instant lastChangedDate) {
         this.lastChangedDate = lastChangedDate;
+    }
+
+    public void setPayloadType(String payloadType) {
+        this.payloadType = payloadType;
+    }
+
+    public String getPayloadType() {
+        return payloadType;
     }
 
     public String getJson() {
