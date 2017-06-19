@@ -1,6 +1,7 @@
 package uk.gov.ea.datareturns.web.resource.v1;
 
 import io.swagger.annotations.*;
+import org.apache.commons.lang3.tuple.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
@@ -33,6 +34,7 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
@@ -456,27 +458,44 @@ public class DatasetResource {
     }
 
     private DatasetValidity getValidity(final DatasetEntity datasetEntity) {
-        StopWatch sw = new StopWatch("validationStatus");
-        sw.startTask("Retrieving validation information");
+        List<Pair<String, String>> validationErrors = submissionService.retrieveValidationErrors(datasetEntity);
+
+        // Group this by the record identifier
+        Map<String, List<Pair<String, String>>> groupedValidationErrors = validationErrors
+                .stream()
+                .collect(Collectors.groupingBy(Pair::getLeft));
 
         Linker linker = Linker.info(uriInfo);
-        // TODO: Service layer should not implement submission status on the record.  A dataset is either submitted or it isn't, modelling
-        // the status on the record adds complexity, reduces performance and introduces potential for error.
         DatasetValidity validity = new DatasetValidity();
-        List<RecordEntity> invalidRecords = submissionService.getInvalidRecords(datasetEntity);
-        for (RecordEntity recordEntity : invalidRecords) {
-            Record record = recordAdaptor.convert(recordEntity);
-            for (ValidationError validationError : recordEntity.getValidationErrors()) {
-                EntityReference validationRef = new EntityReference(validationError.getId().getError(),
-                        linker.constraint(Payload.NAMES.get(record.getPayload().getClass()), validationError.getId().getError()));
-                EntityReference recordRef = new EntityReference(recordEntity.getIdentifier(),
-                        linker.record(datasetEntity.getIdentifier(), recordEntity.getIdentifier()));
-                validity.addViolation(validationRef, recordRef);
+
+        if (!groupedValidationErrors.isEmpty()) {
+
+            // Get a map of the record entities by the identifier for
+            // all records with a validation error
+            Map<String, RecordEntity> recordMap = submissionService
+                    .getRecords(datasetEntity, groupedValidationErrors.keySet());
+
+            // Iterate over the records
+            for (String recordId : groupedValidationErrors.keySet()) {
+
+                EntityReference recordRef = new EntityReference(recordId,
+                        linker.record(datasetEntity.getIdentifier(), recordId));
+
+                // Find the payload type
+                Record record = recordAdaptor.convert(recordMap.get(recordId));
+                String payloadType = Payload.NAMES.get(record.getPayload().getClass());
+
+                // Iterate over the validation errors
+                List<Pair<String, String>> recordValidationErrors = groupedValidationErrors.get(recordId);
+
+                for (Pair<String, String> recordValidationError : recordValidationErrors) {
+                    EntityReference validationRef = new EntityReference(recordValidationError.getRight(),
+                            linker.constraint(payloadType, recordValidationError.getRight()));
+
+                    validity.addViolation(validationRef, recordRef);
+                }
             }
         }
-
-        sw.stopTask();
-        LOGGER.info(sw.prettyPrint());
 
         return validity;
     }
