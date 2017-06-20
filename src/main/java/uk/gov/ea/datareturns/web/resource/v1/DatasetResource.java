@@ -97,12 +97,14 @@ public class DatasetResource {
         User user = datasetService.getSystemUser();
         List<DatasetEntity> datasets = datasetService.getDatasets(user);
 
-        List<EntityReference> entityReferences = onDatasetList(datasets, (datasetEntity) -> new EntityReference(datasetEntity.getIdentifier(),
-                Linker.info(uriInfo).dataset(datasetEntity.getIdentifier())));
+        List<EntityReference> entityReferences = onDatasetList(datasets,
+                (datasetEntity) -> new EntityReference(datasetEntity.getIdentifier(),
+                        Linker.info(uriInfo).dataset(datasetEntity.getIdentifier())));
 
         return onPreconditionsPass(user, datasets, preconditions,
-                () -> new EntityListResponse(entityReferences).toResponseBuilder()
-                    .tag((Preconditions.createEtag(datasets)))
+                () -> new EntityListResponse(entityReferences)
+                        .toResponseBuilder()
+                        .tag((Preconditions.createEtag(datasets)))
                         .lastModified(Date.from(user.getDatasetChangedDate()))).build();
     }
 
@@ -535,7 +537,7 @@ public class DatasetResource {
 
     // Precondition evaluator for the entity list held at user level
     private Response.ResponseBuilder onPreconditionsPass(final User user, List<DatasetEntity> datasets,
-        Preconditions preconditions, Supplier<Response.ResponseBuilder> handler) {
+            Preconditions preconditions, Supplier<Response.ResponseBuilder> handler) {
 
         Response.ResponseBuilder rb = null;
         if (preconditions != null) {

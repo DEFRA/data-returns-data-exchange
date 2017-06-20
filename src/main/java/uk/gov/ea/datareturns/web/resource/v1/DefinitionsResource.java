@@ -79,9 +79,9 @@ public class DefinitionsResource {
      */
     @Inject
     public DefinitionsResource(final ControlledListProcessor controlledListProcessor,
-                               final ValidationErrorDao validationErrorDao,
-                               final PayloadTypeDao payloadTypeDao,
-                               final FieldDao fieldDao) {
+            final ValidationErrorDao validationErrorDao,
+            final PayloadTypeDao payloadTypeDao,
+            final FieldDao fieldDao) {
 
         this.controlledListProcessor = controlledListProcessor;
         this.validationErrorDao = validationErrorDao;
@@ -218,14 +218,14 @@ public class DefinitionsResource {
 
         return onPayloadType(payloadType, (payloadClass) -> {
             PayloadType payloadEntityType = payloadTypeDao.get(payloadType);
-                return new EntityListResponse(
-                        validationErrorDao.list(payloadEntityType).stream()
-                                .map((constraint) -> {
-                                    String uri = Linker.info(uriInfo).constraint(payloadType, constraint.getId().getError());
-                                    return new EntityReference(constraint.getId().getError(), uri);
-                                })
-                                .collect(Collectors.toList())
-                ).toResponseBuilder();
+            return new EntityListResponse(
+                    validationErrorDao.list(payloadEntityType).stream()
+                            .map((constraint) -> {
+                                String uri = Linker.info(uriInfo).constraint(payloadType, constraint.getId().getError());
+                                return new EntityReference(constraint.getId().getError(), uri);
+                            })
+                            .collect(Collectors.toList())
+            ).toResponseBuilder();
         }).build();
     }
 
@@ -282,15 +282,18 @@ public class DefinitionsResource {
         id.setPayloadType(payloadType);
         id.setError(constraintId);
         ValidationError validationError = validationErrorDao.get(id);
-        ConstraintDefinition definition = new ConstraintDefinition();
-        definition.setId(validationError.getId().getError());
-        definition.setDescription(validationError.getMessage());
-        definition.setFields(validationError.getFields().stream()
-                            .map((field) -> new EntityReference(field.getId().getFieldName(), Linker.info(uriInfo).field(
-                                    payloadType.getPayloadTypeName(), field.getId().getFieldName())))
-                            .collect(Collectors.toList()));
-
-        return (definition == null) ? ErrorResponse.CONSTRAINT_NOT_FOUND.toResponseBuilder() : handler.apply(definition);
+        if (validationError == null) {
+            return ErrorResponse.CONSTRAINT_NOT_FOUND.toResponseBuilder();
+        } else {
+            ConstraintDefinition definition = new ConstraintDefinition();
+            definition.setId(validationError.getId().getError());
+            definition.setDescription(validationError.getMessage());
+            definition.setFields(validationError.getFields().stream()
+                    .map((field) -> new EntityReference(field.getId().getFieldName(), Linker.info(uriInfo).field(
+                            payloadType.getPayloadTypeName(), field.getId().getFieldName())))
+                    .collect(Collectors.toList()));
+            return handler.apply(definition);
+        }
     }
 
     private Response.ResponseBuilder onField(Class<?> payloadClass, String fieldId, Function<FieldDefinition, Response
