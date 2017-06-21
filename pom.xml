@@ -13,7 +13,7 @@
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
-		<version>1.4.4.RELEASE</version>
+		<version>1.5.4.RELEASE</version>
 	</parent>
 
 	<organization>
@@ -47,7 +47,7 @@
 
 
 		<!-- Spring boot version - ensure that this matches the version number used for spring-boot-starter-parent above -->
-		<spring-boot.version>1.4.4.RELEASE</spring-boot.version>
+		<spring-boot.version>1.5.4.RELEASE</spring-boot.version>
 
 		<!-- Library versions -->
 
@@ -58,7 +58,7 @@
 		<hibernate-validator.version>5.3.4.Final</hibernate-validator.version>
 
 		<!-- Apache commons libraries -->
-		<commons-lang3.version>3.5</commons-lang3.version>
+		<commons-lang3.version>3.6</commons-lang3.version>
 		<commons-collections4.version>4.1</commons-collections4.version>
 		<commons-email.version>1.4</commons-email.version>
 		<commons-io.version>2.5</commons-io.version>
@@ -67,7 +67,7 @@
 		<univocity.parsers.version>2.2.2</univocity.parsers.version>
 
 		<!-- InfluxDB -->
-		<influxdb-java.version>2.5</influxdb-java.version>
+		<influxdb-java.version>2.6</influxdb-java.version>
 
 		<metrics-spring.version>3.1.3</metrics-spring.version>
 
@@ -75,7 +75,7 @@
 
 		<airbrake-logback.version>1.0.1</airbrake-logback.version>
 
-		<aws.java.sdk.version>1.11.68</aws.java.sdk.version>
+		<aws.java.sdk.version>1.11.152</aws.java.sdk.version>
 
 		<!-- Test -->
 		<run.test.suite>**/AllTests.class</run.test.suite>
@@ -209,7 +209,7 @@
 			<groupId>io.swagger</groupId>
 			<artifactId>swagger-jersey2-jaxrs</artifactId>
 			<scope>compile</scope>
-			<version>1.5.13</version>
+			<version>1.5.15</version>
 		</dependency>
 
 		<!--  JPA via Hibernate ORM -->
