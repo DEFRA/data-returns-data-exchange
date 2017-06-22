@@ -107,10 +107,16 @@ monitorProEmail:
   port: ${monpro.email.port}
   from: ${monpro.email.from}
   to: ${monpro.email.to}
-  subjectLowerNumericUniqueId: EA LFP 10 69 TEST LIST
-  subjectUpperNumericUniqueId: EA LFP 70 AB TEST LIST
-  subjectLowerAlphaNumericUniqueId: EA LFP AA GZ TEST LIST
-  subjectUpperAlphaNumericUniqueId: EA LFP HA ZZ TEST LIST
+  # Amended this for the e-2-e test
+  #subjectLowerNumericUniqueId: EA LFP 10 69 TEST LIST
+  #subjectUpperNumericUniqueId: EA LFP 70 AB TEST LIST
+  #subjectLowerAlphaNumericUniqueId: EA LFP AA GZ TEST LIST
+  #subjectUpperAlphaNumericUniqueId: EA LFP HA ZZ TEST LIST
+  subjectLowerNumericUniqueId: Beta Returns Test
+  subjectUpperNumericUniqueId: Beta Returns Test
+  subjectLowerAlphaNumericUniqueId: Beta Returns Test
+  subjectUpperAlphaNumericUniqueId: Beta Returns Test
+
   # Email message body - note, use two linebreaks to generate a single linebreak in the output.
   body: >
     Data Returns received a submission for EA Identifier {{EA_ID}}.
