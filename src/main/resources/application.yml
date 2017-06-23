@@ -107,11 +107,6 @@ monitorProEmail:
   port: ${monpro.email.port}
   from: ${monpro.email.from}
   to: ${monpro.email.to}
-  # Amended this for the e-2-e test
-  #subjectLowerNumericUniqueId: EA LFP 10 69 TEST LIST
-  #subjectUpperNumericUniqueId: EA LFP 70 AB TEST LIST
-  #subjectLowerAlphaNumericUniqueId: EA LFP AA GZ TEST LIST
-  #subjectUpperAlphaNumericUniqueId: EA LFP HA ZZ TEST LIST
   subjectLowerNumericUniqueId: Beta Returns Test
   subjectUpperNumericUniqueId: Beta Returns Test
   subjectLowerAlphaNumericUniqueId: Beta Returns Test
@@ -257,3 +252,10 @@ spring:
 spring:
   profiles: production
   profiles.include: cluster
+
+# Production Monitor Pro Email Configuration
+monitorProEmail:
+  subjectLowerNumericUniqueId: Beta Returns
+  subjectUpperNumericUniqueId: Beta Returns
+  subjectLowerAlphaNumericUniqueId: Beta Returns
+  subjectUpperAlphaNumericUniqueId: Beta Returns
