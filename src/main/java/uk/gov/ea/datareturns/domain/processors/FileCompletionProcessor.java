@@ -13,6 +13,7 @@ import uk.gov.ea.datareturns.domain.monitorpro.TransportHandler;
 import uk.gov.ea.datareturns.domain.result.CompleteResult;
 import uk.gov.ea.datareturns.domain.result.DataExchangeResult;
 import uk.gov.ea.datareturns.domain.storage.StorageException;
+import uk.gov.ea.datareturns.domain.storage.StorageKeyMismatchException;
 import uk.gov.ea.datareturns.domain.storage.StorageProvider;
 import uk.gov.ea.datareturns.domain.storage.StorageProvider.StoredFile;
 
@@ -85,6 +86,9 @@ public class FileCompletionProcessor extends AbstractReturnsProcessor<DataExchan
 
             this.storage.moveToAuditStore(this.storedFileKey, metadata);
             return new DataExchangeResult(new CompleteResult(this.storedFileKey, this.userEmail));
+        } catch (final StorageKeyMismatchException e) {
+            // Key mismatch exception is a client error.  Do not log it.
+            throw e;
         } catch (final StorageException e) {
             LOGGER.error("FileCompletionProcessor failed to successfully complete.", e);
             throw e;
