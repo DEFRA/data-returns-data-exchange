@@ -74,7 +74,7 @@ public class MonitorProEmailerTests {
     @Test
     public void testSuccessCase() throws Exception {
         final MonitorProTransportHandler emailer = new MonitorProTransportHandler(this.emailSettings);
-        emailer.sendNotifications(TEST_EMAIL, TEST_FILE, "EP3136GK", testSuccessFile, (email) -> {
+        emailer.sendNotifications(TEST_EMAIL, TEST_FILE, "EP3136GK", "test", testSuccessFile, (email) -> {
             email.buildMimeMessage();
 
             Assert.assertEquals(email.getHostName(), EMAIL_HOST);
@@ -98,19 +98,19 @@ public class MonitorProEmailerTests {
     @Test(expected = MonitorProTransportException.class)
     public void testEmptyFile() throws Exception {
         final MonitorProTransportHandler emailer = new MonitorProTransportHandler(this.emailSettings);
-        emailer.sendNotifications(TEST_EMAIL, TEST_FILE, "EP3136GK", testEmptyFile);
+        emailer.sendNotifications(TEST_EMAIL, TEST_FILE, "EP3136GK", "test", testEmptyFile);
     }
 
     @Test(expected = MonitorProTransportException.class)
     public void testHeaderOnlyFile() throws Exception {
         final MonitorProTransportHandler emailer = new MonitorProTransportHandler(this.emailSettings);
-        emailer.sendNotifications(TEST_EMAIL, TEST_FILE, "EP3136GK", testHeaderOnlyFile);
+        emailer.sendNotifications(TEST_EMAIL, TEST_FILE, "EP3136GK", "test", testHeaderOnlyFile);
     }
 
     @Test(expected = MonitorProTransportException.class)
     public void testEmailException() throws Exception {
         final MonitorProTransportHandler emailer = new MonitorProTransportHandler(this.emailSettings);
-        emailer.sendNotifications(TEST_EMAIL, TEST_FILE, "EP3136GK", testSuccessFile, (email) -> {
+        emailer.sendNotifications(TEST_EMAIL, TEST_FILE, "EP3136GK", "test", testSuccessFile, (email) -> {
             throw new EmailException("He's dead Jim");
         });
     }

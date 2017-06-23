@@ -1,6 +1,7 @@
 package uk.gov.ea.datareturns.domain.monitorpro;
 
 import com.samskivert.mustache.Template;
+import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.mail.EmailAttachment;
 import org.apache.commons.mail.EmailException;
 import org.apache.commons.mail.MultiPartEmail;
@@ -49,13 +50,14 @@ public class MonitorProTransportHandler implements TransportHandler {
      * @param originatorEmail the email address of the user that uploaded the source file that this output file has been created from
      * @param originatorFilename the name of the file the user uploaded to the datareturns service
      * @param eaId the EA Unique Identifier that the data in the output file pertains to
+     * @param fileKey the AWS S3 file key that contains the returnsCSVFile
      * @param returnsCSVFile the CSV file to send to MonitorPro
      * @throws MonitorProTransportException if a problem occurred when attempting to send the file to MonitorPro
      */
     @Override public void sendNotifications(final String originatorEmail, final String originatorFilename, final String eaId,
-            final File returnsCSVFile)
+            final String fileKey, final File returnsCSVFile)
             throws MonitorProTransportException {
-        sendNotifications(originatorEmail, originatorFilename, eaId, returnsCSVFile, new DefaultTransportHandler());
+        sendNotifications(originatorEmail, originatorFilename, eaId, fileKey, returnsCSVFile, new DefaultTransportHandler());
     }
 
     /**
@@ -64,12 +66,13 @@ public class MonitorProTransportHandler implements TransportHandler {
      * @param originatorEmail the email address of the user that uploaded the source file that this output file has been created from
      * @param originatorFilename the name of the file the user uploaded to the datareturns service
      * @param eaId the EA Unique Identifier that the data in the output file pertains to
+     * @param fileKey the AWS S3 file key that contains the returnsCSVFile
      * @param returnsCSVFile the CSV file to send to MonitorPro
      * @param handler the transport handler to use to submit the file to MonitorPro
      * @throws MonitorProTransportException if a problem occurred when attempting to send the file to MonitorPro
      */
     public void sendNotifications(final String originatorEmail, final String originatorFilename, final String eaId,
-            final File returnsCSVFile,
+            final String fileKey, final File returnsCSVFile,
             final EmailTransportHandler handler)
             throws MonitorProTransportException {
         LOGGER.debug("Sending Email with attachment '" + returnsCSVFile.getAbsolutePath() + "'");
@@ -99,7 +102,13 @@ public class MonitorProTransportHandler implements TransportHandler {
             final EmailAttachment attachment = new EmailAttachment();
             attachment.setDisposition(EmailAttachment.ATTACHMENT);
             attachment.setDescription("Data Returns File Upload");
-            attachment.setName("Environment Agency.csv");
+
+            String attachmentName = "DR_"
+                    + FilenameUtils.getBaseName(fileKey)
+                    + "_"
+                    + FilenameUtils.getBaseName(returnsCSVFile.getName())
+                    + ".csv";
+            attachment.setName(attachmentName);
             attachment.setPath(returnsCSVFile.getAbsolutePath());
             email.attach(attachment);
 
