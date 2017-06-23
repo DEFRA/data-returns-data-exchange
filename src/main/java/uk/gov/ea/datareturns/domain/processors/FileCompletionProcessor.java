@@ -12,6 +12,7 @@ import uk.gov.ea.datareturns.domain.model.fields.impl.EaId;
 import uk.gov.ea.datareturns.domain.monitorpro.TransportHandler;
 import uk.gov.ea.datareturns.domain.result.CompleteResult;
 import uk.gov.ea.datareturns.domain.result.DataExchangeResult;
+import uk.gov.ea.datareturns.domain.storage.StorageException;
 import uk.gov.ea.datareturns.domain.storage.StorageProvider;
 import uk.gov.ea.datareturns.domain.storage.StorageProvider.StoredFile;
 
@@ -73,7 +74,9 @@ public class FileCompletionProcessor extends AbstractReturnsProcessor<DataExchan
 
             for (final File outputFile : zipModel.getOutputFiles()) {
                 final EaId eaId = zipModel.getOutputFileIdentifiers().get(outputFile.getName());
-                this.transportHandler.sendNotifications(this.userEmail, this.originalFilename, eaId.getValue().getName(), outputFile);
+                this.transportHandler
+                        .sendNotifications(this.userEmail, this.originalFilename, eaId.getValue().getName(), this.storedFileKey,
+                                outputFile);
             }
 
             final Map<String, String> metadata = new LinkedHashMap<>();
@@ -82,7 +85,11 @@ public class FileCompletionProcessor extends AbstractReturnsProcessor<DataExchan
 
             this.storage.moveToAuditStore(this.storedFileKey, metadata);
             return new DataExchangeResult(new CompleteResult(this.storedFileKey, this.userEmail));
+        } catch (final StorageException e) {
+            LOGGER.error("FileCompletionProcessor failed to successfully complete.", e);
+            throw e;
         } catch (final IOException e) {
+            LOGGER.error("FileCompletionProcessor failed to successfully complete.", e);
             throw new ProcessingException(e);
         }
     }

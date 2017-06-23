@@ -14,9 +14,10 @@ public interface TransportHandler {
      * @param originatorEmail the email address of the user that uploaded the source file that this output file has been created from
      * @param originatorFilename the name of the file the user uploaded to the datareturns service
      * @param eaId the EA Unique Identifier that the data in the output file pertains to
+     * @param fileKey the AWS S3 file key that contains the returnsCSVFile
      * @param returnsCSVFile the CSV file to send to MonitorPro
      * @throws MonitorProTransportException if a problem occurred when attempting to send the file to MonitorPro
      */
-    void sendNotifications(String originatorEmail, String originatorFilename, String eaId, File returnsCSVFile)
+    void sendNotifications(String originatorEmail, String originatorFilename, String eaId, String fileKey, File returnsCSVFile)
             throws MonitorProTransportException;
 }
