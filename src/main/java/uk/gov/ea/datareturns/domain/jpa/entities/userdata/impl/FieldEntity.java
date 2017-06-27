@@ -1,6 +1,7 @@
 package uk.gov.ea.datareturns.domain.jpa.entities.userdata.impl;
 
 import javax.persistence.*;
+import java.io.Serializable;
 import java.time.Instant;
 
 /**
@@ -8,7 +9,7 @@ import java.time.Instant;
  */
 @Entity
 @Table(name = "fields")
-public class FieldEntity {
+public class FieldEntity implements Serializable {
     @EmbeddedId FieldId id;
 
     @Basic public String description;

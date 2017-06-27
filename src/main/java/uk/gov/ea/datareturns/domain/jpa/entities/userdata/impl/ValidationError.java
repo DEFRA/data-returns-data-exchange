@@ -1,6 +1,7 @@
-package uk.gov.ea.datareturns.domain.jpa.entities.userdata.impl;
 
+package uk.gov.ea.datareturns.domain.jpa.entities.userdata.impl;
 import javax.persistence.*;
+import java.io.Serializable;
 import java.time.Instant;
 import java.util.Set;
 
@@ -9,7 +10,7 @@ import java.util.Set;
  */
 @Entity
 @Table(name = "validation_errors")
-public class ValidationError {
+public class ValidationError implements Serializable {
     @EmbeddedId private ValidationErrorId id;
     @Basic private String message;
 
