@@ -20,10 +20,7 @@ import uk.gov.ea.datareturns.web.resource.v1.model.record.RecordAdaptor;
 import uk.gov.ea.datareturns.web.resource.v1.model.record.payload.Payload;
 import uk.gov.ea.datareturns.web.resource.v1.model.request.BatchRecordRequest;
 import uk.gov.ea.datareturns.web.resource.v1.model.request.BatchRecordRequestItem;
-import uk.gov.ea.datareturns.web.resource.v1.model.response.EntityListResponse;
-import uk.gov.ea.datareturns.web.resource.v1.model.response.ErrorResponse;
-import uk.gov.ea.datareturns.web.resource.v1.model.response.MultiStatusResponse;
-import uk.gov.ea.datareturns.web.resource.v1.model.response.RecordEntityResponse;
+import uk.gov.ea.datareturns.web.resource.v1.model.response.*;
 
 import javax.inject.Inject;
 import javax.validation.constraints.Pattern;
@@ -119,6 +116,40 @@ public class RecordResource {
             ).toResponseBuilder();
         }).build();
     }
+
+    /**
+     * Retrieve all record and payload data for the given dataset_id
+     *
+     * @param datasetId the unique identifier for the target dataset
+     * @return a response containing an {@link EntityDataListResponse} entity
+     * @throws Exception if the request cannot be completed normally.
+     */
+    @GET
+    @Path("/$data")
+    @ApiOperation(value = "List full record data",
+            notes = "Retrieve all record and payload data for the given `dataset_id`."
+    )
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "OK", response = EntityDataListResponse.class),
+            @ApiResponse(code = 304, message = "Not Modified - see conditional request documentation"),
+            @ApiResponse(
+                    code = 404,
+                    message = "Not Found - The `dataset_id` parameter did not match a known resource",
+                    response = ErrorResponse.class
+            )
+    })
+    public Response listRecordData(
+            @PathParam("dataset_id") @Pattern(regexp = "[A-Za-z0-9_-]+")
+            @ApiParam("The unique identifier for the target dataset") final String datasetId)
+            throws Exception {
+        return onDataset(datasetId, datasetEntity -> {
+            List<RecordEntity> records = submissionService.getRecords(datasetEntity);
+            return new EntityDataListResponse(
+                    records.stream().map(e -> fromEntity(datasetId, e)).collect(Collectors.toList()),
+                    Date.from(datasetEntity.getRecordChangedDate()),
+                    Preconditions.createEtag(records)
+            ).toResponseBuilder();
+        }).build();
     }
 
     /**
@@ -274,7 +305,7 @@ public class RecordResource {
      * @throws Exception if the request cannot be completed normally.
      */
     @GET
-    @Path("/{record_id}")
+    @Path("/{record_id : [a-zA-Z0-9_-]+ }")
     @ApiOperation(value = "Retrieve record details",
             notes = "Retrieve record data for the given `record_id` and `dataset_id`"
     )
