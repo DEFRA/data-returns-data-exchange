@@ -11,9 +11,11 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 import uk.gov.ea.datareturns.App;
+import uk.gov.ea.datareturns.domain.validation.datasample.DataSampleValidationObject;
 import uk.gov.ea.datareturns.domain.validation.model.DataSample;
 import uk.gov.ea.datareturns.domain.validation.model.fields.impl.ds.*;
 import uk.gov.ea.datareturns.domain.validation.model.validation.ValidationGroups;
+import uk.gov.ea.datareturns.web.resource.v1.model.record.payload.DataSamplePayload;
 
 import javax.inject.Inject;
 import javax.validation.ConstraintViolation;
@@ -717,26 +719,24 @@ public class DataSampleValidatorTests {
      * with a valid entry.
      *
      * @return a new {@link DataSample} which should pass validation
+     * DataSampleValidationObject
      */
-    private static DataSample createValidNumericRecord() {
-        final DataSample record = new DataSample();
-        record.setEaId(new EaId("42355"));
-        record.setSiteName(new SiteName("Biffa - Marchington Landfill Site"));
-        record.setReturnType(new ReturnType("Landfill leachate monitoring"));
-        record.setMonitoringDate(new MonitoringDate("2016-03-09T11:18:59"));
-        record.setReturnPeriod(new ReturnPeriod("Aug 2016"));
-        record.setMonitoringPoint(new MonitoringPoint("Borehole 1"));
-        //        record.setSampleReference("Sample Reference");
-        //        record.setSampleBy("Sam Gardner-Dell");
-        record.setParameter(new Parameter("1,1,1,2-Tetrachloroethane"));
-        record.setValue(new Value("<0.0006"));
-        record.setUnit(new Unit("m3/s"));
-        record.setReferencePeriod(new ReferencePeriod("95% of all 10-minute averages in any 24 hour period"));
-        record.setMethStand(new MethodOrStandard("BS EN 12260"));
-        record.setComments(new Comments("Free text comments entered in this field."));
-        record.setCic(new Cic("True"));
-        //        record.setCas("100-74-3");
-        //        record.setRdCode("D13");
+    private static DataSampleValidationObject createValidNumericRecord() {
+        final DataSamplePayload dataSamplePayload = new DataSamplePayload();
+        dataSamplePayload.setEaId("42355");
+        dataSamplePayload.setSiteName("Biffa - Marchington Landfill Site");
+        dataSamplePayload.setReturnType("Landfill leachate monitoring");
+        dataSamplePayload.setMonitoringDate("2016-03-09T11:18:59");
+        dataSamplePayload.setReturnPeriod("Aug 2016");
+        dataSamplePayload.setMonitoringPoint("Borehole 1");
+        dataSamplePayload.setParameter("1,1,1,2-Tetrachloroethane");
+        dataSamplePayload.setValue("<0.0006");
+        dataSamplePayload.setUnit("m3/s");
+        dataSamplePayload.setReferencePeriod("95% of all 10-minute averages in any 24 hour period");
+        dataSamplePayload.setMethStand("BS EN 12260");
+        dataSamplePayload.setComments("Free text comments entered in this field.");
+        final DataSampleValidationObject record = new DataSampleValidationObject(dataSamplePayload);
+
         return record;
     }
 
