@@ -40,7 +40,7 @@
 			<column name="identifier"/>
 		</createIndex>
 
-		<sql>insert into users (identifier, create_date, last_changed_date) values ('SYSTEM', current_timestamp, current_timestamp)</sql>
+		<sql>insert into users (identifier, create_date, last_changed_date, dataset_changed_date) values ('SYSTEM', current_timestamp, current_timestamp, current_timestamp)</sql>
 
 		<!--
 		****************************************************************
