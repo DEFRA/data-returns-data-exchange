@@ -33,7 +33,9 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 import java.lang.reflect.Field;
+import java.util.Date;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -142,13 +144,17 @@ public class DefinitionsResource {
             @ApiParam("The payload type for which to return fields") final String payloadType,
             @BeanParam Preconditions preconditions)
             throws Exception {
-        return onPayloadType(payloadType, (payloadClass) ->
-                new EntityListResponse(
-                        getFields(payloadClass).keySet().stream()
-                                .map((fieldId) -> new EntityReference(fieldId, Linker.info(uriInfo).field(payloadType, fieldId)))
-                                .collect(Collectors.toList())
-                ).toResponseBuilder()
-        ).build();
+        return onPayloadType(payloadType, (payloadClass) -> {
+            Map<String, Field> fieldMap = getFields(payloadClass);
+            PayloadType payloadEntityType = payloadTypeDao.get(payloadType);
+            return new EntityListResponse(
+                    fieldMap.keySet().stream()
+                            .map((fieldId) -> new EntityReference(fieldId, Linker.info(uriInfo).field(payloadType, fieldId)))
+                            .collect(Collectors.toList()),
+                    Date.from(payloadEntityType.getLastChangedDate()),
+                    Preconditions.createEtag(fieldMap.values())
+            ).toResponseBuilder();
+        }).build();
     }
 
     /**
@@ -218,13 +224,18 @@ public class DefinitionsResource {
 
         return onPayloadType(payloadType, (payloadClass) -> {
             PayloadType payloadEntityType = payloadTypeDao.get(payloadType);
+            List<ValidationError> errors = validationErrorDao.list(payloadEntityType);
+
             return new EntityListResponse(
-                    validationErrorDao.list(payloadEntityType).stream()
+                    errors.stream()
                             .map((constraint) -> {
                                 String uri = Linker.info(uriInfo).constraint(payloadType, constraint.getId().getError());
                                 return new EntityReference(constraint.getId().getError(), uri);
                             })
-                            .collect(Collectors.toList())
+                            .collect(Collectors.toList()),
+                    Date.from(payloadEntityType.getLastChangedDate()),
+                    Preconditions.createEtag(errors)
+
             ).toResponseBuilder();
         }).build();
     }

@@ -44,15 +44,25 @@ public abstract class ResponseWrapper<T> {
 
     public abstract void setData(T data);
 
+
     public final Response.ResponseBuilder toResponseBuilder() {
         Response.ResponseBuilder rb = Response.status(getMeta().getStatus());
         rb.entity(this);
+        addModificationHeaders(rb);
+        return rb;
+    }
 
+    /**
+     * Add modification related headers to the response (ETag/Last-Modified)
+     * @param rb the responsebuilder to act on.
+     *
+     * This method provides an override point.
+     */
+    protected void addModificationHeaders(Response.ResponseBuilder rb) {
         if (getData() instanceof EntityBase) {
             EntityBase entity = (EntityBase) getData();
             rb.tag(Preconditions.createEtag(entity));
             rb.lastModified(entity.getLastModified());
         }
-        return rb;
     }
 }

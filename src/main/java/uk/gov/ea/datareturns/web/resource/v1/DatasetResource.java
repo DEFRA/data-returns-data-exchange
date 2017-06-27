@@ -78,6 +78,7 @@ public class DatasetResource {
     /**
      * List the available datasets
      *
+     * @param preconditions conditional request structure
      * @return a response containing an {@link EntityListResponse} entity
      * @throws Exception if the request cannot be completed normally.
      */
@@ -85,27 +86,26 @@ public class DatasetResource {
     @ApiOperation(value = "List the available datasets",
             notes = "This operation will list all datasets previously created by the API consumer.  Multiple API consumers (using "
                     + "different authentication credentials) may use datasets with the same `dataset_id` and these will operate "
-                    + "independently of each other.",
-            response = EntityListResponse.class
+                    + "independently of each other."
     )
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "OK", response = EntityListResponse.class)
+            @ApiResponse(code = 200, message = "OK", response = EntityListResponse.class),
+            @ApiResponse(code = 304, message = "Not Modified - see conditional request documentation")
     })
     public Response listDatasets(@BeanParam Preconditions preconditions) throws Exception {
-        // TODO - the datasets are hardcoded from the system user - we will need to extract the user from the headers etc.
-        // TODO - This could do with some optimization and rationalization.
         User user = datasetService.getSystemUser();
         List<DatasetEntity> datasets = datasetService.getDatasets(user);
 
-        List<EntityReference> entityReferences = onDatasetList(datasets,
-                (datasetEntity) -> new EntityReference(datasetEntity.getIdentifier(),
-                        Linker.info(uriInfo).dataset(datasetEntity.getIdentifier())));
-
         return onPreconditionsPass(user, datasets, preconditions,
-                () -> new EntityListResponse(entityReferences)
-                        .toResponseBuilder()
-                        .tag((Preconditions.createEtag(datasets)))
-                        .lastModified(Date.from(user.getDatasetChangedDate()))).build();
+                () -> {
+                    List<EntityReference> entityReferences = datasets.stream()
+                            .map(e -> new EntityReference(e.getIdentifier(), Linker.info(uriInfo).dataset(e.getIdentifier())))
+                            .collect(Collectors.toList());
+                    return new EntityListResponse(entityReferences,
+                            Date.from(user.getDatasetChangedDate()),
+                            Preconditions.createEtag(datasets)
+                    ).toResponseBuilder();
+                }).build();
     }
 
     /**
@@ -303,7 +303,7 @@ public class DatasetResource {
      * Retrieve the dataset status information for the specified dataset_id
      *
      * @param datasetId the unique identifier for the target dataset
-     * @return
+     * @return a response containing an {@link DatasetStatusResponse} entity
      * @throws Exception if the request cannot be completed normally.
      */
     @GET
@@ -334,7 +334,8 @@ public class DatasetResource {
      * Attempt to set dataset status information
      *
      * @param datasetId the unique identifier for the target dataset
-     * @return
+     * @param requestedStatus a {@link DatasetSubmissionStatus} object containing the desired target status
+     * @return a response containing an {@link DatasetStatusResponse} entity
      * @throws Exception if the request cannot be completed normally.
      */
     @PUT
@@ -553,10 +554,4 @@ public class DatasetResource {
         }
         return rb;
     }
-
-    // The set of entity references from the set of dataset entities
-    private List<EntityReference> onDatasetList(List<DatasetEntity> datasetEntities, Function<DatasetEntity, EntityReference> handler) {
-        return datasetEntities.stream().map(e -> handler.apply(e)).collect(Collectors.toList());
-    }
-
 }

@@ -96,6 +96,7 @@ public class RecordResource {
     )
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "OK", response = EntityListResponse.class),
+            @ApiResponse(code = 304, message = "Not Modified - see conditional request documentation"),
             @ApiResponse(
                     code = 404,
                     message = "Not Found - The `dataset_id` parameter did not match a known resource",
@@ -106,16 +107,18 @@ public class RecordResource {
             @PathParam("dataset_id") @Pattern(regexp = "[A-Za-z0-9_-]+")
             @ApiParam("The unique identifier for the target dataset") final String datasetId)
             throws Exception {
-        return onDataset(datasetId, datasetEntity ->
-                new EntityListResponse(
-                        submissionService.getRecords(datasetEntity).stream()
-                                .map((entity) -> {
-                                    String uri = Linker.info(uriInfo).record(datasetId, entity.getIdentifier());
-                                    return new EntityReference(entity.getIdentifier(), uri);
-                                })
-                                .collect(Collectors.toList())
-                ).toResponseBuilder()
-        ).build();
+        return onDataset(datasetId, datasetEntity -> {
+            List<RecordEntity> records = submissionService.getRecords(datasetEntity);
+            return new EntityListResponse(
+                    records.stream().map((entity) -> {
+                        String uri = Linker.info(uriInfo).record(datasetId, entity.getIdentifier());
+                        return new EntityReference(entity.getIdentifier(), uri);
+                    }).collect(Collectors.toList()),
+                    Date.from(datasetEntity.getRecordChangedDate()),
+                    Preconditions.createEtag(records)
+            ).toResponseBuilder();
+        }).build();
+    }
     }
 
     /**

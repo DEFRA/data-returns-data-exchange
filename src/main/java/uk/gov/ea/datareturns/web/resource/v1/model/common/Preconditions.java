@@ -37,12 +37,20 @@ public class Preconditions {
 
     @HeaderParam("If-Modified-Since")
     @JsonProperty("if_modified_since")
-    @ApiModelProperty(name = "if_modified_since", notes = "Support for RFC7232 conditional requests based on last modification time")
+    @ApiModelProperty(
+            name = "if_modified_since",
+            notes = "Support for RFC7232 conditional requests based on last modification time",
+            example = "\"0d210bfb2a0e1f1b4c082a6a0f79de07\""
+    )
     private Date ifModifiedSince;
 
     @HeaderParam("If-Unmodified-Since")
     @JsonProperty("if_unmodified_since")
-    @ApiModelProperty(name = "if_unmodified_since", notes = "Support for RFC7232 conditional requests based on last modification time")
+    @ApiModelProperty(
+            name = "if_unmodified_since",
+            notes = "Support for RFC7232 conditional requests based on last modification time",
+            example = "\"0d210bfb2a0e1f1b4c082a6a0f79de07\""
+    )
     private Date ifUnmodifiedSince;
 
     @HeaderParam("If-Match")
