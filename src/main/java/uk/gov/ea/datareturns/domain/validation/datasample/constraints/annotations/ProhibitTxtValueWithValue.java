@@ -1,10 +1,9 @@
 package uk.gov.ea.datareturns.domain.validation.datasample.constraints.annotations;
 
-import uk.gov.ea.datareturns.domain.validation.datasample.constraints.field.ValueTxtValueValidator;
+import uk.gov.ea.datareturns.domain.validation.datasample.constraints.validators.ProhibitTxtValueWithValueValidator;
 
 import javax.validation.Constraint;
 import javax.validation.Payload;
-
 import java.lang.annotation.*;
 
 /**
@@ -12,9 +11,9 @@ import java.lang.annotation.*;
  */
 @Target({ ElementType.TYPE })
 @Retention(RetentionPolicy.RUNTIME)
-@Constraint(validatedBy = ValueTxtValueValidator.class)
+@Constraint(validatedBy = ProhibitTxtValueWithValueValidator.class)
 @Documented
-public @interface ValueTxtValue {
+public @interface ProhibitTxtValueWithValue {
 
     String message() default "";
 

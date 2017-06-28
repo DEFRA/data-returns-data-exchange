@@ -1,8 +1,8 @@
-package uk.gov.ea.datareturns.domain.validation.datasample.constraints.field;
+package uk.gov.ea.datareturns.domain.validation.datasample.constraints.validators;
 
+import org.apache.commons.lang3.StringUtils;
 import uk.gov.ea.datareturns.domain.validation.datasample.DataSampleValidationObject;
 import uk.gov.ea.datareturns.domain.validation.datasample.constraints.annotations.ProhibitTxtValueWithValue;
-import uk.gov.ea.datareturns.domain.validation.newmodel.entityfields.FieldValue;
 
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
@@ -10,18 +10,18 @@ import javax.validation.ConstraintValidatorContext;
 /**
  * Created by graham on 11/05/17.
  */
-public class ValueTxtValueValidator implements ConstraintValidator<ProhibitTxtValueWithValue, DataSampleValidationObject> {
-
+public class ProhibitTxtValueWithValueValidator implements ConstraintValidator<ProhibitTxtValueWithValue, DataSampleValidationObject> {
 
     @Override
-    public void initialize(ProhibitTxtValueWithValue valueTxtValue) {
+    public void initialize(ProhibitTxtValueWithValue prohibitTxtValueWithValue) {
 
     }
 
     @Override
-    public boolean isValid(DataSampleValidationObject landfillMeasurementMvo, ConstraintValidatorContext constraintValidatorContext) {
-        boolean hasValue = FieldValue.isNotEmpty(landfillMeasurementMvo.getValue());
-        boolean hasTxtValue = FieldValue.isNotEmpty(landfillMeasurementMvo.getTextValue());
+    public boolean isValid(DataSampleValidationObject dataSampleValidationObject, ConstraintValidatorContext constraintValidatorContext) {
+
+        boolean hasTxtValue = (dataSampleValidationObject.getTextValue().getEntity() != null);
+        boolean hasValue = !StringUtils.isEmpty(dataSampleValidationObject.getValue().getValue());
 
         String error = null;
         if (!hasValue && !hasTxtValue) {

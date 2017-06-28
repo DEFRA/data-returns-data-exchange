@@ -1,6 +1,8 @@
 package uk.gov.ea.datareturns.domain.validation.datasample;
 
-import uk.gov.ea.datareturns.domain.validation.datasample.constraints.annotations.ValueTxtValue;
+import uk.gov.ea.datareturns.domain.validation.datasample.constraints.annotations.ProhibitTxtValueWithValue;
+import uk.gov.ea.datareturns.domain.validation.datasample.constraints.annotations.ProhibitUnitWithTxtValue;
+import uk.gov.ea.datareturns.domain.validation.datasample.constraints.annotations.RequireUnitWithValue;
 import uk.gov.ea.datareturns.domain.validation.datasample.fields.*;
 import uk.gov.ea.datareturns.domain.validation.newmodel.validator.AbstractValidationObject;
 import uk.gov.ea.datareturns.web.resource.v1.model.record.payload.DataSamplePayload;
@@ -11,7 +13,10 @@ import javax.validation.Valid;
  * @author Graham Willis
  * Object contaioning entityfields and hibernate validation annotations
  */
-@ValueTxtValue
+
+@ProhibitTxtValueWithValue
+@ProhibitUnitWithTxtValue
+@RequireUnitWithValue
 public class DataSampleValidationObject extends AbstractValidationObject {
 
     /** The EA Unique Identifier (EA_ID) */
