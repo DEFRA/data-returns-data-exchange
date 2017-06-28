@@ -17,7 +17,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 import org.springframework.util.Assert;
-import uk.gov.ea.datareturns.distributedtransaction.DistributedTransactionService;
 import uk.gov.ea.datareturns.domain.jpa.dao.masterdata.SiteDao;
 import uk.gov.ea.datareturns.domain.jpa.entities.masterdata.impl.Site;
 
@@ -56,7 +55,7 @@ public class Search {
      * @throws IOException
      */
     @Inject
-    public Search(SiteDao siteDao, DistributedTransactionService distributedTransactionService) throws IOException {
+    public Search(SiteDao siteDao) {
         this.siteDao = siteDao;
     }
 
@@ -156,23 +155,6 @@ public class Search {
                 getHitTerms(bc.getQuery(), searcher, docId, hitTerms);
             }
             return;
-        }
-    }
-
-    /**
-     * Added to make the lucene index use the same on-demand methodology as teh generic caches
-     */
-    public void clearIndexes() {
-        if (reader != null) {
-            try {
-                LOGGER.info("Clear site-permit index");
-                if (reader != null) {
-                    reader.close();
-                    reader = null;
-                }
-            } catch (IOException e) {
-                LOGGER.warn("Error clearing site-permit index: " + e);
-            }
         }
     }
 }

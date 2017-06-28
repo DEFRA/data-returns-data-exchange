@@ -7,11 +7,6 @@ import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionDefinition;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.DefaultTransactionDefinition;
-import uk.gov.ea.datareturns.distributedtransaction.DistributedTransactionService;
-import uk.gov.ea.datareturns.distributedtransaction.LockSubject;
-import uk.gov.ea.datareturns.distributedtransaction.RemoteCache;
-import uk.gov.ea.datareturns.distributedtransaction.impl.DistributedLockException;
-import uk.gov.ea.datareturns.distributedtransaction.impl.DistributedTransactionServiceImpl;
 import uk.gov.ea.datareturns.domain.jpa.dao.masterdata.Key;
 import uk.gov.ea.datareturns.domain.jpa.dao.masterdata.SiteDao;
 import uk.gov.ea.datareturns.domain.jpa.dao.masterdata.UniqueIdentifierAliasDao;
@@ -41,25 +36,19 @@ public class SitePermitService {
     private final UniqueIdentifierAliasDao uniqueIdentifierAliasDao;
     private final Search search;
     private final PlatformTransactionManager transactionManager;
-    private final DistributedTransactionServiceImpl.DistributedTransactionLock distributedTransactionLock;
-    private final RemoteCache remoteCache;
 
     @Inject
     public SitePermitService(SiteDao siteDao,
                              UniqueIdentifierDao uniqueIdentifierDao,
                              UniqueIdentifierAliasDao uniqueIdentifierAliasDao,
                              Search search,
-                             PlatformTransactionManager transactionManager,
-                             RemoteCache remoteCacheService,
-                             DistributedTransactionService distributedTransactionService) {
+                             PlatformTransactionManager transactionManager) {
 
         this.uniqueIdentifierDao = uniqueIdentifierDao;
         this.siteDao = siteDao;
         this.uniqueIdentifierAliasDao = uniqueIdentifierAliasDao;
         this.search = search;
         this.transactionManager = transactionManager;
-        this.remoteCache = remoteCacheService;
-        this.distributedTransactionLock = distributedTransactionService.distributedTransactionLockFor(LockSubject.instanceOf(LockSubject.Subject.SITE_PERMIT));
     }
 
     /**
@@ -73,47 +62,42 @@ public class SitePermitService {
     public void addNewPermitAndSite(String eaId, String siteName, String[] aliasNames)  {
 
         // Acquire a distributed lock on all remote servers for this transaction
-        distributedTransactionLock.globalLockAction(() -> {
 
-            DefaultTransactionDefinition def = new DefaultTransactionDefinition();
-            def.setName("addNewPermitAndSite");
-            def.setPropagationBehavior(TransactionDefinition.PROPAGATION_NESTED);
 
-            TransactionStatus status = transactionManager.getTransaction(def);
+        DefaultTransactionDefinition def = new DefaultTransactionDefinition();
+        def.setName("addNewPermitAndSite");
+        def.setPropagationBehavior(TransactionDefinition.PROPAGATION_NESTED);
 
-            Site site = new Site();
-            site.setName(siteName);
+        TransactionStatus status = transactionManager.getTransaction(def);
 
-            UniqueIdentifier uniqueIdentifier = new UniqueIdentifier();
-            uniqueIdentifier.setName(eaId);
-            uniqueIdentifier.setSite(site);
+        Site site = new Site();
+        site.setName(siteName);
 
-            UniqueIdentifierAlias[] uniqueIdentifierAliases = new UniqueIdentifierAlias[aliasNames.length];
+        UniqueIdentifier uniqueIdentifier = new UniqueIdentifier();
+        uniqueIdentifier.setName(eaId);
+        uniqueIdentifier.setSite(site);
 
-            for (int i = 0; i < aliasNames.length; i++) {
-                uniqueIdentifierAliases[i] = new UniqueIdentifierAlias();
-                uniqueIdentifierAliases[i].setUniqueIdentifier(uniqueIdentifier);
-                uniqueIdentifierAliases[i].setName(aliasNames[i]);
-            }
+        UniqueIdentifierAlias[] uniqueIdentifierAliases = new UniqueIdentifierAlias[aliasNames.length];
 
-            siteDao.add(site);
-            uniqueIdentifierDao.add(uniqueIdentifier);
+        for (int i = 0; i < aliasNames.length; i++) {
+            uniqueIdentifierAliases[i] = new UniqueIdentifierAlias();
+            uniqueIdentifierAliases[i].setUniqueIdentifier(uniqueIdentifier);
+            uniqueIdentifierAliases[i].setName(aliasNames[i]);
+        }
 
-            for (int i = 0; i < aliasNames.length; i++) {
-                uniqueIdentifierAliasDao.add(uniqueIdentifierAliases[i]);
-            }
+        siteDao.add(site);
+        uniqueIdentifierDao.add(uniqueIdentifier);
 
-            // Reset the local and remote caches
-            if (remoteCache.blockingRemoteCacheClear(RemoteCache.Cache.SITE_PERMIT_CACHES)) {
-                remoteCache.clearCacheLocal(RemoteCache.Cache.SITE_PERMIT_CACHES);
-            } else {
-                throw new DistributedLockException("Could not clear remote cache");
-            }
+        for (int i = 0; i < aliasNames.length; i++) {
+            uniqueIdentifierAliasDao.add(uniqueIdentifierAliases[i]);
+        }
 
-            // This can cause an exception on write to the database so that transaction is rolled back the
-            // proceeding cache clear functions are not called.
-            transactionManager.commit(status);
-        });
+        // Reset the local and remote caches
+        resetLocalCaches();
+
+        // This can cause an exception on write to the database so that transaction is rolled back the
+        // proceeding cache clear functions are not called.
+        transactionManager.commit(status);
     }
 
     /**
@@ -124,35 +108,29 @@ public class SitePermitService {
     public void addNewPermitAndSite(String eaId, String siteName) {
 
         // Acquire a distributed lock on all remote servers for this transaction
-        distributedTransactionLock.globalLockAction(() -> {
 
-            DefaultTransactionDefinition def = new DefaultTransactionDefinition();
-            def.setName("addNewPermitAndSite");
-            def.setPropagationBehavior(TransactionDefinition.PROPAGATION_NESTED);
+        DefaultTransactionDefinition def = new DefaultTransactionDefinition();
+        def.setName("addNewPermitAndSite");
+        def.setPropagationBehavior(TransactionDefinition.PROPAGATION_NESTED);
 
-            TransactionStatus status = transactionManager.getTransaction(def);
+        TransactionStatus status = transactionManager.getTransaction(def);
 
-            Site site = new Site();
-            site.setName(siteName);
+        Site site = new Site();
+        site.setName(siteName);
 
-            UniqueIdentifier uniqueIdentifier = new UniqueIdentifier();
-            uniqueIdentifier.setName(eaId);
-            uniqueIdentifier.setSite(site);
+        UniqueIdentifier uniqueIdentifier = new UniqueIdentifier();
+        uniqueIdentifier.setName(eaId);
+        uniqueIdentifier.setSite(site);
 
-            siteDao.add(site);
-            uniqueIdentifierDao.add(uniqueIdentifier);
+        siteDao.add(site);
+        uniqueIdentifierDao.add(uniqueIdentifier);
 
-            // Reset the local and remote caches
-            if (remoteCache.blockingRemoteCacheClear(RemoteCache.Cache.SITE_PERMIT_CACHES)) {
-                remoteCache.clearCacheLocal(RemoteCache.Cache.SITE_PERMIT_CACHES);
-            } else {
-                throw new DistributedLockException("Could not clear remote cache");
-            }
+        // Reset the local and remote caches
+        resetLocalCaches();
 
-            // Commit the database transaction
-            transactionManager.commit(status);
+        // Commit the database transaction
+        transactionManager.commit(status);
 
-        });
     }
 
     /**
@@ -165,36 +143,30 @@ public class SitePermitService {
         if (uniqueIdentifier != null) {
 
             // Acquire a distributed lock on all remote servers for this transaction
-            distributedTransactionLock.globalLockAction(() -> {
 
-                DefaultTransactionDefinition def = new DefaultTransactionDefinition();
-                def.setName("removePermitSiteAndAliases");
-                def.setPropagationBehavior(TransactionDefinition.PROPAGATION_NESTED);
+            DefaultTransactionDefinition def = new DefaultTransactionDefinition();
+            def.setName("removePermitSiteAndAliases");
+            def.setPropagationBehavior(TransactionDefinition.PROPAGATION_NESTED);
 
-                TransactionStatus status = transactionManager.getTransaction(def);
+            TransactionStatus status = transactionManager.getTransaction(def);
 
-                Site site = uniqueIdentifier.getSite();
-                Set<String> aliasNames = uniqueIdentifierDao.getAliasNames(uniqueIdentifier);
-                if (aliasNames != null) {
-                    for (String aliasName : aliasNames) {
-                        UniqueIdentifierAlias uniqueIdentifierAlias = uniqueIdentifierAliasDao.getByName(Key.explicit(aliasName));
-                        uniqueIdentifierAliasDao.removeById(uniqueIdentifierAlias.getId());
-                    }
+            Site site = uniqueIdentifier.getSite();
+            Set<String> aliasNames = uniqueIdentifierDao.getAliasNames(uniqueIdentifier);
+            if (aliasNames != null) {
+                for (String aliasName : aliasNames) {
+                    UniqueIdentifierAlias uniqueIdentifierAlias = uniqueIdentifierAliasDao.getByName(Key.explicit(aliasName));
+                    uniqueIdentifierAliasDao.removeById(uniqueIdentifierAlias.getId());
                 }
-                uniqueIdentifierDao.removeById(uniqueIdentifier.getId());
-                siteDao.removeById(site.getId());
+            }
+            uniqueIdentifierDao.removeById(uniqueIdentifier.getId());
+            siteDao.removeById(site.getId());
 
-                // Reset the local and remote caches
-                if (remoteCache.blockingRemoteCacheClear(RemoteCache.Cache.SITE_PERMIT_CACHES)) {
-                    remoteCache.clearCacheLocal(RemoteCache.Cache.SITE_PERMIT_CACHES);
-                } else {
-                    throw new DistributedLockException("Could not clear remote cache");
-                }
+            // Reset the local and remote caches
+            resetLocalCaches();
 
-                // Commit the database transaction
-                transactionManager.commit(status);
+            // Commit the database transaction
+            transactionManager.commit(status);
 
-            });
         } else {
             LOGGER.warn("Requested removal of non-existent permit: " + eaId);
         }
@@ -212,11 +184,4 @@ public class SitePermitService {
         uniqueIdentifierAliasDao.clearCaches();
         siteDao.clearCaches();
     }
-
-    public void resetLocalCacheWithLocking() {
-        distributedTransactionLock.globalLockAction(() -> resetLocalCaches());
-    }
-
-
-
 }
