@@ -4,7 +4,12 @@ import com.univocity.parsers.common.TextParsingException;
 import com.univocity.parsers.common.processor.ColumnProcessor;
 import com.univocity.parsers.csv.CsvParser;
 import com.univocity.parsers.csv.CsvParserSettings;
+import org.apache.commons.io.FileUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import uk.gov.ea.datareturns.util.EncodingSupport;
 
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.util.Collections;
 import java.util.List;
@@ -15,6 +20,7 @@ import java.util.List;
  * @author Sam Gardner-Dell
  */
 public final class CSVColumnReader {
+    private static final Logger LOGGER = LoggerFactory.getLogger(CSVColumnReader.class);
 
     /** Private Utility class constructor */
     private CSVColumnReader() {
@@ -40,7 +46,13 @@ public final class CSVColumnReader {
         parserSettings.selectFields(columnName);
 
         final CsvParser parser = new CsvParser(parserSettings);
-        parser.parse(csvFile);
+        try {
+            byte[] data = FileUtils.readFileToByteArray(csvFile);
+            parser.parse(new ByteArrayInputStream(data), EncodingSupport.detectCharset(data));
+        } catch (final Throwable e) {
+            LOGGER.error("Error encountered parsing CSV data", e);
+            throw new TextParsingException(null, "Unable to parse CSV file.  File content is not valid CSV data.", e);
+        }
 
         try {
             columnData = rowProcessor.getColumn(columnName);
