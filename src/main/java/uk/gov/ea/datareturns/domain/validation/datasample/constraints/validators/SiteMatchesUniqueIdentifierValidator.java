@@ -1,18 +1,27 @@
-package uk.gov.ea.datareturns.domain.validation.datasample.constraints.record;
+package uk.gov.ea.datareturns.domain.validation.datasample.constraints.validators;
 
 import org.apache.commons.lang3.StringUtils;
 import uk.gov.ea.datareturns.domain.jpa.entities.masterdata.impl.UniqueIdentifier;
 import uk.gov.ea.datareturns.domain.validation.datasample.DataSampleValidationObject;
+import uk.gov.ea.datareturns.domain.validation.datasample.constraints.annotations.RequireValueOrTxtValue;
+import uk.gov.ea.datareturns.domain.validation.datasample.constraints.annotations.SiteMatchesUniqueIdentifier;
 import uk.gov.ea.datareturns.domain.validation.datasample.fields.EaId;
 import uk.gov.ea.datareturns.domain.validation.datasample.fields.SiteName;
 import uk.gov.ea.datareturns.domain.validation.newmodel.constraints.record.RecordConstraintValidator;
 
+import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
 
 /**
  * Created by sam on 11/11/16.
  */
-public class SiteAndUniqueIdentifierValidatorNew implements RecordConstraintValidator<DataSampleValidationObject> {
+public class SiteMatchesUniqueIdentifierValidator implements ConstraintValidator<SiteMatchesUniqueIdentifier, DataSampleValidationObject> {
+
+    @Override
+    public void initialize(SiteMatchesUniqueIdentifier siteMatchesUniqueIdentifier) {
+
+    }
+
     @Override
     public boolean isValid(DataSampleValidationObject record, final ConstraintValidatorContext context) {
         final EaId eaId = record.getEaId();

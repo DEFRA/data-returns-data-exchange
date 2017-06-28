@@ -1,8 +1,6 @@
 package uk.gov.ea.datareturns.domain.validation.datasample;
 
-import uk.gov.ea.datareturns.domain.validation.datasample.constraints.annotations.ProhibitTxtValueWithValue;
-import uk.gov.ea.datareturns.domain.validation.datasample.constraints.annotations.ProhibitUnitWithTxtValue;
-import uk.gov.ea.datareturns.domain.validation.datasample.constraints.annotations.RequireUnitWithValue;
+import uk.gov.ea.datareturns.domain.validation.datasample.constraints.annotations.*;
 import uk.gov.ea.datareturns.domain.validation.datasample.fields.*;
 import uk.gov.ea.datareturns.domain.validation.newmodel.validator.AbstractValidationObject;
 import uk.gov.ea.datareturns.web.resource.v1.model.record.payload.DataSamplePayload;
@@ -15,8 +13,11 @@ import javax.validation.Valid;
  */
 
 @ProhibitTxtValueWithValue
+@RequireValueOrTxtValue
 @ProhibitUnitWithTxtValue
 @RequireUnitWithValue
+@SiteMatchesUniqueIdentifier
+@RequireCommentsForTextValueComment
 public class DataSampleValidationObject extends AbstractValidationObject {
 
     /** The EA Unique Identifier (EA_ID) */

@@ -109,7 +109,6 @@ public class DatasetService {
         datasetEntity.setLastChangedDate(Instant.now());
         User user = userDao.get(datasetEntity.getUser().getIdentifier());
         user.setDatasetChangedDate(timestamp);
-
         userDao.merge(user);
         datasetDao.merge(datasetEntity);
     }
@@ -126,6 +125,9 @@ public class DatasetService {
 
     @Transactional
     public void removeDataset(String identifier) {
+        User user = getSystemUser();
+        user.setDatasetChangedDate(Instant.now());
+        userDao.merge(user);
         removeDataset(identifier, getSystemUser());
     }
 

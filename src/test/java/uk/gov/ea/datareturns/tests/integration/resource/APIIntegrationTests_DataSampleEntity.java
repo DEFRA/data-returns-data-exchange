@@ -265,7 +265,7 @@ public class APIIntegrationTests_DataSampleEntity {
                 .createRecords(dataset, samples.stream().collect(Collectors.toMap(o -> UUID.randomUUID().toString(), o -> o)));
         submissionService.submit(recordEntities.values());
         List<Triple<String, String, String>> validationErrors = submissionService.retrieveValidationErrors(dataset);
-        Assert.assertEquals(3, validationErrors.size());
+        Assert.assertEquals(4, validationErrors.size());
     }
 
     /**
