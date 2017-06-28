@@ -22,7 +22,6 @@ import org.springframework.core.type.filter.AssignableTypeFilter;
 import org.springframework.stereotype.Component;
 import uk.gov.ea.datareturns.web.filters.AuthorizationFilterFileUpload;
 import uk.gov.ea.datareturns.web.resource.ControlledListResource;
-import uk.gov.ea.datareturns.web.resource.DataExchangeResource;
 import uk.gov.ea.datareturns.web.resource.LoggingTestResource;
 import uk.gov.ea.datareturns.web.resource.PermitLookupResource;
 
@@ -66,7 +65,6 @@ public class JerseyConfig extends ResourceConfig {
     private void registerEndpoints() {
         // Register resources
         LOGGER.info("Registering JAX-RS Resources");
-        register(context.getBean(DataExchangeResource.class));
         register(context.getBean(ControlledListResource.class));
         register(context.getBean(LoggingTestResource.class));
         register(context.getBean(PermitLookupResource.class));

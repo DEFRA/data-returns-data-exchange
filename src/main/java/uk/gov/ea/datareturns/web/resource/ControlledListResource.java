@@ -17,7 +17,7 @@ import uk.gov.ea.datareturns.domain.jpa.entities.masterdata.impl.ControlledLists
 import uk.gov.ea.datareturns.domain.jpa.hierarchy.Hierarchy;
 import uk.gov.ea.datareturns.domain.jpa.hierarchy.HierarchyLevel;
 import uk.gov.ea.datareturns.domain.processors.ControlledListProcessor;
-import uk.gov.ea.datareturns.domain.result.ExceptionMessageContainer;
+import uk.gov.ea.datareturns.domain.exceptions.ExceptionMessageContainer;
 import uk.gov.ea.datareturns.util.SpringApplicationContextProvider;
 
 import javax.inject.Inject;

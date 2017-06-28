@@ -3,9 +3,7 @@ package uk.gov.ea.datareturns.domain.jpa.service;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.apache.commons.lang3.tuple.Pair;
 import org.apache.commons.lang3.tuple.Triple;
-import org.apache.lucene.analysis.CharArrayMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.transaction.annotation.Transactional;
@@ -17,17 +15,15 @@ import uk.gov.ea.datareturns.domain.jpa.entities.userdata.AbstractPayloadEntity;
 import uk.gov.ea.datareturns.domain.jpa.entities.userdata.impl.DatasetEntity;
 import uk.gov.ea.datareturns.domain.jpa.entities.userdata.impl.RecordEntity;
 import uk.gov.ea.datareturns.domain.jpa.entities.userdata.impl.ValidationError;
-import uk.gov.ea.datareturns.domain.validation.newmodel.validator.AbstractValidationObject;
-import uk.gov.ea.datareturns.domain.validation.newmodel.validator.ValidationObjectFactory;
-import uk.gov.ea.datareturns.domain.validation.newmodel.validator.Validator;
-import uk.gov.ea.datareturns.web.resource.v1.model.dataset.Dataset;
+import uk.gov.ea.datareturns.domain.validation.common.validator.AbstractValidationObject;
+import uk.gov.ea.datareturns.domain.validation.common.validator.ValidationObjectFactory;
+import uk.gov.ea.datareturns.domain.validation.common.validator.Validator;
 import uk.gov.ea.datareturns.web.resource.v1.model.record.payload.Payload;
 
 import java.io.IOException;
 import java.time.Instant;
 import java.util.*;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 /**
  * @author Graham Willis

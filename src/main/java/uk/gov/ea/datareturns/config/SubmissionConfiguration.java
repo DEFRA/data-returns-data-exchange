@@ -11,7 +11,7 @@ import uk.gov.ea.datareturns.domain.jpa.entities.userdata.impl.AlternativePayloa
 import uk.gov.ea.datareturns.domain.jpa.entities.userdata.impl.DataSampleEntity;
 import uk.gov.ea.datareturns.domain.jpa.service.DatasetService;
 import uk.gov.ea.datareturns.domain.jpa.service.SubmissionService;
-import uk.gov.ea.datareturns.domain.validation.newmodel.validator.*;
+import uk.gov.ea.datareturns.domain.validation.common.validator.*;
 import uk.gov.ea.datareturns.web.resource.v1.model.record.payload.DataSamplePayload;
 import uk.gov.ea.datareturns.web.resource.v1.model.record.payload.DemonstrationAlternativePayload;
 
