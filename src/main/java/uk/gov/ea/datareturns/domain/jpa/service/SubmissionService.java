@@ -278,7 +278,7 @@ public class SubmissionService {
                             try {
                                 payload = mapper.readValue(r.getJson(), Payload.class);
                             } catch (IOException e) {
-                                LOGGER.error("Error de-serializing stored JSON: " + e.getMessage());
+                                LOGGER.error("Error de-serializing stored JSON: " + e.getMessage(), e);
                                 return null;
                             }
 

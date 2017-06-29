@@ -17,6 +17,7 @@ import uk.gov.ea.datareturns.domain.jpa.entities.userdata.impl.ValidationError;
 import uk.gov.ea.datareturns.domain.jpa.entities.userdata.impl.ValidationErrorId;
 import uk.gov.ea.datareturns.domain.processors.ControlledListProcessor;
 import uk.gov.ea.datareturns.web.resource.ControlledListResource;
+import uk.gov.ea.datareturns.web.resource.v1.model.common.EntityBase;
 import uk.gov.ea.datareturns.web.resource.v1.model.common.Linker;
 import uk.gov.ea.datareturns.web.resource.v1.model.common.Preconditions;
 import uk.gov.ea.datareturns.web.resource.v1.model.common.references.EntityReference;
@@ -33,10 +34,7 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 import java.lang.reflect.Field;
-import java.util.Date;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -152,7 +150,51 @@ public class DefinitionsResource {
                             .map((fieldId) -> new EntityReference(fieldId, Linker.info(uriInfo).field(payloadType, fieldId)))
                             .collect(Collectors.toList()),
                     Date.from(payloadEntityType.getLastChangedDate()),
-                    Preconditions.createEtag(fieldMap.values())
+                    Preconditions.createEtag(payloadEntityType, new ArrayList<>(fieldMap.keySet()))
+            ).toResponseBuilder();
+        }).build();
+    }
+
+    /**
+     * Retrieve the list of fields available for the given payload_type
+     *
+     * @param payloadType the payload type for which to return fields
+     * @param preconditions conditional request structure
+     * @return a response containing an {@link EntityDataListResponse} entity
+     * @throws Exception if the request cannot be completed normally.
+     */
+    @GET
+    @Path("/{payload_type}/fields/$data")
+    @ApiOperation(value = "List field data",
+            notes = "List the field data for a given `payload type`"
+    )
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "OK", response = EntityDataListResponse.class),
+            @ApiResponse(
+                    code = 404,
+                    message = "Not Found - The `payload_type` parameter did not match a known payload type.",
+                    response = ErrorResponse.class
+            )
+    })
+    public Response listFieldData(
+            @PathParam("payload_type")
+            @Pattern(regexp = "[A-Za-z0-9_-]+")
+            @ApiParam("The payload type for which to return fields") final String payloadType,
+            @BeanParam Preconditions preconditions)
+            throws Exception {
+        return onPayloadType(payloadType, (payloadClass) -> {
+            Map<String, Field> fieldMap = getFields(payloadClass);
+            PayloadType payloadEntityType = payloadTypeDao.get(payloadType);
+            List<EntityBase> defs = fieldMap.entrySet().stream()
+                    .map((mapEntry) -> {
+                        FieldEntity fieldEntity = fieldDao.get(payloadEntityType, mapEntry.getKey());
+                        return toFieldDefinition(payloadEntityType, mapEntry.getValue(), fieldEntity);
+                    })
+                    .collect(Collectors.toList());
+
+            return new EntityDataListResponse(defs,
+                    Date.from(payloadEntityType.getLastChangedDate()),
+                    Preconditions.createEtag(defs)
             ).toResponseBuilder();
         }).build();
     }
@@ -167,7 +209,7 @@ public class DefinitionsResource {
      * @throws Exception if the request cannot be completed normally.
      */
     @GET
-    @Path("/{payload_type}/fields/{field_id}")
+    @Path("/{payload_type}/fields/{field_id : [a-zA-Z0-9_-]+ }")
     @ApiOperation(value = "Retrieve field definition",
             notes = "Retrieve the definition for the given field"
     )
@@ -241,6 +283,44 @@ public class DefinitionsResource {
     }
 
     /**
+     * Retrieve full information about all validation constraints for a particular payload_type
+     *
+     * @param payloadType the payload type for which to return fields
+     * @return a response containing an {@link EntityDataListResponse} entity
+     * @throws Exception if the request cannot be completed normally.
+     */
+    @GET
+    @Path("/{payload_type}/constraints/$data")
+    @ApiOperation(value = "Retrieve constraint data",
+            notes = "Retrieve all validation constraint information for the given `payload_type`"
+    )
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "OK", response = EntityDataListResponse.class),
+            @ApiResponse(
+                    code = 404,
+                    message = "Not Found - The `payload_type` parameter did not match a payload type.",
+                    response = ErrorResponse.class
+            )
+    })
+    public Response listValidationConstraintData(
+            @PathParam("payload_type")
+            @Pattern(regexp = "[A-Za-z0-9_-]+")
+            @ApiParam("The payload type the target field belongs to.") final String payloadType)
+            throws Exception {
+        return onPayloadType(payloadType, (payloadClass) -> {
+            PayloadType payloadEntityType = payloadTypeDao.get(payloadType);
+            List<ValidationError> errors = validationErrorDao.list(payloadEntityType);
+            return new EntityDataListResponse(
+                    errors.stream()
+                            .map((validationErrorDef) -> toConstraint(payloadEntityType, validationErrorDef))
+                            .collect(Collectors.toList()),
+                    Date.from(payloadEntityType.getLastChangedDate()),
+                    Preconditions.createEtag(errors)
+            ).toResponseBuilder();
+        }).build();
+    }
+
+    /**
      * Retrieve the list of potential validation constraints for a particular payload_type
      *
      * @param payloadType the payload type for which to return the constraint definitions
@@ -249,7 +329,7 @@ public class DefinitionsResource {
      * @throws Exception if the request cannot be completed normally.
      */
     @GET
-    @Path("/{payload_type}/constraints/{constraint_id}")
+    @Path("/{payload_type}/constraints/{constraint_id : [a-zA-Z0-9_-]+ }")
     @ApiOperation(
             value = "Retrieve constraint definition",
             notes = "Retrieve the validation constraint definition for the constraint identified by the given `constraint_id` "
@@ -287,23 +367,13 @@ public class DefinitionsResource {
 
     private Response.ResponseBuilder onConstraint(String payloadTypeStr, String constraintId, Function<ConstraintDefinition, Response
             .ResponseBuilder> handler) {
-
         PayloadType payloadType = payloadTypeDao.get(payloadTypeStr);
-        ValidationErrorId id = new ValidationErrorId();
-        id.setPayloadType(payloadType);
-        id.setError(constraintId);
+        ValidationErrorId id = new ValidationErrorId(payloadType, constraintId);
         ValidationError validationError = validationErrorDao.get(id);
         if (validationError == null) {
             return ErrorResponse.CONSTRAINT_NOT_FOUND.toResponseBuilder();
         } else {
-            ConstraintDefinition definition = new ConstraintDefinition();
-            definition.setId(validationError.getId().getError());
-            definition.setDescription(validationError.getMessage());
-            definition.setFields(validationError.getFields().stream()
-                    .map((field) -> new EntityReference(field.getId().getFieldName(), Linker.info(uriInfo).field(
-                            payloadType.getPayloadTypeName(), field.getId().getFieldName())))
-                    .collect(Collectors.toList()));
-            return handler.apply(definition);
+            return handler.apply(toConstraint(payloadType, validationError));
         }
     }
 
@@ -320,21 +390,34 @@ public class DefinitionsResource {
         if (field == null || fieldEntity == null) {
             rb = ErrorResponse.FIELD_NOT_FOUND.toResponseBuilder();
         } else {
-
-            FieldDefinition definition = new FieldDefinition();
-            definition.setId(fieldEntity.getId().getFieldName());
-            definition.setDescription(fieldEntity.getDescription());
-            definition.setType(field.getType().getSimpleName());
-
-            ControlledListsList controlledList = ControlledListsList.getByPath(fieldId);
-            // Check we have a registered controlled list type
-            if (controlledList != null) {
-                definition.setAllowed(controlledListProcessor.getListData(controlledList, null).getRight());
-            }
-
-            rb = handler.apply(definition);
+            rb = handler.apply(toFieldDefinition(payloadEntityType, field, fieldEntity));
         }
         return rb;
+    }
+
+    private FieldDefinition toFieldDefinition(PayloadType payloadType, Field field, FieldEntity fieldEntity) {
+        FieldDefinition definition = new FieldDefinition();
+        definition.setId(fieldEntity.getId().getFieldName());
+        definition.setDescription(fieldEntity.getDescription());
+        definition.setType(field.getType().getSimpleName());
+
+        ControlledListsList controlledList = ControlledListsList.getByPath(fieldEntity.getId().getFieldName());
+        // Check we have a registered controlled list type
+        if (controlledList != null) {
+            definition.setAllowed(controlledListProcessor.getListData(controlledList, null).getRight());
+        }
+        return definition;
+    }
+
+    private ConstraintDefinition toConstraint(PayloadType payloadType, ValidationError validationError) {
+        ConstraintDefinition definition = new ConstraintDefinition();
+        definition.setId(validationError.getId().getError());
+        definition.setDescription(validationError.getMessage());
+        definition.setFields(validationError.getFields().stream()
+                .map((field) -> new EntityReference(field.getId().getFieldName(), Linker.info(uriInfo).field(
+                        payloadType.getPayloadTypeName(), field.getId().getFieldName())))
+                .collect(Collectors.toList()));
+        return definition;
     }
 
     private Map<String, Field> getFields(Class<?> payloadClass) {

@@ -38,8 +38,8 @@ public class DatasetDao extends AbstractUserDataDao<DatasetEntity> {
         Root<DatasetEntity> dataset = cq.from(m.entity(DatasetEntity.class));
         cq.select(dataset);
         cq.where(
-            cb.equal(dataset.get(DatasetEntity_.identifier), identifier),
-            cb.equal(dataset.get(DatasetEntity_.user), user)
+                cb.equal(dataset.get(DatasetEntity_.identifier), identifier),
+                cb.equal(dataset.get(DatasetEntity_.user), user)
         );
         TypedQuery<DatasetEntity> q = entityManager.createQuery(cq);
         try {

@@ -15,6 +15,15 @@ public class ValidationErrorId implements Serializable {
     @Basic @Column(name = "error")
     private String error;
 
+    public ValidationErrorId() {
+
+    }
+
+    public ValidationErrorId(PayloadType payloadType, String error) {
+        this.payloadType = payloadType;
+        this.error = error;
+    }
+
     public PayloadType getPayloadType() {
         return payloadType;
     }
