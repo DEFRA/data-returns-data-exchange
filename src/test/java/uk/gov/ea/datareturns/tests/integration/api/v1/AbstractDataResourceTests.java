@@ -8,6 +8,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import uk.gov.ea.datareturns.testsupport.integration.api.v1.AbstractResourceRequest;
 import uk.gov.ea.datareturns.testsupport.integration.api.v1.DatasetResourceRequest;
+import uk.gov.ea.datareturns.testsupport.integration.api.v1.DefinitionResourceRequest;
 import uk.gov.ea.datareturns.testsupport.integration.api.v1.RecordResourceRequest;
 import uk.gov.ea.datareturns.web.resource.v1.model.common.references.EntityReference;
 import uk.gov.ea.datareturns.web.resource.v1.model.dataset.Dataset;
@@ -42,6 +43,10 @@ public abstract class AbstractDataResourceTests implements AbstractResourceReque
 
     protected RecordResourceRequest recordRequest(HttpStatus expected) {
         return new RecordResourceRequest(this, expected);
+    }
+
+    protected DefinitionResourceRequest definitionRequest(HttpStatus expected) {
+        return new DefinitionResourceRequest(this, expected);
     }
 
     @Before
