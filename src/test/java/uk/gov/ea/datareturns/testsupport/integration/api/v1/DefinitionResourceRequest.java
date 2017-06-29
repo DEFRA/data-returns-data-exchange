@@ -4,7 +4,9 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import uk.gov.ea.datareturns.web.resource.v1.DefinitionsResource;
+import uk.gov.ea.datareturns.web.resource.v1.model.response.ConstraintDefinitionResponse;
 import uk.gov.ea.datareturns.web.resource.v1.model.response.EntityListResponse;
+import uk.gov.ea.datareturns.web.resource.v1.model.response.FieldDefinitionResponse;
 import uk.gov.ea.datareturns.web.resource.v1.model.response.PayloadListResponse;
 
 import java.net.URI;
@@ -36,9 +38,42 @@ public class DefinitionResourceRequest extends AbstractResourceRequest {
         return get(uri, null, EntityListResponse.class);
     }
 
+    public ResponseEntity<FieldDefinitionResponse> getFieldDefinition(String payloadType, String propertyName) {
+        URI uri = uri(DefinitionsResource.class, "getFieldDefinition", templateValuesField(payloadType, propertyName));
+        return get(uri, null, FieldDefinitionResponse.class);
+    }
+
+    public ResponseEntity<EntityListResponse> listValidationConstraints(String payloadType) {
+        URI uri = uri(DefinitionsResource.class, "listValidationConstraints", templateValuesPayload(payloadType));
+        return get(uri, null, EntityListResponse.class);
+    }
+
+    public ResponseEntity<ConstraintDefinitionResponse> getValidationConstraint(String payloadType,
+                                                                                String validationConstraint) {
+
+        URI uri = uri(ConstraintDefinitionResponse.class, "getValidationContraint",
+                templateValuesConstraint(payloadType, validationConstraint));
+
+        return get(uri, null, ConstraintDefinitionResponse.class);
+    }
+
+    private Map<String,Object> templateValuesConstraint(String payloadType, String validationConstraint) {
+        Map<String, Object> values = new HashMap<>();
+        values.put("payload_type", payloadType);
+        values.put("constraint_id", validationConstraint);
+        return values;
+    }
+
     private Map<String, Object> templateValuesPayload(String payloadType) {
         Map<String, Object> values = new HashMap<>();
         values.put("payload_type", payloadType);
+        return values;
+    }
+
+    private Map<String,Object> templateValuesField(String payloadType, String fieldId) {
+        Map<String, Object> values = new HashMap<>();
+        values.put("payload_type", payloadType);
+        values.put("field_id", fieldId);
         return values;
     }
 }

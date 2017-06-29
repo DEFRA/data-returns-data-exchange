@@ -4,23 +4,28 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 import uk.gov.ea.datareturns.App;
+import uk.gov.ea.datareturns.domain.jpa.dao.userdata.impl.FieldDao;
+import uk.gov.ea.datareturns.domain.jpa.dao.userdata.impl.PayloadTypeDao;
+import uk.gov.ea.datareturns.domain.jpa.dao.userdata.impl.ValidationErrorDao;
+import uk.gov.ea.datareturns.domain.jpa.entities.userdata.impl.*;
 import uk.gov.ea.datareturns.web.resource.v1.model.common.references.EntityReference;
 import uk.gov.ea.datareturns.web.resource.v1.model.common.references.PayloadReference;
-import uk.gov.ea.datareturns.web.resource.v1.model.dataset.Dataset;
-import uk.gov.ea.datareturns.web.resource.v1.model.response.DatasetEntityResponse;
+import uk.gov.ea.datareturns.web.resource.v1.model.definitions.FieldDefinition;
+import uk.gov.ea.datareturns.web.resource.v1.model.record.payload.Payload;
+import uk.gov.ea.datareturns.web.resource.v1.model.response.ConstraintDefinitionResponse;
 import uk.gov.ea.datareturns.web.resource.v1.model.response.EntityListResponse;
+import uk.gov.ea.datareturns.web.resource.v1.model.response.FieldDefinitionResponse;
 import uk.gov.ea.datareturns.web.resource.v1.model.response.PayloadListResponse;
 
+import javax.inject.Inject;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
 /**
@@ -31,17 +36,26 @@ import java.util.stream.Collectors;
 @ActiveProfiles("IntegrationTests")
 public class DefinitionResourceTests extends AbstractDataResourceTests {
 
+    public static final String DATA_SAMPLE_PAYLOAD = "DataSamplePayload";
+    @Inject
+    PayloadTypeDao payloadTypeDao;
+
+    @Inject
+    FieldDao fieldDao;
+
+    @Inject
+    ValidationErrorDao validationErrorDao;
+
     /*
      * List payload types
      */
     @Test
     public void testListPayloadTypes() {
-        String[] expectedPayloads = { "DataSamplePayload", "DemonstrationAlternativePayload" };
-
+        Collection<String> expectedPayloads = Payload.NAMES.values();
         ResponseEntity<PayloadListResponse> responseEntity = definitionRequest(HttpStatus.OK).listPayloadTypes();
         Collection<PayloadReference> payloadReferences = responseEntity.getBody().getData();
         List<String> payloads = payloadReferences.stream().map(PayloadReference::getId).collect(Collectors.toList());
-        Assert.assertTrue(payloads.containsAll(Arrays.asList(expectedPayloads)));
+        Assert.assertTrue(payloads.containsAll(expectedPayloads));
     }
 
     /*
@@ -50,28 +64,79 @@ public class DefinitionResourceTests extends AbstractDataResourceTests {
     @Test
     public void listFields() {
         ResponseEntity<EntityListResponse> responseEntity = definitionRequest(HttpStatus.OK)
-                .listFields("DataSamplePayload");
+                .listFields(DATA_SAMPLE_PAYLOAD);
 
-        List<EntityReference> fieldReferences = responseEntity.getBody().getData(); 
-                
+        List<EntityReference> fieldReferences = responseEntity.getBody().getData();
+        List<String> fieldNames = fieldReferences.stream().map(EntityReference::getId).collect(Collectors.toList());
+
+        Assert.assertTrue(getDatabaseFieldNames(DATA_SAMPLE_PAYLOAD).containsAll(fieldNames));
     }
 
     /*
      * Retrieve field definition
      */
     @Test
-    public void retrieveFieldDefinition() {}
+    public void retrieveFieldDefinitions() {
+
+        // Not yet working in the client with controlled lists so need to fix that
+        List<String> propertyNames = Arrays.asList(new String[] { "EA_ID", "Site_Name" });
+        for (String fieldId : propertyNames) {
+
+            ResponseEntity<FieldDefinitionResponse> responseEntity =
+                    definitionRequest(HttpStatus.OK)
+                            .getFieldDefinition(DATA_SAMPLE_PAYLOAD, fieldId);
+
+            FieldDefinition fieldDefinition = responseEntity.getBody().getData();
+
+            Assert.assertTrue(getDatabaseFieldNames(DATA_SAMPLE_PAYLOAD).contains(fieldDefinition.getId()));
+        }
+    }
 
     /*
      * List constraints
      */
     @Test
-    public void listConstraints() {}
+    public void listConstraints() {
+        ResponseEntity<EntityListResponse> responseEntity = definitionRequest(HttpStatus.OK)
+                .listValidationConstraints(DATA_SAMPLE_PAYLOAD);
+
+        List<EntityReference> constraintDefinitions = responseEntity.getBody().getData();
+        List<String> constraintDefinitionsNames = constraintDefinitions.stream().map(EntityReference::getId).collect(Collectors.toList());
+        Assert.assertTrue(getDatabaseConstraintNames(DATA_SAMPLE_PAYLOAD).containsAll(constraintDefinitionsNames));
+    }
 
     /*
-     *Retrieve constraint definition
+     * Retrieve constraint definition
      */
     @Test
-    public void retrieveConstraintDefinition() {}
+    public void retrieveConstraintDefinition() {
+        for (String validationConstraintName : getDatabaseConstraintNames(DATA_SAMPLE_PAYLOAD)) {
+
+            ResponseEntity<ConstraintDefinitionResponse> responseEntity = definitionRequest(HttpStatus.OK)
+                    .getValidationConstraint(DATA_SAMPLE_PAYLOAD, validationConstraintName);
+
+            //getValidationContraint
+            //        ConstraintDefinitionResponse
+        }
+    }
+
+    private List<String> getDatabaseFieldNames(String payloadType) {
+        PayloadType payloadTypeEntity = payloadTypeDao.get(payloadType);
+        List<FieldEntity> fields = fieldDao.list(payloadTypeEntity);
+        return fields.stream()
+                .map(FieldEntity::getId)
+                .map(FieldId::getFieldName)
+                .collect(Collectors.toList());
+    }
+
+    private List<String> getDatabaseConstraintNames(String payloadType) {
+        PayloadType payloadTypeEntity = payloadTypeDao.get(payloadType);
+        List<ValidationError> validationErrors = validationErrorDao.list(payloadTypeEntity);
+        return validationErrors.stream()
+                .map(ValidationError::getId)
+                .map(ValidationErrorId::getError)
+                .collect(Collectors.toList());
+    }
+
 
 }
