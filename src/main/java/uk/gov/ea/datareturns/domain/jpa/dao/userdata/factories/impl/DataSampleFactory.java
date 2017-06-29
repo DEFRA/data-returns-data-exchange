@@ -1,16 +1,14 @@
 package uk.gov.ea.datareturns.domain.jpa.dao.userdata.factories.impl;
 
-import uk.gov.ea.datareturns.domain.validation.payloads.datasample.fields.TxtValue;
+import uk.gov.ea.datareturns.domain.jpa.entities.masterdata.impl.*;
+import uk.gov.ea.datareturns.domain.jpa.entities.masterdata.impl.Parameter;
+import uk.gov.ea.datareturns.domain.jpa.entities.masterdata.impl.ReferencePeriod;
+import uk.gov.ea.datareturns.domain.jpa.entities.masterdata.impl.Unit;
+import uk.gov.ea.datareturns.domain.validation.payloads.datasample.fields.*;
 import org.apache.commons.lang3.StringUtils;
 import uk.gov.ea.datareturns.domain.jpa.dao.masterdata.*;
 import uk.gov.ea.datareturns.domain.jpa.dao.userdata.factories.AbstractPayloadEntityFactory;
-import uk.gov.ea.datareturns.domain.jpa.entities.masterdata.impl.Parameter;
-import uk.gov.ea.datareturns.domain.jpa.entities.masterdata.impl.TextValue;
-import uk.gov.ea.datareturns.domain.jpa.entities.masterdata.impl.UniqueIdentifierAlias;
-import uk.gov.ea.datareturns.domain.jpa.entities.masterdata.impl.Unit;
 import uk.gov.ea.datareturns.domain.jpa.entities.userdata.impl.DataSampleEntity;
-import uk.gov.ea.datareturns.domain.validation.payloads.datasample.fields.EaId;
-import uk.gov.ea.datareturns.domain.validation.payloads.datasample.fields.MonitoringDate;
 import uk.gov.ea.datareturns.web.resource.v1.model.record.payload.DataSamplePayload;
 
 import java.math.BigDecimal;
@@ -69,7 +67,8 @@ public class DataSampleFactory extends AbstractPayloadEntityFactory<DataSampleEn
         UniqueIdentifierAlias uniqueIdentifierAlias = uniqueIdentifierAliasDao.getByName(Key.relaxed(payload.getEaId()));
         if (uniqueIdentifierAlias != null) {
             dataSampleEntity.setUniqueIdentifier(uniqueIdentifierAlias.getUniqueIdentifier());
-            dataSampleEntity.addSubstution(EaId.FIELD_NAME, uniqueIdentifierAlias.getName(), uniqueIdentifierAlias.getUniqueIdentifier().getName());
+            dataSampleEntity.addSubstution(EaId.FIELD_NAME, uniqueIdentifierAlias.getName(),
+                    uniqueIdentifierAlias.getUniqueIdentifier().getName());
         } else {
             dataSampleEntity.setUniqueIdentifier(uniqueIdentifierDao.getByNameOrAlias(Key.relaxed(payload.getEaId())));
         }
@@ -84,7 +83,9 @@ public class DataSampleFactory extends AbstractPayloadEntityFactory<DataSampleEn
         Parameter parameter = parameterDao.getByAliasName(Key.relaxed(payload.getParameter()));
         if (parameter != null) {
             dataSampleEntity.setParameter(parameter);
-            dataSampleEntity.addSubstution(uk.gov.ea.datareturns.domain.validation.payloads.datasample.fields.Parameter.FIELD_NAME, parameter.getName(), parameter.getPreferred());
+            dataSampleEntity.addSubstution(
+                    uk.gov.ea.datareturns.domain.validation.payloads.datasample.fields.Parameter.FIELD_NAME,
+                    parameter.getName(), parameter.getPreferred());
         } else {
             dataSampleEntity.setParameter(parameterDao.getByName(Key.relaxed(payload.getParameter())));
         }
@@ -121,7 +122,8 @@ public class DataSampleFactory extends AbstractPayloadEntityFactory<DataSampleEn
         TextValue textValueAlias = textValueDao.getByAliasName(Key.relaxed(payload.getTextValue()));
         if (textValueAlias != null) {
             dataSampleEntity.setTextValue(textValueAlias);
-            dataSampleEntity.addSubstution(TxtValue.FIELD_NAME, textValueAlias.getName(), textValueAlias.getPreferred());
+            dataSampleEntity.addSubstution(TxtValue.FIELD_NAME,
+                    textValueAlias.getName(), textValueAlias.getPreferred());
         } else {
             dataSampleEntity.setTextValue(textValueDao.getByName(Key.relaxed(payload.getTextValue())));
         }
@@ -136,12 +138,30 @@ public class DataSampleFactory extends AbstractPayloadEntityFactory<DataSampleEn
         Unit unitAlias = unitDao.getByAliasName(Key.relaxed((payload.getUnit())));
         if (unitAlias != null) {
             dataSampleEntity.setUnit(unitAlias);
-            dataSampleEntity.addSubstution(uk.gov.ea.datareturns.domain.validation.payloads.datasample.fields.Unit.FIELD_NAME, unitAlias.getName(), unitAlias.getPreferred());
+            dataSampleEntity.addSubstution(
+                    uk.gov.ea.datareturns.domain.validation.payloads.datasample.fields.Unit.FIELD_NAME,
+                    unitAlias.getName(), unitAlias.getPreferred());
         } else {
             dataSampleEntity.setUnit(unitDao.getByName(Key.relaxed((payload.getUnit()))));
         }
 
+        // Method or standard
+        dataSampleEntity.setMethodOrStandard(methodOrStandardDao.getByName(Key.relaxed(payload.getMethStand())));
+
+        // Reference period or alias
+        ReferencePeriod referencePeriodAlias = referencePeriodDao
+                .getByAliasName(Key.relaxed(payload.getReferencePeriod()));
+
+        if (referencePeriodAlias != null) {
+            dataSampleEntity.setReferencePeriod(referencePeriodAlias);
+            dataSampleEntity.addSubstution(
+                    uk.gov.ea.datareturns.domain.validation.payloads.datasample.fields.ReferencePeriod.FIELD_NAME,
+                    referencePeriodAlias.getName(), referencePeriodAlias.getPreferred());
+        } else {
+            dataSampleEntity.setReferencePeriod(
+                    referencePeriodDao.getByName(Key.relaxed(payload.getReferencePeriod())));
+        }
+
         return dataSampleEntity;
     }
-
 }
