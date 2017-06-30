@@ -343,13 +343,13 @@ public class DefinitionsResource {
                     response = ErrorResponse.class
             )
     })
-    public Response getValidationContraint(
+    public Response getValidationConstraint(
             @PathParam("payload_type")
             @Pattern(regexp = "[A-Za-z0-9_-]+")
-            @ApiParam("The payload type the target contraint belongs to.") final String payloadType,
+            @ApiParam("The payload type the target constraint belongs to.") final String payloadType,
             @PathParam("constraint_id")
             @Pattern(regexp = "[A-Za-z0-9_-]+")
-            @ApiParam("The unique identifier for the target contraint.") final String constraintId
+            @ApiParam("The unique identifier for the target constraint.") final String constraintId
     )
             throws Exception {
         return onPayloadType(payloadType, (payloadClass) ->

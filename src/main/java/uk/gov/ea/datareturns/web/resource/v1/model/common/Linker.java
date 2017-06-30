@@ -77,7 +77,7 @@ public class Linker {
     public String constraint(String payloadType, String contraintId) {
         UriBuilder ub = uriInfo.getBaseUriBuilder();
         ub.path(DefinitionsResource.class);
-        ub.path(DefinitionsResource.class, "getValidationContraint");
+        ub.path(DefinitionsResource.class, "getValidationConstraint");
         ub.resolveTemplate("payload_type", payloadType);
         ub.resolveTemplate("constraint_id", contraintId);
         return ub.build().toASCIIString();

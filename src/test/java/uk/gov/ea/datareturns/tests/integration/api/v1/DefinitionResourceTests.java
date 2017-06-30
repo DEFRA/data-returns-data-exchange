@@ -15,6 +15,7 @@ import uk.gov.ea.datareturns.domain.jpa.dao.userdata.impl.ValidationErrorDao;
 import uk.gov.ea.datareturns.domain.jpa.entities.userdata.impl.*;
 import uk.gov.ea.datareturns.web.resource.v1.model.common.references.EntityReference;
 import uk.gov.ea.datareturns.web.resource.v1.model.common.references.PayloadReference;
+import uk.gov.ea.datareturns.web.resource.v1.model.definitions.ConstraintDefinition;
 import uk.gov.ea.datareturns.web.resource.v1.model.definitions.FieldDefinition;
 import uk.gov.ea.datareturns.web.resource.v1.model.record.payload.Payload;
 import uk.gov.ea.datareturns.web.resource.v1.model.response.ConstraintDefinitionResponse;
@@ -115,8 +116,8 @@ public class DefinitionResourceTests extends AbstractDataResourceTests {
             ResponseEntity<ConstraintDefinitionResponse> responseEntity = definitionRequest(HttpStatus.OK)
                     .getValidationConstraint(DATA_SAMPLE_PAYLOAD, validationConstraintName);
 
-            //getValidationContraint
-            //        ConstraintDefinitionResponse
+            ConstraintDefinition constraintDefinition = responseEntity.getBody().getData();
+            Assert.assertEquals(constraintDefinition.getId(), validationConstraintName);
         }
     }
 

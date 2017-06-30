@@ -51,7 +51,7 @@ public class DefinitionResourceRequest extends AbstractResourceRequest {
     public ResponseEntity<ConstraintDefinitionResponse> getValidationConstraint(String payloadType,
                                                                                 String validationConstraint) {
 
-        URI uri = uri(ConstraintDefinitionResponse.class, "getValidationContraint",
+        URI uri = uri(DefinitionsResource.class, "getValidationConstraint",
                 templateValuesConstraint(payloadType, validationConstraint));
 
         return get(uri, null, ConstraintDefinitionResponse.class);
