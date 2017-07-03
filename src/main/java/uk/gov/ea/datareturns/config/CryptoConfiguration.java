@@ -2,6 +2,7 @@ package uk.gov.ea.datareturns.config;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.validation.annotation.Validated;
 
 import javax.validation.constraints.NotNull;
 
@@ -12,6 +13,7 @@ import javax.validation.constraints.NotNull;
  */
 @Configuration
 @ConfigurationProperties(prefix = "crypt")
+@Validated
 public class CryptoConfiguration {
     @NotNull
     private String secretKey;

@@ -3,6 +3,7 @@ package uk.gov.ea.datareturns.config;
 import org.hibernate.validator.constraints.NotEmpty;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.validation.annotation.Validated;
 
 /**
  * Holds test settings from configuration fileName
@@ -10,6 +11,7 @@ import org.springframework.context.annotation.Configuration;
  */
 @Configuration
 @ConfigurationProperties(prefix = "test")
+@Validated
 public class TestSettings {
     @NotEmpty
     private String testFilesLocation;

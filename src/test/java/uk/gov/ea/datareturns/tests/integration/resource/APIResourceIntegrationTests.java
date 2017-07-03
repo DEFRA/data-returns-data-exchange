@@ -17,10 +17,8 @@ import uk.gov.ea.datareturns.web.resource.v1.model.record.payload.DataSamplePayl
 import uk.gov.ea.datareturns.web.resource.v1.model.response.DatasetEntityResponse;
 import uk.gov.ea.datareturns.web.resource.v1.model.response.RecordEntityResponse;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
+import java.util.function.Supplier;
 
 /**
  * @author Graham Willis
@@ -33,33 +31,29 @@ import java.util.UUID;
 @ActiveProfiles("IntegrationTests")
 public class APIResourceIntegrationTests extends AbstractDataResourceTests {
 
-    //private final static String PAYLOAD_TYPE = "DataSamplePayload";
+    //public static final String PAYLOAD_TYPE = "DataSamplePayload";
 
-    //private static final String REQUIRED_FILEDS_ONLY = "REQUIRED_FILEDS_ONLY";
-    //private Map<String, ResourceIntegrationTestArtifacts> resourceIntegrationTestArtifactsMap =
-    //        ImmutableMap.of(
-    //                REQUIRED_FILEDS_ONLY, new ResourceIntegrationTestArtifacts(
-    //                        HttpStatus.CREATED,
-    //                        pl -> { return new DataSamplePayload(); },
-    //                        new ArrayList<ConstraintDefinition>()
-    //                )
-    //        );
+    private static final Supplier<DataSamplePayload> EMPTY_PAYLOAD = () -> {
+        DataSamplePayload dataSamplePayload = new DataSamplePayload();
+        dataSamplePayload.setEaId("TS1234TS");
+        //dataSamplePayload.setPayloadType(PAYLOAD_TYPE);
+        return dataSamplePayload;
+    };
 
-    private static NewDataSamplePayload xxxx = () -> new DataSamplePayload();
+    private static final List<ConstraintDefinition> EMPTY_CONSTRAINT_LIST = Collections.EMPTY_LIST;
 
     private final static Map<ResourceIntegrationTestResult, DataSamplePayload> RESOURCE_TESTS = ImmutableMap.of(
 
             // Create a record with an empty payload
             (t) -> t.getHttpStatus().equals(HttpStatus.CREATED) &&
-                    t.getConstraintDefinitions().containsAll(new ArrayList<ConstraintDefinition>()), xxxx.create()
+                    t.getConstraintDefinitions().containsAll(EMPTY_CONSTRAINT_LIST),
+
+            EMPTY_PAYLOAD.get()
 
     );
 
     @Test
-    public void doit() {
-        NewDataSamplePayload xxxx = () -> new DataSamplePayload();
-
-
+    public void runTests() {
         Dataset defaultDataset = getDefaultDataset();
         for (Map.Entry<ResourceIntegrationTestResult, DataSamplePayload> es : RESOURCE_TESTS.entrySet()) {
             ResourceIntegrationTestConditions testResult = new ResourceIntegrationTestConditions(submitPayload(defaultDataset, es.getValue()));
@@ -72,36 +66,19 @@ public class APIResourceIntegrationTests extends AbstractDataResourceTests {
         boolean passes(ResourceIntegrationTestConditions t);
     }
 
-    @FunctionalInterface
-    public interface NewDataSamplePayload {
-        DataSamplePayload create();
-    }
-
-
-
-
-
-    public class ResourceIntegrationTestConditions {
+    private class ResourceIntegrationTestConditions {
         private List<ConstraintDefinition> constraintDefinitions;
         private HttpStatus httpStatus;
 
-        public ResourceIntegrationTestConditions(ResponseEntity<RecordEntityResponse> recordEntityResponseResponseEntity) {
+        private ResourceIntegrationTestConditions(ResponseEntity<RecordEntityResponse> recordEntityResponseResponseEntity) {
             httpStatus = recordEntityResponseResponseEntity.getStatusCode();
             constraintDefinitions = null;//TODO figure out best way here - do we just request the status?
         }
 
-        public void setHttpStatus(HttpStatus httpStatus) {
-            this.httpStatus = httpStatus;
-        }
-
-        public List<ConstraintDefinition> getConstraintDefinitions() {
+        private List<ConstraintDefinition> getConstraintDefinitions() {
             return constraintDefinitions;
         }
-
-        public void setConstraintDefinitions(List<ConstraintDefinition> constraintDefinitions) {
-            this.constraintDefinitions = constraintDefinitions;
-        }
-        public HttpStatus getHttpStatus() {
+        private HttpStatus getHttpStatus() {
             return httpStatus;
         }
     }
