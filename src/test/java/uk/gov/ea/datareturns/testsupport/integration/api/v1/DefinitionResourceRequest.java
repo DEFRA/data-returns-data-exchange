@@ -5,7 +5,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import uk.gov.ea.datareturns.web.resource.v1.DefinitionsResource;
 import uk.gov.ea.datareturns.web.resource.v1.model.response.ConstraintDefinitionResponse;
-import uk.gov.ea.datareturns.web.resource.v1.model.response.EntityListResponse;
+import uk.gov.ea.datareturns.web.resource.v1.model.response.EntityReferenceListResponse;
 import uk.gov.ea.datareturns.web.resource.v1.model.response.FieldDefinitionResponse;
 import uk.gov.ea.datareturns.web.resource.v1.model.response.PayloadListResponse;
 
@@ -33,9 +33,9 @@ public class DefinitionResourceRequest extends AbstractResourceRequest {
         return get(uri, null, PayloadListResponse.class);
     }
 
-    public ResponseEntity<EntityListResponse> listFields(String payloadType) {
+    public ResponseEntity<EntityReferenceListResponse> listFields(String payloadType) {
         URI uri = uri(DefinitionsResource.class, "listFields", templateValuesPayload(payloadType));
-        return get(uri, null, EntityListResponse.class);
+        return get(uri, null, EntityReferenceListResponse.class);
     }
 
     public ResponseEntity<FieldDefinitionResponse> getFieldDefinition(String payloadType, String propertyName) {
@@ -43,9 +43,9 @@ public class DefinitionResourceRequest extends AbstractResourceRequest {
         return get(uri, null, FieldDefinitionResponse.class);
     }
 
-    public ResponseEntity<EntityListResponse> listValidationConstraints(String payloadType) {
+    public ResponseEntity<EntityReferenceListResponse> listValidationConstraints(String payloadType) {
         URI uri = uri(DefinitionsResource.class, "listValidationConstraints", templateValuesPayload(payloadType));
-        return get(uri, null, EntityListResponse.class);
+        return get(uri, null, EntityReferenceListResponse.class);
     }
 
     public ResponseEntity<ConstraintDefinitionResponse> getValidationConstraint(String payloadType,

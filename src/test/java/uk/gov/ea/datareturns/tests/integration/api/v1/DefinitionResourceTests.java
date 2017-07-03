@@ -19,7 +19,7 @@ import uk.gov.ea.datareturns.web.resource.v1.model.definitions.ConstraintDefinit
 import uk.gov.ea.datareturns.web.resource.v1.model.definitions.FieldDefinition;
 import uk.gov.ea.datareturns.web.resource.v1.model.record.payload.Payload;
 import uk.gov.ea.datareturns.web.resource.v1.model.response.ConstraintDefinitionResponse;
-import uk.gov.ea.datareturns.web.resource.v1.model.response.EntityListResponse;
+import uk.gov.ea.datareturns.web.resource.v1.model.response.EntityReferenceListResponse;
 import uk.gov.ea.datareturns.web.resource.v1.model.response.FieldDefinitionResponse;
 import uk.gov.ea.datareturns.web.resource.v1.model.response.PayloadListResponse;
 
@@ -64,7 +64,7 @@ public class DefinitionResourceTests extends AbstractDataResourceTests {
      */
     @Test
     public void listFields() {
-        ResponseEntity<EntityListResponse> responseEntity = definitionRequest(HttpStatus.OK)
+        ResponseEntity<EntityReferenceListResponse> responseEntity = definitionRequest(HttpStatus.OK)
                 .listFields(DATA_SAMPLE_PAYLOAD);
 
         List<EntityReference> fieldReferences = responseEntity.getBody().getData();
@@ -98,7 +98,7 @@ public class DefinitionResourceTests extends AbstractDataResourceTests {
      */
     @Test
     public void listConstraints() {
-        ResponseEntity<EntityListResponse> responseEntity = definitionRequest(HttpStatus.OK)
+        ResponseEntity<EntityReferenceListResponse> responseEntity = definitionRequest(HttpStatus.OK)
                 .listValidationConstraints(DATA_SAMPLE_PAYLOAD);
 
         List<EntityReference> constraintDefinitions = responseEntity.getBody().getData();
