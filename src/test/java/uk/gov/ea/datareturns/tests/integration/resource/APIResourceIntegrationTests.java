@@ -11,14 +11,19 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 import uk.gov.ea.datareturns.App;
 import uk.gov.ea.datareturns.tests.integration.api.v1.AbstractDataResourceTests;
+import uk.gov.ea.datareturns.web.resource.v1.model.common.references.EntityReference;
 import uk.gov.ea.datareturns.web.resource.v1.model.dataset.Dataset;
+import uk.gov.ea.datareturns.web.resource.v1.model.dataset.DatasetStatus;
+import uk.gov.ea.datareturns.web.resource.v1.model.dataset.DatasetValidity;
 import uk.gov.ea.datareturns.web.resource.v1.model.definitions.ConstraintDefinition;
 import uk.gov.ea.datareturns.web.resource.v1.model.record.payload.DataSamplePayload;
 import uk.gov.ea.datareturns.web.resource.v1.model.response.DatasetEntityResponse;
+import uk.gov.ea.datareturns.web.resource.v1.model.response.DatasetStatusResponse;
 import uk.gov.ea.datareturns.web.resource.v1.model.response.RecordEntityResponse;
 
 import java.util.*;
 import java.util.function.Supplier;
+import java.util.stream.Collectors;
 
 /**
  * @author Graham Willis
@@ -35,48 +40,89 @@ public class APIResourceIntegrationTests extends AbstractDataResourceTests {
 
     private static final Supplier<DataSamplePayload> EMPTY_PAYLOAD = () -> {
         DataSamplePayload dataSamplePayload = new DataSamplePayload();
-        dataSamplePayload.setEaId("TS1234TS");
-        //dataSamplePayload.setPayloadType(PAYLOAD_TYPE);
         return dataSamplePayload;
     };
 
-    private static final List<ConstraintDefinition> EMPTY_CONSTRAINT_LIST = Collections.EMPTY_LIST;
+    private static final List<String> EMPTY_CONSTRAINT_LIST = Collections.EMPTY_LIST;
+    private static final Map<ResourceIntegrationTestExpectations, DataSamplePayload> RESOURCE_TESTS;
 
-    private final static Map<ResourceIntegrationTestResult, DataSamplePayload> RESOURCE_TESTS = ImmutableMap.of(
+    static {
+        Map<ResourceIntegrationTestExpectations, DataSamplePayload> resourceTests = new HashMap<>();
 
-            // Create a record with an empty payload
-            (t) -> t.getHttpStatus().equals(HttpStatus.CREATED) &&
-                    t.getConstraintDefinitions().containsAll(EMPTY_CONSTRAINT_LIST),
+        resourceTests.put(
+                // Create a record with an empty payload
+                (t) -> t.getHttpStatus().equals(HttpStatus.CREATED)
+                        && t.getConstraintDefinitions().containsAll(Arrays.asList(
+                                "DR9000-Missing",   // EA_ID Missing
+                                "DR9010-Missing",       // Return Type Missing
+                                "DR9030-Missing",       // Parameter Missing
+                                "DR9110-Missing",       // Site name Missing
+                                "DR9999-Missing",       // One of value or Txt Value
+                                "DR9020-Missing",       // Monitoring Date
+                                "DR9060-Missing"))      // Monitoring point
+                        && t.getConstraintDefinitions().size() == 7
+                        && t.isValid == false,
 
-            EMPTY_PAYLOAD.get()
+                EMPTY_PAYLOAD.get()
+        );
 
-    );
+        RESOURCE_TESTS = Collections.unmodifiableMap(resourceTests);
+    }
 
     @Test
     public void runTests() {
         Dataset defaultDataset = getDefaultDataset();
-        for (Map.Entry<ResourceIntegrationTestResult, DataSamplePayload> es : RESOURCE_TESTS.entrySet()) {
-            ResourceIntegrationTestConditions testResult = new ResourceIntegrationTestConditions(submitPayload(defaultDataset, es.getValue()));
+        for (Map.Entry<ResourceIntegrationTestExpectations, DataSamplePayload> es : RESOURCE_TESTS.entrySet()) {
+
+            ResourceIntegrationTestResult testResult = new ResourceIntegrationTestResult(defaultDataset,
+                    submitPayload(defaultDataset, es.getValue()));
+
             Assert.assertTrue(es.getKey().passes(testResult));
         }
     }
 
     @FunctionalInterface
-    public interface ResourceIntegrationTestResult {
-        boolean passes(ResourceIntegrationTestConditions t);
+    private interface ResourceIntegrationTestExpectations {
+        boolean passes(ResourceIntegrationTestResult t);
     }
 
-    private class ResourceIntegrationTestConditions {
-        private List<ConstraintDefinition> constraintDefinitions;
+    private class ResourceIntegrationTestResult {
+        private final boolean isValid;
+        private List<String> violationsList;
+
         private HttpStatus httpStatus;
 
-        private ResourceIntegrationTestConditions(ResponseEntity<RecordEntityResponse> recordEntityResponseResponseEntity) {
+        private ResourceIntegrationTestResult(
+                Dataset dataset,
+                ResponseEntity<RecordEntityResponse> recordEntityResponseResponseEntity) {
+
             httpStatus = recordEntityResponseResponseEntity.getStatusCode();
-            constraintDefinitions = null;//TODO figure out best way here - do we just request the status?
+
+            // Get the dataset status
+            ResponseEntity<DatasetStatusResponse> responseEntity = datasetRequest(HttpStatus.OK)
+                    .getStatus(dataset.getId());
+
+            DatasetStatus datasetStatus = responseEntity.getBody().getData();
+
+            this.isValid = datasetStatus.getValidity().isValid();
+
+            // Get string list of violation
+            violationsList = datasetStatus
+                    .getValidity()
+                    .getViolations()
+                    .stream()
+                    .map(DatasetValidity.Violation::getConstraint)
+                    .map(EntityReference::getId)
+                    .collect(Collectors.toList());
+
         }
 
-        private List<ConstraintDefinition> getConstraintDefinitions() {
-            return constraintDefinitions;
+        public boolean isValid() {
+            return isValid;
+        }
+
+        private List<String> getConstraintDefinitions() {
+            return violationsList;
         }
         private HttpStatus getHttpStatus() {
             return httpStatus;

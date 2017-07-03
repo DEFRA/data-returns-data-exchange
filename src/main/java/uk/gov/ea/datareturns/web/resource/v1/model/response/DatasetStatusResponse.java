@@ -12,6 +12,7 @@ import javax.ws.rs.core.Response;
  */
 @ApiModel(parent = ResponseWrapper.class)
 public class DatasetStatusResponse extends ResponseWrapper<DatasetStatus> {
+
     private DatasetStatus data;
 
     public DatasetStatusResponse() {

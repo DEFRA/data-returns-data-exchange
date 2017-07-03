@@ -7,6 +7,7 @@ import io.swagger.annotations.ApiModel;
 import uk.gov.ea.datareturns.web.resource.v1.model.common.references.EntityReference;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * Container for validation error detail found in the validated model
@@ -31,6 +32,15 @@ public class DatasetValidity {
     @JacksonXmlProperty(localName = "violation")
     public List<Violation> getViolations() {
         return new ArrayList<>(violations.values());
+    }
+
+
+    public void setViolations(List<Violation> violationsList) {
+        this.violations = violationsList.stream().collect(Collectors.toMap(
+                v -> v.getConstraint().getId(),
+                v -> v,
+                (v1, v2) -> v1, // Merge strategy
+                LinkedHashMap::new));
     }
 
     public void addViolation(EntityReference constraint, EntityReference record) {

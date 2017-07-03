@@ -8,6 +8,7 @@ import uk.gov.ea.datareturns.web.resource.v1.DatasetResource;
 import uk.gov.ea.datareturns.web.resource.v1.model.dataset.Dataset;
 import uk.gov.ea.datareturns.web.resource.v1.model.dataset.DatasetProperties;
 import uk.gov.ea.datareturns.web.resource.v1.model.request.BatchDatasetRequest;
+import uk.gov.ea.datareturns.web.resource.v1.model.response.DatasetStatusResponse;
 import uk.gov.ea.datareturns.web.resource.v1.model.response.EntityReferenceListResponse;
 import uk.gov.ea.datareturns.web.resource.v1.model.response.DatasetEntityResponse;
 import uk.gov.ea.datareturns.web.resource.v1.model.response.MultiStatusResponse;
@@ -60,5 +61,10 @@ public class DatasetResourceRequest extends AbstractResourceRequest {
     @Override public DatasetResourceRequest withHeaders(HttpHeaders headers) {
         setHeaders(headers);
         return this;
+    }
+
+    public ResponseEntity<DatasetStatusResponse> getStatus(String datasetId) {
+        URI uri = uri(DatasetResource.class, "getDatasetStatus", templateValues(datasetId));
+        return get(uri, null, DatasetStatusResponse.class);
     }
 }
