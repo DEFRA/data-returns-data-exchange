@@ -11,7 +11,7 @@ import uk.gov.ea.datareturns.testsupport.integration.api.v1.DatasetResourceReque
 import uk.gov.ea.datareturns.testsupport.integration.api.v1.RecordResourceRequest;
 import uk.gov.ea.datareturns.web.resource.v1.model.common.references.EntityReference;
 import uk.gov.ea.datareturns.web.resource.v1.model.dataset.Dataset;
-import uk.gov.ea.datareturns.web.resource.v1.model.response.EntityListResponse;
+import uk.gov.ea.datareturns.web.resource.v1.model.response.EntityReferenceListResponse;
 import uk.gov.ea.datareturns.web.resource.v1.model.response.DatasetEntityResponse;
 
 import javax.inject.Inject;
@@ -47,13 +47,13 @@ public abstract class AbstractDataResourceTests implements AbstractResourceReque
     @Before
     public void beforeTest() {
         // Clear down all datasets before each test
-        ResponseEntity<EntityListResponse> list = datasetRequest(HttpStatus.OK).listDatasets();
+        ResponseEntity<EntityReferenceListResponse> list = datasetRequest(HttpStatus.OK).listDatasets();
         for (EntityReference ref : list.getBody().getData()) {
             String dsId = ref.getId();
             datasetRequest(HttpStatus.NO_CONTENT).deleteDataset(dsId);
         }
 
-        ResponseEntity<EntityListResponse> updatedList = datasetRequest(HttpStatus.OK).listDatasets();
+        ResponseEntity<EntityReferenceListResponse> updatedList = datasetRequest(HttpStatus.OK).listDatasets();
         Assert.assertTrue("Expected dataset list to be empty before each test.", updatedList.getBody().getData().isEmpty());
     }
 

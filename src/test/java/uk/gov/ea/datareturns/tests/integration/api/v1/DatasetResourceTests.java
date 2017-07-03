@@ -17,7 +17,7 @@ import uk.gov.ea.datareturns.web.resource.v1.model.dataset.Dataset;
 import uk.gov.ea.datareturns.web.resource.v1.model.dataset.DatasetProperties;
 import uk.gov.ea.datareturns.web.resource.v1.model.request.BatchDatasetRequest;
 import uk.gov.ea.datareturns.web.resource.v1.model.request.BatchDatasetRequestItem;
-import uk.gov.ea.datareturns.web.resource.v1.model.response.EntityListResponse;
+import uk.gov.ea.datareturns.web.resource.v1.model.response.EntityReferenceListResponse;
 import uk.gov.ea.datareturns.web.resource.v1.model.response.DatasetEntityResponse;
 import uk.gov.ea.datareturns.web.resource.v1.model.response.MultiStatusResponse;
 
@@ -45,7 +45,7 @@ public class DatasetResourceTests extends  AbstractDataResourceTests {
         }
 
         // Test list shows these datasets
-        ResponseEntity<EntityListResponse> list = datasetRequest(HttpStatus.OK).listDatasets();
+        ResponseEntity<EntityReferenceListResponse> list = datasetRequest(HttpStatus.OK).listDatasets();
         List<EntityReference> items = list.getBody().getData();
         List<String> savedDatasetIds = items.stream().map(i -> i.getId()).collect(Collectors.toList());
         Assert.assertTrue(savedDatasetIds.containsAll(Arrays.asList(datasets)));

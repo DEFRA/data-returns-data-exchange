@@ -13,7 +13,6 @@ import uk.gov.ea.datareturns.domain.jpa.entities.userdata.AbstractPayloadEntity;
 import uk.gov.ea.datareturns.domain.jpa.entities.userdata.impl.DatasetEntity;
 import uk.gov.ea.datareturns.domain.jpa.entities.userdata.impl.RecordEntity;
 import uk.gov.ea.datareturns.domain.jpa.entities.userdata.impl.User;
-import uk.gov.ea.datareturns.domain.jpa.entities.userdata.impl.ValidationError;
 import uk.gov.ea.datareturns.domain.jpa.service.DatasetService;
 import uk.gov.ea.datareturns.domain.jpa.service.SubmissionService;
 import uk.gov.ea.datareturns.util.StopWatch;
@@ -21,9 +20,7 @@ import uk.gov.ea.datareturns.web.resource.v1.model.common.Linker;
 import uk.gov.ea.datareturns.web.resource.v1.model.common.Preconditions;
 import uk.gov.ea.datareturns.web.resource.v1.model.common.references.EntityReference;
 import uk.gov.ea.datareturns.web.resource.v1.model.dataset.*;
-import uk.gov.ea.datareturns.web.resource.v1.model.record.Record;
 import uk.gov.ea.datareturns.web.resource.v1.model.record.RecordAdaptor;
-import uk.gov.ea.datareturns.web.resource.v1.model.record.payload.Payload;
 import uk.gov.ea.datareturns.web.resource.v1.model.request.BatchDatasetRequest;
 import uk.gov.ea.datareturns.web.resource.v1.model.request.BatchDatasetRequestItem;
 import uk.gov.ea.datareturns.web.resource.v1.model.response.*;
@@ -79,7 +76,7 @@ public class DatasetResource {
      * List the available datasets
      *
      * @param preconditions conditional request structure
-     * @return a response containing an {@link EntityListResponse} entity
+     * @return a response containing an {@link EntityReferenceListResponse} entity
      * @throws Exception if the request cannot be completed normally.
      */
     @GET
@@ -89,7 +86,7 @@ public class DatasetResource {
                     + "independently of each other."
     )
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "OK", response = EntityListResponse.class),
+            @ApiResponse(code = 200, message = "OK", response = EntityReferenceListResponse.class),
             @ApiResponse(code = 304, message = "Not Modified - see conditional request documentation")
     })
     public Response listDatasets(@BeanParam Preconditions preconditions) throws Exception {
@@ -101,7 +98,7 @@ public class DatasetResource {
                     List<EntityReference> entityReferences = datasets.stream()
                             .map(e -> new EntityReference(e.getIdentifier(), Linker.info(uriInfo).dataset(e.getIdentifier())))
                             .collect(Collectors.toList());
-                    return new EntityListResponse(entityReferences,
+                    return new EntityReferenceListResponse(entityReferences,
                             Date.from(user.getDatasetChangedDate()),
                             Preconditions.createEtag(datasets)
                     ).toResponseBuilder();

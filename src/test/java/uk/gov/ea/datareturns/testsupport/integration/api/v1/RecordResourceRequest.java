@@ -8,7 +8,7 @@ import uk.gov.ea.datareturns.web.resource.v1.RecordResource;
 import uk.gov.ea.datareturns.web.resource.v1.model.record.Record;
 import uk.gov.ea.datareturns.web.resource.v1.model.record.payload.Payload;
 import uk.gov.ea.datareturns.web.resource.v1.model.request.BatchRecordRequest;
-import uk.gov.ea.datareturns.web.resource.v1.model.response.EntityListResponse;
+import uk.gov.ea.datareturns.web.resource.v1.model.response.EntityReferenceListResponse;
 import uk.gov.ea.datareturns.web.resource.v1.model.response.MultiStatusResponse;
 import uk.gov.ea.datareturns.web.resource.v1.model.response.RecordEntityResponse;
 
@@ -24,8 +24,8 @@ public class RecordResourceRequest extends AbstractResourceRequest {
         super(testClass, expected);
     }
 
-    public ResponseEntity<EntityListResponse> listRecords() {
-        return get(uri(RecordResource.class, "listRecords"), null, EntityListResponse.class);
+    public ResponseEntity<EntityReferenceListResponse> listRecords() {
+        return get(uri(RecordResource.class, "listRecords"), null, EntityReferenceListResponse.class);
     }
 
     public ResponseEntity<RecordEntityResponse> getRecord(String datasetId, String recordId) {

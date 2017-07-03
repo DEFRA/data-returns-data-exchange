@@ -8,7 +8,7 @@ import uk.gov.ea.datareturns.web.resource.v1.DatasetResource;
 import uk.gov.ea.datareturns.web.resource.v1.model.dataset.Dataset;
 import uk.gov.ea.datareturns.web.resource.v1.model.dataset.DatasetProperties;
 import uk.gov.ea.datareturns.web.resource.v1.model.request.BatchDatasetRequest;
-import uk.gov.ea.datareturns.web.resource.v1.model.response.EntityListResponse;
+import uk.gov.ea.datareturns.web.resource.v1.model.response.EntityReferenceListResponse;
 import uk.gov.ea.datareturns.web.resource.v1.model.response.DatasetEntityResponse;
 import uk.gov.ea.datareturns.web.resource.v1.model.response.MultiStatusResponse;
 
@@ -24,8 +24,8 @@ public class DatasetResourceRequest extends AbstractResourceRequest {
         super(testClass, expected);
     }
 
-    public ResponseEntity<EntityListResponse> listDatasets() {
-        return get(uri(DatasetResource.class, "listDatasets"), null, EntityListResponse.class);
+    public ResponseEntity<EntityReferenceListResponse> listDatasets() {
+        return get(uri(DatasetResource.class, "listDatasets"), null, EntityReferenceListResponse.class);
     }
 
     public ResponseEntity<DatasetEntityResponse> getDataset(String datasetId) {

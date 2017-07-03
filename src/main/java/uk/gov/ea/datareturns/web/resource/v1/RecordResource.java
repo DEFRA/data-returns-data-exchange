@@ -84,7 +84,7 @@ public class RecordResource {
      * List all records for the given dataset_id
      *
      * @param datasetId the unique identifier for the target dataset
-     * @return a response containing an {@link EntityListResponse} entity
+     * @return a response containing an {@link EntityReferenceListResponse} entity
      * @throws Exception if the request cannot be completed normally.
      */
     @GET
@@ -92,7 +92,7 @@ public class RecordResource {
             notes = "This operation will list all records for the given `dataset_id`."
     )
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "OK", response = EntityListResponse.class),
+            @ApiResponse(code = 200, message = "OK", response = EntityReferenceListResponse.class),
             @ApiResponse(code = 304, message = "Not Modified - see conditional request documentation"),
             @ApiResponse(
                     code = 404,
@@ -106,7 +106,7 @@ public class RecordResource {
             throws Exception {
         return onDataset(datasetId, datasetEntity -> {
             List<RecordEntity> records = submissionService.getRecords(datasetEntity);
-            return new EntityListResponse(
+            return new EntityReferenceListResponse(
                     records.stream().map((entity) -> {
                         String uri = Linker.info(uriInfo).record(datasetId, entity.getIdentifier());
                         return new EntityReference(entity.getIdentifier(), uri);
@@ -121,7 +121,7 @@ public class RecordResource {
      * Retrieve all record and payload data for the given dataset_id
      *
      * @param datasetId the unique identifier for the target dataset
-     * @return a response containing an {@link EntityDataListResponse} entity
+     * @return a response containing an {@link RecordListResponse} entity
      * @throws Exception if the request cannot be completed normally.
      */
     @GET
@@ -130,7 +130,7 @@ public class RecordResource {
             notes = "Retrieve all record and payload data for the given `dataset_id`."
     )
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "OK", response = EntityDataListResponse.class),
+            @ApiResponse(code = 200, message = "OK", response = RecordListResponse.class),
             @ApiResponse(code = 304, message = "Not Modified - see conditional request documentation"),
             @ApiResponse(
                     code = 404,
@@ -144,7 +144,7 @@ public class RecordResource {
             throws Exception {
         return onDataset(datasetId, datasetEntity -> {
             List<RecordEntity> records = submissionService.getRecords(datasetEntity);
-            return new EntityDataListResponse(
+            return new RecordListResponse(
                     records.stream().map(e -> fromEntity(datasetId, e)).collect(Collectors.toList()),
                     Date.from(datasetEntity.getRecordChangedDate()),
                     Preconditions.createEtag(records)
@@ -348,7 +348,7 @@ public class RecordResource {
      * @throws Exception if the request cannot be completed normally.
      */
     @PUT
-    @Path("/{record_id}")
+    @Path("/{record_id : [a-zA-Z0-9_-]+ }")
     @ApiOperation(value = "Create or update record",
             notes = "Create or update the record with the given `record_id` for the dataset with the given `dataset_id`."
     )
@@ -421,7 +421,7 @@ public class RecordResource {
      * @throws Exception if the request cannot be completed normally.
      */
     @DELETE
-    @Path("/{record_id}")
+    @Path("/{record_id : [a-zA-Z0-9_-]+ }")
     @ApiOperation(value = "Delete record",
             notes = "Delete the record with the given `record_id` from the dataset with the given `dataset_id`"
     )

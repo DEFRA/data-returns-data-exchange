@@ -4,7 +4,7 @@ import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlElementWrapper;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
-import uk.gov.ea.datareturns.web.resource.v1.model.common.EntityBase;
+import uk.gov.ea.datareturns.web.resource.v1.model.definitions.ConstraintDefinition;
 
 import javax.ws.rs.core.EntityTag;
 import javax.ws.rs.core.Response;
@@ -12,13 +12,13 @@ import java.util.Date;
 import java.util.List;
 
 /**
- * EntityReference list response
+ * {@link ConstraintDefinition} list response
  *
  * @author Sam Gardner-Dell
  */
 @ApiModel(parent = ResponseWrapper.class)
-public class EntityDataListResponse extends ResponseWrapper<List<EntityBase>> {
-    private List<EntityBase> data;
+public class ConstraintDefinitionListResponse extends ResponseWrapper<List<ConstraintDefinition>> {
+    private List<ConstraintDefinition> data;
 
     @ApiModelProperty(hidden = true)
     private Date lastModified;
@@ -26,16 +26,16 @@ public class EntityDataListResponse extends ResponseWrapper<List<EntityBase>> {
     @ApiModelProperty(hidden = true)
     private EntityTag entityTag;
 
-    public EntityDataListResponse() {
+    public ConstraintDefinitionListResponse() {
 
     }
 
-    public EntityDataListResponse(List<EntityBase> data) {
+    public ConstraintDefinitionListResponse(List<ConstraintDefinition> data) {
         super(Response.Status.OK);
         this.data = data;
     }
 
-    public EntityDataListResponse(List<EntityBase> data, Date lastModified, EntityTag entityTag) {
+    public ConstraintDefinitionListResponse(List<ConstraintDefinition> data, Date lastModified, EntityTag entityTag) {
         super(Response.Status.OK);
         this.data = data;
         this.lastModified = lastModified;
@@ -45,11 +45,11 @@ public class EntityDataListResponse extends ResponseWrapper<List<EntityBase>> {
     @ApiModelProperty(name = "data")
     @JacksonXmlElementWrapper(localName = "data")
     @JacksonXmlProperty(localName = "reference")
-    @Override public List<EntityBase> getData() {
+    @Override public List<ConstraintDefinition> getData() {
         return data;
     }
 
-    @Override public void setData(List<EntityBase> data) {
+    @Override public void setData(List<ConstraintDefinition> data) {
         this.data = data;
     }
 

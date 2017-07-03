@@ -17,7 +17,6 @@ import uk.gov.ea.datareturns.domain.jpa.entities.userdata.impl.ValidationError;
 import uk.gov.ea.datareturns.domain.jpa.entities.userdata.impl.ValidationErrorId;
 import uk.gov.ea.datareturns.domain.processors.ControlledListProcessor;
 import uk.gov.ea.datareturns.web.resource.ControlledListResource;
-import uk.gov.ea.datareturns.web.resource.v1.model.common.EntityBase;
 import uk.gov.ea.datareturns.web.resource.v1.model.common.Linker;
 import uk.gov.ea.datareturns.web.resource.v1.model.common.Preconditions;
 import uk.gov.ea.datareturns.web.resource.v1.model.common.references.EntityReference;
@@ -120,7 +119,7 @@ public class DefinitionsResource {
      *
      * @param payloadType the payload type for which to return fields
      * @param preconditions conditional request structure
-     * @return a response containing an {@link EntityListResponse} entity
+     * @return a response containing an {@link EntityReferenceListResponse} entity
      * @throws Exception if the request cannot be completed normally.
      */
     @GET
@@ -129,7 +128,7 @@ public class DefinitionsResource {
             notes = "List the fields for a given `payload type`"
     )
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "OK", response = EntityListResponse.class),
+            @ApiResponse(code = 200, message = "OK", response = EntityReferenceListResponse.class),
             @ApiResponse(
                     code = 404,
                     message = "Not Found - The `payload_type` parameter did not match a known payload type.",
@@ -145,7 +144,7 @@ public class DefinitionsResource {
         return onPayloadType(payloadType, (payloadClass) -> {
             Map<String, Field> fieldMap = getFields(payloadClass);
             PayloadType payloadEntityType = payloadTypeDao.get(payloadType);
-            return new EntityListResponse(
+            return new EntityReferenceListResponse(
                     fieldMap.keySet().stream()
                             .map((fieldId) -> new EntityReference(fieldId, Linker.info(uriInfo).field(payloadType, fieldId)))
                             .collect(Collectors.toList()),
@@ -160,7 +159,7 @@ public class DefinitionsResource {
      *
      * @param payloadType the payload type for which to return fields
      * @param preconditions conditional request structure
-     * @return a response containing an {@link EntityDataListResponse} entity
+     * @return a response containing an {@link FieldDefinitionListResponse} entity
      * @throws Exception if the request cannot be completed normally.
      */
     @GET
@@ -169,7 +168,7 @@ public class DefinitionsResource {
             notes = "List the field data for a given `payload type`"
     )
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "OK", response = EntityDataListResponse.class),
+            @ApiResponse(code = 200, message = "OK", response = FieldDefinitionListResponse.class),
             @ApiResponse(
                     code = 404,
                     message = "Not Found - The `payload_type` parameter did not match a known payload type.",
@@ -185,14 +184,14 @@ public class DefinitionsResource {
         return onPayloadType(payloadType, (payloadClass) -> {
             Map<String, Field> fieldMap = getFields(payloadClass);
             PayloadType payloadEntityType = payloadTypeDao.get(payloadType);
-            List<EntityBase> defs = fieldMap.entrySet().stream()
+            List<FieldDefinition> defs = fieldMap.entrySet().stream()
                     .map((mapEntry) -> {
                         FieldEntity fieldEntity = fieldDao.get(payloadEntityType, mapEntry.getKey());
                         return toFieldDefinition(payloadEntityType, mapEntry.getValue(), fieldEntity);
                     })
                     .collect(Collectors.toList());
 
-            return new EntityDataListResponse(defs,
+            return new FieldDefinitionListResponse(defs,
                     Date.from(payloadEntityType.getLastChangedDate()),
                     Preconditions.createEtag(defs)
             ).toResponseBuilder();
@@ -242,7 +241,7 @@ public class DefinitionsResource {
      * List the potential validation constraints for a particular payload_type
      *
      * @param payloadType the payload type for which to return fields
-     * @return a response containing an {@link EntityListResponse} entity
+     * @return a response containing an {@link EntityReferenceListResponse} entity
      * @throws Exception if the request cannot be completed normally.
      */
     @GET
@@ -251,7 +250,7 @@ public class DefinitionsResource {
             notes = "List the potential validation constraints for the payload identified by the given `payload_type`"
     )
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "OK", response = EntityListResponse.class),
+            @ApiResponse(code = 200, message = "OK", response = EntityReferenceListResponse.class),
             @ApiResponse(
                     code = 404,
                     message = "Not Found - The `payload_type` parameter did not match a payload type.",
@@ -268,7 +267,7 @@ public class DefinitionsResource {
             PayloadType payloadEntityType = payloadTypeDao.get(payloadType);
             List<ValidationError> errors = validationErrorDao.list(payloadEntityType);
 
-            return new EntityListResponse(
+            return new EntityReferenceListResponse(
                     errors.stream()
                             .map((constraint) -> {
                                 String uri = Linker.info(uriInfo).constraint(payloadType, constraint.getId().getError());
@@ -286,7 +285,7 @@ public class DefinitionsResource {
      * Retrieve full information about all validation constraints for a particular payload_type
      *
      * @param payloadType the payload type for which to return fields
-     * @return a response containing an {@link EntityDataListResponse} entity
+     * @return a response containing an {@link ConstraintDefinitionListResponse} entity
      * @throws Exception if the request cannot be completed normally.
      */
     @GET
@@ -295,7 +294,7 @@ public class DefinitionsResource {
             notes = "Retrieve all validation constraint information for the given `payload_type`"
     )
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "OK", response = EntityDataListResponse.class),
+            @ApiResponse(code = 200, message = "OK", response = ConstraintDefinitionListResponse.class),
             @ApiResponse(
                     code = 404,
                     message = "Not Found - The `payload_type` parameter did not match a payload type.",
@@ -310,7 +309,7 @@ public class DefinitionsResource {
         return onPayloadType(payloadType, (payloadClass) -> {
             PayloadType payloadEntityType = payloadTypeDao.get(payloadType);
             List<ValidationError> errors = validationErrorDao.list(payloadEntityType);
-            return new EntityDataListResponse(
+            return new ConstraintDefinitionListResponse(
                     errors.stream()
                             .map((validationErrorDef) -> toConstraint(payloadEntityType, validationErrorDef))
                             .collect(Collectors.toList()),

@@ -17,7 +17,7 @@ import java.util.List;
  * @author Sam Gardner-Dell
  */
 @ApiModel(parent = ResponseWrapper.class)
-public class EntityListResponse extends ResponseWrapper<List<EntityReference>> {
+public class EntityReferenceListResponse extends ResponseWrapper<List<EntityReference>> {
     private List<EntityReference> data;
 
     @ApiModelProperty(hidden = true)
@@ -26,16 +26,16 @@ public class EntityListResponse extends ResponseWrapper<List<EntityReference>> {
     @ApiModelProperty(hidden = true)
     private EntityTag entityTag;
 
-    public EntityListResponse() {
+    public EntityReferenceListResponse() {
 
     }
 
-    public EntityListResponse(List<EntityReference> data) {
+    public EntityReferenceListResponse(List<EntityReference> data) {
         super(Response.Status.OK);
         this.data = data;
     }
 
-    public EntityListResponse(List<EntityReference> data, Date lastModified, EntityTag entityTag) {
+    public EntityReferenceListResponse(List<EntityReference> data, Date lastModified, EntityTag entityTag) {
         super(Response.Status.OK);
         this.data = data;
         this.lastModified = lastModified;
