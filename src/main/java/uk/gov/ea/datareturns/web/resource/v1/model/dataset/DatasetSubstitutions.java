@@ -7,6 +7,7 @@ import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
 import uk.gov.ea.datareturns.web.resource.v1.model.common.references.EntityReference;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * Response message container to summarise the information which was parsed from the uploaded file.
@@ -14,6 +15,7 @@ import java.util.*;
  * @author Sam Gardner-Dell
  */
 public class DatasetSubstitutions {
+    public static final String KEY_FORMAT = "%s-%s-%s";
     private Map<String, Substitution> instances;
 
     /**
@@ -24,7 +26,7 @@ public class DatasetSubstitutions {
     }
 
     public void addSubstitution(String recordId, String fieldName, String submitted, String substituted) {
-        String mapKey = String.format("%s-%s-%s", fieldName, submitted, substituted);
+        String mapKey = String.format(KEY_FORMAT, fieldName, submitted, substituted);
 
         Substitution sub = instances.get(mapKey);
         if (sub == null) {
@@ -41,6 +43,14 @@ public class DatasetSubstitutions {
     @JacksonXmlProperty(localName = "substitution")
     public Collection<Substitution> getSubstitutions() {
         return instances.values();
+    }
+
+    public void setSubstitutions(List<Substitution> substitutionList) {
+        this.instances = substitutionList.stream().collect(Collectors.toMap(
+                s -> String.format(KEY_FORMAT, s.getFieldName(), s.getSubmitted(), s.getSubstituted()),
+                s -> s,
+                (s1, s2) -> s1, // Merge strategy
+                LinkedHashMap::new));
     }
 
     /**
