@@ -10,6 +10,26 @@ import io.swagger.annotations.ApiModel;
  */
 @ApiModel(value = "DataSamplePayload", description = "DEP v3.0 compliant monitoring data payload", parent = Payload.class)
 public class DataSamplePayload extends Payload  {
+
+    public DataSamplePayload() {}
+
+    public DataSamplePayload(final DataSamplePayload dataSamplePayload) {
+        this.eaId = dataSamplePayload.eaId;
+        this.siteName = dataSamplePayload.siteName;
+        this.returnType = dataSamplePayload.returnType;
+        this.monitoringDate = dataSamplePayload.monitoringDate;
+        this.returnPeriod = dataSamplePayload.returnPeriod;
+        this.monitoringPoint = dataSamplePayload.monitoringPoint;
+        this.parameter = dataSamplePayload.parameter;
+        this.value = dataSamplePayload.value;
+        this.textValue = dataSamplePayload.textValue;
+        this.qualifier = dataSamplePayload.qualifier;
+        this.unit = dataSamplePayload.unit;
+        this.referencePeriod = dataSamplePayload.referencePeriod;
+        this.methStand = dataSamplePayload.methStand;
+        this.comments = dataSamplePayload.comments;
+    }
+
     /** The EA Unique Identifier (EA_ID) */
     @JsonProperty("EA_ID")
     private String eaId;

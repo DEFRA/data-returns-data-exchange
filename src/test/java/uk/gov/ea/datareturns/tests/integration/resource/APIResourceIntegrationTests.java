@@ -3,14 +3,19 @@ package uk.gov.ea.datareturns.tests.integration.resource;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
 import org.junit.Assert;
+import org.junit.ClassRule;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.context.junit4.rules.SpringClassRule;
+import org.springframework.test.context.junit4.rules.SpringMethodRule;
 import uk.gov.ea.datareturns.App;
 import uk.gov.ea.datareturns.tests.integration.api.v1.AbstractDataResourceTests;
 import uk.gov.ea.datareturns.web.resource.v1.model.common.references.EntityReference;
@@ -33,10 +38,18 @@ import java.util.stream.Collectors;
  * Replace the .csv tests - both the processor and resource with equivelent tests
  * which use the API
  */
-@RunWith(SpringRunner.class)
+@RunWith(Parameterized.class)
 @SpringBootTest(classes = App.class, webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 @ActiveProfiles("IntegrationTests")
 public class APIResourceIntegrationTests extends AbstractDataResourceTests {
+
+    private final String name;
+
+    @ClassRule
+    public static final SpringClassRule SPRING_CLASS_RULE= new SpringClassRule();
+
+    @Rule
+    public final SpringMethodRule  springMethodRule = new SpringMethodRule();
 
     private static final Supplier<DataSamplePayload> EMPTY_PAYLOAD = () -> {
         DataSamplePayload dataSamplePayload = new DataSamplePayload();
@@ -56,12 +69,35 @@ public class APIResourceIntegrationTests extends AbstractDataResourceTests {
         return dataSamplePayload;
     };
 
+    private static final Supplier<DataSamplePayload[]> SUPPORTED_DATE_FORMATS = () -> {
+        String[] testDateFormats = new String[] {
+                "2016-04-15",
+                "2016-04-16T09:04:59",
+                "2016-04-16 09:04:59",
+                "17-04-2016",
+                "17-04-2016T09:04:59",
+                "17-04-2016 09:04:59",
+                "17/04/2016",
+                "17/04/2016T09:04:59",
+                "17/04/2016 09:04:59"
+        };
+
+        DataSamplePayload[] dataSamplePayloads = new DataSamplePayload[testDateFormats.length];
+
+        for (int i = 0; i < testDateFormats.length; i++) {
+            dataSamplePayloads[i] = new DataSamplePayload(REQUIRED_FIELDS_PAYLOAD.get());
+            dataSamplePayloads[i].setMonitoringDate(testDateFormats[i]);
+        }
+
+        return dataSamplePayloads;
+    };
+
     private static final Map<String, Pair<DataSamplePayload, ResourceIntegrationTestExpectations>> RESOURCE_TESTS;
 
     static {
-        Map<String, Pair<DataSamplePayload, ResourceIntegrationTestExpectations>> resourceTests = new HashMap<>();
+        Map<String, Pair<DataSamplePayload, ResourceIntegrationTestExpectations>> resourceTests = new LinkedHashMap<>();
 
-        resourceTests.put("Empty Payload", new ImmutablePair<>(EMPTY_PAYLOAD.get(),
+        resourceTests.put("Empty Payload generates violations", new ImmutablePair<>(EMPTY_PAYLOAD.get(),
                 (t) -> t.getHttpStatus().equals(HttpStatus.CREATED)
                     && t.getConstraintDefinitions().containsAll(Arrays.asList(
                     "DR9000-Missing",   // EA_ID Missing
@@ -79,22 +115,47 @@ public class APIResourceIntegrationTests extends AbstractDataResourceTests {
                         && t.getConstraintDefinitions().size() == 0
                         && t.isValid == true));
 
+        for(DataSamplePayload dataSamplePayload : SUPPORTED_DATE_FORMATS.get()) {
+            resourceTests.put("Accepts date format: " + dataSamplePayload.getMonitoringDate(), new ImmutablePair<>(dataSamplePayload,
+                    (t) -> t.getHttpStatus().equals(HttpStatus.CREATED)
+                            && t.getConstraintDefinitions().size() == 0
+                            && t.isValid == true));
+
+        }
+
         RESOURCE_TESTS = Collections.unmodifiableMap(resourceTests);
     }
 
+    @Parameterized.Parameters(name = "{0}")
+    public static Collection<String[]> data() {
+        List<String[]> parameters = RESOURCE_TESTS
+                .entrySet()
+                .stream()
+                .map(Map.Entry::getKey)
+                .map(p -> new String[]{p})
+                .collect(Collectors.toList());
+        return parameters;
+    }
+
+    public APIResourceIntegrationTests(String name) {
+        this.name = name;
+    }
+
+    // Will convert to use parametrized tests
     @Test
-    public void runTests() {
+    public void runSingleNamedTest() {
         Dataset defaultDataset = getDefaultDataset();
-        for (Map.Entry<String, Pair<DataSamplePayload, ResourceIntegrationTestExpectations>> es : RESOURCE_TESTS.entrySet()) {
-            String description = es.getKey();
-            ResourceIntegrationTestExpectations resourceIntegrationTestExpectations = es.getValue().getRight();
-            DataSamplePayload dataSamplePayload =  es.getValue().getLeft();
 
-            ResourceIntegrationTestResult testResult = new ResourceIntegrationTestResult(defaultDataset,
-                    submitPayload(defaultDataset, dataSamplePayload));
+        //String name = "Required fields only";
+        Pair<DataSamplePayload, ResourceIntegrationTestExpectations> test = RESOURCE_TESTS.get(name);
 
-            Assert.assertTrue(description, resourceIntegrationTestExpectations.passes(testResult));
-        }
+        ResourceIntegrationTestExpectations resourceIntegrationTestExpectations = test.getRight();
+        DataSamplePayload dataSamplePayload =  test.getLeft();
+
+        ResourceIntegrationTestResult testResult = new ResourceIntegrationTestResult(defaultDataset,
+                submitPayload(defaultDataset, dataSamplePayload));
+
+        Assert.assertTrue(name, resourceIntegrationTestExpectations.passes(testResult));
     }
 
     @FunctionalInterface
@@ -129,7 +190,6 @@ public class APIResourceIntegrationTests extends AbstractDataResourceTests {
                     .map(DatasetValidity.Violation::getConstraint)
                     .map(EntityReference::getId)
                     .collect(Collectors.toList());
-
         }
 
         private List<String> getConstraintDefinitions() {
@@ -140,7 +200,7 @@ public class APIResourceIntegrationTests extends AbstractDataResourceTests {
         }
     }
 
-    private ResponseEntity<RecordEntityResponse> submitPayload(Dataset dataset, DataSamplePayload payload) {
+    private final ResponseEntity<RecordEntityResponse> submitPayload(Dataset dataset, DataSamplePayload payload) {
         String recordId = UUID.randomUUID().toString();
         ResponseEntity<RecordEntityResponse> createResponse = recordRequest(HttpStatus.CREATED)
                 .putRecord(dataset.getId(), recordId, payload);
