@@ -26,18 +26,13 @@ public class SiteMatchesUniqueIdentifierValidator implements ConstraintValidator
         final UniqueIdentifier eaIdEntity = eaId.getEntity();
         final SiteName site = record.getSiteName();
 
-        // If we have no site name we need to just OK it. The site name validation
-        // checks for not-blank so we don't want to report this as well
-        // This gives an unfortunate dependency between the two validations
-        // which is unavoidable at this stage. It should really check against the controlled list
-        // but cannot do so while being case-insensitive. (There are collisions)
         if (site.getInputValue() == null) {
             return true;
         }
 
         if (eaIdEntity != null && !StringUtils.equalsIgnoreCase(eaId.getEntity().getSite().getName(), site.getValue())) {
             context.disableDefaultConstraintViolation();
-            context.buildConstraintViolationWithTemplate("DR9110-Conflict").addConstraintViolation();
+            context.buildConstraintViolationWithTemplate("DR9000-Incorrect").addConstraintViolation();
             return false;
         }
         return true;

@@ -20,7 +20,7 @@ public class RequireValueOrTextValueValidator implements ConstraintValidator<Req
     @Override
     public boolean isValid(DataSampleValidationObject dataSampleValidationObject, ConstraintValidatorContext constraintValidatorContext) {
 
-        boolean hasTxtValue = (dataSampleValidationObject.getTextValue().getEntity() != null);
+        boolean hasTxtValue = !StringUtils.isEmpty(dataSampleValidationObject.getTextValue().getInputValue());
         boolean hasValue = !StringUtils.isEmpty(dataSampleValidationObject.getValue().getValue());
 
         if (!hasValue && !hasTxtValue) {

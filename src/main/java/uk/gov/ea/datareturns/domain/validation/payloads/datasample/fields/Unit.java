@@ -36,3 +36,4 @@ public class Unit extends AbstractAliasingEntityValue<uk.gov.ea.datareturns.doma
         return inputValue;
     }
 }
+

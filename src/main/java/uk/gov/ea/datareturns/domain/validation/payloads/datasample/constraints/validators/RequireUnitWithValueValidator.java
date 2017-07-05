@@ -20,11 +20,11 @@ public class RequireUnitWithValueValidator implements ConstraintValidator<Requir
     public boolean isValid(DataSampleValidationObject dataSampleValidationObject, ConstraintValidatorContext constraintValidatorContext) {
 
         boolean hasValue = !StringUtils.isEmpty(dataSampleValidationObject.getValue().getValue());
-        boolean hasUnit = (dataSampleValidationObject.getUnit().getEntity() != null);
+        boolean hasUnit = !StringUtils.isEmpty(dataSampleValidationObject.getUnit().getInputValue());
 
         if (hasValue && !hasUnit) {
             constraintValidatorContext.disableDefaultConstraintViolation();
-            constraintValidatorContext.buildConstraintViolationWithTemplate("DR9050-Conflict").addConstraintViolation();
+            constraintValidatorContext.buildConstraintViolationWithTemplate("DR9050-Missing").addConstraintViolation();
             return false;
         }
         return true;

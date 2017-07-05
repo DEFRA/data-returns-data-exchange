@@ -6,11 +6,12 @@ import uk.gov.ea.datareturns.domain.validation.payloads.datasample.constraints.a
 
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
+import java.util.regex.Pattern;
 
-/**
- * @author Graham Willis
- */
 public class RequireCommentsForTextValueCommentValidator implements ConstraintValidator<RequireCommentsForTextValueComment, DataSampleValidationObject> {
+
+    private static final Pattern SEE_COMMENT_PATTERN = Pattern.compile("^See comment[s]?", Pattern.CASE_INSENSITIVE);
+
     @Override
     public void initialize(RequireCommentsForTextValueComment requireUnitWithValue) {
 
@@ -19,12 +20,14 @@ public class RequireCommentsForTextValueCommentValidator implements ConstraintVa
     @Override
     public boolean isValid(DataSampleValidationObject dataSampleValidationObject, ConstraintValidatorContext constraintValidatorContext) {
 
-        boolean hasValue = !StringUtils.isEmpty(dataSampleValidationObject.getValue().getValue());
-        boolean hasUnit = (dataSampleValidationObject.getUnit().getEntity() != null);
+        boolean seeCommentSet = !StringUtils.isEmpty(dataSampleValidationObject.getTextValue().getInputValue())
+                && SEE_COMMENT_PATTERN.matcher(dataSampleValidationObject.getTextValue().getInputValue()).matches();
 
-        if (hasValue && !hasUnit) {
+        boolean hasComment = !StringUtils.isEmpty(dataSampleValidationObject.getComments().getValue());
+
+        if (seeCommentSet && !hasComment) {
             constraintValidatorContext.disableDefaultConstraintViolation();
-            constraintValidatorContext.buildConstraintViolationWithTemplate("DR9050-Conflict").addConstraintViolation();
+            constraintValidatorContext.buildConstraintViolationWithTemplate("DR9140-Missing").addConstraintViolation();
             return false;
         }
         return true;

@@ -1,5 +1,6 @@
 package uk.gov.ea.datareturns.tests.integration.resource;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
 import org.junit.Assert;
@@ -8,12 +9,10 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
-import org.slf4j.LoggerFactory;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.context.junit4.rules.SpringClassRule;
 import org.springframework.test.context.junit4.rules.SpringMethodRule;
 import uk.gov.ea.datareturns.App;
@@ -29,7 +28,6 @@ import uk.gov.ea.datareturns.web.resource.v1.model.response.RecordEntityResponse
 
 import java.util.*;
 import java.util.function.Supplier;
-import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 /**
@@ -46,17 +44,21 @@ public class APIResourceIntegrationTests extends AbstractDataResourceTests {
     private final String name;
 
     @ClassRule
-    public static final SpringClassRule SPRING_CLASS_RULE= new SpringClassRule();
+    public static final SpringClassRule SPRING_CLASS_RULE = new SpringClassRule();
 
     @Rule
     public final SpringMethodRule  springMethodRule = new SpringMethodRule();
 
+    // An ordered map of all the resource tests to be run in turned
+    private static final Map<String, Pair<DataSamplePayload, ResourceIntegrationTestExpectations>> RESOURCE_TESTS;
+
+    // The following suppliers create the payloads used in the tests
     private static final Supplier<DataSamplePayload> EMPTY_PAYLOAD = () -> {
         DataSamplePayload dataSamplePayload = new DataSamplePayload();
         return dataSamplePayload;
     };
 
-    private static final Supplier<DataSamplePayload> REQUIRED_FIELDS_PAYLOAD = () -> {
+    private static final Supplier<DataSamplePayload> REQUIRED_FIELDS = () -> {
         DataSamplePayload dataSamplePayload = new DataSamplePayload();
         dataSamplePayload.setEaId("42355");
         dataSamplePayload.setSiteName("Biffa - Marchington Landfill Site");
@@ -71,46 +73,111 @@ public class APIResourceIntegrationTests extends AbstractDataResourceTests {
 
     private static final Supplier<DataSamplePayload[]> SUPPORTED_DATE_FORMATS = () -> {
         String[] testDateFormats = new String[] {
-                "2016-04-15",
-                "2016-04-16T09:04:59",
-                "2016-04-16 09:04:59",
-                "17-04-2016",
-                "17-04-2016T09:04:59",
-                "17-04-2016 09:04:59",
-                "17/04/2016",
-                "17/04/2016T09:04:59",
+                "2016-04-15", "2016-04-16T09:04:59", "2016-04-16 09:04:59", "17-04-2016",
+                "17-04-2016T09:04:59", "17-04-2016 09:04:59", "17/04/2016", "17/04/2016T09:04:59",
                 "17/04/2016 09:04:59"
         };
 
         DataSamplePayload[] dataSamplePayloads = new DataSamplePayload[testDateFormats.length];
 
         for (int i = 0; i < testDateFormats.length; i++) {
-            dataSamplePayloads[i] = new DataSamplePayload(REQUIRED_FIELDS_PAYLOAD.get());
+            dataSamplePayloads[i] = new DataSamplePayload(REQUIRED_FIELDS.get());
             dataSamplePayloads[i].setMonitoringDate(testDateFormats[i]);
         }
 
         return dataSamplePayloads;
     };
 
-    private static final Map<String, Pair<DataSamplePayload, ResourceIntegrationTestExpectations>> RESOURCE_TESTS;
+    private static final Supplier<DataSamplePayload> PERMIT_NOT_FOUND = () -> {
+        DataSamplePayload dataSamplePayload = new DataSamplePayload(REQUIRED_FIELDS.get());
+        dataSamplePayload.setEaId("ZZZZ");
+        return dataSamplePayload;
+    };
 
+    private static final Supplier<DataSamplePayload> PERMIT_SITE_MISMATCH = () -> {
+        DataSamplePayload dataSamplePayload = new DataSamplePayload(REQUIRED_FIELDS.get());
+        dataSamplePayload.setSiteName("Biffa - Saredon Hill Quarry");
+        return dataSamplePayload;
+    };
+
+    private static final Supplier<DataSamplePayload> INVALID_PERMIT = () -> {
+        DataSamplePayload dataSamplePayload = new DataSamplePayload(REQUIRED_FIELDS.get());
+        dataSamplePayload.setEaId(null);
+        return dataSamplePayload;
+    };
+
+    private static final Supplier<DataSamplePayload> INVALID_RETURN_TYPE = () -> {
+        DataSamplePayload dataSamplePayload = new DataSamplePayload(REQUIRED_FIELDS.get());
+        dataSamplePayload.setReturnType("Not a return type");
+        return dataSamplePayload;
+    };
+
+    private static final Supplier<DataSamplePayload> MISSING_RETURN_TYPE = () -> {
+        DataSamplePayload dataSamplePayload = new DataSamplePayload(REQUIRED_FIELDS.get());
+        dataSamplePayload.setReturnType(null);
+        return dataSamplePayload;
+    };
+
+    private static final Supplier<DataSamplePayload> INVALID_PARAMETER = () -> {
+        DataSamplePayload dataSamplePayload = new DataSamplePayload(REQUIRED_FIELDS.get());
+        dataSamplePayload.setParameter("Not a parameter");
+        return dataSamplePayload;
+    };
+
+    private static final Supplier<DataSamplePayload> MISSING_PARAMETER = () -> {
+        DataSamplePayload dataSamplePayload = new DataSamplePayload(REQUIRED_FIELDS.get());
+        dataSamplePayload.setParameter(null);
+        return dataSamplePayload;
+    };
+
+    private static final Supplier<DataSamplePayload> INVALID_UNIT = () -> {
+        DataSamplePayload dataSamplePayload = new DataSamplePayload(REQUIRED_FIELDS.get());
+        dataSamplePayload.setUnit("Not a unit");
+        return dataSamplePayload;
+    };
+
+    private static final Supplier<DataSamplePayload> MISSING_UNIT = () -> {
+        DataSamplePayload dataSamplePayload = new DataSamplePayload(REQUIRED_FIELDS.get());
+        dataSamplePayload.setUnit(null);
+        return dataSamplePayload;
+    };
+
+    private static final Supplier<DataSamplePayload> INVALID_RETURN_PERIOD = () -> {
+        DataSamplePayload dataSamplePayload = new DataSamplePayload(REQUIRED_FIELDS.get());
+        dataSamplePayload.setReturnPeriod("Not a return period");
+        return dataSamplePayload;
+    };
+
+    private static final Supplier<DataSamplePayload> MISSING_MONITORING_POINT = () -> {
+        DataSamplePayload dataSamplePayload = new DataSamplePayload(REQUIRED_FIELDS.get());
+        dataSamplePayload.setMonitoringPoint(null);
+        return dataSamplePayload;
+    };
+
+    private static final Supplier<DataSamplePayload> LONG_MONITORING_POINT = () -> {
+        DataSamplePayload dataSamplePayload = new DataSamplePayload(REQUIRED_FIELDS.get());
+        dataSamplePayload.setMonitoringPoint(StringUtils.repeat("A", 51));
+        return dataSamplePayload;
+    };
+
+    // Initialize the map containing each test and the expected results
     static {
         Map<String, Pair<DataSamplePayload, ResourceIntegrationTestExpectations>> resourceTests = new LinkedHashMap<>();
 
-        resourceTests.put("Empty Payload generates violations", new ImmutablePair<>(EMPTY_PAYLOAD.get(),
+        resourceTests.put("Empty payload generates violations", new ImmutablePair<>(EMPTY_PAYLOAD.get(),
                 (t) -> t.getHttpStatus().equals(HttpStatus.CREATED)
                     && t.getConstraintDefinitions().containsAll(Arrays.asList(
-                    "DR9000-Missing",   // EA_ID Missing
-                    "DR9010-Missing",       // Return Type Missing
-                    "DR9030-Missing",       // Parameter Missing
-                    "DR9110-Missing",       // Site name Missing
-                    "DR9999-Missing",       // One of value or Txt Value
-                    "DR9020-Missing",       // Monitoring Date
-                    "DR9060-Missing"))      // Monitoring point
+                        "DR9000-Missing",       // EA_ID Missing
+                        "DR9010-Missing",       // Return Type Missing
+                        "DR9030-Missing",       // Parameter Missing
+                        "DR9110-Missing",       // Site name Missing
+                        "DR9999-Missing",       // One of value or Txt Value
+                        "DR9020-Missing",       // Monitoring Date
+                        "DR9060-Missing"))      // Monitoring point
                     && t.getConstraintDefinitions().size() == 7
                     && t.isValid == false));
 
-        resourceTests.put("Required fields only", new ImmutablePair<>(REQUIRED_FIELDS_PAYLOAD.get(),
+        resourceTests.put("Required fields only", new ImmutablePair<>(REQUIRED_FIELDS.get(),
                 (t) -> t.getHttpStatus().equals(HttpStatus.CREATED)
                         && t.getConstraintDefinitions().size() == 0
                         && t.isValid == true));
@@ -120,8 +187,79 @@ public class APIResourceIntegrationTests extends AbstractDataResourceTests {
                     (t) -> t.getHttpStatus().equals(HttpStatus.CREATED)
                             && t.getConstraintDefinitions().size() == 0
                             && t.isValid == true));
-
         }
+
+        resourceTests.put("Permit not found", new ImmutablePair<>(PERMIT_NOT_FOUND.get(),
+                (t) -> t.getHttpStatus().equals(HttpStatus.CREATED)
+                        && t.getConstraintDefinitions().size() == 1
+                        && t.getConstraintDefinitions().containsAll(Arrays.asList("DR9000-Incorrect"))
+                        && t.isValid == false));
+
+        resourceTests.put("Permit site mismatch", new ImmutablePair<>(PERMIT_SITE_MISMATCH.get(),
+                (t) -> t.getHttpStatus().equals(HttpStatus.CREATED)
+                        && t.getConstraintDefinitions().size() == 1
+                        && t.getConstraintDefinitions().containsAll(Arrays.asList("DR9000-Incorrect"))
+                        && t.isValid == false));
+
+        resourceTests.put("Invalid permit", new ImmutablePair<>(INVALID_PERMIT.get(),
+                (t) -> t.getHttpStatus().equals(HttpStatus.CREATED)
+                        && t.getConstraintDefinitions().size() == 1
+                        && t.getConstraintDefinitions().containsAll(Arrays.asList("DR9000-Missing"))
+                        && t.isValid == false));
+
+        resourceTests.put("Invalid return type", new ImmutablePair<>(INVALID_RETURN_TYPE.get(),
+                (t) -> t.getHttpStatus().equals(HttpStatus.CREATED)
+                        && t.getConstraintDefinitions().size() == 1
+                        && t.getConstraintDefinitions().containsAll(Arrays.asList("DR9010-Incorrect"))
+                        && t.isValid == false));
+
+        resourceTests.put("Missing return type", new ImmutablePair<>(MISSING_RETURN_TYPE.get(),
+                (t) -> t.getHttpStatus().equals(HttpStatus.CREATED)
+                        && t.getConstraintDefinitions().size() == 1
+                        && t.getConstraintDefinitions().containsAll(Arrays.asList("DR9010-Missing"))
+                        && t.isValid == false));
+
+        resourceTests.put("Invalid parameter", new ImmutablePair<>(INVALID_PARAMETER.get(),
+                (t) -> t.getHttpStatus().equals(HttpStatus.CREATED)
+                        && t.getConstraintDefinitions().size() == 1
+                        && t.getConstraintDefinitions().containsAll(Arrays.asList("DR9030-Incorrect"))
+                        && t.isValid == false));
+
+        resourceTests.put("Missing parameter", new ImmutablePair<>(MISSING_PARAMETER.get(),
+                (t) -> t.getHttpStatus().equals(HttpStatus.CREATED)
+                        && t.getConstraintDefinitions().size() == 1
+                        && t.getConstraintDefinitions().containsAll(Arrays.asList("DR9030-Missing"))
+                        && t.isValid == false));
+
+        resourceTests.put("Missing unit", new ImmutablePair<>(MISSING_UNIT.get(),
+                (t) -> t.getHttpStatus().equals(HttpStatus.CREATED)
+                        && t.getConstraintDefinitions().size() == 1
+                        && t.getConstraintDefinitions().containsAll(Arrays.asList("DR9050-Missing"))
+                        && t.isValid == false));
+
+        resourceTests.put("Invalid unit", new ImmutablePair<>(INVALID_UNIT.get(),
+                (t) -> t.getHttpStatus().equals(HttpStatus.CREATED)
+                        && t.getConstraintDefinitions().size() == 1
+                        && t.getConstraintDefinitions().containsAll(Arrays.asList("DR9050-Incorrect"))
+                        && t.isValid == false));
+
+        resourceTests.put("Invalid return period", new ImmutablePair<>(INVALID_RETURN_PERIOD.get(),
+                (t) -> t.getHttpStatus().equals(HttpStatus.CREATED)
+                        && t.getConstraintDefinitions().size() == 1
+                        && t.getConstraintDefinitions().containsAll(Arrays.asList("DR9070-Incorrect"))
+                        && t.isValid == false));
+
+        resourceTests.put("Missing monitoring point", new ImmutablePair<>(MISSING_MONITORING_POINT.get(),
+                (t) -> t.getHttpStatus().equals(HttpStatus.CREATED)
+                        && t.getConstraintDefinitions().size() == 1
+                        && t.getConstraintDefinitions().containsAll(Arrays.asList("DR9060-Missing"))
+                        && t.isValid == false));
+
+        resourceTests.put("Monitoring point too long", new ImmutablePair<>(LONG_MONITORING_POINT.get(),
+                (t) -> t.getHttpStatus().equals(HttpStatus.CREATED)
+                        && t.getConstraintDefinitions().size() == 1
+                        && t.getConstraintDefinitions().containsAll(Arrays.asList("DR9060-Length"))
+                        && t.isValid == false));
 
         RESOURCE_TESTS = Collections.unmodifiableMap(resourceTests);
     }
@@ -141,12 +279,10 @@ public class APIResourceIntegrationTests extends AbstractDataResourceTests {
         this.name = name;
     }
 
-    // Will convert to use parametrized tests
     @Test
     public void runSingleNamedTest() {
         Dataset defaultDataset = getDefaultDataset();
 
-        //String name = "Required fields only";
         Pair<DataSamplePayload, ResourceIntegrationTestExpectations> test = RESOURCE_TESTS.get(name);
 
         ResourceIntegrationTestExpectations resourceIntegrationTestExpectations = test.getRight();
