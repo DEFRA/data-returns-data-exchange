@@ -40,7 +40,7 @@ public abstract class Payload implements Serializable {
     public static final Map<String, Class<?>> TYPES = Arrays.stream(Payload.class.getAnnotation(JsonSubTypes.class).value())
             .collect(Collectors.toMap(JsonSubTypes.Type::name, JsonSubTypes.Type::value));
 
-    @ApiModelProperty(name = "_payload_type", required = true, example = "DataSample")
+    @ApiModelProperty(name = "_payload_type", required = true, example = "DataSamplePayload")
     @JsonProperty("_payload_type")
     @XmlAttribute(name = "_payload_type")
     private String payloadType;

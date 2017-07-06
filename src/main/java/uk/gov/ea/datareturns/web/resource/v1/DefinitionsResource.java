@@ -33,12 +33,16 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 import java.lang.reflect.Field;
-import java.util.*;
+import java.util.Date;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 import static javax.ws.rs.core.MediaType.APPLICATION_XML;
+import static uk.gov.ea.datareturns.web.resource.v1.model.common.PreconditionChecks.onPreconditionsPass;
 
 /**
  * RESTful resource to provide business object definitions
@@ -129,6 +133,7 @@ public class DefinitionsResource {
     )
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "OK", response = EntityReferenceListResponse.class),
+            @ApiResponse(code = 304, message = "Not Modified - see conditional request documentation"),
             @ApiResponse(
                     code = 404,
                     message = "Not Found - The `payload_type` parameter did not match a known payload type.",
@@ -142,15 +147,17 @@ public class DefinitionsResource {
             @BeanParam Preconditions preconditions)
             throws Exception {
         return onPayloadType(payloadType, (payloadClass) -> {
-            Map<String, Field> fieldMap = getFields(payloadClass);
             PayloadType payloadEntityType = payloadTypeDao.get(payloadType);
-            return new EntityReferenceListResponse(
-                    fieldMap.keySet().stream()
-                            .map((fieldId) -> new EntityReference(fieldId, Linker.info(uriInfo).field(payloadType, fieldId)))
-                            .collect(Collectors.toList()),
-                    Date.from(payloadEntityType.getLastChangedDate()),
-                    Preconditions.createEtag(payloadEntityType, new ArrayList<>(fieldMap.keySet()))
-            ).toResponseBuilder();
+            return onPreconditionsPass(payloadEntityType, preconditions, () -> {
+                Map<String, Field> fieldMap = getFields(payloadClass);
+                return new EntityReferenceListResponse(
+                        fieldMap.keySet().stream()
+                                .map((fieldId) -> new EntityReference(fieldId, Linker.info(uriInfo).field(payloadType, fieldId)))
+                                .collect(Collectors.toList()),
+                        Date.from(payloadEntityType.getLastChangedDate()),
+                        Preconditions.createEtag(payloadEntityType.getLastChangedDate())
+                ).toResponseBuilder();
+            });
         }).build();
     }
 
@@ -169,6 +176,7 @@ public class DefinitionsResource {
     )
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "OK", response = FieldDefinitionListResponse.class),
+            @ApiResponse(code = 304, message = "Not Modified - see conditional request documentation"),
             @ApiResponse(
                     code = 404,
                     message = "Not Found - The `payload_type` parameter did not match a known payload type.",
@@ -182,19 +190,20 @@ public class DefinitionsResource {
             @BeanParam Preconditions preconditions)
             throws Exception {
         return onPayloadType(payloadType, (payloadClass) -> {
-            Map<String, Field> fieldMap = getFields(payloadClass);
             PayloadType payloadEntityType = payloadTypeDao.get(payloadType);
-            List<FieldDefinition> defs = fieldMap.entrySet().stream()
-                    .map((mapEntry) -> {
-                        FieldEntity fieldEntity = fieldDao.get(payloadEntityType, mapEntry.getKey());
-                        return toFieldDefinition(payloadEntityType, mapEntry.getValue(), fieldEntity);
-                    })
-                    .collect(Collectors.toList());
-
-            return new FieldDefinitionListResponse(defs,
-                    Date.from(payloadEntityType.getLastChangedDate()),
-                    Preconditions.createEtag(defs)
-            ).toResponseBuilder();
+            return onPreconditionsPass(payloadEntityType, preconditions, () -> {
+                Map<String, Field> fieldMap = getFields(payloadClass);
+                List<FieldDefinition> defs = fieldMap.entrySet().stream()
+                        .map((mapEntry) -> {
+                            FieldEntity fieldEntity = fieldDao.get(payloadEntityType, mapEntry.getKey());
+                            return toFieldDefinition(payloadEntityType, mapEntry.getValue(), fieldEntity);
+                        })
+                        .collect(Collectors.toList());
+                return new FieldDefinitionListResponse(defs,
+                        Date.from(payloadEntityType.getLastChangedDate()),
+                        Preconditions.createEtag(payloadEntityType.getLastChangedDate())
+                ).toResponseBuilder();
+            });
         }).build();
     }
 
@@ -251,6 +260,7 @@ public class DefinitionsResource {
     )
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "OK", response = EntityReferenceListResponse.class),
+            @ApiResponse(code = 304, message = "Not Modified - see conditional request documentation"),
             @ApiResponse(
                     code = 404,
                     message = "Not Found - The `payload_type` parameter did not match a payload type.",
@@ -260,24 +270,25 @@ public class DefinitionsResource {
     public Response listValidationConstraints(
             @PathParam("payload_type")
             @Pattern(regexp = "[A-Za-z0-9_-]+")
-            @ApiParam("The payload type the target field belongs to.") final String payloadType)
+            @ApiParam("The payload type the target field belongs to.") final String payloadType,
+            @BeanParam Preconditions preconditions)
             throws Exception {
-
         return onPayloadType(payloadType, (payloadClass) -> {
             PayloadType payloadEntityType = payloadTypeDao.get(payloadType);
-            List<ValidationError> errors = validationErrorDao.list(payloadEntityType);
+            return onPreconditionsPass(payloadEntityType, preconditions, () -> {
+                List<ValidationError> errors = validationErrorDao.list(payloadEntityType);
 
-            return new EntityReferenceListResponse(
-                    errors.stream()
-                            .map((constraint) -> {
-                                String uri = Linker.info(uriInfo).constraint(payloadType, constraint.getId().getError());
-                                return new EntityReference(constraint.getId().getError(), uri);
-                            })
-                            .collect(Collectors.toList()),
-                    Date.from(payloadEntityType.getLastChangedDate()),
-                    Preconditions.createEtag(errors)
-
-            ).toResponseBuilder();
+                return new EntityReferenceListResponse(
+                        errors.stream()
+                                .map((constraint) -> {
+                                    String uri = Linker.info(uriInfo).constraint(payloadType, constraint.getId().getError());
+                                    return new EntityReference(constraint.getId().getError(), uri);
+                                })
+                                .collect(Collectors.toList()),
+                        Date.from(payloadEntityType.getLastChangedDate()),
+                        Preconditions.createEtag(payloadEntityType.getLastChangedDate())
+                ).toResponseBuilder();
+            });
         }).build();
     }
 
@@ -295,6 +306,7 @@ public class DefinitionsResource {
     )
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "OK", response = ConstraintDefinitionListResponse.class),
+            @ApiResponse(code = 304, message = "Not Modified - see conditional request documentation"),
             @ApiResponse(
                     code = 404,
                     message = "Not Found - The `payload_type` parameter did not match a payload type.",
@@ -304,18 +316,21 @@ public class DefinitionsResource {
     public Response listValidationConstraintData(
             @PathParam("payload_type")
             @Pattern(regexp = "[A-Za-z0-9_-]+")
-            @ApiParam("The payload type the target field belongs to.") final String payloadType)
+            @ApiParam("The payload type the target field belongs to.") final String payloadType,
+            @BeanParam Preconditions preconditions)
             throws Exception {
         return onPayloadType(payloadType, (payloadClass) -> {
             PayloadType payloadEntityType = payloadTypeDao.get(payloadType);
-            List<ValidationError> errors = validationErrorDao.list(payloadEntityType);
-            return new ConstraintDefinitionListResponse(
-                    errors.stream()
-                            .map((validationErrorDef) -> toConstraint(payloadEntityType, validationErrorDef))
-                            .collect(Collectors.toList()),
-                    Date.from(payloadEntityType.getLastChangedDate()),
-                    Preconditions.createEtag(errors)
-            ).toResponseBuilder();
+            return onPreconditionsPass(payloadEntityType, preconditions, () -> {
+                List<ValidationError> errors = validationErrorDao.list(payloadEntityType);
+                return new ConstraintDefinitionListResponse(
+                        errors.stream()
+                                .map((validationErrorDef) -> toConstraint(payloadEntityType, validationErrorDef))
+                                .collect(Collectors.toList()),
+                        Date.from(payloadEntityType.getLastChangedDate()),
+                        Preconditions.createEtag(payloadEntityType.getLastChangedDate())
+                ).toResponseBuilder();
+            });
         }).build();
     }
 
@@ -430,4 +445,5 @@ public class DefinitionsResource {
         }
         return fields;
     }
+
 }

@@ -29,17 +29,19 @@ import javax.inject.Inject;
 import javax.validation.constraints.Pattern;
 import javax.ws.rs.*;
 import javax.ws.rs.core.Context;
+import javax.ws.rs.core.EntityTag;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
+import java.time.Instant;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
-import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 import static javax.ws.rs.core.MediaType.APPLICATION_XML;
+import static uk.gov.ea.datareturns.web.resource.v1.model.common.PreconditionChecks.onPreconditionsPass;
 
 /**
  * RESTful resource to manage dataset entities.
@@ -151,17 +153,19 @@ public class DatasetResource {
                 MultiStatusResponse.Response responseItem = new MultiStatusResponse.Response();
                 responseItem.setId(request.getDatasetId());
 
-                Response.ResponseBuilder failureResponse = onPreconditionsPass(datasetEntity, request.getPreconditions(), () -> {
-                    // Preconditions passed, service the request
-                    DatasetEntityResponse storeResult = storeDataset(datasetEntity, request.getDatasetId(), request.getProperties());
-                    Dataset dataset = storeResult.getData();
+                Response.ResponseBuilder failureResponse = onPreconditionsPass(fromEntity(datasetEntity), request.getPreconditions(),
+                        () -> {
+                            // Preconditions passed, service the request
+                            DatasetEntityResponse storeResult = storeDataset(datasetEntity, request.getDatasetId(),
+                                    request.getProperties());
+                            Dataset dataset = storeResult.getData();
 
-                    responseItem.setCode(storeResult.getMeta().getStatus());
-                    responseItem.setHref(Linker.info(uriInfo).dataset(dataset.getId()));
-                    responseItem.setEntityTag(Preconditions.createEtag(dataset).toString());
-                    responseItem.setLastModified(dataset.getLastModified());
-                    return null;
-                });
+                            responseItem.setCode(storeResult.getMeta().getStatus());
+                            responseItem.setHref(Linker.info(uriInfo).dataset(dataset.getId()));
+                            responseItem.setEntityTag(Preconditions.createEtag(dataset).toString());
+                            responseItem.setLastModified(dataset.getLastModified());
+                            return null;
+                        });
                 if (failureResponse != null) {
                     // Preconditions failed, build a response item from the ResponseBuilder returned by the preconditions checks
                     Response response = failureResponse.build();
@@ -207,12 +211,12 @@ public class DatasetResource {
             @ApiParam("The unique identifier for the target dataset") final String datasetId,
             @BeanParam Preconditions preconditions)
             throws Exception {
-        return onDataset(datasetId, datasetEntity ->
-                onPreconditionsPass(datasetEntity, preconditions, () -> {
-                    Dataset dataset = fromEntity(datasetEntity);
-                    return new DatasetEntityResponse(Response.Status.OK, dataset).toResponseBuilder();
-                })
-        ).build();
+        return onDataset(datasetId, datasetEntity -> {
+            Dataset dataset = fromEntity(datasetEntity);
+            return onPreconditionsPass(dataset, preconditions, () ->
+                    new DatasetEntityResponse(Response.Status.OK, dataset).toResponseBuilder()
+            );
+        }).build();
     }
 
     /**
@@ -249,7 +253,7 @@ public class DatasetResource {
     )
             throws Exception {
         DatasetEntity datasetEntity = datasetService.getDataset(datasetId);
-        return onPreconditionsPass(datasetEntity, preconditions, () -> {
+        return onPreconditionsPass(fromEntity(datasetEntity), preconditions, () -> {
             // Preconditions passed, process request
             return storeDataset(datasetEntity, datasetId, datasetProperties).toResponseBuilder();
         }).build();
@@ -288,7 +292,7 @@ public class DatasetResource {
             @BeanParam Preconditions preconditions)
             throws Exception {
         return onDataset(datasetId, datasetEntity ->
-                onPreconditionsPass(datasetEntity, preconditions, () -> {
+                onPreconditionsPass(fromEntity(datasetEntity), preconditions, () -> {
                     // Preconditions passed, delete the resource
                     datasetService.removeDataset(datasetId);
                     return Response.status(Response.Status.NO_CONTENT);
@@ -311,6 +315,7 @@ public class DatasetResource {
     )
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "OK", response = DatasetStatusResponse.class),
+            @ApiResponse(code = 304, message = "Not Modified - see conditional request documentation"),
             @ApiResponse(
                     code = 404,
                     message = "Not Found - The `dataset_id` parameter did not match a known resource",
@@ -320,11 +325,25 @@ public class DatasetResource {
     public Response getDatasetStatus(
             @PathParam("dataset_id")
             @Pattern(regexp = "[A-Za-z0-9_-]+")
-            @ApiParam("The unique identifier for the target dataset") final String datasetId)
+            @ApiParam("The unique identifier for the target dataset") final String datasetId,
+            @BeanParam Preconditions preconditions)
             throws Exception {
-        return onDataset(datasetId, datasetEntity ->
-                new DatasetStatusResponse(buildDatasetStatus(datasetEntity)).toResponseBuilder()
-        ).build();
+
+        return onDataset(datasetId, datasetEntity -> {
+            Instant dsChangeDate = datasetEntity.getLastChangedDate();
+            Instant recordChangeDate = datasetEntity.getRecordChangedDate();
+            Instant latest = dsChangeDate.isAfter(recordChangeDate) ? dsChangeDate : recordChangeDate;
+            Date latestDate = Date.from(latest);
+            EntityTag currentEtag = Preconditions.createEtag(dsChangeDate, recordChangeDate);
+
+            Response.ResponseBuilder rb = preconditions.evaluatePreconditions(latestDate, currentEtag);
+            if (rb == null) {
+                // Preconditions passed, build response
+                rb = new DatasetStatusResponse(buildDatasetStatus(datasetEntity)).toResponseBuilder();
+            }
+            return rb.tag(currentEtag).lastModified(latestDate);
+        }).build();
+
     }
 
     /**
@@ -505,50 +524,16 @@ public class DatasetResource {
     }
 
     private Dataset fromEntity(DatasetEntity entity) {
-        Dataset dataset = DatasetAdaptor.getInstance().convert(entity);
-        Linker.info(uriInfo).resolve(dataset);
+        Dataset dataset = null;
+        if (entity != null) {
+            dataset = DatasetAdaptor.getInstance().convert(entity);
+            Linker.info(uriInfo).resolve(dataset);
+        }
         return dataset;
     }
 
     private Response.ResponseBuilder onDataset(String datasetId, Function<DatasetEntity, Response.ResponseBuilder> handler) {
         DatasetEntity datasetEntity = datasetService.getDataset(datasetId);
         return (datasetEntity == null) ? ErrorResponse.DATASET_NOT_FOUND.toResponseBuilder() : handler.apply(datasetEntity);
-    }
-
-    private Response.ResponseBuilder onPreconditionsPass(final DatasetEntity datasetEntity, Preconditions preconditions, Supplier<Response
-            .ResponseBuilder> handler) {
-        Response.ResponseBuilder rb = null;
-        if (preconditions != null) {
-            if (datasetEntity == null) {
-                rb = preconditions.evaluatePreconditions();
-            } else {
-                Dataset existingDataset = fromEntity(datasetEntity);
-                Date lastModified = Date.from(datasetEntity.getLastChangedDate());
-                rb = preconditions.evaluatePreconditions(lastModified, Preconditions.createEtag(existingDataset));
-            }
-        }
-        if (rb == null) {
-            rb = handler.get();
-        }
-        return rb;
-    }
-
-    // Precondition evaluator for the entity list held at user level
-    private Response.ResponseBuilder onPreconditionsPass(final User user, List<DatasetEntity> datasets,
-            Preconditions preconditions, Supplier<Response.ResponseBuilder> handler) {
-
-        Response.ResponseBuilder rb = null;
-        if (preconditions != null) {
-            if (user == null || datasets == null) {
-                rb = preconditions.evaluatePreconditions();
-            } else {
-                Date lastModified = Date.from(user.getDatasetChangedDate());
-                rb = preconditions.evaluatePreconditions(lastModified, Preconditions.createEtag(datasets));
-            }
-        }
-        if (rb == null) {
-            rb = handler.get();
-        }
-        return rb;
     }
 }
