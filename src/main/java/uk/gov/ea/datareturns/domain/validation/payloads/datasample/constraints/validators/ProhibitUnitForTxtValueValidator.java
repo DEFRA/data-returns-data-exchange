@@ -1,5 +1,6 @@
 package uk.gov.ea.datareturns.domain.validation.payloads.datasample.constraints.validators;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 import uk.gov.ea.datareturns.domain.validation.payloads.datasample.DataSampleValidationObject;
 import uk.gov.ea.datareturns.domain.validation.payloads.datasample.constraints.annotations.ProhibitUnitWithTxtValue;
@@ -20,8 +21,8 @@ public class ProhibitUnitForTxtValueValidator implements ConstraintValidator<Pro
 
     @Override
     public boolean isValid(DataSampleValidationObject dataSampleValidationObject, ConstraintValidatorContext constraintValidatorContext) {
-        boolean hasTxtValue = (dataSampleValidationObject.getTextValue().getEntity() != null);
-        boolean hasUnit = (dataSampleValidationObject.getUnit().getEntity() != null);
+        boolean hasTxtValue = !StringUtils.isEmpty(dataSampleValidationObject.getTextValue().getInputValue());
+        boolean hasUnit = !StringUtils.isEmpty(dataSampleValidationObject.getUnit().getInputValue());
 
         if (hasTxtValue && hasUnit) {
             constraintValidatorContext.disableDefaultConstraintViolation();

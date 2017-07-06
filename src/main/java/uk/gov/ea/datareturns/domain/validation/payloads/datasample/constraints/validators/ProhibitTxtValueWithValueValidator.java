@@ -19,9 +19,8 @@ public class ProhibitTxtValueWithValueValidator implements ConstraintValidator<P
 
     @Override
     public boolean isValid(DataSampleValidationObject dataSampleValidationObject, ConstraintValidatorContext constraintValidatorContext) {
-
-        boolean hasTxtValue = (dataSampleValidationObject.getTextValue().getEntity() != null);
-        boolean hasValue = !StringUtils.isEmpty(dataSampleValidationObject.getValue().getValue());
+        boolean hasTxtValue = !StringUtils.isEmpty(dataSampleValidationObject.getTextValue().getInputValue());
+        boolean hasValue = !StringUtils.isEmpty(dataSampleValidationObject.getValue().getInputValue());
 
         if (hasValue && hasTxtValue) {
             constraintValidatorContext.disableDefaultConstraintViolation();

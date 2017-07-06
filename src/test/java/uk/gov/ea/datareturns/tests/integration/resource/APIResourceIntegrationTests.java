@@ -20,6 +20,7 @@ import uk.gov.ea.datareturns.tests.integration.api.v1.AbstractDataResourceTests;
 import uk.gov.ea.datareturns.web.resource.v1.model.common.references.EntityReference;
 import uk.gov.ea.datareturns.web.resource.v1.model.dataset.Dataset;
 import uk.gov.ea.datareturns.web.resource.v1.model.dataset.DatasetStatus;
+import uk.gov.ea.datareturns.web.resource.v1.model.dataset.DatasetSubstitutions;
 import uk.gov.ea.datareturns.web.resource.v1.model.dataset.DatasetValidity;
 import uk.gov.ea.datareturns.web.resource.v1.model.record.payload.DataSamplePayload;
 import uk.gov.ea.datareturns.web.resource.v1.model.request.BatchRecordRequest;
@@ -170,6 +171,12 @@ public class APIResourceIntegrationTests extends AbstractDataResourceTests {
         return dataSamplePayload;
     };
 
+    private static final Supplier<DataSamplePayload> LONG_COMMENT = () -> {
+        DataSamplePayload dataSamplePayload = new DataSamplePayload(REQUIRED_FIELDS.get());
+        dataSamplePayload.setComments(StringUtils.repeat("A", 256));
+        return dataSamplePayload;
+    };
+
     private static final Supplier<DataSamplePayload[]> VALID_QUALIFIERS = () -> {
         String[] validValueFields = new String[] {
                 "All isomers", "At 20°c", "In leachate"
@@ -262,6 +269,8 @@ public class APIResourceIntegrationTests extends AbstractDataResourceTests {
     private static final Supplier<DataSamplePayload> INVALID_TEXT_VALUE = () -> {
         DataSamplePayload dataSamplePayload = new DataSamplePayload(REQUIRED_FIELDS.get());
         dataSamplePayload.setTextValue("Not a text value");
+        dataSamplePayload.setValue(null);
+        dataSamplePayload.setUnit(null);
         return dataSamplePayload;
     };
 
@@ -359,6 +368,43 @@ public class APIResourceIntegrationTests extends AbstractDataResourceTests {
         return dataSamplePayloads;
     };
 
+    private static final Supplier<DataSamplePayload> REQUIRE_COMMENTS_FOR_TEXT_VALUE_COMMENT = () -> {
+        DataSamplePayload dataSamplePayload = new DataSamplePayload(REQUIRED_FIELDS.get());
+        dataSamplePayload.setValue(null);
+        dataSamplePayload.setTextValue("see comment");
+        dataSamplePayload.setUnit(null);
+        return dataSamplePayload;
+    };
+
+    private static final Supplier<DataSamplePayload> PROHIBIT_TEXT_VALUE_WITH_VALUE = () -> {
+        DataSamplePayload dataSamplePayload = new DataSamplePayload(REQUIRED_FIELDS.get());
+        dataSamplePayload.setValue("318");
+        dataSamplePayload.setTextValue("False");
+        dataSamplePayload.setUnit(null);
+        return dataSamplePayload;
+    };
+
+    private static final Supplier<DataSamplePayload> PROHIBIT_UNIT_WITH_TEXT_VALUE = () -> {
+        DataSamplePayload dataSamplePayload = new DataSamplePayload(REQUIRED_FIELDS.get());
+        dataSamplePayload.setValue(null);
+        dataSamplePayload.setTextValue("False");
+        return dataSamplePayload;
+    };
+
+    private static final Supplier<DataSamplePayload> REQUIRE_UNIT_WITH_VALUE = () -> {
+        DataSamplePayload dataSamplePayload = new DataSamplePayload(REQUIRED_FIELDS.get());
+        dataSamplePayload.setValue("48.9");
+        dataSamplePayload.setUnit(null);
+        return dataSamplePayload;
+    };
+
+    private static final Supplier<DataSamplePayload> REQUIRE_VALUE_OR_TEXT_VALUE = () -> {
+        DataSamplePayload dataSamplePayload = new DataSamplePayload(REQUIRED_FIELDS.get());
+        dataSamplePayload.setValue(null);
+        dataSamplePayload.setTextValue(null);
+        return dataSamplePayload;
+    };
+
     private final static ResourceIntegrationTestExpectations PASS_WITH_NO_ERRORS = (t) -> t.getHttpStatus().equals(HttpStatus.CREATED)
             && t.getConstraintDefinitions().size() == 0
             && t.isValid == true;
@@ -367,6 +413,74 @@ public class APIResourceIntegrationTests extends AbstractDataResourceTests {
             && t.getConstraintDefinitions().size() == 0
             && t.getHttpMultiStatus().containsAll(Arrays.asList(HTTP_1_1_201_CREATED))
             && t.isValid == true;
+
+    private static final Supplier<DataSamplePayload[]> UNIT_SUBSTITUTIONS = () -> {
+        String[] units = new String[] {
+                "㎭", "µg/m²", "µg/m³"
+        };
+
+        DataSamplePayload[] dataSamplePayloads = new DataSamplePayload[units.length];
+
+        for (int i = 0; i < units.length; i++) {
+            dataSamplePayloads[i] = new DataSamplePayload(REQUIRED_FIELDS.get());
+            dataSamplePayloads[i].setUnit(units[i]);
+        }
+
+        return dataSamplePayloads;
+    };
+
+    private static final Supplier<DataSamplePayload[]> PARAMETER_SUBSTITUTIONS = () -> {
+        String[] parameter = new String[] {
+                "Freon 113", "1,1,2-trichloro-1,2,2-trifluoro-ethane", "Methylchloroform", "Chlorothene"
+        };
+
+        DataSamplePayload[] dataSamplePayloads = new DataSamplePayload[parameter.length];
+
+        for (int i = 0; i < parameter.length; i++) {
+            dataSamplePayloads[i] = new DataSamplePayload(REQUIRED_FIELDS.get());
+            dataSamplePayloads[i].setParameter(parameter[i]);
+            dataSamplePayloads[i].setUnit("µg");
+        }
+
+        return dataSamplePayloads;
+    };
+
+    private static final Supplier<DataSamplePayload[]> TEXT_VALUE_SUBSTITUTIONS = () -> {
+        String[] textValue = new String[] {
+                "See comments"
+        };
+
+        DataSamplePayload[] dataSamplePayloads = new DataSamplePayload[textValue.length];
+
+        for (int i = 0; i < textValue.length; i++) {
+            dataSamplePayloads[i] = new DataSamplePayload(REQUIRED_FIELDS.get());
+            dataSamplePayloads[i].setTextValue(textValue[i]);
+            dataSamplePayloads[i].setValue(null);
+            dataSamplePayloads[i].setComments("integration test");
+            dataSamplePayloads[i].setUnit(null);
+        }
+
+        return dataSamplePayloads;
+    };
+
+    private static final Supplier<DataSamplePayload[]> REFERENCE_PERIOD_SUBSTITUTIONS = () -> {
+        String[] referencePeriods = new String[] {
+                "Calendar monthly mean",
+                "Daily average",
+                "Monthly average",
+                "Daily total"
+        };
+
+        DataSamplePayload[] dataSamplePayloads = new DataSamplePayload[referencePeriods.length];
+
+        for (int i = 0; i < referencePeriods.length; i++) {
+            dataSamplePayloads[i] = new DataSamplePayload(REQUIRED_FIELDS.get());
+            dataSamplePayloads[i].setReferencePeriod(referencePeriods[i]);
+            dataSamplePayloads[i].setUnit("µg");
+        }
+
+        return dataSamplePayloads;
+    };
 
     // Initialize the map containing each test and the expected results
     static {
@@ -531,6 +645,68 @@ public class APIResourceIntegrationTests extends AbstractDataResourceTests {
 
         singleRecordResourceTests.put("Embedded separators", new ImmutablePair<>(EMBEDDED_SEPARATORS.get(), PASS_WITH_NO_ERRORS));
 
+        singleRecordResourceTests.put("Require comments for text value 'comment'", new ImmutablePair<>(REQUIRE_COMMENTS_FOR_TEXT_VALUE_COMMENT.get(),
+                (t) -> t.getHttpStatus().equals(HttpStatus.CREATED)
+                        && t.getConstraintDefinitions().size() == 1
+                        && t.getConstraintDefinitions().containsAll(Arrays.asList("DR9140-Missing"))
+                        && t.isValid == false));
+
+        singleRecordResourceTests.put("Prohibit text value with value", new ImmutablePair<>(PROHIBIT_TEXT_VALUE_WITH_VALUE.get(),
+                (t) -> t.getHttpStatus().equals(HttpStatus.CREATED)
+                        && t.getConstraintDefinitions().size() == 2
+                        && t.getConstraintDefinitions().containsAll(Arrays.asList("DR9999-Conflict", "DR9050-Missing"))
+                        && t.isValid == false));
+
+        singleRecordResourceTests.put("Prohibit unit with text value", new ImmutablePair<>(PROHIBIT_UNIT_WITH_TEXT_VALUE.get(),
+                (t) -> t.getHttpStatus().equals(HttpStatus.CREATED)
+                        && t.getConstraintDefinitions().size() == 1
+                        && t.getConstraintDefinitions().containsAll(Arrays.asList("DR9050-Conflict"))
+                        && t.isValid == false));
+
+        singleRecordResourceTests.put("Require unit with value", new ImmutablePair<>(REQUIRE_UNIT_WITH_VALUE.get(),
+                (t) -> t.getHttpStatus().equals(HttpStatus.CREATED)
+                        && t.getConstraintDefinitions().size() == 1
+                        && t.getConstraintDefinitions().containsAll(Arrays.asList("DR9050-Missing"))
+                        && t.isValid == false));
+
+        singleRecordResourceTests.put("Require value or text value", new ImmutablePair<>(REQUIRE_VALUE_OR_TEXT_VALUE.get(),
+                (t) -> t.getHttpStatus().equals(HttpStatus.CREATED)
+                        && t.getConstraintDefinitions().size() == 1
+                        && t.getConstraintDefinitions().containsAll(Arrays.asList("DR9999-Missing"))
+                        && t.isValid == false));
+
+        singleRecordResourceTests.put("Comment too long", new ImmutablePair<>(LONG_COMMENT.get(),
+                (t) -> t.getHttpStatus().equals(HttpStatus.CREATED)
+                        && t.getConstraintDefinitions().size() == 1
+                        && t.getConstraintDefinitions().containsAll(Arrays.asList("DR9140-Length"))
+                        && t.isValid == false));
+
+        multiRecordResourceTests.put("Unit substitutions", new ImmutablePair<>(UNIT_SUBSTITUTIONS.get(),
+                (t) -> t.getSubtitutionsList().containsAll(Arrays.asList("rad", "µg/m2", "µg/m3"))
+                        && t.getSubtitutionsList().size() == 3
+                        && MULTI_PASS_WITH_NO_ERRORS.passes(t)));
+
+        multiRecordResourceTests.put("Parameter substitutions", new ImmutablePair<>(PARAMETER_SUBSTITUTIONS.get(),
+                (t) -> t.getSubtitutionsList().containsAll(Arrays.asList(
+                            "1,1,2-Trichloro-1,2,2-trifluoroethane",
+                            "1,1,2-Trichloroethane"))
+                        && t.getSubtitutionsList().size() == 4
+                        && MULTI_PASS_WITH_NO_ERRORS.passes(t)));
+
+        multiRecordResourceTests.put("Text value substitutions", new ImmutablePair<>(TEXT_VALUE_SUBSTITUTIONS.get(),
+                (t) -> t.getSubtitutionsList().containsAll(Arrays.asList("See comment"))
+                        && t.getSubtitutionsList().size() == 1
+                        && MULTI_PASS_WITH_NO_ERRORS.passes(t)));
+
+        multiRecordResourceTests.put("Reference period substitutions", new ImmutablePair<>(REFERENCE_PERIOD_SUBSTITUTIONS.get(),
+                (t) -> t.getSubtitutionsList().containsAll(Arrays.asList(
+                            "Monthly mean",
+                            "Daily mean",
+                            "Monthly mean",
+                            "24 hour total"))
+                        && t.getSubtitutionsList().size() == 4
+                        && MULTI_PASS_WITH_NO_ERRORS.passes(t)));
+        
         SINGLE_RECORD_RESOURCE_TESTS = Collections.unmodifiableMap(singleRecordResourceTests);
         MULTI_RECORD_RESOURCE_TESTS = Collections.unmodifiableMap(multiRecordResourceTests);
     }
@@ -590,6 +766,7 @@ public class APIResourceIntegrationTests extends AbstractDataResourceTests {
 
     private class ResourceIntegrationTestResult {
         private final boolean isValid;
+        private final List<String> subtitutionsList;
         private List<String> violationsList;
         private HttpStatus httpStatus;
         private List<String> httpMultiStatus;
@@ -617,6 +794,13 @@ public class APIResourceIntegrationTests extends AbstractDataResourceTests {
                     .map(EntityReference::getId)
                     .collect(Collectors.toList());
 
+            subtitutionsList = datasetStatus
+                    .getSubstitutions()
+                    .getSubstitutions()
+                    .stream()
+                    .map(DatasetSubstitutions.Substitution::getSubstituted)
+                    .collect(Collectors.toList());
+
             // Process the record level responses
             ResponseWrapper<?> responseBody = responseEntity.getBody();
 
@@ -634,12 +818,17 @@ public class APIResourceIntegrationTests extends AbstractDataResourceTests {
         private List<String> getConstraintDefinitions() {
             return violationsList;
         }
+
         private HttpStatus getHttpStatus() {
             return httpStatus;
         }
 
         public List<String> getHttpMultiStatus() {
             return httpMultiStatus;
+        }
+
+        public List<String> getSubtitutionsList() {
+            return subtitutionsList;
         }
     }
 

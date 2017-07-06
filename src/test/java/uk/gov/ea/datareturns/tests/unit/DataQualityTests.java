@@ -12,7 +12,7 @@ import java.net.URISyntaxException;
  */
 public class DataQualityTests {
     // Expected entry count checked by SGD 2016-09-23
-    private static final int VALID_UTF8_CHAR_COUNT = 30;
+    private static final int VALID_UTF8_CHAR_COUNT = 38;
 
     @Test
     public void testUTF8Characters() throws URISyntaxException {

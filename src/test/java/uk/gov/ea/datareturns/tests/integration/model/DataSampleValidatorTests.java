@@ -1,7 +1,7 @@
 /**
  *
  */
-package uk.gov.ea.datareturns.tests.integration;
+package uk.gov.ea.datareturns.tests.integration.model;
 
 import org.apache.commons.lang3.RandomStringUtils;
 import org.junit.Assert;
@@ -490,12 +490,9 @@ public class DataSampleValidatorTests {
     @Test
     public void testUnitEmpty() {
         final DataSampleValidationObject record = createValidNumericRecord();
-        record.setUnit(new Unit(" "));
+        record.setUnit(new Unit(null));
         final Set<ConstraintViolation<DataSampleValidationObject>> violations = this.validator.validate(record);
-
-        // Changed. Here we expect a conflict and incorrect - the item is not in the controlled lists
-        // TODO investigate if this needs to be grouped into a second tier validation error
-        Assert.assertEquals(2, violations.size());
+        Assert.assertEquals(1, violations.size());
     }
 
     @Test
