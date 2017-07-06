@@ -706,7 +706,7 @@ public class APIResourceIntegrationTests extends AbstractDataResourceTests {
                             "24 hour total"))
                         && t.getSubtitutionsList().size() == 4
                         && MULTI_PASS_WITH_NO_ERRORS.passes(t)));
-        
+
         SINGLE_RECORD_RESOURCE_TESTS = Collections.unmodifiableMap(singleRecordResourceTests);
         MULTI_RECORD_RESOURCE_TESTS = Collections.unmodifiableMap(multiRecordResourceTests);
     }
