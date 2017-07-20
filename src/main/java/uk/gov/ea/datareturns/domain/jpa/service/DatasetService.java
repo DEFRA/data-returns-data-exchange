@@ -87,6 +87,7 @@ public class DatasetService {
         Instant timestamp = Instant.now();
         newDatasetEntity.setCreateDate(timestamp);
         newDatasetEntity.setLastChangedDate(timestamp);
+        newDatasetEntity.setRecordChangedDate(timestamp);
         newDatasetEntity.setStatus(DatasetEntity.Status.UNSUBMITTED);
 
         if (newDatasetEntity.getIdentifier() == null) {

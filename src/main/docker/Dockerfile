@@ -1,4 +1,6 @@
 FROM frolvlad/alpine-oraclejdk8:slim
+# TODO: For production we don't need JDK support - investigate develar/java
+
 VOLUME /tmp
 
 # Create app directory
