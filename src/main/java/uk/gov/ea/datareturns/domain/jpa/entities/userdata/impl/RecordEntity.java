@@ -1,8 +1,6 @@
 package uk.gov.ea.datareturns.domain.jpa.entities.userdata.impl;
 
-import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.ImmutableTriple;
-import org.apache.commons.lang3.tuple.Pair;
 import org.hibernate.annotations.GenericGenerator;
 import uk.gov.ea.datareturns.domain.jpa.entities.userdata.AbstractPayloadEntity;
 import uk.gov.ea.datareturns.domain.jpa.entities.userdata.Metadata;
@@ -30,7 +28,7 @@ import java.util.Set;
                 }))
 public class RecordEntity implements Metadata {
 
-     public enum RecordStatus {
+    public enum RecordStatus {
         CREATED, PERSISTED, PARSED, INVALID, VALID
     }
 
@@ -46,7 +44,7 @@ public class RecordEntity implements Metadata {
     @Basic @Column(name = "payload_type", length = 100)
     private String payloadType;
 
-    @ManyToOne(optional=false)
+    @ManyToOne(optional = false)
     @JoinColumn(name = "dataset_id", referencedColumnName = "id")
     private DatasetEntity dataset;
 
@@ -65,11 +63,10 @@ public class RecordEntity implements Metadata {
 
     @ManyToMany
     @JoinTable(name = "record_validation_errors", joinColumns =
-            @JoinColumn(name = "record_id", referencedColumnName = "id"), inverseJoinColumns = {
+    @JoinColumn(name = "record_id", referencedColumnName = "id"), inverseJoinColumns = {
             @JoinColumn(name = "payload_type", referencedColumnName = "payload_type"),
             @JoinColumn(name = "error", referencedColumnName = "error")
-        }
-    )
+    })
     public Set<ValidationError> validationErrors;
 
     public Long getId() {
@@ -154,8 +151,10 @@ public class RecordEntity implements Metadata {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o)
+            return true;
+        if (o == null || getClass() != o.getClass())
+            return false;
 
         RecordEntity recordEntity = (RecordEntity) o;
 

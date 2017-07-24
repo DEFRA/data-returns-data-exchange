@@ -112,18 +112,6 @@ public class SubmissionService {
     }
 
     /**
-     * Retrieve records for the given dataset and identifiers
-     *
-     * @param dataset A dataset
-     * @param identifiers a collection of record identifiers to retrieve
-     * @return A {@link Map} of records identifiers to their {@link RecordEntity}
-     */
-    @Transactional(readOnly = true)
-    public Map<String, RecordEntity> getRecords(DatasetEntity dataset, Collection<String> identifiers) {
-        return recordDao.get(dataset, identifiers);
-    }
-
-    /**
      * This returns a list of the invalid records for a dataset
      * with an eager fetch on the validation errors
      * @param dataset
@@ -191,7 +179,11 @@ public class SubmissionService {
      */
     @Transactional
     public <D extends Payload> Map<String, RecordEntity> createRecords(DatasetEntity dataset, Map<String, D> payloadMap) {
-        Map<String, RecordEntity> existingRecords = getRecords(dataset, payloadMap.keySet());
+        Map<String, RecordEntity> existingRecords = getRecords(dataset)
+                .stream()
+                .filter(r -> payloadMap.keySet().contains(r.getIdentifier()))
+                .collect(Collectors.toMap(RecordEntity::getIdentifier, r -> r));
+
 
         Map<String, RecordEntity> updatedRecords = new HashMap<>();
         payloadMap.forEach((identifier, payload) -> {
