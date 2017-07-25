@@ -2,9 +2,9 @@ name,preferred,long_name,unicode,description,type
 ',,Minute,,"This character is a quote, an allowable alternative to a prime - a unit of angular measure used in geographic coordinates (latitude or longitude)",Misc
 """",,Second,,This character is a double quote allowable alternative to double prime - a unit of angular measure used in geographic coordinates (latitude or longitude),Misc
 %,,Percentage,,A number expressed as a fraction of 100,Misc
-% Diff,,,,,
-% REC,,,,,
-% Sat,,,,,
+% Diff,,Percentage difference  ,,A number expressed as a fraction of 100,Misc
+% REC,,Percentage difference  ,,A number expressed as a fraction of 100,Misc
+% Sat,,Percentage difference  ,,A number expressed as a fraction of 100,Misc
 %v/v,,Percentage volume for volume,,A unit of volume percent concentration,Concentration (Vol/Vol)
 %Vol,%v/v,Percentage volume for volume,,A unit of volume percent concentration,Concentration (Vol/Vol)
 %Wt/Wt,,Percentage weight for weight,,A unit of weight percent concentration,Concentration (Wt/Wt)
@@ -19,7 +19,7 @@ A,,Ampere,,A unit of electric current,Electricity
 a,,Year,,A unit of time,Time
 ABS/cm,cm-1,Absorption per centimetre,,A unit of absorption,Misc
 ABS/m,m-1,Absorbance per metre,,A unit of absorbance,Misc
-ATU,,,,,
+ATU,,Accumulated thermal unit,,A unit of temperature,Temperature
 Bar,,Bar,,A unit of pressure,Pressure
 Bq,,Becquerel,,A unit of radioactivity,Radioactive decay
 Bq/cm2,Bqcm-2,Becquerels per square centimetre,,A unit of radioactive surface contamination,Radioactivity
@@ -177,8 +177,8 @@ m3/d,,Cubic metres per day,,A measure of volume flow rate or discharge,Flow (vol
 m³/d,m3/d,Cubic metres per day,m(U+00B3)/d,A measure of volume flow rate or discharge,Flow (vol/time)
 m3/h,,Cubic metres per hour,,A measure of volume flow rate or discharge,Flow (vol/time)
 m³/h,m3/h,Cubic metres per hour,m(U+00B3)/h,A measure of volume flow rate or discharge,Flow (vol/time)
-m3/m,,,,,
-m3/min,,Cubic metres per minute,,A measure of volume flow rate or discharge,Flow (vol/time)
+m3/m,m3/min,Cubic metres per minute,,A measure of volume flow rate or discharge,Flow (vol/time)
+m3/min, ,Cubic metres per minute,,A measure of volume flow rate or discharge,Flow (vol/time)
 m³/min,m3/min,Cubic metres per minute,m(U+00B3)/min,A measure of volume flow rate or discharge,Flow (vol/time)
 m3/s,,Cubic metres per second,,A measure of volume flow rate or discharge,Flow (vol/time)
 m³/s,m3/s,Cubic metres per second,m(U+00B3)/s,A measure of volume flow rate or discharge,Flow (vol/time)
@@ -187,9 +187,9 @@ m³/wk,m3/wk,Cubic metres per week,m(U+00B3)/wk,A measure of volume flow rate or
 m3/y,,Cubic metres per year,,A measure of volume flow rate or discharge,Flow (vol/time)
 m³/y,m3/y,Cubic metres per year,m(U+00B3)/y,A measure of volume flow rate or discharge,Flow (vol/time)
 mA,,Milliamp,,A unit of electric current,Electricity
-mBar,,,,,
+mBar,,Millibar,,A unit of pressure,Pressure
 MBq,,Megabecquerel,,A unit of radioactivity,Radioactive decay
-meq,,,,,
+meq,,Milliequivalents of solute per litre of solvent,,A unit of volume,Volume
 mg,,Milligram,,A unit of mass,Mass
 mg/d,,Milligrams per day,,A measure of volume flow rate or discharge,Flow (mass/time)
 mg/day,mg/d,Milligrams per day,,A measure of volume flow rate or discharge,Flow (mass/time)
@@ -200,12 +200,12 @@ mg/l,,Milligrams per litre,,A unit of concentration,Concentration (mass/vol)
 mg/m,mg/min,Milligrams per minute,,A measure of volume flow rate or discharge,Flow (mass/time)
 mg/m2,,Milligrams per square metre,,A unit of concentration,Concentration (mass/area)
 mg/m²,mg/m2,Milligram per square metre,mg/m(U+00B2),A unit of concentration,Concentration (mass/area)
-mg/m2/d,,,,,
-mg/m2/s,,Milligrams per square meter per second,,A measure of volume flow rate or discharge,Flow (Mass/Area/Time)
-mg/m²/s,mg/m2/s,Milligrams per square meter per second,mg/m(U+00B2)/s,A measure of volume flow rate or discharge,Flow (Mass/Area/Time)
+mg/m2/d,,Milligrams per square metre per day,,A unit of concentration,Concentration (mass/area)
+mg/m2/s,,Milligrams per square metre per second,,A measure of volume flow rate or discharge,Flow (Mass/Area/Time)
+mg/m²/s,mg/m2/s,Milligrams per square metre per second,mg/m(U+00B2)/s,A measure of volume flow rate or discharge,Flow (Mass/Area/Time)
 mg/m3,,Milligrams per cubic metre,,A unit of concentration,Concentration (mass/vol)
 mg/m³,mg/m3,Milligrams per cubic metre,mg/m(U+00B3),A unit of concentration,Concentration (mass/vol)
-mg/m3/d,,,,,
+mg/m3/d,,Milligrams per cubic metre per day,,A unit of concentration,Concentration (mass/vol)
 mg/min,,Milligrams per minute,,A measure of volume flow rate or discharge,Flow (mass/time)
 mg/Nm3,mgNm-3,Emissions versus normal gas volume,,A unit of gas concentration,Concentration (mass/vol)
 mg/s,,Milligrams per second,,A measure of volume flow rate or discharge,Flow (mass/time)
@@ -259,7 +259,7 @@ mol/m3,,Moles per cubic metre,,A unit of concentration,Concentration (mass/vol)
 mol/m³,mol/m3,Moles per cubic metre,mol/m(U+00B3),A unit of concentration,Concentration (mass/vol)
 MPa,,Megapascal,,A unit of pressure,Pressure
 mpg,,Miles per gallon,,A measure of fuel consumption,Misc
-mph,,,,,
+mph,,Miles per hour,,A unit of speed,Speed (Length/Time)
 ms-1,,Metres per second,,A unit of velocity and speed,Speed (Length/Time)
 mS/cm,mScm-1,Millisiemens per centimetre,,A unit of conductivity,Electrical conductivity
 mS/m,mSm-1,Millisiemens per metre,,A unit of conductivity,Electrical conductivity
@@ -296,13 +296,13 @@ ppbv,ppb,Parts per billion,,A measure of concentration,Misc
 ppb,,Parts per billion,,A measure of concentration,Misc
 ppmv,ppm,Parts per million,,A measure of concentration,Misc
 ppm,,Parts per million,,A measure of concentration,Misc
-ppv,,,,,
+ppv,,Parts per volume,,A measure of concentration,Concentration
 qrt,,Quarter,,A unit of time,Time
 ㎭,rad,Radian,(U+33AD),A unit of angular measure,Misc
 rad,,Radian,,A unit of angular measure,Misc
 RFU,,Relative Fluorescence Unit,,A measurement of fluorescence,Misc
 s,,Second,,A unit of time,Time
-SU/Week,,,,,
+SU/Week,,Standard unit per week,,,Misc
 t,,Metric tonne,,A unit of mass,Mass
 t/a,,Tonnes per year,,A measure of mass flow rate,Flow (mass/time)
 t/d,,Tonnes per day,,A measure of mass flow rate,Flow (mass/time)

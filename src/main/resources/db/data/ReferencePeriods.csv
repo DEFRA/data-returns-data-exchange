@@ -31,7 +31,7 @@ Daily mean,,Mean over the time interval starting at midnight and ending at the n
 Daily mean of validated hourly averages,,
 Daily total,24 hour total,Total cumulative measurement over the time interval starting at midnight and ending at the next midnight
 Half hour average,,Total cumulative measurement for the 30 minutes preceding the time and date provided
-Hourly average,,
+Hourly average,Hourly mean,
 Hourly mean,,Mean for the hour preceding the time and date given. Mean is the sum of items divided by the number of entries.
 Instantaneous,,
 Maximum daily,,
