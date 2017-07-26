@@ -322,10 +322,6 @@
 				<constraints nullable="false"/>
 			</column>
 
-			<column name="site_id" type="bigint">
-				<constraints nullable="false"/>
-			</column>
-
 			<column name="return_type_id" type="bigint">
 				<constraints nullable="false"/>
 			</column>
@@ -391,13 +387,7 @@
 								 constraintName="fk_data_sample_unique_identifier"
 								 referencedColumnNames="id"
 								 referencedTableName="unique_identifiers"/>
-
-		<addForeignKeyConstraint baseColumnNames="site_id"
-								 baseTableName="data_sample"
-								 constraintName="fk_data_sample_site"
-								 referencedColumnNames="id"
-								 referencedTableName="sites"/>
-
+		
 		<addForeignKeyConstraint baseColumnNames="return_type_id"
 								 baseTableName="data_sample"
 								 constraintName="fk_data_sample_return_type"

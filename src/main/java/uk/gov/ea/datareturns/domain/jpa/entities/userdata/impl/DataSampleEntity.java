@@ -20,10 +20,6 @@ public class DataSampleEntity extends AbstractPayloadEntity {
     private UniqueIdentifier uniqueIdentifier;
 
     @ManyToOne(optional = false)
-    @JoinColumn(name = "site_id", referencedColumnName = "id")
-    private Site site;
-
-    @ManyToOne(optional = false)
     @JoinColumn(name = "return_type_id", referencedColumnName = "id")
     private ReturnType returnType;
 
@@ -72,14 +68,6 @@ public class DataSampleEntity extends AbstractPayloadEntity {
 
     public void setUniqueIdentifier(UniqueIdentifier uniqueIdentifier) {
         this.uniqueIdentifier = uniqueIdentifier;
-    }
-
-    public Site getSite() {
-        return site;
-    }
-
-    public void setSite(Site site) {
-        this.site = site;
     }
 
     public ReturnType getReturnType() {
@@ -182,7 +170,6 @@ public class DataSampleEntity extends AbstractPayloadEntity {
     public String toString() {
         return "DataSampleEntity{" +
                 "uniqueIdentifier=" + uniqueIdentifier +
-                ", site=" + site +
                 ", returnType=" + returnType +
                 ", monDate=" + monDate +
                 ", monPoint='" + monPoint + '\'' +

@@ -73,9 +73,6 @@ public class DataSampleFactory extends AbstractPayloadEntityFactory<DataSampleEn
             dataSampleEntity.setUniqueIdentifier(uniqueIdentifierDao.getByNameOrAlias(Key.relaxed(payload.getEaId())));
         }
 
-        // Site name
-        dataSampleEntity.setSite(siteDao.getByName((Key.relaxed(payload.getSiteName()))));
-
         // Return type
         dataSampleEntity.setReturnType(returnTypeDao.getByName(Key.relaxed((payload.getReturnType()))));
 
