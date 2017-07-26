@@ -125,12 +125,6 @@
 			<optional>true</optional>
 		</dependency>
 
-		<!-- Spring AOP support -->
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-aop</artifactId>
-		</dependency>
-
 		<!-- Expose dropwizard metrics via management port -->
 		<dependency>
 			<groupId>com.ryantenney.metrics</groupId>
@@ -496,15 +490,6 @@
 							</srcFiles>
 						</configuration>
 					</execution>
-					<!-- This command can be executed using mvn sql:execute@create-schema -->
-					<execution>
-						<id>create-schema</id>
-						<configuration>
-							<srcFiles>
-								<srcFile>${project.build.outputDirectory}/db/sql/4-create-schema.sql</srcFile>
-							</srcFiles>
-						</configuration>
-					</execution>
 				</executions>
 			</plugin>
 
@@ -515,8 +500,8 @@
 				<version>${liquibase.version}</version>
 				<configuration>
 					<promptOnNonLocalDatabase>false</promptOnNonLocalDatabase>
-					<defaultSchemaName>${db.schema}</defaultSchemaName>
-					<changelogSchemaName>${db.schema}</changelogSchemaName>
+					<defaultSchemaName>public</defaultSchemaName>
+					<changelogSchemaName>public</changelogSchemaName>
 					<driver>${db.driver}</driver>
 					<url>${db.url}</url>
 					<username>${db.username}</username>

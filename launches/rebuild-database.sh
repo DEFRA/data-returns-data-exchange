@@ -4,7 +4,7 @@ base_dir="$( cd "$(dirname "$script_dir")" && pwd )"
 cd ${base_dir}
 clear
 
-mvn resources:resources sql:execute@drop-database sql:execute@create-database sql:execute@create-schema
+mvn resources:resources sql:execute@drop-database sql:execute@create-database
 
 # Get return code from maven
 rc=$?;
