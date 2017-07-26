@@ -31,7 +31,7 @@ spring:
       hibernate.jdbc.batch_size: 200
       hibernate.order_inserts: true
       hibernate.order_updates: true
-      hibernate.generate_statistics: true
+      hibernate.generate_statistics: false
       hibernate.cache.use_query_cache: false
       hibernate.cache.use_second_level_cache: false
       hibernate.use_sql_comments: true

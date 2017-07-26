@@ -197,19 +197,23 @@ public class RecordResource {
             throws Exception {
 
         final StopWatch sw = new StopWatch("postRecords");
-
-        sw.startTask("Retrieving dataset");
+        sw.startTask("Fetching dataset");
         return onDataset(datasetId, datasetEntity -> {
-            sw.stopTask();
-            LOGGER.info("Fetched dataset: " + sw.getLastTaskTimeMillis());
-            sw.startTask("Pre-processing batch");
             Response.ResponseBuilder rb;
             if (batchRequest.getRequests().isEmpty()) {
                 rb = ErrorResponse.MULTISTATUS_REQUEST_EMPTY.toResponseBuilder();
             } else {
                 List<String> recordIds = batchRequest.getRequests().stream().map(BatchRecordRequestItem::getRecordId)
                         .collect(Collectors.toList());
-                Map<String, RecordEntity> recordEntities = submissionService.getRecords(datasetEntity, recordIds);
+
+                sw.startTask("Retrieving existing records");
+
+                Map<String, RecordEntity> recordEntities = submissionService.getRecords(datasetEntity)
+                        .stream()
+                        .filter(r -> recordIds.contains(r.getIdentifier()))
+                        .collect(Collectors.toMap(RecordEntity::getIdentifier, r -> r));
+
+                sw.startTask("Calculating record updates");
                 Map<String, Response.ResponseBuilder> preconditionFailures = new HashMap<>();
                 Map<String, Response.Status> responses = new HashMap<>();
                 Map<String, Payload> payloads = new HashMap<>();
@@ -247,17 +251,12 @@ public class RecordResource {
                     }
                 }
 
-                sw.stopTask();
-                LOGGER.info("Finished preprocessing: " + sw.getLastTaskTimeMillis());
                 sw.startTask("Merging records");
 
                 // Create and validate records if they are not already submitted
                 recordEntities.putAll(submissionService.createRecords(datasetEntity, payloads));
 
-                sw.stopTask();
-                LOGGER.info("Fetched validating: " + sw.getLastTaskTimeMillis());
                 sw.startTask("Building response");
-
                 // Build the response
                 MultiStatusResponse multiResponse = new MultiStatusResponse();
                 for (BatchRecordRequestItem request : batchRequest.getRequests()) {

@@ -434,20 +434,24 @@ public class DatasetResource {
     }
 
     private DatasetStatus buildDatasetStatus(final DatasetEntity datasetEntity) {
+        StopWatch sw = new StopWatch("Dataset Status");
         DatasetStatus datasetStatus = new DatasetStatus();
+        sw.startTask("Building submission status");
         datasetStatus.setSubmission(getSubmissionStatus(datasetEntity));
+        sw.startTask("Building substitution status");
         datasetStatus.setSubstitutions(getSubstitutions(datasetEntity));
+        sw.startTask("Building validation status");
         datasetStatus.setValidity(getValidity(datasetEntity));
+        LOGGER.info(sw.prettyPrint());
         return datasetStatus;
     }
 
     private DatasetSubstitutions getSubstitutions(final DatasetEntity datasetEntity) {
-        StopWatch sw = new StopWatch("substitutions");
-        sw.startTask("Retrieving substitutions");
-
         List<RecordEntity> recordEntities = submissionService.getRecords(datasetEntity);
+
         DatasetSubstitutions substitutions = new DatasetSubstitutions();
         recordEntities = submissionService.evaluateSubstitutes(recordEntities);
+
         for (RecordEntity recordEntity : recordEntities) {
             if (recordEntity.getAbstractPayloadEntity() != null) {
                 for (AbstractPayloadEntity.EntitySubstitution entitySubstitution : recordEntity.getAbstractPayloadEntity()
@@ -459,10 +463,6 @@ public class DatasetResource {
                 }
             }
         }
-
-        sw.stopTask();
-        LOGGER.info(sw.prettyPrint());
-
         return substitutions;
     }
 
@@ -479,18 +479,12 @@ public class DatasetResource {
     }
 
     private DatasetValidity getValidity(final DatasetEntity datasetEntity) {
-        StopWatch sw = new StopWatch("validity");
-        sw.stopTask();
-        sw.startTask("Getting record errors");
-
         // Retrieve the list of tuples containing the
         // record identifier, the payload type and the error
-        List<Triple<String, String, String>> validationErrors
-                = submissionService.retrieveValidationErrors(datasetEntity);
+        List<Triple<String, String, String>> validationErrors = submissionService.retrieveValidationErrors(datasetEntity);
 
-        Map<Pair<String, String>, List<String>> groupedValidationErrors = validationErrors
-                .stream()
-                .collect(Collectors.groupingBy(k -> new ImmutablePair(k.getLeft(), k.getMiddle()),
+        Map<Pair<String, String>, List<String>> groupedValidationErrors = validationErrors.stream()
+                .collect(Collectors.groupingBy(k -> new ImmutablePair<>(k.getLeft(), k.getMiddle()),
                         Collectors.mapping(Triple::getRight, Collectors.toList())));
 
         Linker linker = Linker.info(uriInfo);
@@ -516,10 +510,6 @@ public class DatasetResource {
                 }
             }
         }
-
-        sw.stopTask();
-        LOGGER.info(sw.prettyPrint());
-
         return validity;
     }
 

@@ -26,13 +26,13 @@ public class SiteMatchesUniqueIdentifierValidator implements ConstraintValidator
         final UniqueIdentifier eaIdEntity = eaId.getEntity();
         final SiteName site = record.getSiteName();
 
-        if (site.getInputValue() == null) {
+        if (StringUtils.isEmpty(site.getInputValue())) {
             return true;
         }
 
         if (eaIdEntity != null && !StringUtils.equalsIgnoreCase(eaId.getEntity().getSite().getName(), site.getValue())) {
             context.disableDefaultConstraintViolation();
-            context.buildConstraintViolationWithTemplate("DR9000-Incorrect").addConstraintViolation();
+            context.buildConstraintViolationWithTemplate("DR9110-Conflict").addConstraintViolation();
             return false;
         }
         return true;

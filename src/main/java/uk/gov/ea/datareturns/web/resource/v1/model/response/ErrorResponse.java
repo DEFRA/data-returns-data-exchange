@@ -24,7 +24,7 @@ public class ErrorResponse extends ResponseWrapper<Object> {
     public static final ErrorResponse MULTISTATUS_REQUEST_EMPTY = new ErrorResponse(
             Response.Status.BAD_REQUEST, "No request items could be extracted from the request body.");
     public static final ErrorResponse SUBMISSION_INVALID_STATE_CHANGE = new ErrorResponse(
-            Response.Status.BAD_REQUEST, "The requested state change is now allowed.");
+            Response.Status.BAD_REQUEST, "The requested state change is not allowed.");
     public static final ErrorResponse UNSUBMITTABLE_BAD_ORIGINATOR = new ErrorResponse(
             Response.Status.CONFLICT, "The dataset could not be submitted, a valid originator was not set on the DatasetProperties.");
     public static final ErrorResponse UNSUBMITTABLE_VALIDATION_ERRORS = new ErrorResponse(

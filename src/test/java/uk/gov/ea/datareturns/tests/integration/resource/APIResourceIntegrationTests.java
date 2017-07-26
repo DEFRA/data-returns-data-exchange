@@ -518,7 +518,7 @@ public class APIResourceIntegrationTests extends AbstractDataResourceTests {
         singleRecordResourceTests.put("Permit site mismatch", new ImmutablePair<>(PERMIT_SITE_MISMATCH.get(),
                 (t) -> t.getHttpStatus().equals(HttpStatus.CREATED)
                         && t.getConstraintDefinitions().size() == 1
-                        && t.getConstraintDefinitions().containsAll(Arrays.asList("DR9000-Incorrect"))
+                        && t.getConstraintDefinitions().containsAll(Arrays.asList("DR9110-Conflict"))
                         && t.isValid == false));
 
         singleRecordResourceTests.put("Invalid permit", new ImmutablePair<>(INVALID_PERMIT.get(),
