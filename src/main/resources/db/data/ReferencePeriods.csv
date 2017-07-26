@@ -1,15 +1,12 @@
 name,preferred,notes
-1 hour,,
 1 hour total,,Total cumulative measurement for the 1 hour preceding the time and date provided
 2 hour total,,Total cumulative measurement for the 2 hours preceding the time and date provided
-2 hours,,
 20 min average,,Average over 20 minutes where average is defined as the mean. Mean is the sum of items divided by the number of entries.
 24 hour average not >35/yr,,
 24 hour average,24 hour mean,
 24hr mean,24 hour mean,
 24 hour mean,,
 24 hour total,,Total cumulative measurement for the 24 hours preceding the time and date provided
-24 hours,24 hour total,
 4 day total,,Used in dust monitoring
 5 day,,
 7 day total,,Total cumulative measurement for the 7 days preceding the time and date provided. A day is the time interval starting at midnight and ending at the next midnight.
