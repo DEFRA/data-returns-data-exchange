@@ -278,7 +278,7 @@ public abstract class AbstractEntityDao<E extends ControlledListEntity> implemen
      *
      * @return a {@link List} of all database entities returned via a query
      */
-    protected final List<E> fetchAll() {
+    protected List<E> fetchAll() {
         CriteriaBuilder cb = entityManager.getCriteriaBuilder();
         CriteriaQuery<E> q = cb.createQuery(entityClass);
         Root<E> c = q.from(entityClass);

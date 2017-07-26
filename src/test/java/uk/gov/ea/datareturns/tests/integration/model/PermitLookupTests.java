@@ -70,7 +70,7 @@ public class PermitLookupTests {
 
     private void testLookupResults(PermitLookupDto dto) {
         Set<PermitLookupDto.Results> results = dto.getResults();
-        Assert.assertEquals(results.size(), 1);
+        Assert.assertEquals(1, results.size());
         Assert.assertEquals(((PermitLookupDto.Results)results.toArray()[0]).getUniqueIdentifier().getSite().getName(), TEST_SITE_NAME);
         Assert.assertEquals(((PermitLookupDto.Results)results.toArray()[0]).getUniqueIdentifier().getName(), UNIQUE_ID);
         Set<String> alternatives = ((PermitLookupDto.Results) results.toArray()[0]).getAlternatives();

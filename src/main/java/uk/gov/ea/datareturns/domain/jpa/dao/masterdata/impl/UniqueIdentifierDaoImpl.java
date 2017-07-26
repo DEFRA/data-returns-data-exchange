@@ -9,9 +9,12 @@ import uk.gov.ea.datareturns.domain.jpa.dao.masterdata.UniqueIdentifierDao;
 import uk.gov.ea.datareturns.domain.jpa.entities.masterdata.impl.Site;
 import uk.gov.ea.datareturns.domain.jpa.entities.masterdata.impl.UniqueIdentifier;
 import uk.gov.ea.datareturns.domain.jpa.entities.masterdata.impl.UniqueIdentifierAlias;
+import uk.gov.ea.datareturns.domain.jpa.entities.masterdata.impl.UniqueIdentifier_;
 import uk.gov.ea.datareturns.util.CachingSupplier;
 
 import javax.inject.Inject;
+import javax.persistence.TypedQuery;
+import javax.persistence.criteria.*;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -153,4 +156,15 @@ public class UniqueIdentifierDaoImpl extends AbstractEntityDao<UniqueIdentifier>
         List<UniqueIdentifier> list = list();
         return list.stream().collect(Collectors.groupingBy(e -> e.getSite().getName(), Collectors.toSet()));
     }
+
+    protected final List<UniqueIdentifier> fetchAll() {
+        CriteriaBuilder cb = entityManager.getCriteriaBuilder();
+        CriteriaQuery<UniqueIdentifier> q = cb.createQuery(UniqueIdentifier.class);
+        Root<UniqueIdentifier> c = q.from(UniqueIdentifier.class);
+        c.fetch(UniqueIdentifier_.site, JoinType.INNER);
+        q.select(c);
+        TypedQuery<UniqueIdentifier> query = entityManager.createQuery(q);
+        return query.getResultList();
+    }
+
 }
