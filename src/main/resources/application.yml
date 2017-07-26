@@ -36,7 +36,7 @@ spring:
       hibernate.cache.use_second_level_cache: false
       hibernate.use_sql_comments: true
 
-# Congiguration for authorization hashing
+# Configuration for authorization hashing
 crypt:
   secretKey: ${dr.apikey}
   hashAlgorithm: HmacSHA256
