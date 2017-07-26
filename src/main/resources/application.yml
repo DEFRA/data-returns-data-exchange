@@ -53,6 +53,8 @@ server:
 # Configuration for the management server and its endpoints
 management:
   port: 9021
+  security:
+    enabled: false
 endpoints:
   shutdown:
     enabled: true
