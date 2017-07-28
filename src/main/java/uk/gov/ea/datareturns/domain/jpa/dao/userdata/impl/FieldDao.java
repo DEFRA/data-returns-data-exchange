@@ -23,10 +23,6 @@ public class FieldDao extends AbstractUserDataDao {
     private static final String CACHE_ALL = "CACHE_ALL";
     private final CachingSupplier<EntityCache<FieldId, FieldEntity>> cache = CachingSupplier.of(this::cacheBuilder);
 
-    /**
-     * Let the Dao class know the type of entity in order that type-safe
-     * hibernate operations can be performed
-     */
     public FieldDao() {
         super(FieldEntity.class);
     }

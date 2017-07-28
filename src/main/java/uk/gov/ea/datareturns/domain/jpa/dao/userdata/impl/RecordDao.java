@@ -29,11 +29,6 @@ public class RecordDao extends AbstractUserDataDao<RecordEntity> {
         FETCH_INVALID, FETCH_BASE
     }
 
-    /**
-     * Let the Dao class know the type of entity in order that type-safe
-     * hibernate operations can be performed
-     *
-     */
     public RecordDao() {
         super(RecordEntity.class);
     }

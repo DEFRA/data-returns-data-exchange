@@ -21,11 +21,6 @@ import javax.persistence.metamodel.Metamodel;
 @Scope(ConfigurableBeanFactory.SCOPE_SINGLETON)
 public class UserDao extends AbstractUserDataDao<User> {
 
-    /**
-     * Let the Dao class know the type of entity in order that type-safe
-     * hibernate operations can be performed
-     *
-     */
     public UserDao() {
         super(User.class);
     }

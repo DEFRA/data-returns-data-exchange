@@ -10,8 +10,7 @@ import java.util.Map;
 
 /**
  * @author Graham Willis
- * Used so to keep the hibernate entities as clean representations
- * of the persistence objects
+ * Factory for producing objects to create payload entity object from the payload object
  */
 public abstract class AbstractPayloadEntityFactory<M extends AbstractPayloadEntity, P extends Payload> {
     private static final Logger LOGGER = LoggerFactory.getLogger(AbstractPayloadEntityFactory.class);

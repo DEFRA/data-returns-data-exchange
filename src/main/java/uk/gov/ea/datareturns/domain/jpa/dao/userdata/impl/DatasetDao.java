@@ -23,10 +23,6 @@ import java.util.List;
 @Scope(ConfigurableBeanFactory.SCOPE_SINGLETON)
 public class DatasetDao extends AbstractUserDataDao<DatasetEntity> {
 
-    /**
-     * Let the Dao class know the type of entity in order that type-safe
-     * hibernate operations can be performed
-     */
     public DatasetDao() {
         super(DatasetEntity.class);
     }

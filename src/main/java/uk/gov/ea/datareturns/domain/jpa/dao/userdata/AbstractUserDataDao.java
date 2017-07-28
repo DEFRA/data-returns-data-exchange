@@ -21,10 +21,6 @@ public abstract class AbstractUserDataDao<E extends Userdata>  {
     @PersistenceContext
     protected EntityManager entityManager;
 
-    /**
-     * Let the Dao class know the type of entity in order that type-safe
-     * hibernate operations can be performed
-     */
     protected AbstractUserDataDao(Class<E> entityClass) {
         this.entityClass = entityClass;
     }

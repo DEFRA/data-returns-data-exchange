@@ -8,10 +8,6 @@ import uk.gov.ea.datareturns.domain.jpa.entities.userdata.AbstractPayloadEntity;
  */
 public class PayloadEntityDao extends AbstractUserDataDao<AbstractPayloadEntity> {
 
-    /**
-     * Let the Dao class know the type of entity in order that type-safe
-     * hibernate operations can be performed
-     */
     public PayloadEntityDao() {
         super(AbstractPayloadEntity.class);
     }
