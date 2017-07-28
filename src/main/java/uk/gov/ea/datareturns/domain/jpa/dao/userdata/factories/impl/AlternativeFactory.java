@@ -1,6 +1,7 @@
 package uk.gov.ea.datareturns.domain.jpa.dao.userdata.factories.impl;
 
 import uk.gov.ea.datareturns.domain.jpa.dao.userdata.factories.AbstractPayloadEntityFactory;
+import uk.gov.ea.datareturns.domain.jpa.dao.userdata.factories.TranslationResult;
 import uk.gov.ea.datareturns.domain.jpa.entities.userdata.impl.AlternativePayload;
 import uk.gov.ea.datareturns.web.resource.v1.model.record.payload.DemonstrationAlternativePayload;
 
@@ -15,9 +16,11 @@ public class AlternativeFactory extends AbstractPayloadEntityFactory<Alternative
      }
 
     @Override
-    public AlternativePayload create(DemonstrationAlternativePayload payload) {
+    public TranslationResult<AlternativePayload> create(DemonstrationAlternativePayload payload) {
+        TranslationResult<AlternativePayload> result = new TranslationResult<>();;
         AlternativePayload alternativePayload = new AlternativePayload();
         alternativePayload.setTest(payload.getTest());
-        return alternativePayload;
+        result.setEntity(alternativePayload);
+        return result;
     }
 }

@@ -2,7 +2,10 @@ package uk.gov.ea.datareturns.domain.jpa.dao.userdata.impl;
 
 import org.springframework.stereotype.Repository;
 import uk.gov.ea.datareturns.domain.jpa.dao.masterdata.impl.EntityCache;
-import uk.gov.ea.datareturns.domain.jpa.entities.userdata.impl.*;
+import uk.gov.ea.datareturns.domain.jpa.entities.userdata.impl.PayloadType;
+import uk.gov.ea.datareturns.domain.jpa.entities.userdata.impl.ValidationError;
+import uk.gov.ea.datareturns.domain.jpa.entities.userdata.impl.ValidationErrorId;
+import uk.gov.ea.datareturns.domain.jpa.entities.userdata.impl.ValidationError_;
 import uk.gov.ea.datareturns.util.CachingSupplier;
 
 import javax.persistence.EntityManager;
@@ -10,10 +13,8 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Join;
 import javax.persistence.criteria.Root;
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -57,7 +58,7 @@ public class ValidationErrorDao {
             q.select(c);
             TypedQuery<ValidationError> query = entityManager.createQuery(q);
             return query.getResultList();
-        }, EntityCache.View.of(CACHE_ALL, e -> e.getId()));
+        }, EntityCache.View.of(CACHE_ALL, ValidationError::getId));
     }
 
     protected final EntityCache<ValidationErrorId, ValidationError> getCache() {

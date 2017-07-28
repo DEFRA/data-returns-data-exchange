@@ -14,8 +14,12 @@ import java.util.Objects;
  */
 @Component
 public class UniqueIdentifierAuditor implements ControlledListAuditor {
-    @Inject
+    final
     UniqueIdentifierDao uniqueIdentifierDao;
+
+    @Inject public UniqueIdentifierAuditor(UniqueIdentifierDao uniqueIdentifierDao) {
+        this.uniqueIdentifierDao = uniqueIdentifierDao;
+    }
 
     /* (non-Javadoc)
      * @see uk.gov.ea.datareturns.domain.validation.model.validation.entityfields.controlledlist.ControlledListAuditor#isValid(java.lang.Object)

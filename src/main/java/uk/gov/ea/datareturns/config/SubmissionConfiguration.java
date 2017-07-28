@@ -9,9 +9,11 @@ import uk.gov.ea.datareturns.domain.jpa.dao.userdata.factories.impl.DataSampleFa
 import uk.gov.ea.datareturns.domain.jpa.dao.userdata.impl.*;
 import uk.gov.ea.datareturns.domain.jpa.entities.userdata.impl.AlternativePayload;
 import uk.gov.ea.datareturns.domain.jpa.entities.userdata.impl.DataSampleEntity;
-import uk.gov.ea.datareturns.domain.jpa.service.DatasetService;
 import uk.gov.ea.datareturns.domain.jpa.service.SubmissionService;
-import uk.gov.ea.datareturns.domain.validation.common.validator.*;
+import uk.gov.ea.datareturns.domain.validation.common.validator.AbstractValidationObject;
+import uk.gov.ea.datareturns.domain.validation.common.validator.ValidationObjectFactory;
+import uk.gov.ea.datareturns.domain.validation.common.validator.Validator;
+import uk.gov.ea.datareturns.domain.validation.common.validator.ValidatorImpl;
 import uk.gov.ea.datareturns.web.resource.v1.model.record.payload.DataSamplePayload;
 import uk.gov.ea.datareturns.web.resource.v1.model.record.payload.DemonstrationAlternativePayload;
 
@@ -113,11 +115,6 @@ public class SubmissionConfiguration {
     @Bean
     public AbstractPayloadEntityFactory<AlternativePayload, DemonstrationAlternativePayload> alternativeFactory() {
         return new AlternativeFactory();
-    }
-
-    @Bean
-    public DatasetService datasetService() {
-        return new DatasetService(userDao, datasetDao);
     }
 
     @Bean

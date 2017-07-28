@@ -30,9 +30,11 @@ public abstract class AbstractUserDataDao<E extends Userdata>  {
         return entity;
     }
 
-    public void remove(long id) {
-        E entity = entityManager.find(entityClass, id);
-        entityManager.remove(entity);
+    public void remove(Long id) {
+        E e = entityManager.find(entityClass, id);
+        if (e != null) {
+            entityManager.remove(e);
+        }
     }
 
     public void merge(E entity) {

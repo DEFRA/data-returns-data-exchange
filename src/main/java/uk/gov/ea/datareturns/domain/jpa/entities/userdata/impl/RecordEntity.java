@@ -2,7 +2,6 @@ package uk.gov.ea.datareturns.domain.jpa.entities.userdata.impl;
 
 import org.apache.commons.lang3.tuple.ImmutableTriple;
 import org.hibernate.annotations.GenericGenerator;
-import uk.gov.ea.datareturns.domain.jpa.entities.userdata.AbstractPayloadEntity;
 import uk.gov.ea.datareturns.domain.jpa.entities.userdata.Metadata;
 
 import javax.persistence.*;
@@ -26,6 +25,17 @@ import java.util.Set;
                         @ColumnResult(name = "payload_type", type = String.class),
                         @ColumnResult(name = "error", type = String.class)
                 }))
+
+@NamedQueries({
+        @NamedQuery(
+                name = "RecordEntity.findByDatasetAndIdentifier",
+                query = "select r from RecordEntity as r where r.dataset = :dataset and r.identifier = :identifier"
+        ),
+        @NamedQuery(
+                name = "RecordEntity.findByDataset",
+                query = "select r from RecordEntity as r where r.dataset = :dataset"
+        )
+})
 public class RecordEntity implements Metadata {
 
     public enum RecordStatus {
@@ -35,18 +45,15 @@ public class RecordEntity implements Metadata {
     @Id @GeneratedValue(generator = "idGenerator")
     private Long id;
 
-    @OneToOne(cascade = { CascadeType.REMOVE }, mappedBy = "recordEntity")
-    private AbstractPayloadEntity abstractPayloadEntity;
+    @ManyToOne(optional = false)
+    @JoinColumn(name = "dataset_id", referencedColumnName = "id")
+    private DatasetEntity dataset;
 
     @Basic @Column(name = "identifier", nullable = false, length = 80)
     private String identifier;
 
     @Basic @Column(name = "payload_type", length = 100)
     private String payloadType;
-
-    @ManyToOne(optional = false)
-    @JoinColumn(name = "dataset_id", referencedColumnName = "id")
-    private DatasetEntity dataset;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "status")
@@ -68,6 +75,19 @@ public class RecordEntity implements Metadata {
             @JoinColumn(name = "error", referencedColumnName = "error")
     })
     public Set<ValidationError> validationErrors;
+
+    public RecordEntity() {
+    }
+
+    public RecordEntity(DatasetEntity dataset, String identifier) {
+        this.dataset = dataset;
+        this.identifier = identifier;
+        this.recordStatus = RecordEntity.RecordStatus.CREATED;
+
+        Instant timestamp = Instant.now();
+        this.createDate = timestamp;
+        this.lastChangedDate = timestamp;
+    }
 
     public Long getId() {
         return id;
@@ -133,14 +153,6 @@ public class RecordEntity implements Metadata {
         this.json = json;
     }
 
-    public AbstractPayloadEntity getAbstractPayloadEntity() {
-        return abstractPayloadEntity;
-    }
-
-    public void setAbstractPayloadEntity(AbstractPayloadEntity abstractPayloadEntity) {
-        this.abstractPayloadEntity = abstractPayloadEntity;
-    }
-
     public Set<ValidationError> getValidationErrors() {
         return validationErrors;
     }
@@ -172,7 +184,6 @@ public class RecordEntity implements Metadata {
     public String toString() {
         return "RecordEntity{" +
                 "id=" + id +
-                ", abstractPayloadEntity=" + abstractPayloadEntity +
                 ", identifier='" + identifier + '\'' +
                 ", dataset=" + dataset +
                 '}';

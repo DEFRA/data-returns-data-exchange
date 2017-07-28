@@ -253,7 +253,7 @@ public abstract class AbstractEntityDao<E extends ControlledListEntity> implemen
      *
      */
     @Override @Transactional
-    public final void add(E entity) {
+    public void add(E entity) {
         entityManager.persist(entity);
         LOGGER.info("Added: " + entityClass.getSimpleName() + "id: " + entity.getId() + " " + entity.getName());
     }
@@ -265,7 +265,7 @@ public abstract class AbstractEntityDao<E extends ControlledListEntity> implemen
      * @throws IllegalArgumentException
      */
     @Override @Transactional
-    public final void removeById(long id) throws IllegalArgumentException {
+    public void removeById(long id) throws IllegalArgumentException {
         E entity = getById(id);
         entityManager.remove(entity);
         LOGGER.info("Deleted " + entityClass.getSimpleName() + ": " + id);

@@ -1,14 +1,14 @@
 package uk.gov.ea.datareturns.domain.jpa.dao.userdata.factories.impl;
 
-import uk.gov.ea.datareturns.domain.jpa.entities.masterdata.impl.*;
-import uk.gov.ea.datareturns.domain.jpa.entities.masterdata.impl.Parameter;
-import uk.gov.ea.datareturns.domain.jpa.entities.masterdata.impl.ReferencePeriod;
-import uk.gov.ea.datareturns.domain.jpa.entities.masterdata.impl.Unit;
-import uk.gov.ea.datareturns.domain.validation.payloads.datasample.fields.*;
 import org.apache.commons.lang3.StringUtils;
 import uk.gov.ea.datareturns.domain.jpa.dao.masterdata.*;
 import uk.gov.ea.datareturns.domain.jpa.dao.userdata.factories.AbstractPayloadEntityFactory;
+import uk.gov.ea.datareturns.domain.jpa.dao.userdata.factories.TranslationResult;
+import uk.gov.ea.datareturns.domain.jpa.entities.masterdata.impl.*;
 import uk.gov.ea.datareturns.domain.jpa.entities.userdata.impl.DataSampleEntity;
+import uk.gov.ea.datareturns.domain.validation.payloads.datasample.fields.EaId;
+import uk.gov.ea.datareturns.domain.validation.payloads.datasample.fields.MonitoringDate;
+import uk.gov.ea.datareturns.domain.validation.payloads.datasample.fields.TxtValue;
 import uk.gov.ea.datareturns.web.resource.v1.model.record.payload.DataSamplePayload;
 
 import java.math.BigDecimal;
@@ -59,15 +59,18 @@ public class DataSampleFactory extends AbstractPayloadEntityFactory<DataSampleEn
         this.unitDao = unitDao;
     }
 
-    public DataSampleEntity create(DataSamplePayload payload) {
+    public TranslationResult<DataSampleEntity> create(DataSamplePayload payload) {
         // Set up an observation with teh entity objects and also logging any substitutions made
+        TranslationResult<DataSampleEntity> result = new TranslationResult<>();
+
         DataSampleEntity dataSampleEntity = new DataSampleEntity();
+        result.setEntity(dataSampleEntity);
 
         // Unique identifier or alias
         UniqueIdentifierAlias uniqueIdentifierAlias = uniqueIdentifierAliasDao.getByName(Key.relaxed(payload.getEaId()));
         if (uniqueIdentifierAlias != null) {
             dataSampleEntity.setUniqueIdentifier(uniqueIdentifierAlias.getUniqueIdentifier());
-            dataSampleEntity.addSubstution(EaId.FIELD_NAME, uniqueIdentifierAlias.getName(),
+            result.addSubstitution(EaId.FIELD_NAME, uniqueIdentifierAlias.getName(),
                     uniqueIdentifierAlias.getUniqueIdentifier().getName());
         } else {
             dataSampleEntity.setUniqueIdentifier(uniqueIdentifierDao.getByNameOrAlias(Key.relaxed(payload.getEaId())));
@@ -80,7 +83,7 @@ public class DataSampleFactory extends AbstractPayloadEntityFactory<DataSampleEn
         Parameter parameter = parameterDao.getByAliasName(Key.relaxed(payload.getParameter()));
         if (parameter != null) {
             dataSampleEntity.setParameter(parameter);
-            dataSampleEntity.addSubstution(
+            result.addSubstitution(
                     uk.gov.ea.datareturns.domain.validation.payloads.datasample.fields.Parameter.FIELD_NAME,
                     parameter.getName(), parameter.getPreferred());
         } else {
@@ -119,7 +122,7 @@ public class DataSampleFactory extends AbstractPayloadEntityFactory<DataSampleEn
         TextValue textValueAlias = textValueDao.getByAliasName(Key.relaxed(payload.getTextValue()));
         if (textValueAlias != null) {
             dataSampleEntity.setTextValue(textValueAlias);
-            dataSampleEntity.addSubstution(TxtValue.FIELD_NAME,
+            result.addSubstitution(TxtValue.FIELD_NAME,
                     textValueAlias.getName(), textValueAlias.getPreferred());
         } else {
             dataSampleEntity.setTextValue(textValueDao.getByName(Key.relaxed(payload.getTextValue())));
@@ -135,7 +138,7 @@ public class DataSampleFactory extends AbstractPayloadEntityFactory<DataSampleEn
         Unit unitAlias = unitDao.getByAliasName(Key.relaxed((payload.getUnit())));
         if (unitAlias != null) {
             dataSampleEntity.setUnit(unitAlias);
-            dataSampleEntity.addSubstution(
+            result.addSubstitution(
                     uk.gov.ea.datareturns.domain.validation.payloads.datasample.fields.Unit.FIELD_NAME,
                     unitAlias.getName(), unitAlias.getPreferred());
         } else {
@@ -151,7 +154,7 @@ public class DataSampleFactory extends AbstractPayloadEntityFactory<DataSampleEn
 
         if (referencePeriodAlias != null) {
             dataSampleEntity.setReferencePeriod(referencePeriodAlias);
-            dataSampleEntity.addSubstution(
+            result.addSubstitution(
                     uk.gov.ea.datareturns.domain.validation.payloads.datasample.fields.ReferencePeriod.FIELD_NAME,
                     referencePeriodAlias.getName(), referencePeriodAlias.getPreferred());
         } else {
@@ -159,6 +162,6 @@ public class DataSampleFactory extends AbstractPayloadEntityFactory<DataSampleEn
                     referencePeriodDao.getByName(Key.relaxed(payload.getReferencePeriod())));
         }
 
-        return dataSampleEntity;
+        return result;
     }
 }

@@ -2,7 +2,8 @@ package uk.gov.ea.datareturns.domain.jpa.entities.userdata.impl;
 
 import uk.gov.ea.datareturns.domain.jpa.entities.userdata.AbstractPayloadEntity;
 
-import javax.persistence.*;
+import javax.persistence.Entity;
+import javax.persistence.Table;
 
 /**
  * @author Graham Willis

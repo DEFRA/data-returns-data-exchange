@@ -1,97 +1,60 @@
 package uk.gov.ea.datareturns.domain.jpa.entities.userdata;
 
+import uk.gov.ea.datareturns.domain.jpa.entities.userdata.impl.DatasetEntity;
 import uk.gov.ea.datareturns.domain.jpa.entities.userdata.impl.RecordEntity;
 
 import javax.persistence.*;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.Objects;
 
 /**
  * @author Graham Willis
  */
 @Entity
 @Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
+@NamedQueries({
+        @NamedQuery(
+                name = "AbstractPayloadEntity.forDataset",
+                query = "select p from AbstractPayloadEntity as p where p.dataset = :dataset"
+        )
+})
 public abstract class AbstractPayloadEntity implements Userdata {
 
     @Id
-    @OneToOne(optional = false)
+    @OneToOne(optional = false, cascade = { CascadeType.REMOVE })
     @JoinColumn(name = "record_id", referencedColumnName = "id")
     private RecordEntity recordEntity;
+
+    @OneToOne(optional = false)
+    @JoinColumn(name = "dataset_id", referencedColumnName = "id")
+    private DatasetEntity dataset;
+
+    public DatasetEntity getDataset() {
+        return dataset;
+    }
+
+    public void setDataset(DatasetEntity dataset) {
+        this.dataset = dataset;
+    }
 
     public RecordEntity getRecordEntity() {
         return recordEntity;
     }
+
     public void setRecordEntity(RecordEntity recordEntity) {
         this.recordEntity = recordEntity;
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-
+    @Override public boolean equals(Object o) {
+        if (this == o)
+            return true;
+        if (o == null || getClass() != o.getClass())
+            return false;
         AbstractPayloadEntity that = (AbstractPayloadEntity) o;
-
-        return recordEntity.equals(that.recordEntity);
+        return Objects.equals(recordEntity, that.recordEntity) &&
+                Objects.equals(dataset, that.dataset);
     }
 
-    @Override
-    public int hashCode() {
-        return recordEntity.hashCode();
-    }
-
-    @Transient
-    private Set<EntitySubstitution> entitySubstitutions = new HashSet<>();
-
-    public static class EntitySubstitution {
-        private final String entity;
-        private final String submitted;
-        private final String preferred;
-
-        public EntitySubstitution(String entity, String submitted, String preferred) {
-            this.entity = entity;
-            this.submitted = submitted;
-            this.preferred = preferred;
-        }
-
-        public String getEntity() {
-            return entity;
-        }
-
-        public String getSubmitted() {
-            return submitted;
-        }
-
-        public String getPreferred() {
-            return preferred;
-        }
-
-        @Override
-        public boolean equals(Object o) {
-            if (this == o) return true;
-            if (o == null || getClass() != o.getClass()) return false;
-
-            EntitySubstitution that = (EntitySubstitution) o;
-
-            if (entity != null ? !entity.equals(that.entity) : that.entity != null) return false;
-            if (submitted != null ? !submitted.equals(that.submitted) : that.submitted != null) return false;
-            return preferred != null ? preferred.equals(that.preferred) : that.preferred == null;
-        }
-
-        @Override
-        public int hashCode() {
-            int result = entity != null ? entity.hashCode() : 0;
-            result = 31 * result + (submitted != null ? submitted.hashCode() : 0);
-            result = 31 * result + (preferred != null ? preferred.hashCode() : 0);
-            return result;
-        }
-    }
-
-    public void addSubstution(String entity, String submitted, String preferred) {
-        entitySubstitutions.add(new EntitySubstitution(entity, submitted, preferred));
-    }
-
-    public Set<EntitySubstitution> getEntitySubstitutions() {
-        return entitySubstitutions;
+    @Override public int hashCode() {
+        return Objects.hash(recordEntity, dataset);
     }
 }

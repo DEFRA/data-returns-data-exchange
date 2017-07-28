@@ -2,7 +2,6 @@ package uk.gov.ea.datareturns.domain.jpa.entities.userdata.impl;
 
 import org.hibernate.annotations.GenericGenerator;
 import uk.gov.ea.datareturns.domain.jpa.entities.userdata.Metadata;
-import uk.gov.ea.datareturns.web.resource.v1.model.dataset.DatasetSubmissionStatus;
 
 import javax.persistence.*;
 import java.time.Instant;
@@ -33,14 +32,14 @@ public class DatasetEntity implements Metadata {
     @Basic @Column(name = "originator_email", nullable = false, length = 500)
     private String originatorEmail;
 
-    @ManyToOne(optional=false)
+    @ManyToOne(optional = false)
     @JoinColumn(name = "user_id", referencedColumnName = "id")
     private User user;
 
     @Enumerated(EnumType.STRING) @Column(name = "status", nullable = false)
     private Status status;
 
-    @OneToMany(mappedBy="dataset",targetEntity=RecordEntity.class, fetch=FetchType.LAZY, cascade = CascadeType.REMOVE)
+    @OneToMany(mappedBy = "dataset", targetEntity = RecordEntity.class, fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
     private Collection records;
 
     @Basic @Column(name = "create_date", nullable = false)
@@ -129,8 +128,10 @@ public class DatasetEntity implements Metadata {
      */
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o)
+            return true;
+        if (o == null || getClass() != o.getClass())
+            return false;
 
         DatasetEntity dataset = (DatasetEntity) o;
 

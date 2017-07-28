@@ -15,13 +15,13 @@ import java.util.Objects;
  */
 @Component
 public class QualifierAuditor implements ControlledListAuditor {
-    @Inject
-    private QualifierDao qualifierDao;
+    private final QualifierDao qualifierDao;
 
     /**
      *
      */
-    public QualifierAuditor() {
+    @Inject public QualifierAuditor(QualifierDao qualifierDao) {
+        this.qualifierDao = qualifierDao;
     }
 
     /* (non-Javadoc)

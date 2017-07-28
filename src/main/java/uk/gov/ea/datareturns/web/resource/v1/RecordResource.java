@@ -4,7 +4,6 @@ import io.swagger.annotations.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
-import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import uk.gov.ea.datareturns.domain.jpa.entities.userdata.impl.DatasetEntity;
@@ -57,7 +56,6 @@ import static uk.gov.ea.datareturns.web.resource.v1.model.common.PreconditionChe
 @Scope(ConfigurableBeanFactory.SCOPE_SINGLETON)
 public class RecordResource {
     private static final Logger LOGGER = LoggerFactory.getLogger(RecordResource.class);
-    private final ApplicationContext context;
     private final RecordAdaptor recordAdaptor;
     @Context
     private UriInfo uriInfo;
@@ -67,15 +65,12 @@ public class RecordResource {
 
     /**
      * Create a new {@link RecordResource} RESTful service
-     *
-     * @param context the spring application context
      */
     @Inject
-    public RecordResource(final ApplicationContext context, RecordAdaptor recordAdaptor,
+    public RecordResource(RecordAdaptor recordAdaptor,
             SubmissionService submissionService, DatasetService datasetService) {
 
         this.recordAdaptor = recordAdaptor;
-        this.context = context;
         this.submissionService = submissionService;
         this.datasetService = datasetService;
     }

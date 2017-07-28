@@ -23,18 +23,15 @@ spring:
 
   jpa:
     database-platform: ${db.dialect}
-    show-sql: false
     hibernate:
       ddl-auto: validate
     properties:
-      hibernate.jdbc.fetch_size: 200
-      hibernate.jdbc.batch_size: 200
+      hibernate.jdbc.fetch_size: 30
+      hibernate.jdbc.batch_size: 30
       hibernate.order_inserts: true
       hibernate.order_updates: true
-      hibernate.generate_statistics: false
       hibernate.cache.use_query_cache: false
       hibernate.cache.use_second_level_cache: false
-      hibernate.use_sql_comments: true
 
 # Configuration for authorization hashing
 crypt:
@@ -86,7 +83,6 @@ logging:
     org.hibernate: WARN
     org.hibernate.engine.jdbc.spi.SqlExceptionHelper: OFF
 
-    net.sf.ehcache: WARN
     liquibase: INFO
     
     # Amazon S3 API
@@ -156,7 +152,13 @@ storage:
 ###############################################################################
 spring:
   profiles: debug
-  
+  jpa:
+    show-sql: false
+    properties:
+      hibernate.use_sql_comments: true
+      hibernate.format_sql: true
+      hibernate.generate_statistics: true
+
 # Spring boot debug flag 
 debug: false
 
@@ -186,7 +188,8 @@ logging:
     
     # Database
     org.hibernate: INFO
-    net.sf.ehcache: INFO
+    org.hibernate.stat: DEBUG
+    org.hibernate.engine.internal.StatisticalLoggingSessionEventListener: DEBUG
     liquibase: INFO
     
     # Amazon S3 API

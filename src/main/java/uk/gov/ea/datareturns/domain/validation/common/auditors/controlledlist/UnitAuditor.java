@@ -15,13 +15,13 @@ import java.util.Objects;
  */
 @Component
 public class UnitAuditor implements ControlledListAuditor {
-    @Inject
-    private UnitDao unitDao;
+    private final UnitDao unitDao;
 
     /**
      *
      */
-    public UnitAuditor() {
+    @Inject public UnitAuditor(UnitDao unitDao) {
+        this.unitDao = unitDao;
     }
 
     /* (non-Javadoc)

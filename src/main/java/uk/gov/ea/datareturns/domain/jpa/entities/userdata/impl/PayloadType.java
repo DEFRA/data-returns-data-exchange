@@ -11,7 +11,7 @@ import java.time.Instant;
 @Table(name = "payload_types")
 public class PayloadType implements Serializable {
 
-    @Id @Basic @Column(name = "payload_type")
+    @Id @Column(name = "payload_type")
     private String payloadTypeName;
 
     public String getPayloadTypeName() {

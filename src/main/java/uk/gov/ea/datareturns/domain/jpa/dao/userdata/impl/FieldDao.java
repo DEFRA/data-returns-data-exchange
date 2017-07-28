@@ -42,7 +42,7 @@ public class FieldDao extends AbstractUserDataDao {
             q.select(c);
             TypedQuery<FieldEntity> query = entityManager.createQuery(q);
             return query.getResultList();
-        }, EntityCache.View.of(CACHE_ALL, e -> e.getId()));
+        }, EntityCache.View.of(CACHE_ALL, FieldEntity::getId));
     }
 
     protected final EntityCache<FieldId, FieldEntity>  getCache() {

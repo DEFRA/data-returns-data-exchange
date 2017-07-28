@@ -314,6 +314,9 @@
 		-->
 		<createTable tableName="data_sample">
 
+			<column name="dataset_id" type="bigint">
+				<constraints nullable="false"/>
+			</column>
 			<column name="record_id" type="bigserial">
 				<constraints nullable="false"/>
 			</column>
@@ -373,8 +376,15 @@
 		</createTable>
 
 		<createIndex indexName="idx_data_sample" tableName="data_sample" unique="true">
+			<column name="dataset_id"/>
 			<column name="record_id"/>
 		</createIndex>
+
+		<addForeignKeyConstraint baseColumnNames="dataset_id"
+								 baseTableName="data_sample"
+								 constraintName="fk_data_sample_dataset"
+								 referencedColumnNames="id"
+								 referencedTableName="datasets"/>
 
 		<addForeignKeyConstraint baseColumnNames="record_id"
 								 baseTableName="data_sample"
@@ -436,6 +446,9 @@
 		****************************************************************
 		-->
 		<createTable tableName="alternatives">
+			<column name="dataset_id" type="bigint">
+				<constraints nullable="false"/>
+			</column>
 			<column name="record_id" type="bigserial">
 				<constraints nullable="false"/>
 			</column>
@@ -443,6 +456,11 @@
 			<column name="test" type="varchar(100)"/>
 		</createTable>
 
+		<addForeignKeyConstraint baseColumnNames="dataset_id"
+								 baseTableName="alternatives"
+								 constraintName="fk_alternatives_dataset"
+								 referencedColumnNames="id"
+								 referencedTableName="datasets"/>
 		<addForeignKeyConstraint baseColumnNames="record_id"
 								 baseTableName="alternatives"
 								 constraintName="fk_alternatives_record"

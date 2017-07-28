@@ -35,7 +35,7 @@ public class PayloadTypeDao extends AbstractUserDataDao {
             q.select(c);
             TypedQuery<PayloadType> query = entityManager.createQuery(q);
             return query.getResultList();
-        }, EntityCache.View.of(CACHE_ALL, e -> e.getPayloadTypeName()));
+        }, EntityCache.View.of(CACHE_ALL, PayloadType::getPayloadTypeName));
     }
 
     protected final EntityCache<String, PayloadType>  getCache() {

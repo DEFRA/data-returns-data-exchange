@@ -15,13 +15,13 @@ import java.util.Objects;
  */
 @Component
 public class ParameterAuditor implements ControlledListAuditor {
-    @Inject
-    private ParameterDao parameterDao;
+    private final ParameterDao parameterDao;
 
     /**
      *
      */
-    public ParameterAuditor() {
+    @Inject public ParameterAuditor(ParameterDao parameterDao) {
+        this.parameterDao = parameterDao;
     }
 
     /* (non-Javadoc)

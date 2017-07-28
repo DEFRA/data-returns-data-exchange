@@ -3,11 +3,18 @@ package uk.gov.ea.datareturns.domain.jpa.service;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Triple;
+import org.hibernate.validator.internal.constraintvalidators.hv.EmailValidator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.transaction.annotation.Transactional;
+import uk.gov.ea.datareturns.domain.exceptions.ProcessingException;
+import uk.gov.ea.datareturns.domain.exceptions.UnsubmittableDatasetException;
+import uk.gov.ea.datareturns.domain.exceptions.UnsubmittableRecordsException;
 import uk.gov.ea.datareturns.domain.jpa.dao.userdata.factories.AbstractPayloadEntityFactory;
+import uk.gov.ea.datareturns.domain.jpa.dao.userdata.factories.EntitySubstitution;
+import uk.gov.ea.datareturns.domain.jpa.dao.userdata.factories.TranslationResult;
 import uk.gov.ea.datareturns.domain.jpa.dao.userdata.impl.DatasetDao;
 import uk.gov.ea.datareturns.domain.jpa.dao.userdata.impl.PayloadEntityDao;
 import uk.gov.ea.datareturns.domain.jpa.dao.userdata.impl.RecordDao;
@@ -49,7 +56,6 @@ import java.util.stream.Collectors;
 public class SubmissionService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(SubmissionService.class);
-
     private final ValidationObjectFactory validationObjectFactory;
     private final RecordDao recordDao;
     private final PayloadEntityDao payloadEntityDao;
@@ -101,6 +107,31 @@ public class SubmissionService {
     }
 
     /**
+     * Returns a submitted record entity for a dataset and identifier
+     *
+     * @param dataset
+     */
+    @Transactional(readOnly = true)
+    public RecordEntity retrieve(DatasetEntity dataset, String id) {
+        return recordDao.get(dataset, id);
+    }
+
+    @Transactional(readOnly = true)
+    public List<Triple<String, String, String>> retrieveValidationErrors(DatasetEntity dataset) {
+        return recordDao.getValidationErrors(dataset);
+    }
+
+    /**
+     * Returns the set of submitted record entities in a dataset
+     *
+     * @param dataset
+     */
+    @Transactional(readOnly = true)
+    public List<AbstractPayloadEntity> getPayloadList(DatasetEntity dataset) {
+        return payloadEntityDao.list(dataset);
+    }
+
+    /**
      * Get a list of existing records for a given dataset
      *
      * @param dataset A dataset
@@ -108,19 +139,9 @@ public class SubmissionService {
      */
     @Transactional(readOnly = true)
     public List<RecordEntity> getRecords(DatasetEntity dataset) {
-        return recordDao.list(dataset, RecordDao.FetchType.FETCH_BASE);
+        return recordDao.list(dataset);
     }
 
-    /**
-     * This returns a list of the invalid records for a dataset
-     * with an eager fetch on the validation errors
-     * @param dataset
-     * @return List of records
-     */
-    @Transactional(readOnly = true)
-    public List<RecordEntity> getInvalidRecords(DatasetEntity dataset) {
-        return recordDao.list(dataset, RecordDao.FetchType.FETCH_INVALID);
-    }
 
     /**
      * Retrieve a single record null if not found
@@ -141,21 +162,14 @@ public class SubmissionService {
      */
     @Transactional
     public void removeRecord(DatasetEntity dataset, String identifier) {
-        dataset.setRecordChangedDate(Instant.now());
-        datasetDao.merge(dataset);
-        recordDao.remove(dataset, identifier);
+        RecordEntity record = getRecord(dataset, identifier);
+        if (record != null) {
+            payloadEntityDao.remove(record.getId(), AbstractPayloadEntity.class);
+            recordDao.remove(record);
+            dataset.setRecordChangedDate(Instant.now());
+            datasetDao.merge(dataset);
+        }
     }
-
-    /**
-     * Remove a given record
-     * @param recordEntity
-     */
-    //@Transactional
-    // public void removeRecord(RecordEntity recordEntity) {
-    //     dataset.setRecordChangedDate(Instant.now());
-    //    datasetDao.merge(dataset);
-    //    recordDao.remove(recordEntity);
-    //}
 
     /**
      * Test if a record exists in a given dataset by its identifier
@@ -165,7 +179,7 @@ public class SubmissionService {
      * @return
      */
     public boolean recordExists(DatasetEntity dataset, String identifier) {
-        return recordDao.get(dataset, identifier) != null;
+        return getRecord(dataset, identifier) != null;
     }
 
     /**
@@ -184,20 +198,14 @@ public class SubmissionService {
                 .filter(r -> payloadMap.keySet().contains(r.getIdentifier()))
                 .collect(Collectors.toMap(RecordEntity::getIdentifier, r -> r));
 
-
-        Map<String, RecordEntity> updatedRecords = new HashMap<>();
+        Map<String, RecordEntity> updatedRecords = new LinkedHashMap<>();
         payloadMap.forEach((identifier, payload) -> {
-            RecordEntity recordEntity = existingRecords.get(identifier);
-            if (recordEntity == null) {
-                recordEntity = createRecord(dataset, identifier);
-            }
+            RecordEntity recordEntity = Optional.ofNullable(existingRecords.get(identifier)).orElse(new RecordEntity(dataset, identifier));
             updatedRecords.put(identifier, updateRecord(recordEntity, payload));
         });
         // Update the dataset's record collection timestamp
         dataset.setRecordChangedDate(Instant.now());
         datasetDao.merge(dataset);
-
-        validate(updatedRecords.values());
 
         return updatedRecords;
     }
@@ -214,202 +222,8 @@ public class SubmissionService {
      */
     @Transactional
     public <D extends Payload> RecordEntity createRecord(DatasetEntity dataset, String identifier, D payload) {
-        RecordEntity recordEntity = createOrResetRecord(dataset, identifier, payload);
-        validate(recordEntity);
-        return recordEntity;
-    }
-
-    /**
-     *  Validate a recordEntity which has been created with a sample payload
-     * @param record
-     */
-    @Transactional
-    public void validate(RecordEntity record) {
-        Payload payload = null;
-        if (record.getJson() != null && !record.getJson().isEmpty()) {
-            try {
-                payload = mapper.readValue(record.getJson(), Payload.class);
-            } catch (IOException e) {
-                LOGGER.error("Error de-serializing stored JSON: " + e.getMessage());
-            }
-            AbstractValidationObject validationObject = validationObjectFactory.create(payload);
-
-            Set<ValidationError> validationErrors = validator.validateValidationObject(validationObject);
-
-            if (validationErrors.size() == 0) {
-                record.setRecordStatus(RecordEntity.RecordStatus.VALID);
-            } else {
-                record.setValidationErrors(validationErrors);
-                record.setRecordStatus(RecordEntity.RecordStatus.INVALID);
-            }
-
-            record.setLastChangedDate(Instant.now());
-            recordDao.merge(record);
-        }
-    }
-
-    /**
-     * Validate a set of recordEntities which have been created with samples
-     * The validation is against the associated validation object
-     * The JSON stored in the record by the
-     *
-     * @param recordEntities The recordEntities to validate
-     */
-    @Transactional
-    public void validate(Collection<RecordEntity> recordEntities) {
-        // Deserialize the list of samples from the JSON
-        // field in the record and pass store in a map
-        Map<RecordEntity, AbstractValidationObject> recordEntityAbstractValidationObjectMap = recordEntities.stream()
-                .filter(r -> r.getJson() != null && !r.getJson().isEmpty())
-                .collect(Collectors.toMap(
-                        r -> r,
-                        r -> {
-
-                            Payload payload;
-
-                            try {
-                                payload = mapper.readValue(r.getJson(), Payload.class);
-                            } catch (IOException e) {
-                                LOGGER.error("Error de-serializing stored JSON: " + e.getMessage(), e);
-                                return null;
-                            }
-
-                            // Create a validation object using the factory
-                            return validationObjectFactory.create(payload);
-
-                        }
-                ));
-
-        // Validate the AbstractValidationObject measurement record and store the result of the validation
-        // as the validation result serialized to json
-        recordEntityAbstractValidationObjectMap.entrySet().stream()
-                .filter(Objects::nonNull)
-                .forEach(m -> {
-
-                    Set<ValidationError> validationErrors = validator.validateValidationObject(m.getValue());
-
-                    if (validationErrors.size() == 0) {
-                        m.getKey().setRecordStatus(RecordEntity.RecordStatus.VALID);
-                    } else {
-                        m.getKey().setValidationErrors(validationErrors);
-                        m.getKey().setRecordStatus(RecordEntity.RecordStatus.INVALID);
-                    }
-                    recordDao.merge(m.getKey());
-                });
-    }
-
-    /**
-     * Submit a set of valid recordEntities - this writes the data from the stored JSON into the
-     * relation database structures - it creates an instance of a class inheriting AbstractPayloadEntity
-     * and associates it with the record.
-     * <p>
-     * It will ignore all recordEntities that are invalid
-     *
-     * @param recordEntities
-     */
-    @Transactional
-    public void submit(Collection<RecordEntity> recordEntities) {
-
-        // The timestamp
         Instant timestamp = Instant.now();
-
-        // This can potentially submit multiple datasets. Only if all of the records
-        // on a dataset are in the valid status will the dataset be submitted
-        Map<DatasetEntity, List<RecordEntity>> datasets = recordEntities
-                .stream().collect(Collectors.groupingBy(RecordEntity::getDataset));
-
-        Map<DatasetEntity, Map<RecordEntity.RecordStatus, Long>> datasetStatusMap = datasets.entrySet()
-                .stream()
-                .collect(Collectors.toMap(me -> me.getKey(),
-                        me -> me.getValue()
-                                .stream()
-                                .collect(Collectors.groupingBy(RecordEntity::getRecordStatus, Collectors.counting()))
-                ));
-
-        for (DatasetEntity datasetEntity : datasetStatusMap.keySet()) {
-            // Check all the records are valid
-            if (datasetStatusMap.get(datasetEntity).get(RecordEntity.RecordStatus.VALID) ==
-                    datasets.get(datasetEntity).size()) {
-
-                // Process the records of each dataset
-                datasets.entrySet()
-                        .stream()
-                        .filter(m -> m.getKey().equals(datasetEntity))
-                        .map(Map.Entry::getValue)
-                        .forEach(l -> l.stream().forEach(r -> {
-                            try {
-                                Payload payload = mapper.readValue(r.getJson(), Payload.class);
-                                AbstractPayloadEntityFactory factory = AbstractPayloadEntityFactory.factoryFor(payload.getClass());
-                                AbstractPayloadEntity submission = factory.create(payload);
-                                r.setAbstractPayloadEntity(submission);
-                                r.getAbstractPayloadEntity().setRecordEntity(r);
-                                r.setLastChangedDate(timestamp);
-                                r.setValidationErrors(null);
-                                payloadEntityDao.persist(submission);
-                                recordDao.merge(r);
-                            } catch (IOException e) {
-                                LOGGER.error("Error de-serializing stored JSON: " + e.getMessage());
-                            }
-                        }));
-
-                // Process the dataset status
-                datasets.entrySet()
-                        .stream()
-                        .filter(m -> m.getKey().equals(datasetEntity))
-                        .map(Map.Entry::getKey)
-                        .forEach(d -> {
-                            d.setRecordChangedDate(timestamp);
-                            d.setLastChangedDate(timestamp);
-                            d.setStatus(DatasetEntity.Status.SUBMITTED);
-                            datasetDao.merge(d);
-                        });
-
-            }
-        }
-    }
-
-    /**
-     * Evaluate the set of substitutions used for a given collection of records
-     * @param recordEntities
-     * @return
-     */
-    @Transactional
-    public List<RecordEntity> evaluateSubstitutes(Collection<RecordEntity> recordEntities) {
-        return recordEntities.stream()
-                .filter(r -> r.getRecordStatus() == RecordEntity.RecordStatus.VALID)
-                .map(r -> {
-                    try {
-                        Payload payload = mapper.readValue(r.getJson(), Payload.class);
-                        AbstractPayloadEntity submission = AbstractPayloadEntityFactory.factoryFor(payload.getClass()).create(payload);
-                        r.setAbstractPayloadEntity(submission);
-                        return r;
-                    } catch (IOException e) {
-                        LOGGER.error("Error de-serializing stored JSON: " + e.getMessage());
-                        return r;
-                    }
-                })
-                .collect(Collectors.toList());
-    }
-
-    /**
-     * Creates a new record on a given identifier OR resets a record
-     * on a given identifier if it already exists.
-     *
-     * If a valid datum is supplied the record status is set to PARSED
-     * otherwise it is set to created.
-     *
-     * Any errors are cleared and the record values
-     * are reset
-     *
-     * Any record on a dataset with a status of SUBMITTED remains unaffected
-     * by this call
-     *
-     * @return A record entity
-     */
-    private <D extends Payload> RecordEntity createOrResetRecord(DatasetEntity dataset, String identifier, D payload) {
-        Instant timestamp = Instant.now();
-
-        RecordEntity recordEntity = getOrCreateRecord(dataset, identifier);
+        RecordEntity recordEntity = Optional.ofNullable(recordDao.get(dataset, identifier)).orElse(new RecordEntity(dataset, identifier));
 
         if (dataset.getStatus() == DatasetEntity.Status.SUBMITTED) {
             return recordEntity;
@@ -421,6 +235,83 @@ public class SubmissionService {
         datasetDao.merge(dataset);
 
         return recordEntity;
+    }
+
+    /**
+     * Submit the specified dataset.
+     *
+     * If the dataset is not valid then it will not be submitted and this method shall throw an exception
+     * This writes the data from the stored JSON into the relation database structures - it creates an instance of a class inheriting
+     * AbstractPayloadEntity and associates it with the record.
+     *
+     * @param datasetEntity the dataset to be submitted
+     */
+    @Transactional
+    public void submit(DatasetEntity datasetEntity) throws ProcessingException {
+        // The timestamp
+        Instant timestamp = Instant.now();
+
+        // Validate the dataset is submittable first
+        EmailValidator emailValidator = new EmailValidator();
+        if (StringUtils.isBlank(datasetEntity.getOriginatorEmail()) || !emailValidator.isValid(datasetEntity.getOriginatorEmail(), null)) {
+            throw new UnsubmittableDatasetException("The originator email specified is not valid.");
+        }
+
+        // Now check that all records belonging to the dataset are submittable
+        Collection<RecordEntity> recordEntities = getRecords(datasetEntity);
+        boolean hasInvalid = recordEntities.stream().anyMatch(r -> r.getRecordStatus() != RecordEntity.RecordStatus.VALID);
+
+        if (hasInvalid) {
+            throw new UnsubmittableRecordsException("The dataset contains records with validation errors.");
+        }
+
+        // Create payload entry for all records
+        for (RecordEntity r : recordEntities) {
+            try {
+                Payload payload = mapper.readValue(r.getJson(), Payload.class);
+                AbstractPayloadEntityFactory<AbstractPayloadEntity, Payload> factory =
+                        AbstractPayloadEntityFactory.factoryFor(payload.getClass());
+                TranslationResult<AbstractPayloadEntity> result = factory.create(payload);
+                AbstractPayloadEntity submission = result.getEntity();
+                submission.setDataset(datasetEntity);
+                submission.setRecordEntity(r);
+                payloadEntityDao.persist(submission);
+            } catch (IOException e) {
+                LOGGER.error("Error de-serializing stored JSON: " + e.getMessage());
+            }
+        }
+        // Update the dataset
+        datasetEntity.setRecordChangedDate(timestamp);
+        datasetEntity.setLastChangedDate(timestamp);
+        datasetEntity.setStatus(DatasetEntity.Status.SUBMITTED);
+        datasetDao.merge(datasetEntity);
+    }
+
+    /**
+     * Evaluate the set of substitutions used for a given collection of records
+     * @param recordEntities
+     * @return
+     */
+    @Transactional
+    public Map<RecordEntity, Set<EntitySubstitution>> evaluateSubstitutes(Collection<RecordEntity> recordEntities) {
+
+        Map<RecordEntity, Set<EntitySubstitution>> substitutions = new LinkedHashMap<>();
+        for (RecordEntity record : recordEntities) {
+            if (record.getRecordStatus() == RecordEntity.RecordStatus.VALID) {
+                try {
+                    Payload payload = mapper.readValue(record.getJson(), Payload.class);
+                    AbstractPayloadEntityFactory<AbstractPayloadEntity, Payload> factory =
+                            AbstractPayloadEntityFactory.factoryFor(payload.getClass());
+                    TranslationResult<AbstractPayloadEntity> result = factory.create(payload);
+                    if (result.getSubstitutions() != null) {
+                        substitutions.put(record, result.getSubstitutions());
+                    }
+                } catch (IOException e) {
+                    LOGGER.error("Error de-serializing stored JSON: " + e.getMessage());
+                }
+            }
+        }
+        return substitutions;
     }
 
     private <D extends Payload> RecordEntity updateRecord(RecordEntity recordEntity, D payload) {
@@ -441,69 +332,38 @@ public class SubmissionService {
             recordEntity.setJson(null);
         }
 
+        // Validate the payload associated with the record
+        validate(recordEntity, payload);
+
+        recordEntity.setLastChangedDate(Instant.now());
+
         // If its a new recordEntity persist it or otherwise merge
         if (newRecordStatus == RecordEntity.RecordStatus.CREATED) {
-            return recordDao.persist(recordEntity);
+            recordDao.persist(recordEntity);
         } else {
-            recordEntity.setLastChangedDate(Instant.now());
             recordDao.merge(recordEntity);
-            return recordEntity;
-        }
-    }
-
-    /**
-     * Returns a submitted record entity for a dataset and identifier
-     *
-     * @param dataset
-     */
-    @Transactional(readOnly = true)
-    public RecordEntity retrieve(DatasetEntity dataset, String id) {
-        return recordDao.get(dataset, id);
-    }
-
-
-    @Transactional(readOnly = true)
-    public List<Triple<String, String, String>> retrieveValidationErrors(DatasetEntity dataset) {
-        return recordDao.getValidationErrors(dataset);
-    }
-
-    /**
-     * Returns the set of submitted record entities in a dataset
-     *
-     * @param dataset
-     */
-    @Transactional(readOnly = true)
-    public List<RecordEntity> retrieve(DatasetEntity dataset) {
-        return recordDao.list(dataset, RecordDao.FetchType.FETCH_BASE);
-    }
-
-    /**
-     * Returns either a new and initialized record for a dataset and identifier
-     * or if the identified record already exists it returns the existing record
-     * It does not persist the record.
-     *
-     * @param dataset
-     * @param identifier
-     * @return
-     */
-    private RecordEntity getOrCreateRecord(DatasetEntity dataset, String identifier) {
-        RecordEntity recordEntity = recordDao.get(dataset, identifier);
-        if (recordEntity == null) {
-            recordEntity = createRecord(dataset, identifier);
         }
         return recordEntity;
     }
 
-    private RecordEntity createRecord(DatasetEntity dataset, String identifier) {
-        RecordEntity recordEntity = new RecordEntity();
-        recordEntity.setDataset(dataset);
-        recordEntity.setIdentifier(identifier);
-        recordEntity.setRecordStatus(RecordEntity.RecordStatus.CREATED);
+    /**
+     * Validate the given payload associated with the specified record
+     * @param record the record the payload belongs to
+     * @param payload the payload to be validated.
+     */
+    private void validate(RecordEntity record, Payload payload) {
+        Set<ValidationError> validationErrors = null;
+        if (payload != null) {
+            AbstractValidationObject validationObject = validationObjectFactory.create(payload);
+            validationErrors = validator.validateValidationObject(validationObject);
+        }
 
-        Instant timestamp = Instant.now();
-        recordEntity.setCreateDate(timestamp);
-        recordEntity.setLastChangedDate(timestamp);
-        return recordEntity;
+        RecordEntity.RecordStatus status = RecordEntity.RecordStatus.INVALID;
+        if (payload != null && validationErrors.isEmpty()) {
+            // Only set to valid if the payload is not null and there are no errors having validated it
+            status = RecordEntity.RecordStatus.VALID;
+        }
+        record.setValidationErrors(validationErrors);
+        record.setRecordStatus(status);
     }
-
 }

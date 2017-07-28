@@ -15,8 +15,11 @@ import java.util.Objects;
  */
 @Component
 public class MethodOrStandardAuditor implements ControlledListAuditor {
-    @Inject
-    private MethodOrStandardDao methodOrStandardDao;
+    private final MethodOrStandardDao methodOrStandardDao;
+
+    @Inject public MethodOrStandardAuditor(MethodOrStandardDao methodOrStandardDao) {
+        this.methodOrStandardDao = methodOrStandardDao;
+    }
 
     /* (non-Javadoc)
      * @see uk.gov.ea.datareturns.domain.validation.model.validation.entityfields.ControlledListAuditor#isValid(java.lang.Object)

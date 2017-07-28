@@ -9,7 +9,10 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
-import uk.gov.ea.datareturns.domain.jpa.entities.userdata.AbstractPayloadEntity;
+import uk.gov.ea.datareturns.domain.exceptions.ProcessingException;
+import uk.gov.ea.datareturns.domain.exceptions.UnsubmittableDatasetException;
+import uk.gov.ea.datareturns.domain.exceptions.UnsubmittableRecordsException;
+import uk.gov.ea.datareturns.domain.jpa.dao.userdata.factories.EntitySubstitution;
 import uk.gov.ea.datareturns.domain.jpa.entities.userdata.impl.DatasetEntity;
 import uk.gov.ea.datareturns.domain.jpa.entities.userdata.impl.RecordEntity;
 import uk.gov.ea.datareturns.domain.jpa.entities.userdata.impl.User;
@@ -36,6 +39,7 @@ import java.time.Instant;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -65,14 +69,15 @@ public class DatasetResource {
     @Context
     private UriInfo uriInfo;
 
-    @Inject
-    private SubmissionService submissionService;
-
-    @Inject
     private DatasetService datasetService;
-
-    @Inject
+    private final SubmissionService submissionService;
     RecordAdaptor recordAdaptor;
+
+    @Inject public DatasetResource(DatasetService datasetService, SubmissionService submissionService, RecordAdaptor recordAdaptor) {
+        this.datasetService = datasetService;
+        this.submissionService = submissionService;
+        this.recordAdaptor = recordAdaptor;
+    }
 
     /**
      * List the available datasets
@@ -224,7 +229,7 @@ public class DatasetResource {
      *
      * @param datasetId the unique identifier for the target dataset
      * @param preconditions conditional request structure
-     * @param datasetProperties user-defineable properties to associate with the DatasetEntity
+     * @param datasetProperties user-definable properties to associate with the DatasetEntity
      * @return a response containing an {@link DatasetEntityResponse} entity
      * @throws Exception if the request cannot be completed normally.
      */
@@ -391,15 +396,23 @@ public class DatasetResource {
             if (!submissionStatus.getStatus().canTransition(requestedStatus.getStatus())) {
                 return ErrorResponse.SUBMISSION_INVALID_STATE_CHANGE.toResponseBuilder();
             }
-            if (datasetEntity.getOriginatorEmail() == null) {
+            // Submit the data - only valid records may be submitted
+
+            StopWatch sw = new StopWatch("Dataset Status");
+            sw.startTask("Submitting datasets");
+
+            try {
+                submissionService.submit(datasetEntity);
+            } catch (UnsubmittableDatasetException e) {
                 return ErrorResponse.UNSUBMITTABLE_BAD_ORIGINATOR.toResponseBuilder();
-            }
-            if (!submissionService.getInvalidRecords(datasetEntity).isEmpty()) {
+            } catch (UnsubmittableRecordsException e) {
                 return ErrorResponse.UNSUBMITTABLE_VALIDATION_ERRORS.toResponseBuilder();
+            } catch (ProcessingException e) {
+                throw new WebApplicationException(e);
             }
 
-            // Submit the data - only valid records may be submitted
-            submissionService.submit(submissionService.getRecords(datasetEntity));
+            sw.stop();
+            LOGGER.info(sw.prettyPrint());
 
             return new DatasetStatusResponse(buildDatasetStatus(datasetEntity)).toResponseBuilder();
         }).build();
@@ -425,7 +438,7 @@ public class DatasetResource {
             dataset = new Dataset();
             dataset.setId(datasetId);
             dataset.setProperties(datasetProperties);
-            newDatasetEntity = DatasetAdaptor.getInstance().merge(datasetEntity, dataset);
+            newDatasetEntity = DatasetAdaptor.getInstance().convert(dataset);
             datasetService.createDataset(newDatasetEntity);
             status = Response.Status.CREATED;
         }
@@ -434,35 +447,30 @@ public class DatasetResource {
     }
 
     private DatasetStatus buildDatasetStatus(final DatasetEntity datasetEntity) {
-        StopWatch sw = new StopWatch("Dataset Status");
         DatasetStatus datasetStatus = new DatasetStatus();
-        sw.startTask("Building submission status");
         datasetStatus.setSubmission(getSubmissionStatus(datasetEntity));
-        sw.startTask("Building substitution status");
         datasetStatus.setSubstitutions(getSubstitutions(datasetEntity));
-        sw.startTask("Building validation status");
         datasetStatus.setValidity(getValidity(datasetEntity));
-        LOGGER.info(sw.prettyPrint());
         return datasetStatus;
     }
 
     private DatasetSubstitutions getSubstitutions(final DatasetEntity datasetEntity) {
+        StopWatch sw = new StopWatch("Submission Status");
+        sw.startTask("Getting records");
         List<RecordEntity> recordEntities = submissionService.getRecords(datasetEntity);
 
+        sw.startTask("Evaluating substitutions");
         DatasetSubstitutions substitutions = new DatasetSubstitutions();
-        recordEntities = submissionService.evaluateSubstitutes(recordEntities);
+        Map<RecordEntity, Set<EntitySubstitution>> subMap = submissionService
+                .evaluateSubstitutes(recordEntities);
 
-        for (RecordEntity recordEntity : recordEntities) {
-            if (recordEntity.getAbstractPayloadEntity() != null) {
-                for (AbstractPayloadEntity.EntitySubstitution entitySubstitution : recordEntity.getAbstractPayloadEntity()
-                        .getEntitySubstitutions()) {
-                    substitutions.addSubstitution(recordEntity.getIdentifier(),
-                            entitySubstitution.getEntity(),
-                            entitySubstitution.getSubmitted(),
-                            entitySubstitution.getPreferred());
-                }
-            }
-        }
+        sw.startTask("Processing substitutions");
+        subMap.forEach((recordEntity, subs) -> subs.forEach((sub) -> substitutions.addSubstitution(recordEntity.getIdentifier(),
+                sub.getEntity(),
+                sub.getSubmitted(),
+                sub.getPreferred())));
+        sw.stop();
+        LOGGER.info(sw.prettyPrint());
         return substitutions;
     }
 
@@ -482,7 +490,6 @@ public class DatasetResource {
         // Retrieve the list of tuples containing the
         // record identifier, the payload type and the error
         List<Triple<String, String, String>> validationErrors = submissionService.retrieveValidationErrors(datasetEntity);
-
         Map<Pair<String, String>, List<String>> groupedValidationErrors = validationErrors.stream()
                 .collect(Collectors.groupingBy(k -> new ImmutablePair<>(k.getLeft(), k.getMiddle()),
                         Collectors.mapping(Triple::getRight, Collectors.toList())));
@@ -499,8 +506,7 @@ public class DatasetResource {
                 String payloadType = pair.getRight();
                 List<String> errors = groupedValidationErrors.get(pair);
 
-                EntityReference recordRef = new EntityReference(recordId,
-                        linker.record(datasetEntity.getIdentifier(), recordId));
+                EntityReference recordRef = new EntityReference(recordId, linker.record(datasetEntity.getIdentifier(), recordId));
 
                 for (String recordValidationError : errors) {
                     EntityReference validationRef = new EntityReference(recordValidationError,

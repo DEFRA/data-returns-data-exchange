@@ -10,7 +10,6 @@ import uk.gov.ea.datareturns.App;
 import uk.gov.ea.datareturns.domain.jpa.entities.userdata.impl.DatasetEntity;
 import uk.gov.ea.datareturns.domain.jpa.entities.userdata.impl.User;
 import uk.gov.ea.datareturns.domain.jpa.service.DatasetService;
-import uk.gov.ea.datareturns.web.resource.v1.model.dataset.Dataset;
 
 import javax.inject.Inject;
 import java.io.IOException;
@@ -37,12 +36,15 @@ public class APIIntegrationTests_Dataset {
 
     // Remove any old data and set a user and dataset for use in the tests
     @Before public void init() throws IOException {
-
-        if (datasetService.getUser(USER_NAME) != null) {
+        user = datasetService.getUser(USER_NAME);
+        if (user != null) {
+            datasetService.getDatasets(user).forEach(ds -> datasetService.removeDataset(ds.getIdentifier()));
             datasetService.removeUser(USER_NAME);
         }
 
-        if (datasetService.getUser(USER_NAME2) != null) {
+        User user2 = datasetService.getUser(USER_NAME2);
+        if (user2 != null) {
+            datasetService.getDatasets(user2).forEach(ds -> datasetService.removeDataset(ds.getIdentifier()));
             datasetService.removeUser(USER_NAME2);
         }
 
@@ -137,6 +139,5 @@ public class APIIntegrationTests_Dataset {
         Assert.assertNotNull(deleteDate);
         Assert.assertNotEquals(changeDate, deleteDate);
     }
-
 
 }

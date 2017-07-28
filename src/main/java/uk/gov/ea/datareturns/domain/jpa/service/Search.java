@@ -23,7 +23,6 @@ import uk.gov.ea.datareturns.domain.jpa.entities.masterdata.impl.Site;
 import javax.inject.Inject;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -38,7 +37,7 @@ public class Search {
     private static final String SITE = "site";
     private static final Directory INDEX = new RAMDirectory();
 
-    final List<String> stopWords = Arrays.asList(); // Empty stop words list
+    final List<String> stopWords = new ArrayList<>(); // Empty stop words list
     final CharArraySet stopSet = new CharArraySet(stopWords, true);
 
     private final StandardAnalyzer STANDARD_ANALYZER = new StandardAnalyzer(stopSet);
@@ -82,7 +81,7 @@ public class Search {
             }
 
             writer.commit();
-            Assert.isTrue(writer.numDocs() == siteDao.list().size());
+            Assert.isTrue(writer.numDocs() == siteDao.list().size(), "Number of indexed sites should match the site list");
             writer.close();
 
             // Set up the reader which remains open until a refresh
@@ -92,7 +91,7 @@ public class Search {
             searcher = new IndexSearcher(reader);
             queryParser = new QueryParser(SITE, STANDARD_ANALYZER);
 
-            Assert.isTrue(reader.numDocs() == siteDao.list().size());
+            Assert.isTrue(reader.numDocs() == siteDao.list().size(), "Number of indexed sites should match the site list");
 
         } catch (Exception e) {
             LOGGER.error("Error creating lucene index: " + e.getMessage());
@@ -112,7 +111,7 @@ public class Search {
      * @param search
      * @return List of searched sites
      */
-    public List<Pair<String, String[]>> searchSite(String search)  {
+    public List<Pair<String, String[]>> searchSite(String search) {
         // Initialize on demand
         if (reader == null) {
             initialize();
@@ -128,15 +127,15 @@ public class Search {
             ScoreDoc[] hits = docs.scoreDocs;
 
             // Process hits
-            for(int i=0; i < hits.length; ++i) {
+            for (int i = 0; i < hits.length; ++i) {
                 int docId = hits[i].doc;
                 Document d = searcher.doc(docId);
                 List<Term> hitTerms = new ArrayList<>();
-                getHitTerms(query, searcher,docId, hitTerms);
-                results.add(new ImmutablePair<>(d.get(SITE), hitTerms.stream().map(t -> t.text()).toArray(String[]::new)));
+                getHitTerms(query, searcher, docId, hitTerms);
+                results.add(new ImmutablePair<>(d.get(SITE), hitTerms.stream().map(Term::text).toArray(String[]::new)));
             }
             return results;
-        } catch (ParseException|IOException e) {
+        } catch (ParseException | IOException e) {
             LOGGER.warn("Error in search function trying to search: " + search);
             return null;
         }
@@ -144,13 +143,14 @@ public class Search {
 
     private void getHitTerms(Query query, IndexSearcher searcher, int docId, List<Term> hitTerms) throws IOException {
         if (query instanceof TermQuery) {
-            if (searcher.explain(query, docId).isMatch() == true) {
+            if (searcher.explain(query, docId).isMatch()) {
                 hitTerms.add(((TermQuery) query).getTerm());
             }
         }
         if (query instanceof BooleanQuery) {
             List<BooleanClause> clauses = ((BooleanQuery) query).clauses();
-            if (clauses == null) return;
+            if (clauses == null)
+                return;
             for (BooleanClause bc : clauses) {
                 getHitTerms(bc.getQuery(), searcher, docId, hitTerms);
             }

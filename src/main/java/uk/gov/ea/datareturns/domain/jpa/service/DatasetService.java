@@ -2,12 +2,15 @@ package uk.gov.ea.datareturns.domain.jpa.service;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import uk.gov.ea.datareturns.domain.jpa.dao.userdata.impl.DatasetDao;
+import uk.gov.ea.datareturns.domain.jpa.dao.userdata.impl.PayloadEntityDao;
 import uk.gov.ea.datareturns.domain.jpa.dao.userdata.impl.UserDao;
 import uk.gov.ea.datareturns.domain.jpa.entities.userdata.impl.DatasetEntity;
 import uk.gov.ea.datareturns.domain.jpa.entities.userdata.impl.User;
 
+import javax.inject.Inject;
 import java.time.Instant;
 import java.util.List;
 import java.util.UUID;
@@ -15,15 +18,19 @@ import java.util.UUID;
 /**
  * @author Graham Willis
  */
+@Component
 public class DatasetService {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(SubmissionService.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(DatasetService.class);
     private final UserDao userDao;
     private final DatasetDao datasetDao;
+    private final PayloadEntityDao payloadDao;
 
-    public DatasetService(UserDao userDao, DatasetDao datasetDao) {
+    @Inject
+    public DatasetService(UserDao userDao, DatasetDao datasetDao, PayloadEntityDao payloadDao) {
         this.userDao = userDao;
         this.datasetDao = datasetDao;
+        this.payloadDao = payloadDao;
         LOGGER.info("Initializing dataset service");
     }
     /**
@@ -126,19 +133,19 @@ public class DatasetService {
 
     @Transactional
     public void removeDataset(String identifier) {
-        User user = getSystemUser();
-        user.setDatasetChangedDate(Instant.now());
-        userDao.merge(user);
         removeDataset(identifier, getSystemUser());
     }
 
     @Transactional
     public void removeDataset(String identifier, User user) {
-        Instant timestamp = Instant.now();
-        User usrAtt = userDao.get(user.getIdentifier());
-        usrAtt.setDatasetChangedDate(timestamp);
-        userDao.merge(usrAtt);
-        datasetDao.remove(user, identifier);
+        DatasetEntity dataset = datasetDao.get(user, identifier);
+        if (dataset != null) {
+            payloadDao.removeAll(dataset);
+            datasetDao.remove(dataset.getId());
+            Instant timestamp = Instant.now();
+            user.setDatasetChangedDate(timestamp);
+            userDao.merge(user);
+        }
     }
 
     @Transactional(readOnly = true)

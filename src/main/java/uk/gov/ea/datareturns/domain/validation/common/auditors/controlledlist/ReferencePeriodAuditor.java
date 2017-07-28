@@ -15,8 +15,11 @@ import java.util.Objects;
  */
 @Component
 public class ReferencePeriodAuditor implements ControlledListAuditor {
-    @Inject
-    private ReferencePeriodDao referencePeriodDao;
+    private final ReferencePeriodDao referencePeriodDao;
+
+    @Inject public ReferencePeriodAuditor(ReferencePeriodDao referencePeriodDao) {
+        this.referencePeriodDao = referencePeriodDao;
+    }
 
     /* (non-Javadoc)
      * @see uk.gov.ea.datareturns.domain.validation.model.validation.entityfields.ControlledListAuditor#isValid(java.lang.Object)

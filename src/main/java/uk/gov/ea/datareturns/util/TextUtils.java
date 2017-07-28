@@ -104,7 +104,7 @@ public class TextUtils {
         /** Multiple whitespaces should be collapsed to a single space character */
         COLLAPSE,
         /** Whitepsace should be removed entirely */
-        REMOVE;
+        REMOVE
     }
 
     /**

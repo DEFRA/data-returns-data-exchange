@@ -21,8 +21,11 @@ public class ControlledListValidator implements ConstraintValidator<ControlledLi
     /** ControlledListProvider instance to provide the list of values we must validate against */
     private ControlledListAuditor provider;
 
-    @Inject
-    private ApplicationContext applicationContext;
+    private final ApplicationContext applicationContext;
+
+    @Inject public ControlledListValidator(ApplicationContext applicationContext) {
+        this.applicationContext = applicationContext;
+    }
 
     @Override
     public void initialize(final ControlledList constraintAnnotation) {

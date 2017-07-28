@@ -31,9 +31,6 @@ public class DatasetAdaptor implements EntityAdaptor<Dataset, DatasetEntity> {
 
     @Override
     public DatasetEntity merge(DatasetEntity datasetEntity, Dataset dataset) {
-        if (datasetEntity == null) {
-            return convert(dataset);
-        }
         datasetEntity.setIdentifier(dataset.getId());
         if (dataset.getProperties() != null) {
             datasetEntity.setOriginatorEmail(dataset.getProperties().getOriginatorEmail());

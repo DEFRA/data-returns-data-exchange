@@ -15,14 +15,14 @@ import java.util.Objects;
  */
 @Component
 public class ReturnTypeAuditor implements ControlledListAuditor {
-    @Inject
-    private ReturnTypeDao returnTypeDao;
+    private final ReturnTypeDao returnTypeDao;
 
     /**
      *
      */
-    public ReturnTypeAuditor() {
+    @Inject public ReturnTypeAuditor(ReturnTypeDao returnTypeDao) {
 
+        this.returnTypeDao = returnTypeDao;
     }
 
     /* (non-Javadoc)

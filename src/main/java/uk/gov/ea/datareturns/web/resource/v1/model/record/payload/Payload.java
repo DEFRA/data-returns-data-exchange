@@ -39,15 +39,14 @@ import java.util.stream.Collectors;
 public abstract class Payload implements Serializable {
     public static final Map<String, Class<?>> TYPES = Arrays.stream(Payload.class.getAnnotation(JsonSubTypes.class).value())
             .collect(Collectors.toMap(JsonSubTypes.Type::name, JsonSubTypes.Type::value));
+    // Get a reverse map (we have to have a 1-1 here)
+    public static final Map<Class<?>, String> NAMES = TYPES.entrySet().stream()
+            .collect(Collectors.toMap(Map.Entry::getValue, Map.Entry::getKey));
 
     @ApiModelProperty(name = "_payload_type", required = true, example = "DataSamplePayload")
     @JsonProperty("_payload_type")
     @XmlAttribute(name = "_payload_type")
     private String payloadType;
-
-    // Get a reverse map (we have to have a 1-1 here)
-    public static final Map<Class<?>, String> NAMES = TYPES.entrySet().stream()
-            .collect(Collectors.toMap(t -> t.getValue(), t -> t.getKey()));
 
     public Payload() {
         payloadType = NAMES.get(this.getClass());

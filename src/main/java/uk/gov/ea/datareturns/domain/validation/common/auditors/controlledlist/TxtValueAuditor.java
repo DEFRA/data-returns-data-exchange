@@ -15,8 +15,11 @@ import java.util.Objects;
  */
 @Component
 public class TxtValueAuditor implements ControlledListAuditor {
-    @Inject
-    private TextValueDao textValueDao;
+    private final TextValueDao textValueDao;
+
+    @Inject public TxtValueAuditor(TextValueDao textValueDao) {
+        this.textValueDao = textValueDao;
+    }
 
     /* (non-Javadoc)
      * @see uk.gov.ea.datareturns.domain.validation.model.validation.entityfields.ControlledListAuditor#isValid(java.lang.Object)

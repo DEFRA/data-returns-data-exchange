@@ -31,5 +31,6 @@ public abstract class AbstractPayloadEntityFactory<M extends AbstractPayloadEnti
      * @param payload
      * @return
      */
-    public abstract M create(P payload);
+    public abstract TranslationResult<M> create(P payload);
+
 }
