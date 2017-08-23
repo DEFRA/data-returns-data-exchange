@@ -13,6 +13,8 @@ public class ErrorResponse extends ResponseWrapper<Object> {
             Response.Status.NOT_FOUND, "No dataset was found for the given dataset_id.");
     public static final ErrorResponse RECORD_NOT_FOUND = new ErrorResponse(
             Response.Status.NOT_FOUND, "No record was found for the given record_id.");
+    public static final ErrorResponse DUPLICATE_RECORD_ID_WITHIN_BATCH = new ErrorResponse(
+            Response.Status.CONFLICT, "The records submitted in the batch do not have unique record_id's ");
     public static final ErrorResponse PAYLOAD_TYPE_NOT_FOUND = new ErrorResponse(
             Response.Status.NOT_FOUND, "No payload was found for the given payload_type");
     public static final ErrorResponse FIELD_NOT_FOUND = new ErrorResponse(

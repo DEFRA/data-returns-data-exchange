@@ -217,7 +217,9 @@ public class APIIntegrationTests_DataSampleEntity {
 
         for (RecordEntity record : recordEntities.values()) {
             Set<EntitySubstitution> subs  = subMap.get(record);
-            Assert.assertEquals(expectedSubs[index++], subs.size());
+            if (subs != null) {
+                Assert.assertEquals(expectedSubs[index++], subs.size());
+            }
         }
     }
 

@@ -212,6 +212,13 @@ public class RecordResourceTests extends AbstractDataResourceTests {
     }
 
     @Test
+    public void testPostRequestDuplicateIdentifiers() {
+        // Issue a batch POST datasetRequest to create initial data
+        Dataset dataset = createTestDataset().getBody().getData();
+        executeBatchDuplicateRecordTest(dataset);
+    }
+
+    @Test
     public void testPostRequestIfMatchWildSucceeds() {
         // Issue a batch POST datasetRequest to create initial data
         Dataset dataset = createTestDataset().getBody().getData();
@@ -402,6 +409,29 @@ public class RecordResourceTests extends AbstractDataResourceTests {
 
             records.put(response.getId(), response);
         }
+        return records;
+    }
+
+    private Map<String, MultiStatusResponse.Response> executeBatchDuplicateRecordTest(Dataset target) {
+        String[] recordIds = new String[] { "a", "b", "c", "b" };
+        Map<String, MultiStatusResponse.Response> records = new LinkedHashMap<>();
+
+        // Issue a batch POST datasetRequest and record the response
+        List<BatchRecordRequestItem> requests = new ArrayList<>();
+        for (String recordId : recordIds) {
+
+            BatchRecordRequestItem request = new BatchRecordRequestItem();
+            request.setRecordId(recordId);
+
+            DataSamplePayload payload = new DataSamplePayload();
+            payload.setEaId(recordId);
+            payload.setComments(recordId);
+            requests.add(request);
+        }
+
+        recordRequest(HttpStatus.CONFLICT)
+                .postRecords(target.getId(), new BatchRecordRequest(requests));
+
         return records;
     }
 

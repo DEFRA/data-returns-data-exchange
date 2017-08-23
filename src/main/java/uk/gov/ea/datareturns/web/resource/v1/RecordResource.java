@@ -181,6 +181,11 @@ public class RecordResource {
                     code = 403,
                     message = "Forbidden - the dataset is already submitted and cannot be ammended",
                     response = ErrorResponse.class
+            ),
+            @ApiResponse(
+                    code = 409,
+                    message = "Conflict - The records submitted in the batch do not have unique record_id's",
+                    response = ErrorResponse.class
             )
     })
     public Response postRecords(
@@ -197,6 +202,13 @@ public class RecordResource {
             Response.ResponseBuilder rb;
             if (batchRequest.getRequests().isEmpty()) {
                 rb = ErrorResponse.MULTISTATUS_REQUEST_EMPTY.toResponseBuilder();
+            } else if (batchRequest
+                    .getRequests()
+                    .stream()
+                    .map(BatchRecordRequestItem::getRecordId)
+                    .collect(Collectors.toSet()).size() != batchRequest.getRequests().size()) {
+                // The record id's are not unique - issue a 409 error.
+                rb = ErrorResponse.DUPLICATE_RECORD_ID_WITHIN_BATCH.toResponseBuilder();
             } else {
                 List<String> recordIds = batchRequest.getRequests().stream().map(BatchRecordRequestItem::getRecordId)
                         .collect(Collectors.toList());

@@ -59,19 +59,24 @@ public abstract class AbstractResourceRequest {
     public ResponseEntity<MultiStatusResponse> postBatchRequest(URI uri, Object requestEntity) {
         ResponseEntity<MultiStatusResponse> multiResponse = post(uri, requestEntity, MultiStatusResponse.class);
 
-        for (MultiStatusResponse.Response response : multiResponse.getBody().getData()) {
-            Assert.assertTrue(MULTI_RESPONSE_STATUS_PATTERN.matcher(response.getStatus()).matches());
+        // In the case of the following the status codes MULTISTATUS_REQUEST_EMPTY and DUPLICATE_RECORD_ID_WITHIN_BATCH
+        // There is no multi response - hence the response payload is empty - added a check to ignore an empty response payload
 
-            Assert.assertNotNull(response.getId());
+        if (multiResponse.getBody().getData() != null) {
+            for (MultiStatusResponse.Response response : multiResponse.getBody().getData()) {
+                Assert.assertTrue(MULTI_RESPONSE_STATUS_PATTERN.matcher(response.getStatus()).matches());
 
-            HttpStatus status = HttpStatus.valueOf(response.getCode());
-            if (status.is2xxSuccessful()) {
-                Assert.assertNotNull(response.getEntityTag());
-                Assert.assertNotNull(response.getLastModified());
-                Assert.assertNotNull(response.getHref());
-            } else {
-                Assert.assertNull(response.getEntityTag());
-                Assert.assertNull(response.getLastModified());
+                Assert.assertNotNull(response.getId());
+
+                HttpStatus status = HttpStatus.valueOf(response.getCode());
+                if (status.is2xxSuccessful()) {
+                    Assert.assertNotNull(response.getEntityTag());
+                    Assert.assertNotNull(response.getLastModified());
+                    Assert.assertNotNull(response.getHref());
+                } else {
+                    Assert.assertNull(response.getEntityTag());
+                    Assert.assertNull(response.getLastModified());
+                }
             }
         }
         return multiResponse;
