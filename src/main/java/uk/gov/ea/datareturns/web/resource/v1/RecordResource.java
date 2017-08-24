@@ -471,7 +471,7 @@ public class RecordResource {
         Record record = null;
         if (entity != null) {
             record = recordAdaptor.convert(entity);
-            Linker.info(uriInfo).resolve(datasetId, record);
+            Linker.info(uriInfo).resolve("TODO", datasetId, record); // TODO Resolve the EA_ID
         }
         return record;
     }

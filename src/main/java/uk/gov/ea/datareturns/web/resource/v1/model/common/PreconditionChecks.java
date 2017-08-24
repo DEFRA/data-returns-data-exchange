@@ -3,6 +3,7 @@ package uk.gov.ea.datareturns.web.resource.v1.model.common;
 import uk.gov.ea.datareturns.domain.jpa.entities.userdata.impl.DatasetEntity;
 import uk.gov.ea.datareturns.domain.jpa.entities.userdata.impl.PayloadType;
 import uk.gov.ea.datareturns.domain.jpa.entities.userdata.impl.User;
+import uk.gov.ea.datareturns.web.resource.v1.model.eaid.EaId;
 
 import javax.ws.rs.core.Response;
 import java.util.Date;
@@ -70,4 +71,45 @@ public abstract class PreconditionChecks {
         }
         return rb;
     }
+
+    // Pre-condition evaluator for the ea-id list held at the operator level
+    public static Response.ResponseBuilder onPreconditionsPass(final List<EaId> eaIds,
+                                                               Preconditions preconditions,
+                                                               Supplier<Response.ResponseBuilder> handler) {
+        //TODO
+        Response.ResponseBuilder rb = null;
+        //if (preconditions != null) {
+        //    if (user == null || datasets == null) {
+        //        rb = preconditions.evaluatePreconditions();
+        //    } else {
+        //        Date lastModified = Date.from(user.getDatasetChangedDate());
+        //        rb = preconditions.evaluatePreconditions(lastModified, Preconditions.createEtag(datasets));
+        //    }
+        //}
+        if (rb == null) {
+            rb = handler.get();
+        }
+        return rb;
+    }
+
+    // Pre-condition evaluator for the ea-id held at the ea-id level
+    public static Response.ResponseBuilder onPreconditionsPass(final EaId eaId,
+                                                               Preconditions preconditions,
+                                                               Supplier<Response.ResponseBuilder> handler) {
+        //TODO
+        Response.ResponseBuilder rb = null;
+        //if (preconditions != null) {
+        //    if (user == null || datasets == null) {
+        //        rb = preconditions.evaluatePreconditions();
+        //    } else {
+        //        Date lastModified = Date.from(user.getDatasetChangedDate());
+        //        rb = preconditions.evaluatePreconditions(lastModified, Preconditions.createEtag(datasets));
+        //    }
+        //}
+        if (rb == null) {
+            rb = handler.get();
+        }
+        return rb;
+    }
+
 }
