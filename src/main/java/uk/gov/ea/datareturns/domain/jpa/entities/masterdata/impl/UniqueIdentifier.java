@@ -5,6 +5,7 @@ import org.hibernate.annotations.GenericGenerator;
 import uk.gov.ea.datareturns.domain.jpa.entities.masterdata.ControlledListEntity;
 
 import javax.persistence.*;
+import java.time.Instant;
 
 /**
  * @author Graham Willis
@@ -31,6 +32,9 @@ public class UniqueIdentifier implements ControlledListEntity {
     @JoinColumn(name="site_id")
     private Site site;
 
+    @Basic @Column(name = "dataset_changed_date", nullable = false)
+    private Instant datasetChangedDate;
+
     public Long getId() {
         return this.id;
     }
@@ -55,10 +59,13 @@ public class UniqueIdentifier implements ControlledListEntity {
         this.site = site;
     }
 
-//    @Override
-//    public EaId getFieldValue() {
-//        return new EaId(this.getName());
-//    }
+    public Instant getDatasetChangedDate() {
+        return datasetChangedDate;
+    }
+
+    public void setDatasetChangedDate(Instant datasetChangedDate) {
+        this.datasetChangedDate = datasetChangedDate;
+    }
 
     @Override
     public boolean equals(Object o) {
@@ -83,4 +90,5 @@ public class UniqueIdentifier implements ControlledListEntity {
                 ", site=" + site +
                 '}';
     }
+
 }

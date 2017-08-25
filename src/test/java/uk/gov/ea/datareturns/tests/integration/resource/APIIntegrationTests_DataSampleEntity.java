@@ -11,12 +11,14 @@ import org.springframework.test.context.junit4.SpringRunner;
 import uk.gov.ea.datareturns.App;
 import uk.gov.ea.datareturns.config.TestSettings;
 import uk.gov.ea.datareturns.domain.exceptions.ProcessingException;
+import uk.gov.ea.datareturns.domain.jpa.entities.masterdata.impl.UniqueIdentifier;
 import uk.gov.ea.datareturns.domain.jpa.entities.userdata.AbstractPayloadEntity;
 import uk.gov.ea.datareturns.domain.jpa.dao.userdata.factories.EntitySubstitution;
 import uk.gov.ea.datareturns.domain.jpa.entities.userdata.impl.DatasetEntity;
 import uk.gov.ea.datareturns.domain.jpa.entities.userdata.impl.RecordEntity;
 import uk.gov.ea.datareturns.domain.jpa.entities.userdata.impl.User;
 import uk.gov.ea.datareturns.domain.jpa.service.DatasetService;
+import uk.gov.ea.datareturns.domain.jpa.service.SitePermitService;
 import uk.gov.ea.datareturns.domain.jpa.service.SubmissionService;
 import uk.gov.ea.datareturns.web.resource.v1.model.record.payload.Payload;
 
@@ -39,6 +41,7 @@ import java.util.stream.Collectors;
 public class APIIntegrationTests_DataSampleEntity {
 
     @Inject private TestSettings testSettings;
+    @Inject private SitePermitService sitePermitService;
     @Inject private DatasetService datasetService;
     @Inject private SubmissionService submissionService;
 
@@ -57,21 +60,19 @@ public class APIIntegrationTests_DataSampleEntity {
 
     // Remove any old data and set a user and dataset for use in the tests
     @Before public void init() throws IOException {
-        user = datasetService.getUser(USER_NAME);
-        if (user != null) {
-            final User usr = user;
-            datasetService.getDatasets(user).forEach(ds -> datasetService.removeDataset(ds.getIdentifier(), usr));
-            datasetService.removeUser(USER_NAME);
+
+        for (String record : RECORDS) {
+            sitePermitService.removePermitSiteAndAliases(record);
         }
 
-        user = datasetService.createUser(USER_NAME);
+        for (String record : RECORDS) {
+            sitePermitService.addNewPermitAndSite(record, "Test site");
+            dataset = new DatasetEntity();
+            dataset.setIdentifier(DATASET_ID + "_" + record);
+            dataset.setOriginatorEmail(ORIGINATOR_EMAIL);
+            datasetService.createDataset(record, dataset);
+        }
 
-        dataset = new DatasetEntity();
-        dataset.setIdentifier(DATASET_ID);
-        dataset.setOriginatorEmail(ORIGINATOR_EMAIL);
-        dataset.setUser(user);
-
-        datasetService.createDataset(dataset);
         samples = submissionService.parseJsonArray(readTestFile(SUBMISSION_SUCCESS));
     }
 

@@ -1,8 +1,8 @@
 package uk.gov.ea.datareturns.web.resource.v1.model.common;
 
+import uk.gov.ea.datareturns.domain.jpa.entities.masterdata.impl.UniqueIdentifier;
 import uk.gov.ea.datareturns.domain.jpa.entities.userdata.impl.DatasetEntity;
 import uk.gov.ea.datareturns.domain.jpa.entities.userdata.impl.PayloadType;
-import uk.gov.ea.datareturns.domain.jpa.entities.userdata.impl.User;
 import uk.gov.ea.datareturns.web.resource.v1.model.eaid.EaId;
 
 import javax.ws.rs.core.Response;
@@ -54,8 +54,8 @@ public abstract class PreconditionChecks {
     }
 
     // Precondition evaluator for the entity list held at user level
-    public static Response.ResponseBuilder onPreconditionsPass(final User user, List<DatasetEntity> datasets,
-            Preconditions preconditions, Supplier<Response.ResponseBuilder> handler) {
+    public static Response.ResponseBuilder onPreconditionsPass(final UniqueIdentifier user, List<DatasetEntity> datasets,
+                                                               Preconditions preconditions, Supplier<Response.ResponseBuilder> handler) {
 
         Response.ResponseBuilder rb = null;
         if (preconditions != null) {

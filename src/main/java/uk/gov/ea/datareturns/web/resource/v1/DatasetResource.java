@@ -13,17 +13,17 @@ import uk.gov.ea.datareturns.domain.exceptions.ProcessingException;
 import uk.gov.ea.datareturns.domain.exceptions.UnsubmittableDatasetException;
 import uk.gov.ea.datareturns.domain.exceptions.UnsubmittableRecordsException;
 import uk.gov.ea.datareturns.domain.jpa.dao.userdata.factories.EntitySubstitution;
+import uk.gov.ea.datareturns.domain.jpa.entities.masterdata.impl.UniqueIdentifier;
 import uk.gov.ea.datareturns.domain.jpa.entities.userdata.impl.DatasetEntity;
 import uk.gov.ea.datareturns.domain.jpa.entities.userdata.impl.RecordEntity;
-import uk.gov.ea.datareturns.domain.jpa.entities.userdata.impl.User;
 import uk.gov.ea.datareturns.domain.jpa.service.DatasetService;
+import uk.gov.ea.datareturns.domain.jpa.service.SitePermitService;
 import uk.gov.ea.datareturns.domain.jpa.service.SubmissionService;
 import uk.gov.ea.datareturns.util.StopWatch;
 import uk.gov.ea.datareturns.web.resource.v1.model.common.Linker;
 import uk.gov.ea.datareturns.web.resource.v1.model.common.Preconditions;
 import uk.gov.ea.datareturns.web.resource.v1.model.common.references.EntityReference;
 import uk.gov.ea.datareturns.web.resource.v1.model.dataset.*;
-import uk.gov.ea.datareturns.web.resource.v1.model.eaid.EaId;
 import uk.gov.ea.datareturns.web.resource.v1.model.record.RecordAdaptor;
 import uk.gov.ea.datareturns.web.resource.v1.model.request.BatchDatasetRequest;
 import uk.gov.ea.datareturns.web.resource.v1.model.request.BatchDatasetRequestItem;
@@ -72,9 +72,14 @@ public class DatasetResource {
 
     private DatasetService datasetService;
     private final SubmissionService submissionService;
+    private final SitePermitService sitePermitService;
+
     RecordAdaptor recordAdaptor;
 
-    @Inject public DatasetResource(DatasetService datasetService, SubmissionService submissionService, RecordAdaptor recordAdaptor) {
+    @Inject public DatasetResource(SitePermitService sitePermitService, DatasetService datasetService,
+                                   SubmissionService submissionService, RecordAdaptor recordAdaptor) {
+
+        this.sitePermitService = sitePermitService;
         this.datasetService = datasetService;
         this.submissionService = submissionService;
         this.recordAdaptor = recordAdaptor;
@@ -83,7 +88,7 @@ public class DatasetResource {
     /**
      * List the available datasets
      *
-     * @param ea_id the owning EA_ID
+     * @param eaIdId the owning EA_ID
      * @param preconditions conditional request structure
      * @return a response containing an {@link EntityReferenceListResponse} entity
      * @throws Exception if the request cannot be completed normally.
@@ -100,21 +105,20 @@ public class DatasetResource {
     })
     public Response listDatasets(
             @PathParam("ea_id") @Pattern(regexp = "\\p{Print}+")
-            @ApiParam("The unique identifier for the owning ea_id") final String ea_id,
+            @ApiParam("The unique identifier for the owning ea_id") final String eaIdId,
             @BeanParam Preconditions preconditions) throws Exception {
-        User user = datasetService.getSystemUser();
 
-        //TODO Limit the datasets that are returned to just those owned by the permit
-        List<DatasetEntity> datasets = datasetService.getDatasets(user);
+        UniqueIdentifier uniqueIdentifier = sitePermitService.getUniqueIdentifierByName(eaIdId);
+        List<DatasetEntity> datasets = datasetService.getDatasets(eaIdId);
 
         //TODO Move the master changed date from the user to the permit
-        return onPreconditionsPass(user, datasets, preconditions,
+        return onPreconditionsPass(uniqueIdentifier, datasets, preconditions,
                 () -> {
                     List<EntityReference> entityReferences = datasets.stream()
-                            .map(e -> new EntityReference(e.getIdentifier(), Linker.info(uriInfo).dataset(ea_id, e.getIdentifier())))
+                            .map(e -> new EntityReference(e.getIdentifier(), Linker.info(uriInfo).dataset(eaIdId, e.getIdentifier())))
                             .collect(Collectors.toList());
                     return new EntityReferenceListResponse(entityReferences,
-                            Date.from(user.getDatasetChangedDate()),
+                            Date.from(uniqueIdentifier.getDatasetChangedDate()),
                             Preconditions.createEtag(datasets)
                     ).toResponseBuilder();
                 }).build();
@@ -151,12 +155,12 @@ public class DatasetResource {
     })
     public Response postDatasets(
             @PathParam("ea_id") @Pattern(regexp = "\\p{Print}+")
-            @ApiParam("The unique identifier for the owning ea_id") final String ea_id,
+            @ApiParam("The unique identifier for the owning ea_id") final String eaIdId,
             @ApiParam("The bulk dataset create/update request") final BatchDatasetRequest batchRequest
     )
             throws Exception {
 
-        //TODO add in the EA_ID constraint
+        //UniqueIdentifier uniqueIdentifier = datasetService.getUniqueIdentifierByName(ea_id);
         Response.ResponseBuilder rb;
 
         if (batchRequest.getRequests().isEmpty()) {
@@ -165,19 +169,19 @@ public class DatasetResource {
             MultiStatusResponse multiResponse = new MultiStatusResponse();
 
             for (BatchDatasetRequestItem request : batchRequest.getRequests()) {
-                DatasetEntity datasetEntity = datasetService.getDataset(request.getDatasetId());
+                DatasetEntity datasetEntity = datasetService.getDataset(eaIdId, request.getDatasetId());
                 MultiStatusResponse.Response responseItem = new MultiStatusResponse.Response();
                 responseItem.setId(request.getDatasetId());
 
-                Response.ResponseBuilder failureResponse = onPreconditionsPass(fromEntity(ea_id, datasetEntity), request.getPreconditions(),
+                Response.ResponseBuilder failureResponse = onPreconditionsPass(fromEntity(eaIdId, datasetEntity), request.getPreconditions(),
                         () -> {
                             // Preconditions passed, service the request
-                            DatasetEntityResponse storeResult = storeDataset(ea_id, datasetEntity, request.getDatasetId(),
+                            DatasetEntityResponse storeResult = storeDataset(eaIdId, datasetEntity, request.getDatasetId(),
                                     request.getProperties());
                             Dataset dataset = storeResult.getData();
 
                             responseItem.setCode(storeResult.getMeta().getStatus());
-                            responseItem.setHref(Linker.info(uriInfo).dataset("TODO", dataset.getId())); // TODO Resolve the EA_ID
+                            responseItem.setHref(Linker.info(uriInfo).dataset(eaIdId, dataset.getId()));
                             responseItem.setEntityTag(Preconditions.createEtag(dataset).toString());
                             responseItem.setLastModified(dataset.getLastModified());
                             return null;
@@ -189,7 +193,7 @@ public class DatasetResource {
 
                     if (datasetEntity != null) {
                         // Entity does exist so populate the href
-                        responseItem.setHref(Linker.info(uriInfo).dataset("TODO", request.getDatasetId())); // TODO Resolve the EA_ID
+                        responseItem.setHref(Linker.info(uriInfo).dataset(eaIdId, request.getDatasetId()));
                     }
                 }
                 multiResponse.addResponse(responseItem);
@@ -202,7 +206,7 @@ public class DatasetResource {
     /**
      * Retrieve dataset details
      *
-     * @param ea_id the owning EA_ID
+     * @param eaIdId the owning EA_ID
      * @param datasetId the unique identifier for the target dataset
      * @param preconditions conditional request structure
      * @return a response containing an {@link DatasetEntityResponse} entity
@@ -218,21 +222,20 @@ public class DatasetResource {
             @ApiResponse(code = 304, message = "Not Modified - see conditional request documentation"),
             @ApiResponse(
                     code = 404,
-                    message = "Not Found - The `dataset_id` parameter did not match a known resource",
+                    message = "Not Found - The `dataset_id` or `ea_id` parameter did not match a known resource",
                     response = ErrorResponse.class
             )
     })
     public Response getDataset(
             @PathParam("ea_id") @Pattern(regexp = "\\p{Print}+")
-            @ApiParam("The unique identifier for the owning ea_id") final String ea_id,
+            @ApiParam("The unique identifier for the owning ea_id") final String eaIdId,
             @PathParam("dataset_id")
             @Pattern(regexp = "[A-Za-z0-9_-]+")
             @ApiParam("The unique identifier for the target dataset") final String datasetId,
             @BeanParam Preconditions preconditions)
             throws Exception {
-        return onDataset(datasetId, datasetEntity -> {
-            //TODO retrieve only the datasets owned by ea_id
-            Dataset dataset = fromEntity(ea_id, datasetEntity);
+        return onDataset(eaIdId, datasetId, datasetEntity -> {
+            Dataset dataset = fromEntity(eaIdId, datasetEntity);
             return onPreconditionsPass(dataset, preconditions, () ->
                     new DatasetEntityResponse(Response.Status.OK, dataset).toResponseBuilder()
             );
@@ -242,7 +245,7 @@ public class DatasetResource {
     /**
      * Create or update the properties associated with the dataset for the specified dataset_id
      *
-     * @param ea_id the owning EA_ID
+     * @param eaIdId the owning EA_ID
      * @param datasetId the unique identifier for the target dataset
      * @param preconditions conditional request structure
      * @param datasetProperties user-definable properties to associate with the DatasetEntity
@@ -267,7 +270,7 @@ public class DatasetResource {
     })
     public Response putDataset(
             @PathParam("ea_id") @Pattern(regexp = "\\p{Print}+")
-            @ApiParam("The unique identifier for the owning ea_id") final String ea_id,
+            @ApiParam("The unique identifier for the owning ea_id") final String eaIdId,
             @PathParam("dataset_id")
             @Pattern(regexp = "[A-Za-z0-9_-]+")
             @ApiParam("The unique identifier for the target dataset") final String datasetId,
@@ -275,17 +278,17 @@ public class DatasetResource {
             final DatasetProperties datasetProperties
     )
             throws Exception {
-        //TODO assign the dataset to am EA_ID
-        DatasetEntity datasetEntity = datasetService.getDataset(datasetId);
-        return onPreconditionsPass(fromEntity(ea_id, datasetEntity), preconditions, () -> {
+
+        DatasetEntity datasetEntity = datasetService.getDataset(eaIdId, datasetId);
+        return onPreconditionsPass(fromEntity(eaIdId, datasetEntity), preconditions, () -> {
             // Preconditions passed, process request
-            return storeDataset(ea_id, datasetEntity, datasetId, datasetProperties).toResponseBuilder();
+            return storeDataset(eaIdId, datasetEntity, datasetId, datasetProperties).toResponseBuilder();
         }).build();
     }
 
     /**
      * Delete the dataset and any records currently associated with the specified dataset_id
-     * @param ea_id the owning EA_ID
+     * @param eaIdId the owning EA_ID
      * @param datasetId the unique identifier for the target dataset
      * @param preconditions conditional request structure
      * @return an empty response body as per HTTP 204
@@ -300,7 +303,7 @@ public class DatasetResource {
             @ApiResponse(code = 204, message = "No Content - an existing dataset was successfully deleted."),
             @ApiResponse(
                     code = 404,
-                    message = "Not Found - The `dataset_id` parameter did not match a known resource",
+                    message = "Not Found - The `dataset_id` or `ea_id` parameter did not match a known resource",
                     response = ErrorResponse.class
             ),
             @ApiResponse(
@@ -311,17 +314,17 @@ public class DatasetResource {
     })
     public Response deleteDataset(
             @PathParam("ea_id") @Pattern(regexp = "\\p{Print}+")
-            @ApiParam("The unique identifier for the owning ea_id") final String ea_id,
+            @ApiParam("The unique identifier for the owning ea_id") final String eaIdId,
             @PathParam("dataset_id")
             @Pattern(regexp = "[A-Za-z0-9_-]+")
             @ApiParam("The unique identifier for the target dataset") final String datasetId,
             @BeanParam Preconditions preconditions)
             throws Exception {
-        //TODO only delete datasets from owning EA_ID
-        return onDataset(datasetId, datasetEntity ->
-                onPreconditionsPass(fromEntity(ea_id, datasetEntity), preconditions, () -> {
+
+        return onDataset(eaIdId, datasetId, datasetEntity ->
+                onPreconditionsPass(fromEntity(eaIdId, datasetEntity), preconditions, () -> {
                     // Preconditions passed, delete the resource
-                    datasetService.removeDataset(datasetId);
+                    datasetService.removeDataset(eaIdId, datasetId);
                     return Response.status(Response.Status.NO_CONTENT);
                 })
         ).build();
@@ -331,7 +334,7 @@ public class DatasetResource {
      * Retrieve the dataset status information for the specified dataset_id
      *
      * @param datasetId the unique identifier for the target dataset
-     * @param ea_id the owning EA_ID
+     * @param eaIdId the owning EA_ID
      * @return a response containing an {@link DatasetStatusResponse} entity
      * @throws Exception if the request cannot be completed normally.
      */
@@ -346,21 +349,20 @@ public class DatasetResource {
             @ApiResponse(code = 304, message = "Not Modified - see conditional request documentation"),
             @ApiResponse(
                     code = 404,
-                    message = "Not Found - The `dataset_id` parameter did not match a known resource",
+                    message = "Not Found - The `dataset_id` or `ea_id` parameter did not match a known resource",
                     response = ErrorResponse.class
             )
     })
     public Response getDatasetStatus(
             @PathParam("ea_id") @Pattern(regexp = "\\p{Print}+")
-            @ApiParam("The unique identifier for the owning ea_id") final String ea_id,
+            @ApiParam("The unique identifier for the owning ea_id") final String eaIdId,
             @PathParam("dataset_id")
             @Pattern(regexp = "[A-Za-z0-9_-]+")
             @ApiParam("The unique identifier for the target dataset") final String datasetId,
             @BeanParam Preconditions preconditions)
             throws Exception {
 
-        //TODO Limit the dataset status to those datasets owned by EA_ID
-        return onDataset(datasetId, datasetEntity -> {
+        return onDataset(eaIdId, datasetId, datasetEntity -> {
             Instant dsChangeDate = datasetEntity.getLastChangedDate();
             Instant recordChangeDate = datasetEntity.getRecordChangedDate();
             Instant latest = dsChangeDate.isAfter(recordChangeDate) ? dsChangeDate : recordChangeDate;
@@ -374,12 +376,11 @@ public class DatasetResource {
             }
             return rb.tag(currentEtag).lastModified(latestDate);
         }).build();
-
     }
 
     /**
      * Attempt to set dataset status information
-     * @param ea_id the owning EA_ID
+     * @param eaIdId the owning EA_ID
      * @param datasetId the unique identifier for the target dataset
      * @param requestedStatus a {@link DatasetSubmissionStatus} object containing the desired target status
      * @return a response containing an {@link DatasetStatusResponse} entity
@@ -400,7 +401,7 @@ public class DatasetResource {
             ),
             @ApiResponse(
                     code = 404,
-                    message = "Not Found - The `dataset_id` parameter did not match a known resource",
+                    message = "Not Found - The `dataset_id` or `ea_id` parameter did not match a known resource",
                     response = ErrorResponse.class
             ),
             @ApiResponse(
@@ -412,14 +413,14 @@ public class DatasetResource {
     })
     public Response setDatasetStatus(
             @PathParam("ea_id") @Pattern(regexp = "\\p{Print}+")
-            @ApiParam("The unique identifier for the owning ea_id") final String ea_id,
+            @ApiParam("The unique identifier for the owning ea_id") final String eaIdId,
             @PathParam("dataset_id")
             @Pattern(regexp = "[A-Za-z0-9_-]+")
             @ApiParam("The unique identifier for the target dataset") final String datasetId,
             @ApiParam("The requested status.") final DatasetSubmissionStatus requestedStatus)
             throws Exception {
-            //TODO add in the EA_ID constraint
-        return onDataset(datasetId, datasetEntity -> {
+            //TODO add in the eaIdId constraint
+        return onDataset(eaIdId, datasetId, datasetEntity -> {
             // Check state transition
             DatasetSubmissionStatus submissionStatus = getSubmissionStatus(datasetEntity);
             if (!submissionStatus.getStatus().canTransition(requestedStatus.getStatus())) {
@@ -468,7 +469,7 @@ public class DatasetResource {
             dataset.setId(datasetId);
             dataset.setProperties(datasetProperties);
             newDatasetEntity = DatasetAdaptor.getInstance().convert(dataset);
-            datasetService.createDataset(newDatasetEntity);
+            datasetService.createDataset(eaIdId, newDatasetEntity);
             status = Response.Status.CREATED;
         }
         dataset = fromEntity(eaIdId, newDatasetEntity);
@@ -557,8 +558,8 @@ public class DatasetResource {
         return dataset;
     }
 
-    private Response.ResponseBuilder onDataset(String datasetId, Function<DatasetEntity, Response.ResponseBuilder> handler) {
-        DatasetEntity datasetEntity = datasetService.getDataset(datasetId);
+    private Response.ResponseBuilder onDataset(String eaIdId, String datasetId, Function<DatasetEntity, Response.ResponseBuilder> handler) {
+        DatasetEntity datasetEntity = datasetService.getDataset(eaIdId, datasetId);
         return (datasetEntity == null) ? ErrorResponse.DATASET_NOT_FOUND.toResponseBuilder() : handler.apply(datasetEntity);
     }
 }

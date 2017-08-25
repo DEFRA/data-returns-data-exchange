@@ -77,4 +77,10 @@ public interface UniqueIdentifierDao extends EntityDao<UniqueIdentifier> {
      * @return List of all permit numbers
      */
     Set<String> getAllUniqueIdentifierNames(String name);
+
+    /**
+     * Merge changes from an attached UniqueIdentity
+     * @param entity
+     */
+    void merge(UniqueIdentifier entity);
 }

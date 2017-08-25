@@ -4,9 +4,9 @@ import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Repository;
 import uk.gov.ea.datareturns.domain.jpa.dao.userdata.AbstractUserDataDao;
+import uk.gov.ea.datareturns.domain.jpa.entities.masterdata.impl.UniqueIdentifier;
 import uk.gov.ea.datareturns.domain.jpa.entities.userdata.impl.DatasetEntity;
 import uk.gov.ea.datareturns.domain.jpa.entities.userdata.impl.DatasetEntity_;
-import uk.gov.ea.datareturns.domain.jpa.entities.userdata.impl.User;
 
 import javax.persistence.NoResultException;
 import javax.persistence.TypedQuery;
@@ -27,7 +27,7 @@ public class DatasetDao extends AbstractUserDataDao<DatasetEntity> {
         super(DatasetEntity.class);
     }
 
-    public DatasetEntity get(User user, String identifier) {
+    public DatasetEntity get(UniqueIdentifier uniqueIdentifier, String identifier) {
         CriteriaBuilder cb = entityManager.getCriteriaBuilder();
         Metamodel m = entityManager.getMetamodel();
         CriteriaQuery<DatasetEntity> cq = cb.createQuery(DatasetEntity.class);
@@ -35,7 +35,7 @@ public class DatasetDao extends AbstractUserDataDao<DatasetEntity> {
         cq.select(dataset);
         cq.where(
                 cb.equal(dataset.get(DatasetEntity_.identifier), identifier),
-                cb.equal(dataset.get(DatasetEntity_.user), user)
+                cb.equal(dataset.get(DatasetEntity_.uniqueIdentifier), uniqueIdentifier)
         );
         TypedQuery<DatasetEntity> q = entityManager.createQuery(cq);
         try {
@@ -47,19 +47,19 @@ public class DatasetDao extends AbstractUserDataDao<DatasetEntity> {
         }
     }
 
-    public List<DatasetEntity> list(User user) {
+    public List<DatasetEntity> list(UniqueIdentifier uniqueIdentifier) {
         CriteriaBuilder cb = entityManager.getCriteriaBuilder();
         Metamodel m = entityManager.getMetamodel();
         CriteriaQuery<DatasetEntity> cq = cb.createQuery(DatasetEntity.class);
         Root<DatasetEntity> dataset = cq.from(m.entity(DatasetEntity.class));
-        cq.where(cb.equal(dataset.get(DatasetEntity_.user), user));
+        cq.where(cb.equal(dataset.get(DatasetEntity_.uniqueIdentifier), uniqueIdentifier));
         cq.select(dataset);
         TypedQuery<DatasetEntity> q = entityManager.createQuery(cq);
         return q.getResultList();
     }
 
-    public void remove(User user, String identifier) {
-        DatasetEntity ds = get(user, identifier);
+    public void remove(UniqueIdentifier uniqueIdentifier, String identifier) {
+        DatasetEntity ds = get(uniqueIdentifier, identifier);
         remove(ds.getId());
     }
 }

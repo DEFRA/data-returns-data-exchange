@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd">
+									 xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd">
 
 	<preConditions>
 		<dbms type="${db.type}"/>
@@ -8,11 +8,11 @@
 	</preConditions>
 
 	<changeSet id="user data" author="Environment Agency">
-	  <!--
-		****************************************************************
-		User
-		****************************************************************
-		-->
+		<!--
+    ****************************************************************
+    Users - currently this is not used within the system
+    ****************************************************************
+    -->
 		<createTable tableName="users">
 			<column name="id" type="bigserial">
 				<constraints primaryKey="true" nullable="false"/>
@@ -30,10 +30,6 @@
 				<constraints nullable="false"/>
 			</column>
 
-			<column name="dataset_changed_date" type="timestamp without timezone">
-				<constraints nullable="true"/>
-			</column>
-
 		</createTable>
 
 		<createIndex indexName="idx_user_identifier" tableName="users" unique="true">
@@ -43,8 +39,105 @@
 		<sql>insert into users (identifier, create_date, last_changed_date, dataset_changed_date) values ('SYSTEM', current_timestamp, current_timestamp, current_timestamp)</sql>
 
 		<!--
+			Provisionally the main structure hierarchy of the system is as follows:
+
+			Operator -/->
+				Unique Identifier Set ->
+					Unique Identifier ->
+						Dataset(Payload) ->
+							Record(Payload).
+
+			The Unique Identifier Set is not necessarily limited to operators - it
+			can represent entirety of the large landfill operators where we do not care
+			about the ownership of permits.
+
+			Note that a permit may only appear in a single set – hence that it can hold the
+			change date for the list of permits. For this reason this structure is not intended
+			to (and will not) support a general set of
+			authorizations for actions on permits and sets of permits.
+
+			The intermediate table is simply added to provide for a condition where
+			permits may or may not be linked to an operator. It would not be desirable
+			to hold a nullable operator identifier on the permit because then there is
+			nowhere to store the list change date for the conditional queries.
+		-->
+
+		<!--
 		****************************************************************
-		DatasetEntity
+		Operators
+		****************************************************************
+		-->
+		<createTable tableName="operators">
+			<column name="id" type="bigserial">
+				<constraints primaryKey="true" nullable="false"/>
+			</column>
+
+			<column name="operator_name" type="varchar(80)">
+				<constraints nullable="false"/>
+			</column>
+		</createTable>
+
+		<!--
+		****************************************************************
+		Unique Identifier Set Type
+		****************************************************************
+		-->
+		<createTable tableName="unique_identifier_set_type">
+			<column name="type" type="varchar(20)">
+				<constraints primaryKey="true" nullable="false"/>
+			</column>
+		</createTable>
+
+		<sql>insert into unique_identifier_set_type (type) values ('LARGE_LANDFILL_USERS')</sql>
+
+		<!--
+		****************************************************************
+		Unique Identifier Set
+		****************************************************************
+		-->
+		<createTable tableName="unique_identifier_set">
+			<column name="id" type="bigserial">
+				<constraints primaryKey="true" nullable="false"/>
+			</column>
+
+			<column name="type" type="varchar(20)">
+				<constraints nullable="false" foreignKeyName="fk_unique_identifiers_set_type" references="unique_identifier_set_type(type)"/>
+			</column>
+
+			<column name="operator_id" type="bigint">
+				<constraints nullable="true"/>
+			</column>
+
+			<column name="unique_identifier_changed_date" type="timestamp without timezone">
+				<constraints nullable="true"/>
+			</column>
+		</createTable>
+
+		<sql>insert into unique_identifier_set (type) values ('LARGE_LANDFILL_USERS')</sql>
+
+		<!-- Add the columns to the existing unique identifiers table -->
+		<addColumn tableName="unique_identifiers">
+			<column name="unique_identifier_set_id" type="bigserial">
+				<constraints nullable="true"/>
+			</column>
+			<column name="dataset_changed_date" type="timestamp without timezone">
+				<constraints nullable="true"/>
+			</column>
+		</addColumn>
+
+		<sql>update unique_identifiers set unique_identifier_set_id = (select id from unique_identifier_set where type = 'LARGE_LANDFILL_USERS')</sql>
+
+		<addNotNullConstraint tableName="unique_identifiers" columnName="unique_identifier_set_id"/>
+
+		<addForeignKeyConstraint baseTableName="unique_identifiers"
+														 baseColumnNames="unique_identifier_set_id"
+														 constraintName="fk_unique_identifiers_unique_identifier_set"
+														 referencedTableName="unique_identifier_set"
+														 referencedColumnNames="id" />
+
+		<!--
+		****************************************************************
+		Dataset Entity
 		****************************************************************
 		-->
 		<createTable tableName="datasets">
@@ -53,7 +146,7 @@
 				<constraints primaryKey="true" nullable="false"/>
 			</column>
 
-			<column name="user_id" type="bigint">
+			<column name="unique_identifier_id" type="bigint">
 				<constraints nullable="false"/>
 			</column>
 
@@ -84,15 +177,15 @@
 		</createTable>
 
 		<createIndex indexName="idx_datasets" tableName="datasets" unique="true">
-			<column name="user_id"/>
+			<column name="unique_identifier_id"/>
 			<column name="identifier"/>
 		</createIndex>
 
-		<addForeignKeyConstraint baseColumnNames="user_id"
-								 baseTableName="datasets"
-								 constraintName="fk_dataset_user"
-								 referencedColumnNames="id"
-								 referencedTableName="users"/>
+		<addForeignKeyConstraint baseColumnNames="unique_identifier_id"
+														 baseTableName="datasets"
+														 constraintName="fk_dataset_unique_identifier"
+														 referencedColumnNames="id"
+														 referencedTableName="unique_identifiers"/>
 
 
 		<!--
@@ -142,10 +235,10 @@
 		</createIndex>
 
 		<addForeignKeyConstraint baseColumnNames="dataset_id"
-								 baseTableName="records"
-								 constraintName="fk_record_dataset"
-								 referencedColumnNames="id"
-								 referencedTableName="datasets"/>
+														 baseTableName="records"
+														 constraintName="fk_record_dataset"
+														 referencedColumnNames="id"
+														 referencedTableName="datasets"/>
 
 
 		<!--
@@ -200,10 +293,10 @@
 		<loadData file="/db/data/Fields.csv" tableName="fields"/>
 
 		<addForeignKeyConstraint baseColumnNames="payload_type"
-								 baseTableName="fields"
-								 constraintName="fk_fields_payload"
-								 referencedColumnNames="payload_type"
-								 referencedTableName="payload_types"/>
+														 baseTableName="fields"
+														 constraintName="fk_fields_payload"
+														 referencedColumnNames="payload_type"
+														 referencedTableName="payload_types"/>
 
 		<!--
 		****************************************************************
@@ -234,10 +327,10 @@
 		<loadData file="/db/data/ValidationErrors.csv" tableName="validation_errors"/>
 
 		<addForeignKeyConstraint baseColumnNames="payload_type"
-								 baseTableName="validation_errors"
-								 constraintName="fk_validation_errors_payload"
-								 referencedColumnNames="payload_type"
-								 referencedTableName="payload_types"/>
+														 baseTableName="validation_errors"
+														 constraintName="fk_validation_errors_payload"
+														 referencedColumnNames="payload_type"
+														 referencedTableName="payload_types"/>
 
 		<!--
 		****************************************************************
@@ -296,16 +389,16 @@
 		</createTable>
 
 		<addForeignKeyConstraint baseColumnNames="record_id"
-								 baseTableName="record_validation_errors"
-								 constraintName="fk_record_validation_errors_records"
-								 referencedColumnNames="id"
-								 referencedTableName="records"/>
+														 baseTableName="record_validation_errors"
+														 constraintName="fk_record_validation_errors_records"
+														 referencedColumnNames="id"
+														 referencedTableName="records"/>
 
 		<addForeignKeyConstraint baseColumnNames="payload_type, error"
-								 baseTableName="record_validation_errors"
-								 constraintName="fk_record_validation_errors_payload"
-								 referencedColumnNames="payload_type, error"
-								 referencedTableName="validation_errors"/>
+														 baseTableName="record_validation_errors"
+														 constraintName="fk_record_validation_errors_payload"
+														 referencedColumnNames="payload_type, error"
+														 referencedTableName="validation_errors"/>
 
 		<!--
 		****************************************************************
@@ -381,64 +474,64 @@
 		</createIndex>
 
 		<addForeignKeyConstraint baseColumnNames="dataset_id"
-								 baseTableName="data_sample"
-								 constraintName="fk_data_sample_dataset"
-								 referencedColumnNames="id"
-								 referencedTableName="datasets"/>
+														 baseTableName="data_sample"
+														 constraintName="fk_data_sample_dataset"
+														 referencedColumnNames="id"
+														 referencedTableName="datasets"/>
 
 		<addForeignKeyConstraint baseColumnNames="record_id"
-								 baseTableName="data_sample"
-								 constraintName="fk_data_sample_record"
-								 referencedColumnNames="id"
-								 referencedTableName="records"/>
+														 baseTableName="data_sample"
+														 constraintName="fk_data_sample_record"
+														 referencedColumnNames="id"
+														 referencedTableName="records"/>
 
 		<addForeignKeyConstraint baseColumnNames="ea_id"
-								 baseTableName="data_sample"
-								 constraintName="fk_data_sample_unique_identifier"
-								 referencedColumnNames="id"
-								 referencedTableName="unique_identifiers"/>
-		
+														 baseTableName="data_sample"
+														 constraintName="fk_data_sample_unique_identifier"
+														 referencedColumnNames="id"
+														 referencedTableName="unique_identifiers"/>
+
 		<addForeignKeyConstraint baseColumnNames="return_type_id"
-								 baseTableName="data_sample"
-								 constraintName="fk_data_sample_return_type"
-								 referencedColumnNames="id"
-								 referencedTableName="return_types"/>
+														 baseTableName="data_sample"
+														 constraintName="fk_data_sample_return_type"
+														 referencedColumnNames="id"
+														 referencedTableName="return_types"/>
 
 		<addForeignKeyConstraint baseColumnNames="parameter_id"
-								 baseTableName="data_sample"
-								 constraintName="fk_data_sample_parameter"
-								 referencedColumnNames="id"
-								 referencedTableName="parameters"/>
+														 baseTableName="data_sample"
+														 constraintName="fk_data_sample_parameter"
+														 referencedColumnNames="id"
+														 referencedTableName="parameters"/>
 
 		<addForeignKeyConstraint baseColumnNames="text_value_id"
-								 baseTableName="data_sample"
-								 constraintName="fk_data_sample_text_value"
-								 referencedColumnNames="id"
-								 referencedTableName="text_values"/>
+														 baseTableName="data_sample"
+														 constraintName="fk_data_sample_text_value"
+														 referencedColumnNames="id"
+														 referencedTableName="text_values"/>
 
 		<addForeignKeyConstraint baseColumnNames="qualifier_id"
-								 baseTableName="data_sample"
-								 constraintName="fk_data_sample_qualifier"
-								 referencedColumnNames="id"
-								 referencedTableName="qualifiers"/>
+														 baseTableName="data_sample"
+														 constraintName="fk_data_sample_qualifier"
+														 referencedColumnNames="id"
+														 referencedTableName="qualifiers"/>
 
 		<addForeignKeyConstraint baseColumnNames="unit_id"
-								 baseTableName="data_sample"
-								 constraintName="fk_data_sample_unit"
-								 referencedColumnNames="id"
-								 referencedTableName="units"/>
+														 baseTableName="data_sample"
+														 constraintName="fk_data_sample_unit"
+														 referencedColumnNames="id"
+														 referencedTableName="units"/>
 
 		<addForeignKeyConstraint baseColumnNames="reference_period_id"
-								 baseTableName="data_sample"
-								 constraintName="fk_data_sample_reference_period"
-								 referencedColumnNames="id"
-								 referencedTableName="reference_periods"/>
+														 baseTableName="data_sample"
+														 constraintName="fk_data_sample_reference_period"
+														 referencedColumnNames="id"
+														 referencedTableName="reference_periods"/>
 
 		<addForeignKeyConstraint baseColumnNames="method_or_standard_id"
-								 baseTableName="data_sample"
-								 constraintName="fk_data_sample_method_or_standard"
-								 referencedColumnNames="id"
-								 referencedTableName="methods_or_standards"/>
+														 baseTableName="data_sample"
+														 constraintName="fk_data_sample_method_or_standard"
+														 referencedColumnNames="id"
+														 referencedTableName="methods_or_standards"/>
 
 		<!--
 		****************************************************************
@@ -457,15 +550,15 @@
 		</createTable>
 
 		<addForeignKeyConstraint baseColumnNames="dataset_id"
-								 baseTableName="alternatives"
-								 constraintName="fk_alternatives_dataset"
-								 referencedColumnNames="id"
-								 referencedTableName="datasets"/>
+														 baseTableName="alternatives"
+														 constraintName="fk_alternatives_dataset"
+														 referencedColumnNames="id"
+														 referencedTableName="datasets"/>
 		<addForeignKeyConstraint baseColumnNames="record_id"
-								 baseTableName="alternatives"
-								 constraintName="fk_alternatives_record"
-								 referencedColumnNames="id"
-								 referencedTableName="records"/>
+														 baseTableName="alternatives"
+														 constraintName="fk_alternatives_record"
+														 referencedColumnNames="id"
+														 referencedTableName="records"/>
 
 		<!--
 		****************************************************************
@@ -484,6 +577,9 @@
 			<dropTable tableName="status"/>
 			<dropTable tableName="records"/>
 			<dropTable tableName="datasets"/>
+			<dropTable tableName="unique_identifier_set"/>
+			<dropTable tableName="unique_identifier_set_type"/>
+			<dropTable tableName="operators"/>
 			<dropTable tableName="users"/>
 		</rollback>
 

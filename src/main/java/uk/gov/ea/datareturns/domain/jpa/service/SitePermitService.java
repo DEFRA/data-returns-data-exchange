@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionDefinition;
 import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.DefaultTransactionDefinition;
 import uk.gov.ea.datareturns.domain.jpa.dao.masterdata.Key;
 import uk.gov.ea.datareturns.domain.jpa.dao.masterdata.SiteDao;
@@ -183,5 +184,10 @@ public class SitePermitService {
         uniqueIdentifierDao.clearCaches();
         uniqueIdentifierAliasDao.clearCaches();
         siteDao.clearCaches();
+    }
+
+    @Transactional(readOnly = true)
+    public UniqueIdentifier getUniqueIdentifierByName(String eaIdId) {
+        return uniqueIdentifierDao.getByName(eaIdId);
     }
 }

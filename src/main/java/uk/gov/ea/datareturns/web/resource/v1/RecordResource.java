@@ -49,7 +49,9 @@ import static uk.gov.ea.datareturns.web.resource.v1.model.common.PreconditionChe
         consumes = APPLICATION_JSON + "," + APPLICATION_XML,
         produces = APPLICATION_JSON + "," + APPLICATION_XML
 )
-@Path("/datasets/{dataset_id}/records")
+
+
+@Path("/ea_ids/{ea_id}/datasets/{dataset_id}/records")
 @Consumes({ APPLICATION_JSON, APPLICATION_XML })
 @Produces({ APPLICATION_JSON, APPLICATION_XML })
 @Component
@@ -78,6 +80,7 @@ public class RecordResource {
     /**
      * List all records for the given dataset_id
      *
+     * @param eaIdId the owning EA_ID
      * @param datasetId the unique identifier for the target dataset
      * @return a response containing an {@link EntityReferenceListResponse} entity
      * @throws Exception if the request cannot be completed normally.
@@ -91,15 +94,17 @@ public class RecordResource {
             @ApiResponse(code = 304, message = "Not Modified - see conditional request documentation"),
             @ApiResponse(
                     code = 404,
-                    message = "Not Found - The `dataset_id` parameter did not match a known resource",
+                    message = "Not Found - The `dataset_id` or `ea_id` parameter did not match a known resource",
                     response = ErrorResponse.class
             )
     })
     public Response listRecords(
+            @PathParam("ea_id") @Pattern(regexp = "\\p{Print}+")
+            @ApiParam("The unique identifier for the owning ea_id") final String eaIdId,
             @PathParam("dataset_id") @Pattern(regexp = "[A-Za-z0-9_-]+")
             @ApiParam("The unique identifier for the target dataset") final String datasetId)
             throws Exception {
-        return onDataset(datasetId, datasetEntity -> {
+        return onDataset(eaIdId, datasetId, datasetEntity -> {
             List<RecordEntity> records = submissionService.getRecords(datasetEntity);
             return new EntityReferenceListResponse(
                     records.stream().map((entity) -> {
@@ -115,6 +120,7 @@ public class RecordResource {
     /**
      * Retrieve all record and payload data for the given dataset_id
      *
+     * @param eaIdId the owning EA_ID
      * @param datasetId the unique identifier for the target dataset
      * @return a response containing an {@link RecordListResponse} entity
      * @throws Exception if the request cannot be completed normally.
@@ -129,15 +135,17 @@ public class RecordResource {
             @ApiResponse(code = 304, message = "Not Modified - see conditional request documentation"),
             @ApiResponse(
                     code = 404,
-                    message = "Not Found - The `dataset_id` parameter did not match a known resource",
+                    message = "Not Found - The `dataset_id` or `ea_id` parameter did not match a known resource",
                     response = ErrorResponse.class
             )
     })
     public Response listRecordData(
+            @PathParam("ea_id") @Pattern(regexp = "\\p{Print}+")
+            @ApiParam("The unique identifier for the owning ea_id") final String eaIdId,
             @PathParam("dataset_id") @Pattern(regexp = "[A-Za-z0-9_-]+")
             @ApiParam("The unique identifier for the target dataset") final String datasetId)
             throws Exception {
-        return onDataset(datasetId, datasetEntity -> {
+        return onDataset(eaIdId, datasetId, datasetEntity -> {
             List<RecordEntity> records = submissionService.getRecords(datasetEntity);
             return new RecordListResponse(
                     records.stream().map(e -> fromEntity(datasetId, e)).collect(Collectors.toList()),
@@ -189,6 +197,8 @@ public class RecordResource {
             )
     })
     public Response postRecords(
+            @PathParam("ea_id") @Pattern(regexp = "\\p{Print}+")
+            @ApiParam("The unique identifier for the owning ea_id") final String eaIdId,
             @PathParam("dataset_id")
             @Pattern(regexp = "[A-Za-z0-9_-]+")
             @ApiParam("The unique identifier for the target dataset") final String datasetId,
@@ -198,7 +208,7 @@ public class RecordResource {
 
         final StopWatch sw = new StopWatch("postRecords");
         sw.startTask("Fetching dataset");
-        return onDataset(datasetId, datasetEntity -> {
+        return onDataset(eaIdId, datasetId, datasetEntity -> {
             Response.ResponseBuilder rb;
             if (batchRequest.getRequests().isEmpty()) {
                 rb = ErrorResponse.MULTISTATUS_REQUEST_EMPTY.toResponseBuilder();
@@ -305,6 +315,7 @@ public class RecordResource {
     /**
      * Retrieve record data for the given `record_id` and `dataset_id`
      *
+     * @param eaIdId the owning EA_ID
      * @param datasetId the unique identifier for the target dataset
      * @param recordId the unique identifier for the target record
      * @param preconditions conditional request structure
@@ -326,6 +337,8 @@ public class RecordResource {
             )
     })
     public Response getRecord(
+            @PathParam("ea_id") @Pattern(regexp = "\\p{Print}+")
+            @ApiParam("The unique identifier for the owning ea_id") final String eaIdId,
             @PathParam("dataset_id")
             @Pattern(regexp = "[A-Za-z0-9_-]+")
             @ApiParam("The unique identifier for the target dataset") final String datasetId,
@@ -335,7 +348,7 @@ public class RecordResource {
             @BeanParam Preconditions preconditions
     )
             throws Exception {
-        return onDataset(datasetId, (datasetEntity) ->
+        return onDataset(eaIdId, datasetId, (datasetEntity) ->
                 onRecord(datasetEntity, recordId, (recordEntity) ->
                         onPreconditionsPass(fromEntity(datasetId, recordEntity), preconditions, () ->
                                 new RecordEntityResponse(Response.Status.OK, fromEntity(datasetId, recordEntity)).toResponseBuilder()
@@ -347,6 +360,7 @@ public class RecordResource {
     /**
      * Create or update the record with the given record_id for the dataset with the given dataset_id
      *
+     * @param eaIdId the owning EA_ID
      * @param datasetId the unique identifier for the target dataset
      * @param recordId the unique identifier for the target record
      * @param payload the data payload to associate with the record
@@ -380,6 +394,8 @@ public class RecordResource {
             )
     })
     public Response putRecord(
+            @PathParam("ea_id") @Pattern(regexp = "\\p{Print}+")
+            @ApiParam("The unique identifier for the owning ea_id") final String eaIdId,
             @PathParam("dataset_id")
             @Pattern(regexp = "[A-Za-z0-9_-]+")
             @ApiParam("The unique identifier for the target dataset") final String datasetId,
@@ -392,7 +408,7 @@ public class RecordResource {
             @BeanParam Preconditions preconditions
     )
             throws Exception {
-        return onDataset(datasetId, (datasetEntity) -> {
+        return onDataset(eaIdId,datasetId, (datasetEntity) -> {
             RecordEntity existingEntity = submissionService.getRecord(datasetEntity, recordId);
             return onPreconditionsPass(fromEntity(datasetId, existingEntity), preconditions, () -> {
                 Response.Status status = Response.Status.OK;
@@ -421,6 +437,7 @@ public class RecordResource {
     /**
      * Delete the record with the given record_id from the dataset with the given dataset_id
      *
+     * @param eaIdId the owning EA_ID
      * @param datasetId the unique identifier for the target dataset
      * @param recordId the unique identifier for the target record
      * @param preconditions conditional request structure
@@ -447,6 +464,8 @@ public class RecordResource {
             )
     })
     public Response deleteRecord(
+            @PathParam("ea_id") @Pattern(regexp = "\\p{Print}+")
+            @ApiParam("The unique identifier for the owning ea_id") final String eaIdId,
             @PathParam("dataset_id")
             @Pattern(regexp = "[A-Za-z0-9_-]+")
             @ApiParam("The unique identifier for the target dataset") final String datasetId,
@@ -456,7 +475,7 @@ public class RecordResource {
             @BeanParam Preconditions preconditions
     )
             throws Exception {
-        return onDataset(datasetId, (datasetEntity) ->
+        return onDataset(eaIdId, datasetId, (datasetEntity) ->
                 onRecord(datasetEntity, recordId, (recordEntity) ->
                         onPreconditionsPass(fromEntity(datasetId, recordEntity), preconditions, () -> {
                             // Preconditions passed, delete the record
@@ -476,8 +495,8 @@ public class RecordResource {
         return record;
     }
 
-    private Response.ResponseBuilder onDataset(String datasetId, Function<DatasetEntity, Response.ResponseBuilder> handler) {
-        DatasetEntity datasetEntity = datasetService.getDataset(datasetId);
+    private Response.ResponseBuilder onDataset(String eaIdId, String datasetId, Function<DatasetEntity, Response.ResponseBuilder> handler) {
+        DatasetEntity datasetEntity = datasetService.getDataset(eaIdId, datasetId);
         return (datasetEntity == null) ? ErrorResponse.DATASET_NOT_FOUND.toResponseBuilder() : handler.apply(datasetEntity);
     }
 

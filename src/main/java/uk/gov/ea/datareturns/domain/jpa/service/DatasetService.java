@@ -4,11 +4,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
+import uk.gov.ea.datareturns.domain.jpa.dao.masterdata.UniqueIdentifierDao;
 import uk.gov.ea.datareturns.domain.jpa.dao.userdata.impl.DatasetDao;
 import uk.gov.ea.datareturns.domain.jpa.dao.userdata.impl.PayloadEntityDao;
-import uk.gov.ea.datareturns.domain.jpa.dao.userdata.impl.UserDao;
+import uk.gov.ea.datareturns.domain.jpa.entities.masterdata.impl.UniqueIdentifier;
 import uk.gov.ea.datareturns.domain.jpa.entities.userdata.impl.DatasetEntity;
-import uk.gov.ea.datareturns.domain.jpa.entities.userdata.impl.User;
 
 import javax.inject.Inject;
 import java.time.Instant;
@@ -22,62 +22,16 @@ import java.util.UUID;
 public class DatasetService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(DatasetService.class);
-    private final UserDao userDao;
     private final DatasetDao datasetDao;
     private final PayloadEntityDao payloadDao;
+    private final UniqueIdentifierDao uniqueIdentifierDao;
 
     @Inject
-    public DatasetService(UserDao userDao, DatasetDao datasetDao, PayloadEntityDao payloadDao) {
-        this.userDao = userDao;
+    public DatasetService(UniqueIdentifierDao uniqueIdentifierDao, DatasetDao datasetDao, PayloadEntityDao payloadDao) {
         this.datasetDao = datasetDao;
         this.payloadDao = payloadDao;
+        this.uniqueIdentifierDao = uniqueIdentifierDao;
         LOGGER.info("Initializing dataset service");
-    }
-    /**
-     * Get the default (system) user
-     *
-     * @return
-     */
-    @Transactional(readOnly = true)
-    public User getSystemUser() {
-        return userDao.getSystemUser();
-    }
-
-    /**
-     * Create a new user
-     *
-     * @param identifier The username
-     * @return The user
-     */
-    @Transactional
-    public User createUser(String identifier) {
-        User user = new User();
-        user.setIdentifier(identifier);
-        user.setCreateDate(Instant.now());
-        user.setLastChangedDate(Instant.now());
-        userDao.persist(user);
-        return user;
-    }
-
-    /**
-     * Get a user entity from its identifier
-     *
-     * @param identifier
-     * @return
-     */
-    @Transactional(readOnly = true)
-    public User getUser(String identifier) {
-        return userDao.get(identifier);
-    }
-
-    /**
-     * Remove a user entity by its identifier
-     *
-     * @param identifier
-     */
-    @Transactional
-    public void removeUser(String identifier) {
-        userDao.remove(identifier);
     }
 
     /****************************************************************************************
@@ -90,24 +44,22 @@ public class DatasetService {
      * @param newDatasetEntity
      */
     @Transactional
-    public void createDataset(DatasetEntity newDatasetEntity) {
+    public void createDataset(String uniqueIdentifierId, DatasetEntity newDatasetEntity) {
         Instant timestamp = Instant.now();
+        UniqueIdentifier uniqueIdentifier = uniqueIdentifierDao.getByName(uniqueIdentifierId);
+
         newDatasetEntity.setCreateDate(timestamp);
         newDatasetEntity.setLastChangedDate(timestamp);
         newDatasetEntity.setRecordChangedDate(timestamp);
         newDatasetEntity.setStatus(DatasetEntity.Status.UNSUBMITTED);
+        newDatasetEntity.setUniqueIdentifier(uniqueIdentifier);
 
         if (newDatasetEntity.getIdentifier() == null) {
             newDatasetEntity.setIdentifier(UUID.randomUUID().toString());
         }
-        if (newDatasetEntity.getUser() == null) {
-            newDatasetEntity.setUser(getSystemUser());
-        }
 
-        User user = userDao.get(newDatasetEntity.getUser().getIdentifier());
-        user.setDatasetChangedDate(timestamp);
-
-        userDao.merge(user);
+        uniqueIdentifier.setDatasetChangedDate(timestamp);
+        uniqueIdentifierDao.merge(uniqueIdentifier);
         datasetDao.persist(newDatasetEntity);
     }
 
@@ -115,46 +67,35 @@ public class DatasetService {
     public void updateDataset(DatasetEntity datasetEntity) {
         Instant timestamp = Instant.now();
         datasetEntity.setLastChangedDate(Instant.now());
-        User user = userDao.get(datasetEntity.getUser().getIdentifier());
-        user.setDatasetChangedDate(timestamp);
-        userDao.merge(user);
+        UniqueIdentifier uniqueIdentifier = uniqueIdentifierDao.getByName(
+                datasetEntity.getUniqueIdentifier().getName());
+        uniqueIdentifier.setDatasetChangedDate(timestamp);
+        uniqueIdentifierDao.merge(uniqueIdentifier);
         datasetDao.merge(datasetEntity);
     }
 
     @Transactional(readOnly = true)
-    public List<DatasetEntity> getDatasets(User user) {
-        return datasetDao.list(user);
-    }
-
-    @Transactional(readOnly = true)
-    public List<DatasetEntity> getDatasets() {
-        return datasetDao.list(getSystemUser());
+    public List<DatasetEntity> getDatasets(String uniqueIdentifierId) {
+        UniqueIdentifier uniqueIdentifier = uniqueIdentifierDao.getByName(uniqueIdentifierId);
+        return datasetDao.list(uniqueIdentifier);
     }
 
     @Transactional
-    public void removeDataset(String identifier) {
-        removeDataset(identifier, getSystemUser());
-    }
-
-    @Transactional
-    public void removeDataset(String identifier, User user) {
-        DatasetEntity dataset = datasetDao.get(user, identifier);
+    public void removeDataset(String identifier, String uniqueIdentifierId) {
+        UniqueIdentifier uniqueIdentifier = uniqueIdentifierDao.getByName(uniqueIdentifierId);
+        DatasetEntity dataset = datasetDao.get(uniqueIdentifier, identifier);
         if (dataset != null) {
             payloadDao.removeAll(dataset);
             datasetDao.remove(dataset.getId());
             Instant timestamp = Instant.now();
-            user.setDatasetChangedDate(timestamp);
-            userDao.merge(user);
+            uniqueIdentifier.setDatasetChangedDate(timestamp);
+            uniqueIdentifierDao.merge(uniqueIdentifier);
         }
     }
 
     @Transactional(readOnly = true)
-    public DatasetEntity getDataset(String datasetId) {
-        return getDataset(datasetId, getSystemUser());
-    }
-
-    @Transactional(readOnly = true)
-    public DatasetEntity getDataset(String datasetId, User user) {
-        return datasetDao.get(user, datasetId);
+    public DatasetEntity getDataset(String datasetId, String uniqueIdentifierId) {
+        UniqueIdentifier uniqueIdentifier = uniqueIdentifierDao.getByName(uniqueIdentifierId);
+        return datasetDao.get(uniqueIdentifier, datasetId);
     }
 }

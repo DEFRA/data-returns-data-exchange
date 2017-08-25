@@ -1,6 +1,7 @@
 package uk.gov.ea.datareturns.domain.jpa.entities.userdata.impl;
 
 import org.hibernate.annotations.GenericGenerator;
+import uk.gov.ea.datareturns.domain.jpa.entities.masterdata.impl.UniqueIdentifier;
 import uk.gov.ea.datareturns.domain.jpa.entities.userdata.Metadata;
 
 import javax.persistence.*;
@@ -32,9 +33,9 @@ public class DatasetEntity implements Metadata {
     @Basic @Column(name = "originator_email", nullable = false, length = 500)
     private String originatorEmail;
 
-    @ManyToOne(optional = false)
-    @JoinColumn(name = "user_id", referencedColumnName = "id")
-    private User user;
+    @ManyToOne(optional = false, cascade = CascadeType.REMOVE)
+    @JoinColumn(name = "unique_identifier_id", referencedColumnName = "id")
+    private UniqueIdentifier uniqueIdentifier;
 
     @Enumerated(EnumType.STRING) @Column(name = "status", nullable = false)
     private Status status;
@@ -73,14 +74,6 @@ public class DatasetEntity implements Metadata {
 
     public void setOriginatorEmail(String originatorEmail) {
         this.originatorEmail = originatorEmail;
-    }
-
-    public User getUser() {
-        return user;
-    }
-
-    public void setUser(User user) {
-        this.user = user;
     }
 
     public Status getStatus() {
@@ -123,25 +116,29 @@ public class DatasetEntity implements Metadata {
         this.recordChangedDate = recordChangedDate;
     }
 
-    /*
-     * The dataset identifier is unique for a given user
-     */
+    public UniqueIdentifier getUniqueIdentifier() {
+        return uniqueIdentifier;
+    }
+
+    public void setUniqueIdentifier(UniqueIdentifier uniqueIdentifier) {
+        this.uniqueIdentifier = uniqueIdentifier;
+    }
+
     @Override
     public boolean equals(Object o) {
-        if (this == o)
-            return true;
-        if (o == null || getClass() != o.getClass())
-            return false;
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
 
-        DatasetEntity dataset = (DatasetEntity) o;
+        DatasetEntity that = (DatasetEntity) o;
 
-        return identifier.equals(dataset.identifier) && user.equals(dataset.user);
+        if (!identifier.equals(that.identifier)) return false;
+        return uniqueIdentifier.equals(that.uniqueIdentifier);
     }
 
     @Override
     public int hashCode() {
         int result = identifier.hashCode();
-        result = 31 * result + user.hashCode();
+        result = 31 * result + uniqueIdentifier.hashCode();
         return result;
     }
 
@@ -151,7 +148,12 @@ public class DatasetEntity implements Metadata {
                 "id=" + id +
                 ", identifier='" + identifier + '\'' +
                 ", originatorEmail='" + originatorEmail + '\'' +
-                ", user=" + user +
+                ", uniqueIdentifier=" + uniqueIdentifier +
+                ", status=" + status +
+                ", records=" + records +
+                ", createDate=" + createDate +
+                ", lastChangedDate=" + lastChangedDate +
+                ", recordChangedDate=" + recordChangedDate +
                 '}';
     }
 }

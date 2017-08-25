@@ -125,6 +125,11 @@ public class UniqueIdentifierDaoImpl extends AbstractEntityDao<UniqueIdentifier>
         return aliasNames;
     }
 
+    @Override
+    public void merge(UniqueIdentifier entity) {
+            entityManager.merge(entity);
+    }
+
     /**
      * Build the cache lookup for the set of permit numbers by the base permit number
      * @return
