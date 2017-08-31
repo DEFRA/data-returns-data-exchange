@@ -55,7 +55,7 @@ public class SitePermitService {
         this.search = search;
     }
 
-    @Transactional(readOnly = true)
+    // Gets the extended graph from the cache
     public UniqueIdentifier getUniqueIdentifierByName(String eaIdId) {
         return uniqueIdentifierDao.getByName(eaIdId);
     }
@@ -72,7 +72,8 @@ public class SitePermitService {
         return uniqueIdentifierDao.list(uniqueIdentifierSetType, operator);
     }
 
-    private UniqueIdentifierSet getUniqueSetFor(UniqueIdentifierSet.UniqueIdentifierSetType uniqueIdentifierSetType) throws SitePermitServiceException {
+    @Transactional(readOnly = true)
+    public UniqueIdentifierSet getUniqueSetFor(UniqueIdentifierSet.UniqueIdentifierSetType uniqueIdentifierSetType) throws SitePermitServiceException {
         List<UniqueIdentifierSet> sets = uniqueIdentifierSetDao.listSetsFor(uniqueIdentifierSetType);
 
         if (sets.size() != 1) {
@@ -82,7 +83,8 @@ public class SitePermitService {
         return sets.get(0);
     }
 
-    private UniqueIdentifierSet getUniqueSetFor(UniqueIdentifierSet.UniqueIdentifierSetType uniqueIdentifierSetType,
+    @Transactional(readOnly = true)
+    public UniqueIdentifierSet getUniqueSetFor(UniqueIdentifierSet.UniqueIdentifierSetType uniqueIdentifierSetType,
                                                 Operator operator) throws SitePermitServiceException {
         List<UniqueIdentifierSet> sets = uniqueIdentifierSetDao.listSetsFor(uniqueIdentifierSetType, operator);
 
@@ -172,15 +174,10 @@ public class SitePermitService {
     public void removePermitSiteAndAliases(String eaId) {
         UniqueIdentifier uniqueIdentifier = uniqueIdentifierDao.getByName(Key.explicit(eaId));
 
+        // The aliases are removed by association
         if (uniqueIdentifier != null) {
             Site site = uniqueIdentifier.getSite();
-            Set<String> aliasNames = uniqueIdentifierDao.getAliasNames(uniqueIdentifier);
-            if (aliasNames != null) {
-                for (String aliasName : aliasNames) {
-                    UniqueIdentifierAlias uniqueIdentifierAlias = uniqueIdentifierAliasDao.getByName(Key.explicit(aliasName));
-                    uniqueIdentifierAliasDao.removeById(uniqueIdentifierAlias.getId());
-                }
-            }
+
             uniqueIdentifierDao.removeById(uniqueIdentifier.getId());
             siteDao.removeById(site.getId());
 

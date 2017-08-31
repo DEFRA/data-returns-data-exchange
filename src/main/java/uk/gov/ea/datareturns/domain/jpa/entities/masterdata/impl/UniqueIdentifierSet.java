@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
+import java.io.Serializable;
 import java.time.Instant;
 
 @Entity
@@ -11,7 +12,7 @@ import java.time.Instant;
 @GenericGenerator(name = "idGenerator", strategy = "org.hibernate.id.enhanced.SequenceStyleGenerator", parameters = {
         @org.hibernate.annotations.Parameter(name = "sequence_name", value = "unique_identifier_sets_id_seq") }
 )
-public class UniqueIdentifierSet {
+public class UniqueIdentifierSet implements Serializable {
 
     public enum UniqueIdentifierSetType {
         LARGE_LANDFILL_USERS, POLLUTION_INVENTORY

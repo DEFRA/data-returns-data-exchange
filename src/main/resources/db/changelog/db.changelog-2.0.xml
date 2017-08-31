@@ -111,11 +111,16 @@
 			</column>
 
 			<column name="unique_identifier_changed_date" type="timestamp without timezone">
-				<constraints nullable="true"/>
+				<constraints nullable="false"/>
 			</column>
 		</createTable>
 
-		<sql>insert into unique_identifier_sets (type) values ('LARGE_LANDFILL_USERS')</sql>
+		<createIndex indexName="idx_unique_identifier_sets" tableName="unique_identifier_sets" unique="true">
+			<column name="type"/>
+			<column name="operator_id"/>
+		</createIndex>
+
+		<sql>insert into unique_identifier_sets (type, unique_identifier_changed_date) values ('LARGE_LANDFILL_USERS', current_timestamp)</sql>
 
 		<!-- Add the columns to the existing unique identifiers table -->
 		<addColumn tableName="unique_identifiers">
@@ -289,10 +294,10 @@
 		<loadData file="/db/data/Fields.csv" tableName="fields"/>
 
 		<addForeignKeyConstraint baseColumnNames="payload_type"
-														 baseTableName="fields"
-														 constraintName="fk_fields_payload"
-														 referencedColumnNames="payload_type"
-														 referencedTableName="payload_types"/>
+								 baseTableName="fields"
+								 constraintName="fk_fields_payload"
+								 referencedColumnNames="payload_type"
+								 referencedTableName="payload_types"/>
 
 		<!--
 		****************************************************************

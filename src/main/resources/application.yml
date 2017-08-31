@@ -153,7 +153,7 @@ storage:
 spring:
   profiles: debug
   jpa:
-    show-sql: false
+    show-sql: true
     properties:
       hibernate.use_sql_comments: true
       hibernate.format_sql: true

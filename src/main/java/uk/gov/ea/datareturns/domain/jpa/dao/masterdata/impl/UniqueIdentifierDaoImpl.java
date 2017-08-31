@@ -69,6 +69,7 @@ public class UniqueIdentifierDaoImpl extends AbstractEntityDao<UniqueIdentifier>
         CriteriaQuery<UniqueIdentifier> q = cb.createQuery(UniqueIdentifier.class);
 
         Root<UniqueIdentifier> uniqueIdentifierRoot = q.from(UniqueIdentifier.class);
+        uniqueIdentifierRoot.fetch(UniqueIdentifier_.uniqueIdentifierAliases);
         Join<UniqueIdentifier, UniqueIdentifierSet> uniqueIdentifierSetJoined = uniqueIdentifierRoot.join(UniqueIdentifier_.uniqueIdentifierSet);
         q.where(cb.equal(uniqueIdentifierSetJoined.get(UniqueIdentifierSet_.uniqueIdentifierSetType), uniqueIdentifierSetType));
         q.select(uniqueIdentifierRoot);
@@ -83,6 +84,7 @@ public class UniqueIdentifierDaoImpl extends AbstractEntityDao<UniqueIdentifier>
         CriteriaQuery<UniqueIdentifier> q = cb.createQuery(UniqueIdentifier.class);
 
         Root<UniqueIdentifier> uniqueIdentifierRoot = q.from(UniqueIdentifier.class);
+        uniqueIdentifierRoot.fetch(UniqueIdentifier_.uniqueIdentifierAliases);
         Join<UniqueIdentifier, UniqueIdentifierSet> uniqueIdentifierSetJoined = uniqueIdentifierRoot.join(UniqueIdentifier_.uniqueIdentifierSet);
         q.where(
                 cb.and(
@@ -192,14 +194,17 @@ public class UniqueIdentifierDaoImpl extends AbstractEntityDao<UniqueIdentifier>
         return list.stream().collect(Collectors.groupingBy(e -> e.getSite().getName(), Collectors.toSet()));
     }
 
+    @Override
     protected final List<UniqueIdentifier> fetchAll() {
         CriteriaBuilder cb = entityManager.getCriteriaBuilder();
         CriteriaQuery<UniqueIdentifier> q = cb.createQuery(UniqueIdentifier.class);
-        Root<UniqueIdentifier> c = q.from(UniqueIdentifier.class);
-        c.fetch(UniqueIdentifier_.site, JoinType.INNER);
-        q.select(c);
+        Root<UniqueIdentifier> uniqueIdentifierRoot = q.from(UniqueIdentifier.class);
+        uniqueIdentifierRoot.fetch(UniqueIdentifier_.uniqueIdentifierAliases, JoinType.LEFT);
+        uniqueIdentifierRoot.fetch(UniqueIdentifier_.datasets, JoinType.LEFT);
+        q.select(uniqueIdentifierRoot);
         TypedQuery<UniqueIdentifier> query = entityManager.createQuery(q);
-        return query.getResultList();
-    }
+        List<UniqueIdentifier> results = query.getResultList();
 
+        return results;
+    }
 }

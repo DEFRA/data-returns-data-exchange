@@ -38,6 +38,12 @@ public class UniqueIdentifier implements ControlledListEntity {
     @Basic @Column(name = "dataset_changed_date", nullable = false)
     private Instant datasetChangedDate;
 
+    @Basic @Column(name = "create_date", nullable = false)
+    private Instant createDate;
+
+    @Basic @Column(name = "last_changed_date", nullable = false)
+    private Instant lastChangedDate;
+
     @ManyToOne
     @JoinColumn(name="unique_identifier_set_id")
     private UniqueIdentifierSet uniqueIdentifierSet;
@@ -47,6 +53,12 @@ public class UniqueIdentifier implements ControlledListEntity {
             fetch=FetchType.LAZY,
             cascade = CascadeType.REMOVE)
     private Set<DatasetEntity> datasets;
+
+    @OneToMany(mappedBy = "uniqueIdentifier",
+            targetEntity = UniqueIdentifierAlias.class,
+            fetch = FetchType.LAZY,
+            cascade = CascadeType.REMOVE)
+    private Set<UniqueIdentifierAlias> uniqueIdentifierAliases;
 
     public Long getId() {
         return this.id;
@@ -96,6 +108,30 @@ public class UniqueIdentifier implements ControlledListEntity {
         this.datasetChangedDate = datasetChangedDate;
     }
 
+    public Set<UniqueIdentifierAlias> getUniqueIdentifierAliases() {
+        return uniqueIdentifierAliases;
+    }
+
+    public void setUniqueIdentifierAliases(Set<UniqueIdentifierAlias> uniqueIdentifierAliases) {
+        this.uniqueIdentifierAliases = uniqueIdentifierAliases;
+    }
+
+    public Instant getCreateDate() {
+        return createDate;
+    }
+
+    public void setCreateDate(Instant createDate) {
+        this.createDate = createDate;
+    }
+
+    public Instant getLastChangedDate() {
+        return lastChangedDate;
+    }
+
+    public void setLastChangedDate(Instant lastChangedDate) {
+        this.lastChangedDate = lastChangedDate;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -119,5 +155,4 @@ public class UniqueIdentifier implements ControlledListEntity {
                 ", site=" + site +
                 '}';
     }
-
 }

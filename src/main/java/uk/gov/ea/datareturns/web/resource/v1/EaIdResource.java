@@ -4,11 +4,14 @@ import io.swagger.annotations.*;
 import org.springframework.stereotype.Component;
 import uk.gov.ea.datareturns.domain.jpa.entities.masterdata.impl.Operator;
 import uk.gov.ea.datareturns.domain.jpa.entities.masterdata.impl.UniqueIdentifier;
+import uk.gov.ea.datareturns.domain.jpa.entities.masterdata.impl.UniqueIdentifierAlias;
 import uk.gov.ea.datareturns.domain.jpa.entities.masterdata.impl.UniqueIdentifierSet;
+import uk.gov.ea.datareturns.domain.jpa.entities.userdata.impl.DatasetEntity;
 import uk.gov.ea.datareturns.domain.jpa.service.SitePermitService;
 import uk.gov.ea.datareturns.web.resource.v1.model.common.Linker;
 import uk.gov.ea.datareturns.web.resource.v1.model.common.Preconditions;
 import uk.gov.ea.datareturns.web.resource.v1.model.common.references.EntityReference;
+import uk.gov.ea.datareturns.web.resource.v1.model.dataset.Dataset;
 import uk.gov.ea.datareturns.web.resource.v1.model.eaid.EaId;
 import uk.gov.ea.datareturns.web.resource.v1.model.response.DatasetEntityResponse;
 import uk.gov.ea.datareturns.web.resource.v1.model.response.EaIdEntityResponse;
@@ -23,7 +26,9 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -75,16 +80,18 @@ public class EaIdResource {
         List<UniqueIdentifier> uniqueIdentifiers = sitePermitService.listUniqueIdentifiers(
                 UniqueIdentifierSet.UniqueIdentifierSetType.LARGE_LANDFILL_USERS);
 
-        // With operator like this
+        UniqueIdentifierSet uniqueIdentifierSet =
+                sitePermitService.getUniqueSetFor(UniqueIdentifierSet.UniqueIdentifierSetType.LARGE_LANDFILL_USERS);
+
+        // With operator like this:
         //uniqueIdentifiers = sitePermitService.listUniqueIdentifiers(
         //        UniqueIdentifierSet.UniqueIdentifierSetType.POLLUTION_INVENTORY, new Operator());
 
-
-        //TODO replace with real entity
         List<EaId> eaIds = new ArrayList<>();
-        for (String id : new String[] { "id1/001", "id2-002", "id 003" }) {
+        for (UniqueIdentifier uniqueIdentifier : uniqueIdentifiers) {
             EaId eaId = new EaId();
-            eaId.setId(id);
+            eaId.setId(uniqueIdentifier.getName());
+            //eaId.setAliases(uniqueIdentifier.getUniqueIdentifierAliases());
             eaIds.add(eaId);
         }
 
@@ -94,8 +101,8 @@ public class EaIdResource {
                             .map(e -> new EntityReference(e.getId(), Linker.info(uriInfo).eaId(e.getId())))
                             .collect(Collectors.toList());
                     return new EntityReferenceListResponse(entityReferences,
-                            null, //TODO - need the operator change date
-                            null // TODO - need the e-tag from referring entity (operator)
+                            Date.from(uniqueIdentifierSet.getUniqueIdentifierChangeDate()),
+                            Preconditions.createEtag(uniqueIdentifiers)
                     ).toResponseBuilder();
                 }).build();
     }
@@ -127,6 +134,7 @@ public class EaIdResource {
             @BeanParam Preconditions preconditions)
             throws Exception {
 
+        // TODO - we need to figure out how to restrict the entities allowable
         EaId eaId = fromEntity(eaIdId);
 
         return onEaId(eaId, eaIdEntityResponseBuilder -> onPreconditionsPass(eaId, preconditions, () ->
@@ -138,10 +146,39 @@ public class EaIdResource {
         return (eaId == null) ? ErrorResponse.EA_ID_NOT_FOUND.toResponseBuilder() : handler.apply(eaId);
     }
 
-    // TODO - get the actual EaId data from the service layer
     private EaId fromEntity(String eaIdId) {
+        UniqueIdentifier uniqueIdentifier = sitePermitService.getUniqueIdentifierByName(eaIdId);
         EaId eaId = new EaId();
         eaId.setId(eaIdId);
+        eaId.setCreated(Date.from(uniqueIdentifier.getCreateDate()));
+        eaId.setLastModified(Date.from(uniqueIdentifier.getLastChangedDate()));
+        eaId.setSiteName(uniqueIdentifier.getSite().getName());
+
+        eaId.setAliases(uniqueIdentifier
+                .getUniqueIdentifierAliases()
+                .stream()
+                .map(UniqueIdentifierAlias::getName)
+                .distinct()
+                .collect(Collectors.toSet()));
+
+        /*eaId.setDatasets(uniqueIdentifier
+                .getDatasets()
+                .stream()
+                .map(DatasetEntity::getIdentifier)
+                .map(d -> {
+                    Dataset dataset = new Dataset();
+                    dataset.setId(d);
+                    return dataset;
+                }).collect(Collectors.toSet())
+        );*/
+
+        eaId.setIdentifierType(uniqueIdentifier.getUniqueIdentifierSet()
+                .getUniqueIdentifierSetType().toString());
+
+        if(uniqueIdentifier.getUniqueIdentifierSet().getOperator() != null) {
+            eaId.setOperatorName(uniqueIdentifier.getUniqueIdentifierSet().getOperator().getName());
+        }
+
         Linker.info(uriInfo).resolve(eaId);
         return eaId;
     }

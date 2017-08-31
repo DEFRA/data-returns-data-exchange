@@ -111,7 +111,6 @@ public class DatasetResource {
         UniqueIdentifier uniqueIdentifier = sitePermitService.getUniqueIdentifierByName(eaIdId);
         List<DatasetEntity> datasets = datasetService.getDatasets(eaIdId);
 
-        //TODO Move the master changed date from the user to the permit
         return onPreconditionsPass(uniqueIdentifier, datasets, preconditions,
                 () -> {
                     List<EntityReference> entityReferences = datasets.stream()
