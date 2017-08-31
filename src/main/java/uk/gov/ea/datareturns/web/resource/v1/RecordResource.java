@@ -496,7 +496,7 @@ public class RecordResource {
     }
 
     private Response.ResponseBuilder onDataset(String eaIdId, String datasetId, Function<DatasetEntity, Response.ResponseBuilder> handler) {
-        DatasetEntity datasetEntity = datasetService.getDataset(eaIdId, datasetId);
+        DatasetEntity datasetEntity = datasetService.getDataset(datasetId, eaIdId);
         return (datasetEntity == null) ? ErrorResponse.DATASET_NOT_FOUND.toResponseBuilder() : handler.apply(datasetEntity);
     }
 

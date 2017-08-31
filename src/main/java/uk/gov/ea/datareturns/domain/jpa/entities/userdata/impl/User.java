@@ -25,9 +25,6 @@ public class User implements Metadata {
     @Basic @Column(name = "identifier", nullable = false, length = 80)
     private String identifier;
 
-    @OneToMany(mappedBy="user",targetEntity=DatasetEntity.class, fetch=FetchType.LAZY, cascade = CascadeType.REMOVE)
-    private Collection datasets;
-
     @Basic @Column(name = "create_date", nullable = false)
     private Instant createDate;
 
@@ -48,14 +45,6 @@ public class User implements Metadata {
 
     public void setIdentifier(String identifier) {
         this.identifier = identifier;
-    }
-
-    public Collection getDatasets() {
-        return datasets;
-    }
-
-    public void setDatasets(Collection datasets) {
-        this.datasets = datasets;
     }
 
     public Instant getCreateDate() {

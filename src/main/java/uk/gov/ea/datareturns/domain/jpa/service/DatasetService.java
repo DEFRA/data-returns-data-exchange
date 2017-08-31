@@ -81,9 +81,9 @@ public class DatasetService {
     }
 
     @Transactional
-    public void removeDataset(String identifier, String uniqueIdentifierId) {
+    public void removeDataset(String uniqueIdentifierId, String datasetIdentifier) {
         UniqueIdentifier uniqueIdentifier = uniqueIdentifierDao.getByName(uniqueIdentifierId);
-        DatasetEntity dataset = datasetDao.get(uniqueIdentifier, identifier);
+        DatasetEntity dataset = datasetDao.get(uniqueIdentifier, datasetIdentifier);
         if (dataset != null) {
             payloadDao.removeAll(dataset);
             datasetDao.remove(dataset.getId());
@@ -94,8 +94,8 @@ public class DatasetService {
     }
 
     @Transactional(readOnly = true)
-    public DatasetEntity getDataset(String datasetId, String uniqueIdentifierId) {
+    public DatasetEntity getDataset(String uniqueIdentifierId, String datasetIdentifier) {
         UniqueIdentifier uniqueIdentifier = uniqueIdentifierDao.getByName(uniqueIdentifierId);
-        return datasetDao.get(uniqueIdentifier, datasetId);
+        return datasetDao.get(uniqueIdentifier, datasetIdentifier);
     }
 }

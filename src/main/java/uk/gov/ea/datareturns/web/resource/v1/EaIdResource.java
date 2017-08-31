@@ -2,18 +2,20 @@ package uk.gov.ea.datareturns.web.resource.v1;
 
 import io.swagger.annotations.*;
 import org.springframework.stereotype.Component;
-import uk.gov.ea.datareturns.domain.jpa.entities.userdata.impl.DatasetEntity;
-import uk.gov.ea.datareturns.domain.jpa.entities.userdata.impl.User;
+import uk.gov.ea.datareturns.domain.jpa.entities.masterdata.impl.Operator;
+import uk.gov.ea.datareturns.domain.jpa.entities.masterdata.impl.UniqueIdentifier;
+import uk.gov.ea.datareturns.domain.jpa.entities.masterdata.impl.UniqueIdentifierSet;
+import uk.gov.ea.datareturns.domain.jpa.service.SitePermitService;
 import uk.gov.ea.datareturns.web.resource.v1.model.common.Linker;
 import uk.gov.ea.datareturns.web.resource.v1.model.common.Preconditions;
 import uk.gov.ea.datareturns.web.resource.v1.model.common.references.EntityReference;
-import uk.gov.ea.datareturns.web.resource.v1.model.dataset.Dataset;
 import uk.gov.ea.datareturns.web.resource.v1.model.eaid.EaId;
 import uk.gov.ea.datareturns.web.resource.v1.model.response.DatasetEntityResponse;
 import uk.gov.ea.datareturns.web.resource.v1.model.response.EaIdEntityResponse;
 import uk.gov.ea.datareturns.web.resource.v1.model.response.EntityReferenceListResponse;
 import uk.gov.ea.datareturns.web.resource.v1.model.response.ErrorResponse;
 
+import javax.inject.Inject;
 import javax.validation.constraints.Pattern;
 import javax.ws.rs.*;
 import javax.ws.rs.core.Context;
@@ -47,6 +49,8 @@ public class EaIdResource {
     @Context
     private UriInfo uriInfo;
 
+    @Inject
+    SitePermitService sitePermitService;
 
     /**
      * List the available ea_ids (permits and authorizations) for which you are authorized
@@ -64,8 +68,17 @@ public class EaIdResource {
             @ApiResponse(code = 304, message = "Not Modified - see conditional request documentation")
     })
     public Response listEaIds(@BeanParam Preconditions preconditions) throws Exception {
-        //User user = datasetService.getSystemUser();
-        //List<DatasetEntity> datasets = datasetService.getDatasets(user);
+
+         // TODO We will need to get a security context from the request here to limit the
+         // TODO permits to only those owned by the current user
+         // TODO for now these are just all the landfill permits
+        List<UniqueIdentifier> uniqueIdentifiers = sitePermitService.listUniqueIdentifiers(
+                UniqueIdentifierSet.UniqueIdentifierSetType.LARGE_LANDFILL_USERS);
+
+        // With operator like this
+        //uniqueIdentifiers = sitePermitService.listUniqueIdentifiers(
+        //        UniqueIdentifierSet.UniqueIdentifierSetType.POLLUTION_INVENTORY, new Operator());
+
 
         //TODO replace with real entity
         List<EaId> eaIds = new ArrayList<>();

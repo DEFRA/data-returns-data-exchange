@@ -169,7 +169,7 @@ public class DatasetResource {
             MultiStatusResponse multiResponse = new MultiStatusResponse();
 
             for (BatchDatasetRequestItem request : batchRequest.getRequests()) {
-                DatasetEntity datasetEntity = datasetService.getDataset(eaIdId, request.getDatasetId());
+                DatasetEntity datasetEntity = datasetService.getDataset(request.getDatasetId(), eaIdId);
                 MultiStatusResponse.Response responseItem = new MultiStatusResponse.Response();
                 responseItem.setId(request.getDatasetId());
 
@@ -279,7 +279,7 @@ public class DatasetResource {
     )
             throws Exception {
 
-        DatasetEntity datasetEntity = datasetService.getDataset(eaIdId, datasetId);
+        DatasetEntity datasetEntity = datasetService.getDataset(datasetId, eaIdId);
         return onPreconditionsPass(fromEntity(eaIdId, datasetEntity), preconditions, () -> {
             // Preconditions passed, process request
             return storeDataset(eaIdId, datasetEntity, datasetId, datasetProperties).toResponseBuilder();
@@ -324,7 +324,7 @@ public class DatasetResource {
         return onDataset(eaIdId, datasetId, datasetEntity ->
                 onPreconditionsPass(fromEntity(eaIdId, datasetEntity), preconditions, () -> {
                     // Preconditions passed, delete the resource
-                    datasetService.removeDataset(eaIdId, datasetId);
+                    datasetService.removeDataset(datasetId, eaIdId);
                     return Response.status(Response.Status.NO_CONTENT);
                 })
         ).build();
@@ -559,7 +559,7 @@ public class DatasetResource {
     }
 
     private Response.ResponseBuilder onDataset(String eaIdId, String datasetId, Function<DatasetEntity, Response.ResponseBuilder> handler) {
-        DatasetEntity datasetEntity = datasetService.getDataset(eaIdId, datasetId);
+        DatasetEntity datasetEntity = datasetService.getDataset(datasetId, eaIdId);
         return (datasetEntity == null) ? ErrorResponse.DATASET_NOT_FOUND.toResponseBuilder() : handler.apply(datasetEntity);
     }
 }

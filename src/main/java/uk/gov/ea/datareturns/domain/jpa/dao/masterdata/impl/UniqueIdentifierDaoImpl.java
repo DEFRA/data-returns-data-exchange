@@ -6,10 +6,7 @@ import org.springframework.stereotype.Repository;
 import uk.gov.ea.datareturns.domain.jpa.dao.masterdata.EntityDao;
 import uk.gov.ea.datareturns.domain.jpa.dao.masterdata.Key;
 import uk.gov.ea.datareturns.domain.jpa.dao.masterdata.UniqueIdentifierDao;
-import uk.gov.ea.datareturns.domain.jpa.entities.masterdata.impl.Site;
-import uk.gov.ea.datareturns.domain.jpa.entities.masterdata.impl.UniqueIdentifier;
-import uk.gov.ea.datareturns.domain.jpa.entities.masterdata.impl.UniqueIdentifierAlias;
-import uk.gov.ea.datareturns.domain.jpa.entities.masterdata.impl.UniqueIdentifier_;
+import uk.gov.ea.datareturns.domain.jpa.entities.masterdata.impl.*;
 import uk.gov.ea.datareturns.util.CachingSupplier;
 
 import javax.inject.Inject;
@@ -64,6 +61,39 @@ public class UniqueIdentifierDaoImpl extends AbstractEntityDao<UniqueIdentifier>
 
     @Override public UniqueIdentifier getPreferred(Key nameOrAlias) {
         return getByNameOrAlias(nameOrAlias);
+    }
+
+    @Override
+    public List<UniqueIdentifier> list(UniqueIdentifierSet.UniqueIdentifierSetType uniqueIdentifierSetType) {
+        CriteriaBuilder cb = entityManager.getCriteriaBuilder();
+        CriteriaQuery<UniqueIdentifier> q = cb.createQuery(UniqueIdentifier.class);
+
+        Root<UniqueIdentifier> uniqueIdentifierRoot = q.from(UniqueIdentifier.class);
+        Join<UniqueIdentifier, UniqueIdentifierSet> uniqueIdentifierSetJoined = uniqueIdentifierRoot.join(UniqueIdentifier_.uniqueIdentifierSet);
+        q.where(cb.equal(uniqueIdentifierSetJoined.get(UniqueIdentifierSet_.uniqueIdentifierSetType), uniqueIdentifierSetType));
+        q.select(uniqueIdentifierRoot);
+
+        TypedQuery<UniqueIdentifier> query = entityManager.createQuery(q);
+        return query.getResultList();
+    }
+
+    @Override
+    public List<UniqueIdentifier> list(UniqueIdentifierSet.UniqueIdentifierSetType uniqueIdentifierSetType, Operator operator) {
+        CriteriaBuilder cb = entityManager.getCriteriaBuilder();
+        CriteriaQuery<UniqueIdentifier> q = cb.createQuery(UniqueIdentifier.class);
+
+        Root<UniqueIdentifier> uniqueIdentifierRoot = q.from(UniqueIdentifier.class);
+        Join<UniqueIdentifier, UniqueIdentifierSet> uniqueIdentifierSetJoined = uniqueIdentifierRoot.join(UniqueIdentifier_.uniqueIdentifierSet);
+        q.where(
+                cb.and(
+                        cb.equal(uniqueIdentifierSetJoined.get(UniqueIdentifierSet_.uniqueIdentifierSetType), uniqueIdentifierSetType),
+                        cb.equal(uniqueIdentifierSetJoined.get(UniqueIdentifierSet_.operator), operator)
+                )
+        );
+        q.select(uniqueIdentifierRoot);
+
+        TypedQuery<UniqueIdentifier> query = entityManager.createQuery(q);
+        return query.getResultList();
     }
 
     /**

@@ -1,9 +1,8 @@
 package uk.gov.ea.datareturns.domain.jpa.dao.masterdata;
 
-import uk.gov.ea.datareturns.domain.jpa.entities.masterdata.impl.Site;
-import uk.gov.ea.datareturns.domain.jpa.entities.masterdata.impl.UniqueIdentifier;
-import uk.gov.ea.datareturns.domain.jpa.entities.masterdata.impl.UniqueIdentifierAlias;
+import uk.gov.ea.datareturns.domain.jpa.entities.masterdata.impl.*;
 
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -83,4 +82,21 @@ public interface UniqueIdentifierDao extends EntityDao<UniqueIdentifier> {
      * @param entity
      */
     void merge(UniqueIdentifier entity);
+
+    /**
+     * Get a list of unique identifiers using the uniqueIdentifierSet
+     * @param uniqueIdentifierSetType
+     * @return List of unique identifiers
+     */
+    List<UniqueIdentifier> list(UniqueIdentifierSet.UniqueIdentifierSetType uniqueIdentifierSetType);
+
+    /**
+     * Get a list of unique identifiers using the operator and type
+     * @param uniqueIdentifierSetType The type of set e.g. POLLUTION_INVENTORY
+     * @param operator The operator
+     * @return List of unique identifiers
+     */
+    List<UniqueIdentifier> list(UniqueIdentifierSet.UniqueIdentifierSetType uniqueIdentifierSetType, Operator operator);
+
+
 }

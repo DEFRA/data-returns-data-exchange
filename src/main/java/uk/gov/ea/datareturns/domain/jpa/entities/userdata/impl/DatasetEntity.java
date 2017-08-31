@@ -33,14 +33,17 @@ public class DatasetEntity implements Metadata {
     @Basic @Column(name = "originator_email", nullable = false, length = 500)
     private String originatorEmail;
 
-    @ManyToOne(optional = false, cascade = CascadeType.REMOVE)
+    @ManyToOne(optional = false)
     @JoinColumn(name = "unique_identifier_id", referencedColumnName = "id")
     private UniqueIdentifier uniqueIdentifier;
 
     @Enumerated(EnumType.STRING) @Column(name = "status", nullable = false)
     private Status status;
 
-    @OneToMany(mappedBy = "dataset", targetEntity = RecordEntity.class, fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
+    @OneToMany(mappedBy = "dataset",
+            targetEntity = RecordEntity.class,
+            fetch = FetchType.LAZY,
+            cascade = CascadeType.REMOVE)
     private Collection records;
 
     @Basic @Column(name = "create_date", nullable = false)

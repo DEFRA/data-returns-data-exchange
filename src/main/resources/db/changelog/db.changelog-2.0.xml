@@ -8,11 +8,12 @@
 	</preConditions>
 
 	<changeSet id="user data" author="Environment Agency">
+
 		<!--
-    ****************************************************************
-    Users - currently this is not used within the system
-    ****************************************************************
-    -->
+    	****************************************************************
+    	Users - currently this is not used within the system
+    	****************************************************************
+    	-->
 		<createTable tableName="users">
 			<column name="id" type="bigserial">
 				<constraints primaryKey="true" nullable="false"/>
@@ -36,7 +37,7 @@
 			<column name="identifier"/>
 		</createIndex>
 
-		<sql>insert into users (identifier, create_date, last_changed_date, dataset_changed_date) values ('SYSTEM', current_timestamp, current_timestamp, current_timestamp)</sql>
+		<sql>insert into users (identifier, create_date, last_changed_date) values ('SYSTEM', current_timestamp, current_timestamp)</sql>
 
 		<!--
 			Provisionally the main structure hierarchy of the system is as follows:
@@ -82,26 +83,27 @@
 		Unique Identifier Set Type
 		****************************************************************
 		-->
-		<createTable tableName="unique_identifier_set_type">
+		<createTable tableName="unique_identifier_set_types">
 			<column name="type" type="varchar(20)">
 				<constraints primaryKey="true" nullable="false"/>
 			</column>
 		</createTable>
 
-		<sql>insert into unique_identifier_set_type (type) values ('LARGE_LANDFILL_USERS')</sql>
+		<sql>insert into unique_identifier_set_types (type) values ('LARGE_LANDFILL_USERS')</sql>
+		<sql>insert into unique_identifier_set_types (type) values ('POLLUTION_INVENTORY')</sql>
 
 		<!--
 		****************************************************************
 		Unique Identifier Set
 		****************************************************************
 		-->
-		<createTable tableName="unique_identifier_set">
+		<createTable tableName="unique_identifier_sets">
 			<column name="id" type="bigserial">
 				<constraints primaryKey="true" nullable="false"/>
 			</column>
 
 			<column name="type" type="varchar(20)">
-				<constraints nullable="false" foreignKeyName="fk_unique_identifiers_set_type" references="unique_identifier_set_type(type)"/>
+				<constraints nullable="false" foreignKeyName="fk_unique_identifier_set_type" references="unique_identifier_set_types(type)"/>
 			</column>
 
 			<column name="operator_id" type="bigint">
@@ -113,7 +115,7 @@
 			</column>
 		</createTable>
 
-		<sql>insert into unique_identifier_set (type) values ('LARGE_LANDFILL_USERS')</sql>
+		<sql>insert into unique_identifier_sets (type) values ('LARGE_LANDFILL_USERS')</sql>
 
 		<!-- Add the columns to the existing unique identifiers table -->
 		<addColumn tableName="unique_identifiers">
@@ -125,15 +127,15 @@
 			</column>
 		</addColumn>
 
-		<sql>update unique_identifiers set unique_identifier_set_id = (select id from unique_identifier_set where type = 'LARGE_LANDFILL_USERS')</sql>
+		<sql>update unique_identifiers set unique_identifier_set_id = (select id from unique_identifier_sets where type = 'LARGE_LANDFILL_USERS')</sql>
 
 		<addNotNullConstraint tableName="unique_identifiers" columnName="unique_identifier_set_id"/>
 
 		<addForeignKeyConstraint baseTableName="unique_identifiers"
-														 baseColumnNames="unique_identifier_set_id"
-														 constraintName="fk_unique_identifiers_unique_identifier_set"
-														 referencedTableName="unique_identifier_set"
-														 referencedColumnNames="id" />
+								 baseColumnNames="unique_identifier_set_id"
+								 constraintName="fk_unique_identifiers_unique_identifier_set"
+								 referencedTableName="unique_identifier_sets"
+								 referencedColumnNames="id" />
 
 		<!--
 		****************************************************************
@@ -176,17 +178,11 @@
 
 		</createTable>
 
-		<createIndex indexName="idx_datasets" tableName="datasets" unique="true">
-			<column name="unique_identifier_id"/>
-			<column name="identifier"/>
-		</createIndex>
-
 		<addForeignKeyConstraint baseColumnNames="unique_identifier_id"
-														 baseTableName="datasets"
-														 constraintName="fk_dataset_unique_identifier"
-														 referencedColumnNames="id"
-														 referencedTableName="unique_identifiers"/>
-
+								 baseTableName="datasets"
+								 constraintName="fk_dataset_unique_identifier"
+								 referencedColumnNames="id"
+								 referencedTableName="unique_identifiers"/>
 
 		<!--
 		****************************************************************
@@ -235,10 +231,10 @@
 		</createIndex>
 
 		<addForeignKeyConstraint baseColumnNames="dataset_id"
-														 baseTableName="records"
-														 constraintName="fk_record_dataset"
-														 referencedColumnNames="id"
-														 referencedTableName="datasets"/>
+								 baseTableName="records"
+								 constraintName="fk_record_dataset"
+								 referencedColumnNames="id"
+								 referencedTableName="datasets"/>
 
 
 		<!--
@@ -407,10 +403,11 @@
 		-->
 		<createTable tableName="data_sample">
 
-			<column name="dataset_id" type="bigint">
-				<constraints nullable="false"/>
-			</column>
 			<column name="record_id" type="bigserial">
+				<constraints primaryKey="true" nullable="false"/>
+			</column>
+
+			<column name="dataset_id" type="bigint">
 				<constraints nullable="false"/>
 			</column>
 
@@ -474,64 +471,65 @@
 		</createIndex>
 
 		<addForeignKeyConstraint baseColumnNames="dataset_id"
-														 baseTableName="data_sample"
-														 constraintName="fk_data_sample_dataset"
-														 referencedColumnNames="id"
-														 referencedTableName="datasets"/>
+								 baseTableName="data_sample"
+								 constraintName="fk_data_sample_dataset"
+								 referencedColumnNames="id"
+								 referencedTableName="datasets"/>
 
 		<addForeignKeyConstraint baseColumnNames="record_id"
-														 baseTableName="data_sample"
-														 constraintName="fk_data_sample_record"
-														 referencedColumnNames="id"
-														 referencedTableName="records"/>
+								 baseTableName="data_sample"
+								 onDelete="CASCADE"
+								 constraintName="fk_data_sample_record"
+								 referencedColumnNames="id"
+								 referencedTableName="records"/>
 
 		<addForeignKeyConstraint baseColumnNames="ea_id"
-														 baseTableName="data_sample"
-														 constraintName="fk_data_sample_unique_identifier"
-														 referencedColumnNames="id"
-														 referencedTableName="unique_identifiers"/>
+								 baseTableName="data_sample"
+								 constraintName="fk_data_sample_unique_identifier"
+								 referencedColumnNames="id"
+								 referencedTableName="unique_identifiers"/>
 
 		<addForeignKeyConstraint baseColumnNames="return_type_id"
-														 baseTableName="data_sample"
-														 constraintName="fk_data_sample_return_type"
-														 referencedColumnNames="id"
-														 referencedTableName="return_types"/>
+								 baseTableName="data_sample"
+								 constraintName="fk_data_sample_return_type"
+								 referencedColumnNames="id"
+								 referencedTableName="return_types"/>
 
 		<addForeignKeyConstraint baseColumnNames="parameter_id"
-														 baseTableName="data_sample"
-														 constraintName="fk_data_sample_parameter"
-														 referencedColumnNames="id"
-														 referencedTableName="parameters"/>
+								 baseTableName="data_sample"
+								 constraintName="fk_data_sample_parameter"
+								 referencedColumnNames="id"
+								 referencedTableName="parameters"/>
 
 		<addForeignKeyConstraint baseColumnNames="text_value_id"
-														 baseTableName="data_sample"
-														 constraintName="fk_data_sample_text_value"
-														 referencedColumnNames="id"
-														 referencedTableName="text_values"/>
+								 baseTableName="data_sample"
+								 constraintName="fk_data_sample_text_value"
+								 referencedColumnNames="id"
+								 referencedTableName="text_values"/>
 
 		<addForeignKeyConstraint baseColumnNames="qualifier_id"
-														 baseTableName="data_sample"
-														 constraintName="fk_data_sample_qualifier"
-														 referencedColumnNames="id"
-														 referencedTableName="qualifiers"/>
+								 baseTableName="data_sample"
+								 constraintName="fk_data_sample_qualifier"
+								 referencedColumnNames="id"
+								 referencedTableName="qualifiers"/>
 
 		<addForeignKeyConstraint baseColumnNames="unit_id"
-														 baseTableName="data_sample"
-														 constraintName="fk_data_sample_unit"
-														 referencedColumnNames="id"
-														 referencedTableName="units"/>
+								 baseTableName="data_sample"
+								 constraintName="fk_data_sample_unit"
+								 referencedColumnNames="id"
+								 referencedTableName="units"/>
 
 		<addForeignKeyConstraint baseColumnNames="reference_period_id"
-														 baseTableName="data_sample"
-														 constraintName="fk_data_sample_reference_period"
-														 referencedColumnNames="id"
-														 referencedTableName="reference_periods"/>
+								 baseTableName="data_sample"
+								 constraintName="fk_data_sample_reference_period"
+								 referencedColumnNames="id"
+								 referencedTableName="reference_periods"/>
 
 		<addForeignKeyConstraint baseColumnNames="method_or_standard_id"
-														 baseTableName="data_sample"
-														 constraintName="fk_data_sample_method_or_standard"
-														 referencedColumnNames="id"
-														 referencedTableName="methods_or_standards"/>
+								 baseTableName="data_sample"
+								 constraintName="fk_data_sample_method_or_standard"
+								 referencedColumnNames="id"
+								 referencedTableName="methods_or_standards"/>
 
 		<!--
 		****************************************************************
@@ -539,10 +537,11 @@
 		****************************************************************
 		-->
 		<createTable tableName="alternatives">
-			<column name="dataset_id" type="bigint">
-				<constraints nullable="false"/>
-			</column>
 			<column name="record_id" type="bigserial">
+				<constraints primaryKey="true" nullable="false"/>
+			</column>
+
+			<column name="dataset_id" type="bigint">
 				<constraints nullable="false"/>
 			</column>
 
@@ -550,15 +549,17 @@
 		</createTable>
 
 		<addForeignKeyConstraint baseColumnNames="dataset_id"
-														 baseTableName="alternatives"
-														 constraintName="fk_alternatives_dataset"
-														 referencedColumnNames="id"
-														 referencedTableName="datasets"/>
+								 baseTableName="alternatives"
+								 constraintName="fk_alternatives_dataset"
+								 referencedColumnNames="id"
+								 referencedTableName="datasets"/>
+
 		<addForeignKeyConstraint baseColumnNames="record_id"
-														 baseTableName="alternatives"
-														 constraintName="fk_alternatives_record"
-														 referencedColumnNames="id"
-														 referencedTableName="records"/>
+								 baseTableName="alternatives"
+								 onDelete="CASCADE"
+								 constraintName="fk_alternatives_record"
+								 referencedColumnNames="id"
+								 referencedTableName="records"/>
 
 		<!--
 		****************************************************************
@@ -577,8 +578,8 @@
 			<dropTable tableName="status"/>
 			<dropTable tableName="records"/>
 			<dropTable tableName="datasets"/>
-			<dropTable tableName="unique_identifier_set"/>
-			<dropTable tableName="unique_identifier_set_type"/>
+			<dropTable tableName="unique_identifier_sets"/>
+			<dropTable tableName="unique_identifier_set_types"/>
 			<dropTable tableName="operators"/>
 			<dropTable tableName="users"/>
 		</rollback>

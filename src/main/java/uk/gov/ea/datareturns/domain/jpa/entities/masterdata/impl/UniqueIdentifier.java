@@ -3,9 +3,12 @@ package uk.gov.ea.datareturns.domain.jpa.entities.masterdata.impl;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.hibernate.annotations.GenericGenerator;
 import uk.gov.ea.datareturns.domain.jpa.entities.masterdata.ControlledListEntity;
+import uk.gov.ea.datareturns.domain.jpa.entities.userdata.impl.DatasetEntity;
 
 import javax.persistence.*;
 import java.time.Instant;
+import java.util.Collection;
+import java.util.Set;
 
 /**
  * @author Graham Willis
@@ -35,6 +38,16 @@ public class UniqueIdentifier implements ControlledListEntity {
     @Basic @Column(name = "dataset_changed_date", nullable = false)
     private Instant datasetChangedDate;
 
+    @ManyToOne
+    @JoinColumn(name="unique_identifier_set_id")
+    private UniqueIdentifierSet uniqueIdentifierSet;
+
+    @OneToMany(mappedBy="uniqueIdentifier",
+            targetEntity=DatasetEntity.class,
+            fetch=FetchType.LAZY,
+            cascade = CascadeType.REMOVE)
+    private Set<DatasetEntity> datasets;
+
     public Long getId() {
         return this.id;
     }
@@ -57,6 +70,22 @@ public class UniqueIdentifier implements ControlledListEntity {
 
     public void setSite(Site site) {
         this.site = site;
+    }
+
+    public Set<DatasetEntity> getDatasets() {
+        return datasets;
+    }
+
+    public void setDatasets(Set<DatasetEntity> datasets) {
+        this.datasets = datasets;
+    }
+
+    public UniqueIdentifierSet getUniqueIdentifierSet() {
+        return uniqueIdentifierSet;
+    }
+
+    public void setUniqueIdentifierSet(UniqueIdentifierSet uniqueIdentifierSet) {
+        this.uniqueIdentifierSet = uniqueIdentifierSet;
     }
 
     public Instant getDatasetChangedDate() {
