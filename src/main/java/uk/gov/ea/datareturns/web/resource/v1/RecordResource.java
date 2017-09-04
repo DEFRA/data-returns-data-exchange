@@ -49,8 +49,6 @@ import static uk.gov.ea.datareturns.web.resource.v1.model.common.PreconditionChe
         consumes = APPLICATION_JSON + "," + APPLICATION_XML,
         produces = APPLICATION_JSON + "," + APPLICATION_XML
 )
-
-
 @Path("/ea_ids/{ea_id}/datasets/{dataset_id}/records")
 @Consumes({ APPLICATION_JSON, APPLICATION_XML })
 @Produces({ APPLICATION_JSON, APPLICATION_XML })
@@ -108,7 +106,7 @@ public class RecordResource {
             List<RecordEntity> records = submissionService.getRecords(datasetEntity);
             return new EntityReferenceListResponse(
                     records.stream().map((entity) -> {
-                        String uri = Linker.info(uriInfo).record(datasetId, entity.getIdentifier());
+                        String uri = Linker.info(uriInfo).record(eaIdId, datasetId, entity.getIdentifier());
                         return new EntityReference(entity.getIdentifier(), uri);
                     }).collect(Collectors.toList()),
                     Date.from(datasetEntity.getRecordChangedDate()),
@@ -288,7 +286,7 @@ public class RecordResource {
                         Record record = fromEntity(datasetId, recordEntity);
 
                         responseItem.setCode(responses.get(request.getRecordId()).getStatusCode());
-                        responseItem.setHref(Linker.info(uriInfo).record(datasetId, request.getRecordId()));
+                        responseItem.setHref(Linker.info(uriInfo).record(eaIdId, datasetId, request.getRecordId()));
                         responseItem.setEntityTag(Preconditions.createEtag(record).toString());
                         responseItem.setLastModified(record.getLastModified());
                     } else {
@@ -298,7 +296,8 @@ public class RecordResource {
 
                         if (recordEntity != null) {
                             // Entity does exist so populate the href
-                            responseItem.setHref(Linker.info(uriInfo).record(datasetId, request.getRecordId()));
+                            responseItem.setHref(Linker.info(uriInfo)
+                                    .record(eaIdId, datasetId, request.getRecordId()));
                         }
                     }
                     multiResponse.addResponse(responseItem);
@@ -496,7 +495,7 @@ public class RecordResource {
     }
 
     private Response.ResponseBuilder onDataset(String eaIdId, String datasetId, Function<DatasetEntity, Response.ResponseBuilder> handler) {
-        DatasetEntity datasetEntity = datasetService.getDataset(datasetId, eaIdId);
+        DatasetEntity datasetEntity = datasetService.getDataset(eaIdId, datasetId);
         return (datasetEntity == null) ? ErrorResponse.DATASET_NOT_FOUND.toResponseBuilder() : handler.apply(datasetEntity);
     }
 

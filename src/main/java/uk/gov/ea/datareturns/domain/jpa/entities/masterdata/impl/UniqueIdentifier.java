@@ -7,7 +7,6 @@ import uk.gov.ea.datareturns.domain.jpa.entities.userdata.impl.DatasetEntity;
 
 import javax.persistence.*;
 import java.time.Instant;
-import java.util.Collection;
 import java.util.Set;
 
 /**
@@ -50,14 +49,12 @@ public class UniqueIdentifier implements ControlledListEntity {
 
     @OneToMany(mappedBy="uniqueIdentifier",
             targetEntity=DatasetEntity.class,
-            fetch=FetchType.LAZY,
-            cascade = CascadeType.REMOVE)
+            fetch=FetchType.LAZY)
     private Set<DatasetEntity> datasets;
 
     @OneToMany(mappedBy = "uniqueIdentifier",
             targetEntity = UniqueIdentifierAlias.class,
-            fetch = FetchType.LAZY,
-            cascade = CascadeType.REMOVE)
+            fetch = FetchType.LAZY)
     private Set<UniqueIdentifierAlias> uniqueIdentifierAliases;
 
     public Long getId() {

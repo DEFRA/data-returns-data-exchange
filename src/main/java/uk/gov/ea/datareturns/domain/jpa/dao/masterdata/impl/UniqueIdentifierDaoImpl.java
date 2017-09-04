@@ -202,6 +202,7 @@ public class UniqueIdentifierDaoImpl extends AbstractEntityDao<UniqueIdentifier>
         uniqueIdentifierRoot.fetch(UniqueIdentifier_.uniqueIdentifierAliases, JoinType.LEFT);
         uniqueIdentifierRoot.fetch(UniqueIdentifier_.datasets, JoinType.LEFT);
         q.select(uniqueIdentifierRoot);
+        q.distinct(true);
         TypedQuery<UniqueIdentifier> query = entityManager.createQuery(q);
         List<UniqueIdentifier> results = query.getResultList();
 

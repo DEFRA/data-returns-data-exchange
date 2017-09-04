@@ -37,10 +37,7 @@ import javax.ws.rs.core.EntityTag;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 import java.time.Instant;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -279,6 +276,7 @@ public class DatasetResource {
             throws Exception {
 
         DatasetEntity datasetEntity = datasetService.getDataset(datasetId, eaIdId);
+
         return onPreconditionsPass(fromEntity(eaIdId, datasetEntity), preconditions, () -> {
             // Preconditions passed, process request
             return storeDataset(eaIdId, datasetEntity, datasetId, datasetProperties).toResponseBuilder();
@@ -535,7 +533,8 @@ public class DatasetResource {
                 String payloadType = pair.getRight();
                 List<String> errors = groupedValidationErrors.get(pair);
 
-                EntityReference recordRef = new EntityReference(recordId, linker.record(datasetEntity.getIdentifier(), recordId));
+                EntityReference recordRef = new EntityReference(recordId, linker.record(
+                        datasetEntity.getUniqueIdentifier().getName(), datasetEntity.getIdentifier(), recordId));
 
                 for (String recordValidationError : errors) {
                     EntityReference validationRef = new EntityReference(recordValidationError,
@@ -558,7 +557,7 @@ public class DatasetResource {
     }
 
     private Response.ResponseBuilder onDataset(String eaIdId, String datasetId, Function<DatasetEntity, Response.ResponseBuilder> handler) {
-        DatasetEntity datasetEntity = datasetService.getDataset(datasetId, eaIdId);
+        DatasetEntity datasetEntity = datasetService.getDataset(eaIdId, datasetId);
         return (datasetEntity == null) ? ErrorResponse.DATASET_NOT_FOUND.toResponseBuilder() : handler.apply(datasetEntity);
     }
 }

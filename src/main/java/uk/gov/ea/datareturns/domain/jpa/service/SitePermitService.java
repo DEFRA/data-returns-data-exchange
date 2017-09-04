@@ -3,17 +3,13 @@ package uk.gov.ea.datareturns.domain.jpa.service;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.PlatformTransactionManager;
-import org.springframework.transaction.TransactionDefinition;
-import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.transaction.support.DefaultTransactionDefinition;
 import uk.gov.ea.datareturns.domain.jpa.dao.masterdata.*;
 import uk.gov.ea.datareturns.domain.jpa.entities.masterdata.impl.*;
 
 import javax.inject.Inject;
+import java.time.Instant;
 import java.util.List;
-import java.util.Set;
 
 /**
  * @author Graham Willis
@@ -99,6 +95,8 @@ public class SitePermitService {
     private void addNewPermitAndSite(String eaId, UniqueIdentifierSet uniqueIdentifierSet,  String siteName,
                                     String[] aliasNames) {
 
+        Instant timestamp = Instant.now();
+
         Site site = new Site();
         site.setName(siteName);
 
@@ -106,25 +104,22 @@ public class SitePermitService {
         uniqueIdentifier.setName(eaId);
         uniqueIdentifier.setSite(site);
         uniqueIdentifier.setUniqueIdentifierSet(uniqueIdentifierSet);
-
-        UniqueIdentifierAlias[] uniqueIdentifierAliases = new UniqueIdentifierAlias[aliasNames.length];
-
-        for (int i = 0; i < aliasNames.length; i++) {
-            uniqueIdentifierAliases[i] = new UniqueIdentifierAlias();
-            uniqueIdentifierAliases[i].setUniqueIdentifier(uniqueIdentifier);
-            uniqueIdentifierAliases[i].setName(aliasNames[i]);
-        }
+        uniqueIdentifier.setDatasetChangedDate(timestamp);
+        uniqueIdentifier.setCreateDate(timestamp);
+        uniqueIdentifier.setLastChangedDate(timestamp);
 
         siteDao.add(site);
         uniqueIdentifierDao.add(uniqueIdentifier);
 
         if (aliasNames != null && aliasNames.length > 0) {
             for (int i = 0; i < aliasNames.length; i++) {
-                uniqueIdentifierAliasDao.add(uniqueIdentifierAliases[i]);
+                UniqueIdentifierAlias uniqueIdentifierAlias = new UniqueIdentifierAlias();
+                uniqueIdentifierAlias.setUniqueIdentifier(uniqueIdentifier);
+                uniqueIdentifierAlias.setName(aliasNames[i]);
+                uniqueIdentifierAliasDao.add(uniqueIdentifierAlias);
             }
         }
 
-        // Reset the local and remote caches
         resetLocalCaches();
     }
 

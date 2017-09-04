@@ -42,8 +42,7 @@ public class DatasetEntity implements Metadata {
 
     @OneToMany(mappedBy = "dataset",
             targetEntity = RecordEntity.class,
-            fetch = FetchType.LAZY,
-            cascade = CascadeType.REMOVE)
+            fetch = FetchType.LAZY)
     private Collection records;
 
     @Basic @Column(name = "create_date", nullable = false)

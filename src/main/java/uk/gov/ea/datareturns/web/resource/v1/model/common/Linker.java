@@ -44,24 +44,28 @@ public class Linker {
         return ub.build().toASCIIString();
     }
 
-    //TODO
     private String datasetList(String eaIdId) {
-        return "TODO";
-    }
-
-    public String recordsList(String datasetId) {
         UriBuilder ub = uriInfo.getBaseUriBuilder();
-        ub.path(RecordResource.class);
-        ub.resolveTemplate("dataset_id", datasetId);
+        ub.path(DatasetResource.class);
+        ub.resolveTemplate("ea_id", eaIdId);
         return ub.build().toASCIIString();
     }
 
-    public String record(String datasetId, String recordId) {
+    public String record(String eaIdId, String datasetId, String recordId) {
         UriBuilder ub = uriInfo.getBaseUriBuilder();
         ub.path(RecordResource.class);
         ub.path(RecordResource.class, "getRecord");
+        ub.resolveTemplate("ea_id", eaIdId);
         ub.resolveTemplate("dataset_id", datasetId);
         ub.resolveTemplate("record_id", recordId);
+        return ub.build().toASCIIString();
+    }
+
+    public String recordsList(String eaIdId, String datasetId) {
+        UriBuilder ub = uriInfo.getBaseUriBuilder();
+        ub.path(RecordResource.class);
+        ub.resolveTemplate("ea_id", eaIdId);
+        ub.resolveTemplate("dataset_id", datasetId);
         return ub.build().toASCIIString();
     }
 
@@ -109,13 +113,13 @@ public class Linker {
     public void resolve(String eaIdId, Dataset dataset) {
         List<Link> links = new ArrayList<>();
         links.add(new Link("self", dataset(eaIdId, dataset.getId())));
-        links.add(new Link("records", recordsList(dataset.getId())));
+        links.add(new Link("records", recordsList(eaIdId, dataset.getId())));
         dataset.setLinks(links);
     }
 
     public void resolve(String eaIdId, String datasetId, Record record) {
         List<Link> links = new ArrayList<>();
-        links.add(new Link("self", record(datasetId, record.getId())));
+        links.add(new Link("self", record(eaIdId, datasetId, record.getId())));
         links.add(new Link("dataset", dataset(eaIdId, datasetId)));
         record.setLinks(links);
     }

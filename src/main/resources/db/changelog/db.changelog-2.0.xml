@@ -183,7 +183,7 @@
 
 		</createTable>
 
-		<addForeignKeyConstraint baseColumnNames="unique_identifier_id"
+		<addForeignKeyConstraint onDelete="CASCADE" baseColumnNames="unique_identifier_id"
 								 baseTableName="datasets"
 								 constraintName="fk_dataset_unique_identifier"
 								 referencedColumnNames="id"
@@ -235,7 +235,7 @@
 			<column name="identifier"/>
 		</createIndex>
 
-		<addForeignKeyConstraint baseColumnNames="dataset_id"
+		<addForeignKeyConstraint onDelete="CASCADE" baseColumnNames="dataset_id"
 								 baseTableName="records"
 								 constraintName="fk_record_dataset"
 								 referencedColumnNames="id"
