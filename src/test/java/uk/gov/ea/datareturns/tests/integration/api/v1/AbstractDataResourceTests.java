@@ -1,6 +1,5 @@
 package uk.gov.ea.datareturns.tests.integration.api.v1;
 
-import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.springframework.boot.context.embedded.LocalServerPort;
@@ -19,7 +18,6 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 /**
  * DatasetResource tests
@@ -40,6 +38,9 @@ public abstract class AbstractDataResourceTests implements AbstractResourceReque
         return template;
     }
 
+    // Permit number used for resource tests
+    protected final static String TEST_EA_ID = "10207";
+
     protected EaIdResourceRequest eaIdRequest(HttpStatus expected) {
         return new EaIdResourceRequest(this, expected);
     }
@@ -58,11 +59,8 @@ public abstract class AbstractDataResourceTests implements AbstractResourceReque
 
     @Before
     public void beforeTest() throws IOException, SitePermitService.SitePermitServiceException {
-        TestPermitData.createTestData();
         // Clear down all datasets used before each test using the test data set
-        List<String> testEaIds = Arrays.stream(TestPermitData.getTestData()).map(p -> p.uniqueId).collect(Collectors.toList());
-
-        ResponseEntity<EntityReferenceListResponse> eaIdlist = eaIdRequest(HttpStatus.OK).listEaIds();
+        List<String> testEaIds = Arrays.asList(new String[] { TEST_EA_ID });
         for (String eaIdId : testEaIds) {
             ResponseEntity<EntityReferenceListResponse> list = datasetRequest(HttpStatus.OK).listDatasets(eaIdId);
             for (EntityReference ref : list.getBody().getData()) {
@@ -73,11 +71,6 @@ public abstract class AbstractDataResourceTests implements AbstractResourceReque
             ResponseEntity<EntityReferenceListResponse> updatedList = datasetRequest(HttpStatus.OK).listDatasets(eaIdId);
             Assert.assertTrue("Expected dataset list to be empty before each test.", updatedList.getBody().getData().isEmpty());
         }
-    }
-
-    @After
-    public void tearDown() throws IOException, SitePermitService.SitePermitServiceException {
-        TestPermitData.destroyTestData();
     }
 
     protected ResponseEntity<DatasetEntityResponse> createTestDataset(String eaIdId) {

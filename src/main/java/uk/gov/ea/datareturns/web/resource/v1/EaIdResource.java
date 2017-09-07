@@ -24,6 +24,7 @@ import javax.ws.rs.core.UriInfo;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -129,43 +130,46 @@ public class EaIdResource {
             @BeanParam Preconditions preconditions)
             throws Exception {
 
-        // TODO - we will need to restrict the entities allowable for the user
-        UniqueIdentifier uniqueIdentifier = sitePermitService.getUniqueIdentifierByName(eaIdId);
-        EaId eaId = fromEntity(uniqueIdentifier);
+        final UniqueIdentifier uniqueIdentifier = sitePermitService.getUniqueIdentifierByName(eaIdId);
+        final EaId eaId = fromEntity(uniqueIdentifier);
 
         return onEaId(eaId, eaIdEntityResponseBuilder -> onPreconditionsPass(uniqueIdentifier, preconditions, () ->
             new EaIdEntityResponse(Response.Status.OK, eaId).toResponseBuilder()
         )).build();
     }
 
-    private Response.ResponseBuilder onEaId(EaId eaId, Function<EaId, Response.ResponseBuilder> handler) {
+    private Response.ResponseBuilder onEaId(final EaId eaId, Function<EaId, Response.ResponseBuilder> handler) {
         return (eaId == null) ? ErrorResponse.EA_ID_NOT_FOUND.toResponseBuilder() : handler.apply(eaId);
     }
 
     private EaId fromEntity(UniqueIdentifier uniqueIdentifier) {
-        EaId eaId = new EaId();
-        eaId.setId(uniqueIdentifier.getName());
-        eaId.setCreated(Date.from(uniqueIdentifier.getCreateDate()));
-        eaId.setLastModified(Date.from(uniqueIdentifier.getLastChangedDate()));
-        eaId.setSiteName(uniqueIdentifier.getSite().getName());
+        if (uniqueIdentifier != null) {
+            EaId eaId = new EaId();
+            eaId.setId(uniqueIdentifier.getName());
+            eaId.setCreated(Date.from(uniqueIdentifier.getCreateDate()));
+            eaId.setLastModified(Date.from(uniqueIdentifier.getLastChangedDate()));
+            eaId.setSiteName(uniqueIdentifier.getSite().getName());
 
-        eaId.setAliases(uniqueIdentifier
-                .getUniqueIdentifierAliases()
-                .stream()
-                .map(UniqueIdentifierAlias::getName)
-                .distinct()
-                .collect(Collectors.toSet()));
+            eaId.setAliases(uniqueIdentifier
+                    .getUniqueIdentifierAliases()
+                    .stream()
+                    .map(UniqueIdentifierAlias::getName)
+                    .distinct()
+                    .collect(Collectors.toSet()));
 
-        eaId.setIdentifierType(uniqueIdentifier.getUniqueIdentifierSet()
-                .getUniqueIdentifierSetType().toString());
+            eaId.setIdentifierType(uniqueIdentifier.getUniqueIdentifierSet()
+                    .getUniqueIdentifierSetType().toString());
 
-        if(uniqueIdentifier.getUniqueIdentifierSet().getOperator() != null) {
-            eaId.setOperatorName(uniqueIdentifier.getUniqueIdentifierSet().getOperator().getName());
+            if (uniqueIdentifier.getUniqueIdentifierSet().getOperator() != null) {
+                eaId.setOperatorName(uniqueIdentifier.getUniqueIdentifierSet().getOperator().getName());
+            }
+
+            Linker.info(uriInfo).resolve(eaId);
+
+            return eaId;
         }
 
-        Linker.info(uriInfo).resolve(eaId);
-
-        return eaId;
+        return null;
     }
 }
 

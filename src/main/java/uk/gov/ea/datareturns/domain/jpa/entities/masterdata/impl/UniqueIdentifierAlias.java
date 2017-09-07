@@ -27,6 +27,7 @@ public class UniqueIdentifierAlias implements ControlledListEntity {
     @Column(name = "name", nullable = false, length = 10)
     private String name;
 
+    @JsonIgnore
     @ManyToOne
     @JoinColumn(name="unique_id")
     private UniqueIdentifier uniqueIdentifier;

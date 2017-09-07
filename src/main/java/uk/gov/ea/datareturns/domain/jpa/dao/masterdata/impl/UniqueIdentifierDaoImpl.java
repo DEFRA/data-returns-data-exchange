@@ -1,5 +1,6 @@
 package uk.gov.ea.datareturns.domain.jpa.dao.masterdata.impl;
 
+import liquibase.statement.core.SelectFromDatabaseChangeLogStatement;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Repository;
@@ -65,37 +66,23 @@ public class UniqueIdentifierDaoImpl extends AbstractEntityDao<UniqueIdentifier>
 
     @Override
     public List<UniqueIdentifier> list(UniqueIdentifierSet.UniqueIdentifierSetType uniqueIdentifierSetType) {
-        CriteriaBuilder cb = entityManager.getCriteriaBuilder();
-        CriteriaQuery<UniqueIdentifier> q = cb.createQuery(UniqueIdentifier.class);
-
-        Root<UniqueIdentifier> uniqueIdentifierRoot = q.from(UniqueIdentifier.class);
-        uniqueIdentifierRoot.fetch(UniqueIdentifier_.uniqueIdentifierAliases);
-        Join<UniqueIdentifier, UniqueIdentifierSet> uniqueIdentifierSetJoined = uniqueIdentifierRoot.join(UniqueIdentifier_.uniqueIdentifierSet);
-        q.where(cb.equal(uniqueIdentifierSetJoined.get(UniqueIdentifierSet_.uniqueIdentifierSetType), uniqueIdentifierSetType));
-        q.select(uniqueIdentifierRoot);
-
-        TypedQuery<UniqueIdentifier> query = entityManager.createQuery(q);
-        return query.getResultList();
+        return listWithWhereClause((cb, q, r) -> {
+            Join<UniqueIdentifier, UniqueIdentifierSet> uniqueIdentifierSetJoined = r.join(UniqueIdentifier_.uniqueIdentifierSet);
+            q.where(cb.equal(uniqueIdentifierSetJoined.get(UniqueIdentifierSet_.uniqueIdentifierSetType), uniqueIdentifierSetType));
+        });
     }
 
     @Override
     public List<UniqueIdentifier> list(UniqueIdentifierSet.UniqueIdentifierSetType uniqueIdentifierSetType, Operator operator) {
-        CriteriaBuilder cb = entityManager.getCriteriaBuilder();
-        CriteriaQuery<UniqueIdentifier> q = cb.createQuery(UniqueIdentifier.class);
-
-        Root<UniqueIdentifier> uniqueIdentifierRoot = q.from(UniqueIdentifier.class);
-        uniqueIdentifierRoot.fetch(UniqueIdentifier_.uniqueIdentifierAliases);
-        Join<UniqueIdentifier, UniqueIdentifierSet> uniqueIdentifierSetJoined = uniqueIdentifierRoot.join(UniqueIdentifier_.uniqueIdentifierSet);
-        q.where(
-                cb.and(
-                        cb.equal(uniqueIdentifierSetJoined.get(UniqueIdentifierSet_.uniqueIdentifierSetType), uniqueIdentifierSetType),
-                        cb.equal(uniqueIdentifierSetJoined.get(UniqueIdentifierSet_.operator), operator)
-                )
-        );
-        q.select(uniqueIdentifierRoot);
-
-        TypedQuery<UniqueIdentifier> query = entityManager.createQuery(q);
-        return query.getResultList();
+        return listWithWhereClause((cb, q, r) -> {
+            Join<UniqueIdentifier, UniqueIdentifierSet> uniqueIdentifierSetJoined = r.join(UniqueIdentifier_.uniqueIdentifierSet);
+            q.where(
+                    cb.and(
+                            cb.equal(uniqueIdentifierSetJoined.get(UniqueIdentifierSet_.uniqueIdentifierSetType), uniqueIdentifierSetType),
+                            cb.equal(uniqueIdentifierSetJoined.get(UniqueIdentifierSet_.operator), operator)
+                    )
+            );
+        });
     }
 
     /**
@@ -194,15 +181,28 @@ public class UniqueIdentifierDaoImpl extends AbstractEntityDao<UniqueIdentifier>
         return list.stream().collect(Collectors.groupingBy(e -> e.getSite().getName(), Collectors.toSet()));
     }
 
+    // Apply a where clause against the root
+    @FunctionalInterface
+    private interface WhereClause<T> {
+        void apply(CriteriaBuilder criteriaBuilder, CriteriaQuery<T> criteriaQuery, Root<T> root);
+    }
+
     @Override
     protected final List<UniqueIdentifier> fetchAll() {
+        return listWithWhereClause((cb, q, r) -> {});
+    }
+
+    protected final List<UniqueIdentifier> listWithWhereClause(WhereClause whereClause) {
         CriteriaBuilder cb = entityManager.getCriteriaBuilder();
         CriteriaQuery<UniqueIdentifier> q = cb.createQuery(UniqueIdentifier.class);
         Root<UniqueIdentifier> uniqueIdentifierRoot = q.from(UniqueIdentifier.class);
+        uniqueIdentifierRoot.fetch(UniqueIdentifier_.site, JoinType.LEFT);
+        uniqueIdentifierRoot.fetch(UniqueIdentifier_.uniqueIdentifierSet, JoinType.LEFT);
+        whereClause.apply(cb, q, uniqueIdentifierRoot);
+
         uniqueIdentifierRoot.fetch(UniqueIdentifier_.uniqueIdentifierAliases, JoinType.LEFT);
-        uniqueIdentifierRoot.fetch(UniqueIdentifier_.datasets, JoinType.LEFT);
+
         q.select(uniqueIdentifierRoot);
-        q.distinct(true);
         TypedQuery<UniqueIdentifier> query = entityManager.createQuery(q);
         List<UniqueIdentifier> results = query.getResultList();
 

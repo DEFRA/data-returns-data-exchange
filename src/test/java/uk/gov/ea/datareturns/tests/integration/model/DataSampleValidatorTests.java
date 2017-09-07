@@ -343,11 +343,7 @@ public class DataSampleValidatorTests {
 
     @Test
     public void testValueEmpty() {
-        // TODO Review
-        // ProhibitTxtValueWithValueValidator produces the error because the value
-        // is missing in addition to the missing error produced by the value validator
-        // ProhibitTxtValueWithValueValidator should probably only produce the
-        // conflict value - the missing value - needs review
+
         final DataSampleValidationObject record = createValidNumericRecord();
         record.setValue(new Value("  "));
         final Set<ConstraintViolation<DataSampleValidationObject>> violations = this.validator.validate(record);

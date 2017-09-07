@@ -51,6 +51,15 @@ public class Linker {
         return ub.build().toASCIIString();
     }
 
+    public String status(String eaIdId, String datasetId) {
+        UriBuilder ub = uriInfo.getBaseUriBuilder();
+        ub.path(DatasetResource.class);
+        ub.path(DatasetResource.class, "getDatasetStatus");
+        ub.resolveTemplate("ea_id", eaIdId);
+        ub.resolveTemplate("dataset_id", datasetId);
+        return ub.build().toASCIIString();
+    }
+
     public String record(String eaIdId, String datasetId, String recordId) {
         UriBuilder ub = uriInfo.getBaseUriBuilder();
         ub.path(RecordResource.class);
@@ -114,6 +123,7 @@ public class Linker {
         List<Link> links = new ArrayList<>();
         links.add(new Link("self", dataset(eaIdId, dataset.getId())));
         links.add(new Link("records", recordsList(eaIdId, dataset.getId())));
+        links.add(new Link("statuc", status(eaIdId, dataset.getId())));
         dataset.setLinks(links);
     }
 

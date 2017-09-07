@@ -22,7 +22,7 @@ spring:
     show-sql: false
     hibernate.jdbc.batch_size: 200
 
-# Congiguration for authorization hashing
+# Configuration for authorization hashing
 crypt:
   secretKey: ${dr.apikey}
   hashAlgorithm: HmacSHA256

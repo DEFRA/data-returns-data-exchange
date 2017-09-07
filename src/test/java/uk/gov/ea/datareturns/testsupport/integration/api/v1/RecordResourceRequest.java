@@ -24,11 +24,11 @@ public class RecordResourceRequest extends AbstractResourceRequest {
     }
 
     public ResponseEntity<RecordEntityResponse> getRecord(String eaIdId, String datasetId, String recordId) {
-        return get(uri(RecordResource.class, "getRecord", templateValues(datasetId, recordId)), null, RecordEntityResponse.class);
+        return get(uri(RecordResource.class, "getRecord", templateValues(eaIdId, datasetId, recordId)), null, RecordEntityResponse.class);
     }
 
     public ResponseEntity<RecordEntityResponse> putRecord(String eaIdId, String datasetId, String recordId, Payload payload) {
-        URI uri = uri(RecordResource.class, "putRecord", templateValues(datasetId, recordId));
+        URI uri = uri(RecordResource.class, "putRecord", templateValues(eaIdId, datasetId, recordId));
         ResponseEntity<RecordEntityResponse> response = put(uri, payload, RecordEntityResponse.class);
         if (getExpected().is2xxSuccessful()) {
             Record data = response.getBody().getData();
@@ -42,7 +42,7 @@ public class RecordResourceRequest extends AbstractResourceRequest {
     }
 
     public ResponseEntity<?> deleteRecord(String eaIdId, String datasetId, String recordId) {
-        URI uri = uri(RecordResource.class, "deleteRecord", templateValues(datasetId, recordId));
+        URI uri = uri(RecordResource.class, "deleteRecord", templateValues(eaIdId, datasetId, recordId));
         return delete(uri);
     }
 

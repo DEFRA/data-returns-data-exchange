@@ -12,7 +12,6 @@ import uk.gov.ea.datareturns.App;
 import uk.gov.ea.datareturns.web.resource.v1.model.common.references.EntityReference;
 import uk.gov.ea.datareturns.web.resource.v1.model.response.EntityReferenceListResponse;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -31,9 +30,7 @@ public class EaIdResourceTests extends AbstractDataResourceTests {
         // Test list shows these eaIds
         ResponseEntity<EntityReferenceListResponse> list = eaIdRequest(HttpStatus.OK).listEaIds();
         List<EntityReference> items = list.getBody().getData();
-        List<String> actual = items.stream().map(i -> i.getId()).collect(Collectors.toList());
-        List<String> expected = Arrays.stream(TestPermitData
-                .getTestData()).map(t -> t.uniqueId).collect(Collectors.toList());
-        Assert.assertTrue(actual.containsAll(expected));
+        List<String> eaIds = items.stream().map(i -> i.getId()).collect(Collectors.toList());
+        Assert.assertTrue(eaIds.contains(TEST_EA_ID));
     }
 }

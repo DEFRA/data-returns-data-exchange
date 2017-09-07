@@ -196,6 +196,4 @@ public class SitePermitService {
         uniqueIdentifierAliasDao.clearCaches();
         siteDao.clearCaches();
     }
-
-
 }

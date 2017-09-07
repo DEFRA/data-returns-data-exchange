@@ -111,7 +111,7 @@
 				<constraints primaryKey="true" nullable="false"/>
 			</column>
 			<column name="unique_id" type="bigserial">
-				<constraints nullable="false" foreignKeyName="fk_unique" references="unique_identifiers(id)"/>
+				<constraints nullable="false"/>
 			</column>
 			<column name="name" type="varchar(18)">
 				<constraints nullable="false"/>
@@ -123,9 +123,18 @@
 				<constraints nullable="false"/>
 			</column>
 		</createTable>
+
+		<addForeignKeyConstraint onDelete="CASCADE"
+								 baseTableName="unique_identifier_aliases"
+								 baseColumnNames="unique_id"
+								 constraintName="fk_unique_identifier_aliases_unique_identifier"
+								 referencedTableName="unique_identifiers"
+								 referencedColumnNames="id" />
+
 		<rollback>
 			<dropTable tableName="unique_identifier_aliases"/>
 		</rollback>
+
 	</changeSet>
 
 	<changeSet id="create-index: unique_identifier_aliases" author="Environment Agency">

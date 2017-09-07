@@ -47,6 +47,7 @@ public class UniqueIdentifier implements ControlledListEntity {
     @JoinColumn(name="unique_identifier_set_id")
     private UniqueIdentifierSet uniqueIdentifierSet;
 
+    @JsonIgnore
     @OneToMany(mappedBy="uniqueIdentifier",
             targetEntity=DatasetEntity.class,
             fetch=FetchType.LAZY)

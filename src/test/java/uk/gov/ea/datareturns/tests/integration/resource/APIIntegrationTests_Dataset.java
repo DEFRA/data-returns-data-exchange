@@ -1,5 +1,6 @@
 package uk.gov.ea.datareturns.tests.integration.resource;
 
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -39,6 +40,10 @@ public class APIIntegrationTests_Dataset {
         sitePermitService.addNewPermitAndSite(UNIQUE_ID,
                 UniqueIdentifierSet.UniqueIdentifierSetType.LARGE_LANDFILL_USERS,
                 TEST_SITE_NAME);
+    }
+
+    @After public void down() throws IOException, SitePermitService.SitePermitServiceException {
+        sitePermitService.removePermitSiteAndAliases(UNIQUE_ID);
     }
 
     @Test

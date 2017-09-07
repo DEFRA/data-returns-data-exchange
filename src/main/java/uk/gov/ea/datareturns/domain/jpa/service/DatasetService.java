@@ -48,6 +48,10 @@ public class DatasetService {
         Instant timestamp = Instant.now();
         UniqueIdentifier uniqueIdentifier = uniqueIdentifierDao.getByName(uniqueIdentifierId);
 
+        if (uniqueIdentifier == null) {
+            return;
+        }
+
         newDatasetEntity.setCreateDate(timestamp);
         newDatasetEntity.setLastChangedDate(timestamp);
         newDatasetEntity.setRecordChangedDate(timestamp);

@@ -1,6 +1,7 @@
 package uk.gov.ea.datareturns.tests.integration.resource;
 
 import org.apache.commons.io.IOUtils;
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -113,6 +114,17 @@ public class APIIntegrationTests_DataSampleEntity {
                         }
                     }
                 })));
+    }
+
+    @After
+    public void down() throws IOException, SitePermitService.SitePermitServiceException {
+        // Add sites and permits back in using the payload
+        permitIterator(successPayloadMap, (eaIdId, datasetMap) -> sitePermitService.removePermitSiteAndAliases(eaIdId));
+
+        permitIterator(failurePayloadMap, (eaIdId, datasetMap) -> sitePermitService.removePermitSiteAndAliases(eaIdId));
+
+        permitIterator(substitutionPayloadMap, (eaIdId, datasetMap) -> sitePermitService.removePermitSiteAndAliases(eaIdId));
+
     }
 
     // Test the basic creation and removal of test records

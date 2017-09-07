@@ -98,7 +98,12 @@ public class DatasetResource {
     )
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "OK", response = EntityReferenceListResponse.class),
-            @ApiResponse(code = 304, message = "Not Modified - see conditional request documentation")
+            @ApiResponse(code = 304, message = "Not Modified - see conditional request documentation"),
+            @ApiResponse(
+                    code = 404,
+                    message = "Not Found - The `ea_id` parameter did not match a known resource",
+                    response = ErrorResponse.class
+            )
     })
     public Response listDatasets(
             @PathParam("ea_id") @Pattern(regexp = "\\p{Print}+")
@@ -106,8 +111,12 @@ public class DatasetResource {
             @BeanParam Preconditions preconditions) throws Exception {
 
         UniqueIdentifier uniqueIdentifier = sitePermitService.getUniqueIdentifierByName(eaIdId);
-        List<DatasetEntity> datasets = datasetService.getDatasets(eaIdId);
 
+        if (uniqueIdentifier == null) {
+            return ErrorResponse.EA_ID_NOT_FOUND.toResponseBuilder().build();
+        }
+
+        List<DatasetEntity> datasets = datasetService.getDatasets(eaIdId);
         return onPreconditionsPass(uniqueIdentifier, datasets, preconditions,
                 () -> {
                     List<EntityReference> entityReferences = datasets.stream()
@@ -156,6 +165,10 @@ public class DatasetResource {
     )
             throws Exception {
 
+        if (sitePermitService.getUniqueIdentifierByName(eaIdId) == null) {
+            return ErrorResponse.EA_ID_NOT_FOUND.toResponseBuilder().build();
+        }
+
         //UniqueIdentifier uniqueIdentifier = datasetService.getUniqueIdentifierByName(ea_id);
         Response.ResponseBuilder rb;
 
@@ -165,7 +178,7 @@ public class DatasetResource {
             MultiStatusResponse multiResponse = new MultiStatusResponse();
 
             for (BatchDatasetRequestItem request : batchRequest.getRequests()) {
-                DatasetEntity datasetEntity = datasetService.getDataset(request.getDatasetId(), eaIdId);
+                DatasetEntity datasetEntity = datasetService.getDataset(eaIdId, request.getDatasetId());
                 MultiStatusResponse.Response responseItem = new MultiStatusResponse.Response();
                 responseItem.setId(request.getDatasetId());
 
@@ -275,7 +288,11 @@ public class DatasetResource {
     )
             throws Exception {
 
-        DatasetEntity datasetEntity = datasetService.getDataset(datasetId, eaIdId);
+        if (sitePermitService.getUniqueIdentifierByName(eaIdId) == null) {
+            return ErrorResponse.EA_ID_NOT_FOUND.toResponseBuilder().build();
+        }
+
+        DatasetEntity datasetEntity = datasetService.getDataset(eaIdId, datasetId);
 
         return onPreconditionsPass(fromEntity(eaIdId, datasetEntity), preconditions, () -> {
             // Preconditions passed, process request
@@ -321,7 +338,7 @@ public class DatasetResource {
         return onDataset(eaIdId, datasetId, datasetEntity ->
                 onPreconditionsPass(fromEntity(eaIdId, datasetEntity), preconditions, () -> {
                     // Preconditions passed, delete the resource
-                    datasetService.removeDataset(datasetId, eaIdId);
+                    datasetService.removeDataset(eaIdId, datasetId);
                     return Response.status(Response.Status.NO_CONTENT);
                 })
         ).build();
@@ -416,7 +433,6 @@ public class DatasetResource {
             @ApiParam("The unique identifier for the target dataset") final String datasetId,
             @ApiParam("The requested status.") final DatasetSubmissionStatus requestedStatus)
             throws Exception {
-            //TODO add in the eaIdId constraint
         return onDataset(eaIdId, datasetId, datasetEntity -> {
             // Check state transition
             DatasetSubmissionStatus submissionStatus = getSubmissionStatus(datasetEntity);
@@ -557,6 +573,10 @@ public class DatasetResource {
     }
 
     private Response.ResponseBuilder onDataset(String eaIdId, String datasetId, Function<DatasetEntity, Response.ResponseBuilder> handler) {
+        if (sitePermitService.getUniqueIdentifierByName(eaIdId) == null) {
+            return ErrorResponse.EA_ID_NOT_FOUND.toResponseBuilder();
+        }
+
         DatasetEntity datasetEntity = datasetService.getDataset(eaIdId, datasetId);
         return (datasetEntity == null) ? ErrorResponse.DATASET_NOT_FOUND.toResponseBuilder() : handler.apply(datasetEntity);
     }

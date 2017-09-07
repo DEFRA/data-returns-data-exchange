@@ -127,8 +127,8 @@
 			<column name="unique_identifier_set_id" type="bigserial">
 				<constraints nullable="true"/>
 			</column>
-			<column name="dataset_changed_date" type="timestamp without timezone">
-				<constraints nullable="true"/>
+			<column name="dataset_changed_date" type="timestamp without timezone" defaultValueComputed="current_timestamp">
+				<constraints nullable="false"/>
 			</column>
 		</addColumn>
 
@@ -389,17 +389,17 @@
 
 		</createTable>
 
-		<addForeignKeyConstraint baseColumnNames="record_id"
-														 baseTableName="record_validation_errors"
-														 constraintName="fk_record_validation_errors_records"
-														 referencedColumnNames="id"
-														 referencedTableName="records"/>
+		<addForeignKeyConstraint onDelete="CASCADE" baseColumnNames="record_id"
+								 baseTableName="record_validation_errors"
+								 constraintName="fk_record_validation_errors_records"
+								 referencedColumnNames="id"
+								 referencedTableName="records"/>
 
 		<addForeignKeyConstraint baseColumnNames="payload_type, error"
-														 baseTableName="record_validation_errors"
-														 constraintName="fk_record_validation_errors_payload"
-														 referencedColumnNames="payload_type, error"
-														 referencedTableName="validation_errors"/>
+								 baseTableName="record_validation_errors"
+								 constraintName="fk_record_validation_errors_payload"
+								 referencedColumnNames="payload_type, error"
+								 referencedTableName="validation_errors"/>
 
 		<!--
 		****************************************************************
@@ -475,20 +475,19 @@
 			<column name="record_id"/>
 		</createIndex>
 
-		<addForeignKeyConstraint baseColumnNames="dataset_id"
+		<addForeignKeyConstraint onDelete="CASCADE" baseColumnNames="dataset_id"
 								 baseTableName="data_sample"
 								 constraintName="fk_data_sample_dataset"
 								 referencedColumnNames="id"
 								 referencedTableName="datasets"/>
 
-		<addForeignKeyConstraint baseColumnNames="record_id"
+		<addForeignKeyConstraint onDelete="CASCADE" baseColumnNames="record_id"
 								 baseTableName="data_sample"
-								 onDelete="CASCADE"
 								 constraintName="fk_data_sample_record"
 								 referencedColumnNames="id"
 								 referencedTableName="records"/>
 
-		<addForeignKeyConstraint baseColumnNames="ea_id"
+		<addForeignKeyConstraint onDelete="CASCADE" baseColumnNames="ea_id"
 								 baseTableName="data_sample"
 								 constraintName="fk_data_sample_unique_identifier"
 								 referencedColumnNames="id"
