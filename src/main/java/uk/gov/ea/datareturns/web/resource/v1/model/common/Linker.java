@@ -123,7 +123,7 @@ public class Linker {
         List<Link> links = new ArrayList<>();
         links.add(new Link("self", dataset(eaIdId, dataset.getId())));
         links.add(new Link("records", recordsList(eaIdId, dataset.getId())));
-        links.add(new Link("statuc", status(eaIdId, dataset.getId())));
+        links.add(new Link("status", status(eaIdId, dataset.getId())));
         dataset.setLinks(links);
     }
 
