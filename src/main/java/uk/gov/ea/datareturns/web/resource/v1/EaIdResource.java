@@ -10,10 +10,7 @@ import uk.gov.ea.datareturns.web.resource.v1.model.common.Linker;
 import uk.gov.ea.datareturns.web.resource.v1.model.common.Preconditions;
 import uk.gov.ea.datareturns.web.resource.v1.model.common.references.EntityReference;
 import uk.gov.ea.datareturns.web.resource.v1.model.eaid.EaId;
-import uk.gov.ea.datareturns.web.resource.v1.model.response.DatasetEntityResponse;
-import uk.gov.ea.datareturns.web.resource.v1.model.response.EaIdEntityResponse;
-import uk.gov.ea.datareturns.web.resource.v1.model.response.EntityReferenceListResponse;
-import uk.gov.ea.datareturns.web.resource.v1.model.response.ErrorResponse;
+import uk.gov.ea.datareturns.web.resource.v1.model.response.*;
 
 import javax.inject.Inject;
 import javax.validation.constraints.Pattern;
@@ -102,6 +99,57 @@ public class EaIdResource {
                     ).toResponseBuilder();
                 }).build();
     }
+
+    /**
+     * Get all the entity data (including sites and aliases)
+     * @return
+     * @throws Exception
+     */
+    @GET
+    @Path("/$data")
+    @ApiOperation(value = "The full list the available ea-id's sites and aliases",
+            notes = "This operation will list all ea-id's (permits and authorizations) for which the user of the API is authorized "
+    )
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "OK", response = EaIdListResponse.class),
+            @ApiResponse(code = 304, message = "Not Modified - see conditional request documentation")
+    })
+    public Response listEaIdData()
+            throws Exception {
+
+        List<UniqueIdentifier> uniqueIdentifiers = sitePermitService.listUniqueIdentifiers(
+                UniqueIdentifierSet.UniqueIdentifierSetType.LARGE_LANDFILL_USERS);
+
+        UniqueIdentifierSet uniqueIdentifierSet =
+                sitePermitService.getUniqueSetFor(UniqueIdentifierSet.UniqueIdentifierSetType.LARGE_LANDFILL_USERS);
+
+        List<EaId> eaIds = new ArrayList<>();
+
+        for (UniqueIdentifier uniqueIdentifier : uniqueIdentifiers) {
+            EaId eaId = new EaId();
+            eaId.setId(uniqueIdentifier.getName());
+            eaId.setAliases(uniqueIdentifier
+                    .getUniqueIdentifierAliases().stream().map(UniqueIdentifierAlias::getName).collect(Collectors.toSet()));
+
+            eaId.setSiteName(uniqueIdentifier.getSite().getName());
+            eaId.setIdentifierType(uniqueIdentifierSet.getUniqueIdentifierSetType().toString());
+
+            String operatorName = Optional.ofNullable(uniqueIdentifier.getUniqueIdentifierSet())
+                    .flatMap(set -> Optional.ofNullable(set.getOperator()))
+                    .flatMap(operator -> Optional.ofNullable(operator.getName()))
+                    .orElse(null);
+
+            eaId.setOperatorName(operatorName);
+            eaIds.add(eaId);
+        }
+
+        EaIdListResponse eaIdListResponse = new EaIdListResponse(eaIds,
+                Date.from(uniqueIdentifierSet.getUniqueIdentifierChangeDate()),
+                Preconditions.createEtag(uniqueIdentifierSet));
+
+        return eaIdListResponse.toResponseBuilder().build();
+    }
+
 
     /**
      * Retrieve permit details
