@@ -141,6 +141,8 @@ public class EaIdResource {
                         .orElse(null);
 
                 eaId.setOperatorName(operatorName);
+                eaId.setLastModified(Date.from(uniqueIdentifier.getLastChangedDate()));
+                eaId.setCreated(Date.from(uniqueIdentifier.getCreateDate()));
                 eaIds.add(eaId);
             }
 
