@@ -84,7 +84,6 @@ public class EaIdResource {
         for (UniqueIdentifier uniqueIdentifier : uniqueIdentifiers) {
             EaId eaId = new EaId();
             eaId.setId(uniqueIdentifier.getName());
-            //eaId.setAliases(uniqueIdentifier.getUniqueIdentifierAliases());
             eaIds.add(eaId);
         }
 
@@ -114,40 +113,44 @@ public class EaIdResource {
             @ApiResponse(code = 200, message = "OK", response = EaIdListResponse.class),
             @ApiResponse(code = 304, message = "Not Modified - see conditional request documentation")
     })
-    public Response listEaIdData()
+    public Response listEaIdData(@BeanParam Preconditions preconditions)
             throws Exception {
 
-        List<UniqueIdentifier> uniqueIdentifiers = sitePermitService.listUniqueIdentifiers(
-                UniqueIdentifierSet.UniqueIdentifierSetType.LARGE_LANDFILL_USERS);
 
         UniqueIdentifierSet uniqueIdentifierSet =
                 sitePermitService.getUniqueSetFor(UniqueIdentifierSet.UniqueIdentifierSetType.LARGE_LANDFILL_USERS);
 
-        List<EaId> eaIds = new ArrayList<>();
+        return onPreconditionsPass(uniqueIdentifierSet, preconditions, () -> {
+            List<UniqueIdentifier> uniqueIdentifiers = sitePermitService.listUniqueIdentifiers(
+                    UniqueIdentifierSet.UniqueIdentifierSetType.LARGE_LANDFILL_USERS);
 
-        for (UniqueIdentifier uniqueIdentifier : uniqueIdentifiers) {
-            EaId eaId = new EaId();
-            eaId.setId(uniqueIdentifier.getName());
-            eaId.setAliases(uniqueIdentifier
-                    .getUniqueIdentifierAliases().stream().map(UniqueIdentifierAlias::getName).collect(Collectors.toSet()));
+            List<EaId> eaIds = new ArrayList<>();
 
-            eaId.setSiteName(uniqueIdentifier.getSite().getName());
-            eaId.setIdentifierType(uniqueIdentifierSet.getUniqueIdentifierSetType().toString());
+            for (UniqueIdentifier uniqueIdentifier : uniqueIdentifiers) {
+                EaId eaId = new EaId();
+                eaId.setId(uniqueIdentifier.getName());
+                eaId.setAliases(uniqueIdentifier
+                        .getUniqueIdentifierAliases().stream().map(UniqueIdentifierAlias::getName).collect(Collectors.toSet()));
 
-            String operatorName = Optional.ofNullable(uniqueIdentifier.getUniqueIdentifierSet())
-                    .flatMap(set -> Optional.ofNullable(set.getOperator()))
-                    .flatMap(operator -> Optional.ofNullable(operator.getName()))
-                    .orElse(null);
+                eaId.setSiteName(uniqueIdentifier.getSite().getName());
+                eaId.setIdentifierType(uniqueIdentifierSet.getUniqueIdentifierSetType().toString());
 
-            eaId.setOperatorName(operatorName);
-            eaIds.add(eaId);
-        }
+                String operatorName = Optional.ofNullable(uniqueIdentifier.getUniqueIdentifierSet())
+                        .flatMap(set -> Optional.ofNullable(set.getOperator()))
+                        .flatMap(operator -> Optional.ofNullable(operator.getName()))
+                        .orElse(null);
 
-        EaIdListResponse eaIdListResponse = new EaIdListResponse(eaIds,
-                Date.from(uniqueIdentifierSet.getUniqueIdentifierChangeDate()),
-                Preconditions.createEtag(uniqueIdentifierSet));
+                eaId.setOperatorName(operatorName);
+                eaIds.add(eaId);
+            }
 
-        return eaIdListResponse.toResponseBuilder().build();
+            EaIdListResponse eaIdListResponse = new EaIdListResponse(eaIds,
+                    Date.from(uniqueIdentifierSet.getUniqueIdentifierChangeDate()),
+                    Preconditions.createEtag(uniqueIdentifierSet));
+
+            return eaIdListResponse.toResponseBuilder();
+
+        }).build();
     }
 
 

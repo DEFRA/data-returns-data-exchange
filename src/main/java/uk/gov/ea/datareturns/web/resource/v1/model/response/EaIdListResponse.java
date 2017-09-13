@@ -20,11 +20,7 @@ import java.util.List;
 @ApiModel(parent = ResponseWrapper.class)
 public class EaIdListResponse extends ResponseWrapper<List<EaId>> {
     private List<EaId> data;
-
-    @ApiModelProperty(hidden = true)
     private Date lastModified;
-
-    @ApiModelProperty(hidden = true)
     private EntityTag entityTag;
 
     public EaIdListResponse() {
@@ -52,6 +48,24 @@ public class EaIdListResponse extends ResponseWrapper<List<EaId>> {
 
     @Override public void setData(List<EaId> data) {
         this.data = data;
+    }
+
+    @ApiModelProperty(name = "lastModified")
+    public Date getLastModified() {
+        return lastModified;
+    }
+
+    public void setLastModified(Date lastModified) {
+        this.lastModified = lastModified;
+    }
+
+    @ApiModelProperty(name = "entityTag")
+    public EntityTag getEntityTag() {
+        return entityTag;
+    }
+
+    public void setEntityTag(EntityTag entityTag) {
+        this.entityTag = entityTag;
     }
 
     @Override
