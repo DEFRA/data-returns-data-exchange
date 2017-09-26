@@ -24,7 +24,7 @@ import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 @Path("/lookup/")
 @Component
 @Scope(ConfigurableBeanFactory.SCOPE_SINGLETON)
-public class PermitLookupResource {
+public class PermitLookupResource implements JerseyResource {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(PermitLookupResource.class);
     private final SearchProcessor searchProcessor;

@@ -22,7 +22,7 @@ import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 @Path("/logging/")
 @Component
 @Scope(ConfigurableBeanFactory.SCOPE_SINGLETON)
-public class LoggingTestResource {
+public class LoggingTestResource implements JerseyResource {
     private static final Logger LOGGER = LoggerFactory.getLogger(LoggingTestResource.class);
     /**
      * Create a new {@link LoggingTestResource} RESTful service

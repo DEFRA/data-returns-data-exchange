@@ -1,7 +1,6 @@
 package uk.gov.ea.datareturns.domain.validation.payloads.datasample.fields;
 
 import uk.gov.ea.datareturns.domain.validation.common.entityfields.FieldValue;
-import uk.gov.ea.datareturns.util.TextUtils;
 
 import javax.validation.constraints.Pattern;
 
@@ -26,9 +25,4 @@ public class Value implements FieldValue<String> {
     @Override public String getInputValue() {
         return inputValue;
     }
-
-    @Override public String getValue() {
-        return TextUtils.normalize(inputValue, TextUtils.WhitespaceHandling.REMOVE);
-    }
-
 }

@@ -1,23 +1,19 @@
 package uk.gov.ea.datareturns.domain.validation.payloads.datasample.fields;
 
 import org.hibernate.validator.constraints.NotBlank;
-import uk.gov.ea.datareturns.domain.jpa.dao.masterdata.EntityDao;
-import uk.gov.ea.datareturns.domain.jpa.dao.masterdata.ReturnTypeDao;
-import uk.gov.ea.datareturns.domain.validation.common.auditors.controlledlist.ReturnTypeAuditor;
 import uk.gov.ea.datareturns.domain.validation.common.constraints.controlledlist.ControlledList;
-import uk.gov.ea.datareturns.domain.validation.common.entityfields.AbstractEntityValue;
+import uk.gov.ea.datareturns.domain.validation.common.entityfields.FieldValue;
 
 /**
  * The return type describes the type of data being returned.
  *
  * @author Sam Gardner-Dell
  */
-public class ReturnType extends AbstractEntityValue<ReturnTypeDao, uk.gov.ea.datareturns.domain.jpa.entities.masterdata.impl.ReturnType> {
+public class ReturnType implements FieldValue<uk.gov.ea.datareturns.domain.jpa.entities.masterdata.impl.ReturnType> {
     public static final String FIELD_NAME = "Rtn_Type";
-    private static final ReturnTypeDao DAO = EntityDao.getDao(ReturnTypeDao.class);
 
     @NotBlank(message = "DR9010-Missing")
-    @ControlledList(auditor = ReturnTypeAuditor.class, message = "DR9010-Incorrect")
+    @ControlledList(entities = uk.gov.ea.datareturns.domain.jpa.entities.masterdata.impl.ReturnType.class, message = "DR9010-Incorrect")
     private final String inputValue;
 
     /**
@@ -26,12 +22,7 @@ public class ReturnType extends AbstractEntityValue<ReturnTypeDao, uk.gov.ea.dat
      * @param inputValue the input value
      */
     public ReturnType(String inputValue) {
-        super(inputValue);
         this.inputValue = inputValue;
-    }
-
-    @Override protected ReturnTypeDao getDao() {
-        return DAO;
     }
 
     @Override public String getInputValue() {

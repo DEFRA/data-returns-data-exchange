@@ -1,8 +1,8 @@
 package uk.gov.ea.datareturns.domain.jpa.entities.masterdata.impl;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.hibernate.annotations.GenericGenerator;
-import uk.gov.ea.datareturns.domain.jpa.entities.masterdata.ControlledListEntity;
+import org.hibernate.id.enhanced.SequenceStyleGenerator;
+import uk.gov.ea.datareturns.domain.jpa.entities.masterdata.MasterDataEntity;
 
 import javax.persistence.*;
 
@@ -11,21 +11,14 @@ import javax.persistence.*;
  *
  */
 @Entity
-@Table(name = "qualifiers")
-@GenericGenerator(name = "idGenerator", strategy = "org.hibernate.id.enhanced.SequenceStyleGenerator", parameters = {
-        @org.hibernate.annotations.Parameter(name = "sequence_name", value = "qualifiers_id_seq") }
+@Table(name = "md_qualifiers")
+@Cacheable
+@GenericGenerator(name = AbstractMasterDataEntity.DEFINITIONS_ID_GENERATOR,
+        strategy = AbstractMasterDataEntity.DEFINITIONS_ID_SEQUENCE_STRATEGY,
+        parameters = {
+                @org.hibernate.annotations.Parameter(name = SequenceStyleGenerator.SEQUENCE_PARAM, value = "md_qualifiers_id_seq") }
 )
-public class Qualifier implements ControlledListEntity {
-
-    @Id
-    @GeneratedValue(generator = "idGenerator")
-    @JsonIgnore
-    private Long id;
-
-    @Basic
-    @Column(name = "name", nullable = false, length = 100)
-    private String name;
-
+public class Qualifier extends AbstractMasterDataEntity implements MasterDataEntity {
     @Basic
     @Column(name = "notes", length = 100)
     private String notes;
@@ -36,24 +29,7 @@ public class Qualifier implements ControlledListEntity {
 
     @Basic
     @Column(name = "singleormultiple", length = 20)
-    private String SingleOrMultiple;
-
-    public Long getId() {
-        return this.id;
-    }
-
-    public void setId(final Long id) {
-        this.id = id;
-    }
-
-    @Override
-    public String getName() {
-        return this.name;
-    }
-
-    public void setName(final String name) {
-        this.name = name;
-    }
+    private String singleOrMultiple;
 
     public String getNotes() {
         return notes;
@@ -72,36 +48,10 @@ public class Qualifier implements ControlledListEntity {
     }
 
     public String getSingleOrMultiple() {
-        return SingleOrMultiple;
+        return singleOrMultiple;
     }
 
     public void setSingleOrMultiple(String singleOrMultiple) {
-        SingleOrMultiple = singleOrMultiple;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-
-        Qualifier that = (Qualifier) o;
-
-        return name.equals(that.name);
-    }
-
-    @Override
-    public int hashCode() {
-        return name.hashCode();
-    }
-
-    @Override
-    public String toString() {
-        return "Qualifier{" +
-                "id=" + id +
-                ", name='" + name + '\'' +
-                ", notes='" + notes + '\'' +
-                ", type='" + type + '\'' +
-                ", SingleOrMultiple='" + SingleOrMultiple + '\'' +
-                '}';
+        this.singleOrMultiple = singleOrMultiple;
     }
 }

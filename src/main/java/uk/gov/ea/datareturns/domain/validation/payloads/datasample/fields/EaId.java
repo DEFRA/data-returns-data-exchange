@@ -2,13 +2,10 @@ package uk.gov.ea.datareturns.domain.validation.payloads.datasample.fields;
 
 import org.apache.commons.lang3.math.NumberUtils;
 import org.hibernate.validator.constraints.NotBlank;
-import uk.gov.ea.datareturns.domain.jpa.dao.masterdata.EntityDao;
-import uk.gov.ea.datareturns.domain.jpa.dao.masterdata.Key;
-import uk.gov.ea.datareturns.domain.jpa.dao.masterdata.UniqueIdentifierDao;
 import uk.gov.ea.datareturns.domain.jpa.entities.masterdata.impl.UniqueIdentifier;
-import uk.gov.ea.datareturns.domain.validation.common.auditors.controlledlist.UniqueIdentifierAuditor;
+import uk.gov.ea.datareturns.domain.jpa.entities.masterdata.impl.UniqueIdentifierAlias;
 import uk.gov.ea.datareturns.domain.validation.common.constraints.controlledlist.ControlledList;
-import uk.gov.ea.datareturns.domain.validation.common.entityfields.AbstractEntityValue;
+import uk.gov.ea.datareturns.domain.validation.common.entityfields.FieldValue;
 import uk.gov.ea.datareturns.domain.validation.payloads.datasample.rules.EaIdType;
 
 /**
@@ -16,13 +13,11 @@ import uk.gov.ea.datareturns.domain.validation.payloads.datasample.rules.EaIdTyp
  *
  * @author Sam Gardner-Dell
  */
-public class EaId extends AbstractEntityValue<UniqueIdentifierDao, UniqueIdentifier> implements Comparable<EaId> {
-    private static final UniqueIdentifierDao DAO = EntityDao.getDao(UniqueIdentifierDao.class);
-
+public class EaId implements FieldValue<EaId>, Comparable<EaId> {
     public static final String FIELD_NAME = "EA_ID";
 
     @NotBlank(message = "DR9000-Missing")
-    @ControlledList(auditor = UniqueIdentifierAuditor.class, message = "DR9000-Incorrect")
+    @ControlledList(entities = { UniqueIdentifier.class, UniqueIdentifierAlias.class }, message = "DR9000-Incorrect")
     private String identifier;
 
     private EaIdType type;
@@ -33,19 +28,8 @@ public class EaId extends AbstractEntityValue<UniqueIdentifierDao, UniqueIdentif
      * @param identifier the String representation of the unique identifier.
      */
     public EaId(final String identifier) {
-        super(identifier);
         this.identifier = identifier;
-        if (getEntity() != null) {
-            this.type = EaIdType.forUniqueId(getEntity().getName());
-        }
-    }
-
-    protected UniqueIdentifier findEntity(String inputValue) {
-        return getDao().getByNameOrAlias(Key.explicit(inputValue));
-    }
-
-    @Override protected UniqueIdentifierDao getDao() {
-        return DAO;
+        this.type = EaIdType.forUniqueId(identifier);
     }
 
     /**
@@ -110,40 +94,4 @@ public class EaId extends AbstractEntityValue<UniqueIdentifierDao, UniqueIdentif
         // Default alpha comparison
         return this.identifier.compareTo(o.identifier);
     }
-
-    /**
-     * Determine if two {@link EaId}s are equal.  This method checks the identifier value only.
-     *
-     * @param o the {@link EaId} to check equality against
-     * @return true if the two identifiers are equal, false otherwise
-     */
-    @Override
-    public boolean equals(Object o) {
-        if (this == o)
-            return true;
-        if (o == null || getClass() != o.getClass())
-            return false;
-        EaId eaId = (EaId) o;
-
-        if (getEntity() != null) {
-            return getEntity().equals(eaId.getEntity());
-        } else {
-            return identifier != null ? identifier.equals(eaId.identifier) : eaId.identifier == null;
-        }
-    }
-
-    /**
-     * Generate a hashcode based on the identifier value
-     *
-     * @return the generated hashcode
-     */
-    @Override
-    public int hashCode() {
-        if (getEntity() != null) {
-            return getEntity().getName().hashCode();
-        } else {
-            return identifier != null ? identifier.hashCode() : 0;
-        }
-    }
-
 }

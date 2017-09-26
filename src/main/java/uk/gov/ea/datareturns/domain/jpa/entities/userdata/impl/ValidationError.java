@@ -9,7 +9,7 @@ import java.util.Set;
  * @author Graham Willis
  */
 @Entity
-@Table(name = "validation_errors")
+@Table(name = "md_validation_errors")
 public class ValidationError implements Serializable {
     @EmbeddedId private ValidationErrorId id;
     @Basic private String message;
@@ -20,7 +20,7 @@ public class ValidationError implements Serializable {
      * (To do this would require duplication of the payload_type field in the table)
      */
     @ManyToMany
-    @JoinTable(name = "validation_error_fields",
+    @JoinTable(name = "md_validation_error_fields",
             joinColumns = {
                 @JoinColumn(name = "payload_type", referencedColumnName = "payload_type"),
                 @JoinColumn(name = "error", referencedColumnName = "error")

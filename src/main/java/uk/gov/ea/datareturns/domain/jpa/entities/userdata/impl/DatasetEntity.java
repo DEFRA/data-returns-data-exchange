@@ -11,9 +11,9 @@ import java.util.Collection;
  * @author Graham
  */
 @Entity
-@Table(name = "datasets")
+@Table(name = "ud_datasets")
 @GenericGenerator(name = "idGenerator", strategy = "org.hibernate.id.enhanced.SequenceStyleGenerator", parameters = {
-        @org.hibernate.annotations.Parameter(name = "sequence_name", value = "datasets_id_seq") }
+        @org.hibernate.annotations.Parameter(name = "sequence_name", value = "ud_datasets_id_seq") }
 )
 public class DatasetEntity implements Metadata {
 

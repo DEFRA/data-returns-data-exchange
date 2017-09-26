@@ -7,16 +7,14 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
-import uk.gov.ea.datareturns.domain.jpa.dao.userdata.impl.FieldDao;
-import uk.gov.ea.datareturns.domain.jpa.dao.userdata.impl.PayloadTypeDao;
-import uk.gov.ea.datareturns.domain.jpa.dao.userdata.impl.ValidationErrorDao;
 import uk.gov.ea.datareturns.domain.jpa.entities.masterdata.impl.ControlledListsList;
-import uk.gov.ea.datareturns.domain.jpa.entities.userdata.impl.FieldEntity;
-import uk.gov.ea.datareturns.domain.jpa.entities.userdata.impl.PayloadType;
-import uk.gov.ea.datareturns.domain.jpa.entities.userdata.impl.ValidationError;
-import uk.gov.ea.datareturns.domain.jpa.entities.userdata.impl.ValidationErrorId;
+import uk.gov.ea.datareturns.domain.jpa.entities.userdata.impl.*;
+import uk.gov.ea.datareturns.domain.jpa.repositories.systemdata.FieldRepository;
+import uk.gov.ea.datareturns.domain.jpa.repositories.systemdata.PayloadTypeRepository;
+import uk.gov.ea.datareturns.domain.jpa.repositories.systemdata.ValidationConstraintRepository;
 import uk.gov.ea.datareturns.domain.processors.ControlledListProcessor;
 import uk.gov.ea.datareturns.web.resource.ControlledListResource;
+import uk.gov.ea.datareturns.web.resource.JerseyResource;
 import uk.gov.ea.datareturns.web.resource.v1.model.common.Linker;
 import uk.gov.ea.datareturns.web.resource.v1.model.common.Preconditions;
 import uk.gov.ea.datareturns.web.resource.v1.model.common.references.EntityReference;
@@ -60,7 +58,7 @@ import static uk.gov.ea.datareturns.web.resource.v1.model.common.PreconditionChe
 @Produces({ APPLICATION_JSON, APPLICATION_XML })
 @Component
 @Scope(ConfigurableBeanFactory.SCOPE_SINGLETON)
-public class DefinitionsResource {
+public class DefinitionsResource implements JerseyResource {
     private static final Logger LOGGER = LoggerFactory.getLogger(DefinitionsResource.class);
 
     @Context
@@ -69,11 +67,11 @@ public class DefinitionsResource {
     /** controlled list processor */
     private final ControlledListProcessor controlledListProcessor;
     /** controlled list processor */
-    private final ValidationErrorDao validationErrorDao;
+    private final ValidationConstraintRepository validationConstraintRepository;
     /** Payload types */
-    private final PayloadTypeDao payloadTypeDao;
+    private final PayloadTypeRepository payloadTypeRepository;
     /** Fields **/
-    private final FieldDao fieldDao;
+    private final FieldRepository fieldRepository;
 
     /**
      * Create a new {@link ControlledListResource} RESTful service
@@ -82,14 +80,14 @@ public class DefinitionsResource {
      */
     @Inject
     public DefinitionsResource(final ControlledListProcessor controlledListProcessor,
-            final ValidationErrorDao validationErrorDao,
-            final PayloadTypeDao payloadTypeDao,
-            final FieldDao fieldDao) {
+            final ValidationConstraintRepository validationConstraintRepository,
+            final PayloadTypeRepository payloadTypeRepository,
+            final FieldRepository fieldRepository) {
 
         this.controlledListProcessor = controlledListProcessor;
-        this.validationErrorDao = validationErrorDao;
-        this.payloadTypeDao = payloadTypeDao;
-        this.fieldDao = fieldDao;
+        this.validationConstraintRepository = validationConstraintRepository;
+        this.payloadTypeRepository = payloadTypeRepository;
+        this.fieldRepository = fieldRepository;
     }
 
     /**
@@ -147,7 +145,7 @@ public class DefinitionsResource {
             @BeanParam Preconditions preconditions)
             throws Exception {
         return onPayloadType(payloadType, (payloadClass) -> {
-            PayloadType payloadEntityType = payloadTypeDao.get(payloadType);
+            PayloadType payloadEntityType = payloadTypeRepository.getOne(payloadType);
             return onPreconditionsPass(payloadEntityType, preconditions, () -> {
                 Map<String, Field> fieldMap = getFields(payloadClass);
                 return new EntityReferenceListResponse(
@@ -190,12 +188,12 @@ public class DefinitionsResource {
             @BeanParam Preconditions preconditions)
             throws Exception {
         return onPayloadType(payloadType, (payloadClass) -> {
-            PayloadType payloadEntityType = payloadTypeDao.get(payloadType);
+            PayloadType payloadEntityType = payloadTypeRepository.getOne(payloadType);
             return onPreconditionsPass(payloadEntityType, preconditions, () -> {
                 Map<String, Field> fieldMap = getFields(payloadClass);
                 List<FieldDefinition> defs = fieldMap.entrySet().stream()
                         .map((mapEntry) -> {
-                            FieldEntity fieldEntity = fieldDao.get(payloadEntityType, mapEntry.getKey());
+                            FieldEntity fieldEntity = fieldRepository.getOne(new FieldId(mapEntry.getKey(), payloadEntityType));
                             return toFieldDefinition(payloadEntityType, mapEntry.getValue(), fieldEntity);
                         })
                         .collect(Collectors.toList());
@@ -274,9 +272,9 @@ public class DefinitionsResource {
             @BeanParam Preconditions preconditions)
             throws Exception {
         return onPayloadType(payloadType, (payloadClass) -> {
-            PayloadType payloadEntityType = payloadTypeDao.get(payloadType);
+            PayloadType payloadEntityType = payloadTypeRepository.getOne(payloadType);
             return onPreconditionsPass(payloadEntityType, preconditions, () -> {
-                List<ValidationError> errors = validationErrorDao.list(payloadEntityType);
+                List<ValidationError> errors = validationConstraintRepository.findAllByIdPayloadType(payloadEntityType);
 
                 return new EntityReferenceListResponse(
                         errors.stream()
@@ -320,9 +318,9 @@ public class DefinitionsResource {
             @BeanParam Preconditions preconditions)
             throws Exception {
         return onPayloadType(payloadType, (payloadClass) -> {
-            PayloadType payloadEntityType = payloadTypeDao.get(payloadType);
+            PayloadType payloadEntityType = payloadTypeRepository.getOne(payloadType);
             return onPreconditionsPass(payloadEntityType, preconditions, () -> {
-                List<ValidationError> errors = validationErrorDao.list(payloadEntityType);
+                List<ValidationError> errors = validationConstraintRepository.findAllByIdPayloadType(payloadEntityType);
                 return new ConstraintDefinitionListResponse(
                         errors.stream()
                                 .map((validationErrorDef) -> toConstraint(payloadEntityType, validationErrorDef))
@@ -381,9 +379,9 @@ public class DefinitionsResource {
 
     private Response.ResponseBuilder onConstraint(String payloadTypeStr, String constraintId, Function<ConstraintDefinition, Response
             .ResponseBuilder> handler) {
-        PayloadType payloadType = payloadTypeDao.get(payloadTypeStr);
+        PayloadType payloadType = payloadTypeRepository.getOne(payloadTypeStr);
         ValidationErrorId id = new ValidationErrorId(payloadType, constraintId);
-        ValidationError validationError = validationErrorDao.get(id);
+        ValidationError validationError = validationConstraintRepository.getOne(id);
         if (validationError == null) {
             return ErrorResponse.CONSTRAINT_NOT_FOUND.toResponseBuilder();
         } else {
@@ -397,8 +395,8 @@ public class DefinitionsResource {
         Map<String, Field> fields = getFields(payloadClass);
         Field field = fields.get(fieldId);
         String payloadTypeStr = Payload.NAMES.get(payloadClass);
-        PayloadType payloadEntityType = payloadTypeDao.get(payloadTypeStr);
-        FieldEntity fieldEntity = fieldDao.get(payloadEntityType, fieldId);
+        PayloadType payloadEntityType = payloadTypeRepository.getOne(payloadTypeStr);
+        FieldEntity fieldEntity = fieldRepository.getOne(new FieldId(fieldId, payloadEntityType));
 
         Response.ResponseBuilder rb;
         if (field == null || fieldEntity == null) {

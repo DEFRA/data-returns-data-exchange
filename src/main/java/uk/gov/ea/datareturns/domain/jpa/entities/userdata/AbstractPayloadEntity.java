@@ -18,13 +18,12 @@ import java.util.Objects;
         )
 })
 public abstract class AbstractPayloadEntity implements Userdata {
-
     @Id
     @OneToOne(optional = false, cascade = { CascadeType.REMOVE })
     @JoinColumn(name = "record_id", referencedColumnName = "id")
     private RecordEntity recordEntity;
 
-    @OneToOne(optional = false)
+    @OneToOne(optional = false, fetch = FetchType.LAZY)
     @JoinColumn(name = "dataset_id", referencedColumnName = "id")
     private DatasetEntity dataset;
 

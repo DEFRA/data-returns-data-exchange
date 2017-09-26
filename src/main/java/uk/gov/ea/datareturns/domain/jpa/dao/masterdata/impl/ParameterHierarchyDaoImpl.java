@@ -5,12 +5,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Repository;
 import uk.gov.ea.datareturns.domain.exceptions.ProcessingException;
-import uk.gov.ea.datareturns.domain.jpa.dao.masterdata.*;
-import uk.gov.ea.datareturns.domain.jpa.entities.masterdata.impl.ParameterHierarchy;
-import uk.gov.ea.datareturns.domain.jpa.entities.masterdata.impl.ParameterHierarchyId;
-import uk.gov.ea.datareturns.util.CachingSupplier;
+import uk.gov.ea.datareturns.domain.jpa.dao.masterdata.ParameterHierarchyDao;
+import uk.gov.ea.datareturns.domain.jpa.entities.masterdata.impl.*;
 import uk.gov.ea.datareturns.domain.jpa.hierarchy.HierarchyGroupSymbols;
 import uk.gov.ea.datareturns.domain.jpa.hierarchy.HierarchySymbols;
+import uk.gov.ea.datareturns.domain.jpa.service.MasterDataLookupService;
+import uk.gov.ea.datareturns.domain.jpa.service.MasterDataNaturalKeyService;
+import uk.gov.ea.datareturns.util.CachingSupplier;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
@@ -40,25 +41,19 @@ import java.util.stream.Collectors;
 public class ParameterHierarchyDaoImpl implements ParameterHierarchyDao {
     protected static final Logger LOGGER = LoggerFactory.getLogger(ParameterHierarchyDaoImpl.class);
 
+    // FIXME: This cache strategy needs to be re-thought.
     private final CachingSupplier<Map<String, Map<String, Map<String, Set<String>>>>> cache = CachingSupplier.of(this::cacheSupplier);
 
     @PersistenceContext
     protected EntityManager entityManager;
 
-    private ParameterDao parameterDao;
-
-    private ReturnTypeDao returnTypeDao;
-
-    private ReleasesAndTransfersDao releasesAndTransfersDao;
-
-    private UnitDao unitDao;
+    private final MasterDataNaturalKeyService keyService;
+    private final MasterDataLookupService lookupService;
 
     @Inject
-    public ParameterHierarchyDaoImpl(ParameterDao parameterDao, ReturnTypeDao returnTypeDao, ReleasesAndTransfersDao releasesAndTransfersDao, UnitDao unitDao) {
-        this.parameterDao = parameterDao;
-        this.returnTypeDao = returnTypeDao;
-        this.releasesAndTransfersDao = releasesAndTransfersDao;
-        this.unitDao = unitDao;
+    public ParameterHierarchyDaoImpl(MasterDataNaturalKeyService keyService, MasterDataLookupService lookupService) {
+        this.keyService = keyService;
+        this.lookupService = lookupService;
     }
 
     @Override public ParameterHierarchy getById(ParameterHierarchyId id) {
@@ -85,10 +80,10 @@ public class ParameterHierarchyDaoImpl implements ParameterHierarchyDao {
     private Map<String, Map<String, Map<String, Set<String>>>> cacheSupplier() {
         LOGGER.info("Build name cache of: ParameterHierarchy");
         return list().stream().collect(
-                Collectors.groupingBy(t -> returnTypeDao.generateMash(t.getReturnType()),
-                        Collectors.groupingBy(r -> releasesAndTransfersDao.generateMash(r.getReleasesAndTransfers()),
-                                Collectors.groupingBy(p -> parameterDao.generateMash(p.getParameter()),
-                                        Collectors.mapping(u -> unitDao.generateMash(u.getUnits()),
+                Collectors.groupingBy(t -> keyService.relaxKey(ReturnType.class, t.getReturnType()),
+                        Collectors.groupingBy(r -> keyService.relaxKey(ReleasesAndTransfers.class, r.getReleasesAndTransfers()),
+                                Collectors.groupingBy(p -> keyService.relaxKey(Parameter.class, p.getParameter()),
+                                        Collectors.mapping(u -> keyService.relaxKey(Unit.class, u.getUnits()),
                                                 Collectors.toCollection(HashSet::new))
                                 )
                         )
@@ -126,7 +121,7 @@ public class ParameterHierarchyDaoImpl implements ParameterHierarchyDao {
                 .map(HierarchySymbols::removeExclusion)
                 .filter(p -> !StringUtils.equalsAny(p.trim(), HierarchySymbols.ALL_SYMBOLS))
                 .filter(p -> !HierarchyGroupSymbols.isGroup(p))
-                .filter(p -> !parameterDao.nameOrAliasExists(Key.explicit(p)))
+                .filter(p -> !(lookupService.relaxed().exists(Parameter.class, p)))
                 .collect(Collectors.toList());
 
         if (missingParameters.size() != 0) {
@@ -143,7 +138,7 @@ public class ParameterHierarchyDaoImpl implements ParameterHierarchyDao {
                 .map(HierarchySymbols::removeExclusion)
                 .filter(p -> !StringUtils.equalsAny(p.trim(), HierarchySymbols.ALL_SYMBOLS))
                 .filter(p -> !HierarchyGroupSymbols.isGroup(p))
-                .filter(p -> !returnTypeDao.nameExists(Key.explicit(p)))
+                .filter(p -> !lookupService.relaxed().exists(ReturnType.class, p))
                 .collect(Collectors.toList());
 
         if (missingReturnTypes.size() != 0) {
@@ -160,7 +155,7 @@ public class ParameterHierarchyDaoImpl implements ParameterHierarchyDao {
                 .map(HierarchySymbols::removeExclusion)
                 .filter(p -> !StringUtils.equalsAny(p.trim(), HierarchySymbols.ALL_SYMBOLS))
                 .filter(p -> !HierarchyGroupSymbols.isGroup(p))
-                .filter(p -> !releasesAndTransfersDao.nameExists(Key.explicit(p)))
+                .filter(p -> !lookupService.relaxed().exists(ReleasesAndTransfers.class, p))
                 .collect(Collectors.toList());
 
         if (missingReleasesAndTransfers.size() != 0) {
@@ -177,7 +172,7 @@ public class ParameterHierarchyDaoImpl implements ParameterHierarchyDao {
                 .map(HierarchySymbols::removeExclusion)
                 .filter(p -> !StringUtils.equalsAny(p.trim(), HierarchySymbols.ALL_SYMBOLS))
                 .filter(p -> !HierarchyGroupSymbols.isGroup(p))
-                .filter(p -> !unitDao.nameOrAliasExists(Key.explicit(p)))
+                .filter(p -> !lookupService.relaxed().exists(Unit.class, p))
                 .collect(Collectors.toList());
 
         if (missingUnits.size() != 0) {

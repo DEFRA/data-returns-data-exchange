@@ -1,19 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
-	xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd
-        http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
-        
-	<property name="uniqueIdentifiersFile" value="/db/data/UniqueIdentifiers.csv"/>
-	<property name="returnTypesFile" value="/db/data/ReturnTypes.csv"/>
-	<property name="parametersFile" value="/db/data/Parameters.csv"/>
-	<property name="unitsFile" value="/db/data/Units.csv"/>
-	<property name="methodsOrStandardsFile" value="/db/data/MethodsOrStandards.csv"/>
-	<property name="qualifiersFile" value="/db/data/Qualifiers.csv"/>
-	<property name="referencePeriodsFile" value="/db/data/ReferencePeriods.csv"/>
-	<property name="returnPeriodsFile" value="/db/data/ReturnPeriods.csv"/>
-	<property name="textValuesFile" value="/db/data/TextValues.csv"/>
-	<property name="releasesAndTransfersFile" value="/db/data/ReleasesAndTransfers.csv"/>
+				   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd">
+
 	<property name="parameterHierarchyFile" value="/db/data/ParameterHierarchy.csv"/>
 
 	<property name="WML" value="/db/data/stage_data_initialization/EA-WML.csv"/>
@@ -33,7 +21,7 @@
   ****************************************************************
   -->
 	<changeSet id="create-table: sites" author="Environment Agency">
-		<createTable tableName="sites">
+		<createTable tableName="md_sites">
 			<column name="id" type="bigserial">
 				<constraints primaryKey="true" nullable="false"/>
 			</column>
@@ -48,16 +36,16 @@
 			</column>
 		</createTable>
 		<rollback>
-			<dropTable tableName="sites"/>
+			<dropTable tableName="md_sites"/>
 		</rollback>
 	</changeSet>
 
 	<changeSet id="create-index: sites" author="Environment Agency">
-		<createIndex indexName="idx_site_name" tableName="sites" unique="true">
+		<createIndex indexName="idx_md_sites_name" tableName="md_sites" unique="true">
 			<column name="name"/>
 		</createIndex>
 		<rollback>
-			<dropIndex tableName="sites" indexName="idx_site_name"/>
+			<dropIndex tableName="sites" indexName="idx_md_sites_name"/>
 		</rollback>
 	</changeSet>
 
@@ -67,16 +55,16 @@
 	****************************************************************
 	-->
 	<changeSet id="create-table: unique_identifiers" author="Environment Agency">
-		<createTable tableName="unique_identifiers">
+		<createTable tableName="md_unique_identifiers">
 			<!-- Currently unique identifiers are generally 6 characters long but this could change! -->
 			<column name="id" type="bigserial">
 				<constraints primaryKey="true" nullable="false"/>
 			</column>
-			<column name="site_id" type="bigserial">
-				<constraints nullable="false" foreignKeyName="fk_site" references="sites(id)"/>
-			</column>
 			<column name="name" type="varchar(18)">
-				<constraints nullable="false"/>
+				<constraints nullable="false" unique="true"/>
+			</column>
+			<column name="site_id" type="bigint">
+				<constraints nullable="false" foreignKeyName="fk_site" references="md_sites(id)"/>
 			</column>
 			<column name="create_date" type="timestamp without timezone" defaultValueComputed="current_timestamp">
 				<constraints nullable="false"/>
@@ -86,16 +74,16 @@
 			</column>
 		</createTable>
 		<rollback>
-			<dropTable tableName="unique_identifiers"/>
+			<dropTable tableName="md_unique_identifiers"/>
 		</rollback>
 	</changeSet>
 
 	<changeSet id="create-index: unique_identifiers" author="Environment Agency">
-		<createIndex indexName="idx_unique_identifiers_name" tableName="unique_identifiers" unique="true">
+		<createIndex indexName="idx_md_unique_identifiers_name" tableName="md_unique_identifiers" unique="true">
 			<column name="name"/>
 		</createIndex>
 		<rollback>
-			<dropIndex tableName="unique_identifiers" indexName="idx_unique_identifiers_name"/>
+			<dropIndex tableName="md_unique_identifiers" indexName="idx_md_unique_identifiers_name"/>
 		</rollback>
 	</changeSet>
 
@@ -105,16 +93,16 @@
 	****************************************************************
 	-->
 	<changeSet id="create-table: unique_identifier_aliases" author="Environment Agency">
-		<createTable tableName="unique_identifier_aliases">
+		<createTable tableName="md_unique_identifier_aliases">
 			<!-- Currently unique identifiers are generally 6 characters long but this could change! -->
 			<column name="id" type="bigserial">
 				<constraints primaryKey="true" nullable="false"/>
 			</column>
-			<column name="unique_id" type="bigserial">
-				<constraints nullable="false" foreignKeyName="fk_unique" references="unique_identifiers(id)"/>
-			</column>
 			<column name="name" type="varchar(18)">
 				<constraints nullable="false"/>
+			</column>
+			<column name="preferred" type="bigint">
+				<constraints nullable="false" foreignKeyName="fk_ea_id_preferred" references="md_unique_identifiers(id)"/>
 			</column>
 			<column name="create_date" type="timestamp without timezone" defaultValueComputed="current_timestamp">
 				<constraints nullable="false"/>
@@ -124,16 +112,16 @@
 			</column>
 		</createTable>
 		<rollback>
-			<dropTable tableName="unique_identifier_aliases"/>
+			<dropTable tableName="md_unique_identifier_aliases"/>
 		</rollback>
 	</changeSet>
 
 	<changeSet id="create-index: unique_identifier_aliases" author="Environment Agency">
-		<createIndex indexName="idx_unique_identifier_aliases" tableName="unique_identifier_aliases" unique="true">
+		<createIndex indexName="idx_md_unique_identifier_aliases" tableName="md_unique_identifier_aliases" unique="true">
 			<column name="name"/>
 		</createIndex>
 		<rollback>
-			<dropIndex tableName="unique_identifiers_alias" indexName="idx_unique_identifiers_alias"/>
+			<dropIndex tableName="md_unique_identifier_aliases" indexName="idx_md_unique_identifier_aliases"/>
 		</rollback>
 	</changeSet>
 
@@ -143,12 +131,12 @@
 	****************************************************************
 	-->
 	<changeSet id="create-table: return_types" author="Environment Agency">
-		<createTable tableName="return_types">
+		<createTable tableName="md_return_types">
 			<column name="id" type="bigserial">
 				<constraints primaryKey="true" nullable="false"/>
 			</column>
 			<column name="name" type="varchar(80)">
-				<constraints nullable="false"/>
+				<constraints nullable="false" unique="true"/>
 			</column>
 			<column name="sector" type="varchar(20)">
 				<constraints nullable="false"/>
@@ -161,119 +149,36 @@
 			</column>
 		</createTable>
 		<rollback>
-			<dropTable tableName="return_types"/>
-		</rollback>
-	</changeSet>
-
-	<changeSet id="load-data: return_types" author="Environment Agency">
-		<preConditions onFail="HALT">
-			<tableExists tableName="return_types"/>
-			<columnExists tableName="return_types" columnName="name"/>
-			<sqlCheck expectedResult="0">select count(id) from return_types</sqlCheck>
-		</preConditions>
-		<loadData file="${returnTypesFile}" tableName="return_types"/>
-		<rollback>
-			<delete tableName="return_types"></delete>
+			<dropTable tableName="md_return_types"/>
 		</rollback>
 	</changeSet>
 
 	<changeSet id="create-index: return_types" author="Environment Agency">
-		<createIndex indexName="idx_return_type_name" tableName="return_types" unique="true">
+		<createIndex indexName="idx_md_return_types_name" tableName="md_return_types" unique="true">
 			<column name="name"/>
 		</createIndex>
 		<rollback>
-			<dropIndex tableName="return_types" indexName="idx_return_type_name"/>
+			<dropIndex tableName="md_return_types" indexName="idx_md_return_types_name"/>
 		</rollback>
 	</changeSet>
 
 	<!--
-	****************************************************************
-	Parameters Preload table
-	****************************************************************
-	-->
-	<changeSet id="create-table: parameters_preload" author="Environment Agency">
-		<createTable tableName="parameters_preload">
-			<column name="name" type="varchar(150)">
-				<constraints nullable="false" unique="true"/>
-			</column>
-			<column name="type" type="varchar(100)"/>
-			<column name="alias1" type="varchar(150)"/>
-			<column name="alias2" type="varchar(150)"/>
-			<column name="alias3" type="varchar(150)"/>
-			<column name="alias4" type="varchar(150)"/>
-			<column name="alias5" type="varchar(150)"/>
-			<column name="alias6" type="varchar(150)"/>
-			<column name="alias7" type="varchar(150)"/>
-			<column name="cas" type="varchar(50)"/>
-		</createTable>
-	</changeSet>
-
-	<changeSet id="load-data: parameters_preload" author="Environment Agency">
-		<preConditions onFail="HALT">
-			<tableExists tableName="parameters_preload"/>
-			<columnExists tableName="parameters_preload" columnName="name"/>
-			<sqlCheck expectedResult="0">select count(name) from parameters_preload</sqlCheck>
-		</preConditions>
-		<loadData file="${parametersFile}" tableName="parameters_preload"/>
-		<rollback>
-			<delete tableName="parameters_preload"></delete>
-		</rollback>
-	</changeSet>
-
-	<changeSet id="update-nulls: parameters_preload" author="Environment Agency">
-		<update tableName="parameters_preload">
-			<column name="type"/>
-			<where>type = ''</where>
-		</update>
-		<update tableName="parameters_preload">
-			<column name="alias1"/>
-			<where>alias1 = ''</where>
-		</update>
-		<update tableName="parameters_preload">
-			<column name="alias2"/>
-			<where>alias2 = ''</where>
-		</update>
-		<update tableName="parameters_preload">
-			<column name="alias3"/>
-			<where>alias3 = ''</where>
-		</update>
-		<update tableName="parameters_preload">
-			<column name="alias4"/>
-			<where>alias4 = ''</where>
-		</update>
-		<update tableName="parameters_preload">
-			<column name="alias5"/>
-			<where>alias5 = ''</where>
-		</update>
-		<update tableName="parameters_preload">
-			<column name="alias6"/>
-			<where>alias6 = ''</where>
-		</update>
-		<update tableName="parameters_preload">
-			<column name="alias7"/>
-			<where>alias7 = ''</where>
-		</update>
-		<update tableName="parameters_preload">
-			<column name="cas"/>
-			<where>cas = ''</where>
-		</update>
-	</changeSet>
-
-	<!-- 
 	****************************************************************
 	Parameters
 	****************************************************************
   -->
 
 	<changeSet id="create-table: parameters" author="Environment Agency">
-		<createTable tableName="parameters">
-			<column name="id" type="bigserial" autoIncrement="true">
-				<constraints primaryKey="true"/>
+		<createTable tableName="md_parameters">
+			<column name="id" type="bigserial">
+				<constraints primaryKey="true" nullable="false"/>
 			</column>
 			<column name="name" type="varchar(150)">
-				<constraints nullable="false"/>
+				<constraints nullable="false" unique="true"/>
 			</column>
-			<column name="preferred" type="varchar(150)"/>
+			<column name="preferred" type="bigint">
+				<constraints nullable="true" foreignKeyName="fk_parameters_preferred" references="md_parameters(id)"/>
+			</column>
 			<column name="type" type="varchar(100)"/>
 			<column name="cas" type="varchar(50)"/>
 			<column name="create_date" type="timestamp without timezone" defaultValueComputed="current_timestamp">
@@ -284,65 +189,36 @@
 			</column>
 		</createTable>
 		<rollback>
-			<dropTable tableName="parameters"/>
+			<dropTable tableName="md_parameters"/>
 		</rollback>
-	</changeSet>
-
-  <!-- Don't specify postgres here because liquibase silently fails. No comment. -->
-	<changeSet id="normalize: parameters" author="Environment Agency">
-		<sqlFile path="../sql/prepare-parameters.sql"
-             relativeToChangelogFile="true"
-             splitStatements="true"
-             stripComments="true"/>
 	</changeSet>
 
 	<changeSet id="create-index: parameters" author="Environment Agency">
-		<createIndex indexName="idx_parameters_name" tableName="parameters" unique="true">
+		<createIndex indexName="idx_md_parameters_name" tableName="md_parameters" unique="true">
 			<column name="name"/>
 		</createIndex>
 		<rollback>
-			<dropIndex tableName="parameters" indexName="idx_parameters_name"/>
+			<dropIndex tableName="md_parameters" indexName="idx_md_parameters_name"/>
 		</rollback>
 	</changeSet>
 
-  <changeSet id="update-nulls: parameters" author="Environment Agency">
-    <update tableName="parameters">
-      <column name="preferred"/>
-      <where>preferred = ''</where>
-    </update>
-    <update tableName="parameters">
-      <column name="type"/>
-      <where>type = ''</where>
-    </update>
-    <update tableName="parameters">
-      <column name="cas"/>
-      <where>cas = ''</where>
-    </update>
-  </changeSet>
-
-  <changeSet author="Environment Agency" id="addForeignKeyConstraint-parameters">
-    <addForeignKeyConstraint baseColumnNames="preferred"
-                             baseTableName="parameters"
-                             constraintName="fk_parameters"
-                             referencedColumnNames="name"
-                             referencedTableName="parameters"/>
-  </changeSet>
-
-  <!--
-  ****************************************************************
-  Units
-  ****************************************************************
-  -->
+	<!--
+	****************************************************************
+	Units
+	****************************************************************
+	-->
 
 	<changeSet id="create-table: units" author="Environment Agency">
-		<createTable tableName="units">
+		<createTable tableName="md_units">
 			<column name="id" type="bigserial">
 				<constraints primaryKey="true" nullable="false"/>
 			</column>
 			<column name="name" type="varchar(10)">
-				<constraints nullable="false"/>
+				<constraints nullable="false" unique="true"/>
 			</column>
-			<column name="preferred" type="varchar(10)"/>
+			<column name="preferred" type="bigint">
+				<constraints nullable="true" foreignKeyName="fk_units_preferred" references="md_units(id)"/>
+			</column>
 			<column name="long_name" type="varchar(50)"/>
 			<column name="unicode" type="varchar(50)"/>
 			<column name="description" type="varchar(200)"/>
@@ -355,75 +231,32 @@
 			</column>
 		</createTable>
 		<rollback>
-			<dropTable tableName="units"/>
+			<dropTable tableName="md_units"/>
 		</rollback>
-	</changeSet>
-
-	<changeSet id="load-data: units" author="Environment Agency">
-		<preConditions onFail="HALT">
-			<tableExists tableName="units"/>
-			<columnExists tableName="units" columnName="id"/>
-			<sqlCheck expectedResult="0">select count(id) from units</sqlCheck>
-		</preConditions>
-		<loadData file="${unitsFile}" tableName="units"/>
-		<rollback>
-			<delete tableName="units"></delete>
-		</rollback>
-	</changeSet>
-
-  <changeSet id="update-nulls: units" author="Environment Agency">
-		<update tableName="units">
-			<column name="preferred"/>
-			<where>preferred = ''</where>
-		</update>
-		<update tableName="units">
-			<column name="long_name"/>
-			<where>long_name = ''</where>
-		</update>
-		<update tableName="units">
-			<column name="unicode"/>
-			<where>unicode = ''</where>
-		</update>
-		<update tableName="units">
-			<column name="description"/>
-			<where>description = ''</where>
-		</update>
-		<update tableName="units">
-			<column name="type"/>
-			<where>type = ''</where>
-		</update>
 	</changeSet>
 
 	<changeSet id="create-index: units" author="Environment Agency">
-		<createIndex indexName="idx_units_name" tableName="units" unique="true">
+		<createIndex indexName="idx_md_units_name" tableName="md_units" unique="true">
 			<column name="name"/>
 		</createIndex>
 		<rollback>
-			<dropIndex tableName="units" indexName="idx_units_name"/>
+			<dropIndex tableName="md_units" indexName="idx_md_units_name"/>
 		</rollback>
 	</changeSet>
 
-  <changeSet author="Environment Agency" id="addForeignKeyConstraint-units">
-    <addForeignKeyConstraint baseColumnNames="preferred"
-                             baseTableName="units"
-                             constraintName="fk_units"
-                             referencedColumnNames="name"
-                             referencedTableName="units"/>
-  </changeSet>
-
-  <!--
-  ****************************************************************
-  Method Or Standard
-  ****************************************************************
-  -->
+	<!--
+	****************************************************************
+	Method Or Standard
+	****************************************************************
+	-->
 
 	<changeSet id="create-table: methods_or_standards" author="Environment Agency">
-		<createTable tableName="methods_or_standards">
+		<createTable tableName="md_methods_or_standards">
 			<column name="id" type="bigserial">
 				<constraints primaryKey="true" nullable="false"/>
 			</column>
 			<column name="name" type="varchar(30)">
-				<constraints nullable="false"/>
+				<constraints nullable="false" unique="true"/>
 			</column>
 			<column name="notes" type="varchar(250)"/>
 			<column name="create_date" type="timestamp without timezone" defaultValueComputed="current_timestamp">
@@ -434,35 +267,16 @@
 			</column>
 		</createTable>
 		<rollback>
-			<dropTable tableName="methods_or_standards"/>
+			<dropTable tableName="md_methods_or_standards"/>
 		</rollback>
 	</changeSet>
 
-	<changeSet id="load-data: methods_or_standards" author="Environment Agency">
-		<preConditions onFail="HALT">
-			<tableExists tableName="methods_or_standards"/>
-			<columnExists tableName="methods_or_standards" columnName="id"/>
-			<sqlCheck expectedResult="0">select count(id) from methods_or_standards</sqlCheck>
-		</preConditions>
-		<loadData file="${methodsOrStandardsFile}" tableName="methods_or_standards"/>
-		<rollback>
-			<delete tableName="methods_or_standards"></delete>
-		</rollback>
-	</changeSet>
-
-  <changeSet id="update-nulls: methods_or_standards" author="Environment Agency">
-    <update tableName="methods_or_standards">
-      <column name="notes"/>
-      <where>notes = ''</where>
-    </update>
-  </changeSet>
-
-  <changeSet id="create-index: methods_or_standards" author="Environment Agency">
-		<createIndex indexName="idx_methods_or_standards_name" tableName="methods_or_standards" unique="true">
+	<changeSet id="create-index: methods_or_standards" author="Environment Agency">
+		<createIndex indexName="idx_md_methods_or_standards_name" tableName="md_methods_or_standards" unique="true">
 			<column name="name"/>
 		</createIndex>
 		<rollback>
-			<dropIndex tableName="methods_or_standards" indexName="idx_methods_or_standards_name"/>
+			<dropIndex tableName="md_methods_or_standards" indexName="idx_md_methods_or_standards_name"/>
 		</rollback>
 	</changeSet>
 
@@ -472,16 +286,16 @@
 	****************************************************************
 	-->
 	<changeSet id="create-table: qualifiers" author="Environment Agency">
-		<createTable tableName="qualifiers">
+		<createTable tableName="md_qualifiers">
 			<column name="id" type="bigserial">
 				<constraints primaryKey="true" nullable="false"/>
 			</column>
 			<column name="name" type="varchar(100)">
-				<constraints nullable="false"/>
+				<constraints nullable="false" unique="true"/>
 			</column>
-			<column name="notes" type="varchar(100)"></column>
-			<column name="type" type="varchar(50)"></column>
-			<column name="singleormultiple" type="varchar(20)"></column>
+			<column name="notes" type="varchar(100)"/>
+			<column name="type" type="varchar(50)"/>
+			<column name="singleormultiple" type="varchar(20)"/>
 			<column name="create_date" type="timestamp without timezone" defaultValueComputed="current_timestamp">
 				<constraints nullable="false"/>
 			</column>
@@ -490,60 +304,35 @@
 			</column>
 		</createTable>
 		<rollback>
-			<dropTable tableName="qualifiers"/>
+			<dropTable tableName="md_qualifiers"/>
 		</rollback>
 	</changeSet>
-
-	<changeSet id="load-data: qualifiers" author="Environment Agency">
-		<preConditions onFail="HALT">
-			<tableExists tableName="qualifiers"/>
-			<columnExists tableName="qualifiers" columnName="id"/>
-			<sqlCheck expectedResult="0">select count(id) from qualifiers</sqlCheck>
-		</preConditions>
-		<loadData file="${qualifiersFile}" tableName="qualifiers"/>
-		<rollback>
-			<delete tableName="qualifiers"></delete>
-		</rollback>
-	</changeSet>
-  
-  <changeSet id="update-nulls: qualifiers" author="Environment Agency">
-    <update tableName="qualifiers">
-      <column name="notes"/>
-      <where>notes = ''</where>
-    </update>
-    <update tableName="qualifiers">
-      <column name="type"/>
-      <where>type = ''</where>
-    </update>
-		<update tableName="qualifiers">
-			<column name="singleormultiple"/>
-			<where>singleormultiple = ''</where>
-		</update>
-  </changeSet>
 
 	<changeSet id="create-index: qualifiers" author="Environment Agency">
-		<createIndex indexName="idx_qualifiers_name" tableName="qualifiers" unique="true">
+		<createIndex indexName="idx_md_qualifiers_name" tableName="md_qualifiers" unique="true">
 			<column name="name"/>
 		</createIndex>
 		<rollback>
-			<dropIndex tableName="qualifiers" indexName="idx_qualifiers_name"/>
+			<dropIndex tableName="md_qualifiers" indexName="idx_md_qualifiers_name"/>
 		</rollback>
 	</changeSet>
-
 	<!-- 
 	****************************************************************
 	Reference Periods
 	****************************************************************
 	-->
 	<changeSet id="create-table: reference_periods" author="Environment Agency">
-		<createTable tableName="reference_periods">
+		<createTable tableName="md_reference_periods">
 			<column name="id" type="bigserial">
 				<constraints primaryKey="true" nullable="false"/>
 			</column>
 			<column name="name" type="varchar(100)">
-				<constraints nullable="false"/>
+				<constraints nullable="false" unique="true"/>
 			</column>
-			<column name="preferred" type="varchar(100)" />
+			<column name="preferred" type="bigint">
+				<constraints nullable="true" foreignKeyName="fk_reference_periods_preferred"
+							 references="md_reference_periods(id)"/>
+			</column>
 			<column name="notes" type="varchar(250)"/>
 			<column name="create_date" type="timestamp without timezone" defaultValueComputed="current_timestamp">
 				<constraints nullable="false"/>
@@ -553,49 +342,18 @@
 			</column>
 		</createTable>
 		<rollback>
-			<dropTable tableName="reference_periods"/>
+			<dropTable tableName="md_reference_periods"/>
 		</rollback>
-	</changeSet>
-
-	<changeSet id="load-data: reference_periods" author="Environment Agency">
-		<preConditions onFail="HALT">
-			<tableExists tableName="reference_periods"/>
-			<columnExists tableName="reference_periods" columnName="id"/>
-			<sqlCheck expectedResult="0">select count(id) from reference_periods</sqlCheck>
-		</preConditions>
-		<loadData file="${referencePeriodsFile}" tableName="reference_periods"/>
-		<rollback>
-			<delete tableName="reference_periods"></delete>
-		</rollback>
-	</changeSet>
-
-	<changeSet id="update-nulls: reference_periods" author="Environment Agency">
-		<update tableName="reference_periods">
-			<column name="notes"/>
-			<where>notes = ''</where>
-		</update>
-		<update tableName="reference_periods">
-			<column name="preferred"/>
-			<where>preferred = ''</where>
-		</update>
 	</changeSet>
 
 	<changeSet id="create-index: reference_periods" author="Environment Agency">
-		<createIndex indexName="idx_reference_periods_name" tableName="reference_periods" unique="true">
+		<createIndex indexName="idx_md_reference_periods_name" tableName="md_reference_periods" unique="true">
 			<column name="name"/>
 		</createIndex>
 		<rollback>
-			<dropIndex tableName="reference_periods" indexName="idx_reference_periods_name"/>
+			<dropIndex tableName="md_reference_periods" indexName="idx_md_reference_periods_name"/>
 		</rollback>
 	</changeSet>
-
-  <changeSet author="Environment Agency" id="addForeignKeyConstraint-reference_periods">
-    <addForeignKeyConstraint baseColumnNames="preferred"
-                             baseTableName="reference_periods"
-                             constraintName="fk_reference_periods"
-                             referencedColumnNames="name"
-                             referencedTableName="reference_periods"/>
-  </changeSet>
 	<!--
 	****************************************************************
 	Return Periods
@@ -603,15 +361,15 @@
 	-->
 
 	<changeSet id="create-table: return_periods" author="Environment Agency">
-		<createTable tableName="return_periods">
+		<createTable tableName="md_return_periods">
 			<column name="id" type="bigserial">
 				<constraints primaryKey="true" nullable="false"/>
 			</column>
 			<column name="name" type="varchar(20)">
-				<constraints nullable="false"/>
+				<constraints nullable="false" unique="true"/>
 			</column>
-			<column name="definition" type="varchar(600)"></column>
-			<column name="example" type="varchar(20)"></column>
+			<column name="definition" type="varchar(600)"/>
+			<column name="example" type="varchar(20)"/>
 			<column name="create_date" type="timestamp without timezone" defaultValueComputed="current_timestamp">
 				<constraints nullable="false"/>
 			</column>
@@ -620,42 +378,18 @@
 			</column>
 		</createTable>
 		<rollback>
-			<dropTable tableName="return_periods"/>
+			<dropTable tableName="md_return_periods"/>
 		</rollback>
 	</changeSet>
 
-	<changeSet id="load-data: return_periods" author="Environment Agency">
-		<preConditions onFail="HALT">
-			<tableExists tableName="return_periods"/>
-			<columnExists tableName="return_periods" columnName="id"/>
-			<sqlCheck expectedResult="0">select count(id) from return_periods</sqlCheck>
-		</preConditions>
-		<loadData file="${returnPeriodsFile}" tableName="return_periods"/>
-		<rollback>
-			<delete tableName="return_periods"></delete>
-		</rollback>
-	</changeSet>
-
-  <changeSet id="update-nulls: return_periods" author="Environment Agency">
-    <update tableName="return_periods">
-      <column name="definition"/>
-      <where>definition = ''</where>
-    </update>
-    <update tableName="return_periods">
-      <column name="example"/>
-      <where>example = ''</where>
-    </update>
-  </changeSet>
-
-  <changeSet id="create-index: return_periods" author="Environment Agency">
-		<createIndex indexName="idx_return_periods_name" tableName="return_periods" unique="true">
+	<changeSet id="create-index: return_periods" author="Environment Agency">
+		<createIndex indexName="idx_md_return_periods_name" tableName="md_return_periods" unique="true">
 			<column name="name"/>
 		</createIndex>
 		<rollback>
-			<dropIndex tableName="return_periods" indexName="idx_return_periods_name"/>
+			<dropIndex tableName="md_return_periods" indexName="idx_md_return_periods_name"/>
 		</rollback>
 	</changeSet>
-
 	<!--
 	****************************************************************
 	Text Values
@@ -663,14 +397,16 @@
 	-->
 
 	<changeSet id="create-table: text_values" author="Environment Agency">
-		<createTable tableName="text_values">
+		<createTable tableName="md_text_values">
 			<column name="id" type="bigserial">
 				<constraints primaryKey="true" nullable="false"/>
 			</column>
 			<column name="name" type="varchar(30)">
-				<constraints nullable="false"/>
+				<constraints nullable="false" unique="true"/>
 			</column>
-			<column name="preferred" type="varchar(30)"/>
+			<column name="preferred" type="bigint">
+				<constraints nullable="true" foreignKeyName="fk_text_values_preferred" references="md_text_values(id)"/>
+			</column>
 			<column name="create_date" type="timestamp without timezone" defaultValueComputed="current_timestamp">
 				<constraints nullable="false"/>
 			</column>
@@ -679,53 +415,24 @@
 			</column>
 		</createTable>
 		<rollback>
-			<dropTable tableName="text_values"/>
+			<dropTable tableName="md_text_values"/>
 		</rollback>
 	</changeSet>
-
-	<changeSet id="load-data: text_values" author="Environment Agency">
-		<preConditions onFail="HALT">
-			<tableExists tableName="text_values"/>
-			<columnExists tableName="text_values" columnName="id"/>
-			<sqlCheck expectedResult="0">select count(id) from text_values</sqlCheck>
-		</preConditions>
-		<loadData file="${textValuesFile}" tableName="text_values"/>
-		<rollback>
-			<delete tableName="text_values"></delete>
-		</rollback>
-	</changeSet>
-
-	<changeSet id="update-nulls: text_values" author="Environment Agency">
-		<update tableName="text_values">
-			<column name="preferred"/>
-			<where>preferred = ''</where>
-		</update>
-	</changeSet>
-
 	<changeSet id="create-index: text_values" author="Environment Agency">
-		<createIndex indexName="idx_text_values_name" tableName="text_values" unique="true">
+		<createIndex indexName="idx_md_text_values_name" tableName="md_text_values" unique="true">
 			<column name="name"/>
 		</createIndex>
 		<rollback>
-			<dropIndex tableName="text_values" indexName="idx_text_values_name"/>
+			<dropIndex tableName="md_text_values" indexName="idx_md_text_values_name"/>
 		</rollback>
 	</changeSet>
-
-	<changeSet author="Environment Agency" id="addForeignKeyConstraint-text_values">
-		<addForeignKeyConstraint baseColumnNames="preferred"
-														 baseTableName="text_values"
-														 constraintName="fk_text_values"
-														 referencedColumnNames="name"
-														 referencedTableName="text_values"/>
-	</changeSet>
-
 	<!--
   ****************************************************************
   ParameterHierarchy
   ****************************************************************
   -->
-	<changeSet id="create-table: parameter_hierarchy" author="Environment Agency">
-		<createTable tableName="parameter_hierarchy">
+	<changeSet id="create-table: md_parameter_hierarchy" author="Environment Agency">
+		<createTable tableName="md_parameter_hierarchy">
 			<column name="return_type" type="varchar(80)">
 				<constraints nullable="false" unique="false"/>
 			</column>
@@ -746,30 +453,30 @@
 			</column>
 		</createTable>
 		<rollback>
-			<dropTable tableName="parameter_hierarchy"/>
+			<dropTable tableName="md_parameter_hierarchy"/>
 		</rollback>
 	</changeSet>
 
-	<changeSet id="load-data: parameter_hierarchy" author="Environment Agency">
+	<changeSet id="load-data: md_parameter_hierarchy" author="Environment Agency">
 		<preConditions onFail="HALT">
-			<tableExists tableName="parameter_hierarchy"/>
-			<sqlCheck expectedResult="0">select count(*) from parameter_hierarchy</sqlCheck>
+			<tableExists tableName="md_parameter_hierarchy"/>
+			<sqlCheck expectedResult="0">select count(*) from md_parameter_hierarchy</sqlCheck>
 		</preConditions>
-		<loadData file="${parameterHierarchyFile}" tableName="parameter_hierarchy"/>
+		<loadData file="${parameterHierarchyFile}" tableName="md_parameter_hierarchy"/>
 		<rollback>
-			<delete tableName="parameter_hierarchy"></delete>
+			<delete tableName="md_parameter_hierarchy"/>
 		</rollback>
 	</changeSet>
 
-	<changeSet id="create-index: parameter_hierarchy" author="Environment Agency">
-		<createIndex indexName="idx_parameter_hierarchy" tableName="parameter_hierarchy" unique="true">
+	<changeSet id="create-index: md_parameter_hierarchy" author="Environment Agency">
+		<createIndex indexName="idx_md_parameter_hierarchy" tableName="md_parameter_hierarchy" unique="true">
 			<column name="return_type"/>
 			<column name="parameter"/>
 			<column name="releases_and_transfers"/>
 			<column name="units"/>
 		</createIndex>
 		<rollback>
-			<dropIndex tableName="parameter_hierarchy" indexName="idx_parameter_hierarchy"/>
+			<dropIndex tableName="md_parameter_hierarchy" indexName="idx_md_parameter_hierarchy"/>
 		</rollback>
 	</changeSet>
 
@@ -779,13 +486,13 @@
 	****************************************************************
 	-->
 	<changeSet id="create-table: releases_and_transfers" author="Environment Agency">
-		<createTable tableName="releases_and_transfers">
+		<createTable tableName="md_releases_and_transfers">
 			<!-- Currently unique identifiers are generally 6 characters long but this could change! -->
 			<column name="id" type="bigserial">
 				<constraints primaryKey="true" nullable="false"/>
 			</column>
 			<column name="name" type="varchar(50)">
-				<constraints nullable="false"/>
+				<constraints nullable="false" unique="true"/>
 			</column>
 			<column name="create_date" type="timestamp without timezone" defaultValueComputed="current_timestamp">
 				<constraints nullable="false"/>
@@ -795,79 +502,17 @@
 			</column>
 		</createTable>
 		<rollback>
-			<dropTable tableName="releases_and_transfers"/>
+			<dropTable tableName="md_releases_and_transfers"/>
 		</rollback>
 	</changeSet>
 
-	<changeSet id="load-data: releases_and_transfers" author="Environment Agency">
-		<preConditions onFail="HALT">
-			<tableExists tableName="releases_and_transfers"/>
-			<columnExists tableName="releases_and_transfers" columnName="name"/>
-			<sqlCheck expectedResult="0">select count(id) from releases_and_transfers</sqlCheck>
-		</preConditions>
-		<loadData file="${releasesAndTransfersFile}" tableName="releases_and_transfers"/>
-		<rollback>
-			<delete tableName="releases_and_transfers"></delete>
-		</rollback>
-	</changeSet>
 
 	<changeSet id="create-index: releases_and_transfers" author="Environment Agency">
-		<createIndex indexName="idx_releases_and_transfers_name" tableName="releases_and_transfers" unique="true">
+		<createIndex indexName="idx_md_releases_and_transfers_name" tableName="md_releases_and_transfers" unique="true">
 			<column name="name"/>
 		</createIndex>
 		<rollback>
-			<dropIndex tableName="releases_and_transfers" indexName="idx_releases_and_transfers_name"/>
+			<dropIndex tableName="md_releases_and_transfers" indexName="idx_md_releases_and_transfers_name"/>
 		</rollback>
 	</changeSet>
-
-	<!--
-	****************************************************************
-	Regis/PAS LICHOLD table holds status information
-	****************************************************************
-	-->
-	<changeSet id="create-table: stage_permits" author="Environment Agency">
-		<createTable tableName="stage_permits">
-			<column name="ea_id" type="varchar(18)"/>
-			<column name="site" type="varchar(80)"/>
-			<column name="alternatives" type="varchar(18)"/>
-		</createTable>
-		<rollback>
-			<dropTable tableName="stage_permits"/>
-		</rollback>
-	</changeSet>
-
-	<changeSet id="load-data: stage_permits" author="Environment Agency">
-		<preConditions onFail="HALT">
-			<tableExists tableName="stage_permits"/>
-			<sqlCheck expectedResult="0">select count(*) from stage_permits</sqlCheck>
-		</preConditions>
-		<loadData file="${WML}" tableName="stage_permits"/>
-		<loadData file="${EPR}" tableName="stage_permits"/>
-		<loadData file="${IPPC}" tableName="stage_permits"/>
-		<loadData file="${PRE}" tableName="stage_permits"/>
-		<rollback>
-			<delete tableName="stage_permits"></delete>
-		</rollback>
-	</changeSet>
-
-	<changeSet id="update-nulls: stage_permits" author="Environment Agency">
-		<update tableName="stage_permits">
-			<column name="alternatives"/>
-			<where>alternatives = ''</where>
-		</update>
-	</changeSet>
-
-	<!--
-	****************************************************************
-	Read the permit/site data from the stage tables and merge into
-	the main tables
-	****************************************************************
-	-->
-	<changeSet id="prepare: site-permit" author="Environment Agency">
-		 <sqlFile path="../sql/prepare-permit-data.sql"
-						 relativeToChangelogFile="true"
-						 splitStatements="true"
-						 stripComments="true"/>
-	</changeSet>
-
 </databaseChangeLog>

@@ -4,11 +4,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
-import uk.gov.ea.datareturns.domain.jpa.dao.userdata.impl.DatasetDao;
 import uk.gov.ea.datareturns.domain.jpa.dao.userdata.impl.PayloadEntityDao;
-import uk.gov.ea.datareturns.domain.jpa.dao.userdata.impl.UserDao;
 import uk.gov.ea.datareturns.domain.jpa.entities.userdata.impl.DatasetEntity;
 import uk.gov.ea.datareturns.domain.jpa.entities.userdata.impl.User;
+import uk.gov.ea.datareturns.domain.jpa.repositories.systemdata.UserRepository;
+import uk.gov.ea.datareturns.domain.jpa.repositories.userdata.DatasetRepository;
 
 import javax.inject.Inject;
 import java.time.Instant;
@@ -22,17 +22,18 @@ import java.util.UUID;
 public class DatasetService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(DatasetService.class);
-    private final UserDao userDao;
-    private final DatasetDao datasetDao;
+    private final UserRepository userRepository;
+    private final DatasetRepository datasetRepository;
     private final PayloadEntityDao payloadDao;
 
     @Inject
-    public DatasetService(UserDao userDao, DatasetDao datasetDao, PayloadEntityDao payloadDao) {
-        this.userDao = userDao;
-        this.datasetDao = datasetDao;
+    public DatasetService(UserRepository userRepository, DatasetRepository datasetRepository, PayloadEntityDao payloadDao) {
+        this.userRepository = userRepository;
+        this.datasetRepository = datasetRepository;
         this.payloadDao = payloadDao;
         LOGGER.info("Initializing dataset service");
     }
+
     /**
      * Get the default (system) user
      *
@@ -40,7 +41,7 @@ public class DatasetService {
      */
     @Transactional(readOnly = true)
     public User getSystemUser() {
-        return userDao.getSystemUser();
+        return userRepository.getUserByIdentifier(User.SYSTEM);
     }
 
     /**
@@ -55,7 +56,7 @@ public class DatasetService {
         user.setIdentifier(identifier);
         user.setCreateDate(Instant.now());
         user.setLastChangedDate(Instant.now());
-        userDao.persist(user);
+        userRepository.save(user);
         return user;
     }
 
@@ -67,7 +68,7 @@ public class DatasetService {
      */
     @Transactional(readOnly = true)
     public User getUser(String identifier) {
-        return userDao.get(identifier);
+        return userRepository.getUserByIdentifier(identifier);
     }
 
     /**
@@ -77,7 +78,7 @@ public class DatasetService {
      */
     @Transactional
     public void removeUser(String identifier) {
-        userDao.remove(identifier);
+        userRepository.removeUserByIdentifier(identifier);
     }
 
     /****************************************************************************************
@@ -104,31 +105,31 @@ public class DatasetService {
             newDatasetEntity.setUser(getSystemUser());
         }
 
-        User user = userDao.get(newDatasetEntity.getUser().getIdentifier());
+        User user = userRepository.getUserByIdentifier(newDatasetEntity.getUser().getIdentifier());
         user.setDatasetChangedDate(timestamp);
 
-        userDao.merge(user);
-        datasetDao.persist(newDatasetEntity);
+        userRepository.saveAndFlush(user);
+        datasetRepository.saveAndFlush(newDatasetEntity);
     }
 
     @Transactional
     public void updateDataset(DatasetEntity datasetEntity) {
         Instant timestamp = Instant.now();
         datasetEntity.setLastChangedDate(Instant.now());
-        User user = userDao.get(datasetEntity.getUser().getIdentifier());
+        User user = userRepository.getUserByIdentifier(datasetEntity.getUser().getIdentifier());
         user.setDatasetChangedDate(timestamp);
-        userDao.merge(user);
-        datasetDao.merge(datasetEntity);
+        userRepository.saveAndFlush(user);
+        datasetRepository.saveAndFlush(datasetEntity);
     }
 
     @Transactional(readOnly = true)
     public List<DatasetEntity> getDatasets(User user) {
-        return datasetDao.list(user);
+        return datasetRepository.findAllByUser(user);
     }
 
     @Transactional(readOnly = true)
     public List<DatasetEntity> getDatasets() {
-        return datasetDao.list(getSystemUser());
+        return datasetRepository.findAllByUser(getSystemUser());
     }
 
     @Transactional
@@ -138,13 +139,13 @@ public class DatasetService {
 
     @Transactional
     public void removeDataset(String identifier, User user) {
-        DatasetEntity dataset = datasetDao.get(user, identifier);
+        DatasetEntity dataset = datasetRepository.getByUserAndIdentifier(user, identifier);
         if (dataset != null) {
             payloadDao.removeAll(dataset);
-            datasetDao.remove(dataset.getId());
+            datasetRepository.delete(dataset);
             Instant timestamp = Instant.now();
             user.setDatasetChangedDate(timestamp);
-            userDao.merge(user);
+            userRepository.saveAndFlush(user);
         }
     }
 
@@ -155,6 +156,6 @@ public class DatasetService {
 
     @Transactional(readOnly = true)
     public DatasetEntity getDataset(String datasetId, User user) {
-        return datasetDao.get(user, datasetId);
+        return datasetRepository.getByUserAndIdentifier(user, datasetId);
     }
 }

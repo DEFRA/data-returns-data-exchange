@@ -1,22 +1,17 @@
 package uk.gov.ea.datareturns.domain.validation.payloads.datasample.fields;
 
-import uk.gov.ea.datareturns.domain.jpa.dao.masterdata.EntityDao;
-import uk.gov.ea.datareturns.domain.jpa.dao.masterdata.TextValueDao;
 import uk.gov.ea.datareturns.domain.jpa.entities.masterdata.impl.TextValue;
-import uk.gov.ea.datareturns.domain.validation.common.auditors.controlledlist.TxtValueAuditor;
 import uk.gov.ea.datareturns.domain.validation.common.constraints.controlledlist.ControlledList;
-import uk.gov.ea.datareturns.domain.validation.common.entityfields.AbstractAliasingEntityValue;
+import uk.gov.ea.datareturns.domain.validation.common.entityfields.FieldValue;
 
 /**
  * Models measurements/observations returned as text such as true, false, yes and no
  *
  * @author Sam Gardner-Dell
  */
-public class TxtValue extends AbstractAliasingEntityValue<TextValue> {
+public class TxtValue implements FieldValue<TextValue> {
     public static final String FIELD_NAME = "Txt_Value";
-
-    private static final TextValueDao DAO = EntityDao.getDao(TextValueDao.class);
-    @ControlledList(auditor = TxtValueAuditor.class, message = "DR9080-Incorrect")
+    @ControlledList(entities = uk.gov.ea.datareturns.domain.jpa.entities.masterdata.impl.TextValue.class, message = "DR9080-Incorrect")
     private final String inputValue;
 
     /**
@@ -25,12 +20,7 @@ public class TxtValue extends AbstractAliasingEntityValue<TextValue> {
      * @param inputValue the input value
      */
     public TxtValue(String inputValue) {
-        super(inputValue);
         this.inputValue = inputValue;
-    }
-
-    @Override protected TextValueDao getDao() {
-        return DAO;
     }
 
     @Override public String getInputValue() {

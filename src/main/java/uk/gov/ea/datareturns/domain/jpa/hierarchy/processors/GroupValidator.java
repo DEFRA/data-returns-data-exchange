@@ -4,8 +4,10 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
+import uk.gov.ea.datareturns.domain.jpa.entities.masterdata.MasterDataEntity;
 import uk.gov.ea.datareturns.domain.jpa.hierarchy.*;
 
+import javax.inject.Inject;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
@@ -17,18 +19,24 @@ import java.util.Set;
  *
  * This variant will operate on groups - enclosed by []
  */
-@SuppressWarnings("unchecked")
 @Component
 public class GroupValidator implements Validator {
     private static final Logger LOGGER = LoggerFactory.getLogger(GroupValidator.class);
 
-    public Pair<HierarchyLevel<? extends Hierarchy.HierarchyEntity>, Hierarchy.Result> validate(
-            Map<String, ?> cache,
-            Set<HierarchyLevel<? extends Hierarchy.HierarchyEntity>> hierarchyLevels,
-            Map<HierarchyLevel<? extends Hierarchy.HierarchyEntity>, String> entityNames) {
+    public final GroupCommon groupCommon;
 
-        Iterator<HierarchyLevel<? extends Hierarchy.HierarchyEntity>> hierarchyNodesIttr = hierarchyLevels.iterator();
-        HierarchyLevel<? extends Hierarchy.HierarchyEntity> rootNode = hierarchyNodesIttr.next();
+    @Inject
+    public GroupValidator(GroupCommon groupCommon) {
+        this.groupCommon = groupCommon;
+    }
+
+    public Pair<HierarchyLevel<? extends MasterDataEntity>, Hierarchy.Result> validate(
+            Map<String, ?> cache,
+            Set<HierarchyLevel<? extends MasterDataEntity>> hierarchyLevels,
+            Map<HierarchyLevel<? extends MasterDataEntity>, String> entityNames) {
+
+        Iterator<HierarchyLevel<? extends MasterDataEntity>> hierarchyNodesIttr = hierarchyLevels.iterator();
+        HierarchyLevel<? extends MasterDataEntity> rootNode = hierarchyNodesIttr.next();
         return evaluate(hierarchyNodesIttr, rootNode, cache, entityNames);
     }
 
@@ -36,11 +44,11 @@ public class GroupValidator implements Validator {
      * Main evaluating function which is recursive as the rules are the same for each entity
      */
     @SuppressWarnings("unchecked")
-    private Pair<HierarchyLevel<? extends Hierarchy.HierarchyEntity>, Hierarchy.Result> evaluate(
-            Iterator<HierarchyLevel<? extends Hierarchy.HierarchyEntity>> hierarchyNodesIttr,
-            HierarchyLevel<? extends Hierarchy.HierarchyEntity> level,
+    private Pair<HierarchyLevel<? extends MasterDataEntity>, Hierarchy.Result> evaluate(
+            Iterator<HierarchyLevel<? extends MasterDataEntity>> hierarchyNodesIttr,
+            HierarchyLevel<? extends MasterDataEntity> level,
             Map<String, ?> cache,
-            Map<HierarchyLevel<? extends Hierarchy.HierarchyEntity>, String> entityNames) {
+            Map<HierarchyLevel<? extends MasterDataEntity>, String> entityNames) {
 
         if (entityNames.get(level) != null) {
             /*
@@ -55,7 +63,7 @@ public class GroupValidator implements Validator {
             } else if (cache.containsKey(entityNames.get(level))) {
                 // Item explicitly listed - Proceed
                 return shim(hierarchyNodesIttr, level, cache, entityNames.get(level), entityNames);
-            } else if(cache.containsKey(HierarchyGroupSymbols.INCLUDE_ALL_OPTIONALLY)) {
+            } else if (cache.containsKey(HierarchyGroupSymbols.INCLUDE_ALL_OPTIONALLY)) {
                 // if the item is optionally supplied with a wildcard - proceed
                 return shim(hierarchyNodesIttr, level, cache, HierarchySymbols.INCLUDE_ALL_OPTIONALLY, entityNames);
             } else if (cache.containsKey(HierarchyGroupSymbols.INCLUDE_ALL)) {
@@ -63,8 +71,11 @@ public class GroupValidator implements Validator {
                 return shim(hierarchyNodesIttr, level, cache, HierarchyGroupSymbols.INCLUDE_ALL, entityNames);
             } else if (level instanceof HierarchyGroupLevel) {
                 // For a group level search for the group
-                if (GroupCommon.cacheContainsGroupContainsName((HierarchyGroupLevel<? extends Hierarchy.HierarchyEntity>)level, cache, entityNames.get(level))) {
-                    String foundGroup = GroupCommon.getGroupInCacheFromName((HierarchyGroupLevel<? extends Hierarchy.HierarchyEntity>)level, cache, entityNames.get(level));
+                if (groupCommon.cacheContainsGroupContainsName((HierarchyGroupLevel<? extends MasterDataEntity>) level, cache,
+                        entityNames.get(level))) {
+                    String foundGroup = groupCommon
+                            .getGroupInCacheFromName((HierarchyGroupLevel<? extends MasterDataEntity>) level, cache,
+                                    entityNames.get(level));
                     return shim(hierarchyNodesIttr, level, cache, HierarchyGroupSymbols.injectGroup(foundGroup), entityNames);
                 } else {
                     return Pair.of(level, Hierarchy.Result.NOT_IN_GROUP);
@@ -83,7 +94,7 @@ public class GroupValidator implements Validator {
             if (cache.containsKey(HierarchySymbols.EXCLUDE_ALL)) {
                 // If we have the inverse wildcard we are not expecting an item so no error - proceed
                 return shim(hierarchyNodesIttr, level, cache, HierarchyGroupSymbols.EXCLUDE_ALL, entityNames);
-            } else if(cache.containsKey(HierarchyGroupSymbols.INCLUDE_ALL_OPTIONALLY)) {
+            } else if (cache.containsKey(HierarchyGroupSymbols.INCLUDE_ALL_OPTIONALLY)) {
                 // if the item is optionally supplied with a wildcard we are good - proceed
                 return shim(hierarchyNodesIttr, level, cache, HierarchyGroupSymbols.INCLUDE_ALL_OPTIONALLY, entityNames);
             } else if (cache.containsKey(HierarchyGroupSymbols.INCLUDE_ALL)) {
@@ -106,11 +117,11 @@ public class GroupValidator implements Validator {
      * If the validation is not already complete and returned out of the above
      * recursive method it is terminated by this operation with a set lookup
      */
-    private Pair<HierarchyLevel<? extends Hierarchy.HierarchyEntity>, Hierarchy.Result> evaluate(
-            Iterator<HierarchyLevel<? extends Hierarchy.HierarchyEntity>> hierarchyNodesIttr,
-            HierarchyLevel<? extends Hierarchy.HierarchyEntity> level,
+    private Pair<HierarchyLevel<? extends MasterDataEntity>, Hierarchy.Result> evaluate(
+            Iterator<HierarchyLevel<? extends MasterDataEntity>> hierarchyNodesIttr,
+            HierarchyLevel<? extends MasterDataEntity> level,
             Set<String> cache,
-            Map<HierarchyLevel<? extends Hierarchy.HierarchyEntity>, String> entityNames) {
+            Map<HierarchyLevel<? extends MasterDataEntity>, String> entityNames) {
 
         if (entityNames.get(level) != null) {
             /*
@@ -125,14 +136,14 @@ public class GroupValidator implements Validator {
             } else if (cache.contains(entityNames.get(level))) {
                 // Item explicitly listed - Proceed
                 return Pair.of(level, Hierarchy.Result.OK);
-            } else if(cache.contains(HierarchyGroupSymbols.INCLUDE_ALL_OPTIONALLY)) {
+            } else if (cache.contains(HierarchyGroupSymbols.INCLUDE_ALL_OPTIONALLY)) {
                 // if the item is optionally supplied with a wildcard - OK
                 return Pair.of(level, Hierarchy.Result.OK);
             } else if (cache.contains(HierarchyGroupSymbols.INCLUDE_ALL)) {
                 // if the item is on a wildcard - OK
                 return Pair.of(level, Hierarchy.Result.OK);
             } else if (level instanceof HierarchyGroupLevel) {
-                if (GroupCommon.cacheContainsGroupContainsName((HierarchyGroupLevel)level, cache, entityNames.get(level))) {
+                if (groupCommon.cacheContainsGroupContainsName((HierarchyGroupLevel<?>) level, cache, entityNames.get(level))) {
                     return Pair.of(level, Hierarchy.Result.OK);
                 } else {
                     return Pair.of(level, Hierarchy.Result.NOT_IN_GROUP);
@@ -151,7 +162,7 @@ public class GroupValidator implements Validator {
             if (cache.contains(HierarchySymbols.EXCLUDE_ALL)) {
                 // If we have the inverse wildcard we are not expecting an item so no error - ok
                 return Pair.of(level, Hierarchy.Result.OK);
-            } else if(cache.contains(HierarchyGroupSymbols.INCLUDE_ALL_OPTIONALLY)) {
+            } else if (cache.contains(HierarchyGroupSymbols.INCLUDE_ALL_OPTIONALLY)) {
                 // if the item is optionally supplied with a wildcard we are good
                 return Pair.of(level, Hierarchy.Result.OK);
             } else if (cache.contains(HierarchyGroupSymbols.INCLUDE_ALL)) {
@@ -177,12 +188,13 @@ public class GroupValidator implements Validator {
      * Then as each entity is validated the cache is drilled into so that we get the following
      * sequence
      */
-    private Pair<HierarchyLevel<? extends Hierarchy.HierarchyEntity>, Hierarchy.Result> shim(
-            Iterator<HierarchyLevel<? extends Hierarchy.HierarchyEntity>> hierarchyNodesIttr,
-            HierarchyLevel<? extends Hierarchy.HierarchyEntity> level,
+    @SuppressWarnings("unchecked")
+    private Pair<HierarchyLevel<? extends MasterDataEntity>, Hierarchy.Result> shim(
+            Iterator<HierarchyLevel<? extends MasterDataEntity>> hierarchyNodesIttr,
+            HierarchyLevel<? extends MasterDataEntity> level,
             Map<String, ?> cache,
             String cacheKey,
-            Map<HierarchyLevel<? extends Hierarchy.HierarchyEntity>, String> entityNames) {
+            Map<HierarchyLevel<? extends MasterDataEntity>, String> entityNames) {
 
         if (!hierarchyNodesIttr.hasNext()) {
             LOGGER.error("Error evaluating hierarchy at : " + level.getControlledList().getDescription());
@@ -191,10 +203,11 @@ public class GroupValidator implements Validator {
 
         entityNames.remove(level);
 
-        if (cache.get(cacheKey) instanceof Set) {
-            return evaluate(hierarchyNodesIttr, hierarchyNodesIttr.next(), (Set<String>)cache.get(cacheKey), entityNames);
+        Object cachedObject = cache.get(cacheKey);
+        if (cachedObject instanceof Set) {
+            return evaluate(hierarchyNodesIttr, hierarchyNodesIttr.next(), (Set<String>) cachedObject, entityNames);
         } else {
-            return evaluate(hierarchyNodesIttr, hierarchyNodesIttr.next(), (Map<String, ?>)cache.get(cacheKey), entityNames);
+            return evaluate(hierarchyNodesIttr, hierarchyNodesIttr.next(), (Map<String, ?>) cachedObject, entityNames);
         }
     }
 }

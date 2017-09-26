@@ -10,7 +10,7 @@ import uk.gov.ea.datareturns.domain.jpa.entities.userdata.impl.DatasetEntity;
 import uk.gov.ea.datareturns.domain.jpa.entities.userdata.impl.RecordEntity;
 import uk.gov.ea.datareturns.domain.jpa.service.DatasetService;
 import uk.gov.ea.datareturns.domain.jpa.service.SubmissionService;
-import uk.gov.ea.datareturns.util.StopWatch;
+import uk.gov.ea.datareturns.web.resource.JerseyResource;
 import uk.gov.ea.datareturns.web.resource.v1.model.common.Linker;
 import uk.gov.ea.datareturns.web.resource.v1.model.common.Preconditions;
 import uk.gov.ea.datareturns.web.resource.v1.model.common.references.EntityReference;
@@ -54,7 +54,7 @@ import static uk.gov.ea.datareturns.web.resource.v1.model.common.PreconditionChe
 @Produces({ APPLICATION_JSON, APPLICATION_XML })
 @Component
 @Scope(ConfigurableBeanFactory.SCOPE_SINGLETON)
-public class RecordResource {
+public class RecordResource implements JerseyResource {
     private static final Logger LOGGER = LoggerFactory.getLogger(RecordResource.class);
     private final RecordAdaptor recordAdaptor;
     @Context
@@ -196,8 +196,6 @@ public class RecordResource {
     )
             throws Exception {
 
-        final StopWatch sw = new StopWatch("postRecords");
-        sw.startTask("Fetching dataset");
         return onDataset(datasetId, datasetEntity -> {
             Response.ResponseBuilder rb;
             if (batchRequest.getRequests().isEmpty()) {
@@ -213,14 +211,11 @@ public class RecordResource {
                 List<String> recordIds = batchRequest.getRequests().stream().map(BatchRecordRequestItem::getRecordId)
                         .collect(Collectors.toList());
 
-                sw.startTask("Retrieving existing records");
-
                 Map<String, RecordEntity> recordEntities = submissionService.getRecords(datasetEntity)
                         .stream()
                         .filter(r -> recordIds.contains(r.getIdentifier()))
                         .collect(Collectors.toMap(RecordEntity::getIdentifier, r -> r));
 
-                sw.startTask("Calculating record updates");
                 Map<String, Response.ResponseBuilder> preconditionFailures = new HashMap<>();
                 Map<String, Response.Status> responses = new HashMap<>();
                 Map<String, Payload> payloads = new HashMap<>();
@@ -258,12 +253,9 @@ public class RecordResource {
                     }
                 }
 
-                sw.startTask("Merging records");
-
                 // Create and validate records if they are not already submitted
                 recordEntities.putAll(submissionService.createRecords(datasetEntity, payloads));
 
-                sw.startTask("Building response");
                 // Build the response
                 MultiStatusResponse multiResponse = new MultiStatusResponse();
                 for (BatchRecordRequestItem request : batchRequest.getRequests()) {
@@ -294,9 +286,6 @@ public class RecordResource {
                     multiResponse.addResponse(responseItem);
                 }
                 rb = multiResponse.toResponseBuilder();
-
-                sw.stopTask();
-                LOGGER.info(sw.prettyPrint());
             }
             return rb;
         }).build();

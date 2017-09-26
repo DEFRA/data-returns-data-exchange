@@ -1,21 +1,22 @@
 package uk.gov.ea.datareturns.tests.integration.resource;
 
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang3.tuple.Triple;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 import uk.gov.ea.datareturns.App;
 import uk.gov.ea.datareturns.config.TestSettings;
 import uk.gov.ea.datareturns.domain.exceptions.ProcessingException;
-import uk.gov.ea.datareturns.domain.jpa.entities.userdata.AbstractPayloadEntity;
 import uk.gov.ea.datareturns.domain.jpa.dao.userdata.factories.EntitySubstitution;
+import uk.gov.ea.datareturns.domain.jpa.entities.userdata.AbstractPayloadEntity;
 import uk.gov.ea.datareturns.domain.jpa.entities.userdata.impl.DatasetEntity;
 import uk.gov.ea.datareturns.domain.jpa.entities.userdata.impl.RecordEntity;
 import uk.gov.ea.datareturns.domain.jpa.entities.userdata.impl.User;
+import uk.gov.ea.datareturns.domain.jpa.projections.userdata.ValidationErrorInstance;
 import uk.gov.ea.datareturns.domain.jpa.service.DatasetService;
 import uk.gov.ea.datareturns.domain.jpa.service.SubmissionService;
 import uk.gov.ea.datareturns.web.resource.v1.model.record.payload.Payload;
@@ -35,7 +36,8 @@ import java.util.stream.Collectors;
  * Integration test to the SubmissionServiceOld
  */
 @RunWith(SpringRunner.class)
-@SpringBootTest(classes = App.class)
+@SpringBootTest(classes = App.class, webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
+@ActiveProfiles("IntegrationTests")
 public class APIIntegrationTests_DataSampleEntity {
 
     @Inject private TestSettings testSettings;
@@ -216,10 +218,9 @@ public class APIIntegrationTests_DataSampleEntity {
         int index = 0;
 
         for (RecordEntity record : recordEntities.values()) {
-            Set<EntitySubstitution> subs  = subMap.get(record);
-            if (subs != null) {
-                Assert.assertEquals(expectedSubs[index++], subs.size());
-            }
+            Set<EntitySubstitution> subs = subMap.get(record);
+            int subCount = subs == null ? 0 : subs.size();
+            Assert.assertEquals(expectedSubs[index++], subCount);
         }
     }
 
@@ -284,7 +285,7 @@ public class APIIntegrationTests_DataSampleEntity {
         List<Payload> samples = submissionService.parseJsonArray(readTestFile(SUBMISSION_FAILURE));
         Map<String, RecordEntity> recordEntities = submissionService
                 .createRecords(dataset, samples.stream().collect(Collectors.toMap(o -> UUID.randomUUID().toString(), o -> o)));
-        List<Triple<String, String, String>> validationErrors = submissionService.retrieveValidationErrors(dataset);
+        List<ValidationErrorInstance> validationErrors = submissionService.retrieveValidationErrors(dataset);
         Assert.assertEquals(3, validationErrors.size());
     }
 

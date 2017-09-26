@@ -1,6 +1,6 @@
 package uk.gov.ea.datareturns.domain.jpa.hierarchy;
 
-import uk.gov.ea.datareturns.domain.jpa.dao.masterdata.EntityDao;
+import uk.gov.ea.datareturns.domain.jpa.entities.masterdata.MasterDataEntity;
 import uk.gov.ea.datareturns.domain.jpa.entities.masterdata.impl.ControlledListsList;
 
 /**
@@ -9,29 +9,23 @@ import uk.gov.ea.datareturns.domain.jpa.entities.masterdata.impl.ControlledLists
  * for hierarchy meta-data to be held apart from the entity object
  * @author Graham Willis
  */
-public class HierarchyLevel<E extends Hierarchy.HierarchyEntity> {
+public class HierarchyLevel<E extends MasterDataEntity> {
     private final ControlledListsList controlledList;
     private final Class<E> hierarchyEntityClass;
-    Class<? extends EntityDao<E>> daoClass;
 
     public HierarchyLevel(Class<E> hierarchyEntity,
-                          Class<? extends EntityDao<E>> daoClass,
-                          ControlledListsList controlledList) {
+            ControlledListsList controlledList) {
 
         this.hierarchyEntityClass = hierarchyEntity;
-        this.daoClass = daoClass;
         this.controlledList = controlledList;
     }
 
-    public Class<? extends Hierarchy.HierarchyEntity> getHierarchyEntityClass() {
+    public Class<E> getHierarchyEntityClass() {
         return hierarchyEntityClass;
     }
+
     public ControlledListsList getControlledList() {
         return controlledList;
-    }
-
-    public Class<? extends EntityDao<E>> getDaoClass() {
-        return daoClass;
     }
 }
 

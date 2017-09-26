@@ -3,7 +3,8 @@ package uk.gov.ea.datareturns.domain.validation.common.constraints.controlledlis
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.context.ApplicationContext;
+import uk.gov.ea.datareturns.domain.jpa.entities.masterdata.impl.AbstractMasterDataEntity;
+import uk.gov.ea.datareturns.domain.jpa.service.MasterDataLookupService;
 
 import javax.inject.Inject;
 import javax.validation.ConstraintValidator;
@@ -18,20 +19,18 @@ import java.util.Objects;
 public class ControlledListValidator implements ConstraintValidator<ControlledList, Object> {
     private static final Logger LOGGER = LoggerFactory.getLogger(ControlledListValidator.class);
 
-    /** ControlledListProvider instance to provide the list of values we must validate against */
-    private ControlledListAuditor provider;
+    private MasterDataLookupService lookupService;
 
-    private final ApplicationContext applicationContext;
+    private Class<? extends AbstractMasterDataEntity>[] entityClasses;
 
-    @Inject public ControlledListValidator(ApplicationContext applicationContext) {
-        this.applicationContext = applicationContext;
+    @Inject public ControlledListValidator(MasterDataLookupService lookupService) {
+        this.lookupService = lookupService;
     }
 
     @Override
     public void initialize(final ControlledList constraintAnnotation) {
         try {
-            final Class<? extends ControlledListAuditor> providerType = constraintAnnotation.auditor();
-            this.provider = this.applicationContext.getBean(providerType);
+            this.entityClasses = constraintAnnotation.entities();
         } catch (final Throwable t) {
             LOGGER.error(t.getMessage(), t);
         }
@@ -39,21 +38,21 @@ public class ControlledListValidator implements ConstraintValidator<ControlledLi
 
     @Override
     public boolean isValid(final Object value, final ConstraintValidatorContext context) {
-        boolean valid = false;
-        if (StringUtils.isEmpty(Objects.toString(value, ""))) {
-            // If field is empty then this is valid.
-            valid = true;
-        } else {
-            // Assume item is valid if there is no list to validate against.
-            if (this.provider != null) {
-                try {
-                    valid = this.provider.isValid(value);
-                } catch (final Throwable t) {
-                    LOGGER.error("Unable to perform Controlled List Validation", t);
-                    throw t;
-                }
-            }
+        // Check for required dependencies
+        if (lookupService == null || entityClasses == null) {
+            throw new RuntimeException("A MasterDataLookupService instance and an entity class must be provided to perform validation.");
         }
-        return valid;
+
+        // If field is empty then assume it is valid with respect to the list (unused)
+        String naturalKey = Objects.toString(value, null);
+        if (StringUtils.isNotEmpty(naturalKey)) {
+            boolean exists = false;
+            int i = -1;
+            while (!exists && ++i < entityClasses.length) {
+                exists = lookupService.relaxed().exists(entityClasses[i], naturalKey);
+            }
+            return exists;
+        }
+        return true;
     }
 }

@@ -13,7 +13,7 @@
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
-		<version>1.5.4.RELEASE</version>
+		<version>1.5.7.RELEASE</version>
 	</parent>
 
 	<organization>
@@ -40,14 +40,11 @@
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 		<java.version>1.8</java.version>
-
-
+		<maven.compiler.source>${java.version}</maven.compiler.source>
+		<maven.compiler.target>${java.version}</maven.compiler.target>
 		<docker.image.prefix>defra</docker.image.prefix>
-
-
-		<!-- Spring boot version - ensure that this matches the version number used for spring-boot-starter-parent above -->
-		<spring-boot.version>1.5.4.RELEASE</spring-boot.version>
 
 		<!-- Library versions -->
 
@@ -55,14 +52,14 @@
 		<postgresql.version>42.1.1</postgresql.version>
 
 		<!-- Hibernate validation -->
-		<hibernate.version>5.2.10.Final</hibernate.version>
-		<hibernate-validator.version>5.3.4.Final</hibernate-validator.version>
+		<hibernate.version>5.2.11.Final</hibernate.version>
+		<hazelcast.version>3.8.3</hazelcast.version>
 
 		<!-- Apache commons libraries -->
 		<commons-lang3.version>3.6</commons-lang3.version>
 		<commons-collections4.version>4.1</commons-collections4.version>
-		<commons-email.version>1.4</commons-email.version>
 		<commons-io.version>2.5</commons-io.version>
+		<commons-text.version>1.1</commons-text.version>
 
 		<!-- Univocity CSV parser -->
 		<univocity.parsers.version>2.2.2</univocity.parsers.version>
@@ -74,34 +71,14 @@
 
 		<liquibase-slf4j.version>2.0.0</liquibase-slf4j.version>
 
-		<airbrake-logback.version>1.0.1</airbrake-logback.version>
+		<airbrake-logback.version>1.0.3</airbrake-logback.version>
 
-		<aws.java.sdk.version>1.11.152</aws.java.sdk.version>
+		<!-- spring cloud/aws -->
+		<aws.java.sdk.version>1.11.179</aws.java.sdk.version>
 
 		<!-- Test -->
 		<run.test.suite>**/AllTests.class</run.test.suite>
 	</properties>
-
-	<dependencyManagement>
-		<dependencies>
-			<!-- Exclude tomcat from the spring boot starter web dependency - undertow/jetty give better performance -->
-			<dependency>
-				<groupId>org.springframework.boot</groupId>
-				<artifactId>spring-boot-starter-web</artifactId>
-				<version>${spring-boot.version}</version>
-				<exclusions>
-					<exclusion>
-						<groupId>org.springframework.boot</groupId>
-						<artifactId>spring-boot-starter-tomcat</artifactId>
-					</exclusion>
-					<exclusion>
-						<groupId>org.glassfish.jersey.media</groupId>
-						<artifactId>jersey-media-jaxb</artifactId>
-					</exclusion>
-				</exclusions>
-			</dependency>
-		</dependencies>
-	</dependencyManagement>
 
 	<dependencies>
 		<dependency>
@@ -109,10 +86,21 @@
 			<artifactId>spring-boot-starter-jetty</artifactId>
 		</dependency>
 
+
 		<!-- Server management interface port -->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-web</artifactId>
+			<exclusions>
+				<exclusion>
+					<groupId>org.springframework.boot</groupId>
+					<artifactId>spring-boot-starter-tomcat</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>org.glassfish.jersey.media</groupId>
+					<artifactId>jersey-media-jaxb</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
@@ -124,6 +112,11 @@
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-configuration-processor</artifactId>
 			<optional>true</optional>
+		</dependency>
+
+		<dependency>
+			<groupId>org.springframework.hateoas</groupId>
+			<artifactId>spring-hateoas</artifactId>
 		</dependency>
 
 		<!-- Expose dropwizard metrics via management port -->
@@ -158,12 +151,24 @@
 			<version>${dropwizard-metrics.version}</version>
 		</dependency>
 
+		<!-- AWS Integration -->
+		<!--
+		<dependency>
+			<groupId>com.amazonaws</groupId>
+			<artifactId>aws-java-sdk</artifactId>
+			<version>${aws.java.sdk.version}</version>
+		</dependency>
+		-->
+
 		<!-- InfluxDB -->
+		<!--
 		<dependency>
 			<groupId>org.influxdb</groupId>
 			<artifactId>influxdb-java</artifactId>
 			<version>${influxdb-java.version}</version>
 		</dependency>
+		-->
+
 
 		<!-- Jersey JAX-RS -->
 		<dependency>
@@ -181,29 +186,27 @@
 			</exclusions>
 		</dependency>
 
+		<!--
 		<dependency>
 			<groupId>org.glassfish.jersey.media</groupId>
 			<artifactId>jersey-media-multipart</artifactId>
-			<version>${jersey.version}</version>
 		</dependency>
+		-->
 		<dependency>
 			<groupId>com.fasterxml.jackson.jaxrs</groupId>
 			<artifactId>jackson-jaxrs-json-provider</artifactId>
-			<version>${jackson.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>com.fasterxml.jackson.jaxrs</groupId>
 			<artifactId>jackson-jaxrs-xml-provider</artifactId>
-			<version>${jackson.version}</version>
 		</dependency>
-
 
 		<!-- Swagger -->
 		<dependency>
 			<groupId>io.swagger</groupId>
 			<artifactId>swagger-jersey2-jaxrs</artifactId>
 			<scope>compile</scope>
-			<version>1.5.15</version>
+			<version>1.5.16</version>
 		</dependency>
 
 		<!--  JPA via Hibernate ORM -->
@@ -211,12 +214,26 @@
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-data-jpa</artifactId>
 		</dependency>
+		<dependency>
+			<groupId>com.querydsl</groupId>
+			<artifactId>querydsl-apt</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>com.querydsl</groupId>
+			<artifactId>querydsl-jpa</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.hibernate</groupId>
+			<artifactId>hibernate-jpamodelgen</artifactId>
+			<version>${hibernate.version}</version>
+			<scope>compile</scope>
+		</dependency>
+
 
 		<!--Hibernate validator -->
 		<dependency>
 			<groupId>org.hibernate</groupId>
 			<artifactId>hibernate-validator</artifactId>
-			<version>${hibernate-validator.version}</version>
 		</dependency>
 
 		<dependency>
@@ -224,17 +241,36 @@
 			<artifactId>postgresql</artifactId>
 		</dependency>
 
-		<!-- Add in JPA 2.0 meta-model generation -->
+		<!-- Hazelcast 2nd level cache -->
+		<!--
 		<dependency>
-			<groupId>org.hibernate</groupId>
-			<artifactId>hibernate-jpamodelgen</artifactId>
+			<groupId>com.hazelcast</groupId>
+			<artifactId>hazelcast</artifactId>
+			<version>${hazelcast.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>com.hazelcast</groupId>
+			<artifactId>hazelcast-client</artifactId>
+			<version>${hazelcast.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>com.hazelcast</groupId>
+			<artifactId>hazelcast-spring</artifactId>
+			<version>${hazelcast.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>com.hazelcast</groupId>
+			<artifactId>hazelcast-hibernate52</artifactId>
+			<version>1.2.2</version>
+		</dependency>
+		-->
+
+		<!-- Redis support for spring cache -->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-data-redis</artifactId>
 		</dependency>
 
-		<!-- Add in support for Java8 data times -->
-		<dependency>
-			<groupId>org.hibernate</groupId>
-			<artifactId>hibernate-java8</artifactId>
-		</dependency>
 
 		<dependency>
 			<groupId>org.liquibase</groupId>
@@ -262,24 +298,21 @@
 		</dependency>
 
 		<!-- Charset autodetection library -->
+		<!--
 		<dependency>
 			<groupId>com.github.albfernandez</groupId>
 			<artifactId>juniversalchardet</artifactId>
 			<version>2.0.0</version>
 		</dependency>
+		-->
 
 		<!-- Mustache support -->
+		<!--
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-mustache</artifactId>
 		</dependency>
-
-		<!-- AWS S3 Integration -->
-		<dependency>
-			<groupId>com.amazonaws</groupId>
-			<artifactId>aws-java-sdk-s3</artifactId>
-			<version>${aws.java.sdk.version}</version>
-		</dependency>
+		-->
 
 		<!-- Lucene -->
 		<dependency>
@@ -310,14 +343,19 @@
 			<version>${commons-collections4.version}</version>
 		</dependency>
 		<dependency>
-			<groupId>org.apache.commons</groupId>
-			<artifactId>commons-email</artifactId>
-			<version>${commons-email.version}</version>
-		</dependency>
-		<dependency>
 			<groupId>commons-io</groupId>
 			<artifactId>commons-io</artifactId>
 			<version>${commons-io.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.commons</groupId>
+			<artifactId>commons-text</artifactId>
+			<version>${commons-text.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>commons-codec</groupId>
+			<artifactId>commons-codec</artifactId>
+			<version>1.10</version>
 		</dependency>
 
 		<!-- Test -->
@@ -327,6 +365,7 @@
 			<scope>test</scope>
 		</dependency>
 	</dependencies>
+
 	<build>
 		<!-- 		<filters> -->
 		<!-- 			<filter>src/main/resources/db/changelog/liquibase.properties</filter> -->
@@ -358,7 +397,42 @@
 				</includes>
 			</testResource>
 		</testResources>
+
+
 		<plugins>
+			<!-- Run required annotation processors -->
+			<plugin>
+				<groupId>org.bsc.maven</groupId>
+				<artifactId>maven-processor-plugin</artifactId>
+				<version>3.3.2</version>
+				<configuration>
+					<processors>
+						<!-- Hibernate metamodel processor -->
+						<processor>org.hibernate.jpamodelgen.JPAMetaModelEntityProcessor</processor>
+						<!-- QueryDSL processor -->
+						<processor>com.querydsl.apt.jpa.JPAAnnotationProcessor</processor>
+					</processors>
+					<addOutputDirectoryToCompilationSources>true</addOutputDirectoryToCompilationSources>
+				</configuration>
+				<executions>
+					<execution>
+						<id>process</id>
+						<goals>
+							<goal>process</goal>
+						</goals>
+						<phase>generate-sources</phase>
+					</execution>
+					<execution>
+						<id>process-test</id>
+						<goals>
+							<goal>process-test</goal>
+						</goals>
+						<phase>generate-test-sources</phase>
+					</execution>
+				</executions>
+			</plugin>
+
+			<!-- Disable annotation processors during normal compilation -->
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
@@ -367,43 +441,8 @@
 					<target>${java.version}</target>
 					<compilerArgument>-proc:none</compilerArgument>
 				</configuration>
-				<!-- Run the annotation processors to generate the JPA metamodel
-             as per teh JPA 2 metamodel specification -->
-				<executions>
-					<execution>
-						<id>run-annotation-processors-only</id>
-						<phase>generate-sources</phase>
-						<configuration>
-							<compilerArgument>-proc:only</compilerArgument>
-							<includes>
-								<include>**/entities/**/*.java</include>
-							</includes>
-						</configuration>
-						<goals>
-							<goal>compile</goal>
-						</goals>
-					</execution>
-				</executions>
 			</plugin>
-			<!-- Adds the sources generated by the JPA 2 annotation processor above to the compile path -->
-			<plugin>
-				<groupId>org.codehaus.mojo</groupId>
-				<artifactId>build-helper-maven-plugin</artifactId>
-				<version>1.5</version>
-				<executions>
-					<execution>
-						<phase>process-sources</phase>
-						<configuration>
-							<sources>
-								<source>${project.build.directory}/generated-sources/annotations</source>
-							</sources>
-						</configuration>
-						<goals>
-							<goal>add-source</goal>
-						</goals>
-					</execution>
-				</executions>
-			</plugin>
+
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-resources-plugin</artifactId>
@@ -493,26 +532,20 @@
 				</executions>
 			</plugin>
 
-
+			<!-- Make DataLoader executable via "mvn exec:java@load-data" -->
 			<plugin>
-				<groupId>org.liquibase</groupId>
-				<artifactId>liquibase-maven-plugin</artifactId>
-				<version>${liquibase.version}</version>
-				<configuration>
-					<promptOnNonLocalDatabase>false</promptOnNonLocalDatabase>
-					<defaultSchemaName>public</defaultSchemaName>
-					<changelogSchemaName>public</changelogSchemaName>
-					<driver>${db.driver}</driver>
-					<url>${db.url}</url>
-					<username>${db.username}</username>
-					<password>${db.password}</password>
-					<propertyFile>${project.build.outputDirectory}/db/changelog/liquibase.properties</propertyFile>
-				</configuration>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>exec-maven-plugin</artifactId>
+				<version>1.6.0</version>
 				<executions>
 					<execution>
+						<id>load-data</id>
 						<goals>
-							<goal>update</goal>
+							<goal>java</goal>
 						</goals>
+						<configuration>
+							<mainClass>uk.gov.ea.datareturns.DataLoader</mainClass>
+						</configuration>
 					</execution>
 				</executions>
 			</plugin>

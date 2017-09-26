@@ -93,9 +93,4 @@ public class MonitoringDate implements FieldValue<Instant> {
     @Override public String getInputValue() {
         return inputValue;
     }
-
-    public Instant getValue() {
-        return this.instant;
-    }
-
 }

@@ -9,7 +9,7 @@ import javax.persistence.Table;
  * @author Graham Willis
  */
 @Entity
-@Table(name = "alternatives")
+@Table(name = "ud_alternatives")
 public class AlternativePayload extends AbstractPayloadEntity {
 
     private String test;

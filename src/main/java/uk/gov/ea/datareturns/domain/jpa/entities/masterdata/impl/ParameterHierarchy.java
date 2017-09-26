@@ -6,7 +6,7 @@ import javax.persistence.*;
  * Created by graham on 03/10/16.
  */
 @Entity
-@Table(name = "parameter_hierarchy")
+@Table(name = "md_parameter_hierarchy")
 public class ParameterHierarchy {
 
     @EmbeddedId

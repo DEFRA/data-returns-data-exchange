@@ -6,17 +6,19 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionDefinition;
 import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.DefaultTransactionDefinition;
-import uk.gov.ea.datareturns.domain.jpa.dao.masterdata.Key;
-import uk.gov.ea.datareturns.domain.jpa.dao.masterdata.SiteDao;
-import uk.gov.ea.datareturns.domain.jpa.dao.masterdata.UniqueIdentifierAliasDao;
-import uk.gov.ea.datareturns.domain.jpa.dao.masterdata.UniqueIdentifierDao;
 import uk.gov.ea.datareturns.domain.jpa.entities.masterdata.impl.Site;
 import uk.gov.ea.datareturns.domain.jpa.entities.masterdata.impl.UniqueIdentifier;
 import uk.gov.ea.datareturns.domain.jpa.entities.masterdata.impl.UniqueIdentifierAlias;
+import uk.gov.ea.datareturns.domain.jpa.repositories.masterdata.SiteRepository;
+import uk.gov.ea.datareturns.domain.jpa.repositories.masterdata.UniqueIdentifierRepository;
 
 import javax.inject.Inject;
+import java.util.Arrays;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * @author Graham Willis
@@ -31,23 +33,17 @@ import java.util.Set;
 public class SitePermitService {
     protected static final Logger LOGGER = LoggerFactory.getLogger(SitePermitService.class);
 
-    private final UniqueIdentifierDao uniqueIdentifierDao;
-    private final SiteDao siteDao;
-    private final UniqueIdentifierAliasDao uniqueIdentifierAliasDao;
-    private final Search search;
+    private final UniqueIdentifierRepository uniqueIdentifierRepository;
+    private final SiteRepository siteRepository;
     private final PlatformTransactionManager transactionManager;
 
     @Inject
-    public SitePermitService(SiteDao siteDao,
-                             UniqueIdentifierDao uniqueIdentifierDao,
-                             UniqueIdentifierAliasDao uniqueIdentifierAliasDao,
-                             Search search,
-                             PlatformTransactionManager transactionManager) {
+    public SitePermitService(SiteRepository siteRepository,
+            UniqueIdentifierRepository uniqueIdentifierRepository,
+            PlatformTransactionManager transactionManager) {
 
-        this.uniqueIdentifierDao = uniqueIdentifierDao;
-        this.siteDao = siteDao;
-        this.uniqueIdentifierAliasDao = uniqueIdentifierAliasDao;
-        this.search = search;
+        this.uniqueIdentifierRepository = uniqueIdentifierRepository;
+        this.siteRepository = siteRepository;
         this.transactionManager = transactionManager;
     }
 
@@ -59,45 +55,40 @@ public class SitePermitService {
      * @param siteName
      * @param aliasNames
      */
-    public void addNewPermitAndSite(String eaId, String siteName, String[] aliasNames)  {
+    @Transactional(propagation = Propagation.NESTED)
+    public void addNewPermitAndSite(String eaId, String siteName, String[] aliasNames) {
 
         // Acquire a distributed lock on all remote servers for this transaction
 
-
-        DefaultTransactionDefinition def = new DefaultTransactionDefinition();
-        def.setName("addNewPermitAndSite");
-        def.setPropagationBehavior(TransactionDefinition.PROPAGATION_NESTED);
-
-        TransactionStatus status = transactionManager.getTransaction(def);
+        //        DefaultTransactionDefinition def = new DefaultTransactionDefinition();
+        //        def.setName("addNewPermitAndSite");
+        //        def.setPropagationBehavior(TransactionDefinition.PROPAGATION_NESTED);
+        //
+        //        TransactionStatus status = transactionManager.getTransaction(def);
 
         Site site = new Site();
         site.setName(siteName);
+        siteRepository.save(site);
 
         UniqueIdentifier uniqueIdentifier = new UniqueIdentifier();
         uniqueIdentifier.setName(eaId);
         uniqueIdentifier.setSite(site);
 
-        UniqueIdentifierAlias[] uniqueIdentifierAliases = new UniqueIdentifierAlias[aliasNames.length];
+        Set<UniqueIdentifierAlias> aliases = Arrays.stream(aliasNames)
+                .map(aliasName -> {
+                    UniqueIdentifierAlias alias = new UniqueIdentifierAlias();
+                    alias.setName(aliasName);
+                    alias.setPreferred(uniqueIdentifier);
+                    return alias;
+                })
+                .collect(Collectors.toSet());
+        uniqueIdentifier.setAliases(aliases);
 
-        for (int i = 0; i < aliasNames.length; i++) {
-            uniqueIdentifierAliases[i] = new UniqueIdentifierAlias();
-            uniqueIdentifierAliases[i].setUniqueIdentifier(uniqueIdentifier);
-            uniqueIdentifierAliases[i].setName(aliasNames[i]);
-        }
-
-        siteDao.add(site);
-        uniqueIdentifierDao.add(uniqueIdentifier);
-
-        for (int i = 0; i < aliasNames.length; i++) {
-            uniqueIdentifierAliasDao.add(uniqueIdentifierAliases[i]);
-        }
-
-        // Reset the local and remote caches
-        resetLocalCaches();
+        uniqueIdentifierRepository.saveAndFlush(uniqueIdentifier);
 
         // This can cause an exception on write to the database so that transaction is rolled back the
         // proceeding cache clear functions are not called.
-        transactionManager.commit(status);
+        //        transactionManager.commit(status);
     }
 
     /**
@@ -122,11 +113,8 @@ public class SitePermitService {
         uniqueIdentifier.setName(eaId);
         uniqueIdentifier.setSite(site);
 
-        siteDao.add(site);
-        uniqueIdentifierDao.add(uniqueIdentifier);
-
-        // Reset the local and remote caches
-        resetLocalCaches();
+        siteRepository.save(site);
+        uniqueIdentifierRepository.save(uniqueIdentifier);
 
         // Commit the database transaction
         transactionManager.commit(status);
@@ -137,51 +125,29 @@ public class SitePermitService {
      * Remove the aliases, site and ea_id associated with an ea_id
      * @param eaId
      */
+    @Transactional(propagation = Propagation.NESTED)
     public void removePermitSiteAndAliases(String eaId) {
-        UniqueIdentifier uniqueIdentifier = uniqueIdentifierDao.getByName(Key.explicit(eaId));
+        UniqueIdentifier uniqueIdentifier = uniqueIdentifierRepository.getByName(eaId);
 
         if (uniqueIdentifier != null) {
 
             // Acquire a distributed lock on all remote servers for this transaction
-
-            DefaultTransactionDefinition def = new DefaultTransactionDefinition();
-            def.setName("removePermitSiteAndAliases");
-            def.setPropagationBehavior(TransactionDefinition.PROPAGATION_NESTED);
-
-            TransactionStatus status = transactionManager.getTransaction(def);
+            //
+            //            DefaultTransactionDefinition def = new DefaultTransactionDefinition();
+            //            def.setName("removePermitSiteAndAliases");
+            //            def.setPropagationBehavior(TransactionDefinition.PROPAGATION_NESTED);
+            //
+            //            TransactionStatus status = transactionManager.getTransaction(def);
 
             Site site = uniqueIdentifier.getSite();
-            Set<String> aliasNames = uniqueIdentifierDao.getAliasNames(uniqueIdentifier);
-            if (aliasNames != null) {
-                for (String aliasName : aliasNames) {
-                    UniqueIdentifierAlias uniqueIdentifierAlias = uniqueIdentifierAliasDao.getByName(Key.explicit(aliasName));
-                    uniqueIdentifierAliasDao.removeById(uniqueIdentifierAlias.getId());
-                }
-            }
-            uniqueIdentifierDao.removeById(uniqueIdentifier.getId());
-            siteDao.removeById(site.getId());
-
-            // Reset the local and remote caches
-            resetLocalCaches();
-
-            // Commit the database transaction
-            transactionManager.commit(status);
+            uniqueIdentifierRepository.delete(uniqueIdentifier.getId());
+            siteRepository.delete(site.getId());
+            //
+            //            // Commit the database transaction
+            //            transactionManager.commit(status);
 
         } else {
             LOGGER.warn("Requested removal of non-existent permit: " + eaId);
         }
-    }
-
-    /**
-     * Unlocked call to set local caches called from within the local transaction
-     */
-    private void resetLocalCaches() {
-        // Reinitialize the lucene cache
-        search.initialize();
-
-        // Clear the local caches
-        uniqueIdentifierDao.clearCaches();
-        uniqueIdentifierAliasDao.clearCaches();
-        siteDao.clearCaches();
     }
 }

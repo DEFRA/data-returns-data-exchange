@@ -2,6 +2,7 @@ package uk.gov.ea.datareturns.web.exceptionmappers;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Component;
 import uk.gov.ea.datareturns.web.resource.v1.model.response.ErrorResponse;
 
 import javax.ws.rs.core.Response;
@@ -15,6 +16,7 @@ import javax.ws.rs.ext.Provider;
  * @author Sam Gardner-Dell
  */
 @Provider
+@Component
 public class UnhandledExceptionMapper implements ExceptionMapper<Throwable> {
     private static final Logger LOGGER = LoggerFactory.getLogger(UnhandledExceptionMapper.class);
 

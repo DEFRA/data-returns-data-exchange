@@ -226,7 +226,7 @@ public class TextUtils {
          * @return the hex unicode reference for the given character
          */
         public static String unicode(Character c) {
-            return c != null ? String.format("\\u%04x", (int) c.charValue()) : null;
+            return c != null ? String.format("\\u%04x", (int) c) : null;
         }
     }
 

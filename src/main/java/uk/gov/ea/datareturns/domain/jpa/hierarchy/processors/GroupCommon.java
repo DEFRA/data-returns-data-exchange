@@ -1,24 +1,44 @@
 package uk.gov.ea.datareturns.domain.jpa.hierarchy.processors;
 
-import uk.gov.ea.datareturns.domain.jpa.dao.masterdata.EntityDao;
-import uk.gov.ea.datareturns.domain.jpa.hierarchy.Hierarchy;
+import com.querydsl.core.types.dsl.StringPath;
+import org.apache.commons.collections4.IterableUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.stereotype.Component;
+import uk.gov.ea.datareturns.config.JpaRepositoryConfiguration;
+import uk.gov.ea.datareturns.domain.jpa.entities.masterdata.MasterDataEntity;
 import uk.gov.ea.datareturns.domain.jpa.hierarchy.HierarchyGroupLevel;
 import uk.gov.ea.datareturns.domain.jpa.hierarchy.HierarchyGroupSymbols;
-import uk.gov.ea.datareturns.util.SpringApplicationContextProvider;
+import uk.gov.ea.datareturns.domain.jpa.repositories.masterdata.MasterDataRepository;
+import uk.gov.ea.datareturns.domain.jpa.service.MasterDataLookupService;
+import uk.gov.ea.datareturns.domain.jpa.service.MasterDataNaturalKeyService;
 
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import javax.inject.Inject;
+import java.lang.reflect.Method;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
  * Group functions for entities extending Hierarchy.GroupedHierarchyEntity
  * @author Graham Willis
  */
-class GroupCommon {
-    private static <E extends Hierarchy.GroupedHierarchyEntity> EntityDao<E> getEntityDaoFromLevel(HierarchyGroupLevel<E> level) {
-        Class<? extends EntityDao<E>> listItemDaoClass = level.getDaoClass();
-        return SpringApplicationContextProvider.getApplicationContext().getBean(listItemDaoClass);
+@Component
+public class GroupCommon {
+    private final JpaRepositoryConfiguration repositoryConfiguration;
+    private final MasterDataNaturalKeyService keyService;
+    private final MasterDataLookupService lookupService;
+
+    @Inject
+    public GroupCommon(JpaRepositoryConfiguration repositoryConfiguration, MasterDataNaturalKeyService keyService,
+            MasterDataLookupService lookupService) {
+        this.repositoryConfiguration = repositoryConfiguration;
+        this.keyService = keyService;
+        this.lookupService = lookupService;
+    }
+
+    public <E extends MasterDataEntity> boolean cacheContainsGroupContainsName(HierarchyGroupLevel<E> level, Map<String, ?> cache,
+            String entityName) {
+        Set<String> cacheSet = cache.entrySet().stream().map(Map.Entry::getKey).collect(Collectors.toSet());
+        return cacheContainsGroupContainsName(level, cacheSet, entityName);
     }
 
     /**
@@ -29,26 +49,9 @@ class GroupCommon {
      * @param entityName The given enity name
      * @return true if entity name is found
      */
-    static <E extends Hierarchy.GroupedHierarchyEntity> boolean cacheContainsGroupContainsName(HierarchyGroupLevel<E> level, Set<String> cache, String entityName) {
-        EntityDao<E> dao = getEntityDaoFromLevel(level);
-        GroupingEntityCommon<?> groupingEntityCommon = dao.getGroupingEntityCommon();
-        Set<String> groups = findGroups(cache, groupingEntityCommon);
-        if (groups.size() == 0) {
-            return false;
-        } else {
-            for (String group : groups) {
-                if (groupingEntityCommon.isGroupMember(group, entityName)) {
-                    return true;
-                }
-            }
-            return false;
-        }
-    }
-
-
-    static <E extends Hierarchy.GroupedHierarchyEntity> boolean cacheContainsGroupContainsName(HierarchyGroupLevel<E> level, Map<String, ?> cache, String entityName) {
-        Set<String> cacheSet = cache.entrySet().stream().map(Map.Entry::getKey).collect(Collectors.toSet());
-        return cacheContainsGroupContainsName(level, cacheSet, entityName);
+    public <E extends MasterDataEntity> boolean cacheContainsGroupContainsName(HierarchyGroupLevel<E> level, Set<String> cache,
+            String entityName) {
+        return getGroupInCacheFromName(level, cache, entityName) != null;
     }
 
     /**
@@ -58,20 +61,15 @@ class GroupCommon {
      * @param entityName The entity name
      * @return The group
      */
-    private static <E extends Hierarchy.GroupedHierarchyEntity> String getGroupInCacheFromName(HierarchyGroupLevel<E> level, Set<String> cache, String entityName) {
-        EntityDao<E> dao = getEntityDaoFromLevel(level);
-        GroupingEntityCommon<?> unitUnitDaoGroupingEntityCommon = dao.getGroupingEntityCommon();
-        Set<String> groups = findGroups(cache, unitUnitDaoGroupingEntityCommon);
-        if (groups.size() == 0) {
-            return null;
-        } else {
-            for (String group : groups) {
-                if (unitUnitDaoGroupingEntityCommon.isGroupMember(group, entityName)) {
-                    return group;
-                }
+    public <E extends MasterDataEntity> String getGroupInCacheFromName(HierarchyGroupLevel<E> level, Set<String> cache,
+            String entityName) {
+        Set<String> groups = findGroups(cache, level);
+        for (String group : groups) {
+            if (isGroupMember(level, group, entityName)) {
+                return group;
             }
-            return null;
         }
+        return null;
     }
 
     /**
@@ -79,9 +77,17 @@ class GroupCommon {
      * @param cache The cache
      * @return A set of groups
      */
-    static private <E extends Hierarchy.GroupedHierarchyEntity> Set<String> findGroups(Set<String> cache, GroupingEntityCommon<?> unitUnitDaoGroupingEntityCommon) {
+    public <E extends MasterDataEntity> Set<String> findGroups(Set<String> cache, HierarchyGroupLevel<E> level) {
+        MasterDataRepository<E> repo = repositoryConfiguration.getMasterDataRepository(level.getHierarchyEntityClass());
+
+        StringPath groupFieldPath = level.getGroupFieldPath();
+
+        Collection<E> data = IterableUtils.toList(repo.findAll(groupFieldPath.isNotNull()));
+        Map<String, Set<E>> dataByGroupField = data.stream()
+                .collect(Collectors.groupingBy(u -> getGroupFieldValue(u, level.getGroupFieldGetter()), Collectors.toSet()));
+
         // Get the list of groups associated with the entity at this level
-        Set<String> levelGroups = unitUnitDaoGroupingEntityCommon.listGroups();
+        Set<String> levelGroups = dataByGroupField.keySet();
 
         // Get the list of groups at this level in the cache
         Set<String> cacheGroups = cache.stream()
@@ -96,14 +102,38 @@ class GroupCommon {
         return groups;
     }
 
-    public static String getGroupInCacheFromName(HierarchyGroupLevel level, Map<String, ?> cache, String entityName) {
+    private String getGroupFieldValue(Object entity, Method getterMethod) {
+        try {
+            if (entity != null && getterMethod != null) {
+                return toGroupName(Objects.toString(getterMethod.invoke(entity), null));
+            }
+            return null;
+        } catch (ReflectiveOperationException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private <E extends MasterDataEntity> boolean isGroupMember(HierarchyGroupLevel<E> level, String targetGroup,
+            String entityName) {
+        // Lookup the entity for the given name
+        E entity = lookupService.relaxed().find(level.getHierarchyEntityClass(), entityName);
+        // Check the entity group matches our expectations
+        String entityGroupValue = getGroupFieldValue(entity, level.getGroupFieldGetter());
+        return StringUtils.equalsIgnoreCase(StringUtils.trim(targetGroup), StringUtils.trim(entityGroupValue));
+    }
+
+    public String getGroupInCacheFromName(HierarchyGroupLevel<?> level, Map<String, ?> cache, String entityName) {
         Set<String> cacheSet = cache.entrySet().stream().map(Map.Entry::getKey).collect(Collectors.toSet());
         return getGroupInCacheFromName(level, cacheSet, entityName);
     }
 
-    static boolean allNulls(Map<?, ?> m) {
+    public String toGroupName(String groupFieldValue) {
+        return StringUtils.upperCase(StringUtils.trimToNull(groupFieldValue));
+    }
+
+    public boolean allNulls(Map<?, ?> m) {
         Set ks = m.keySet();
-        for (Object key: ks) {
+        for (Object key : ks) {
             if (m.get(key) != null) {
                 return false;
             }

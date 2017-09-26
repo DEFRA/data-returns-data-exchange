@@ -2,13 +2,17 @@ package uk.gov.ea.datareturns.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import uk.gov.ea.datareturns.domain.jpa.dao.masterdata.*;
 import uk.gov.ea.datareturns.domain.jpa.dao.userdata.factories.AbstractPayloadEntityFactory;
 import uk.gov.ea.datareturns.domain.jpa.dao.userdata.factories.impl.AlternativeFactory;
 import uk.gov.ea.datareturns.domain.jpa.dao.userdata.factories.impl.DataSampleFactory;
 import uk.gov.ea.datareturns.domain.jpa.dao.userdata.impl.*;
 import uk.gov.ea.datareturns.domain.jpa.entities.userdata.impl.AlternativePayload;
 import uk.gov.ea.datareturns.domain.jpa.entities.userdata.impl.DataSampleEntity;
+import uk.gov.ea.datareturns.domain.jpa.repositories.systemdata.PayloadTypeRepository;
+import uk.gov.ea.datareturns.domain.jpa.repositories.systemdata.ValidationConstraintRepository;
+import uk.gov.ea.datareturns.domain.jpa.repositories.userdata.DatasetRepository;
+import uk.gov.ea.datareturns.domain.jpa.repositories.userdata.RecordRepository;
+import uk.gov.ea.datareturns.domain.jpa.service.MasterDataLookupService;
 import uk.gov.ea.datareturns.domain.jpa.service.SubmissionService;
 import uk.gov.ea.datareturns.domain.validation.common.validator.AbstractValidationObject;
 import uk.gov.ea.datareturns.domain.validation.common.validator.ValidationObjectFactory;
@@ -26,61 +30,25 @@ import javax.inject.Inject;
 public class SubmissionConfiguration {
 
     private final javax.validation.Validator validator;
-    private final ValidationErrorDao validationErrorDao;
+    private final ValidationConstraintRepository validationConstraintRepository;
 
-    private final DatasetDao datasetDao;
-    private final UserDao userDao;
-    private final RecordDao recordDao;
-    private final MethodOrStandardDao methodOrStandardDao;
-    private final ParameterDao parameterDao;
-    private final QualifierDao qualifierDao;
-    private final ReferencePeriodDao referencePeriodDao;
-    private final ReturnPeriodDao returnPeriodDao;
-    private final ReturnTypeDao returnTypeDao;
-    private final SiteDao siteDao;
-    private final TextValueDao textValueDao;
-    private final UniqueIdentifierAliasDao uniqueIdentifierAliasDao;
-    private final UniqueIdentifierDao uniqueIdentifierDao;
-    private final UnitDao unitDao;
-    private final PayloadTypeDao payloadTypeDao;
+    private final DatasetRepository datasetRepository;
+    private final RecordRepository recordRepository;
+    private final PayloadTypeRepository payloadTypeRepository;
 
     @Inject
     public SubmissionConfiguration(
             javax.validation.Validator validator,
-            ValidationErrorDao validationErrorDao,
-            PayloadTypeDao payloadTypeDao,
-            DatasetDao datasetDao,
-            UserDao userDao,
-            RecordDao recordDao,
-            MethodOrStandardDao methodOrStandardDao,
-            ParameterDao parameterDao,
-            QualifierDao qualifierDao,
-            ReferencePeriodDao referencePeriodDao,
-            ReturnPeriodDao returnPeriodDao,
-            ReturnTypeDao returnTypeDao,
-            SiteDao siteDao,
-            TextValueDao textValueDao,
-            UniqueIdentifierAliasDao uniqueIdentifierAliasDao,
-            UniqueIdentifierDao uniqueIdentifierDao,
-            UnitDao unitDao
+            ValidationConstraintRepository validationConstraintRepository,
+            PayloadTypeRepository payloadTypeRepository,
+            DatasetRepository datasetRepository,
+            RecordRepository recordRepository
     ) {
         this.validator = validator;
-        this.validationErrorDao = validationErrorDao;
-        this.payloadTypeDao = payloadTypeDao;
-        this.datasetDao = datasetDao;
-        this.userDao = userDao;
-        this.recordDao = recordDao;
-        this.methodOrStandardDao = methodOrStandardDao;
-        this.returnPeriodDao = returnPeriodDao;
-        this.parameterDao = parameterDao;
-        this.qualifierDao = qualifierDao;
-        this.referencePeriodDao = referencePeriodDao;
-        this.returnTypeDao = returnTypeDao;
-        this.siteDao = siteDao;
-        this.textValueDao = textValueDao;
-        this.uniqueIdentifierAliasDao = uniqueIdentifierAliasDao;
-        this.uniqueIdentifierDao = uniqueIdentifierDao;
-        this.unitDao = unitDao;
+        this.validationConstraintRepository = validationConstraintRepository;
+        this.payloadTypeRepository = payloadTypeRepository;
+        this.datasetRepository = datasetRepository;
+        this.recordRepository = recordRepository;
     }
 
     /**
@@ -97,19 +65,8 @@ public class SubmissionConfiguration {
      * @return
      */
     @Bean
-    public AbstractPayloadEntityFactory<DataSampleEntity, DataSamplePayload> dataSampleEntityFactory() {
-        return new DataSampleFactory(
-                methodOrStandardDao,
-                parameterDao,
-                qualifierDao,
-                referencePeriodDao,
-                returnPeriodDao,
-                returnTypeDao,
-                siteDao,
-                textValueDao,
-                uniqueIdentifierAliasDao,
-                uniqueIdentifierDao,
-                unitDao);
+    public AbstractPayloadEntityFactory<DataSampleEntity, DataSamplePayload> dataSampleEntityFactory(MasterDataLookupService lookupService) {
+        return new DataSampleFactory(lookupService);
     }
 
     @Bean
@@ -119,7 +76,7 @@ public class SubmissionConfiguration {
 
     @Bean
     public Validator<AbstractValidationObject> validationObjectValidator() {
-        return new ValidatorImpl(this.validator, validationErrorDao, payloadTypeDao);
+        return new ValidatorImpl(this.validator, validationConstraintRepository, payloadTypeRepository);
     }
 
     @Bean
@@ -129,6 +86,6 @@ public class SubmissionConfiguration {
 
     @Bean
     public SubmissionService submissionsService() {
-        return new SubmissionService(validationObjectFactory(), datasetDao, recordDao, payloadEntityDao(), validationObjectValidator());
+        return new SubmissionService(validationObjectFactory(), datasetRepository, recordRepository, payloadEntityDao(), validationObjectValidator());
     }
 }

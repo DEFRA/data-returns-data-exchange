@@ -1,7 +1,9 @@
 package uk.gov.ea.datareturns.config;
 
+import com.codahale.metrics.JmxReporter;
 import com.codahale.metrics.JvmAttributeGaugeSet;
 import com.codahale.metrics.MetricRegistry;
+import com.codahale.metrics.Slf4jReporter;
 import com.codahale.metrics.jetty9.InstrumentedHandler;
 import com.codahale.metrics.jvm.*;
 import com.ryantenney.metrics.spring.config.annotation.EnableMetrics;
@@ -10,8 +12,11 @@ import org.eclipse.jetty.server.Server;
 import org.springframework.boot.context.embedded.EmbeddedServletContainerCustomizer;
 import org.springframework.boot.context.embedded.jetty.JettyEmbeddedServletContainerFactory;
 import org.springframework.boot.context.embedded.jetty.JettyServerCustomizer;
+import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+
+import java.util.concurrent.TimeUnit;
 
 /**
  * Configuration for the metrics exposed over the administration port
@@ -20,6 +25,7 @@ import org.springframework.context.annotation.Configuration;
  */
 @Configuration
 @EnableMetrics
+@ConfigurationProperties(prefix = "metrics")
 public class DropWizardMetricsConfiguration extends MetricsConfigurerAdapter implements JettyServerCustomizer {
     private InstrumentedHandler metricsHandler;
 
@@ -38,7 +44,13 @@ public class DropWizardMetricsConfiguration extends MetricsConfigurerAdapter imp
         metricRegistry.register("jvm.threads", new ThreadStatesGaugeSet());
         this.metricsHandler = new InstrumentedHandler(metricRegistry, "jetty");
 
-        //    JmxReporter.forRegistry(metricRegistry()).build().start();
+        // Report metrics over JMX
+        registerReporter(JmxReporter.forRegistry(metricRegistry).build()).start();
+
+        // Console debug reporting
+        registerReporter(Slf4jReporter.forRegistry(metricRegistry)
+                .withLoggingLevel(Slf4jReporter.LoggingLevel.DEBUG).build())
+                .start(120, TimeUnit.SECONDS);
     }
 
     /**

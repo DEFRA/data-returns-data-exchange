@@ -22,8 +22,14 @@ public abstract class AbstractPayloadEntityFactory<M extends AbstractPayloadEnti
         factories.put(payloadClass, this);
     }
 
-    public static <P extends Payload> AbstractPayloadEntityFactory factoryFor(Class<P> payloadClass) {
-        return factories.get(payloadClass);
+    @SuppressWarnings("unchecked")
+    public static <P extends Payload> AbstractPayloadEntityFactory<AbstractPayloadEntity, P> factoryFor(Class<P> payloadClass) {
+        return (AbstractPayloadEntityFactory<AbstractPayloadEntity, P>) factories.get(payloadClass);
+    }
+
+    @SuppressWarnings("unchecked")
+    public static AbstractPayloadEntityFactory<AbstractPayloadEntity, Payload> genericFactory(Class<? extends Payload> payloadClass) {
+        return (AbstractPayloadEntityFactory<AbstractPayloadEntity, Payload>) factories.get(payloadClass);
     }
 
     /**

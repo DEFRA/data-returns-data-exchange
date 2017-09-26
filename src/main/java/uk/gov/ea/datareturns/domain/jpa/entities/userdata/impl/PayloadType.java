@@ -8,7 +8,7 @@ import java.time.Instant;
  * @author Graham Willis
  */
 @Entity
-@Table(name = "payload_types")
+@Table(name = "md_payload_types")
 public class PayloadType implements Serializable {
 
     @Id @Column(name = "payload_type")

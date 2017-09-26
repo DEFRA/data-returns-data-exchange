@@ -1,16 +1,23 @@
 package uk.gov.ea.datareturns.tests.integration.model;
 
+import org.apache.commons.collections4.IterableUtils;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 import uk.gov.ea.datareturns.App;
-import uk.gov.ea.datareturns.domain.jpa.dao.masterdata.*;
+import uk.gov.ea.datareturns.domain.jpa.entities.masterdata.MasterDataEntity;
 import uk.gov.ea.datareturns.domain.jpa.entities.masterdata.impl.*;
+import uk.gov.ea.datareturns.domain.jpa.repositories.masterdata.*;
+import uk.gov.ea.datareturns.domain.jpa.service.MasterDataLookupService;
 
 import javax.inject.Inject;
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
 
 /**
@@ -20,91 +27,89 @@ import java.util.List;
 @SpringBootTest(classes = App.class, webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 @ActiveProfiles("IntegrationTests")
 public class ControlledListsTests {
+    private static final Logger LOGGER = LoggerFactory.getLogger(ControlledListsTests.class);
 
     public static final String NAME = "Casespaces";
     public static final String NAME_MASH = "CasEspAces";
 
     @Inject
-    MethodOrStandardDao methodOrStandardDao;
+    MethodOrStandardRepository methodOrStandardRepository;
 
     @Inject
-    ParameterDao parameterDao;
+    ParameterRepository parameterRepository;
 
     @Inject
-    QualifierDao qualifierDao;
+    QualifierRepository qualifierRepository;
 
     @Inject
-    ReferencePeriodDao referencePeriodDao;
+    ReferencePeriodRepository referencePeriodRepository;
 
     @Inject
-    ReturnTypeDao returnTypeDao;
+    ReturnTypeRepository returnTypeRepository;
 
     @Inject
-    UnitDao unitDao;
+    UnitRepository unitRepository;
 
     @Inject
-    TextValueDao textValueDao;
+    TextValueRepository textValueRepository;
+
+    @Inject
+    MasterDataLookupService lookupService;
 
     @Test
     public void testMethodOrStandard() {
-        MethodOrStandard methodOrStandard0 = methodOrStandardDao.getByName(NAME);
+        MethodOrStandard methodOrStandard0 = methodOrStandardRepository.getByName(NAME);
         if (methodOrStandard0 != null) {
-            methodOrStandardDao.removeById(methodOrStandard0.getId());
+            methodOrStandardRepository.delete(methodOrStandard0.getId());
         }
         // Add and retrieve
         MethodOrStandard methodOrStandard = new MethodOrStandard();
         methodOrStandard.setName(NAME);
-        methodOrStandardDao.add(methodOrStandard);
-        methodOrStandardDao.clearCaches();
+        methodOrStandardRepository.save(methodOrStandard);
 
-        MethodOrStandard retrieveMethodOrStandard = methodOrStandardDao.getByName(NAME);
-        Assert.assertNotNull(retrieveMethodOrStandard.getId());
+        MethodOrStandard retrieveMethodOrStandard = methodOrStandardRepository.getByName(NAME);
+        Assert.assertNotNull(retrieveMethodOrStandard.getName());
 
-        MethodOrStandard retrieveMethodOrStandard2 = methodOrStandardDao.getById(retrieveMethodOrStandard.getId());
+        MethodOrStandard retrieveMethodOrStandard2 = methodOrStandardRepository.getByName(retrieveMethodOrStandard.getName());
         Assert.assertNotNull(retrieveMethodOrStandard2);
-        Assert.assertEquals(retrieveMethodOrStandard2.getId(), retrieveMethodOrStandard.getId());
+        Assert.assertEquals(retrieveMethodOrStandard2.getName(), retrieveMethodOrStandard.getName());
 
-        methodOrStandardDao.removeById(retrieveMethodOrStandard2.getId());
-        methodOrStandardDao.clearCaches();
+        methodOrStandardRepository.delete(retrieveMethodOrStandard2.getId());
 
-        MethodOrStandard retrieveMethodOrStandard3 = methodOrStandardDao.getById(retrieveMethodOrStandard.getId());
+        MethodOrStandard retrieveMethodOrStandard3 = methodOrStandardRepository.getByName(retrieveMethodOrStandard.getName());
         Assert.assertNull(retrieveMethodOrStandard3);
     }
 
     @Test
     public void testParameter() {
-        Parameter retrieveParameter0 = parameterDao.getByName(NAME);
+        Parameter retrieveParameter0 = parameterRepository.getByName(NAME);
         if (retrieveParameter0 != null) {
-            parameterDao.removeById(retrieveParameter0.getId());
+            parameterRepository.delete(retrieveParameter0.getId());
         }
         // Add and retrieve
         Parameter parameter = new Parameter();
         parameter.setName(NAME);
-        parameterDao.add(parameter);
-        parameterDao.clearCaches();
+        parameterRepository.save(parameter);
 
-        Parameter retrieveParameter = parameterDao.getByName(NAME);
-        Assert.assertNotNull(retrieveParameter.getId());
+        Parameter retrieveParameter = parameterRepository.getByName(NAME);
+        Assert.assertNotNull(retrieveParameter.getName());
 
-        Parameter retrieveParameter2 = parameterDao.getById(retrieveParameter.getId());
+        Parameter retrieveParameter2 = parameterRepository.getByName(retrieveParameter.getName());
         Assert.assertNotNull(retrieveParameter2);
-        Assert.assertEquals(retrieveParameter2.getId(), retrieveParameter.getId());
+        Assert.assertEquals(retrieveParameter2.getName(), retrieveParameter.getName());
 
         // Test the case-insensitive cache
-        Assert.assertTrue(parameterDao.nameExists(Key.relaxed(NAME_MASH)));
-        Assert.assertEquals(NAME, parameterDao.getByName(Key.relaxed(NAME_MASH)).getName());
+        Assert.assertEquals(NAME, lookupService.relaxed().find(Parameter.class, NAME_MASH).getName());
 
         // Second test to prove cache use
-        Assert.assertTrue(parameterDao.nameExists(Key.relaxed(NAME_MASH)));
-        Assert.assertEquals(NAME, parameterDao.getByName(Key.relaxed(NAME_MASH)).getName());
+        Assert.assertEquals(NAME, lookupService.relaxed().find(Parameter.class, NAME_MASH).getName());
 
-        parameterDao.removeById(retrieveParameter2.getId());
-        parameterDao.clearCaches();
+        parameterRepository.delete(retrieveParameter2.getId());
+        parameterRepository.flush();
 
-        Assert.assertFalse(parameterDao.nameExists(Key.relaxed(NAME_MASH)));
-        Assert.assertNull(parameterDao.getByName(Key.relaxed(NAME_MASH)));
+        Assert.assertNull(lookupService.relaxed().find(Parameter.class, NAME_MASH));
 
-        Parameter retrieveParameter3 = parameterDao.getById(retrieveParameter.getId());
+        Parameter retrieveParameter3 = parameterRepository.getByName(retrieveParameter.getName());
         Assert.assertNull(retrieveParameter3);
     }
 
@@ -112,48 +117,42 @@ public class ControlledListsTests {
     public void testReturnType() {
         final String LANDFILL = "Landfill";
         // Make the test type is gone
-        ReturnType retrieveReturnType0 = returnTypeDao.getByName(NAME);
-        if (retrieveReturnType0 != null) {
-            returnTypeDao.removeById(retrieveReturnType0.getId());
-        }
+        ReturnType retrieveReturnType0 = returnTypeRepository.getByName(NAME);
+
+        removeTestData(returnTypeRepository, retrieveReturnType0);
         // Add and retrieve
         ReturnType returnType = new ReturnType();
         returnType.setName(NAME);
         returnType.setSector(LANDFILL);
-        returnTypeDao.add(returnType);
-        returnTypeDao.clearCaches();
+        returnTypeRepository.save(returnType);
 
-        ReturnType retrieveReturnType = returnTypeDao.getByName(NAME);
-        Assert.assertNotNull(retrieveReturnType.getId());
+        ReturnType retrieveReturnType = returnTypeRepository.getByName(NAME);
+        Assert.assertNotNull(retrieveReturnType.getName());
 
-        ReturnType retrieveReturnType2 = returnTypeDao.getById(retrieveReturnType.getId());
+        ReturnType retrieveReturnType2 = returnTypeRepository.getByName(retrieveReturnType.getName());
         Assert.assertNotNull(retrieveReturnType2);
-        Assert.assertEquals(retrieveReturnType2.getId(), retrieveReturnType.getId());
+        Assert.assertEquals(retrieveReturnType2.getName(), retrieveReturnType.getName());
 
         // Test the case-insensitive cache
-        Assert.assertTrue(returnTypeDao.nameExists(Key.relaxed(NAME_MASH)));
-        Assert.assertEquals(NAME, returnTypeDao.getByName(Key.relaxed(NAME_MASH)).getName());
+        Assert.assertEquals(NAME, lookupService.relaxed().find(ReturnType.class, NAME_MASH).getName());
 
         // Second test to prove cache use
-        Assert.assertTrue(returnTypeDao.nameExists(Key.relaxed(NAME_MASH)));
-        Assert.assertEquals(NAME, returnTypeDao.getByName(Key.relaxed(NAME_MASH)).getName());
+        Assert.assertEquals(NAME, lookupService.relaxed().find(ReturnType.class, NAME_MASH).getName());
 
         // Remove it and try again
-        returnTypeDao.removeById(retrieveReturnType2.getId());
-        returnTypeDao.clearCaches();
-        Assert.assertFalse(returnTypeDao.nameExists(Key.relaxed(NAME_MASH)));
-        Assert.assertNull(returnTypeDao.getByName(Key.relaxed(NAME_MASH)));
+        returnTypeRepository.delete(retrieveReturnType2.getId());
+        Assert.assertNull(lookupService.relaxed().find(ReturnType.class, NAME_MASH));
 
-        ReturnType retrieveReturnType3 = returnTypeDao.getById(retrieveReturnType.getId());
+        ReturnType retrieveReturnType3 = returnTypeRepository.getByName(retrieveReturnType.getName());
         Assert.assertNull(retrieveReturnType3);
     }
 
     @Test
     public void testUnit() {
         // Make the test type is gone
-        Unit retrieveUnit0 = unitDao.getByName(NAME);
+        Unit retrieveUnit0 = unitRepository.getByName(NAME);
         if (retrieveUnit0 != null) {
-            unitDao.removeById(retrieveUnit0.getId());
+            unitRepository.delete(retrieveUnit0.getId());
         }
         // Add and retrieve
         Unit unit = new Unit();
@@ -163,154 +162,181 @@ public class ControlledListsTests {
         unit.setLongName(NAME + NAME);
         unit.setUnicode("UC");
 
-        unitDao.add(unit);
-        unitDao.clearCaches();
+        unitRepository.save(unit);
 
-        Unit retrieveUnit = unitDao.getByName(NAME);
-        Assert.assertNotNull(retrieveUnit.getId());
+        Unit retrieveUnit = unitRepository.getByName(NAME);
+        Assert.assertNotNull(retrieveUnit.getName());
         Assert.assertEquals(retrieveUnit.getDescription(), NAME + NAME + NAME);
         Assert.assertEquals(retrieveUnit.getLongName(), NAME + NAME);
         Assert.assertEquals(retrieveUnit.getType(), "Type");
         Assert.assertEquals(retrieveUnit.getUnicode(), "UC");
 
-        Unit retrieveUnit2 = unitDao.getById(retrieveUnit.getId());
+        Unit retrieveUnit2 = unitRepository.getByName(retrieveUnit.getName());
         Assert.assertNotNull(retrieveUnit2);
-        Assert.assertEquals(retrieveUnit2.getId(), retrieveUnit.getId());
+        Assert.assertEquals(retrieveUnit2.getName(), retrieveUnit.getName());
 
-        unitDao.removeById(retrieveUnit2.getId());
-        unitDao.clearCaches();
+        unitRepository.delete(retrieveUnit2.getId());
 
-        Unit retrieveUnit3 = unitDao.getById(retrieveUnit.getId());
+        Unit retrieveUnit3 = unitRepository.getByName(retrieveUnit.getName());
         Assert.assertNull(retrieveUnit3);
     }
 
     @Test
     public void testQualifier() {
         // Make the test type is gone
-        Qualifier retrieveQualifier0 = qualifierDao.getByName(NAME);
+        Qualifier retrieveQualifier0 = qualifierRepository.getByName(NAME);
         if (retrieveQualifier0 != null) {
-            qualifierDao.removeById(retrieveQualifier0.getId());
+            qualifierRepository.delete(retrieveQualifier0.getId());
         }
         // Add and retrieve
         Qualifier Qualifier = new Qualifier();
         Qualifier.setName(NAME);
         Qualifier.setNotes(NAME);
-        qualifierDao.add(Qualifier);
-        qualifierDao.clearCaches();
+        qualifierRepository.save(Qualifier);
 
-        Qualifier retrieveQualifier = qualifierDao.getByName(NAME);
-        Assert.assertNotNull(retrieveQualifier.getId());
-        Qualifier retrieveQualifier2 = qualifierDao.getById(retrieveQualifier.getId());
+        Qualifier retrieveQualifier = qualifierRepository.getByName(NAME);
+        Assert.assertNotNull(retrieveQualifier.getName());
+        Qualifier retrieveQualifier2 = qualifierRepository.getByName(retrieveQualifier.getName());
         Assert.assertNotNull(retrieveQualifier2);
-        Assert.assertEquals(retrieveQualifier2.getId(), retrieveQualifier.getId());
-        qualifierDao.removeById(retrieveQualifier2.getId());
-        qualifierDao.clearCaches();
+        Assert.assertEquals(retrieveQualifier2.getName(), retrieveQualifier.getName());
+        qualifierRepository.delete(retrieveQualifier2.getId());
 
-        Qualifier retrieveQualifier3 = qualifierDao.getById(retrieveQualifier.getId());
+        Qualifier retrieveQualifier3 = qualifierRepository.getByName(retrieveQualifier.getName());
         Assert.assertNull(retrieveQualifier3);
     }
 
     @Test
     public void testTextValues() {
-        TextValue textValue0 = textValueDao.getByName(NAME);
+        TextValue textValue0 = textValueRepository.getByName(NAME);
         if (textValue0 != null) {
-            qualifierDao.removeById(textValue0.getId());
+            qualifierRepository.delete(textValue0.getId());
         }
         // Add and retrieve
         TextValue TextValue = new TextValue();
         TextValue.setName(NAME);
-        textValueDao.add(TextValue);
-        textValueDao.clearCaches();
+        textValueRepository.save(TextValue);
 
-        TextValue retrieveTextValue = textValueDao.getByName(NAME);
-        Assert.assertNotNull(retrieveTextValue.getId());
+        TextValue retrieveTextValue = textValueRepository.getByName(NAME);
+        Assert.assertNotNull(retrieveTextValue.getName());
 
-        TextValue retrieveTextValue2 = textValueDao.getById(retrieveTextValue.getId());
+        TextValue retrieveTextValue2 = textValueRepository.getByName(retrieveTextValue.getName());
         Assert.assertNotNull(retrieveTextValue2);
-        Assert.assertEquals(retrieveTextValue2.getId(), retrieveTextValue.getId());
+        Assert.assertEquals(retrieveTextValue2.getName(), retrieveTextValue.getName());
 
-        textValueDao.removeById(retrieveTextValue2.getId());
-        textValueDao.clearCaches();
+        textValueRepository.delete(retrieveTextValue2.getId());
 
-        TextValue retrieveTextValue3 = textValueDao.getById(retrieveTextValue.getId());
+        TextValue retrieveTextValue3 = textValueRepository.getByName(retrieveTextValue.getName());
         Assert.assertNull(retrieveTextValue3);
     }
 
     @Test
+    public void testCacheDissimilarObjectsBySameKey() {
+        final String name = "DUPLICATE NAME";
+        final String mash = "dupLICATE     nAmE";
+
+        Parameter p = new Parameter();
+        p.setName(name);
+        parameterRepository.save(p);
+
+        ReferencePeriod r = new ReferencePeriod();
+        r.setName(name);
+        referencePeriodRepository.save(r);
+
+        try {
+            Parameter p1 = lookupService.strict().find(Parameter.class, name);
+            ReferencePeriod r1 = lookupService.strict().find(ReferencePeriod.class, name);
+            Assert.assertEquals(p, p1);
+            Assert.assertEquals(r, r1);
+
+            Parameter p2 = lookupService.relaxed().find(Parameter.class, mash);
+            ReferencePeriod r2 = lookupService.relaxed().find(ReferencePeriod.class, mash);
+            Assert.assertEquals(p, p2);
+            Assert.assertEquals(r, r2);
+        } finally {
+            removeTestData(parameterRepository, p);
+            removeTestData(referencePeriodRepository, r);
+        }
+    }
+
+    @Test
     public void testAlias() {
+        final String PRIMARY_1 = "__TEST__ Primary 1";
+        final String ALIAS_1 = "__TEST__ Alias 1";
+        final String ALIAS_2 = "__TEST__ Alias 2";
+        final String ALIAS_3 = "__TEST__ Alias 3";
 
-        final String PRIMARY_1 = "Primary 1";
-        final String PRIMARY_2 = "Primary 2";
-        final String PRIMARY_3 = "Primary 3";
+        final String PRIMARY_1_MASH = "__TEST__    PrIMARy     1";
+        final String ALIAS_1_MASH = "__TEST__ aLiAS    1";
+        final String ALIAS_2_MASH = "__TEST__ aLIas 2";
+        final String ALIAS_3_MASH = "__TEST__ aLIas          3";
 
-        final String PRIMARY_1_MASH = "PRimary 1";
-        final String PRIMARY_2_MASH = "PrImary 2";
-        final String PRIMARY_3_MASH = "PriMary 3";
+        // Ensure any existing test data is removed (primary value deletion always cascades deletion to aliases)
+        removeTestData(referencePeriodRepository, referencePeriodRepository.getByName(PRIMARY_1));
 
-        ReferencePeriod referencePeriod1 = referencePeriodDao.getByNameOrAlias(Key.explicit(PRIMARY_1));
-        ReferencePeriod referencePeriod2 = referencePeriodDao.getByNameOrAlias(Key.explicit(PRIMARY_2));
-        ReferencePeriod referencePeriod3 = referencePeriodDao.getByNameOrAlias(Key.explicit(PRIMARY_3));
+        ReferencePeriod primaryEntity = new ReferencePeriod();
+        primaryEntity.setName(PRIMARY_1);
 
-        // Have to remove 2 & 3 first in order not to violates foreign key constraint fk_reference_periods
-        if (referencePeriod2 != null) {
-            referencePeriodDao.removeById(referencePeriod2.getId());
+        ReferencePeriod alias1 = new ReferencePeriod();
+        alias1.setName(ALIAS_1);
+        alias1.setPreferred(primaryEntity);
+
+        ReferencePeriod alias2 = new ReferencePeriod();
+        alias2.setName(ALIAS_2);
+        alias2.setPreferred(primaryEntity);
+
+        ReferencePeriod alias3 = new ReferencePeriod();
+        alias3.setName(ALIAS_3);
+        alias3.setPreferred(primaryEntity);
+
+        primaryEntity.setAliases(new HashSet<>(Arrays.asList(alias1, alias2)));
+
+        // Save the primary entity along with the two existing aliases
+        primaryEntity = referencePeriodRepository.saveAndFlush(primaryEntity);
+        Assert.assertTrue(primaryEntity.getAliases().size() == 2);
+
+        // Now save a third alias
+        referencePeriodRepository.saveAndFlush(alias3);
+
+        // Alias list still be 2 as we haven't refreshed the primary entity
+        Assert.assertTrue(primaryEntity.getAliases().size() == 2);
+
+        // All other lookups will return the 3rd alias
+        List<ReferencePeriod> list = IterableUtils.toList(referencePeriodRepository.findAll());
+        Assert.assertTrue(list.contains(primaryEntity));
+        Assert.assertTrue(list.contains(alias1));
+        Assert.assertTrue(list.contains(alias2));
+        Assert.assertTrue(list.contains(alias3));
+
+        Assert.assertTrue(lookupService.relaxed().find(ReferencePeriod.class, PRIMARY_1_MASH).isPrimary());
+
+        Assert.assertEquals(PRIMARY_1, lookupService.strict().find(ReferencePeriod.class, PRIMARY_1).getPrimary().getName());
+        Assert.assertEquals(PRIMARY_1, lookupService.strict().find(ReferencePeriod.class, ALIAS_1).getPrimary().getName());
+        Assert.assertEquals(PRIMARY_1, lookupService.strict().find(ReferencePeriod.class, ALIAS_2).getPrimary().getName());
+        Assert.assertEquals(PRIMARY_1, lookupService.strict().find(ReferencePeriod.class, ALIAS_3).getPrimary().getName());
+
+        Assert.assertEquals(PRIMARY_1, lookupService.relaxed().find(ReferencePeriod.class, PRIMARY_1_MASH).getPrimary().getName());
+        Assert.assertEquals(PRIMARY_1, lookupService.relaxed().find(ReferencePeriod.class, ALIAS_1_MASH).getPrimary().getName());
+        Assert.assertEquals(PRIMARY_1, lookupService.relaxed().find(ReferencePeriod.class, ALIAS_2_MASH).getPrimary().getName());
+        Assert.assertEquals(PRIMARY_1, lookupService.relaxed().find(ReferencePeriod.class, ALIAS_3_MASH).getPrimary().getName());
+
+        // We can refresh the primary entity and we'll see the 3rd alias
+        primaryEntity = lookupService.strict().find(ReferencePeriod.class, PRIMARY_1);
+        Assert.assertTrue(primaryEntity.getAliases().size() == 3);
+
+        // Finally, cascade delete all of the test data
+        removeTestData(referencePeriodRepository, primaryEntity);
+    }
+
+    @SafeVarargs
+    private final <E extends MasterDataEntity> void removeTestData(MasterDataRepository<E> repository, E... entities) {
+        for (E entity : entities) {
+            if (entity != null) {
+                LOGGER.info("Attempting to delete test data entry " + entity.getClass().getSimpleName()
+                        + " with id=" + entity.getId() + " and name=" + entity.getName());
+                repository.delete(entity);
+            }
         }
-
-        if (referencePeriod3 != null) {
-            referencePeriodDao.removeById(referencePeriod3.getId());
-        }
-
-        if (referencePeriod1 != null) {
-            referencePeriodDao.removeById(referencePeriod1.getId());
-        }
-
-        referencePeriodDao.clearCaches();
-
-        referencePeriod1 = new ReferencePeriod();
-        referencePeriod2 = new ReferencePeriod();
-        referencePeriod3 = new ReferencePeriod();
-
-        referencePeriod1.setName(PRIMARY_1);
-        referencePeriod2.setName(PRIMARY_2);
-        referencePeriod3.setName(PRIMARY_3);
-
-        referencePeriod2.setPreferred(referencePeriod1.getName());
-        referencePeriod3.setPreferred(referencePeriod1.getName());
-
-        referencePeriodDao.add(referencePeriod1);
-        referencePeriodDao.add(referencePeriod2);
-        referencePeriodDao.add(referencePeriod3);
-
-        referencePeriodDao.clearCaches();
-
-        List list = referencePeriodDao.list();
-
-        Assert.assertNotNull(list);
-        Assert.assertFalse(list.isEmpty());
-
-        Assert.assertEquals(PRIMARY_1, referencePeriodDao.getByName(PRIMARY_1).getName());
-
-        Assert.assertEquals(PRIMARY_2, referencePeriodDao.getByAliasName(Key.explicit(PRIMARY_2)).getName());
-        Assert.assertEquals(PRIMARY_1, referencePeriodDao.getPreferred(Key.explicit(PRIMARY_2)).getName());
-
-        Assert.assertEquals(PRIMARY_3, referencePeriodDao.getByAliasName(Key.relaxed(PRIMARY_3)).getName());
-        Assert.assertEquals(PRIMARY_1, referencePeriodDao.getPreferred(Key.relaxed(PRIMARY_3)).getName());
-
-        Assert.assertNull(referencePeriodDao.getByAliasName(Key.relaxed(PRIMARY_1)));
-
-        Assert.assertTrue(referencePeriodDao.nameOrAliasExists(Key.relaxed(PRIMARY_1_MASH)));
-        Assert.assertEquals(PRIMARY_1, referencePeriodDao.getPreferred(Key.relaxed(PRIMARY_1_MASH)).getName());
-
-        Assert.assertTrue(referencePeriodDao.nameOrAliasExists(Key.relaxed(PRIMARY_2_MASH)));
-        Assert.assertEquals(PRIMARY_1, referencePeriodDao.getPreferred(Key.relaxed(PRIMARY_2_MASH)).getName());
-
-        Assert.assertTrue(referencePeriodDao.nameOrAliasExists(Key.relaxed(PRIMARY_3_MASH)));
-        Assert.assertEquals(PRIMARY_1, referencePeriodDao.getPreferred(Key.relaxed(PRIMARY_3_MASH)).getName());
-
-        referencePeriodDao.removeById(referencePeriod2.getId());
-        referencePeriodDao.removeById(referencePeriod3.getId());
-        referencePeriodDao.removeById(referencePeriod1.getId());
-        referencePeriodDao.clearCaches();
+        repository.flush();
     }
 
 }

@@ -23,7 +23,7 @@ public class RequireCommentsForTextValueCommentValidator implements ConstraintVa
         boolean seeCommentSet = !StringUtils.isEmpty(dataSampleValidationObject.getTextValue().getInputValue())
                 && SEE_COMMENT_PATTERN.matcher(dataSampleValidationObject.getTextValue().getInputValue()).matches();
 
-        boolean hasComment = !StringUtils.isEmpty(dataSampleValidationObject.getComments().getValue());
+        boolean hasComment = !StringUtils.isEmpty(dataSampleValidationObject.getComments().getInputValue());
 
         if (seeCommentSet && !hasComment) {
             constraintValidatorContext.disableDefaultConstraintViolation();

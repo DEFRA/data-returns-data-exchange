@@ -1,12 +1,10 @@
 package uk.gov.ea.datareturns.domain.jpa.entities.masterdata.impl;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.hibernate.annotations.GenericGenerator;
+import org.hibernate.id.enhanced.SequenceStyleGenerator;
 import uk.gov.ea.datareturns.domain.jpa.entities.masterdata.AliasingEntity;
-import uk.gov.ea.datareturns.domain.jpa.hierarchy.Hierarchy;
 
 import javax.persistence.*;
-import java.util.Set;
 
 /**
  * @author Sam Gardner-Dell
@@ -14,25 +12,14 @@ import java.util.Set;
  *
  */
 @Entity
-@Table(name = "units")
-@GenericGenerator(name = "idGenerator", strategy = "org.hibernate.id.enhanced.SequenceStyleGenerator", parameters = {
-        @org.hibernate.annotations.Parameter(name = "sequence_name", value = "units_id_seq") }
+@Table(name = "md_units")
+@Cacheable
+@GenericGenerator(name = AbstractMasterDataEntity.DEFINITIONS_ID_GENERATOR,
+        strategy = AbstractMasterDataEntity.DEFINITIONS_ID_SEQUENCE_STRATEGY,
+        parameters = {
+                @org.hibernate.annotations.Parameter(name = SequenceStyleGenerator.SEQUENCE_PARAM, value = "md_units_id_seq") }
 )
-public class Unit implements AliasingEntity, Hierarchy.GroupedHierarchyEntity {
-    @JsonIgnore
-    @Id
-    @GeneratedValue(generator = "idGenerator")
-    private Long id;
-
-    @Basic
-    @Column(name = "name", nullable = false, length = 10)
-    private String name;
-
-    @Basic
-    @JsonIgnore
-    @Column(name = "preferred", length = 10)
-    private String preferred;
-
+public class Unit extends AbstractAliasingEntity<Unit> implements AliasingEntity<Unit> {
     @Basic
     @Column(name = "long_name", length = 50)
     private String longName;
@@ -48,35 +35,6 @@ public class Unit implements AliasingEntity, Hierarchy.GroupedHierarchyEntity {
     @Basic
     @Column(name = "type", length = 50)
     private String type;
-
-    @Transient
-    private Set<String> aliases = null;
-
-    public Long getId() {
-        return this.id;
-    }
-
-    public void setId(final Long id) {
-        this.id = id;
-    }
-
-    public String getName() {
-        return this.name;
-    }
-
-    public void setName(final String name) {
-        this.name = name;
-    }
-
-    @Override
-    public String getPreferred() {
-        return this.preferred;
-    }
-
-    @Override
-    public void setPreferred(String preferred) {
-        this.preferred = preferred;
-    }
 
     public String getLongName() {
         return longName;
@@ -108,49 +66,5 @@ public class Unit implements AliasingEntity, Hierarchy.GroupedHierarchyEntity {
 
     public void setType(String type) {
         this.type = type;
-    }
-
-    @Override
-    public Set<String> getAliases() {
-        return this.aliases;
-    }
-
-    @Override
-    public void setAliases(Set<String> aliases) {
-        this.aliases = aliases;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-
-        Unit that = (Unit) o;
-
-        return name.equals(that.name);
-    }
-
-    @Override
-    public int hashCode() {
-        return name.hashCode();
-    }
-
-    @Override
-    public String getGroup() {
-        return type;
-    }
-
-    @Override
-    public String toString() {
-        return "Unit{" +
-                "id=" + id +
-                ", name='" + name + '\'' +
-                ", preferred='" + preferred + '\'' +
-                ", longName='" + longName + '\'' +
-                ", unicode='" + unicode + '\'' +
-                ", description='" + description + '\'' +
-                ", type='" + type + '\'' +
-                ", aliases=" + aliases +
-                '}';
     }
 }

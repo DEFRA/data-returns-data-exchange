@@ -28,9 +28,4 @@ public class MonitoringPoint implements FieldValue<String> {
     @Override public String getInputValue() {
         return this.monitoringPoint;
     }
-
-    @Override public String getValue() {
-        return this.monitoringPoint;
-    }
-
 }

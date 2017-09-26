@@ -3,11 +3,10 @@ package uk.gov.ea.datareturns.domain.processors;
 import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.stereotype.Component;
 import uk.gov.ea.datareturns.domain.dto.impl.PermitLookupDto;
-import uk.gov.ea.datareturns.domain.jpa.dao.masterdata.Key;
-import uk.gov.ea.datareturns.domain.jpa.dao.masterdata.SiteDao;
-import uk.gov.ea.datareturns.domain.jpa.dao.masterdata.UniqueIdentifierDao;
-import uk.gov.ea.datareturns.domain.jpa.entities.masterdata.impl.Site;
 import uk.gov.ea.datareturns.domain.jpa.entities.masterdata.impl.UniqueIdentifier;
+import uk.gov.ea.datareturns.domain.jpa.entities.masterdata.impl.UniqueIdentifierAlias;
+import uk.gov.ea.datareturns.domain.jpa.repositories.masterdata.UniqueIdentifierAliasRepository;
+import uk.gov.ea.datareturns.domain.jpa.repositories.masterdata.UniqueIdentifierRepository;
 import uk.gov.ea.datareturns.domain.jpa.service.Search;
 
 import javax.inject.Inject;
@@ -20,15 +19,16 @@ import java.util.stream.Collectors;
 @Component
 public class SearchProcessor {
 
-    private final SiteDao siteDao;
     private final Search search;
-    private final UniqueIdentifierDao uniqueIdentifierDao;
+    private final UniqueIdentifierRepository uniqueIdentifierRepository;
+    private final UniqueIdentifierAliasRepository uniqueIdentifierAliasRepository;
 
     @Inject
-    public SearchProcessor(Search search, UniqueIdentifierDao uniqueIdentifierDao, SiteDao siteDao) {
+    public SearchProcessor(Search search, UniqueIdentifierRepository uniqueIdentifierRepository,
+            UniqueIdentifierAliasRepository uniqueIdentifierAliasRepository) {
         this.search = search;
-        this.uniqueIdentifierDao = uniqueIdentifierDao;
-        this.siteDao = siteDao;
+        this.uniqueIdentifierRepository = uniqueIdentifierRepository;
+        this.uniqueIdentifierAliasRepository = uniqueIdentifierAliasRepository;
     }
 
     /**
@@ -41,16 +41,24 @@ public class SearchProcessor {
         // Look for an exact match on the permit. If found retrieve the
         // alternatives and populate and return the search dto object
         StringTokenizer tokenizer = new StringTokenizer(term, " ,.:;?!'");
-        while(tokenizer.hasMoreTokens()) {
+        while (tokenizer.hasMoreTokens()) {
             String word = tokenizer.nextToken();
-            if (uniqueIdentifierDao.uniqueIdentifierExists(word)) {
-                UniqueIdentifier basePermit = uniqueIdentifierDao.getByNameOrAlias(Key.explicit(word));
+
+            UniqueIdentifier basePermit;
+            UniqueIdentifierAlias alias = uniqueIdentifierAliasRepository.getByName(word);
+            if (alias != null) {
+                basePermit = alias.getPreferred();
+            } else {
+                basePermit = uniqueIdentifierRepository.getByName(word);
+            }
+
+            if (basePermit != null) {
                 // Get the set of alternatives using the base identifier
-                Set<String> alternatives = uniqueIdentifierDao.getAliasNames(basePermit);
+                Set<String> alternatives = basePermit.getAliases().stream().map(UniqueIdentifierAlias::getName).collect(Collectors.toSet());
                 // Check that the search result is not previously found
                 if (!results.stream().map(PermitLookupDto.Results::getUniqueIdentifier)
                         .collect(Collectors.toSet()).contains(basePermit)) {
-                    results.add(new PermitLookupDto.Results(basePermit, alternatives, new String[]{word}));
+                    results.add(new PermitLookupDto.Results(basePermit, alternatives, new String[] { word }));
                 }
             }
         }
@@ -66,10 +74,10 @@ public class SearchProcessor {
             List<Pair<String, String[]>> siteResults = search.searchSite(sj.toString());
             if (siteResults != null) {
                 for (Pair<String, String[]> siteResult : siteResults) {
-                    // Lookup the site
-                    Site site = siteDao.getByName(siteResult.getLeft());
                     // From the site search results lookup the permit
-                    Set<UniqueIdentifier> siteBasePermits = uniqueIdentifierDao.getUniqueIdentifierBySiteName(siteResult.getLeft());
+                    List<UniqueIdentifier> siteBasePermits = uniqueIdentifierRepository
+                            .findUniqueIdentifiersBySiteName(siteResult.getLeft());
+
                     // Loop through the multiple permits on the site
                     if (siteBasePermits != null) {
                         for (UniqueIdentifier siteBasePermit : siteBasePermits) {
@@ -77,7 +85,8 @@ public class SearchProcessor {
                             if (!results.stream().map(PermitLookupDto.Results::getUniqueIdentifier)
                                     .collect(Collectors.toSet()).contains(siteBasePermit)) {
                                 // Get the alternative permits
-                                Set<String> alternatives = uniqueIdentifierDao.getAliasNames(siteBasePermit);
+                                Set<String> alternatives = siteBasePermit.getAliases().stream().map(UniqueIdentifierAlias::getName)
+                                        .collect(Collectors.toSet());
                                 results.add(new PermitLookupDto.Results(siteBasePermit, alternatives, siteResult.getRight()));
                             }
                         }

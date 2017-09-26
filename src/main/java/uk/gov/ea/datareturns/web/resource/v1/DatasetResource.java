@@ -3,7 +3,6 @@ package uk.gov.ea.datareturns.web.resource.v1;
 import io.swagger.annotations.*;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
-import org.apache.commons.lang3.tuple.Triple;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
@@ -16,14 +15,14 @@ import uk.gov.ea.datareturns.domain.jpa.dao.userdata.factories.EntitySubstitutio
 import uk.gov.ea.datareturns.domain.jpa.entities.userdata.impl.DatasetEntity;
 import uk.gov.ea.datareturns.domain.jpa.entities.userdata.impl.RecordEntity;
 import uk.gov.ea.datareturns.domain.jpa.entities.userdata.impl.User;
+import uk.gov.ea.datareturns.domain.jpa.projections.userdata.ValidationErrorInstance;
 import uk.gov.ea.datareturns.domain.jpa.service.DatasetService;
 import uk.gov.ea.datareturns.domain.jpa.service.SubmissionService;
-import uk.gov.ea.datareturns.util.StopWatch;
+import uk.gov.ea.datareturns.web.resource.JerseyResource;
 import uk.gov.ea.datareturns.web.resource.v1.model.common.Linker;
 import uk.gov.ea.datareturns.web.resource.v1.model.common.Preconditions;
 import uk.gov.ea.datareturns.web.resource.v1.model.common.references.EntityReference;
 import uk.gov.ea.datareturns.web.resource.v1.model.dataset.*;
-import uk.gov.ea.datareturns.web.resource.v1.model.record.RecordAdaptor;
 import uk.gov.ea.datareturns.web.resource.v1.model.request.BatchDatasetRequest;
 import uk.gov.ea.datareturns.web.resource.v1.model.request.BatchDatasetRequestItem;
 import uk.gov.ea.datareturns.web.resource.v1.model.response.*;
@@ -63,7 +62,7 @@ import static uk.gov.ea.datareturns.web.resource.v1.model.common.PreconditionChe
 @Produces({ APPLICATION_JSON, APPLICATION_XML })
 @Component
 @Scope(ConfigurableBeanFactory.SCOPE_SINGLETON)
-public class DatasetResource {
+public class DatasetResource implements JerseyResource {
     private static final Logger LOGGER = LoggerFactory.getLogger(DatasetResource.class);
 
     @Context
@@ -71,12 +70,10 @@ public class DatasetResource {
 
     private DatasetService datasetService;
     private final SubmissionService submissionService;
-    RecordAdaptor recordAdaptor;
 
-    @Inject public DatasetResource(DatasetService datasetService, SubmissionService submissionService, RecordAdaptor recordAdaptor) {
+    @Inject public DatasetResource(DatasetService datasetService, SubmissionService submissionService) {
         this.datasetService = datasetService;
         this.submissionService = submissionService;
-        this.recordAdaptor = recordAdaptor;
     }
 
     /**
@@ -398,9 +395,6 @@ public class DatasetResource {
             }
             // Submit the data - only valid records may be submitted
 
-            StopWatch sw = new StopWatch("Dataset Status");
-            sw.startTask("Submitting datasets");
-
             try {
                 submissionService.submit(datasetEntity);
             } catch (UnsubmittableDatasetException e) {
@@ -410,9 +404,6 @@ public class DatasetResource {
             } catch (ProcessingException e) {
                 throw new WebApplicationException(e);
             }
-
-            sw.stop();
-            LOGGER.info(sw.prettyPrint());
 
             return new DatasetStatusResponse(buildDatasetStatus(datasetEntity)).toResponseBuilder();
         }).build();
@@ -455,22 +446,16 @@ public class DatasetResource {
     }
 
     private DatasetSubstitutions getSubstitutions(final DatasetEntity datasetEntity) {
-        StopWatch sw = new StopWatch("Submission Status");
-        sw.startTask("Getting records");
         List<RecordEntity> recordEntities = submissionService.getRecords(datasetEntity);
 
-        sw.startTask("Evaluating substitutions");
         DatasetSubstitutions substitutions = new DatasetSubstitutions();
         Map<RecordEntity, Set<EntitySubstitution>> subMap = submissionService
                 .evaluateSubstitutes(recordEntities);
 
-        sw.startTask("Processing substitutions");
         subMap.forEach((recordEntity, subs) -> subs.forEach((sub) -> substitutions.addSubstitution(recordEntity.getIdentifier(),
                 sub.getEntity(),
                 sub.getSubmitted(),
                 sub.getPreferred())));
-        sw.stop();
-        LOGGER.info(sw.prettyPrint());
         return substitutions;
     }
 
@@ -489,10 +474,10 @@ public class DatasetResource {
     private DatasetValidity getValidity(final DatasetEntity datasetEntity) {
         // Retrieve the list of tuples containing the
         // record identifier, the payload type and the error
-        List<Triple<String, String, String>> validationErrors = submissionService.retrieveValidationErrors(datasetEntity);
+        List<ValidationErrorInstance> validationErrors = submissionService.retrieveValidationErrors(datasetEntity);
         Map<Pair<String, String>, List<String>> groupedValidationErrors = validationErrors.stream()
-                .collect(Collectors.groupingBy(k -> new ImmutablePair<>(k.getLeft(), k.getMiddle()),
-                        Collectors.mapping(Triple::getRight, Collectors.toList())));
+                .collect(Collectors.groupingBy(k -> new ImmutablePair<>(k.getRecordIdentifier(), k.getPayloadType()),
+                        Collectors.mapping(ValidationErrorInstance::getConstraintIdentifier, Collectors.toList())));
 
         Linker linker = Linker.info(uriInfo);
         DatasetValidity validity = new DatasetValidity();

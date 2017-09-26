@@ -8,7 +8,7 @@ import java.time.Instant;
  * @author Graham Willis
  */
 @Entity
-@Table(name = "fields")
+@Table(name = "md_fields")
 public class FieldEntity implements Serializable {
     @EmbeddedId FieldId id;
 

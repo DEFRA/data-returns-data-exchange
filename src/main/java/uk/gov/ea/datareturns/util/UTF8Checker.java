@@ -35,11 +35,17 @@ public class UTF8Checker {
         final List<Violation> violations = UTF8Checker.checkFile(file, maxAsciiAllowed);
         final StringBuilder sb = new StringBuilder();
 
-        sb.append(file.getName() + " contains " + violations.size() + " violations" + System.lineSeparator());
+        sb.append(file.getName());
+        sb.append(" contains ");
+        sb.append(violations.size());
+        sb.append(" violations");
+        sb.append(System.lineSeparator());
+
         if (violations.size() > 0) {
             sb.append(String.format("[%25s (%5s:%-5s) Character Details   ] Data%n", "Filename", "Line", "Col"));
             for (Violation v : violations) {
-                sb.append(v.toString() + System.lineSeparator());
+                sb.append(v.toString());
+                sb.append(System.lineSeparator());
             }
         }
         return sb.toString();
@@ -124,7 +130,8 @@ public class UTF8Checker {
         }
 
         @Override public String toString() {
-            return String.format("[%25s (%5d:%-5d) Char: %-2c (U+%04X)   ] %s", file.getName(), line, column, badChar, badChar & 0x0FFFF, text);
+            return String
+                    .format("[%25s (%5d:%-5d) Char: %-2c (U+%04X)   ] %s", file.getName(), line, column, badChar, badChar & 0x0FFFF, text);
         }
     }
 }

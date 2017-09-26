@@ -10,16 +10,16 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 import uk.gov.ea.datareturns.App;
-import uk.gov.ea.datareturns.domain.jpa.dao.masterdata.ParameterDao;
-import uk.gov.ea.datareturns.domain.jpa.dao.masterdata.ReleasesAndTransfersDao;
-import uk.gov.ea.datareturns.domain.jpa.dao.masterdata.ReturnTypeDao;
+import uk.gov.ea.datareturns.domain.jpa.entities.masterdata.MasterDataEntity;
 import uk.gov.ea.datareturns.domain.jpa.entities.masterdata.impl.ControlledListsList;
 import uk.gov.ea.datareturns.domain.jpa.entities.masterdata.impl.Parameter;
 import uk.gov.ea.datareturns.domain.jpa.entities.masterdata.impl.ReleasesAndTransfers;
 import uk.gov.ea.datareturns.domain.jpa.entities.masterdata.impl.ReturnType;
-import uk.gov.ea.datareturns.domain.jpa.hierarchy.Hierarchy;
 import uk.gov.ea.datareturns.domain.jpa.hierarchy.HierarchyLevel;
 import uk.gov.ea.datareturns.domain.jpa.hierarchy.implementations.ParameterHierarchy;
+import uk.gov.ea.datareturns.domain.jpa.repositories.masterdata.ParameterRepository;
+import uk.gov.ea.datareturns.domain.jpa.repositories.masterdata.ReleasesAndTransfersRepository;
+import uk.gov.ea.datareturns.domain.jpa.repositories.masterdata.ReturnTypeRepository;
 
 import javax.inject.Inject;
 import java.util.List;
@@ -34,57 +34,57 @@ public class ParameterHierarchyNavigationTests {
     protected static final Logger LOGGER = LoggerFactory.getLogger(ParameterHierarchyNavigationTests.class);
 
     @Inject
-    private ParameterDao parameterDao;
+    private ParameterRepository parameterRepository;
 
     @Inject
-    private ReturnTypeDao returnTypeDao;
+    private ReturnTypeRepository returnTypeRepository;
 
     @Inject
-    private ReleasesAndTransfersDao releasesAndTransfersDao;
+    private ReleasesAndTransfersRepository releasesAndTransfersRepository;
 
     @Inject
     ParameterHierarchy parameterHierarchy;
 
     @Test
     public void traverseReturningLandfillAllParameters() {
-        ReturnType returnType = returnTypeDao.getByName("Emissions to sewer");
+        ReturnType returnType = returnTypeRepository.getByName("Emissions to sewer");
         Assert.assertNotNull(returnType);
 
-        Pair<HierarchyLevel<? extends Hierarchy.HierarchyEntity>, List<? extends Hierarchy.HierarchyEntity>> result = parameterHierarchy
+        Pair<HierarchyLevel<? extends MasterDataEntity>, List<? extends MasterDataEntity>> result = parameterHierarchy
                 .children(returnType);
 
         Assert.assertNotNull(result.getRight());
         Assert.assertEquals(ControlledListsList.PARAMETER, result.getLeft().getControlledList());
 
-        printList(result.getRight());
+        //        printList(result.getRight());
     }
 
     @Test
     public void traverseReturningLandfillAllUnits() {
-        ReturnType returnType = returnTypeDao.getByName("Emissions to sewer");
+        ReturnType returnType = returnTypeRepository.getByName("Emissions to sewer");
         Assert.assertNotNull(returnType);
 
-        Parameter parameter = parameterDao.getByName("Ziram");
+        Parameter parameter = parameterRepository.getByName("Ziram");
         Assert.assertNotNull(parameter);
 
-        Pair<HierarchyLevel<? extends Hierarchy.HierarchyEntity>, List<? extends Hierarchy.HierarchyEntity>> result = parameterHierarchy
+        Pair<HierarchyLevel<? extends MasterDataEntity>, List<? extends MasterDataEntity>> result = parameterHierarchy
                 .children(returnType, parameter);
 
         Assert.assertNotNull(result.getRight());
         Assert.assertEquals(ControlledListsList.UNIT, result.getLeft().getControlledList());
 
-        printList(result.getRight());
+        //        printList(result.getRight());
     }
 
     @Test
     public void traverseReturningNullForLandfillWithReleasesAndTransfers() {
-        ReturnType returnType = returnTypeDao.getByName("Emissions to sewer");
+        ReturnType returnType = returnTypeRepository.getByName("Emissions to sewer");
         Assert.assertNotNull(returnType);
 
-        ReleasesAndTransfers releasesAndTransfers = releasesAndTransfersDao.getByName("Air");
+        ReleasesAndTransfers releasesAndTransfers = releasesAndTransfersRepository.getByName("Air");
         Assert.assertNotNull(releasesAndTransfers);
 
-        Pair<HierarchyLevel<? extends Hierarchy.HierarchyEntity>, List<? extends Hierarchy.HierarchyEntity>> result = parameterHierarchy
+        Pair<HierarchyLevel<? extends MasterDataEntity>, List<? extends MasterDataEntity>> result = parameterHierarchy
                 .children(returnType, releasesAndTransfers);
 
         Assert.assertNull(result.getRight());
@@ -93,16 +93,16 @@ public class ParameterHierarchyNavigationTests {
 
     @Test
     public void traverseReturningNullForExcludedParameter() {
-        ReturnType returnType = returnTypeDao.getByName("Emissions to groundwater");
+        ReturnType returnType = returnTypeRepository.getByName("Emissions to groundwater");
         Assert.assertNotNull(returnType);
 
-        ReleasesAndTransfers releasesAndTransfers = releasesAndTransfersDao.getByName("Air");
+        ReleasesAndTransfers releasesAndTransfers = releasesAndTransfersRepository.getByName("Air");
         Assert.assertNotNull(releasesAndTransfers);
 
-        Parameter parameter = parameterDao.getByName("Dichlorvos");
+        Parameter parameter = parameterRepository.getByName("Dichlorvos");
         Assert.assertNotNull(parameter);
 
-        Pair<HierarchyLevel<? extends Hierarchy.HierarchyEntity>, List<? extends Hierarchy.HierarchyEntity>> result = parameterHierarchy
+        Pair<HierarchyLevel<? extends MasterDataEntity>, List<? extends MasterDataEntity>> result = parameterHierarchy
                 .children(returnType, releasesAndTransfers, parameter);
 
         Assert.assertNull(result.getRight());
@@ -111,17 +111,17 @@ public class ParameterHierarchyNavigationTests {
 
     @Test
     public void traverseAllNullsReturnsReturnTypes() {
-        Pair<HierarchyLevel<? extends Hierarchy.HierarchyEntity>, List<? extends Hierarchy.HierarchyEntity>> result = parameterHierarchy
-                .children((Hierarchy.HierarchyEntity) null);
+        Pair<HierarchyLevel<? extends MasterDataEntity>, List<? extends MasterDataEntity>> result = parameterHierarchy
+                .children((MasterDataEntity) null);
 
         Assert.assertNotNull(result.getRight());
         Assert.assertEquals(ControlledListsList.RETURN_TYPE, result.getLeft().getControlledList());
     }
 
-    private void printList(List<? extends Hierarchy.HierarchyEntity> list) {
-        for (Hierarchy.HierarchyEntity e : list) {
-            LOGGER.info(e.getName());
-        }
-    }
+    //    private void printList(List<? extends MasterDataEntity> list) {
+    //        for (MasterDataEntity e : list) {
+    //            LOGGER.info(e.getName());
+    //        }
+    //    }
 
 }

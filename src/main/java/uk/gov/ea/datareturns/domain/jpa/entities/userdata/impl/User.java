@@ -1,20 +1,20 @@
 package uk.gov.ea.datareturns.domain.jpa.entities.userdata.impl;
 
 import org.hibernate.annotations.GenericGenerator;
+import org.hibernate.annotations.NaturalId;
 import uk.gov.ea.datareturns.domain.jpa.entities.userdata.Metadata;
 
 import javax.persistence.*;
 import java.time.Instant;
-import java.time.LocalDateTime;
 import java.util.Collection;
 
 /**
  * @author Graham
  */
 @Entity
-@Table(name = "users")
+@Table(name = "md_users")
 @GenericGenerator(name = "idGenerator", strategy = "org.hibernate.id.enhanced.SequenceStyleGenerator", parameters = {
-        @org.hibernate.annotations.Parameter(name = "sequence_name", value = "users_id_seq") }
+        @org.hibernate.annotations.Parameter(name = "sequence_name", value = "md_users_id_seq") }
 )
 public class User implements Metadata {
 
@@ -23,6 +23,7 @@ public class User implements Metadata {
     @Id @GeneratedValue(generator = "idGenerator")
     private Long id;
 
+    @NaturalId
     @Basic @Column(name = "identifier", nullable = false, length = 80)
     private String identifier;
 

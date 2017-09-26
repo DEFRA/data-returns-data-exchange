@@ -17,6 +17,14 @@ public class FieldId implements Serializable {
     @JoinColumn(name = "payload_type", referencedColumnName = "payload_type")
     private PayloadType payloadType;
 
+    public FieldId() {
+    }
+
+    public FieldId(String fieldName, PayloadType payloadType) {
+        this.fieldName = fieldName;
+        this.payloadType = payloadType;
+    }
+
     public String getFieldName() {
         return fieldName;
     }

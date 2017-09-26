@@ -381,7 +381,7 @@ predictable set of keys with which you can interact:
         "code": 200
     },
     "data": {
-        ...
+        "...":"..."
     }
 }
 ```

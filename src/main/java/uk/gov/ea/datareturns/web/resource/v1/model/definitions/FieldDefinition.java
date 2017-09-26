@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlElementWrapper;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
 import io.swagger.annotations.ApiModel;
-import uk.gov.ea.datareturns.domain.jpa.entities.masterdata.ControlledListEntity;
+import uk.gov.ea.datareturns.domain.jpa.entities.masterdata.MasterDataEntity;
 import uk.gov.ea.datareturns.web.resource.v1.model.common.EntityBase;
 
 import java.io.Serializable;
@@ -24,7 +24,7 @@ public class FieldDefinition extends EntityBase implements Serializable {
     @JsonProperty("allowed_values")
     @JacksonXmlElementWrapper(localName = "allowed_values")
     @JacksonXmlProperty(localName = "allowed")
-    private Collection<ControlledListEntity> allowed;
+    private Collection<? extends MasterDataEntity> allowed;
 
     public FieldDefinition() {
     }
@@ -45,11 +45,11 @@ public class FieldDefinition extends EntityBase implements Serializable {
         this.type = type;
     }
 
-    public Collection<ControlledListEntity> getAllowed() {
+    public Collection<? extends MasterDataEntity> getAllowed() {
         return allowed;
     }
 
-    public void setAllowed(Collection<ControlledListEntity> allowed) {
+    public void setAllowed(Collection<? extends MasterDataEntity> allowed) {
         this.allowed = allowed;
     }
 }

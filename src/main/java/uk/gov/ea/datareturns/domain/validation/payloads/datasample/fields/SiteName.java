@@ -26,9 +26,4 @@ public class SiteName implements FieldValue<String> {
     @Override public String getInputValue() {
         return this.inputValue;
     }
-
-    @Override public String getValue() {
-        return this.inputValue;
-    }
-
 }

@@ -10,6 +10,8 @@ import org.springframework.stereotype.Component;
  * The {@link SpringApplicationContextProvider} class provides access to the spring {@link ApplicationContext} from outside of the spring
  * managed scope.
  *
+ * Not recommended - use only where absolutely necessary!
+ *
  * @author Sam Gardner-Dell
  */
 @Component

@@ -40,13 +40,14 @@ public class PermitLookupTests {
     @Before
     public void initialize() throws IOException {
         try {
-        LOGGER.info("Initialize tests");
+            LOGGER.info("Initialize tests");
 
-        sitePermitService.removePermitSiteAndAliases(UNIQUE_ID);
-        sitePermitService.addNewPermitAndSite(UNIQUE_ID, TEST_SITE_NAME, new String [] { UNIQUE_ID_ALIAS });
+            sitePermitService.removePermitSiteAndAliases(UNIQUE_ID);
+            sitePermitService.addNewPermitAndSite(UNIQUE_ID, TEST_SITE_NAME, new String[] { UNIQUE_ID_ALIAS });
 
         } catch (DataAccessException e) {
-            LOGGER.warn("Cannot add the test data: " + e.getMessage());
+            LOGGER.error("Cannot add the test data", e);
+            throw e;
         }
     }
 
@@ -71,11 +72,11 @@ public class PermitLookupTests {
     private void testLookupResults(PermitLookupDto dto) {
         Set<PermitLookupDto.Results> results = dto.getResults();
         Assert.assertEquals(1, results.size());
-        Assert.assertEquals(((PermitLookupDto.Results)results.toArray()[0]).getUniqueIdentifier().getSite().getName(), TEST_SITE_NAME);
-        Assert.assertEquals(((PermitLookupDto.Results)results.toArray()[0]).getUniqueIdentifier().getName(), UNIQUE_ID);
+        Assert.assertEquals(TEST_SITE_NAME, ((PermitLookupDto.Results) results.toArray()[0]).getUniqueIdentifier().getSite().getName());
+        Assert.assertEquals(UNIQUE_ID, ((PermitLookupDto.Results) results.toArray()[0]).getUniqueIdentifier().getName());
         Set<String> alternatives = ((PermitLookupDto.Results) results.toArray()[0]).getAlternatives();
-        Assert.assertEquals(alternatives.size(), 1);
-        Assert.assertEquals(alternatives.toArray()[0], UNIQUE_ID_ALIAS);
+        Assert.assertEquals(1, alternatives.size());
+        Assert.assertEquals(UNIQUE_ID_ALIAS, alternatives.toArray()[0]);
     }
 
     @After

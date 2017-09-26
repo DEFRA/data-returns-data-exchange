@@ -1,22 +1,20 @@
 package uk.gov.ea.datareturns;
 
-import org.springframework.beans.factory.config.ConfigurableBeanFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.boot.autoconfigure.mustache.MustacheAutoConfiguration;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Scope;
-import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
-
-import javax.validation.Validator;
+import org.springframework.boot.autoconfigure.liquibase.LiquibaseAutoConfiguration;
 
 /**
  * Application class for the Data Returns Backend Service.
  *
  * @author Sam Gardner-Dell
  */
-@SpringBootApplication(exclude = { MustacheAutoConfiguration.class })
+@SpringBootApplication(exclude = LiquibaseAutoConfiguration.class)
 public class App {
+    protected static final Logger LOGGER = LoggerFactory.getLogger(App.class);
+
     /**
      * Application main startup method
      *
@@ -24,16 +22,5 @@ public class App {
      */
     public static void main(final String[] args) {
         SpringApplication.run(App.class, args);
-    }
-
-    /**
-     * Bean record for hibernate validator.
-     *
-     * @return a singleton instance of the {@link LocalValidatorFactoryBean} to be shared application-wide.
-     */
-    @Bean
-    @Scope(ConfigurableBeanFactory.SCOPE_SINGLETON)
-    public Validator validator() {
-        return new LocalValidatorFactoryBean();
     }
 }

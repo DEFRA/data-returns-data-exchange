@@ -2,11 +2,11 @@ package uk.gov.ea.datareturns.domain.validation.common.validator;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import uk.gov.ea.datareturns.domain.jpa.dao.userdata.impl.PayloadTypeDao;
-import uk.gov.ea.datareturns.domain.jpa.dao.userdata.impl.ValidationErrorDao;
 import uk.gov.ea.datareturns.domain.jpa.entities.userdata.impl.PayloadType;
 import uk.gov.ea.datareturns.domain.jpa.entities.userdata.impl.ValidationError;
 import uk.gov.ea.datareturns.domain.jpa.entities.userdata.impl.ValidationErrorId;
+import uk.gov.ea.datareturns.domain.jpa.repositories.systemdata.PayloadTypeRepository;
+import uk.gov.ea.datareturns.domain.jpa.repositories.systemdata.ValidationConstraintRepository;
 
 import javax.inject.Inject;
 import javax.validation.ConstraintViolation;
@@ -22,8 +22,8 @@ public class ValidatorImpl implements Validator<AbstractValidationObject> {
 
     /** validator instance */
     private final javax.validation.Validator instanceValidator;
-    private final ValidationErrorDao validationErrorDao;
-    private final PayloadTypeDao payloadTypeDao;
+    private final ValidationConstraintRepository validationConstraintRepository;
+    private final PayloadTypeRepository payloadTypeRepository;
     /** flag to indicate if the instanceValidator has been fully initialised */
     private boolean initialised = false;
 
@@ -33,21 +33,22 @@ public class ValidatorImpl implements Validator<AbstractValidationObject> {
      * @param validator the hibernate instanceValidator instance
      */
     @Inject
-    public ValidatorImpl(final javax.validation.Validator validator, ValidationErrorDao validationErrorDao, PayloadTypeDao payloadTypeDao) {
+    public ValidatorImpl(final javax.validation.Validator validator, ValidationConstraintRepository validationConstraintRepository, PayloadTypeRepository payloadTypeRepository) {
         this.instanceValidator = validator;
-        this.validationErrorDao = validationErrorDao;
-        this.payloadTypeDao = payloadTypeDao;
+        this.validationConstraintRepository = validationConstraintRepository;
+        this.payloadTypeRepository = payloadTypeRepository;
     }
 
     public Set<ValidationError> validateValidationObject(AbstractValidationObject validationObject) {
         final Set<ValidationError> errors = new HashSet<>();
+
+        PayloadType payloadType = payloadTypeRepository.getOne((validationObject).payload.getPayloadType());
         final Set<ConstraintViolation<AbstractValidationObject>> violations = validate(validationObject);
         for (final ConstraintViolation<AbstractValidationObject> violation : violations) {
             ValidationErrorId id = new ValidationErrorId();
             id.setError(violation.getMessageTemplate());
-            PayloadType payloadType = payloadTypeDao.get((validationObject).payload.getPayloadType());
             id.setPayloadType(payloadType);
-            ValidationError error = validationErrorDao.get(id);
+            ValidationError error = validationConstraintRepository.getOne(id);
             if (error == null) {
                 LOGGER.error("Unknown message template discovered: " + violation.getMessageTemplate());
             } else {

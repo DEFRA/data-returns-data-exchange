@@ -4,7 +4,6 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.tuple.Triple;
 import org.hibernate.validator.internal.constraintvalidators.hv.EmailValidator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -15,13 +14,14 @@ import uk.gov.ea.datareturns.domain.exceptions.UnsubmittableRecordsException;
 import uk.gov.ea.datareturns.domain.jpa.dao.userdata.factories.AbstractPayloadEntityFactory;
 import uk.gov.ea.datareturns.domain.jpa.dao.userdata.factories.EntitySubstitution;
 import uk.gov.ea.datareturns.domain.jpa.dao.userdata.factories.TranslationResult;
-import uk.gov.ea.datareturns.domain.jpa.dao.userdata.impl.DatasetDao;
 import uk.gov.ea.datareturns.domain.jpa.dao.userdata.impl.PayloadEntityDao;
-import uk.gov.ea.datareturns.domain.jpa.dao.userdata.impl.RecordDao;
 import uk.gov.ea.datareturns.domain.jpa.entities.userdata.AbstractPayloadEntity;
 import uk.gov.ea.datareturns.domain.jpa.entities.userdata.impl.DatasetEntity;
 import uk.gov.ea.datareturns.domain.jpa.entities.userdata.impl.RecordEntity;
 import uk.gov.ea.datareturns.domain.jpa.entities.userdata.impl.ValidationError;
+import uk.gov.ea.datareturns.domain.jpa.projections.userdata.ValidationErrorInstance;
+import uk.gov.ea.datareturns.domain.jpa.repositories.userdata.DatasetRepository;
+import uk.gov.ea.datareturns.domain.jpa.repositories.userdata.RecordRepository;
 import uk.gov.ea.datareturns.domain.validation.common.validator.AbstractValidationObject;
 import uk.gov.ea.datareturns.domain.validation.common.validator.ValidationObjectFactory;
 import uk.gov.ea.datareturns.domain.validation.common.validator.Validator;
@@ -57,21 +57,21 @@ public class SubmissionService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(SubmissionService.class);
     private final ValidationObjectFactory validationObjectFactory;
-    private final RecordDao recordDao;
+    private final RecordRepository recordRepository;
     private final PayloadEntityDao payloadEntityDao;
     private final Validator<AbstractValidationObject> validator;
     private final static ObjectMapper mapper = new ObjectMapper();
-    private final DatasetDao datasetDao;
+    private final DatasetRepository datasetRepository;
 
     public SubmissionService(ValidationObjectFactory validationObjectFactory,
-            DatasetDao datasetDao,
-            RecordDao recordDao,
+            DatasetRepository datasetRepository,
+            RecordRepository recordRepository,
             PayloadEntityDao payloadEntityDao,
             Validator<AbstractValidationObject> validator) {
 
         this.validationObjectFactory = validationObjectFactory;
-        this.datasetDao = datasetDao;
-        this.recordDao = recordDao;
+        this.datasetRepository = datasetRepository;
+        this.recordRepository = recordRepository;
         this.validator = validator;
         this.payloadEntityDao = payloadEntityDao;
 
@@ -113,12 +113,32 @@ public class SubmissionService {
      */
     @Transactional(readOnly = true)
     public RecordEntity retrieve(DatasetEntity dataset, String id) {
-        return recordDao.get(dataset, id);
+        return recordRepository.getByDatasetAndIdentifier(dataset, id);
     }
 
     @Transactional(readOnly = true)
-    public List<Triple<String, String, String>> retrieveValidationErrors(DatasetEntity dataset) {
-        return recordDao.getValidationErrors(dataset);
+    public List<ValidationErrorInstance> retrieveValidationErrors(DatasetEntity dataset) {
+        // TODO: This is only necessary due to a bug with spring data projections and native queries, see https://jira.spring.io/browse/DATAJPA-980
+        // Once this has been fixed, the recordRepository.getValidationErrorsForDataset could return a List<RecordRepository.ValidationErrorInstance> itself
+        // See RecordRepository
+        List<Object[]> results = recordRepository.getValidationErrorsForDataset(dataset);
+        List<ValidationErrorInstance> errors = new ArrayList<>(results.size());
+        for (Object[] entry : results) {
+            errors.add(new ValidationErrorInstance() {
+                @Override public String getRecordIdentifier() {
+                    return Objects.toString(entry[0], null);
+                }
+
+                @Override public String getPayloadType() {
+                    return Objects.toString(entry[1], null);
+                }
+
+                @Override public String getConstraintIdentifier() {
+                    return Objects.toString(entry[2], null);
+                }
+            });
+        }
+        return errors;
     }
 
     /**
@@ -139,9 +159,8 @@ public class SubmissionService {
      */
     @Transactional(readOnly = true)
     public List<RecordEntity> getRecords(DatasetEntity dataset) {
-        return recordDao.list(dataset);
+        return recordRepository.findAllByDataset(dataset);
     }
-
 
     /**
      * Retrieve a single record null if not found
@@ -151,7 +170,7 @@ public class SubmissionService {
      */
     @Transactional(readOnly = true)
     public RecordEntity getRecord(DatasetEntity dataset, String identifier) {
-        return recordDao.get(dataset, identifier);
+        return recordRepository.getByDatasetAndIdentifier(dataset, identifier);
     }
 
     /**
@@ -165,9 +184,9 @@ public class SubmissionService {
         RecordEntity record = getRecord(dataset, identifier);
         if (record != null) {
             payloadEntityDao.remove(record.getId(), AbstractPayloadEntity.class);
-            recordDao.remove(record);
+            recordRepository.delete(record);
             dataset.setRecordChangedDate(Instant.now());
-            datasetDao.merge(dataset);
+            datasetRepository.saveAndFlush(dataset);
         }
     }
 
@@ -205,7 +224,8 @@ public class SubmissionService {
         });
         // Update the dataset's record collection timestamp
         dataset.setRecordChangedDate(Instant.now());
-        datasetDao.merge(dataset);
+        recordRepository.flush();
+        datasetRepository.saveAndFlush(dataset);
 
         return updatedRecords;
     }
@@ -223,7 +243,8 @@ public class SubmissionService {
     @Transactional
     public <D extends Payload> RecordEntity createRecord(DatasetEntity dataset, String identifier, D payload) {
         Instant timestamp = Instant.now();
-        RecordEntity recordEntity = Optional.ofNullable(recordDao.get(dataset, identifier)).orElse(new RecordEntity(dataset, identifier));
+        RecordEntity recordEntity = Optional.ofNullable(recordRepository.getByDatasetAndIdentifier(dataset, identifier))
+                .orElse(new RecordEntity(dataset, identifier));
 
         if (dataset.getStatus() == DatasetEntity.Status.SUBMITTED) {
             return recordEntity;
@@ -232,7 +253,8 @@ public class SubmissionService {
         recordEntity = updateRecord(recordEntity, payload);
 
         dataset.setRecordChangedDate(timestamp);
-        datasetDao.merge(dataset);
+        recordRepository.flush();
+        datasetRepository.saveAndFlush(dataset);
 
         return recordEntity;
     }
@@ -269,8 +291,8 @@ public class SubmissionService {
         for (RecordEntity r : recordEntities) {
             try {
                 Payload payload = mapper.readValue(r.getJson(), Payload.class);
-                AbstractPayloadEntityFactory<AbstractPayloadEntity, Payload> factory =
-                        AbstractPayloadEntityFactory.factoryFor(payload.getClass());
+                AbstractPayloadEntityFactory<AbstractPayloadEntity, Payload> factory = AbstractPayloadEntityFactory
+                        .genericFactory(payload.getClass());
                 TranslationResult<AbstractPayloadEntity> result = factory.create(payload);
                 AbstractPayloadEntity submission = result.getEntity();
                 submission.setDataset(datasetEntity);
@@ -284,7 +306,7 @@ public class SubmissionService {
         datasetEntity.setRecordChangedDate(timestamp);
         datasetEntity.setLastChangedDate(timestamp);
         datasetEntity.setStatus(DatasetEntity.Status.SUBMITTED);
-        datasetDao.merge(datasetEntity);
+        datasetRepository.saveAndFlush(datasetEntity);
     }
 
     /**
@@ -300,8 +322,8 @@ public class SubmissionService {
             if (record.getRecordStatus() == RecordEntity.RecordStatus.VALID) {
                 try {
                     Payload payload = mapper.readValue(record.getJson(), Payload.class);
-                    AbstractPayloadEntityFactory<AbstractPayloadEntity, Payload> factory =
-                            AbstractPayloadEntityFactory.factoryFor(payload.getClass());
+                    AbstractPayloadEntityFactory<AbstractPayloadEntity, Payload> factory = AbstractPayloadEntityFactory
+                            .genericFactory(payload.getClass());
                     TranslationResult<AbstractPayloadEntity> result = factory.create(payload);
                     if (result.getSubstitutions() != null) {
                         substitutions.put(record, result.getSubstitutions());
@@ -315,8 +337,6 @@ public class SubmissionService {
     }
 
     private <D extends Payload> RecordEntity updateRecord(RecordEntity recordEntity, D payload) {
-        RecordEntity.RecordStatus newRecordStatus = recordEntity.getRecordStatus();
-
         // If we have a data transfer object, associated
         if (payload != null) {
             try {
@@ -336,13 +356,7 @@ public class SubmissionService {
         validate(recordEntity, payload);
 
         recordEntity.setLastChangedDate(Instant.now());
-
-        // If its a new recordEntity persist it or otherwise merge
-        if (newRecordStatus == RecordEntity.RecordStatus.CREATED) {
-            recordDao.persist(recordEntity);
-        } else {
-            recordDao.merge(recordEntity);
-        }
+        recordRepository.save(recordEntity);
         return recordEntity;
     }
 

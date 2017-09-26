@@ -3,7 +3,8 @@ package uk.gov.ea.datareturns.testsupport.integration.api.v1;
 import org.junit.Assert;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.http.*;
-import uk.gov.ea.datareturns.web.config.JerseyConfig;
+import uk.gov.ea.datareturns.config.JerseyConfiguration;
+import uk.gov.ea.datareturns.util.SpringApplicationContextProvider;
 import uk.gov.ea.datareturns.web.resource.v1.model.response.ErrorResponse;
 import uk.gov.ea.datareturns.web.resource.v1.model.response.MultiStatusResponse;
 import uk.gov.ea.datareturns.web.resource.v1.model.response.ResponseMetadata;
@@ -28,10 +29,14 @@ public abstract class AbstractResourceRequest {
     private final HttpStatus expected;
     private HttpHeaders headers;
 
+    private final String applicationPath;
+
     public AbstractResourceRequest(RestfulTest testClassInstance, HttpStatus expected) {
         this.expected = expected;
         this.template = testClassInstance.getTemplate();
         this.port = testClassInstance.getPort();
+        this.applicationPath = SpringApplicationContextProvider.getApplicationContext().getBean(JerseyConfiguration.class)
+                .getApplicationPath().substring(1);
     }
 
     protected <T extends ResponseWrapper> ResponseEntity<T> get(URI uri, Object requestEntity, Class<T> responseType) {
@@ -128,7 +133,7 @@ public abstract class AbstractResourceRequest {
     protected URI uri(Class resource, String methodName, Map<String, Object> templateValues) {
         UriBuilder ub = UriBuilder.fromUri("http://localhost:{port}/{baseUri}");
         ub.resolveTemplate("port", port);
-        ub.resolveTemplateFromEncoded("baseUri", JerseyConfig.APPLICATION_PATH.substring(1));
+        ub.resolveTemplateFromEncoded("baseUri", this.applicationPath);
 
         ub.path(resource);
 

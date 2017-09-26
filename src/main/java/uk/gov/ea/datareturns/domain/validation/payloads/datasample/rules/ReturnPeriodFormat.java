@@ -51,7 +51,7 @@ public enum ReturnPeriodFormat {
     public static String toStandardisedFormat(String input) {
         ReturnPeriodFormat fmt = from(input);
         String value = input;
-        if (fmt != null && input != null) {
+        if (fmt != null) {
             value = fmt.pattern.matcher(input).replaceAll(fmt.replacement);
             value = StringUtils.capitalize(value.toLowerCase());
         }

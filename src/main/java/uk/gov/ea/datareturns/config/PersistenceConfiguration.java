@@ -8,6 +8,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
 import org.springframework.dao.annotation.PersistenceExceptionTranslationPostProcessor;
 import org.springframework.orm.jpa.JpaTransactionManager;
+import org.springframework.orm.jpa.JpaVendorAdapter;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
@@ -18,7 +19,6 @@ import javax.sql.DataSource;
  * Stores database connection settings
  *
  * @author Sam Gardner-Dell
- *
  */
 @Configuration
 @EnableTransactionManagement
@@ -40,7 +40,7 @@ public class PersistenceConfiguration {
      * Create the Hibernate JPA adaptor
      * @return
      */
-    private HibernateJpaVendorAdapter vendorAdapter() {
+    private JpaVendorAdapter vendorAdapter() {
         HibernateJpaVendorAdapter vendorAdapter = new HibernateJpaVendorAdapter();
         return vendorAdapter;
     }
@@ -56,7 +56,6 @@ public class PersistenceConfiguration {
         entityManagerFactory.setJpaVendorAdapter(vendorAdapter());
         entityManagerFactory.setDataSource(primaryDataSource());
         entityManagerFactory.setPersistenceProviderClass(HibernatePersistenceProvider.class);
-
         entityManagerFactory.setPersistenceUnitName("uk.gov.ea.datareturns.domain.jpa");
         entityManagerFactory.setPackagesToScan("uk.gov.ea.datareturns.domain.jpa.entities");
         entityManagerFactory.setJpaVendorAdapter(vendorAdapter());

@@ -1,5 +1,7 @@
 package uk.gov.ea.datareturns.domain.validation.common.constraints.controlledlist;
 
+import uk.gov.ea.datareturns.domain.jpa.entities.masterdata.impl.AbstractMasterDataEntity;
+
 import javax.validation.Constraint;
 import javax.validation.Payload;
 import java.lang.annotation.*;
@@ -34,9 +36,9 @@ public @interface ControlledList {
     Class<? extends Payload>[] payload() default {};
 
     /**
-     * The controlled list auditor class responsible for auditing values in this field
+     * The JPA entity class which should be used to lookup allowed values in order to discover if the entry is valid
      *
-     * @return the {@link Class} definition for the auditor to use
+     * @return the {@link Class} definition for the entity class
      */
-    Class<? extends ControlledListAuditor> auditor();
+    Class<? extends AbstractMasterDataEntity>[] entities();
 }

@@ -1,62 +1,34 @@
 package uk.gov.ea.datareturns.domain.jpa.dao.userdata.factories.impl;
 
 import org.apache.commons.lang3.StringUtils;
-import uk.gov.ea.datareturns.domain.jpa.dao.masterdata.*;
 import uk.gov.ea.datareturns.domain.jpa.dao.userdata.factories.AbstractPayloadEntityFactory;
 import uk.gov.ea.datareturns.domain.jpa.dao.userdata.factories.TranslationResult;
+import uk.gov.ea.datareturns.domain.jpa.entities.masterdata.AliasedEntity;
+import uk.gov.ea.datareturns.domain.jpa.entities.masterdata.AliasingEntity;
+import uk.gov.ea.datareturns.domain.jpa.entities.masterdata.MasterDataEntity;
 import uk.gov.ea.datareturns.domain.jpa.entities.masterdata.impl.*;
 import uk.gov.ea.datareturns.domain.jpa.entities.userdata.impl.DataSampleEntity;
+import uk.gov.ea.datareturns.domain.jpa.service.MasterDataLookupService;
 import uk.gov.ea.datareturns.domain.validation.payloads.datasample.fields.EaId;
 import uk.gov.ea.datareturns.domain.validation.payloads.datasample.fields.MonitoringDate;
 import uk.gov.ea.datareturns.domain.validation.payloads.datasample.fields.TxtValue;
+import uk.gov.ea.datareturns.domain.validation.payloads.datasample.rules.ReturnPeriodFormat;
+import uk.gov.ea.datareturns.util.TextUtils;
 import uk.gov.ea.datareturns.web.resource.v1.model.record.payload.DataSamplePayload;
 
 import java.math.BigDecimal;
+import java.util.function.Consumer;
 
 /**
  * @author Graham Willis
  * Boilerplate to generate instances of the hibernate persistence entity
  */
 public class DataSampleFactory extends AbstractPayloadEntityFactory<DataSampleEntity, DataSamplePayload> {
+    private MasterDataLookupService lookupSvc;
 
-    private final MethodOrStandardDao methodOrStandardDao;
-    private final ParameterDao parameterDao;
-    private final QualifierDao qualifierDao;
-    private final ReferencePeriodDao referencePeriodDao;
-    private final ReturnPeriodDao returnPeriodDao;
-    private final ReturnTypeDao returnTypeDao;
-    private final SiteDao siteDao;
-    private final TextValueDao textValueDao;
-    private final UniqueIdentifierAliasDao uniqueIdentifierAliasDao;
-    private final UniqueIdentifierDao uniqueIdentifierDao;
-    private final UnitDao unitDao;
-
-    public DataSampleFactory(
-            MethodOrStandardDao methodOrStandardDao,
-            ParameterDao parameterDao,
-            QualifierDao qualifierDao,
-            ReferencePeriodDao referencePeriodDao,
-            ReturnPeriodDao returnPeriodDao,
-            ReturnTypeDao returnTypeDao,
-            SiteDao siteDao,
-            TextValueDao textValueDao,
-            UniqueIdentifierAliasDao uniqueIdentifierAliasDao,
-            UniqueIdentifierDao uniqueIdentifierDao,
-            UnitDao unitDao
-    ) {
+    public DataSampleFactory(MasterDataLookupService lookupSvc) {
         super(DataSamplePayload.class);
-
-        this.methodOrStandardDao = methodOrStandardDao;
-        this.parameterDao = parameterDao;
-        this.qualifierDao = qualifierDao;
-        this.referencePeriodDao = referencePeriodDao;
-        this.returnTypeDao = returnTypeDao;
-        this.returnPeriodDao = returnPeriodDao;
-        this.siteDao = siteDao;
-        this.textValueDao = textValueDao;
-        this.uniqueIdentifierAliasDao = uniqueIdentifierAliasDao;
-        this.uniqueIdentifierDao = uniqueIdentifierDao;
-        this.unitDao = unitDao;
+        this.lookupSvc = lookupSvc;
     }
 
     public TranslationResult<DataSampleEntity> create(DataSamplePayload payload) {
@@ -67,28 +39,19 @@ public class DataSampleFactory extends AbstractPayloadEntityFactory<DataSampleEn
         result.setEntity(dataSampleEntity);
 
         // Unique identifier or alias
-        UniqueIdentifierAlias uniqueIdentifierAlias = uniqueIdentifierAliasDao.getByName(Key.relaxed(payload.getEaId()));
-        if (uniqueIdentifierAlias != null) {
-            dataSampleEntity.setUniqueIdentifier(uniqueIdentifierAlias.getUniqueIdentifier());
-            result.addSubstitution(EaId.FIELD_NAME, uniqueIdentifierAlias.getName(),
-                    uniqueIdentifierAlias.getUniqueIdentifier().getName());
-        } else {
-            dataSampleEntity.setUniqueIdentifier(uniqueIdentifierDao.getByNameOrAlias(Key.relaxed(payload.getEaId())));
-        }
-
+        UniqueIdentifier eaId = resolve(UniqueIdentifier.class, UniqueIdentifierAlias.class, payload.getEaId(), alias ->
+                result.addSubstitution(EaId.FIELD_NAME, alias.getName(), alias.getPreferred().getName())
+        );
+        dataSampleEntity.setUniqueIdentifier(eaId);
         // Return type
-        dataSampleEntity.setReturnType(returnTypeDao.getByName(Key.relaxed((payload.getReturnType()))));
+        dataSampleEntity.setReturnType(resolve(ReturnType.class, payload.getReturnType()));
 
         // Parameter or alias
-        Parameter parameter = parameterDao.getByAliasName(Key.relaxed(payload.getParameter()));
-        if (parameter != null) {
-            dataSampleEntity.setParameter(parameter);
-            result.addSubstitution(
-                    uk.gov.ea.datareturns.domain.validation.payloads.datasample.fields.Parameter.FIELD_NAME,
-                    parameter.getName(), parameter.getPreferred());
-        } else {
-            dataSampleEntity.setParameter(parameterDao.getByName(Key.relaxed(payload.getParameter())));
-        }
+        Parameter parameter = resolve(Parameter.class, payload.getParameter(), alias ->
+                result.addSubstitution(uk.gov.ea.datareturns.domain.validation.payloads.datasample.fields.Parameter.FIELD_NAME,
+                        alias.getName(), alias.getPreferred().getName())
+        );
+        dataSampleEntity.setParameter(parameter);
 
         // Monitoring point
         dataSampleEntity.setMonPoint(payload.getMonitoringPoint());
@@ -97,13 +60,15 @@ public class DataSampleFactory extends AbstractPayloadEntityFactory<DataSampleEn
         MonitoringDate monDate = new MonitoringDate(payload.getMonitoringDate());
         dataSampleEntity.setMonDate(monDate.getInstant());
 
-        // Numeric value
+        // Return period!
+        dataSampleEntity.setReturnPeriod(ReturnPeriodFormat.toStandardisedFormat(payload.getReturnPeriod()));
 
+        // Numeric value
         /*
         TODO: Discuss with Graham as to intention here....
          */
-        if (StringUtils.isNotBlank(payload.getValue())) {
-            String value = payload.getValue().trim();
+        String value = TextUtils.normalize(payload.getValue(), TextUtils.WhitespaceHandling.REMOVE);
+        if (StringUtils.isNotBlank(value)) {
             char firstChar = value.charAt(0);
 
             if (firstChar == '<' || firstChar == '>') {
@@ -119,49 +84,59 @@ public class DataSampleFactory extends AbstractPayloadEntityFactory<DataSampleEn
         }
 
         // Text value or alias
-        TextValue textValueAlias = textValueDao.getByAliasName(Key.relaxed(payload.getTextValue()));
-        if (textValueAlias != null) {
-            dataSampleEntity.setTextValue(textValueAlias);
-            result.addSubstitution(TxtValue.FIELD_NAME,
-                    textValueAlias.getName(), textValueAlias.getPreferred());
-        } else {
-            dataSampleEntity.setTextValue(textValueDao.getByName(Key.relaxed(payload.getTextValue())));
-        }
-
+        TextValue textValue = resolve(TextValue.class, payload.getTextValue(), alias ->
+                result.addSubstitution(TxtValue.FIELD_NAME, alias.getName(), alias.getPreferred().getName())
+        );
+        dataSampleEntity.setTextValue(textValue);
         // Qualifier
-        dataSampleEntity.setQualifier(qualifierDao.getByName(Key.relaxed((payload.getQualifier()))));
-
+        dataSampleEntity.setQualifier(resolve(Qualifier.class, payload.getQualifier()));
         // Comments
         dataSampleEntity.setComments(payload.getComments());
 
         // Units or alias
-        Unit unitAlias = unitDao.getByAliasName(Key.relaxed((payload.getUnit())));
-        if (unitAlias != null) {
-            dataSampleEntity.setUnit(unitAlias);
-            result.addSubstitution(
-                    uk.gov.ea.datareturns.domain.validation.payloads.datasample.fields.Unit.FIELD_NAME,
-                    unitAlias.getName(), unitAlias.getPreferred());
-        } else {
-            dataSampleEntity.setUnit(unitDao.getByName(Key.relaxed((payload.getUnit()))));
-        }
+        Unit unit = resolve(Unit.class, payload.getUnit(), alias ->
+                result.addSubstitution(uk.gov.ea.datareturns.domain.validation.payloads.datasample.fields.Unit.FIELD_NAME,
+                        alias.getName(), alias.getPreferred().getName())
+        );
+        dataSampleEntity.setUnit(unit);
 
         // Method or standard
-        dataSampleEntity.setMethodOrStandard(methodOrStandardDao.getByName(Key.relaxed(payload.getMethStand())));
+        dataSampleEntity.setMethodOrStandard(resolve(MethodOrStandard.class, payload.getMethStand()));
 
         // Reference period or alias
-        ReferencePeriod referencePeriodAlias = referencePeriodDao
-                .getByAliasName(Key.relaxed(payload.getReferencePeriod()));
-
-        if (referencePeriodAlias != null) {
-            dataSampleEntity.setReferencePeriod(referencePeriodAlias);
-            result.addSubstitution(
-                    uk.gov.ea.datareturns.domain.validation.payloads.datasample.fields.ReferencePeriod.FIELD_NAME,
-                    referencePeriodAlias.getName(), referencePeriodAlias.getPreferred());
-        } else {
-            dataSampleEntity.setReferencePeriod(
-                    referencePeriodDao.getByName(Key.relaxed(payload.getReferencePeriod())));
-        }
+        ReferencePeriod referencePeriod = resolve(ReferencePeriod.class, payload.getReferencePeriod(), alias ->
+                result.addSubstitution(uk.gov.ea.datareturns.domain.validation.payloads.datasample.fields.ReferencePeriod.FIELD_NAME,
+                        alias.getName(), alias.getPreferred().getName())
+        );
+        dataSampleEntity.setReferencePeriod(referencePeriod);
 
         return result;
+    }
+
+    private <E extends MasterDataEntity> E resolve(Class<E> entityClass, String value) {
+        return lookupSvc.relaxed().find(entityClass, value);
+    }
+
+    private <E extends AbstractAliasingEntity<E>> E resolve(Class<E> entityClass, String value, Consumer<E> aliasHandler) {
+        E entity = resolve(entityClass, value);
+        if (entity != null) {
+            if (entity.getPreferred() != null) {
+                aliasHandler.accept(entity);
+            }
+            entity = entity.getPrimary();
+        }
+        return entity;
+    }
+
+    private <E extends AliasedEntity<A>, A extends AliasingEntity<E>> E resolve(Class<E> entityClass, Class<A> aliasClass, String value,
+            Consumer<A> aliasHandler) {
+        A alias = resolve(aliasClass, value);
+        if (alias != null) {
+            aliasHandler.accept(alias);
+            return alias.getPreferred();
+        } else {
+            return resolve(entityClass, value);
+
+        }
     }
 }

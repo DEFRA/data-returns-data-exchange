@@ -17,7 +17,7 @@ public class AlternativeFactory extends AbstractPayloadEntityFactory<Alternative
 
     @Override
     public TranslationResult<AlternativePayload> create(DemonstrationAlternativePayload payload) {
-        TranslationResult<AlternativePayload> result = new TranslationResult<>();;
+        TranslationResult<AlternativePayload> result = new TranslationResult<>();
         AlternativePayload alternativePayload = new AlternativePayload();
         alternativePayload.setTest(payload.getTest());
         result.setEntity(alternativePayload);

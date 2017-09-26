@@ -10,15 +10,13 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import uk.gov.ea.datareturns.domain.dto.impl.ControlledListsDto;
 import uk.gov.ea.datareturns.domain.exceptions.ApplicationExceptionType;
-import uk.gov.ea.datareturns.domain.jpa.dao.masterdata.EntityDao;
-import uk.gov.ea.datareturns.domain.jpa.dao.masterdata.Key;
-import uk.gov.ea.datareturns.domain.jpa.entities.masterdata.ControlledListEntity;
+import uk.gov.ea.datareturns.domain.exceptions.ExceptionMessageContainer;
+import uk.gov.ea.datareturns.domain.jpa.entities.masterdata.MasterDataEntity;
 import uk.gov.ea.datareturns.domain.jpa.entities.masterdata.impl.ControlledListsList;
 import uk.gov.ea.datareturns.domain.jpa.hierarchy.Hierarchy;
 import uk.gov.ea.datareturns.domain.jpa.hierarchy.HierarchyLevel;
+import uk.gov.ea.datareturns.domain.jpa.service.MasterDataLookupService;
 import uk.gov.ea.datareturns.domain.processors.ControlledListProcessor;
-import uk.gov.ea.datareturns.domain.exceptions.ExceptionMessageContainer;
-import uk.gov.ea.datareturns.util.SpringApplicationContextProvider;
 
 import javax.inject.Inject;
 import javax.ws.rs.*;
@@ -41,11 +39,15 @@ import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 @Component
 @Path("/controlled-list/")
 @Scope(ConfigurableBeanFactory.SCOPE_SINGLETON)
-public class ControlledListResource {
+public class ControlledListResource implements JerseyResource {
     private static final Logger LOGGER = LoggerFactory.getLogger(ControlledListResource.class);
 
     /** controlled list processor */
     private final ControlledListProcessor controlledListProcessor;
+
+    private final ApplicationContext context;
+
+    private final MasterDataLookupService lookupService;
 
     /**
      * Create a new {@link ControlledListResource} RESTful service
@@ -53,8 +55,11 @@ public class ControlledListResource {
      * @param controlledListProcessor the controlled list processor
      */
     @Inject
-    public ControlledListResource(final ControlledListProcessor controlledListProcessor) {
+    public ControlledListResource(final ApplicationContext context, final ControlledListProcessor controlledListProcessor, final
+    MasterDataLookupService lookupService) {
+        this.context = context;
         this.controlledListProcessor = controlledListProcessor;
+        this.lookupService = lookupService;
     }
 
     /**
@@ -88,12 +93,12 @@ public class ControlledListResource {
 
         // Check we have a registered controlled list type
         if (controlledList == null) {
-            LOGGER.error("Request for unknown controlled list: " + listName);
+            LOGGER.info("Request for unknown controlled list: " + listName);
             return Response.status(Response.Status.BAD_REQUEST).entity(new ExceptionMessageContainer(
                     ApplicationExceptionType.UNKNOWN_LIST_TYPE, "Request for unknown controlled list: " + listName
             )).build();
         } else {
-            Pair<String, List<ControlledListEntity>> listData = controlledListProcessor.getListData(controlledList, contains);
+            Pair<String, List<? extends MasterDataEntity>> listData = controlledListProcessor.getListData(controlledList, contains);
             return Response.status(Response.Status.OK).entity(listData).build();
         }
     }
@@ -114,16 +119,16 @@ public class ControlledListResource {
         MultivaluedMap<String, String> queryParams = ui.getQueryParameters();
         MultivaluedMap<String, String> pathParams = ui.getPathParameters();
         try {
-            ApplicationContext context = SpringApplicationContextProvider.getApplicationContext();
             List<String> hierachyNames = pathParams.get("name");
-            Hierarchy hierarchy = (Hierarchy) context.getBean(hierachyNames.get(0) + "-hierarchy");
-            Set<HierarchyLevel> levels = hierarchy.getHierarchyLevels();
+            Hierarchy<?> hierarchy = (Hierarchy) context.getBean(hierachyNames.get(0) + "-hierarchy");
+            Set<HierarchyLevel<?>> levels = hierarchy.getHierarchyLevels();
             String field = queryParams.containsKey("field") ? queryParams.get("field").get(0) : null;
             String contains = queryParams.containsKey("contains") ? queryParams.get("contains").get(0) : null;
-            Set<Hierarchy.HierarchyEntity> entities = getHierarchyEntitiesFromParameters(queryParams, context, levels);
-            Pair<String, List<? extends Hierarchy.HierarchyEntity>> controlledList = controlledListProcessor.getListData(hierarchy, entities, field, contains);
+            Set<MasterDataEntity> entities = getHierarchyEntitiesFromParameters(queryParams, levels);
+            Pair<String, List<? extends MasterDataEntity>> controlledList = controlledListProcessor
+                    .getListData(hierarchy, entities, field, contains);
             return Response.status(Response.Status.OK).entity(controlledList).build();
-        } catch (NoSuchBeanDefinitionException|ClassCastException e) {
+        } catch (NoSuchBeanDefinitionException | ClassCastException e) {
             return Response.status(Response.Status.BAD_REQUEST).entity(new ExceptionMessageContainer(
                     ApplicationExceptionType.UNKNOWN_LIST_TYPE,
                     "No hierarchy: you must specify a known hierarchy in the path parameter /controlled-list/hierarchy/{name}")).build();
@@ -146,14 +151,13 @@ public class ControlledListResource {
         MultivaluedMap<String, String> queryParams = ui.getQueryParameters();
         MultivaluedMap<String, String> pathParams = ui.getPathParameters();
         try {
-            ApplicationContext context = SpringApplicationContextProvider.getApplicationContext();
             List<String> hierarchyNames = pathParams.get("name");
-            Hierarchy hierarchy = (Hierarchy) context.getBean(hierarchyNames.get(0) + "-hierarchy");
-            Set<HierarchyLevel> levels = hierarchy.getHierarchyLevels();
-            Set<Hierarchy.HierarchyEntity> entities = getHierarchyEntitiesFromParameters(queryParams, context, levels);
+            Hierarchy<?> hierarchy = (Hierarchy) context.getBean(hierarchyNames.get(0) + "-hierarchy");
+            Set<HierarchyLevel<?>> levels = hierarchy.getHierarchyLevels();
+            Set<MasterDataEntity> entities = getHierarchyEntitiesFromParameters(queryParams, levels);
             Pair<String, Hierarchy.Result> validationResult = controlledListProcessor.validate(hierarchy, entities);
             return Response.status(Response.Status.OK).entity(validationResult).build();
-        } catch (NoSuchBeanDefinitionException|ClassCastException e) {
+        } catch (NoSuchBeanDefinitionException | ClassCastException e) {
             return Response.status(Response.Status.BAD_REQUEST).entity(new ExceptionMessageContainer(
                     ApplicationExceptionType.UNKNOWN_LIST_TYPE,
                     "No hierarchy: you must specify a known hierarchy in the path parameter /controlled-list/hierarchy/{name}")).build();
@@ -163,18 +167,16 @@ public class ControlledListResource {
     /**
      * The query params should correspond to the path variable stored against the controlled list
      * @param queryParams
-     * @param context
      * @param levels
      * @return
      */
-    private Set<Hierarchy.HierarchyEntity> getHierarchyEntitiesFromParameters(MultivaluedMap<String, String> queryParams, ApplicationContext context, Set<HierarchyLevel> levels) {
-        Set<Hierarchy.HierarchyEntity> entities = new HashSet<>();
-        for (HierarchyLevel<? extends Hierarchy.HierarchyEntity> level : levels) {
+    private Set<MasterDataEntity> getHierarchyEntitiesFromParameters(MultivaluedMap<String, String> queryParams,
+            Set<HierarchyLevel<?>> levels) {
+        Set<MasterDataEntity> entities = new HashSet<>();
+        for (HierarchyLevel<? extends MasterDataEntity> level : levels) {
             String path = level.getControlledList().getPath();
             if (queryParams.containsKey(path)) {
-                Class<? extends EntityDao<? extends Hierarchy.HierarchyEntity>> daoClass = level.getDaoClass();
-                EntityDao<? extends Hierarchy.HierarchyEntity> dao = context.getBean(daoClass);
-                Hierarchy.HierarchyEntity entity = dao.getByName(Key.relaxed(queryParams.getFirst(path)));
+                MasterDataEntity entity = lookupService.relaxed().find(level.getHierarchyEntityClass(), queryParams.getFirst(path));
                 if (entity != null) {
                     entities.add(entity);
                 }
@@ -182,5 +184,4 @@ public class ControlledListResource {
         }
         return entities;
     }
-
- }
+}

@@ -1,5 +1,6 @@
 package uk.gov.ea.datareturns.domain.jpa.entities.userdata.impl;
 
+import org.apache.commons.lang3.builder.ToStringBuilder;
 import uk.gov.ea.datareturns.domain.jpa.entities.masterdata.impl.*;
 import uk.gov.ea.datareturns.domain.jpa.entities.masterdata.impl.Parameter;
 import uk.gov.ea.datareturns.domain.jpa.entities.userdata.AbstractPayloadEntity;
@@ -12,15 +13,15 @@ import java.time.Instant;
  * @author Graham Willis
  */
 @Entity
-@Table(name = "data_sample")
+@Table(name = "ud_data_sample")
 public class DataSampleEntity extends AbstractPayloadEntity {
 
     @ManyToOne(optional = false)
-    @JoinColumn(name = "ea_id", referencedColumnName = "id")
+    @JoinColumn(name = "ea_id")
     private UniqueIdentifier uniqueIdentifier;
 
     @ManyToOne(optional = false)
-    @JoinColumn(name = "return_type_id", referencedColumnName = "id")
+    @JoinColumn(name = "return_type_id")
     private ReturnType returnType;
 
     @Basic @Column(name = "mon_date", nullable = false)
@@ -30,7 +31,7 @@ public class DataSampleEntity extends AbstractPayloadEntity {
     private String monPoint;
 
     @ManyToOne(optional = false)
-    @JoinColumn(name = "parameter_id", referencedColumnName = "id")
+    @JoinColumn(name = "parameter_id")
     private Parameter parameter;
 
     @Basic @Column(name = "numeric_value")
@@ -40,24 +41,27 @@ public class DataSampleEntity extends AbstractPayloadEntity {
     private String numericValueText;
 
     @ManyToOne
-    @JoinColumn(name = "text_value_id", referencedColumnName = "id")
+    @JoinColumn(name = "text_value_id")
     private TextValue textValue;
 
     @ManyToOne
-    @JoinColumn(name = "qualifier_id", referencedColumnName = "id")
+    @JoinColumn(name = "qualifier_id")
     private Qualifier qualifier;
 
     @ManyToOne
-    @JoinColumn(name = "unit_id", referencedColumnName = "id")
+    @JoinColumn(name = "unit_id")
     private Unit unit;
 
     @ManyToOne
-    @JoinColumn(name = "reference_period_id", referencedColumnName = "id")
+    @JoinColumn(name = "reference_period_id")
     private ReferencePeriod referencePeriod;
 
     @ManyToOne
-    @JoinColumn(name = "method_or_standard_id", referencedColumnName = "id")
+    @JoinColumn(name = "method_or_standard_id")
     private MethodOrStandard methodOrStandard;
+
+    @Basic @Column(name = "return_period")
+    private String returnPeriod;
 
     @Basic @Column(name = "comments")
     private String comments;
@@ -166,22 +170,32 @@ public class DataSampleEntity extends AbstractPayloadEntity {
         this.comments = comments;
     }
 
-    @Override
-    public String toString() {
-        return "DataSampleEntity{" +
-                "uniqueIdentifier=" + uniqueIdentifier +
-                ", returnType=" + returnType +
-                ", monDate=" + monDate +
-                ", monPoint='" + monPoint + '\'' +
-                ", parameter=" + parameter +
-                ", numericValue=" + numericValue +
-                ", numericValueText='" + numericValueText + '\'' +
-                ", textValue=" + textValue +
-                ", qualifier=" + qualifier +
-                ", unit=" + unit +
-                ", referencePeriod=" + referencePeriod +
-                ", methodOrStandard=" + methodOrStandard +
-                ", comments='" + comments + '\'' +
-                '}';
+    public String getReturnPeriod() {
+        return returnPeriod;
+    }
+
+    public void setReturnPeriod(String returnPeriod) {
+        this.returnPeriod = returnPeriod;
+    }
+
+    @Override public String toString() {
+        return new ToStringBuilder(this)
+                .append("uniqueIdentifier", uniqueIdentifier)
+                .append("returnType", returnType)
+                .append("monDate", monDate)
+                .append("monPoint", monPoint)
+                .append("parameter", parameter)
+                .append("numericValue", numericValue)
+                .append("numericValueText", numericValueText)
+                .append("textValue", textValue)
+                .append("qualifier", qualifier)
+                .append("unit", unit)
+                .append("referencePeriod", referencePeriod)
+                .append("methodOrStandard", methodOrStandard)
+                .append("returnPeriod", returnPeriod)
+                .append("comments", comments)
+                .toString();
     }
 }
+
+

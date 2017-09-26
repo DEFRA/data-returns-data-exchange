@@ -3,7 +3,8 @@
  */
 package uk.gov.ea.datareturns.tests.integration.model;
 
-import org.apache.commons.lang3.RandomStringUtils;
+import org.apache.commons.text.CharacterPredicates;
+import org.apache.commons.text.RandomStringGenerator;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -32,6 +33,11 @@ import java.util.Set;
 @SpringBootTest(classes = App.class, webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 @ActiveProfiles("IntegrationTests")
 public class DataSampleValidatorTests {
+
+    private static final RandomStringGenerator generator = new RandomStringGenerator.Builder()
+            .filteredBy(CharacterPredicates.DIGITS, CharacterPredicates.LETTERS)
+            .withinRange('0', 'z')
+            .build();
     @Inject
     private Validator validator;
 
@@ -66,7 +72,6 @@ public class DataSampleValidatorTests {
         // one violation for the field being blank
         Assert.assertEquals(1, violations.size());
     }
-
 
     @Test
     public void testPermitNumberIncorrectForSite() {
@@ -215,7 +220,7 @@ public class DataSampleValidatorTests {
     @Test
     public void testMonitoringDateFutureDateOnly() {
         final DataSampleValidationObject record = createValidNumericRecord();
-        final LocalDateTime anHourFromNow = LocalDateTime.now(ZoneOffset.UTC).plusDays(1);
+        final LocalDateTime anHourFromNow = LocalDateTime.now().plusDays(1);
         final String testDate = anHourFromNow.format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
         record.setMonitoringDate(new MonitoringDate(testDate));
         final Set<ConstraintViolation<DataSampleValidationObject>> violations = this.validator.validate(record);
@@ -250,7 +255,7 @@ public class DataSampleValidatorTests {
     @Test
     public void testReturnPeriodLength() {
         final DataSampleValidationObject record = createValidNumericRecord();
-        record.setReturnPeriod(new ReturnPeriod(RandomStringUtils.random(20)));
+        record.setReturnPeriod(new ReturnPeriod(generator.generate(20)));
         final Set<ConstraintViolation<DataSampleValidationObject>> violations = this.validator.validate(record);
         Assert.assertEquals(1, violations.size());
     }
@@ -280,11 +285,11 @@ public class DataSampleValidatorTests {
     @Test
     public void testMonitoringPointLength() {
         final DataSampleValidationObject record = createValidNumericRecord();
-        record.setMonitoringPoint(new MonitoringPoint(RandomStringUtils.randomAlphanumeric(50)));
+        record.setMonitoringPoint(new MonitoringPoint(generator.generate(50)));
         Set<ConstraintViolation<DataSampleValidationObject>> violations = this.validator.validate(record);
         Assert.assertEquals(0, violations.size());
 
-        record.setMonitoringPoint(new MonitoringPoint(RandomStringUtils.randomAlphanumeric(51)));
+        record.setMonitoringPoint(new MonitoringPoint(generator.generate(51)));
         violations = this.validator.validate(record);
         Assert.assertEquals(1, violations.size());
     }
@@ -343,15 +348,10 @@ public class DataSampleValidatorTests {
 
     @Test
     public void testValueEmpty() {
-        // TODO Review
-        // ProhibitTxtValueWithValueValidator produces the error because the value
-        // is missing in addition to the missing error produced by the value validator
-        // ProhibitTxtValueWithValueValidator should probably only produce the
-        // conflict value - the missing value - needs review
         final DataSampleValidationObject record = createValidNumericRecord();
         record.setValue(new Value("  "));
         final Set<ConstraintViolation<DataSampleValidationObject>> violations = this.validator.validate(record);
-        Assert.assertEquals(2, violations.size());
+        Assert.assertEquals(1, violations.size());
     }
 
     @Test
@@ -403,6 +403,7 @@ public class DataSampleValidatorTests {
         final Set<ConstraintViolation<DataSampleValidationObject>> violations = this.validator.validate(record);
         Assert.assertEquals(0, violations.size());
     }
+
     @Test
     public void testValueValidWithSpaces() {
         final DataSampleValidationObject record = createValidNumericRecord();
@@ -528,7 +529,7 @@ public class DataSampleValidatorTests {
     @Test
     public void testReferencePeriodInvalid() {
         final DataSampleValidationObject record = createValidNumericRecord();
-        record.setReferencePeriod(new ReferencePeriod(RandomStringUtils.random(30)));
+        record.setReferencePeriod(new ReferencePeriod(generator.generate(30)));
         final Set<ConstraintViolation<DataSampleValidationObject>> violations = this.validator.validate(record);
         Assert.assertEquals(1, violations.size());
     }
@@ -550,7 +551,7 @@ public class DataSampleValidatorTests {
     @Test
     public void testMethStandInvalid() {
         final DataSampleValidationObject record = createValidNumericRecord();
-        record.setMethStand(new MethodOrStandard(RandomStringUtils.random(31)));
+        record.setMethStand(new MethodOrStandard(generator.generate(31)));
         final Set<ConstraintViolation<DataSampleValidationObject>> violations = this.validator.validate(record);
         Assert.assertEquals(1, violations.size());
     }
@@ -572,15 +573,14 @@ public class DataSampleValidatorTests {
     @Test
     public void testCommentsLength() {
         final DataSampleValidationObject record = createValidNumericRecord();
-        record.setComments(new Comments(RandomStringUtils.random(255)));
+        record.setComments(new Comments(generator.generate(255)));
         Set<ConstraintViolation<DataSampleValidationObject>> violations = this.validator.validate(record);
         Assert.assertEquals(0, violations.size());
 
-        record.setComments(new Comments(RandomStringUtils.random(256)));
+        record.setComments(new Comments(generator.generate(256)));
         violations = this.validator.validate(record);
         Assert.assertEquals(1, violations.size());
     }
-
 
     /**
      * Creates a {@link DataSampleValidationObject} instance with all values setup

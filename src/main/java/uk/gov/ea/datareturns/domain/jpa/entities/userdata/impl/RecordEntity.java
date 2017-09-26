@@ -1,6 +1,5 @@
 package uk.gov.ea.datareturns.domain.jpa.entities.userdata.impl;
 
-import org.apache.commons.lang3.tuple.ImmutableTriple;
 import org.hibernate.annotations.GenericGenerator;
 import uk.gov.ea.datareturns.domain.jpa.entities.userdata.Metadata;
 
@@ -12,30 +11,10 @@ import java.util.Set;
  * @author Graham
  */
 @Entity
-@Table(name = "records")
+@Table(name = "ud_records")
 @GenericGenerator(name = "idGenerator", strategy = "org.hibernate.id.enhanced.SequenceStyleGenerator", parameters = {
-        @org.hibernate.annotations.Parameter(name = "sequence_name", value = "records_id_seq") }
+        @org.hibernate.annotations.Parameter(name = "sequence_name", value = "ud_records_id_seq") }
 )
-@SqlResultSetMapping(
-        name = "selectValidationErrorsMapping",
-        classes = @ConstructorResult(
-                targetClass = ImmutableTriple.class,
-                columns = {
-                        @ColumnResult(name = "identifier", type = String.class),
-                        @ColumnResult(name = "payload_type", type = String.class),
-                        @ColumnResult(name = "error", type = String.class)
-                }))
-
-@NamedQueries({
-        @NamedQuery(
-                name = "RecordEntity.findByDatasetAndIdentifier",
-                query = "select r from RecordEntity as r where r.dataset = :dataset and r.identifier = :identifier"
-        ),
-        @NamedQuery(
-                name = "RecordEntity.findByDataset",
-                query = "select r from RecordEntity as r where r.dataset = :dataset"
-        )
-})
 public class RecordEntity implements Metadata {
 
     public enum RecordStatus {
@@ -69,7 +48,7 @@ public class RecordEntity implements Metadata {
     private String json;
 
     @ManyToMany
-    @JoinTable(name = "record_validation_errors", joinColumns =
+    @JoinTable(name = "ud_record_validation_errors", joinColumns =
     @JoinColumn(name = "record_id", referencedColumnName = "id"), inverseJoinColumns = {
             @JoinColumn(name = "payload_type", referencedColumnName = "payload_type"),
             @JoinColumn(name = "error", referencedColumnName = "error")

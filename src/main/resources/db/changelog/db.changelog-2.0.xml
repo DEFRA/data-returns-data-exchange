@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd">
+				   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd">
 
 	<preConditions>
 		<dbms type="${db.type}"/>
@@ -8,12 +8,12 @@
 	</preConditions>
 
 	<changeSet id="user data" author="Environment Agency">
-	  <!--
-		****************************************************************
-		User
-		****************************************************************
-		-->
-		<createTable tableName="users">
+		<!--
+		  ****************************************************************
+		  User
+		  ****************************************************************
+		  -->
+		<createTable tableName="md_users">
 			<column name="id" type="bigserial">
 				<constraints primaryKey="true" nullable="false"/>
 			</column>
@@ -36,19 +36,20 @@
 
 		</createTable>
 
-		<createIndex indexName="idx_user_identifier" tableName="users" unique="true">
+		<createIndex indexName="idx_md_users_identifier" tableName="md_users" unique="true">
 			<column name="identifier"/>
 		</createIndex>
 
-		<sql>insert into users (identifier, create_date, last_changed_date, dataset_changed_date) values ('SYSTEM', current_timestamp, current_timestamp, current_timestamp)</sql>
+		<sql>insert into md_users (identifier, create_date, last_changed_date, dataset_changed_date) values ('SYSTEM', current_timestamp,
+			current_timestamp, current_timestamp)
+		</sql>
 
 		<!--
 		****************************************************************
 		DatasetEntity
 		****************************************************************
 		-->
-		<createTable tableName="datasets">
-
+		<createTable tableName="ud_datasets">
 			<column name="id" type="bigserial">
 				<constraints primaryKey="true" nullable="false"/>
 			</column>
@@ -83,16 +84,16 @@
 
 		</createTable>
 
-		<createIndex indexName="idx_datasets" tableName="datasets" unique="true">
+		<createIndex indexName="idx_ud_datasets" tableName="ud_datasets" unique="true">
 			<column name="user_id"/>
 			<column name="identifier"/>
 		</createIndex>
 
 		<addForeignKeyConstraint baseColumnNames="user_id"
-								 baseTableName="datasets"
-								 constraintName="fk_dataset_user"
+								 baseTableName="ud_datasets"
+								 constraintName="fk_ud_datasets_user"
 								 referencedColumnNames="id"
-								 referencedTableName="users"/>
+								 referencedTableName="md_users"/>
 
 
 		<!--
@@ -100,7 +101,7 @@
 		Records
 		****************************************************************
 		-->
-		<createTable tableName="records">
+		<createTable tableName="ud_records">
 
 			<column name="id" type="bigserial">
 				<constraints primaryKey="true" nullable="false"/>
@@ -136,16 +137,16 @@
 
 		</createTable>
 
-		<createIndex indexName="idx_records" tableName="records" unique="true">
+		<createIndex indexName="idx_ud_records" tableName="ud_records" unique="true">
 			<column name="dataset_id"/>
 			<column name="identifier"/>
 		</createIndex>
 
 		<addForeignKeyConstraint baseColumnNames="dataset_id"
-								 baseTableName="records"
+								 baseTableName="ud_records"
 								 constraintName="fk_record_dataset"
 								 referencedColumnNames="id"
-								 referencedTableName="datasets"/>
+								 referencedTableName="ud_datasets"/>
 
 
 		<!--
@@ -153,7 +154,7 @@
 		Payload types
 		****************************************************************
 		-->
-		<createTable tableName="payload_types">
+		<createTable tableName="md_payload_types">
 			<column name="payload_type" type="varchar(100)">
 				<constraints primaryKey="true" nullable="false"/>
 			</column>
@@ -168,14 +169,14 @@
 
 		</createTable>
 
-		<loadData file="/db/data/PayloadTypes.csv" tableName="payload_types"/>
+		<loadData file="/db/data/PayloadTypes.csv" tableName="md_payload_types"/>
 
 		<!--
 		****************************************************************
 		Fields
 		****************************************************************
 		-->
-		<createTable tableName="fields">
+		<createTable tableName="md_fields">
 
 			<column name="payload_type" type="varchar(100)">
 				<constraints primaryKey="true" nullable="false"/>
@@ -197,20 +198,20 @@
 
 		</createTable>
 
-		<loadData file="/db/data/Fields.csv" tableName="fields"/>
+		<loadData file="/db/data/Fields.csv" tableName="md_fields"/>
 
 		<addForeignKeyConstraint baseColumnNames="payload_type"
-								 baseTableName="fields"
-								 constraintName="fk_fields_payload"
+								 baseTableName="md_fields"
+								 constraintName="fk_md_fields_payload"
 								 referencedColumnNames="payload_type"
-								 referencedTableName="payload_types"/>
+								 referencedTableName="md_payload_types"/>
 
 		<!--
 		****************************************************************
 		Validation errors
 		****************************************************************
 		-->
-		<createTable tableName="validation_errors">
+		<createTable tableName="md_validation_errors">
 			<column name="payload_type" type="varchar(100)">
 				<constraints primaryKey="true" nullable="false"/>
 			</column>
@@ -231,20 +232,20 @@
 
 		</createTable>
 
-		<loadData file="/db/data/ValidationErrors.csv" tableName="validation_errors"/>
+		<loadData file="/db/data/ValidationErrors.csv" tableName="md_validation_errors"/>
 
 		<addForeignKeyConstraint baseColumnNames="payload_type"
-								 baseTableName="validation_errors"
-								 constraintName="fk_validation_errors_payload"
+								 baseTableName="md_validation_errors"
+								 constraintName="fk_md_validation_errors_payload"
 								 referencedColumnNames="payload_type"
-								 referencedTableName="payload_types"/>
+								 referencedTableName="md_payload_types"/>
 
 		<!--
 		****************************************************************
 		Validation error fields
 		****************************************************************
 		-->
-		<createTable tableName="validation_error_fields">
+		<createTable tableName="md_validation_error_fields">
 
 			<column name="payload_type" type="varchar(100)">
 				<constraints primaryKey="true" nullable="false"/>
@@ -261,25 +262,25 @@
 		</createTable>
 
 		<addForeignKeyConstraint baseColumnNames="payload_type, error"
-														 baseTableName="validation_error_fields"
-														 constraintName="fk_validation_error_fields_validation_error"
-														 referencedColumnNames="payload_type, error"
-														 referencedTableName="validation_errors"/>
+								 baseTableName="md_validation_error_fields"
+								 constraintName="fk_md_validation_error_fields_validation_error"
+								 referencedColumnNames="payload_type, error"
+								 referencedTableName="md_validation_errors"/>
 
 		<addForeignKeyConstraint baseColumnNames="payload_type, field_name"
-														 baseTableName="validation_error_fields"
-														 constraintName="fk_validation_error_fields_fields"
-														 referencedColumnNames="payload_type, field_name"
-														 referencedTableName="fields"/>
+								 baseTableName="md_validation_error_fields"
+								 constraintName="fk_md_validation_error_fields_fields"
+								 referencedColumnNames="payload_type, field_name"
+								 referencedTableName="md_fields"/>
 
-		<loadData file="/db/data/ValidationErrorFields.csv" tableName="validation_error_fields"/>
+		<loadData file="/db/data/ValidationErrorFields.csv" tableName="md_validation_error_fields"/>
 
 		<!--
 		****************************************************************
 		Record validation errors
 		****************************************************************
 		-->
-		<createTable tableName="record_validation_errors">
+		<createTable tableName="ud_record_validation_errors">
 
 			<column name="record_id" type="bigserial">
 				<constraints primaryKey="true" nullable="false"/>
@@ -296,23 +297,23 @@
 		</createTable>
 
 		<addForeignKeyConstraint baseColumnNames="record_id"
-								 baseTableName="record_validation_errors"
-								 constraintName="fk_record_validation_errors_records"
+								 baseTableName="ud_record_validation_errors"
+								 constraintName="fk_ud_record_validation_errors_records"
 								 referencedColumnNames="id"
-								 referencedTableName="records"/>
+								 referencedTableName="ud_records"/>
 
 		<addForeignKeyConstraint baseColumnNames="payload_type, error"
-								 baseTableName="record_validation_errors"
-								 constraintName="fk_record_validation_errors_payload"
+								 baseTableName="ud_record_validation_errors"
+								 constraintName="fk_ud_record_validation_errors_payload"
 								 referencedColumnNames="payload_type, error"
-								 referencedTableName="validation_errors"/>
+								 referencedTableName="md_validation_errors"/>
 
 		<!--
 		****************************************************************
 		Data Sample
 		****************************************************************
 		-->
-		<createTable tableName="data_sample">
+		<createTable tableName="ud_data_sample">
 
 			<column name="dataset_id" type="bigint">
 				<constraints nullable="false"/>
@@ -369,83 +370,87 @@
 				<constraints nullable="true"/>
 			</column>
 
+			<column name="return_period" type="varchar(255)">
+				<constraints nullable="true"/>
+			</column>
+
 			<column name="comments" type="varchar(255)">
 				<constraints nullable="true"/>
 			</column>
 
 		</createTable>
 
-		<createIndex indexName="idx_data_sample" tableName="data_sample" unique="true">
+		<createIndex indexName="idx_ud_data_sample" tableName="ud_data_sample" unique="true">
 			<column name="dataset_id"/>
 			<column name="record_id"/>
 		</createIndex>
 
 		<addForeignKeyConstraint baseColumnNames="dataset_id"
-								 baseTableName="data_sample"
-								 constraintName="fk_data_sample_dataset"
+								 baseTableName="ud_data_sample"
+								 constraintName="fk_ud_data_sample_dataset"
 								 referencedColumnNames="id"
-								 referencedTableName="datasets"/>
+								 referencedTableName="ud_datasets"/>
 
 		<addForeignKeyConstraint baseColumnNames="record_id"
-								 baseTableName="data_sample"
-								 constraintName="fk_data_sample_record"
+								 baseTableName="ud_data_sample"
+								 constraintName="fk_ud_data_sample_record"
 								 referencedColumnNames="id"
-								 referencedTableName="records"/>
+								 referencedTableName="ud_records"/>
 
 		<addForeignKeyConstraint baseColumnNames="ea_id"
-								 baseTableName="data_sample"
-								 constraintName="fk_data_sample_unique_identifier"
+								 baseTableName="ud_data_sample"
+								 constraintName="fk_ud_data_sample_unique_identifier"
 								 referencedColumnNames="id"
-								 referencedTableName="unique_identifiers"/>
-		
+								 referencedTableName="md_unique_identifiers"/>
+
 		<addForeignKeyConstraint baseColumnNames="return_type_id"
-								 baseTableName="data_sample"
-								 constraintName="fk_data_sample_return_type"
+								 baseTableName="ud_data_sample"
+								 constraintName="fk_ud_data_sample_return_type"
 								 referencedColumnNames="id"
-								 referencedTableName="return_types"/>
+								 referencedTableName="md_return_types"/>
 
 		<addForeignKeyConstraint baseColumnNames="parameter_id"
-								 baseTableName="data_sample"
-								 constraintName="fk_data_sample_parameter"
+								 baseTableName="ud_data_sample"
+								 constraintName="fk_ud_data_sample_parameter"
 								 referencedColumnNames="id"
-								 referencedTableName="parameters"/>
+								 referencedTableName="md_parameters"/>
 
 		<addForeignKeyConstraint baseColumnNames="text_value_id"
-								 baseTableName="data_sample"
-								 constraintName="fk_data_sample_text_value"
+								 baseTableName="ud_data_sample"
+								 constraintName="fk_ud_data_sample_text_value"
 								 referencedColumnNames="id"
-								 referencedTableName="text_values"/>
+								 referencedTableName="md_text_values"/>
 
 		<addForeignKeyConstraint baseColumnNames="qualifier_id"
-								 baseTableName="data_sample"
-								 constraintName="fk_data_sample_qualifier"
+								 baseTableName="ud_data_sample"
+								 constraintName="fk_ud_data_sample_qualifier"
 								 referencedColumnNames="id"
-								 referencedTableName="qualifiers"/>
+								 referencedTableName="md_qualifiers"/>
 
 		<addForeignKeyConstraint baseColumnNames="unit_id"
-								 baseTableName="data_sample"
-								 constraintName="fk_data_sample_unit"
+								 baseTableName="ud_data_sample"
+								 constraintName="fk_ud_data_sample_unit"
 								 referencedColumnNames="id"
-								 referencedTableName="units"/>
+								 referencedTableName="md_units"/>
 
 		<addForeignKeyConstraint baseColumnNames="reference_period_id"
-								 baseTableName="data_sample"
-								 constraintName="fk_data_sample_reference_period"
+								 baseTableName="ud_data_sample"
+								 constraintName="fk_ud_data_sample_reference_period"
 								 referencedColumnNames="id"
-								 referencedTableName="reference_periods"/>
+								 referencedTableName="md_reference_periods"/>
 
 		<addForeignKeyConstraint baseColumnNames="method_or_standard_id"
-								 baseTableName="data_sample"
-								 constraintName="fk_data_sample_method_or_standard"
+								 baseTableName="ud_data_sample"
+								 constraintName="fk_ud_data_sample_method_or_standard"
 								 referencedColumnNames="id"
-								 referencedTableName="methods_or_standards"/>
+								 referencedTableName="md_methods_or_standards"/>
 
 		<!--
 		****************************************************************
 		Alternative payload - prototype
 		****************************************************************
 		-->
-		<createTable tableName="alternatives">
+		<createTable tableName="ud_alternatives">
 			<column name="dataset_id" type="bigint">
 				<constraints nullable="false"/>
 			</column>
@@ -457,15 +462,15 @@
 		</createTable>
 
 		<addForeignKeyConstraint baseColumnNames="dataset_id"
-								 baseTableName="alternatives"
-								 constraintName="fk_alternatives_dataset"
+								 baseTableName="ud_alternatives"
+								 constraintName="fk_ud_alternatives_dataset"
 								 referencedColumnNames="id"
-								 referencedTableName="datasets"/>
+								 referencedTableName="ud_datasets"/>
 		<addForeignKeyConstraint baseColumnNames="record_id"
-								 baseTableName="alternatives"
-								 constraintName="fk_alternatives_record"
+								 baseTableName="ud_alternatives"
+								 constraintName="fk_ud_alternatives_record"
 								 referencedColumnNames="id"
-								 referencedTableName="records"/>
+								 referencedTableName="ud_records"/>
 
 		<!--
 		****************************************************************
@@ -474,17 +479,16 @@
 		-->
 
 		<rollback>
-			<dropTable tableName="record_validation_error_fields"/>
-			<dropTable tableName="record_validation_errors"/>
-			<dropTable tableName="validation_errors"/>
-			<dropTable tableName="fields"/>
-			<dropTable tableName="payload_types"/>
-			<dropTable tableName="alternatives"/>
-			<dropTable tableName="data_sample"/>
-			<dropTable tableName="status"/>
-			<dropTable tableName="records"/>
-			<dropTable tableName="datasets"/>
-			<dropTable tableName="users"/>
+			<dropTable tableName="ud_record_validation_error_fields"/>
+			<dropTable tableName="ud_record_validation_errors"/>
+			<dropTable tableName="md_validation_errors"/>
+			<dropTable tableName="md_fields"/>
+			<dropTable tableName="md_payload_types"/>
+			<dropTable tableName="ud_alternatives"/>
+			<dropTable tableName="ud_data_sample"/>
+			<dropTable tableName="ud_records"/>
+			<dropTable tableName="ud_datasets"/>
+			<dropTable tableName="md_users"/>
 		</rollback>
 
 	</changeSet>

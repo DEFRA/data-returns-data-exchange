@@ -1,36 +1,39 @@
 package uk.gov.ea.datareturns.domain.processors;
 
+import com.querydsl.core.types.dsl.BooleanExpression;
+import com.querydsl.core.types.dsl.StringPath;
+import org.apache.commons.collections4.IterableUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.BeansException;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.ApplicationContextAware;
 import org.springframework.stereotype.Component;
+import uk.gov.ea.datareturns.config.JpaRepositoryConfiguration;
 import uk.gov.ea.datareturns.domain.dto.impl.ControlledListsDto;
-import uk.gov.ea.datareturns.domain.jpa.dao.masterdata.EntityDao;
-import uk.gov.ea.datareturns.domain.jpa.entities.masterdata.ControlledListEntity;
+import uk.gov.ea.datareturns.domain.jpa.entities.masterdata.MasterDataEntity;
 import uk.gov.ea.datareturns.domain.jpa.entities.masterdata.impl.ControlledListsList;
 import uk.gov.ea.datareturns.domain.jpa.hierarchy.Hierarchy;
 import uk.gov.ea.datareturns.domain.jpa.hierarchy.HierarchyLevel;
+import uk.gov.ea.datareturns.domain.jpa.repositories.BaseRepository;
 
+import java.io.Serializable;
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
- * @Author Graham Willis
  * Service to handle operations on controlled lists
+ * @author Graham Willis
  */
 @SuppressWarnings("unchecked")
 @Component
-public class ControlledListProcessor implements ApplicationContextAware {
+public class ControlledListProcessor {
     private static final Logger LOGGER = LoggerFactory.getLogger(ControlledListProcessor.class);
-    private ApplicationContext applicationContext;
 
-    @Override
-    public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
-        this.applicationContext = applicationContext;
+    private final JpaRepositoryConfiguration repositoryConfiguration;
+
+    public ControlledListProcessor(final JpaRepositoryConfiguration repositoryConfiguration) {
+        this.repositoryConfiguration = repositoryConfiguration;
     }
 
     /**
@@ -40,9 +43,8 @@ public class ControlledListProcessor implements ApplicationContextAware {
     public Map<String, ControlledListsDto> getListMetaData() {
         Map<String, ControlledListsDto> result = new HashMap<>();
         for (ControlledListsList list : ControlledListsList.values()) {
-            EntityDao<? extends ControlledListEntity> dao = applicationContext.getBean(list.getDaoCls());
-            result.put(list.getPath(), new ControlledListsDto(list.getDescription(), list.getPath(), list.getDisplayHeaders(),
-                    dao.getSearchFields()));
+            result.put(list.getPath(),
+                    new ControlledListsDto(list.getDescription(), list.getPath(), list.getDisplayHeaders(), list.getSearchableFields()));
         }
         return result;
     }
@@ -52,9 +54,10 @@ public class ControlledListProcessor implements ApplicationContextAware {
      * @param controlledList The controlled list for which to return data
      * @return
      */
-    private <E extends ControlledListEntity> Pair<String, List<E>> getListData(ControlledListsList controlledList) {
-        EntityDao<E> dao = applicationContext.getBean(controlledList.getDaoCls());
-        return new ImmutablePair<>(controlledList.getPath(), sortedList(dao.list()));
+    private Pair<String, List<? extends MasterDataEntity>> getListData(ControlledListsList controlledList) {
+        BaseRepository<? extends MasterDataEntity, ? extends Serializable> repository = repositoryConfiguration
+                .getRepository(controlledList.getEntityClass());
+        return new ImmutablePair<>(controlledList.getPath(), sortedList(repository.findAll()));
     }
 
     /**
@@ -63,11 +66,24 @@ public class ControlledListProcessor implements ApplicationContextAware {
      * @param contains The search term
      * @return The filtered list
      */
-    public <E extends ControlledListEntity> Pair<String, List<E>> getListData(ControlledListsList controlledList, String contains) {
+    public Pair<String, List<? extends MasterDataEntity>> getListData(ControlledListsList controlledList, String contains) {
         if (StringUtils.isNotEmpty(contains)) {
-            EntityDao<E> dao = applicationContext.getBean(controlledList.getDaoCls());
             final List<String> terms = Arrays.asList(contains.split("\\s+"));
-            return new ImmutablePair<>(controlledList.getPath(), sortedList(dao.search(terms)));
+            BaseRepository<? extends MasterDataEntity, ? extends Serializable> repository = repositoryConfiguration
+                    .getRepository(controlledList.getEntityClass());
+
+            BooleanExpression searchPredicate = null;
+            for (StringPath path : controlledList.getSearchablePaths()) {
+                for (String term : terms) {
+                    if (searchPredicate == null) {
+                        searchPredicate = path.containsIgnoreCase(term);
+                    } else {
+                        searchPredicate = searchPredicate.or(path.containsIgnoreCase(term));
+                    }
+                }
+            }
+            List<? extends MasterDataEntity> entities = IterableUtils.toList(repository.findAll(searchPredicate));
+            return new ImmutablePair<>(controlledList.getPath(), sortedList(entities));
         }
         return getListData(controlledList);
     }
@@ -79,9 +95,9 @@ public class ControlledListProcessor implements ApplicationContextAware {
      * @param field
      *@param contains @return A pair of the controlled list path and the list
      */
-    public Pair<String, List<? extends Hierarchy.HierarchyEntity>> getListData(Hierarchy hierarchy, Set<Hierarchy.HierarchyEntity> entities,
+    public Pair<String, List<? extends MasterDataEntity>> getListData(Hierarchy hierarchy, Set<MasterDataEntity> entities,
             String field, String contains) {
-        Pair<HierarchyLevel, List<? extends Hierarchy.HierarchyEntity>> results = null;
+        Pair<HierarchyLevel, List<? extends MasterDataEntity>> results = null;
         if (field == null || field.isEmpty() || contains == null || contains.isEmpty()) {
             results = hierarchy.children(entities);
         } else {
@@ -95,7 +111,7 @@ public class ControlledListProcessor implements ApplicationContextAware {
      * @param hierarchy The hierarchy to interrogate
      * @param entities The list of entities implying the route to the require level
      */
-    public Pair<String, Hierarchy.Result> validate(Hierarchy hierarchy, Set<Hierarchy.HierarchyEntity> entities) {
+    public Pair<String, Hierarchy.Result> validate(Hierarchy hierarchy, Set<MasterDataEntity> entities) {
         Pair<HierarchyLevel, Hierarchy.Result> result = hierarchy.validate(entities);
         return new ImmutablePair<>(result.getLeft().getControlledList().getPath(), result.getRight());
     }
@@ -103,12 +119,11 @@ public class ControlledListProcessor implements ApplicationContextAware {
     /**
      * Convenience method to sort list entries in the natural order by primary key
      *
-     * @param list the list of {@link ControlledListEntity} to be sorted
+     * @param list the list of {@link MasterDataEntity} to be sorted
      * @param <E>
      * @return the sorted list (in place)
      */
-    private static <E extends ControlledListEntity> List<E> sortedList(List<E> list) {
-        list.sort(Comparator.comparing(E::getId));
-        return list;
+    private static <E extends MasterDataEntity> List<E> sortedList(Collection<E> list) {
+        return list.stream().filter(E::isPrimary).sorted(Comparator.comparing(E::getName)).collect(Collectors.toList());
     }
 }

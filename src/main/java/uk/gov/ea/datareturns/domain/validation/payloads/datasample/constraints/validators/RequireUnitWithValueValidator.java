@@ -19,7 +19,7 @@ public class RequireUnitWithValueValidator implements ConstraintValidator<Requir
     @Override
     public boolean isValid(DataSampleValidationObject dataSampleValidationObject, ConstraintValidatorContext constraintValidatorContext) {
 
-        boolean hasValue = !StringUtils.isEmpty(dataSampleValidationObject.getValue().getValue());
+        boolean hasValue = !StringUtils.isEmpty(dataSampleValidationObject.getValue().getInputValue());
         boolean hasUnit = !StringUtils.isEmpty(dataSampleValidationObject.getUnit().getInputValue());
 
         if (hasValue && !hasUnit) {

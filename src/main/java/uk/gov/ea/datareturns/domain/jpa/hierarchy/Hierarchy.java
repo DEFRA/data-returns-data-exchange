@@ -1,10 +1,11 @@
 package uk.gov.ea.datareturns.domain.jpa.hierarchy;
 
 import org.apache.commons.lang3.tuple.Pair;
-import uk.gov.ea.datareturns.domain.jpa.dao.masterdata.EntityDao;
-import uk.gov.ea.datareturns.domain.jpa.entities.masterdata.ControlledListEntity;
+import uk.gov.ea.datareturns.domain.jpa.entities.masterdata.MasterDataEntity;
 import uk.gov.ea.datareturns.domain.jpa.hierarchy.processors.Navigator;
 import uk.gov.ea.datareturns.domain.jpa.hierarchy.processors.Validator;
+import uk.gov.ea.datareturns.domain.jpa.service.MasterDataLookupService;
+import uk.gov.ea.datareturns.domain.jpa.service.MasterDataNaturalKeyService;
 
 import java.util.*;
 
@@ -14,7 +15,10 @@ import java.util.*;
  * of input data and providing an interface for navigating
  */
 public class Hierarchy<C extends HierarchyCacheProvider<? extends Map<String, ?>>> {
-    private final Set<HierarchyLevel<? extends Hierarchy.HierarchyEntity>> hierarchyLevels;
+    private final MasterDataLookupService lookupService;
+    private final MasterDataNaturalKeyService keyService;
+
+    private final Set<HierarchyLevel<? extends MasterDataEntity>> hierarchyLevels;
     private final C cacheProvider;
     private final Navigator hierarchyNavigator;
     private final Validator hierarchyValidator;
@@ -25,25 +29,16 @@ public class Hierarchy<C extends HierarchyCacheProvider<? extends Map<String, ?>
      * @param hierarchyNavigator The navigator to use
      * @param hierarchyValidator The validator to use
      */
-    protected Hierarchy(Set<HierarchyLevel<? extends Hierarchy.HierarchyEntity>> hierarchyLevels, C cacheProvider,
+    protected Hierarchy(MasterDataLookupService lookupService,
+            MasterDataNaturalKeyService keyService,
+            Set<HierarchyLevel<? extends MasterDataEntity>> hierarchyLevels, C cacheProvider,
             Navigator hierarchyNavigator, Validator hierarchyValidator) {
+        this.lookupService = lookupService;
+        this.keyService = keyService;
         this.hierarchyLevels = hierarchyLevels;
         this.cacheProvider = cacheProvider;
         this.hierarchyNavigator = hierarchyNavigator;
         this.hierarchyValidator = hierarchyValidator;
-    }
-
-    /*
-     * Public interface used by the entities participating in the hierarchy
-     */
-    public interface HierarchyEntity extends ControlledListEntity {
-    }
-
-    /*
-     * Public interface used by the entities participating in the hierarchy
-     */
-    public interface GroupedHierarchyEntity extends HierarchyEntity {
-        String getGroup();
     }
 
     /**
@@ -60,8 +55,8 @@ public class Hierarchy<C extends HierarchyCacheProvider<? extends Map<String, ?>
      * List the children of a given set of parents. The parents must form a complete and proper path
      * to be able to calculate the hierarchy
      */
-    public Pair<HierarchyLevel<? extends Hierarchy.HierarchyEntity>, List<? extends Hierarchy.HierarchyEntity>> children(
-            Set<HierarchyEntity> entities) {
+    public Pair<HierarchyLevel<? extends MasterDataEntity>, List<? extends MasterDataEntity>> children(
+            Set<MasterDataEntity> entities) {
         return hierarchyNavigator.children(cacheProvider.getCache(), hierarchyLevels, processInputs(entities));
     }
 
@@ -69,16 +64,16 @@ public class Hierarchy<C extends HierarchyCacheProvider<? extends Map<String, ?>
      * List the children of a given set of parents. The parents must form a complete and proper path
      * to be able to calculate the hierarchy. This overdide causes the list to be filtered
      */
-    public Pair<HierarchyLevel<? extends Hierarchy.HierarchyEntity>, List<? extends Hierarchy.HierarchyEntity>> children(
-            Set<HierarchyEntity> entities, String field, String contains) {
+    public Pair<HierarchyLevel<? extends MasterDataEntity>, List<? extends MasterDataEntity>> children(
+            Set<MasterDataEntity> entities, String field, String contains) {
         return hierarchyNavigator.children(cacheProvider.getCache(), hierarchyLevels, processInputs(entities), field, contains);
     }
 
     /**
      * Helper - especially for unit tests
      */
-    public Pair<HierarchyLevel<? extends Hierarchy.HierarchyEntity>, List<? extends HierarchyEntity>> children(
-            HierarchyEntity... entities) {
+    public Pair<HierarchyLevel<? extends MasterDataEntity>, List<? extends MasterDataEntity>> children(
+            MasterDataEntity... entities) {
         return hierarchyNavigator
                 .children(cacheProvider.getCache(), hierarchyLevels, processInputs(new HashSet<>(Arrays.asList(entities))));
     }
@@ -88,7 +83,7 @@ public class Hierarchy<C extends HierarchyCacheProvider<? extends Map<String, ?>
      * @param entities
      * @return The validation result
      */
-    public Pair<HierarchyLevel<? extends Hierarchy.HierarchyEntity>, Hierarchy.Result> validate(Set<HierarchyEntity> entities) {
+    public Pair<HierarchyLevel<? extends MasterDataEntity>, Hierarchy.Result> validate(Set<MasterDataEntity> entities) {
         return hierarchyValidator.validate(cacheProvider.getCache(), hierarchyLevels, processInputs(entities));
     }
 
@@ -97,7 +92,7 @@ public class Hierarchy<C extends HierarchyCacheProvider<? extends Map<String, ?>
      * @param entities
      * @return The validation result
      */
-    public Pair<HierarchyLevel<? extends Hierarchy.HierarchyEntity>, Hierarchy.Result> validate(HierarchyEntity... entities) {
+    public Pair<HierarchyLevel<? extends MasterDataEntity>, Hierarchy.Result> validate(MasterDataEntity... entities) {
         return hierarchyValidator.validate(cacheProvider.getCache(),
                 hierarchyLevels, processInputs(new HashSet<>(Arrays.asList(entities))));
     }
@@ -108,22 +103,21 @@ public class Hierarchy<C extends HierarchyCacheProvider<? extends Map<String, ?>
      * A map of the supplied inputs by the hierarchy level. The map contains all the levels regardless
      * of whether inputs are supplied
      */
-    private Map<HierarchyLevel<? extends Hierarchy.HierarchyEntity>, String> processInputs(Set<HierarchyEntity> entities) {
-        Map<HierarchyLevel<? extends Hierarchy.HierarchyEntity>, String> result = new HashMap<>();
-        for (HierarchyLevel<? extends Hierarchy.HierarchyEntity> hierarchyLevel : hierarchyLevels) {
+    private Map<HierarchyLevel<? extends MasterDataEntity>, String> processInputs(Set<MasterDataEntity> entities) {
+        Map<HierarchyLevel<? extends MasterDataEntity>, String> result = new HashMap<>();
+        for (HierarchyLevel<? extends MasterDataEntity> hierarchyLevel : hierarchyLevels) {
             result.put(hierarchyLevel, null);
-            Class<? extends Hierarchy.HierarchyEntity> hierarchyEntityClass = hierarchyLevel.getHierarchyEntityClass();
-            for (HierarchyEntity entity : entities) {
+            Class<? extends MasterDataEntity> hierarchyEntityClass = hierarchyLevel.getHierarchyEntityClass();
+            for (MasterDataEntity entity : entities) {
                 if (entity != null && entity.getClass().equals(hierarchyEntityClass)) {
-                    final EntityDao dao = EntityDao.getDao(hierarchyLevel.getDaoClass());
-                    result.put(hierarchyLevel, dao.generateMash(entity.getName()));
+                    result.put(hierarchyLevel, keyService.relaxKey(hierarchyEntityClass, entity.getName()));
                 }
             }
         }
         return result;
     }
 
-    public Set<HierarchyLevel<? extends Hierarchy.HierarchyEntity>> getHierarchyLevels() {
+    public Set<HierarchyLevel<? extends MasterDataEntity>> getHierarchyLevels() {
         return hierarchyLevels;
     }
 }

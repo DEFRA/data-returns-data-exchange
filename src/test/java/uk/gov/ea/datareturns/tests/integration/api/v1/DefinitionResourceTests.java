@@ -9,10 +9,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 import uk.gov.ea.datareturns.App;
-import uk.gov.ea.datareturns.domain.jpa.dao.userdata.impl.FieldDao;
-import uk.gov.ea.datareturns.domain.jpa.dao.userdata.impl.PayloadTypeDao;
-import uk.gov.ea.datareturns.domain.jpa.dao.userdata.impl.ValidationErrorDao;
 import uk.gov.ea.datareturns.domain.jpa.entities.userdata.impl.*;
+import uk.gov.ea.datareturns.domain.jpa.repositories.systemdata.FieldRepository;
+import uk.gov.ea.datareturns.domain.jpa.repositories.systemdata.PayloadTypeRepository;
+import uk.gov.ea.datareturns.domain.jpa.repositories.systemdata.ValidationConstraintRepository;
 import uk.gov.ea.datareturns.web.resource.v1.model.common.references.EntityReference;
 import uk.gov.ea.datareturns.web.resource.v1.model.common.references.PayloadReference;
 import uk.gov.ea.datareturns.web.resource.v1.model.definitions.ConstraintDefinition;
@@ -39,13 +39,13 @@ public class DefinitionResourceTests extends AbstractDataResourceTests {
 
     public static final String DATA_SAMPLE_PAYLOAD = "DataSamplePayload";
     @Inject
-    PayloadTypeDao payloadTypeDao;
+    PayloadTypeRepository payloadTypeRepository;
 
     @Inject
-    FieldDao fieldDao;
+    FieldRepository fieldRepository;
 
     @Inject
-    ValidationErrorDao validationErrorDao;
+    ValidationConstraintRepository validationConstraintRepository;
 
     /*
      * List payload types
@@ -122,8 +122,8 @@ public class DefinitionResourceTests extends AbstractDataResourceTests {
     }
 
     private List<String> getDatabaseFieldNames(String payloadType) {
-        PayloadType payloadTypeEntity = payloadTypeDao.get(payloadType);
-        List<FieldEntity> fields = fieldDao.list(payloadTypeEntity);
+        PayloadType payloadTypeEntity = payloadTypeRepository.getOne(payloadType);
+        List<FieldEntity> fields = fieldRepository.findAllByIdPayloadType(payloadTypeEntity);
         return fields.stream()
                 .map(FieldEntity::getId)
                 .map(FieldId::getFieldName)
@@ -131,8 +131,8 @@ public class DefinitionResourceTests extends AbstractDataResourceTests {
     }
 
     private List<String> getDatabaseConstraintNames(String payloadType) {
-        PayloadType payloadTypeEntity = payloadTypeDao.get(payloadType);
-        List<ValidationError> validationErrors = validationErrorDao.list(payloadTypeEntity);
+        PayloadType payloadTypeEntity = payloadTypeRepository.getOne(payloadType);
+        List<ValidationError> validationErrors = validationConstraintRepository.findAllByIdPayloadType(payloadTypeEntity);
         return validationErrors.stream()
                 .map(ValidationError::getId)
                 .map(ValidationErrorId::getError)

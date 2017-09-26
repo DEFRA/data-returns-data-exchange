@@ -6,8 +6,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.annotation.ClassPathScanningCandidateComponentProvider;
+import org.springframework.core.io.support.PropertiesLoaderUtils;
 import org.springframework.core.type.classreading.MetadataReader;
+import org.springframework.core.type.filter.TypeFilter;
 
+import java.io.IOException;
 import java.net.InetAddress;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
@@ -50,6 +53,16 @@ public final class Environment {
         return host;
     });
 
+    private static final CachingSupplier<String> VERSION = CachingSupplier.of(() -> {
+        String version = "UNKNOWN";
+        try {
+            version = PropertiesLoaderUtils.loadAllProperties("version.properties").getProperty("version");
+        } catch (IOException e) {
+            LOGGER.error("Unable to read version.properties");
+        }
+        return version;
+    });
+
     /**
      * Retrieve the hostname of the system.
      * Attempts to use HOSTNAME/COMPUTERNAME environment variables first
@@ -63,13 +76,21 @@ public final class Environment {
     }
 
     /**
+     * Retrieve the application version from version.properties
+     * @return the version as a String
+     */
+    public static String getVersion() {
+        return VERSION.get();
+    }
+
+    /**
      * Find all classes within a given package (and subpackages)
      *
      * @param packageName the package from which to search
      * @return a {@link List} of {@link Class}es within the package
      */
     public static List<Class<?>> findClasses(String packageName) {
-        return findClasses(packageName, null);
+        return findClasses(packageName, (TypeFilter) null);
     }
 
     /**
@@ -80,8 +101,19 @@ public final class Environment {
      * @return a {@link List} of {@link Class}es within the package
      */
     public static List<Class<?>> findClasses(String packageName, Predicate<MetadataReader> predicate) {
+        return findClasses(packageName, (metadataReader, metadataReaderFactory) -> predicate == null || predicate.test(metadataReader));
+    }
+
+    /**
+     * Find all classes within a given package (and subpackages) and applies the given {@link TypeFilter} predicate to filter the list.
+     *
+     * @param packageName the package from which to search
+     * @param includeFilter the predicate used to filter the list of classes returned
+     * @return a {@link List} of {@link Class}es within the package
+     */
+    public static List<Class<?>> findClasses(String packageName, TypeFilter includeFilter) {
         final ClassPathScanningCandidateComponentProvider scanner = new ClassPathScanningCandidateComponentProvider(false);
-        scanner.addIncludeFilter((metadataReader, metadataReaderFactory) -> predicate == null || predicate.test(metadataReader));
+        scanner.addIncludeFilter(includeFilter);
         final List<Class<?>> classes = new ArrayList<>();
         final Set<BeanDefinition> result = scanner.findCandidateComponents(packageName);
         for (final BeanDefinition defintion : result) {
