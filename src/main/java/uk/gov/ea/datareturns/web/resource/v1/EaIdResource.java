@@ -1,10 +1,10 @@
 package uk.gov.ea.datareturns.web.resource.v1;
 
 import io.swagger.annotations.*;
+import org.joda.time.DateTime;
 import org.springframework.stereotype.Component;
 import uk.gov.ea.datareturns.domain.jpa.entities.masterdata.impl.UniqueIdentifier;
 import uk.gov.ea.datareturns.domain.jpa.entities.masterdata.impl.UniqueIdentifierAlias;
-import uk.gov.ea.datareturns.domain.jpa.entities.masterdata.impl.UniqueIdentifierSet;
 import uk.gov.ea.datareturns.domain.jpa.service.SitePermitService;
 import uk.gov.ea.datareturns.web.resource.v1.model.common.Linker;
 import uk.gov.ea.datareturns.web.resource.v1.model.common.Preconditions;
@@ -18,6 +18,10 @@ import javax.ws.rs.*;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
+import java.time.Instant;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -50,6 +54,11 @@ public class EaIdResource {
     @Inject
     SitePermitService sitePermitService;
 
+    // This is a placeholder for holding the change date of the set of permits
+    // (currently the permits are not modified)
+    private final static Instant PERMIT_CHANGE_FLOOR = Instant.parse("2017-01-01T00:00:00.000Z");
+    //private final static Instant PERMIT_CHANGE_FLOOR = LocalDate.of(1970, 01, 01);
+
     /**
      * List the available ea_ids (permits and authorizations) for which you are authorized
      *
@@ -67,34 +76,23 @@ public class EaIdResource {
     })
     public Response listEaIds(@BeanParam Preconditions preconditions) throws Exception {
 
-         // TODO We will need to get a security context from the request here to limit the
-         // TODO permits to only those owned by the current user
-         // TODO for now these are just all the landfill permits
-        List<UniqueIdentifier> uniqueIdentifiers = sitePermitService.listUniqueIdentifiers(
-                UniqueIdentifierSet.UniqueIdentifierSetType.LARGE_LANDFILL_USERS);
 
-        UniqueIdentifierSet uniqueIdentifierSet =
-                sitePermitService.getUniqueSetFor(UniqueIdentifierSet.UniqueIdentifierSetType.LARGE_LANDFILL_USERS);
-
-        // With operator like this:
-        //uniqueIdentifiers = sitePermitService.listUniqueIdentifiers(
-        //        UniqueIdentifierSet.UniqueIdentifierSetType.POLLUTION_INVENTORY, new Operator());
 
         List<EaId> eaIds = new ArrayList<>();
-        for (UniqueIdentifier uniqueIdentifier : uniqueIdentifiers) {
+        for (UniqueIdentifier uniqueIdentifier : sitePermitService.listUniqueIdentifiers()) {
             EaId eaId = new EaId();
             eaId.setId(uniqueIdentifier.getName());
             eaIds.add(eaId);
         }
 
-        return onPreconditionsPass(uniqueIdentifierSet, preconditions,
+        return onPreconditionsPass(Date.from(PERMIT_CHANGE_FLOOR), preconditions,
                 () -> {
                     List<EntityReference> entityReferences = eaIds.stream()
                             .map(e -> new EntityReference(e.getId(), Linker.info(uriInfo).eaId(e.getId())))
                             .collect(Collectors.toList());
                     return new EntityReferenceListResponse(entityReferences,
-                            Date.from(uniqueIdentifierSet.getUniqueIdentifierChangeDate()),
-                            Preconditions.createEtag(uniqueIdentifierSet)
+                            Date.from(PERMIT_CHANGE_FLOOR),
+                            Preconditions.createEtag(PERMIT_CHANGE_FLOOR)
                     ).toResponseBuilder();
                 }).build();
     }
@@ -115,40 +113,23 @@ public class EaIdResource {
     })
     public Response listEaIdData(@BeanParam Preconditions preconditions)
             throws Exception {
-
-
-        UniqueIdentifierSet uniqueIdentifierSet =
-                sitePermitService.getUniqueSetFor(UniqueIdentifierSet.UniqueIdentifierSetType.LARGE_LANDFILL_USERS);
-
-        return onPreconditionsPass(uniqueIdentifierSet, preconditions, () -> {
-            List<UniqueIdentifier> uniqueIdentifiers = sitePermitService.listUniqueIdentifiers(
-                    UniqueIdentifierSet.UniqueIdentifierSetType.LARGE_LANDFILL_USERS);
-
             List<EaId> eaIds = new ArrayList<>();
-
-            for (UniqueIdentifier uniqueIdentifier : uniqueIdentifiers) {
+        return onPreconditionsPass(Date.from(PERMIT_CHANGE_FLOOR), preconditions, () -> {
+            for (UniqueIdentifier uniqueIdentifier : sitePermitService.listUniqueIdentifiers()) {
                 EaId eaId = new EaId();
                 eaId.setId(uniqueIdentifier.getName());
                 eaId.setAliases(uniqueIdentifier
                         .getUniqueIdentifierAliases().stream().map(UniqueIdentifierAlias::getName).collect(Collectors.toSet()));
 
                 eaId.setSiteName(uniqueIdentifier.getSite().getName());
-                eaId.setIdentifierType(uniqueIdentifierSet.getUniqueIdentifierSetType().toString());
-
-                String operatorName = Optional.ofNullable(uniqueIdentifier.getUniqueIdentifierSet())
-                        .flatMap(set -> Optional.ofNullable(set.getOperator()))
-                        .flatMap(operator -> Optional.ofNullable(operator.getName()))
-                        .orElse(null);
-
-                eaId.setOperatorName(operatorName);
                 eaId.setLastModified(Date.from(uniqueIdentifier.getLastChangedDate()));
                 eaId.setCreated(Date.from(uniqueIdentifier.getCreateDate()));
                 eaIds.add(eaId);
             }
 
             EaIdListResponse eaIdListResponse = new EaIdListResponse(eaIds,
-                    Date.from(uniqueIdentifierSet.getUniqueIdentifierChangeDate()),
-                    Preconditions.createEtag(uniqueIdentifierSet));
+                    Date.from(PERMIT_CHANGE_FLOOR),
+                    Preconditions.createEtag(PERMIT_CHANGE_FLOOR));
 
             return eaIdListResponse.toResponseBuilder();
 
@@ -209,13 +190,6 @@ public class EaIdResource {
                     .map(UniqueIdentifierAlias::getName)
                     .distinct()
                     .collect(Collectors.toSet()));
-
-            eaId.setIdentifierType(uniqueIdentifier.getUniqueIdentifierSet()
-                    .getUniqueIdentifierSetType().toString());
-
-            if (uniqueIdentifier.getUniqueIdentifierSet().getOperator() != null) {
-                eaId.setOperatorName(uniqueIdentifier.getUniqueIdentifierSet().getOperator().getName());
-            }
 
             Linker.info(uriInfo).resolve(eaId);
 

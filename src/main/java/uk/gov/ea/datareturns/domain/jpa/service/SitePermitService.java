@@ -28,7 +28,8 @@ public class SitePermitService {
     private final SiteDao siteDao;
     private final UniqueIdentifierAliasDao uniqueIdentifierAliasDao;
     private final Search search;
-    private final UniqueIdentifierSetDao uniqueIdentifierSetDao;
+
+
 
     public class SitePermitServiceException extends Exception {
         public SitePermitServiceException(String message) {
@@ -38,13 +39,11 @@ public class SitePermitService {
 
     @Inject
     public SitePermitService(
-            UniqueIdentifierSetDao uniqueIdentifierSetDao,
             SiteDao siteDao,
             UniqueIdentifierDao uniqueIdentifierDao,
             UniqueIdentifierAliasDao uniqueIdentifierAliasDao,
             Search search) {
 
-        this.uniqueIdentifierSetDao = uniqueIdentifierSetDao;
         this.uniqueIdentifierDao = uniqueIdentifierDao;
         this.siteDao = siteDao;
         this.uniqueIdentifierAliasDao = uniqueIdentifierAliasDao;
@@ -56,43 +55,8 @@ public class SitePermitService {
         return uniqueIdentifierDao.getByName(eaIdId);
     }
 
-    @Transactional(readOnly = true)
-    public List<UniqueIdentifier> listUniqueIdentifiers(
-            UniqueIdentifierSet.UniqueIdentifierSetType uniqueIdentifierSetType) {
-        return uniqueIdentifierDao.list(uniqueIdentifierSetType);
-    }
-
-    @Transactional(readOnly = true)
-    public List<UniqueIdentifier> listUniqueIdentifiers(
-            UniqueIdentifierSet.UniqueIdentifierSetType uniqueIdentifierSetType, Operator operator) {
-        return uniqueIdentifierDao.list(uniqueIdentifierSetType, operator);
-    }
-
-    @Transactional(readOnly = true)
-    public UniqueIdentifierSet getUniqueSetFor(UniqueIdentifierSet.UniqueIdentifierSetType uniqueIdentifierSetType) throws SitePermitServiceException {
-        List<UniqueIdentifierSet> sets = uniqueIdentifierSetDao.listSetsFor(uniqueIdentifierSetType);
-
-        if (sets.size() != 1) {
-            throw new SitePermitServiceException(uniqueIdentifierSetType + "Does not define a unique UniqueIdentifier set");
-        }
-
-        return sets.get(0);
-    }
-
-    @Transactional(readOnly = true)
-    public UniqueIdentifierSet getUniqueSetFor(UniqueIdentifierSet.UniqueIdentifierSetType uniqueIdentifierSetType,
-                                                Operator operator) throws SitePermitServiceException {
-        List<UniqueIdentifierSet> sets = uniqueIdentifierSetDao.listSetsFor(uniqueIdentifierSetType, operator);
-
-        if (sets.size() != 1) {
-            throw new SitePermitServiceException("Operator: " + operator.getName() + " with "
-                    + uniqueIdentifierSetType + "Does not define a unique UniqueIdentifierSet");
-        }
-
-        return sets.get(0);
-    }
-
-    private void addNewPermitAndSite(String eaId, UniqueIdentifierSet uniqueIdentifierSet,  String siteName,
+    @Transactional
+    public void addNewPermitAndSite(String eaId, String siteName,
                                     String[] aliasNames) {
 
         Instant timestamp = Instant.now();
@@ -103,7 +67,6 @@ public class SitePermitService {
         UniqueIdentifier uniqueIdentifier = new UniqueIdentifier();
         uniqueIdentifier.setName(eaId);
         uniqueIdentifier.setSite(site);
-        uniqueIdentifier.setUniqueIdentifierSet(uniqueIdentifierSet);
         uniqueIdentifier.setDatasetChangedDate(timestamp);
         uniqueIdentifier.setCreateDate(timestamp);
         uniqueIdentifier.setLastChangedDate(timestamp);
@@ -124,41 +87,8 @@ public class SitePermitService {
     }
 
     @Transactional
-    public void addNewPermitAndSite(String eaId,
-                                    UniqueIdentifierSet.UniqueIdentifierSetType uniqueIdentifierSetType,
-                                    Operator operator,
-                                    String siteName) throws SitePermitServiceException {
-
-        addNewPermitAndSite(eaId, getUniqueSetFor(uniqueIdentifierSetType, operator), siteName, null);
-    }
-
-    @Transactional
-    public void addNewPermitAndSite(String eaId,
-                                    UniqueIdentifierSet.UniqueIdentifierSetType uniqueIdentifierSetType,
-                                    Operator operator,
-                                    String siteName,
-                                    String[] aliasNames) throws SitePermitServiceException {
-
-        addNewPermitAndSite(eaId, getUniqueSetFor(uniqueIdentifierSetType, operator),
-                siteName, aliasNames);
-    }
-
-    @Transactional
-    public void addNewPermitAndSite(String eaId,
-                                    UniqueIdentifierSet.UniqueIdentifierSetType uniqueIdentifierSetType,
-                                    String siteName) throws SitePermitServiceException {
-
-        addNewPermitAndSite(eaId, getUniqueSetFor(uniqueIdentifierSetType), siteName, null);
-    }
-
-    @Transactional
-    public void addNewPermitAndSite(String eaId,
-                                    UniqueIdentifierSet.UniqueIdentifierSetType uniqueIdentifierSetType,
-                                    String siteName,
-                                    String[] aliasNames) throws SitePermitServiceException {
-
-        addNewPermitAndSite(eaId, getUniqueSetFor(uniqueIdentifierSetType),
-                siteName, aliasNames);
+    public void addNewPermitAndSite(String eaId, String siteName) throws SitePermitServiceException {
+        addNewPermitAndSite(eaId, siteName, null);
     }
 
     /**
@@ -182,6 +112,11 @@ public class SitePermitService {
         } else {
             LOGGER.warn("Requested removal of non-existent permit: " + eaId);
         }
+    }
+
+    @Transactional(readOnly = true)
+    public List<UniqueIdentifier> listUniqueIdentifiers() {
+        return uniqueIdentifierDao.list();
     }
 
     /**

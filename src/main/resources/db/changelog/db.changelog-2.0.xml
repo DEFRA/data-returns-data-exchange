@@ -42,105 +42,11 @@
 		<!--
 			Provisionally the main structure hierarchy of the system is as follows:
 
-			Operator -/->
-				Unique Identifier Set ->
 					Unique Identifier ->
 						Dataset(Payload) ->
 							Record(Payload).
 
-			The Unique Identifier Set is not necessarily limited to operators - it
-			can represent entirety of the large landfill operators where we do not care
-			about the ownership of permits.
-
-			Note that a permit may only appear in a single set – hence that it can hold the
-			change date for the list of permits. For this reason this structure is not intended
-			to (and will not) support a general set of
-			authorizations for actions on permits and sets of permits.
-
-			The intermediate table is simply added to provide for a condition where
-			permits may or may not be linked to an operator. It would not be desirable
-			to hold a nullable operator identifier on the permit because then there is
-			nowhere to store the list change date for the conditional queries.
 		-->
-
-		<!--
-		****************************************************************
-		Operators
-		****************************************************************
-		-->
-		<createTable tableName="operators">
-			<column name="id" type="bigserial">
-				<constraints primaryKey="true" nullable="false"/>
-			</column>
-
-			<column name="operator_name" type="varchar(80)">
-				<constraints nullable="false"/>
-			</column>
-		</createTable>
-
-		<!--
-		****************************************************************
-		Unique Identifier Set Type
-		****************************************************************
-		-->
-		<createTable tableName="unique_identifier_set_types">
-			<column name="type" type="varchar(20)">
-				<constraints primaryKey="true" nullable="false"/>
-			</column>
-		</createTable>
-
-		<sql>insert into unique_identifier_set_types (type) values ('LARGE_LANDFILL_USERS')</sql>
-		<sql>insert into unique_identifier_set_types (type) values ('POLLUTION_INVENTORY')</sql>
-
-		<!--
-		****************************************************************
-		Unique Identifier Set
-		****************************************************************
-		-->
-		<createTable tableName="unique_identifier_sets">
-			<column name="id" type="bigserial">
-				<constraints primaryKey="true" nullable="false"/>
-			</column>
-
-			<column name="type" type="varchar(20)">
-				<constraints nullable="false" foreignKeyName="fk_unique_identifier_set_type" references="unique_identifier_set_types(type)"/>
-			</column>
-
-			<column name="operator_id" type="bigint">
-				<constraints nullable="true"/>
-			</column>
-
-			<column name="unique_identifier_changed_date" type="timestamp without timezone">
-				<constraints nullable="false"/>
-			</column>
-		</createTable>
-
-		<createIndex indexName="idx_unique_identifier_sets" tableName="unique_identifier_sets" unique="true">
-			<column name="type"/>
-			<column name="operator_id"/>
-		</createIndex>
-
-		<sql>insert into unique_identifier_sets (type, unique_identifier_changed_date) values ('LARGE_LANDFILL_USERS', current_timestamp)</sql>
-
-		<!-- Add the columns to the existing unique identifiers table -->
-		<addColumn tableName="unique_identifiers">
-			<column name="unique_identifier_set_id" type="bigserial">
-				<constraints nullable="true"/>
-			</column>
-			<column name="dataset_changed_date" type="timestamp without timezone" defaultValueComputed="current_timestamp">
-				<constraints nullable="false"/>
-			</column>
-		</addColumn>
-
-		<sql>update unique_identifiers set unique_identifier_set_id = (select id from unique_identifier_sets where type = 'LARGE_LANDFILL_USERS')</sql>
-
-		<addNotNullConstraint tableName="unique_identifiers" columnName="unique_identifier_set_id"/>
-
-		<addForeignKeyConstraint baseTableName="unique_identifiers"
-								 baseColumnNames="unique_identifier_set_id"
-								 constraintName="fk_unique_identifiers_unique_identifier_set"
-								 referencedTableName="unique_identifier_sets"
-								 referencedColumnNames="id" />
 
 		<!--
 		****************************************************************

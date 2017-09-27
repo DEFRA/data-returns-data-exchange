@@ -64,27 +64,6 @@ public class UniqueIdentifierDaoImpl extends AbstractEntityDao<UniqueIdentifier>
         return getByNameOrAlias(nameOrAlias);
     }
 
-    @Override
-    public List<UniqueIdentifier> list(UniqueIdentifierSet.UniqueIdentifierSetType uniqueIdentifierSetType) {
-        return listWithWhereClause((cb, q, r) -> {
-            Join<UniqueIdentifier, UniqueIdentifierSet> uniqueIdentifierSetJoined = r.join(UniqueIdentifier_.uniqueIdentifierSet);
-            q.where(cb.equal(uniqueIdentifierSetJoined.get(UniqueIdentifierSet_.uniqueIdentifierSetType), uniqueIdentifierSetType));
-        });
-    }
-
-    @Override
-    public List<UniqueIdentifier> list(UniqueIdentifierSet.UniqueIdentifierSetType uniqueIdentifierSetType, Operator operator) {
-        return listWithWhereClause((cb, q, r) -> {
-            Join<UniqueIdentifier, UniqueIdentifierSet> uniqueIdentifierSetJoined = r.join(UniqueIdentifier_.uniqueIdentifierSet);
-            q.where(
-                    cb.and(
-                            cb.equal(uniqueIdentifierSetJoined.get(UniqueIdentifierSet_.uniqueIdentifierSetType), uniqueIdentifierSetType),
-                            cb.equal(uniqueIdentifierSetJoined.get(UniqueIdentifierSet_.operator), operator)
-                    )
-            );
-        });
-    }
-
     /**
      * Get list of alias names for a given UniqueIdentifier
      * @param uniqueIdentifier
@@ -197,7 +176,6 @@ public class UniqueIdentifierDaoImpl extends AbstractEntityDao<UniqueIdentifier>
         CriteriaQuery<UniqueIdentifier> q = cb.createQuery(UniqueIdentifier.class);
         Root<UniqueIdentifier> uniqueIdentifierRoot = q.from(UniqueIdentifier.class);
         uniqueIdentifierRoot.fetch(UniqueIdentifier_.site, JoinType.LEFT);
-        uniqueIdentifierRoot.fetch(UniqueIdentifier_.uniqueIdentifierSet, JoinType.LEFT);
         whereClause.apply(cb, q, uniqueIdentifierRoot);
 
         uniqueIdentifierRoot.fetch(UniqueIdentifier_.uniqueIdentifierAliases, JoinType.LEFT);

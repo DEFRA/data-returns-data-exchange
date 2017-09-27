@@ -85,18 +85,10 @@ public interface UniqueIdentifierDao extends EntityDao<UniqueIdentifier> {
 
     /**
      * Get a list of unique identifiers using the uniqueIdentifierSet
-     * @param uniqueIdentifierSetType
      * @return List of unique identifiers
      */
-    List<UniqueIdentifier> list(UniqueIdentifierSet.UniqueIdentifierSetType uniqueIdentifierSetType);
+    List<UniqueIdentifier> list();
 
-    /**
-     * Get a list of unique identifiers using the operator and type
-     * @param uniqueIdentifierSetType The type of set e.g. POLLUTION_INVENTORY
-     * @param operator The operator
-     * @return List of unique identifiers
-     */
-    List<UniqueIdentifier> list(UniqueIdentifierSet.UniqueIdentifierSetType uniqueIdentifierSetType, Operator operator);
 
 
 }

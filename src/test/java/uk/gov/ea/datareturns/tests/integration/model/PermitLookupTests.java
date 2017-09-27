@@ -13,7 +13,6 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 import uk.gov.ea.datareturns.App;
 import uk.gov.ea.datareturns.domain.dto.impl.PermitLookupDto;
-import uk.gov.ea.datareturns.domain.jpa.entities.masterdata.impl.UniqueIdentifierSet;
 import uk.gov.ea.datareturns.domain.jpa.service.SitePermitService;
 import uk.gov.ea.datareturns.domain.processors.SearchProcessor;
 
@@ -44,9 +43,7 @@ public class PermitLookupTests {
         LOGGER.info("Initialize tests");
 
         sitePermitService.removePermitSiteAndAliases(UNIQUE_ID);
-        sitePermitService.addNewPermitAndSite(UNIQUE_ID,
-                UniqueIdentifierSet.UniqueIdentifierSetType.LARGE_LANDFILL_USERS,
-                TEST_SITE_NAME, new String [] { UNIQUE_ID_ALIAS });
+        sitePermitService.addNewPermitAndSite(UNIQUE_ID, TEST_SITE_NAME, new String [] { UNIQUE_ID_ALIAS });
 
     }
 

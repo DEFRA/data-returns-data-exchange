@@ -9,7 +9,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 import uk.gov.ea.datareturns.App;
 import uk.gov.ea.datareturns.domain.jpa.entities.masterdata.impl.UniqueIdentifier;
-import uk.gov.ea.datareturns.domain.jpa.entities.masterdata.impl.UniqueIdentifierSet;
 import uk.gov.ea.datareturns.domain.jpa.entities.userdata.impl.DatasetEntity;
 import uk.gov.ea.datareturns.domain.jpa.service.DatasetService;
 import uk.gov.ea.datareturns.domain.jpa.service.SitePermitService;
@@ -37,9 +36,7 @@ public class APIIntegrationTests_Dataset {
     // Remove any old data and set a user and dataset for use in the tests
     @Before public void init() throws IOException, SitePermitService.SitePermitServiceException {
         sitePermitService.removePermitSiteAndAliases(UNIQUE_ID);
-        sitePermitService.addNewPermitAndSite(UNIQUE_ID,
-                UniqueIdentifierSet.UniqueIdentifierSetType.LARGE_LANDFILL_USERS,
-                TEST_SITE_NAME);
+        sitePermitService.addNewPermitAndSite(UNIQUE_ID, TEST_SITE_NAME);
     }
 
     @After public void down() throws IOException, SitePermitService.SitePermitServiceException {
@@ -52,10 +49,6 @@ public class APIIntegrationTests_Dataset {
         dataset.setOriginatorEmail(ORIGINATOR_EMAIL);
         dataset.setIdentifier(DATASET_IDENTIFIER);
         datasetService.createDataset(UNIQUE_ID, dataset);
-        Assert.assertEquals(UniqueIdentifierSet.UniqueIdentifierSetType.LARGE_LANDFILL_USERS,
-                    dataset.getUniqueIdentifier()
-                    .getUniqueIdentifierSet()
-                    .getUniqueIdentifierSetType());
         Assert.assertEquals(UNIQUE_ID, dataset.getUniqueIdentifier().getName());
     }
 
@@ -64,10 +57,7 @@ public class APIIntegrationTests_Dataset {
         DatasetEntity dataset = new DatasetEntity();
         dataset.setOriginatorEmail(ORIGINATOR_EMAIL);
         datasetService.createDataset(UNIQUE_ID, dataset);
-        Assert.assertEquals(UniqueIdentifierSet.UniqueIdentifierSetType.LARGE_LANDFILL_USERS,
-                dataset.getUniqueIdentifier()
-                        .getUniqueIdentifierSet()
-                        .getUniqueIdentifierSetType());
+        Assert.assertNotNull(dataset.getUniqueIdentifier());
     }
 
     @Test

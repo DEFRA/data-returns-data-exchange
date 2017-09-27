@@ -16,7 +16,6 @@ import uk.gov.ea.datareturns.domain.exceptions.ProcessingException;
 import uk.gov.ea.datareturns.domain.jpa.dao.userdata.factories.EntitySubstitution;
 import uk.gov.ea.datareturns.domain.jpa.dao.userdata.impl.PayloadEntityDao;
 import uk.gov.ea.datareturns.domain.jpa.entities.masterdata.impl.UniqueIdentifier;
-import uk.gov.ea.datareturns.domain.jpa.entities.masterdata.impl.UniqueIdentifierSet;
 import uk.gov.ea.datareturns.domain.jpa.entities.userdata.impl.DataSampleEntity;
 import uk.gov.ea.datareturns.domain.jpa.entities.userdata.impl.DatasetEntity;
 import uk.gov.ea.datareturns.domain.jpa.entities.userdata.impl.RecordEntity;
@@ -83,8 +82,7 @@ public class APIIntegrationTests_DataSampleEntity {
                 datasetIterator(datasetMap, (datasetId, recordMap) -> recordIterator(recordMap, (recordId, payload) -> {
                     if (sitePermitService.getUniqueIdentifierByName(eaIdId) == null) {
                         try {
-                            sitePermitService.addNewPermitAndSite(eaIdId,
-                                    UniqueIdentifierSet.UniqueIdentifierSetType.LARGE_LANDFILL_USERS, payload.getSiteName());
+                            sitePermitService.addNewPermitAndSite(eaIdId, payload.getSiteName());
                         } catch (SitePermitService.SitePermitServiceException e) {
                             LOGGER.error("Error parsing successPayloadMap");
                         }
@@ -95,8 +93,7 @@ public class APIIntegrationTests_DataSampleEntity {
                 datasetIterator(datasetMap, (datasetId, recordMap) -> recordIterator(recordMap, (recordId, payload) -> {
                     if (sitePermitService.getUniqueIdentifierByName(eaIdId) == null) {
                         try {
-                            sitePermitService.addNewPermitAndSite(eaIdId,
-                                    UniqueIdentifierSet.UniqueIdentifierSetType.LARGE_LANDFILL_USERS, payload.getSiteName());
+                            sitePermitService.addNewPermitAndSite(eaIdId, payload.getSiteName());
                         } catch (SitePermitService.SitePermitServiceException e) {
                             LOGGER.error("Error parsing failurePayloadMap");
                         }
@@ -107,8 +104,7 @@ public class APIIntegrationTests_DataSampleEntity {
                 datasetIterator(datasetMap, (datasetId, recordMap) -> recordIterator(recordMap, (recordId, payload) -> {
                     if (sitePermitService.getUniqueIdentifierByName(eaIdId) == null) {
                         try {
-                            sitePermitService.addNewPermitAndSite(eaIdId,
-                                    UniqueIdentifierSet.UniqueIdentifierSetType.LARGE_LANDFILL_USERS, payload.getSiteName());
+                            sitePermitService.addNewPermitAndSite(eaIdId, payload.getSiteName());
                         } catch (SitePermitService.SitePermitServiceException e) {
                             LOGGER.error("Error parsing substitutionPayloadMap");
                         }
@@ -149,8 +145,6 @@ public class APIIntegrationTests_DataSampleEntity {
             Assert.assertNotNull(uniqueIdentifier);
             Assert.assertEquals(uniqueIdentifier.getName(), eaIdId);
             Assert.assertNotNull(uniqueIdentifier.getDatasetChangedDate());
-            Assert.assertEquals(uniqueIdentifier.getUniqueIdentifierSet().getUniqueIdentifierSetType(),
-                    UniqueIdentifierSet.UniqueIdentifierSetType.LARGE_LANDFILL_USERS);
 
             Instant datasetChangedDate = uniqueIdentifier.getDatasetChangedDate();
 

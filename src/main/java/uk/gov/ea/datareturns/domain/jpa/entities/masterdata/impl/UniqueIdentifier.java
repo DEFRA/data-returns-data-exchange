@@ -43,10 +43,6 @@ public class UniqueIdentifier implements ControlledListEntity {
     @Basic @Column(name = "last_changed_date", nullable = false)
     private Instant lastChangedDate;
 
-    @ManyToOne
-    @JoinColumn(name="unique_identifier_set_id")
-    private UniqueIdentifierSet uniqueIdentifierSet;
-
     @JsonIgnore
     @OneToMany(mappedBy="uniqueIdentifier",
             targetEntity=DatasetEntity.class,
@@ -88,14 +84,6 @@ public class UniqueIdentifier implements ControlledListEntity {
 
     public void setDatasets(Set<DatasetEntity> datasets) {
         this.datasets = datasets;
-    }
-
-    public UniqueIdentifierSet getUniqueIdentifierSet() {
-        return uniqueIdentifierSet;
-    }
-
-    public void setUniqueIdentifierSet(UniqueIdentifierSet uniqueIdentifierSet) {
-        this.uniqueIdentifierSet = uniqueIdentifierSet;
     }
 
     public Instant getDatasetChangedDate() {

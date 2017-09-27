@@ -1,7 +1,6 @@
 package uk.gov.ea.datareturns.web.resource.v1.model.common;
 
 import uk.gov.ea.datareturns.domain.jpa.entities.masterdata.impl.UniqueIdentifier;
-import uk.gov.ea.datareturns.domain.jpa.entities.masterdata.impl.UniqueIdentifierSet;
 import uk.gov.ea.datareturns.domain.jpa.entities.userdata.impl.DatasetEntity;
 import uk.gov.ea.datareturns.domain.jpa.entities.userdata.impl.PayloadType;
 
@@ -73,17 +72,16 @@ public abstract class PreconditionChecks {
         return rb;
     }
 
-    // Pre-condition evaluator for the ea-id list held at the set level
-    public static Response.ResponseBuilder onPreconditionsPass(final UniqueIdentifierSet uniqueIdentifierSet,
+    // Pre-condition evaluator for the ea-id list
+    public static Response.ResponseBuilder onPreconditionsPass(final Date lastModified,
                                                                Preconditions preconditions,
                                                                Supplier<Response.ResponseBuilder> handler) {
         Response.ResponseBuilder rb = null;
         if (preconditions != null) {
-            if (uniqueIdentifierSet == null) {
+            if (lastModified == null) {
                 rb = preconditions.evaluatePreconditions();
             } else {
-                Date lastModified = Date.from(uniqueIdentifierSet.getUniqueIdentifierChangeDate());
-                rb = preconditions.evaluatePreconditions(lastModified, Preconditions.createEtag(uniqueIdentifierSet));
+                rb = preconditions.evaluatePreconditions(lastModified, Preconditions.createEtag(lastModified));
             }
         }
         if (rb == null) {

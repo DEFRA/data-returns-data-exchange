@@ -84,6 +84,9 @@
 			<column name="last_changed_date" type="timestamp without timezone" defaultValueComputed="current_timestamp">
 				<constraints nullable="false"/>
 			</column>
+			<column name="dataset_changed_date" type="timestamp without timezone" defaultValueComputed="current_timestamp">
+				<constraints nullable="false"/>
+			</column>
 		</createTable>
 		<rollback>
 			<dropTable tableName="unique_identifiers"/>

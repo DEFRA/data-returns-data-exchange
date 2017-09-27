@@ -23,12 +23,6 @@ public class EaId extends EntityBase implements Serializable {
     @JacksonXmlProperty(localName = "alias")
     private Set<String> aliases;
 
-    @JsonProperty("type")
-    private String identifierType;
-
-    @JsonProperty("operator")
-    private String operatorName;
-
     public String getSiteName() {
         return siteName;
     }
@@ -45,19 +39,4 @@ public class EaId extends EntityBase implements Serializable {
         this.aliases = aliases;
     }
 
-    public String getIdentifierType() {
-        return identifierType;
-    }
-
-    public void setIdentifierType(String identifierType) {
-        this.identifierType = identifierType;
-    }
-
-    public String getOperatorName() {
-        return operatorName;
-    }
-
-    public void setOperatorName(String operatorName) {
-        this.operatorName = operatorName;
-    }
 }
