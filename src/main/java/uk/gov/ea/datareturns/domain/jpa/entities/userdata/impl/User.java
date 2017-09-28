@@ -6,7 +6,6 @@ import uk.gov.ea.datareturns.domain.jpa.entities.userdata.Metadata;
 
 import javax.persistence.*;
 import java.time.Instant;
-import java.util.Collection;
 
 /**
  * @author Graham
@@ -27,17 +26,11 @@ public class User implements Metadata {
     @Basic @Column(name = "identifier", nullable = false, length = 80)
     private String identifier;
 
-    @OneToMany(mappedBy="user",targetEntity=DatasetEntity.class, fetch=FetchType.LAZY, cascade = CascadeType.REMOVE)
-    private Collection datasets;
-
     @Basic @Column(name = "create_date", nullable = false)
     private Instant createDate;
 
     @Basic @Column(name = "last_changed_date", nullable = false)
     private Instant lastChangedDate;
-
-    @Basic @Column(name = "dataset_changed_date", nullable = false)
-    private Instant datasetChangedDate;
 
     public Long getId() {
         return id;
@@ -55,14 +48,6 @@ public class User implements Metadata {
         this.identifier = identifier;
     }
 
-    public Collection getDatasets() {
-        return datasets;
-    }
-
-    public void setDatasets(Collection datasets) {
-        this.datasets = datasets;
-    }
-
     public Instant getCreateDate() {
         return createDate;
     }
@@ -77,14 +62,6 @@ public class User implements Metadata {
 
     public void setLastChangedDate(Instant lastChangedDate) {
         this.lastChangedDate = lastChangedDate;
-    }
-
-    public Instant getDatasetChangedDate() {
-        return datasetChangedDate;
-    }
-
-    public void setDatasetChangedDate(Instant datasetChangedDate) {
-        this.datasetChangedDate = datasetChangedDate;
     }
 
     @Override

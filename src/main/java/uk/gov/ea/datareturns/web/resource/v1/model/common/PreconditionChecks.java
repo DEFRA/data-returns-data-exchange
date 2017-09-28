@@ -1,12 +1,10 @@
 package uk.gov.ea.datareturns.web.resource.v1.model.common;
 
-import uk.gov.ea.datareturns.domain.jpa.entities.userdata.impl.DatasetEntity;
+import uk.gov.ea.datareturns.domain.jpa.entities.userdata.impl.DatasetCollection;
 import uk.gov.ea.datareturns.domain.jpa.entities.userdata.impl.PayloadType;
-import uk.gov.ea.datareturns.domain.jpa.entities.userdata.impl.User;
 
 import javax.ws.rs.core.Response;
 import java.util.Date;
-import java.util.List;
 import java.util.function.Supplier;
 
 /**
@@ -52,17 +50,34 @@ public abstract class PreconditionChecks {
         return rb;
     }
 
-    // Precondition evaluator for the entity list held at user level
-    public static Response.ResponseBuilder onPreconditionsPass(final User user, List<DatasetEntity> datasets,
+    public static Response.ResponseBuilder onPreconditionsPass(final DatasetCollection collection,
             Preconditions preconditions, Supplier<Response.ResponseBuilder> handler) {
 
         Response.ResponseBuilder rb = null;
         if (preconditions != null) {
-            if (user == null || datasets == null) {
+            if (collection == null) {
                 rb = preconditions.evaluatePreconditions();
             } else {
-                Date lastModified = Date.from(user.getDatasetChangedDate());
-                rb = preconditions.evaluatePreconditions(lastModified, Preconditions.createEtag(datasets));
+                Date lastModified = Date.from(collection.getLastChangedDate());
+                rb = preconditions.evaluatePreconditions(lastModified, Preconditions.createEtag(collection));
+            }
+        }
+        if (rb == null) {
+            rb = handler.get();
+        }
+        return rb;
+    }
+
+    // Pre-condition evaluator for the ea-id list
+    public static Response.ResponseBuilder onPreconditionsPass(final Date lastModified,
+            Preconditions preconditions,
+            Supplier<Response.ResponseBuilder> handler) {
+        Response.ResponseBuilder rb = null;
+        if (preconditions != null) {
+            if (lastModified == null) {
+                rb = preconditions.evaluatePreconditions();
+            } else {
+                rb = preconditions.evaluatePreconditions(lastModified, Preconditions.createEtag(lastModified));
             }
         }
         if (rb == null) {

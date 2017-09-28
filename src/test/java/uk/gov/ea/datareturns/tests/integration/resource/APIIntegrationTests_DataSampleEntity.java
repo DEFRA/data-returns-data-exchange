@@ -1,10 +1,13 @@
 package uk.gov.ea.datareturns.tests.integration.resource;
 
 import org.apache.commons.io.IOUtils;
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
@@ -12,13 +15,15 @@ import uk.gov.ea.datareturns.App;
 import uk.gov.ea.datareturns.config.TestSettings;
 import uk.gov.ea.datareturns.domain.exceptions.ProcessingException;
 import uk.gov.ea.datareturns.domain.jpa.dao.userdata.factories.EntitySubstitution;
-import uk.gov.ea.datareturns.domain.jpa.entities.userdata.AbstractPayloadEntity;
+import uk.gov.ea.datareturns.domain.jpa.dao.userdata.impl.PayloadEntityDao;
+import uk.gov.ea.datareturns.domain.jpa.entities.userdata.impl.DataSampleEntity;
+import uk.gov.ea.datareturns.domain.jpa.entities.userdata.impl.DatasetCollection;
 import uk.gov.ea.datareturns.domain.jpa.entities.userdata.impl.DatasetEntity;
 import uk.gov.ea.datareturns.domain.jpa.entities.userdata.impl.RecordEntity;
-import uk.gov.ea.datareturns.domain.jpa.entities.userdata.impl.User;
-import uk.gov.ea.datareturns.domain.jpa.projections.userdata.ValidationErrorInstance;
 import uk.gov.ea.datareturns.domain.jpa.service.DatasetService;
+import uk.gov.ea.datareturns.domain.jpa.service.SitePermitService;
 import uk.gov.ea.datareturns.domain.jpa.service.SubmissionService;
+import uk.gov.ea.datareturns.web.resource.v1.model.record.payload.DataSamplePayload;
 import uk.gov.ea.datareturns.web.resource.v1.model.record.payload.Payload;
 
 import javax.inject.Inject;
@@ -28,265 +33,306 @@ import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.time.Instant;
 import java.util.*;
-import java.util.function.Function;
+import java.util.function.BiConsumer;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * @author Graham Willis
- * Integration test to the SubmissionServiceOld
+ * Integration test to the submission and dataset services
+ * Deals with the basic mechanism - the details of the validations are tested
+ * in the resource tests elsewhere.
  */
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = App.class, webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 @ActiveProfiles("IntegrationTests")
 public class APIIntegrationTests_DataSampleEntity {
+    private static final Logger LOGGER = LoggerFactory.getLogger(APIIntegrationTests_DataSampleEntity.class);
 
     @Inject private TestSettings testSettings;
+    @Inject private SitePermitService sitePermitService;
     @Inject private DatasetService datasetService;
     @Inject private SubmissionService submissionService;
+    @Inject private PayloadEntityDao payloadEntityDao;
 
+    private static final String EMAIL_ADDR = "graham@email.com";
     private final static String SUBMISSION_SUCCESS = "json/landfill-success.json";
     private final static String SUBMISSION_FAILURE = "json/landfill-failure.json";
     private final static String SUBSTITUTIONS = "json/landfill-substitutions.json";
-    private static final String DATASET_ID = "DatasetEntity name";
 
-    private static final String USER_NAME = "Graham Willis";
-    private static final String ORIGINATOR_EMAIL = "graham.willis@email.com";
-    private static final String[] RECORDS = { "BB001", "BB002", "BB003", "BB004" };
+    // The basic structure used for the testing is as follows
+    //Map<EaIdId, Map<DatasetIentifier, Map<RecordIdentifier, DataSamplePayload>>>
+    private static Map<String, Map<String, Map<String, DataSamplePayload>>> successPayloadMap = new HashMap<>();
+    private static Map<String, Map<String, Map<String, DataSamplePayload>>> failurePayloadMap = new HashMap<>();
+    private static Map<String, Map<String, Map<String, DataSamplePayload>>> substitutionPayloadMap = new HashMap<>();
 
-    private static User user;
-    private static DatasetEntity dataset;
-    private static List<Payload> samples;
+    @Before
+    public void init() throws IOException {
+        successPayloadMap = buildPayloadMap(submissionService.parseJsonArray(readTestFile(SUBMISSION_SUCCESS)));
+        failurePayloadMap = buildPayloadMap(submissionService.parseJsonArray(readTestFile(SUBMISSION_FAILURE)));
+        substitutionPayloadMap = buildPayloadMap(submissionService.parseJsonArray(readTestFile(SUBSTITUTIONS)));
 
-    // Remove any old data and set a user and dataset for use in the tests
-    @Before public void init() throws IOException {
-        user = datasetService.getUser(USER_NAME);
-        if (user != null) {
-            final User usr = user;
-            datasetService.getDatasets(user).forEach(ds -> datasetService.removeDataset(ds.getIdentifier(), usr));
-            datasetService.removeUser(USER_NAME);
-        }
+        Set<String> permits = Stream.concat(
+                Stream.concat(successPayloadMap.keySet().stream(), failurePayloadMap.keySet().stream()),
+                substitutionPayloadMap.keySet().stream()).distinct().collect(Collectors.toSet());
 
-        user = datasetService.createUser(USER_NAME);
+        // Remove any old data by removing the permits used in the tests
+        permits.forEach(p -> sitePermitService.removePermitSiteAndAliases(p));
 
-        dataset = new DatasetEntity();
-        dataset.setIdentifier(DATASET_ID);
-        dataset.setOriginatorEmail(ORIGINATOR_EMAIL);
-        dataset.setUser(user);
+        // Add sites and permits back in using the payload
+        permitIterator(successPayloadMap, (eaIdId, datasetMap) ->
+                datasetIterator(datasetMap, (datasetId, recordMap) -> recordIterator(recordMap, (recordId, payload) -> {
+                    if (sitePermitService.getUniqueIdentifierByName(eaIdId) == null) {
+                        try {
+                            sitePermitService.addNewPermitAndSite(eaIdId, payload.getSiteName());
+                        } catch (SitePermitService.SitePermitServiceException e) {
+                            LOGGER.error("Error parsing successPayloadMap");
+                        }
+                    }
+                })));
 
-        datasetService.createDataset(dataset);
-        samples = submissionService.parseJsonArray(readTestFile(SUBMISSION_SUCCESS));
+        permitIterator(failurePayloadMap, (eaIdId, datasetMap) ->
+                datasetIterator(datasetMap, (datasetId, recordMap) -> recordIterator(recordMap, (recordId, payload) -> {
+                    if (sitePermitService.getUniqueIdentifierByName(eaIdId) == null) {
+                        try {
+                            sitePermitService.addNewPermitAndSite(eaIdId, payload.getSiteName());
+                        } catch (SitePermitService.SitePermitServiceException e) {
+                            LOGGER.error("Error parsing failurePayloadMap");
+                        }
+                    }
+                })));
+
+        permitIterator(substitutionPayloadMap, (eaIdId, datasetMap) ->
+                datasetIterator(datasetMap, (datasetId, recordMap) -> recordIterator(recordMap, (recordId, payload) -> {
+                    if (sitePermitService.getUniqueIdentifierByName(eaIdId) == null) {
+                        try {
+                            sitePermitService.addNewPermitAndSite(eaIdId, payload.getSiteName());
+                        } catch (SitePermitService.SitePermitServiceException e) {
+                            LOGGER.error("Error parsing substitutionPayloadMap");
+                        }
+                    }
+                })));
+    }
+
+    @After
+    public void down() throws IOException, SitePermitService.SitePermitServiceException {
+        // Add sites and permits back in using the payload
+        permitIterator(successPayloadMap, (eaIdId, datasetMap) -> sitePermitService.removePermitSiteAndAliases(eaIdId));
+
+        permitIterator(failurePayloadMap, (eaIdId, datasetMap) -> sitePermitService.removePermitSiteAndAliases(eaIdId));
+
+        permitIterator(substitutionPayloadMap, (eaIdId, datasetMap) -> sitePermitService.removePermitSiteAndAliases(eaIdId));
+
     }
 
     // Test the basic creation and removal of test records
-    @Test public void createTestRemoveRecords() {
-        Map<String, Payload> initialPayload = buildPayloadMap(Arrays.asList(RECORDS), null);
-        Map<String, RecordEntity> recordEntities = submissionService.createRecords(dataset, initialPayload);
+    @Test public void createAndRemoveDatasets() {
+        permitIterator(successPayloadMap, (eaIdId, datasetMap) -> {
+            datasetIterator(datasetMap, (datasetId, recordMap) -> {
+                // Create the datasets
+                DatasetEntity datasetEntity = new DatasetEntity();
+                datasetEntity.setIdentifier(datasetId);
+                datasetEntity.setOriginatorEmail(EMAIL_ADDR);
+                datasetService.createDataset(eaIdId, datasetEntity);
 
-        Assert.assertEquals(RECORDS.length, recordEntities.size());
-        for (String id : RECORDS) {
-            Assert.assertTrue(submissionService.recordExists(dataset, id));
-            RecordEntity rec = submissionService.getRecord(dataset, id);
-            Assert.assertEquals(RecordEntity.RecordStatus.INVALID, rec.getRecordStatus());
-            submissionService.removeRecord(dataset, id);
-            Assert.assertFalse(submissionService.recordExists(dataset, id));
-        }
-    }
+                datasetEntity = datasetService.getDataset(eaIdId, datasetId);
 
-    @Test
-    public void testThatRecordAdditionDeletionAndModificationUpdateTheDatasetChangeDate() {
-        Map<String, Payload> initialPayload = buildPayloadMap(Arrays.asList(RECORDS), null);
-        Map<String, RecordEntity> recordEntities = submissionService.createRecords(dataset, initialPayload);
+                DatasetCollection parentCollection = datasetEntity.getParentCollection();
 
-        DatasetEntity datasetEntity = datasetService.getDataset(DATASET_ID, user);
-        Instant datasetEntityRecordCreateDate = datasetEntity.getRecordChangedDate();
-        Assert.assertNotNull(datasetEntityRecordCreateDate);
-        Assert.assertEquals(initialPayload.size(), recordEntities.size());
+                Assert.assertNotNull(datasetEntity);
+                Assert.assertEquals(datasetId, datasetEntity.getIdentifier());
+                Assert.assertNotNull(datasetEntity.getLastChangedDate());
+                Assert.assertNotNull(datasetEntity.getCreateDate());
+                Assert.assertNotNull(parentCollection);
+                Assert.assertNotNull(parentCollection.getLastChangedDate());
+                Assert.assertEquals(EMAIL_ADDR, datasetEntity.getOriginatorEmail());
+                Assert.assertEquals(DatasetEntity.Status.UNSUBMITTED, datasetEntity.getStatus());
 
-        // Modify a record and therefore update the dataset changed date
-        Function<String, Payload> payloadSupplier = new Function<String, Payload>() {
-            private int i = 0;
+                Assert.assertTrue(parentCollection.getUniqueIdentifier().getName().equals(eaIdId));
 
-            @Override public Payload apply(String s) {
-                return samples.get(i++);
-            }
-        };
-        recordEntities = submissionService
-                .createRecords(dataset, buildPayloadMap(Arrays.asList(RECORDS), payloadSupplier));
+            });
 
-        datasetEntity = datasetService.getDataset(DATASET_ID, user);
-        Instant datasetEntityRecordChangeDate = datasetEntity.getRecordChangedDate();
-        Assert.assertNotNull(datasetEntityRecordChangeDate);
-        Assert.assertNotEquals(datasetEntityRecordChangeDate, datasetEntityRecordCreateDate);
-
-        // Validate the records - this should NOT set the dataset change date
-        datasetEntity = datasetService.getDataset(DATASET_ID, user);
-        Instant datasetEntityRecordValidateDate = datasetEntity.getRecordChangedDate();
-        Assert.assertEquals(datasetEntityRecordValidateDate, datasetEntityRecordChangeDate);
-
-        // Submit the records - this should set the dataset change date
-        // because of the changed status on the dataset
-        try {
-            submissionService.submit(datasetEntity);
-        } catch (ProcessingException e) {
-            Assert.fail(e.getMessage());
-        }
-        datasetEntity = datasetService.getDataset(DATASET_ID, user);
-        Instant datasetEntityRecordSubmitDate = datasetEntity.getRecordChangedDate();
-        Assert.assertNotEquals(datasetEntityRecordSubmitDate, datasetEntityRecordChangeDate);
-
-        // Delete a record and check that the dataset modification date has changed.
-        submissionService.removeRecord(datasetEntity, RECORDS[1]);
-        datasetEntity = datasetService.getDataset(DATASET_ID, user);
-        Instant datasetEntityRecordDeleteDate = datasetEntity.getRecordChangedDate();
-        Assert.assertNotEquals(datasetEntityRecordSubmitDate, datasetEntityRecordDeleteDate);
-    }
-
-    // Create a set of new records with no associated data sample
-    // and with a user identifier. The records
-    // should all have a status of PERSISTED
-    @Test public void createNewUserRecords() {
-        Map<String, RecordEntity> recordEntities = submissionService.createRecords(dataset, buildPayloadMap(Arrays.asList(RECORDS), null));
-        recordEntities.values().stream().forEach(r -> Assert.assertEquals(RecordEntity.RecordStatus.INVALID, r.getRecordStatus()));
-    }
-
-    // Create a set of new records with no associated data sample
-    // and with a user identifier. The records
-    // should all have a status of PERSISTED
-    @Test public void createNewSystemRecords() {
-        Map<String, RecordEntity> recordEntities = submissionService.createRecords(dataset, buildPayloadMap(Arrays.asList(RECORDS), null));
-        recordEntities.values().stream().forEach(r -> Assert.assertEquals(RecordEntity.RecordStatus.INVALID, r.getRecordStatus()));
-    }
-
-    // Create a set of new records using the associated data sample
-    // and with a system identifier. The records
-    // should all have a status of PARSED
-    @Test public void createNewSystemRecordsWithSample() {
-        Map<String, RecordEntity> recordEntities = submissionService.createRecords(dataset, buildPayloadMap(samples));
-        recordEntities.values().stream().forEach(r -> Assert.assertEquals(RecordEntity.RecordStatus.VALID, r.getRecordStatus()));
-    }
-
-    // Create a set of new records using the associated data sample
-    // and with a user identifier. The records
-    // should all have a status of PARSED
-    @Test public void createNewUserRecordsWithSample() {
-        Map<String, RecordEntity> recordEntities = submissionService.createRecords(dataset, buildPayloadMap(samples));
-        recordEntities.values().stream().forEach(r -> Assert.assertEquals(RecordEntity.RecordStatus.VALID, r.getRecordStatus()));
-    }
-
-    // Create a set of records and then associate data samples with them
-    // as a secondary step
-    @Test public void createNewUserRecordsAndAddSample() {
-        Map<String, RecordEntity> recordEntities = submissionService.createRecords(dataset, buildPayloadMap(Arrays.asList(RECORDS), null));
-        recordEntities.values().stream().forEach(r -> Assert.assertEquals(RecordEntity.RecordStatus.INVALID, r.getRecordStatus()));
-
-        Map<String, Payload> payloadUpdates = new HashMap<>();
-        for (String id : RECORDS) {
-            payloadUpdates.put(id, samples.get(payloadUpdates.size()));
-        }
-        recordEntities = submissionService.createRecords(dataset, payloadUpdates);
-        recordEntities.values().stream().forEach(r -> {
-            Assert.assertEquals(RecordEntity.RecordStatus.VALID, r.getRecordStatus());
+            datasetIterator(datasetMap, (datasetId, recordMap) -> {
+                datasetService.removeDataset(eaIdId, datasetId);
+                Assert.assertNull(datasetService.getDataset(eaIdId, datasetId));
+            });
         });
     }
 
-    // Create and validate a set of valid records
-    @Test public void createAndValidateValidRecords() {
-        Map<String, RecordEntity> recordEntities = submissionService.createRecords(dataset, buildPayloadMap(samples));
-        recordEntities.values().stream().forEach(r -> Assert.assertEquals(RecordEntity.RecordStatus.VALID, r.getRecordStatus()));
+    @Test public void createAndRemoveRecords() {
+        permitIterator(successPayloadMap, (eaIdId, datasetMap) ->
+                datasetIterator(datasetMap, (datasetId, recordMap) -> {
+                    // Create the datasets
+                    DatasetEntity datasetEntity = new DatasetEntity();
+                    datasetEntity.setIdentifier(datasetId);
+                    datasetEntity.setOriginatorEmail(EMAIL_ADDR);
+                    datasetService.createDataset(eaIdId, datasetEntity);
+
+                    // Create the records
+                    Map<String, RecordEntity> recordEntities = submissionService.createRecords(datasetEntity, recordMap);
+                    Assert.assertNotNull(recordEntities);
+                    Assert.assertEquals(recordEntities.size(), recordMap.size());
+
+                    recordIterator(recordMap, (recordId, payload) -> {
+                        RecordEntity recordEntity = recordEntities.get(recordId);
+                        Assert.assertEquals(recordId, recordEntity.getIdentifier());
+                        Assert.assertEquals(0, recordEntity.validationErrors.size());
+                        Assert.assertNotNull(recordEntity.getJson());
+                        Assert.assertEquals(recordEntity.getRecordStatus(), RecordEntity.RecordStatus.VALID);
+                        Assert.assertNotNull(recordEntity.getCreateDate());
+                        Assert.assertNotNull(recordEntity.getLastChangedDate());
+                    });
+
+                    Instant recordChangedDate = datasetEntity.getRecordChangedDate();
+                    Assert.assertNotNull(recordChangedDate);
+
+                    recordIterator(recordMap, (recordId, payload) -> {
+                        // Delete the records
+                        submissionService.removeRecord(datasetEntity, recordId);
+                        Assert.assertFalse(submissionService.recordExists(datasetEntity, recordId));
+                    });
+
+                    Assert.assertNotEquals(recordChangedDate, datasetEntity.getRecordChangedDate());
+                    List<RecordEntity> records = submissionService.getRecords(datasetEntity);
+                    Assert.assertEquals(0, records.size());
+                }));
     }
 
-    // Create a valid set of records and submit them
-    @Test public void createValidateAndSubmitRecords() {
-        Map<String, RecordEntity> recordEntities = submissionService.createRecords(dataset, buildPayloadMap(samples));
-        recordEntities.values().stream().forEach(r -> Assert.assertEquals(RecordEntity.RecordStatus.VALID, r.getRecordStatus()));
-        try {
-            submissionService.submit(dataset);
-        } catch (ProcessingException e) {
-            Assert.fail(e.getMessage());
+    @Test public void createAndSubmitValidRecords() {
+        permitIterator(successPayloadMap, (String eaIdId, Map<String, Map<String, DataSamplePayload>> datasetMap) ->
+                datasetIterator(datasetMap, (String datasetId, Map<String, DataSamplePayload> recordMap) -> {
+                    // Create the datasets
+                    DatasetEntity datasetEntity = new DatasetEntity();
+                    datasetEntity.setIdentifier(datasetId);
+                    datasetEntity.setOriginatorEmail(EMAIL_ADDR);
+                    datasetService.createDataset(eaIdId, datasetEntity);
+
+                    // Create the records
+                    Map<String, RecordEntity> recordEntities = submissionService.createRecords(datasetEntity, recordMap);
+
+                    try {
+                        submissionService.submit(datasetEntity);
+                    } catch (ProcessingException e) {
+                        e.printStackTrace();
+                    }
+
+                    recordIterator(recordMap, (recordId, payload) -> {
+                        RecordEntity recordEntity = recordEntities.get(recordId);
+                        Assert.assertEquals(recordEntity.getRecordStatus(), RecordEntity.RecordStatus.VALID);
+                        DataSampleEntity dataSamplePayload = payloadEntityDao.find(recordEntity.getId(), DataSampleEntity.class);
+                        Assert.assertNotNull(dataSamplePayload);
+                    });
+
+                    Assert.assertEquals(DatasetEntity.Status.SUBMITTED, datasetEntity.getStatus());
+                }));
+    }
+
+    @Test public void createAndSubmitInvalidRecords() {
+        permitIterator(failurePayloadMap, (String eaIdId, Map<String, Map<String, DataSamplePayload>> datasetMap) ->
+                datasetIterator(datasetMap, (String datasetId, Map<String, DataSamplePayload> recordMap) -> {
+                    // Create the datasets
+                    DatasetEntity datasetEntity = new DatasetEntity();
+                    datasetEntity.setIdentifier(datasetId);
+                    datasetEntity.setOriginatorEmail(EMAIL_ADDR);
+                    datasetService.createDataset(eaIdId, datasetEntity);
+
+                    // Create the records
+                    submissionService.createRecords(datasetEntity, recordMap);
+
+                    try {
+                        submissionService.submit(datasetEntity);
+                    } catch (ProcessingException e) {
+                        Assert.assertEquals(0, 0);
+                    }
+
+                    Assert.assertEquals(DatasetEntity.Status.UNSUBMITTED, datasetEntity.getStatus());
+                }));
+    }
+
+    @Test public void testSubstitutions() {
+        permitIterator(substitutionPayloadMap, (String eaIdId, Map<String, Map<String, DataSamplePayload>> datasetMap) -> {
+            datasetIterator(datasetMap, (String datasetId, Map<String, DataSamplePayload> recordMap) -> {
+                // Create the datasets
+                DatasetEntity datasetEntity = new DatasetEntity();
+                datasetEntity.setIdentifier(datasetId);
+                datasetEntity.setOriginatorEmail(EMAIL_ADDR);
+                datasetService.createDataset(eaIdId, datasetEntity);
+
+                // Create the records
+                submissionService.createRecords(datasetEntity, recordMap);
+                try {
+                    submissionService.submit(datasetEntity);
+                } catch (ProcessingException e) {
+                    Assert.assertEquals(0, 0);
+                }
+
+                Assert.assertEquals(DatasetEntity.Status.SUBMITTED, datasetEntity.getStatus());
+                Map<String, RecordEntity> recordEntities = submissionService.createRecords(datasetEntity, recordMap);
+                Map<RecordEntity, Set<EntitySubstitution>> substitutions = submissionService.evaluateSubstitutes(recordEntities.values());
+                Assert.assertNotNull(substitutions);
+            });
+        });
+    }
+
+    private void permitIterator(Map<String, Map<String, Map<String, DataSamplePayload>>> permitMap,
+            BiConsumer<String, Map<String, Map<String, DataSamplePayload>>> function) {
+        permitMap.keySet().stream().forEach(p -> function.accept(p, permitMap.get(p)));
+    }
+
+    private void datasetIterator(Map<String, Map<String, DataSamplePayload>> datasetMap,
+            BiConsumer<String, Map<String, DataSamplePayload>> function) {
+        datasetMap.keySet().stream().forEach(p -> function.accept(p, datasetMap.get(p)));
+    }
+
+    private void recordIterator(Map<String, DataSamplePayload> recordMap, BiConsumer<String, DataSamplePayload> function) {
+        recordMap.keySet().stream().forEach(p -> function.accept(p, recordMap.get(p)));
+    }
+
+    private static Map<String, Map<String, Map<String, DataSamplePayload>>> buildPayloadMap(List<Payload> payloads) {
+        Map<String, DataSamplePayload> recordIdentifierMap = new HashMap<>();
+        Map<String, Map<String, DataSamplePayload>> datasetIdentifierMap = new HashMap<>();
+        Map<String, Map<String, Map<String, DataSamplePayload>>> eaIdIdentifierMap = new HashMap<>();
+        payloads.sort(Comparator.comparing(o -> ((DataSamplePayload) o).getEaId()));
+
+        String eaId = null;
+        String prevEaId = null;
+
+        // Arbitrarily make the max size of the dataset 2 to give multiple datasets for a given permit
+        for (Payload payload : payloads) {
+            if (payload instanceof DataSamplePayload) {
+                eaId = ((DataSamplePayload) payload).getEaId();
+                if (prevEaId == null) {
+                    prevEaId = eaId;
+                }
+                // Max size of the dataset so add the accumulated record map into the dataset
+                // and clear the map
+                if (recordIdentifierMap.size() == 3) {
+                    datasetIdentifierMap.put(UUID.randomUUID().toString(), recordIdentifierMap);
+                    recordIdentifierMap = new HashMap<>();
+                }
+                // If the Id has changed add the accumulated dataset map into the EaId and clear both maps
+                if (!eaId.equals(prevEaId)) {
+                    if (recordIdentifierMap.size() != 0) {
+                        datasetIdentifierMap.put(UUID.randomUUID().toString(), recordIdentifierMap);
+                    }
+                    eaIdIdentifierMap.put(prevEaId, datasetIdentifierMap);
+                    datasetIdentifierMap = new HashMap<>();
+                    recordIdentifierMap = new HashMap<>();
+                    prevEaId = eaId;
+                }
+                recordIdentifierMap.put(UUID.randomUUID().toString(), (DataSamplePayload) payload);
+            }
         }
-        Assert.assertEquals(DatasetEntity.Status.SUBMITTED, dataset.getStatus());
-    }
 
-    @Test public void createValidateAndDetermineSubstitutions() throws IOException {
-        List<Payload> samples = submissionService.parseJsonArray(readTestFile(SUBSTITUTIONS));
-        Map<String, Payload> payloadMap = buildPayloadMap(samples);
-        Map<String, RecordEntity> recordEntities = submissionService.createRecords(dataset, payloadMap);
-        recordEntities.values().stream().forEach(r -> Assert.assertEquals(RecordEntity.RecordStatus.VALID, r.getRecordStatus()));
-
-        int[] expectedSubs = { 4, 4, 4, 0 };
-        Map<RecordEntity, Set<EntitySubstitution>> subMap = submissionService.evaluateSubstitutes(recordEntities.values());
-        int index = 0;
-
-        for (RecordEntity record : recordEntities.values()) {
-            Set<EntitySubstitution> subs = subMap.get(record);
-            int subCount = subs == null ? 0 : subs.size();
-            Assert.assertEquals(expectedSubs[index++], subCount);
-        }
-    }
-
-    // Create and validate a set of valid and invalid records
-    @Test public void createAndValidateValidAndInvalidRecords() throws IOException {
-        List<Payload> samples = submissionService.parseJsonArray(readTestFile(SUBMISSION_FAILURE));
-
-        Map<String, RecordEntity> recordEntities = submissionService.createRecords(dataset, buildPayloadMap(samples));
-        Assert.assertEquals(1,
-                recordEntities.values().stream().filter(r -> r.getRecordStatus() == RecordEntity.RecordStatus.VALID).count());
-        Assert.assertEquals(3,
-                recordEntities.values().stream().filter(r -> r.getRecordStatus() == RecordEntity.RecordStatus.INVALID).count());
-    }
-
-    // Create and validate a set of valid and invalid records and submit them
-    @Test public void createAndValidateValidAndInvalidAndSubmitRecords() throws IOException {
-        List<Payload> samples = submissionService.parseJsonArray(readTestFile(SUBMISSION_FAILURE));
-        Map<String, RecordEntity> recordEntities = submissionService
-                .createRecords(dataset, samples.stream().collect(Collectors.toMap(o -> UUID.randomUUID().toString(), o -> o)));
-
-        try {
-            submissionService.submit(dataset);
-            Assert.fail("Expected an exception to be thrown when attempting to submit a dataset with validation errors");
-        } catch (ProcessingException e) {
-            // Expected....
+        if (recordIdentifierMap.size() != 0) {
+            datasetIdentifierMap.put(UUID.randomUUID().toString(), recordIdentifierMap);
         }
 
-        Assert.assertEquals(1,
-                recordEntities.values().stream().filter(r -> r.getRecordStatus() == RecordEntity.RecordStatus.VALID).count());
-        Assert.assertEquals(3,
-                recordEntities.values().stream().filter(r -> r.getRecordStatus() == RecordEntity.RecordStatus.INVALID).count());
-
-        Assert.assertEquals(DatasetEntity.Status.UNSUBMITTED, dataset.getStatus());
-
-    }
-
-    // Create and validate a set of valid records, submit and retrieve them by dataset and dataset/identifier
-    @Test public void createAndValidateAndSubmitAndRetrieveRecords() throws IOException {
-        submissionService.createRecords(dataset, buildPayloadMap(samples));
-        try {
-            submissionService.submit(dataset);
-        } catch (ProcessingException e) {
-            Assert.fail(e.getMessage());
+        if (datasetIdentifierMap.size() != 0) {
+            eaIdIdentifierMap.put(eaId, datasetIdentifierMap);
         }
 
-        List<AbstractPayloadEntity> payloadEntities = submissionService.getPayloadList(dataset);
-        payloadEntities.stream()
-                .map(AbstractPayloadEntity::getRecordEntity)
-                .forEach(
-                        r -> Assert.assertEquals(RecordEntity.RecordStatus.VALID, r.getRecordStatus()));
-
-        RecordEntity r = payloadEntities.get(0).getRecordEntity();
-        String id = r.getIdentifier();
-
-        RecordEntity r1 = submissionService.retrieve(dataset, id);
-        Assert.assertEquals(r, r1);
-
-        Assert.assertEquals(DatasetEntity.Status.SUBMITTED, dataset.getStatus());
-    }
-
-    @Test public void retrieveValidationErrors() throws IOException {
-        List<Payload> samples = submissionService.parseJsonArray(readTestFile(SUBMISSION_FAILURE));
-        Map<String, RecordEntity> recordEntities = submissionService
-                .createRecords(dataset, samples.stream().collect(Collectors.toMap(o -> UUID.randomUUID().toString(), o -> o)));
-        List<ValidationErrorInstance> validationErrors = submissionService.retrieveValidationErrors(dataset);
-        Assert.assertEquals(3, validationErrors.size());
+        return eaIdIdentifierMap;
     }
 
     /**
@@ -298,26 +344,9 @@ public class APIIntegrationTests_DataSampleEntity {
     private String readTestFile(String testFileName) throws IOException {
         final String testFilesLocation = this.testSettings.getTestFilesLocation();
         final File testFile = new File(testFilesLocation, testFileName);
-        InputStream inputStream = APIIntegrationTests_DataSampleEntity.class.getResourceAsStream(testFile.getAbsolutePath());
+        InputStream inputStream = APIIntegrationTests_DataSampleEntity.class.
+                getResourceAsStream(testFile.getAbsolutePath());
+
         return IOUtils.toString(inputStream, StandardCharsets.UTF_8);
-    }
-
-    private Map<String, Payload> buildPayloadMap(Collection<String> ids, Function<String, Payload> payloadSupplier) {
-        Map<String, Payload> map = new LinkedHashMap<>();
-        for (String id : ids) {
-            Payload value = payloadSupplier != null ? payloadSupplier.apply(id) : null;
-            map.put(id, value);
-        }
-        return map;
-    }
-
-    private Map<String, Payload> buildPayloadMap(Collection<Payload> payloads) {
-        return payloads.stream()
-                .collect(Collectors.toMap(o -> UUID.randomUUID().toString(),
-                        o -> o,
-                        (u, v) -> {
-                            throw new IllegalStateException(String.format("Duplicate key %s", u));
-                        },
-                        LinkedHashMap::new));
     }
 }

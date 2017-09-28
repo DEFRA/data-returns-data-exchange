@@ -1,5 +1,6 @@
 package uk.gov.ea.datareturns.tests.integration.resource;
 
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -8,14 +9,15 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 import uk.gov.ea.datareturns.App;
+import uk.gov.ea.datareturns.domain.jpa.entities.masterdata.impl.UniqueIdentifier;
+import uk.gov.ea.datareturns.domain.jpa.entities.userdata.impl.DatasetCollection;
 import uk.gov.ea.datareturns.domain.jpa.entities.userdata.impl.DatasetEntity;
-import uk.gov.ea.datareturns.domain.jpa.entities.userdata.impl.User;
 import uk.gov.ea.datareturns.domain.jpa.service.DatasetService;
+import uk.gov.ea.datareturns.domain.jpa.service.SitePermitService;
 
 import javax.inject.Inject;
 import java.io.IOException;
 import java.time.Instant;
-import java.util.List;
 
 /**
  * @author Graham Willis
@@ -27,119 +29,69 @@ import java.util.List;
 public class APIIntegrationTests_Dataset {
 
     @Inject private DatasetService datasetService;
+    @Inject private SitePermitService sitePermitService;
 
-    private static final String USER_NAME = "Graham Willis";
-    private static final String USER_NAME2 = "Graham Willis2";
+    private static final String TEST_SITE_NAME = "TEST_SITE";
+    private static final String UNIQUE_ID = "EA_ID1";
     private static final String ORIGINATOR_EMAIL = "graham.willis@email.com";
-    private static final String DATASET_ID = "DatasetEntity name";
-
-    private static User user;
-    private static DatasetEntity dataset;
+    private static final String DATASET_IDENTIFIER = "DS_01";
 
     // Remove any old data and set a user and dataset for use in the tests
-    @Before public void init() throws IOException {
-        user = datasetService.getUser(USER_NAME);
-        if (user != null) {
-            datasetService.getDatasets(user).forEach(ds -> datasetService.removeDataset(ds.getIdentifier()));
-            datasetService.removeUser(USER_NAME);
-        }
-
-        User user2 = datasetService.getUser(USER_NAME2);
-        if (user2 != null) {
-            datasetService.getDatasets(user2).forEach(ds -> datasetService.removeDataset(ds.getIdentifier()));
-            datasetService.removeUser(USER_NAME2);
-        }
-
-        user = datasetService.createUser(USER_NAME);
-        dataset = new DatasetEntity();
-        dataset.setUser(user);
-        datasetService.createDataset(dataset);
+    @Before public void init() throws IOException, SitePermitService.SitePermitServiceException {
+        sitePermitService.removePermitSiteAndAliases(UNIQUE_ID);
+        sitePermitService.addNewPermitAndSite(UNIQUE_ID, TEST_SITE_NAME);
     }
 
-    @Test
-    public void createUser() {
-        Assert.assertEquals(user.getIdentifier(), USER_NAME);
-    }
-
-    @Test
-    public void getSystemUser() {
-        User systemUser = datasetService.getSystemUser();
-        Assert.assertEquals(systemUser.getIdentifier(), User.SYSTEM);
+    @After public void down() throws IOException, SitePermitService.SitePermitServiceException {
+        sitePermitService.removePermitSiteAndAliases(UNIQUE_ID);
     }
 
     @Test
     public void createSystemManagedDataset() {
         DatasetEntity dataset = new DatasetEntity();
         dataset.setOriginatorEmail(ORIGINATOR_EMAIL);
-        datasetService.createDataset(dataset);
-        Assert.assertEquals(dataset.getUser().getIdentifier(), User.SYSTEM);
+        dataset.setIdentifier(DATASET_IDENTIFIER);
+        datasetService.createDataset(UNIQUE_ID, dataset);
+
+        Assert.assertEquals(UNIQUE_ID, dataset.getParentCollection().getUniqueIdentifier().getName());
     }
 
     @Test
     public void createUserManagedDatasetAutonamed() {
         DatasetEntity dataset = new DatasetEntity();
         dataset.setOriginatorEmail(ORIGINATOR_EMAIL);
-        dataset.setUser(user);
-        datasetService.createDataset(dataset);
-
-        Assert.assertEquals(dataset.getUser().getIdentifier(), USER_NAME);
-        List<DatasetEntity> datasets = datasetService.getDatasets(user);
-        Assert.assertEquals(2, datasets.size());
+        datasetService.createDataset(UNIQUE_ID, dataset);
+        Assert.assertNotNull(dataset.getParentCollection().getUniqueIdentifier());
     }
 
     @Test
-    public void createUserManagedDatasetNamed() {
-        DatasetEntity dataset = new DatasetEntity();
-        dataset.setOriginatorEmail(ORIGINATOR_EMAIL);
-        dataset.setUser(user);
-        dataset.setIdentifier(DATASET_ID);
-        datasetService.createDataset(dataset);
-
-        List<DatasetEntity> datasets = datasetService.getDatasets(user);
-        Assert.assertEquals(2, datasets.size());
-
-        DatasetEntity ds = datasetService.getDataset(DATASET_ID, user);
-
-        Assert.assertEquals(ds.getUser().getIdentifier(), USER_NAME);
-        Assert.assertEquals(ds.getIdentifier(), DATASET_ID);
-
-        datasetService.removeDataset(DATASET_ID, user);
-        datasets = datasetService.getDatasets(user);
-        Assert.assertEquals(1, datasets.size());
-    }
-
-    @Test
-    public void testThatDatasetAdditionDeletionAndModificationUpdateTheUserDatasetChangeDate() {
-        // Create new user
-        User user = datasetService.createUser(USER_NAME2);
+    public void testDatasetModificationSetsChangeDate() {
 
         //  Create new dataset
         DatasetEntity dataset = new DatasetEntity();
-        dataset.setUser(user);
-        dataset.setIdentifier(DATASET_ID);
-        datasetService.createDataset(dataset);
+        dataset.setIdentifier(DATASET_IDENTIFIER);
+        datasetService.createDataset(UNIQUE_ID, dataset);
 
-        // Test the dataset creation date is set on the user
-        user = datasetService.getUser(user.getIdentifier());
-        Instant createDate = user.getDatasetChangedDate();
+        // Test the dataset creation date is set the EA_ID
+        Instant createDate = dataset.getParentCollection().getLastChangedDate();
         Assert.assertNotNull(createDate);
 
         // Modify the dataset
-        dataset.setOriginatorEmail("Some email");
+        dataset.setOriginatorEmail("some.email@email.com");
         datasetService.updateDataset(dataset);
 
-        // Test that the dataset modification date has been set
-        user = datasetService.getUser(user.getIdentifier());
-        Instant changeDate = user.getDatasetChangedDate();
-        Assert.assertNotNull(changeDate);
-        Assert.assertNotEquals(changeDate, createDate);
+        // Test that the dataset modification date has been changed
+        Instant changedDate = dataset.getParentCollection().getLastChangedDate();
+        Assert.assertNotEquals(changedDate, createDate);
+
+        UniqueIdentifier eaId = dataset.getParentCollection().getUniqueIdentifier();
 
         // Remove the dataset
-        datasetService.removeDataset(DATASET_ID, user);
-        user = datasetService.getUser(user.getIdentifier());
-        Instant deleteDate = user.getDatasetChangedDate();
+        datasetService.removeDataset(UNIQUE_ID, DATASET_IDENTIFIER);
+        DatasetCollection collection = datasetService.getDatasets(eaId);
+        Instant deleteDate = collection.getLastChangedDate();
         Assert.assertNotNull(deleteDate);
-        Assert.assertNotEquals(changeDate, deleteDate);
+        Assert.assertNotEquals(changedDate, deleteDate);
     }
 
 }

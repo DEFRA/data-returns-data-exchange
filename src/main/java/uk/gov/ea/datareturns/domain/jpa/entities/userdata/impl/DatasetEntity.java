@@ -5,7 +5,9 @@ import uk.gov.ea.datareturns.domain.jpa.entities.userdata.Metadata;
 
 import javax.persistence.*;
 import java.time.Instant;
-import java.util.Collection;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
 
 /**
  * @author Graham
@@ -33,14 +35,18 @@ public class DatasetEntity implements Metadata {
     private String originatorEmail;
 
     @ManyToOne(optional = false)
-    @JoinColumn(name = "user_id", referencedColumnName = "id")
-    private User user;
+    @JoinColumn(name = "dataset_collection_id")
+    private DatasetCollection parentCollection;
 
     @Enumerated(EnumType.STRING) @Column(name = "status", nullable = false)
     private Status status;
 
-    @OneToMany(mappedBy = "dataset", targetEntity = RecordEntity.class, fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
-    private Collection records;
+    @OneToMany(mappedBy = "dataset",
+            fetch = FetchType.LAZY,
+            cascade = CascadeType.REMOVE,
+            orphanRemoval = true
+    )
+    private List<RecordEntity> records = new ArrayList<>();
 
     @Basic @Column(name = "create_date", nullable = false)
     private Instant createDate;
@@ -75,14 +81,6 @@ public class DatasetEntity implements Metadata {
         this.originatorEmail = originatorEmail;
     }
 
-    public User getUser() {
-        return user;
-    }
-
-    public void setUser(User user) {
-        this.user = user;
-    }
-
     public Status getStatus() {
         return status;
     }
@@ -91,11 +89,11 @@ public class DatasetEntity implements Metadata {
         this.status = status;
     }
 
-    public Collection getRecords() {
+    public List<RecordEntity> getRecords() {
         return records;
     }
 
-    public void setRecords(Collection records) {
+    public void setRecords(List<RecordEntity> records) {
         this.records = records;
     }
 
@@ -123,35 +121,24 @@ public class DatasetEntity implements Metadata {
         this.recordChangedDate = recordChangedDate;
     }
 
-    /*
-     * The dataset identifier is unique for a given user
-     */
-    @Override
-    public boolean equals(Object o) {
+    public DatasetCollection getParentCollection() {
+        return parentCollection;
+    }
+
+    public void setParentCollection(DatasetCollection parentCollection) {
+        this.parentCollection = parentCollection;
+    }
+
+    @Override public boolean equals(Object o) {
         if (this == o)
             return true;
-        if (o == null || getClass() != o.getClass())
+        if (!(o instanceof DatasetEntity))
             return false;
-
-        DatasetEntity dataset = (DatasetEntity) o;
-
-        return identifier.equals(dataset.identifier) && user.equals(dataset.user);
+        DatasetEntity that = (DatasetEntity) o;
+        return Objects.equals(getIdentifier(), that.getIdentifier());
     }
 
-    @Override
-    public int hashCode() {
-        int result = identifier.hashCode();
-        result = 31 * result + user.hashCode();
-        return result;
-    }
-
-    @Override
-    public String toString() {
-        return "DatasetEntity{" +
-                "id=" + id +
-                ", identifier='" + identifier + '\'' +
-                ", originatorEmail='" + originatorEmail + '\'' +
-                ", user=" + user +
-                '}';
+    @Override public int hashCode() {
+        return Objects.hash(getIdentifier());
     }
 }

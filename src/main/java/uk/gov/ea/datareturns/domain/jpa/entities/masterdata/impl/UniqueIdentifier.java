@@ -23,7 +23,7 @@ import java.util.Set;
                 @org.hibernate.annotations.Parameter(name = SequenceStyleGenerator.SEQUENCE_PARAM, value = "md_unique_identifiers_id_seq") }
 )
 public class UniqueIdentifier extends AbstractMasterDataEntity implements AliasedEntity<UniqueIdentifierAlias> {
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "site_id")
     private Site site;
 

@@ -93,7 +93,7 @@ liquibase:
 
 # Default logging levels (provide minimal level of logging here)
 logging:
-  level: 
+  level:
     root: WARN
     jndi: WARN
     uk.gov.ea.datareturns: INFO
@@ -106,13 +106,13 @@ logging:
     org.springframework.aop: info
     org.springframework.cache: debug
     javax.xml.bind: WARN
-    
+
     # Database
     org.hibernate: WARN
     org.hibernate.engine.jdbc.spi.SqlExceptionHelper: OFF
 
     liquibase: INFO
-    
+
     # Amazon S3 API
     com.amazonaws: WARN
     org.apache.http.wire: WARN
@@ -143,12 +143,12 @@ spring:
       hibernate.format_sql: true
       hibernate.generate_statistics: true
 
-# Spring boot debug flag 
+# Spring boot debug flag
 debug: false
 
 # Configure loggers for debug - should configure DEBUG by default and use WARN/INFO on stuff that is not useful to reduce unwanted spam
 logging:
-  level: 
+  level:
     root: DEBUG
     jndi: INFO
     uk.gov.ea.datareturns: DEBUG
@@ -158,7 +158,7 @@ logging:
     org.eclipse.jetty.servlet.ServletHandler: DEBUG
     org.apache.http: INFO
     org.jvnet.mimepull: INFO
-    
+
     org.springframework: INFO
     org.springframework.beans.factory: INFO
     org.springframework.boot: INFO
@@ -166,7 +166,7 @@ logging:
     org.springframework.core: INFO
     org.springframework.context.annotation: INFO
     org.springframework.boot.context.embedded.jetty.JettyEmbeddedServletContainer: INFO
-    
+
     # Set to DEBUG to enable the auto-configuration report at startup
     org.springframework.boot.autoconfigure: DEBUG
 
@@ -178,7 +178,7 @@ logging:
     org.hibernate.stat: DEBUG
     org.hibernate.engine.internal.StatisticalLoggingSessionEventListener: DEBUG
     liquibase: INFO
-    
+
     # Amazon S3 API
     com.amazonaws: INFO
     org.apache.http.wire: INFO

@@ -185,6 +185,7 @@ public class SubmissionService {
         if (record != null) {
             payloadEntityDao.remove(record.getId(), AbstractPayloadEntity.class);
             recordRepository.delete(record);
+            dataset.getRecords().removeIf(recordEntity -> identifier.equals(recordEntity.getIdentifier()));
             dataset.setRecordChangedDate(Instant.now());
             datasetRepository.saveAndFlush(dataset);
         }
@@ -212,21 +213,22 @@ public class SubmissionService {
      */
     @Transactional
     public <D extends Payload> Map<String, RecordEntity> createRecords(DatasetEntity dataset, Map<String, D> payloadMap) {
-        Map<String, RecordEntity> existingRecords = getRecords(dataset)
+        Collection<RecordEntity> recordEntities = dataset.getRecords();
+        final Map<String, RecordEntity> existingRecords = recordEntities
                 .stream()
                 .filter(r -> payloadMap.keySet().contains(r.getIdentifier()))
                 .collect(Collectors.toMap(RecordEntity::getIdentifier, r -> r));
 
         Map<String, RecordEntity> updatedRecords = new LinkedHashMap<>();
         payloadMap.forEach((identifier, payload) -> {
-            RecordEntity recordEntity = Optional.ofNullable(existingRecords.get(identifier)).orElse(new RecordEntity(dataset, identifier));
+            RecordEntity recordEntity = Optional.ofNullable(existingRecords.get(identifier))
+                    .orElseGet(() -> new RecordEntity(dataset, identifier));
             updatedRecords.put(identifier, updateRecord(recordEntity, payload));
         });
         // Update the dataset's record collection timestamp
+        dataset.setRecords(new ArrayList<>(updatedRecords.values()));
         dataset.setRecordChangedDate(Instant.now());
-        recordRepository.flush();
         datasetRepository.saveAndFlush(dataset);
-
         return updatedRecords;
     }
 

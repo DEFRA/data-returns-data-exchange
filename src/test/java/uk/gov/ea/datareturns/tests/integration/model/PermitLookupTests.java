@@ -38,17 +38,13 @@ public class PermitLookupTests {
     @Inject private SearchProcessor searchProcessor;
 
     @Before
-    public void initialize() throws IOException {
-        try {
-            LOGGER.info("Initialize tests");
+    public void initialize() throws IOException, SitePermitService.SitePermitServiceException, DataAccessException {
 
-            sitePermitService.removePermitSiteAndAliases(UNIQUE_ID);
-            sitePermitService.addNewPermitAndSite(UNIQUE_ID, TEST_SITE_NAME, new String[] { UNIQUE_ID_ALIAS });
+        LOGGER.info("Initialize tests");
 
-        } catch (DataAccessException e) {
-            LOGGER.error("Cannot add the test data", e);
-            throw e;
-        }
+        sitePermitService.removePermitSiteAndAliases(UNIQUE_ID);
+        sitePermitService.addNewPermitAndSite(UNIQUE_ID, TEST_SITE_NAME, new String [] { UNIQUE_ID_ALIAS });
+
     }
 
     @Test

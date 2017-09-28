@@ -33,20 +33,6 @@ import java.util.function.Function;
 @SpringBootTest(classes = { App.class }, webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 @ActiveProfiles("IntegrationTests")
 public class RecordResourceTests extends AbstractDataResourceTests {
-    //    @Test
-    //    public void testListRecord() {
-    //        // Add datasets to test with
-    //        String[] datasets = { "Foo", "Bar" };
-    //        for (String datasetId : datasets) {
-    //            datasetRequest(HttpStatus.CREATED).putDataset(datasetId, null);
-    //        }
-    //
-    //        // Test list shows these datasets
-    //        ResponseEntity<EntityListResponse> list = datasetRequest(HttpStatus.OK).listDatasets();
-    //        List<EntityReference> items = list.getBody().getData();
-    //        List<String> savedDatasetIds = items.stream().map(i -> i.getId()).collect(Collectors.toList());
-    //        Assert.assertTrue(savedDatasetIds.containsAll(Arrays.asList(datasets)));
-    //    }
 
     @Test
     public void testGetRequestIfNoneMatchPasses() {
@@ -201,7 +187,7 @@ public class RecordResourceTests extends AbstractDataResourceTests {
     @Test
     public void testPostRequestIfMatchSucceeds() {
         // Issue a batch POST datasetRequest to create initial data
-        Dataset dataset = createTestDataset().getBody().getData();
+        Dataset dataset = createTestDataset(TEST_EA_ID).getBody().getData();
         Map<String, MultiStatusResponse.Response> records = executeBatchCreateRequestTest(dataset);
 
         executeBatchUpdateRequestTest(dataset, records, (recordId) -> {
@@ -214,14 +200,14 @@ public class RecordResourceTests extends AbstractDataResourceTests {
     @Test
     public void testPostRequestDuplicateIdentifiers() {
         // Issue a batch POST datasetRequest to create initial data
-        Dataset dataset = createTestDataset().getBody().getData();
+        Dataset dataset = createTestDataset(TEST_EA_ID).getBody().getData();
         executeBatchDuplicateRecordTest(dataset);
     }
 
     @Test
     public void testPostRequestIfMatchWildSucceeds() {
         // Issue a batch POST datasetRequest to create initial data
-        Dataset dataset = createTestDataset().getBody().getData();
+        Dataset dataset = createTestDataset(TEST_EA_ID).getBody().getData();
         Map<String, MultiStatusResponse.Response> records = executeBatchCreateRequestTest(dataset);
 
         executeBatchUpdateRequestTest(dataset, records, (recordId) -> {
@@ -234,7 +220,7 @@ public class RecordResourceTests extends AbstractDataResourceTests {
     @Test
     public void testPostRequestIfMatchFails() {
         // Issue a batch POST datasetRequest to create initial data
-        Dataset dataset = createTestDataset().getBody().getData();
+        Dataset dataset = createTestDataset(TEST_EA_ID).getBody().getData();
         Map<String, MultiStatusResponse.Response> records = executeBatchCreateRequestTest(dataset);
 
         // Now for each dataset, attempt an update with If-Match set to an invalid
@@ -248,7 +234,7 @@ public class RecordResourceTests extends AbstractDataResourceTests {
     @Test
     public void testPostRequestIfUnmodifiedSinceSucceeds() {
         // Issue a batch POST datasetRequest to create initial data
-        Dataset dataset = createTestDataset().getBody().getData();
+        Dataset dataset = createTestDataset(TEST_EA_ID).getBody().getData();
         Map<String, MultiStatusResponse.Response> records = executeBatchCreateRequestTest(dataset);
 
         executeBatchUpdateRequestTest(dataset, records, (recordId) -> {
@@ -261,7 +247,7 @@ public class RecordResourceTests extends AbstractDataResourceTests {
     @Test
     public void testPostRequestIfUnmodifiedSinceFails() {
         // Issue a batch POST datasetRequest to create initial data
-        Dataset dataset = createTestDataset().getBody().getData();
+        Dataset dataset = createTestDataset(TEST_EA_ID).getBody().getData();
         Map<String, MultiStatusResponse.Response> records = executeBatchCreateRequestTest(dataset);
 
         executeBatchUpdateRequestTest(dataset, records, (recordId) -> {
@@ -281,7 +267,7 @@ public class RecordResourceTests extends AbstractDataResourceTests {
         payload.setEaId("TS1234TS");
 
         ResponseEntity<RecordEntityResponse> createResponse = recordRequest(HttpStatus.CREATED)
-                .putRecord(dataset.getId(), recordId, payload);
+                .putRecord(TEST_EA_ID, dataset.getId(), recordId, payload);
 
         Record record = createResponse.getBody().getData();
         Assert.assertEquals(recordId, record.getId());
@@ -297,7 +283,8 @@ public class RecordResourceTests extends AbstractDataResourceTests {
     private void executeConditionalGetRequestTest(HttpStatus expected,
             Function<ResponseEntity<RecordEntityResponse>, HttpHeaders> getRequestHeaderProvider) {
         // First PUT a new dataset and add a record
-        ResponseEntity<DatasetEntityResponse> createDatasetResponse = createTestDataset();
+        ResponseEntity<DatasetEntityResponse> createDatasetResponse =
+                createTestDataset(TEST_EA_ID);
         Dataset dataset = createDatasetResponse.getBody().getData();
 
         ResponseEntity<RecordEntityResponse> createRecordResponse = createTestRecord(dataset);
@@ -307,7 +294,7 @@ public class RecordResourceTests extends AbstractDataResourceTests {
         HttpHeaders headers = getRequestHeaderProvider.apply(createRecordResponse);
         ResponseEntity<RecordEntityResponse> getResponse = recordRequest(expected)
                 .withHeaders(headers)
-                .getRecord(dataset.getId(), record.getId());
+                .getRecord(TEST_EA_ID, dataset.getId(), record.getId());
 
         if (expected == HttpStatus.NOT_MODIFIED) {
             Assert.assertNull(getResponse.getBody());
@@ -319,7 +306,9 @@ public class RecordResourceTests extends AbstractDataResourceTests {
     private void executeConditionalPutRequestTest(HttpStatus expected,
             Function<ResponseEntity<RecordEntityResponse>, HttpHeaders> updateRequestHeaderProvider) {
         // First PUT a new dataset and add a record
-        ResponseEntity<DatasetEntityResponse> createDatasetResponse = createTestDataset();
+        ResponseEntity<DatasetEntityResponse> createDatasetResponse =
+                createTestDataset(TEST_EA_ID);
+
         Dataset dataset = createDatasetResponse.getBody().getData();
 
         ResponseEntity<RecordEntityResponse> createRecordResponse = createTestRecord(dataset);
@@ -334,7 +323,8 @@ public class RecordResourceTests extends AbstractDataResourceTests {
 
         ResponseEntity<RecordEntityResponse> updateResponse = recordRequest(expected)
                 .withHeaders(headers)
-                .putRecord(dataset.getId(), record.getId(), newPayload);
+                .putRecord(TEST_EA_ID,
+                        dataset.getId(), record.getId(), newPayload);
 
         if (updateResponse.getStatusCode().is2xxSuccessful()) {
             Record updatedRecord = updateResponse.getBody().getData();
@@ -354,7 +344,8 @@ public class RecordResourceTests extends AbstractDataResourceTests {
     private void executeConditionalDeleteRequestTest(HttpStatus expected,
             Function<ResponseEntity<RecordEntityResponse>, HttpHeaders> deleteRequestHeaderProvider) {
         // First PUT a new dataset and add a record
-        ResponseEntity<DatasetEntityResponse> createDatasetResponse = createTestDataset();
+        ResponseEntity<DatasetEntityResponse> createDatasetResponse =
+                createTestDataset(TEST_EA_ID);
         Dataset dataset = createDatasetResponse.getBody().getData();
 
         ResponseEntity<RecordEntityResponse> createRecordResponse = createTestRecord(dataset);
@@ -365,12 +356,14 @@ public class RecordResourceTests extends AbstractDataResourceTests {
 
         ResponseEntity<?> deleteResponse = recordRequest(expected)
                 .withHeaders(headers)
-                .deleteRecord(dataset.getId(), record.getId());
+                .deleteRecord(TEST_EA_ID,
+                        dataset.getId(), record.getId());
         if (deleteResponse.getStatusCode().is2xxSuccessful()) {
             Assert.assertNull(deleteResponse.getBody());
 
             // Check that the record has actually been deleted
-            recordRequest(HttpStatus.NOT_FOUND).getRecord(dataset.getId(), record.getId());
+            recordRequest(HttpStatus.NOT_FOUND).getRecord(
+                    TEST_EA_ID, dataset.getId(), record.getId());
         } else {
             Assert.assertNotNull(deleteResponse.getBody());
         }
@@ -394,7 +387,8 @@ public class RecordResourceTests extends AbstractDataResourceTests {
             requests.add(request);
         }
         ResponseEntity<MultiStatusResponse> createResponse = recordRequest(HttpStatus.MULTI_STATUS)
-                .postRecords(target.getId(), new BatchRecordRequest(requests));
+                .postRecords(TEST_EA_ID,
+                        target.getId(), new BatchRecordRequest(requests));
         // Test the response and store each one in the records map
         List<MultiStatusResponse.Response> responses = createResponse.getBody().getData();
         for (int i = 0; i < responses.size(); i++) {
@@ -430,7 +424,7 @@ public class RecordResourceTests extends AbstractDataResourceTests {
         }
 
         recordRequest(HttpStatus.CONFLICT)
-                .postRecords(target.getId(), new BatchRecordRequest(requests));
+                .postRecords(TEST_EA_ID, target.getId(), new BatchRecordRequest(requests));
 
         return records;
     }
@@ -461,7 +455,9 @@ public class RecordResourceTests extends AbstractDataResourceTests {
         }
 
         ResponseEntity<MultiStatusResponse> responses = recordRequest(HttpStatus.MULTI_STATUS)
-                .postRecords(target.getId(), new BatchRecordRequest(requests));
+                .postRecords(TEST_EA_ID,
+                        target.getId(), new BatchRecordRequest(requests));
+
         responses.getBody().getData().forEach((response) -> {
             HttpStatus expected = expectations.get(response.getId());
             HttpStatus status = HttpStatus.valueOf(response.getCode());

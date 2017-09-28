@@ -12,11 +12,13 @@ import uk.gov.ea.datareturns.domain.exceptions.ProcessingException;
 import uk.gov.ea.datareturns.domain.exceptions.UnsubmittableDatasetException;
 import uk.gov.ea.datareturns.domain.exceptions.UnsubmittableRecordsException;
 import uk.gov.ea.datareturns.domain.jpa.dao.userdata.factories.EntitySubstitution;
+import uk.gov.ea.datareturns.domain.jpa.entities.masterdata.impl.UniqueIdentifier;
+import uk.gov.ea.datareturns.domain.jpa.entities.userdata.impl.DatasetCollection;
 import uk.gov.ea.datareturns.domain.jpa.entities.userdata.impl.DatasetEntity;
 import uk.gov.ea.datareturns.domain.jpa.entities.userdata.impl.RecordEntity;
-import uk.gov.ea.datareturns.domain.jpa.entities.userdata.impl.User;
 import uk.gov.ea.datareturns.domain.jpa.projections.userdata.ValidationErrorInstance;
 import uk.gov.ea.datareturns.domain.jpa.service.DatasetService;
+import uk.gov.ea.datareturns.domain.jpa.service.SitePermitService;
 import uk.gov.ea.datareturns.domain.jpa.service.SubmissionService;
 import uk.gov.ea.datareturns.web.resource.JerseyResource;
 import uk.gov.ea.datareturns.web.resource.v1.model.common.Linker;
@@ -57,7 +59,7 @@ import static uk.gov.ea.datareturns.web.resource.v1.model.common.PreconditionChe
         consumes = APPLICATION_JSON + "," + APPLICATION_XML,
         produces = APPLICATION_JSON + "," + APPLICATION_XML
 )
-@Path("/datasets")
+@Path("/ea_ids/{ea_id}/datasets")
 @Consumes({ APPLICATION_JSON, APPLICATION_XML })
 @Produces({ APPLICATION_JSON, APPLICATION_XML })
 @Component
@@ -70,8 +72,12 @@ public class DatasetResource implements JerseyResource {
 
     private DatasetService datasetService;
     private final SubmissionService submissionService;
+    private final SitePermitService sitePermitService;
 
-    @Inject public DatasetResource(DatasetService datasetService, SubmissionService submissionService) {
+    @Inject public DatasetResource(SitePermitService sitePermitService, DatasetService datasetService,
+            SubmissionService submissionService) {
+
+        this.sitePermitService = sitePermitService;
         this.datasetService = datasetService;
         this.submissionService = submissionService;
     }
@@ -79,6 +85,7 @@ public class DatasetResource implements JerseyResource {
     /**
      * List the available datasets
      *
+     * @param eaIdId the owning EA_ID
      * @param preconditions conditional request structure
      * @return a response containing an {@link EntityReferenceListResponse} entity
      * @throws Exception if the request cannot be completed normally.
@@ -91,20 +98,34 @@ public class DatasetResource implements JerseyResource {
     )
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "OK", response = EntityReferenceListResponse.class),
-            @ApiResponse(code = 304, message = "Not Modified - see conditional request documentation")
+            @ApiResponse(code = 304, message = "Not Modified - see conditional request documentation"),
+            @ApiResponse(
+                    code = 404,
+                    message = "Not Found - The `ea_id` parameter did not match a known resource",
+                    response = ErrorResponse.class
+            )
     })
-    public Response listDatasets(@BeanParam Preconditions preconditions) throws Exception {
-        User user = datasetService.getSystemUser();
-        List<DatasetEntity> datasets = datasetService.getDatasets(user);
+    public Response listDatasets(
+            @PathParam("ea_id") @Pattern(regexp = "\\p{Print}+")
+            @ApiParam("The unique identifier for the owning ea_id") final String eaIdId,
+            @BeanParam Preconditions preconditions) throws Exception {
 
-        return onPreconditionsPass(user, datasets, preconditions,
+        UniqueIdentifier uniqueIdentifier = sitePermitService.getUniqueIdentifierByName(eaIdId);
+
+        if (uniqueIdentifier == null) {
+            return ErrorResponse.EA_ID_NOT_FOUND.toResponseBuilder().build();
+        }
+
+        DatasetCollection collection = datasetService.getDatasets(uniqueIdentifier);
+        return onPreconditionsPass(collection, preconditions,
                 () -> {
-                    List<EntityReference> entityReferences = datasets.stream()
-                            .map(e -> new EntityReference(e.getIdentifier(), Linker.info(uriInfo).dataset(e.getIdentifier())))
+                    List<EntityReference> entityReferences = collection.getDatasets().stream()
+                            .map(e -> new EntityReference(e.getIdentifier(), Linker.info(uriInfo).dataset(eaIdId, e.getIdentifier())))
                             .collect(Collectors.toList());
+
                     return new EntityReferenceListResponse(entityReferences,
-                            Date.from(user.getDatasetChangedDate()),
-                            Preconditions.createEtag(datasets)
+                            Date.from(collection.getLastChangedDate()),
+                            Preconditions.createEtag(collection)
                     ).toResponseBuilder();
                 }).build();
     }
@@ -139,10 +160,17 @@ public class DatasetResource implements JerseyResource {
             )
     })
     public Response postDatasets(
+            @PathParam("ea_id") @Pattern(regexp = "\\p{Print}+")
+            @ApiParam("The unique identifier for the owning ea_id") final String eaIdId,
             @ApiParam("The bulk dataset create/update request") final BatchDatasetRequest batchRequest
     )
             throws Exception {
 
+        if (sitePermitService.getUniqueIdentifierByName(eaIdId) == null) {
+            return ErrorResponse.EA_ID_NOT_FOUND.toResponseBuilder().build();
+        }
+
+        //UniqueIdentifier uniqueIdentifier = datasetService.getUniqueIdentifierByName(ea_id);
         Response.ResponseBuilder rb;
 
         if (batchRequest.getRequests().isEmpty()) {
@@ -151,19 +179,20 @@ public class DatasetResource implements JerseyResource {
             MultiStatusResponse multiResponse = new MultiStatusResponse();
 
             for (BatchDatasetRequestItem request : batchRequest.getRequests()) {
-                DatasetEntity datasetEntity = datasetService.getDataset(request.getDatasetId());
+                DatasetEntity datasetEntity = datasetService.getDataset(eaIdId, request.getDatasetId());
                 MultiStatusResponse.Response responseItem = new MultiStatusResponse.Response();
                 responseItem.setId(request.getDatasetId());
 
-                Response.ResponseBuilder failureResponse = onPreconditionsPass(fromEntity(datasetEntity), request.getPreconditions(),
+                Response.ResponseBuilder failureResponse = onPreconditionsPass(fromEntity(eaIdId, datasetEntity),
+                        request.getPreconditions(),
                         () -> {
                             // Preconditions passed, service the request
-                            DatasetEntityResponse storeResult = storeDataset(datasetEntity, request.getDatasetId(),
+                            DatasetEntityResponse storeResult = storeDataset(eaIdId, datasetEntity, request.getDatasetId(),
                                     request.getProperties());
                             Dataset dataset = storeResult.getData();
 
                             responseItem.setCode(storeResult.getMeta().getStatus());
-                            responseItem.setHref(Linker.info(uriInfo).dataset(dataset.getId()));
+                            responseItem.setHref(Linker.info(uriInfo).dataset(eaIdId, dataset.getId()));
                             responseItem.setEntityTag(Preconditions.createEtag(dataset).toString());
                             responseItem.setLastModified(dataset.getLastModified());
                             return null;
@@ -175,7 +204,7 @@ public class DatasetResource implements JerseyResource {
 
                     if (datasetEntity != null) {
                         // Entity does exist so populate the href
-                        responseItem.setHref(Linker.info(uriInfo).dataset(request.getDatasetId()));
+                        responseItem.setHref(Linker.info(uriInfo).dataset(eaIdId, request.getDatasetId()));
                     }
                 }
                 multiResponse.addResponse(responseItem);
@@ -188,6 +217,7 @@ public class DatasetResource implements JerseyResource {
     /**
      * Retrieve dataset details
      *
+     * @param eaIdId the owning EA_ID
      * @param datasetId the unique identifier for the target dataset
      * @param preconditions conditional request structure
      * @return a response containing an {@link DatasetEntityResponse} entity
@@ -203,18 +233,20 @@ public class DatasetResource implements JerseyResource {
             @ApiResponse(code = 304, message = "Not Modified - see conditional request documentation"),
             @ApiResponse(
                     code = 404,
-                    message = "Not Found - The `dataset_id` parameter did not match a known resource",
+                    message = "Not Found - The `dataset_id` or `ea_id` parameter did not match a known resource",
                     response = ErrorResponse.class
             )
     })
     public Response getDataset(
+            @PathParam("ea_id") @Pattern(regexp = "\\p{Print}+")
+            @ApiParam("The unique identifier for the owning ea_id") final String eaIdId,
             @PathParam("dataset_id")
             @Pattern(regexp = "[A-Za-z0-9_-]+")
             @ApiParam("The unique identifier for the target dataset") final String datasetId,
             @BeanParam Preconditions preconditions)
             throws Exception {
-        return onDataset(datasetId, datasetEntity -> {
-            Dataset dataset = fromEntity(datasetEntity);
+        return onDataset(eaIdId, datasetId, datasetEntity -> {
+            Dataset dataset = fromEntity(eaIdId, datasetEntity);
             return onPreconditionsPass(dataset, preconditions, () ->
                     new DatasetEntityResponse(Response.Status.OK, dataset).toResponseBuilder()
             );
@@ -224,6 +256,7 @@ public class DatasetResource implements JerseyResource {
     /**
      * Create or update the properties associated with the dataset for the specified dataset_id
      *
+     * @param eaIdId the owning EA_ID
      * @param datasetId the unique identifier for the target dataset
      * @param preconditions conditional request structure
      * @param datasetProperties user-definable properties to associate with the DatasetEntity
@@ -247,6 +280,8 @@ public class DatasetResource implements JerseyResource {
             )
     })
     public Response putDataset(
+            @PathParam("ea_id") @Pattern(regexp = "\\p{Print}+")
+            @ApiParam("The unique identifier for the owning ea_id") final String eaIdId,
             @PathParam("dataset_id")
             @Pattern(regexp = "[A-Za-z0-9_-]+")
             @ApiParam("The unique identifier for the target dataset") final String datasetId,
@@ -254,16 +289,22 @@ public class DatasetResource implements JerseyResource {
             final DatasetProperties datasetProperties
     )
             throws Exception {
-        DatasetEntity datasetEntity = datasetService.getDataset(datasetId);
-        return onPreconditionsPass(fromEntity(datasetEntity), preconditions, () -> {
+
+        if (sitePermitService.getUniqueIdentifierByName(eaIdId) == null) {
+            return ErrorResponse.EA_ID_NOT_FOUND.toResponseBuilder().build();
+        }
+
+        DatasetEntity datasetEntity = datasetService.getDataset(eaIdId, datasetId);
+
+        return onPreconditionsPass(fromEntity(eaIdId, datasetEntity), preconditions, () -> {
             // Preconditions passed, process request
-            return storeDataset(datasetEntity, datasetId, datasetProperties).toResponseBuilder();
+            return storeDataset(eaIdId, datasetEntity, datasetId, datasetProperties).toResponseBuilder();
         }).build();
     }
 
     /**
      * Delete the dataset and any records currently associated with the specified dataset_id
-
+     * @param eaIdId the owning EA_ID
      * @param datasetId the unique identifier for the target dataset
      * @param preconditions conditional request structure
      * @return an empty response body as per HTTP 204
@@ -278,7 +319,7 @@ public class DatasetResource implements JerseyResource {
             @ApiResponse(code = 204, message = "No Content - an existing dataset was successfully deleted."),
             @ApiResponse(
                     code = 404,
-                    message = "Not Found - The `dataset_id` parameter did not match a known resource",
+                    message = "Not Found - The `dataset_id` or `ea_id` parameter did not match a known resource",
                     response = ErrorResponse.class
             ),
             @ApiResponse(
@@ -288,15 +329,18 @@ public class DatasetResource implements JerseyResource {
             )
     })
     public Response deleteDataset(
+            @PathParam("ea_id") @Pattern(regexp = "\\p{Print}+")
+            @ApiParam("The unique identifier for the owning ea_id") final String eaIdId,
             @PathParam("dataset_id")
             @Pattern(regexp = "[A-Za-z0-9_-]+")
             @ApiParam("The unique identifier for the target dataset") final String datasetId,
             @BeanParam Preconditions preconditions)
             throws Exception {
-        return onDataset(datasetId, datasetEntity ->
-                onPreconditionsPass(fromEntity(datasetEntity), preconditions, () -> {
+
+        return onDataset(eaIdId, datasetId, datasetEntity ->
+                onPreconditionsPass(fromEntity(eaIdId, datasetEntity), preconditions, () -> {
                     // Preconditions passed, delete the resource
-                    datasetService.removeDataset(datasetId);
+                    datasetService.removeDataset(eaIdId, datasetId);
                     return Response.status(Response.Status.NO_CONTENT);
                 })
         ).build();
@@ -306,6 +350,7 @@ public class DatasetResource implements JerseyResource {
      * Retrieve the dataset status information for the specified dataset_id
      *
      * @param datasetId the unique identifier for the target dataset
+     * @param eaIdId the owning EA_ID
      * @return a response containing an {@link DatasetStatusResponse} entity
      * @throws Exception if the request cannot be completed normally.
      */
@@ -320,18 +365,20 @@ public class DatasetResource implements JerseyResource {
             @ApiResponse(code = 304, message = "Not Modified - see conditional request documentation"),
             @ApiResponse(
                     code = 404,
-                    message = "Not Found - The `dataset_id` parameter did not match a known resource",
+                    message = "Not Found - The `dataset_id` or `ea_id` parameter did not match a known resource",
                     response = ErrorResponse.class
             )
     })
     public Response getDatasetStatus(
+            @PathParam("ea_id") @Pattern(regexp = "\\p{Print}+")
+            @ApiParam("The unique identifier for the owning ea_id") final String eaIdId,
             @PathParam("dataset_id")
             @Pattern(regexp = "[A-Za-z0-9_-]+")
             @ApiParam("The unique identifier for the target dataset") final String datasetId,
             @BeanParam Preconditions preconditions)
             throws Exception {
 
-        return onDataset(datasetId, datasetEntity -> {
+        return onDataset(eaIdId, datasetId, datasetEntity -> {
             Instant dsChangeDate = datasetEntity.getLastChangedDate();
             Instant recordChangeDate = datasetEntity.getRecordChangedDate();
             Instant latest = dsChangeDate.isAfter(recordChangeDate) ? dsChangeDate : recordChangeDate;
@@ -345,12 +392,11 @@ public class DatasetResource implements JerseyResource {
             }
             return rb.tag(currentEtag).lastModified(latestDate);
         }).build();
-
     }
 
     /**
      * Attempt to set dataset status information
-     *
+     * @param eaIdId the owning EA_ID
      * @param datasetId the unique identifier for the target dataset
      * @param requestedStatus a {@link DatasetSubmissionStatus} object containing the desired target status
      * @return a response containing an {@link DatasetStatusResponse} entity
@@ -371,7 +417,7 @@ public class DatasetResource implements JerseyResource {
             ),
             @ApiResponse(
                     code = 404,
-                    message = "Not Found - The `dataset_id` parameter did not match a known resource",
+                    message = "Not Found - The `dataset_id` or `ea_id` parameter did not match a known resource",
                     response = ErrorResponse.class
             ),
             @ApiResponse(
@@ -382,12 +428,14 @@ public class DatasetResource implements JerseyResource {
             )
     })
     public Response setDatasetStatus(
+            @PathParam("ea_id") @Pattern(regexp = "\\p{Print}+")
+            @ApiParam("The unique identifier for the owning ea_id") final String eaIdId,
             @PathParam("dataset_id")
             @Pattern(regexp = "[A-Za-z0-9_-]+")
             @ApiParam("The unique identifier for the target dataset") final String datasetId,
             @ApiParam("The requested status.") final DatasetSubmissionStatus requestedStatus)
             throws Exception {
-        return onDataset(datasetId, datasetEntity -> {
+        return onDataset(eaIdId, datasetId, datasetEntity -> {
             // Check state transition
             DatasetSubmissionStatus submissionStatus = getSubmissionStatus(datasetEntity);
             if (!submissionStatus.getStatus().canTransition(requestedStatus.getStatus())) {
@@ -415,7 +463,7 @@ public class DatasetResource implements JerseyResource {
      * @param datasetProperties
      * @return DatasetEntityResponse
      */
-    private DatasetEntityResponse storeDataset(final DatasetEntity datasetEntity, String datasetId,
+    private DatasetEntityResponse storeDataset(final String eaIdId, final DatasetEntity datasetEntity, String datasetId,
             final DatasetProperties datasetProperties) {
         Dataset dataset;
         DatasetEntity newDatasetEntity;
@@ -430,10 +478,10 @@ public class DatasetResource implements JerseyResource {
             dataset.setId(datasetId);
             dataset.setProperties(datasetProperties);
             newDatasetEntity = DatasetAdaptor.getInstance().convert(dataset);
-            datasetService.createDataset(newDatasetEntity);
+            datasetService.createDataset(eaIdId, newDatasetEntity);
             status = Response.Status.CREATED;
         }
-        dataset = fromEntity(newDatasetEntity);
+        dataset = fromEntity(eaIdId, newDatasetEntity);
         return new DatasetEntityResponse(status, dataset);
     }
 
@@ -491,7 +539,8 @@ public class DatasetResource implements JerseyResource {
                 String payloadType = pair.getRight();
                 List<String> errors = groupedValidationErrors.get(pair);
 
-                EntityReference recordRef = new EntityReference(recordId, linker.record(datasetEntity.getIdentifier(), recordId));
+                EntityReference recordRef = new EntityReference(recordId, linker.record(
+                        datasetEntity.getParentCollection().getUniqueIdentifier().getName(), datasetEntity.getIdentifier(), recordId));
 
                 for (String recordValidationError : errors) {
                     EntityReference validationRef = new EntityReference(recordValidationError,
@@ -504,17 +553,21 @@ public class DatasetResource implements JerseyResource {
         return validity;
     }
 
-    private Dataset fromEntity(DatasetEntity entity) {
+    private Dataset fromEntity(String eaIdId, DatasetEntity entity) {
         Dataset dataset = null;
         if (entity != null) {
             dataset = DatasetAdaptor.getInstance().convert(entity);
-            Linker.info(uriInfo).resolve(dataset);
+            Linker.info(uriInfo).resolve(eaIdId, dataset);
         }
         return dataset;
     }
 
-    private Response.ResponseBuilder onDataset(String datasetId, Function<DatasetEntity, Response.ResponseBuilder> handler) {
-        DatasetEntity datasetEntity = datasetService.getDataset(datasetId);
+    private Response.ResponseBuilder onDataset(String eaIdId, String datasetId, Function<DatasetEntity, Response.ResponseBuilder> handler) {
+        if (sitePermitService.getUniqueIdentifierByName(eaIdId) == null) {
+            return ErrorResponse.EA_ID_NOT_FOUND.toResponseBuilder();
+        }
+
+        DatasetEntity datasetEntity = datasetService.getDataset(eaIdId, datasetId);
         return (datasetEntity == null) ? ErrorResponse.DATASET_NOT_FOUND.toResponseBuilder() : handler.apply(datasetEntity);
     }
 }

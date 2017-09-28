@@ -3,17 +3,15 @@ package uk.gov.ea.datareturns.domain.jpa.service;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.PlatformTransactionManager;
-import org.springframework.transaction.TransactionDefinition;
-import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.transaction.support.DefaultTransactionDefinition;
 import uk.gov.ea.datareturns.domain.jpa.entities.masterdata.impl.Site;
 import uk.gov.ea.datareturns.domain.jpa.entities.masterdata.impl.UniqueIdentifier;
 import uk.gov.ea.datareturns.domain.jpa.entities.masterdata.impl.UniqueIdentifierAlias;
+import uk.gov.ea.datareturns.domain.jpa.entities.userdata.impl.DatasetCollection;
 import uk.gov.ea.datareturns.domain.jpa.repositories.masterdata.SiteRepository;
 import uk.gov.ea.datareturns.domain.jpa.repositories.masterdata.UniqueIdentifierRepository;
+import uk.gov.ea.datareturns.domain.jpa.repositories.userdata.DatasetCollectionRepository;
+import uk.gov.ea.datareturns.domain.jpa.repositories.userdata.DatasetRepository;
 
 import javax.inject.Inject;
 import java.util.Arrays;
@@ -35,16 +33,29 @@ public class SitePermitService {
 
     private final UniqueIdentifierRepository uniqueIdentifierRepository;
     private final SiteRepository siteRepository;
-    private final PlatformTransactionManager transactionManager;
+    private final DatasetCollectionRepository datasetCollectionRepository;
+    private final DatasetRepository datasetRepository;
+
+    public class SitePermitServiceException extends Exception {
+        public SitePermitServiceException(String message) {
+            super(message);
+        }
+    }
 
     @Inject
     public SitePermitService(SiteRepository siteRepository,
             UniqueIdentifierRepository uniqueIdentifierRepository,
-            PlatformTransactionManager transactionManager) {
-
+            DatasetCollectionRepository datasetCollectionRepository,
+            DatasetRepository datasetRepository) {
         this.uniqueIdentifierRepository = uniqueIdentifierRepository;
         this.siteRepository = siteRepository;
-        this.transactionManager = transactionManager;
+        this.datasetCollectionRepository = datasetCollectionRepository;
+        this.datasetRepository = datasetRepository;
+    }
+
+    // Gets the extended graph from the cache
+    public UniqueIdentifier getUniqueIdentifierByName(String eaIdId) {
+        return uniqueIdentifierRepository.getByName(eaIdId);
     }
 
     /**
@@ -55,40 +66,29 @@ public class SitePermitService {
      * @param siteName
      * @param aliasNames
      */
-    @Transactional(propagation = Propagation.NESTED)
-    public void addNewPermitAndSite(String eaId, String siteName, String[] aliasNames) {
-
-        // Acquire a distributed lock on all remote servers for this transaction
-
-        //        DefaultTransactionDefinition def = new DefaultTransactionDefinition();
-        //        def.setName("addNewPermitAndSite");
-        //        def.setPropagationBehavior(TransactionDefinition.PROPAGATION_NESTED);
-        //
-        //        TransactionStatus status = transactionManager.getTransaction(def);
-
+    @Transactional
+    public void addNewPermitAndSite(String eaId, String siteName,
+            String[] aliasNames) {
         Site site = new Site();
         site.setName(siteName);
-        siteRepository.save(site);
 
         UniqueIdentifier uniqueIdentifier = new UniqueIdentifier();
         uniqueIdentifier.setName(eaId);
         uniqueIdentifier.setSite(site);
 
-        Set<UniqueIdentifierAlias> aliases = Arrays.stream(aliasNames)
-                .map(aliasName -> {
-                    UniqueIdentifierAlias alias = new UniqueIdentifierAlias();
-                    alias.setName(aliasName);
-                    alias.setPreferred(uniqueIdentifier);
-                    return alias;
-                })
-                .collect(Collectors.toSet());
-        uniqueIdentifier.setAliases(aliases);
-
-        uniqueIdentifierRepository.saveAndFlush(uniqueIdentifier);
-
-        // This can cause an exception on write to the database so that transaction is rolled back the
-        // proceeding cache clear functions are not called.
-        //        transactionManager.commit(status);
+        if (aliasNames != null) {
+            Set<UniqueIdentifierAlias> aliases = Arrays.stream(aliasNames)
+                    .map(aliasName -> {
+                        UniqueIdentifierAlias alias = new UniqueIdentifierAlias();
+                        alias.setName(aliasName);
+                        alias.setPreferred(uniqueIdentifier);
+                        return alias;
+                    })
+                    .collect(Collectors.toSet());
+            uniqueIdentifier.setAliases(aliases);
+        }
+        siteRepository.save(site);
+        uniqueIdentifierRepository.save(uniqueIdentifier);
     }
 
     /**
@@ -96,56 +96,32 @@ public class SitePermitService {
      * @param eaId
      * @param siteName
      */
-    public void addNewPermitAndSite(String eaId, String siteName) {
 
-        // Acquire a distributed lock on all remote servers for this transaction
-
-        DefaultTransactionDefinition def = new DefaultTransactionDefinition();
-        def.setName("addNewPermitAndSite");
-        def.setPropagationBehavior(TransactionDefinition.PROPAGATION_NESTED);
-
-        TransactionStatus status = transactionManager.getTransaction(def);
-
-        Site site = new Site();
-        site.setName(siteName);
-
-        UniqueIdentifier uniqueIdentifier = new UniqueIdentifier();
-        uniqueIdentifier.setName(eaId);
-        uniqueIdentifier.setSite(site);
-
-        siteRepository.save(site);
-        uniqueIdentifierRepository.save(uniqueIdentifier);
-
-        // Commit the database transaction
-        transactionManager.commit(status);
-
+    @Transactional
+    public void addNewPermitAndSite(String eaId, String siteName) throws SitePermitServiceException {
+        addNewPermitAndSite(eaId, siteName, null);
     }
 
     /**
      * Remove the aliases, site and ea_id associated with an ea_id
      * @param eaId
      */
-    @Transactional(propagation = Propagation.NESTED)
+    @Transactional
     public void removePermitSiteAndAliases(String eaId) {
         UniqueIdentifier uniqueIdentifier = uniqueIdentifierRepository.getByName(eaId);
-
         if (uniqueIdentifier != null) {
+            // Remove any data associatted with the unique identifier
+            DatasetCollection collection = datasetCollectionRepository.getByUniqueIdentifier(uniqueIdentifier);
+            if (collection != null) {
+//                datasetRepository.delete(collection.getDatasets());
 
-            // Acquire a distributed lock on all remote servers for this transaction
-            //
-            //            DefaultTransactionDefinition def = new DefaultTransactionDefinition();
-            //            def.setName("removePermitSiteAndAliases");
-            //            def.setPropagationBehavior(TransactionDefinition.PROPAGATION_NESTED);
-            //
-            //            TransactionStatus status = transactionManager.getTransaction(def);
+                datasetCollectionRepository.delete(collection);
+            }
 
-            Site site = uniqueIdentifier.getSite();
+//            Site site = uniqueIdentifier.getSite();
+//            siteRepository.delete(site.getId());
+
             uniqueIdentifierRepository.delete(uniqueIdentifier.getId());
-            siteRepository.delete(site.getId());
-            //
-            //            // Commit the database transaction
-            //            transactionManager.commit(status);
-
         } else {
             LOGGER.warn("Requested removal of non-existent permit: " + eaId);
         }

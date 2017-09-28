@@ -55,6 +55,8 @@ public class APIResourceIntegrationTests extends AbstractDataResourceTests {
         boolean passes(ResourceIntegrationTestResult t);
     }
 
+    private final static String TEST_EA_ID = "10207";
+    private final static String TEST_SITE_ID = "Pyramids At Paulsgrove Landfill Site";
     public static final String HTTP_1_1_201_CREATED = "HTTP/1.1 201 Created";
 
     // An ordered map of all the single record resource tests to be run in turn
@@ -71,8 +73,8 @@ public class APIResourceIntegrationTests extends AbstractDataResourceTests {
 
     private static final Supplier<DataSamplePayload> REQUIRED_FIELDS = () -> {
         DataSamplePayload dataSamplePayload = new DataSamplePayload();
-        dataSamplePayload.setEaId("42355");
-        dataSamplePayload.setSiteName("Biffa - Marchington Landfill Site");
+        dataSamplePayload.setEaId(TEST_EA_ID);
+        dataSamplePayload.setSiteName(TEST_SITE_ID);
         dataSamplePayload.setReturnType("Air point source emissions");
         dataSamplePayload.setMonitoringPoint("Borehole 1");
         dataSamplePayload.setMonitoringDate("2015-02-15");
@@ -107,7 +109,7 @@ public class APIResourceIntegrationTests extends AbstractDataResourceTests {
 
     private static final Supplier<DataSamplePayload> PERMIT_SITE_MISMATCH = () -> {
         DataSamplePayload dataSamplePayload = new DataSamplePayload(REQUIRED_FIELDS.get());
-        dataSamplePayload.setSiteName("Biffa - Saredon Hill Quarry");
+        dataSamplePayload.setSiteName("Colthrop Board Mill Landfill");
         return dataSamplePayload;
     };
 
@@ -734,6 +736,12 @@ public class APIResourceIntegrationTests extends AbstractDataResourceTests {
         result.addAll(multipleRecordTestsNames);
 
         return result;
+
+        /* Run single test like ...
+        String[] s = new String[] {"Permit site mismatch"};
+        return Collections.singletonList(s);
+        */
+
     }
 
     public APIResourceIntegrationTests(String name) {
@@ -780,7 +788,7 @@ public class APIResourceIntegrationTests extends AbstractDataResourceTests {
 
             // Get the dataset status
             ResponseEntity<DatasetStatusResponse> datasetResponseEntity = datasetRequest(HttpStatus.OK)
-                    .getStatus(dataset.getId());
+                    .getStatus(TEST_EA_ID, dataset.getId());
 
             DatasetStatus datasetStatus = datasetResponseEntity.getBody().getData();
             this.isValid = datasetStatus.getValidity().isValid();
@@ -835,7 +843,7 @@ public class APIResourceIntegrationTests extends AbstractDataResourceTests {
     private final ResponseEntity<RecordEntityResponse> submitPayload(Dataset dataset, DataSamplePayload payload) {
         String recordId = UUID.randomUUID().toString();
         ResponseEntity<RecordEntityResponse> createResponse = recordRequest(HttpStatus.CREATED)
-                .putRecord(dataset.getId(), recordId, payload);
+                .putRecord(TEST_EA_ID, dataset.getId(), recordId, payload);
 
         return createResponse;
     }
@@ -854,13 +862,13 @@ public class APIResourceIntegrationTests extends AbstractDataResourceTests {
         request.setRequests(batchRecordRequestItems);
 
         ResponseEntity<MultiStatusResponse> createResponse = recordRequest(HttpStatus.MULTI_STATUS)
-                .postRecords(dataset.getId(), request);
+                .postRecords(TEST_EA_ID, dataset.getId(), request);
 
         return createResponse;
     }
 
     private final Dataset getDefaultDataset() {
-        ResponseEntity<DatasetEntityResponse> response = createTestDataset();
+        ResponseEntity<DatasetEntityResponse> response = createTestDataset(TEST_EA_ID);
         DatasetEntityResponse body = response.getBody();
         return body.getData();
     }

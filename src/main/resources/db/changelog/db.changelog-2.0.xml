@@ -9,9 +9,9 @@
 
 	<changeSet id="user data" author="Environment Agency">
 		<!--
-		  ****************************************************************
-		  User
-		  ****************************************************************
+    	****************************************************************
+    	Users - currently this is not used within the system
+    	****************************************************************
 		  -->
 		<createTable tableName="md_users">
 			<column name="id" type="bigserial">
@@ -33,7 +33,6 @@
 			<column name="dataset_changed_date" type="timestamp without timezone">
 				<constraints nullable="true"/>
 			</column>
-
 		</createTable>
 
 		<createIndex indexName="idx_md_users_identifier" tableName="md_users" unique="true">
@@ -43,6 +42,44 @@
 		<sql>insert into md_users (identifier, create_date, last_changed_date, dataset_changed_date) values ('SYSTEM', current_timestamp,
 			current_timestamp, current_timestamp)
 		</sql>
+
+
+		<!--
+
+			<column name="create_date" type="timestamp without timezone">
+				<constraints nullable="false"/>
+			</column>
+
+			<column name="last_changed_date" type="timestamp without timezone">
+				<constraints nullable="false"/>
+			</column>
+
+			<column name="dataset_changed_date" type="timestamp without timezone">
+				<constraints nullable="true"/>
+			</column>
+
+		-->
+		<createTable tableName="ud_dataset_collections">
+			<column name="id" type="bigserial">
+				<constraints primaryKey="true" nullable="false"/>
+			</column>
+
+			<column name="unique_identifier_id" type="bigint">
+				<constraints nullable="false" foreignKeyName="fk_unique_identifier" references="md_unique_identifiers(id)"/>
+			</column>
+
+			<column name="create_date" type="timestamp without timezone">
+				<constraints nullable="false"/>
+			</column>
+
+			<column name="last_changed_date" type="timestamp without timezone">
+				<constraints nullable="false"/>
+			</column>
+		</createTable>
+
+		<createIndex indexName="idx_ud_dataset_collections" tableName="ud_dataset_collections" unique="true">
+			<column name="unique_identifier_id"/>
+		</createIndex>
 
 		<!--
 		****************************************************************
@@ -54,8 +91,8 @@
 				<constraints primaryKey="true" nullable="false"/>
 			</column>
 
-			<column name="user_id" type="bigint">
-				<constraints nullable="false"/>
+			<column name="dataset_collection_id" type="bigint">
+				<constraints nullable="false" foreignKeyName="fk_dataset_collection" references="ud_dataset_collections(id)"/>
 			</column>
 
 			<column name="identifier" type="varchar(80)">
@@ -85,15 +122,9 @@
 		</createTable>
 
 		<createIndex indexName="idx_ud_datasets" tableName="ud_datasets" unique="true">
-			<column name="user_id"/>
+			<column name="dataset_collection_id"/>
 			<column name="identifier"/>
 		</createIndex>
-
-		<addForeignKeyConstraint baseColumnNames="user_id"
-								 baseTableName="ud_datasets"
-								 constraintName="fk_ud_datasets_user"
-								 referencedColumnNames="id"
-								 referencedTableName="md_users"/>
 
 
 		<!--
@@ -315,10 +346,11 @@
 		-->
 		<createTable tableName="ud_data_sample">
 
-			<column name="dataset_id" type="bigint">
-				<constraints nullable="false"/>
-			</column>
 			<column name="record_id" type="bigserial">
+				<constraints primaryKey="true" nullable="false"/>
+			</column>
+
+			<column name="dataset_id" type="bigint">
 				<constraints nullable="false"/>
 			</column>
 
@@ -395,7 +427,8 @@
 								 baseTableName="ud_data_sample"
 								 constraintName="fk_ud_data_sample_record"
 								 referencedColumnNames="id"
-								 referencedTableName="ud_records"/>
+								 referencedTableName="ud_records"
+								 onDelete="CASCADE"/>
 
 		<addForeignKeyConstraint baseColumnNames="ea_id"
 								 baseTableName="ud_data_sample"
@@ -451,10 +484,11 @@
 		****************************************************************
 		-->
 		<createTable tableName="ud_alternatives">
-			<column name="dataset_id" type="bigint">
-				<constraints nullable="false"/>
-			</column>
 			<column name="record_id" type="bigserial">
+				<constraints primaryKey="true" nullable="false"/>
+			</column>
+
+			<column name="dataset_id" type="bigint">
 				<constraints nullable="false"/>
 			</column>
 
@@ -468,6 +502,7 @@
 								 referencedTableName="ud_datasets"/>
 		<addForeignKeyConstraint baseColumnNames="record_id"
 								 baseTableName="ud_alternatives"
+								 onDelete="CASCADE"
 								 constraintName="fk_ud_alternatives_record"
 								 referencedColumnNames="id"
 								 referencedTableName="ud_records"/>

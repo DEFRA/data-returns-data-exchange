@@ -9,6 +9,8 @@ import javax.ws.rs.core.Response;
  */
 public class ErrorResponse extends ResponseWrapper<Object> {
 
+    public static final ErrorResponse EA_ID_NOT_FOUND = new ErrorResponse(
+            Response.Status.NOT_FOUND, "No permit or authorization was found for the given ea_id.");
     public static final ErrorResponse DATASET_NOT_FOUND = new ErrorResponse(
             Response.Status.NOT_FOUND, "No dataset was found for the given dataset_id.");
     public static final ErrorResponse RECORD_NOT_FOUND = new ErrorResponse(

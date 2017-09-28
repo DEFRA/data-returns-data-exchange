@@ -6,10 +6,12 @@ package uk.gov.ea.datareturns.web.resource.v1.model.common;
 
 import uk.gov.ea.datareturns.web.resource.v1.DatasetResource;
 import uk.gov.ea.datareturns.web.resource.v1.DefinitionsResource;
+import uk.gov.ea.datareturns.web.resource.v1.EaIdResource;
 import uk.gov.ea.datareturns.web.resource.v1.RecordResource;
 import uk.gov.ea.datareturns.web.resource.v1.model.common.references.Link;
 import uk.gov.ea.datareturns.web.resource.v1.model.common.references.PayloadReference;
 import uk.gov.ea.datareturns.web.resource.v1.model.dataset.Dataset;
+import uk.gov.ea.datareturns.web.resource.v1.model.eaid.EaId;
 import uk.gov.ea.datareturns.web.resource.v1.model.record.Record;
 
 import javax.ws.rs.core.UriBuilder;
@@ -25,27 +27,54 @@ public class Linker {
         this.uriInfo = uriInfo;
     }
 
-    public String dataset(String datasetId) {
+    public String eaId(String eaId) {
+        UriBuilder ub = uriInfo.getBaseUriBuilder();
+        ub.path(EaIdResource.class);
+        ub.path(EaIdResource.class, "getEaId");
+        ub.resolveTemplate("ea_id", eaId);
+        return ub.build().toASCIIString();
+    }
+
+    public String dataset(String eaId, String datasetId) {
         UriBuilder ub = uriInfo.getBaseUriBuilder();
         ub.path(DatasetResource.class);
         ub.path(DatasetResource.class, "getDataset");
+        ub.resolveTemplate("ea_id", eaId);
         ub.resolveTemplate("dataset_id", datasetId);
         return ub.build().toASCIIString();
     }
 
-    public String recordsList(String datasetId) {
+    private String datasetList(String eaIdId) {
         UriBuilder ub = uriInfo.getBaseUriBuilder();
-        ub.path(RecordResource.class);
+        ub.path(DatasetResource.class);
+        ub.resolveTemplate("ea_id", eaIdId);
+        return ub.build().toASCIIString();
+    }
+
+    public String status(String eaIdId, String datasetId) {
+        UriBuilder ub = uriInfo.getBaseUriBuilder();
+        ub.path(DatasetResource.class);
+        ub.path(DatasetResource.class, "getDatasetStatus");
+        ub.resolveTemplate("ea_id", eaIdId);
         ub.resolveTemplate("dataset_id", datasetId);
         return ub.build().toASCIIString();
     }
 
-    public String record(String datasetId, String recordId) {
+    public String record(String eaIdId, String datasetId, String recordId) {
         UriBuilder ub = uriInfo.getBaseUriBuilder();
         ub.path(RecordResource.class);
         ub.path(RecordResource.class, "getRecord");
+        ub.resolveTemplate("ea_id", eaIdId);
         ub.resolveTemplate("dataset_id", datasetId);
         ub.resolveTemplate("record_id", recordId);
+        return ub.build().toASCIIString();
+    }
+
+    public String recordsList(String eaIdId, String datasetId) {
+        UriBuilder ub = uriInfo.getBaseUriBuilder();
+        ub.path(RecordResource.class);
+        ub.resolveTemplate("ea_id", eaIdId);
+        ub.resolveTemplate("dataset_id", datasetId);
         return ub.build().toASCIIString();
     }
 
@@ -83,17 +112,25 @@ public class Linker {
         return ub.build().toASCIIString();
     }
 
-    public void resolve(Dataset dataset) {
+    public void resolve(EaId eaId) {
         List<Link> links = new ArrayList<>();
-        links.add(new Link("self", dataset(dataset.getId())));
-        links.add(new Link("records", recordsList(dataset.getId())));
+        links.add(new Link("self", eaId(eaId.getId())));
+        links.add(new Link("datasets", datasetList(eaId.getId())));
+        eaId.setLinks(links);
+    }
+
+    public void resolve(String eaIdId, Dataset dataset) {
+        List<Link> links = new ArrayList<>();
+        links.add(new Link("self", dataset(eaIdId, dataset.getId())));
+        links.add(new Link("records", recordsList(eaIdId, dataset.getId())));
+        links.add(new Link("status", status(eaIdId, dataset.getId())));
         dataset.setLinks(links);
     }
 
-    public void resolve(String datasetId, Record record) {
+    public void resolve(String eaIdId, String datasetId, Record record) {
         List<Link> links = new ArrayList<>();
-        links.add(new Link("self", record(datasetId, record.getId())));
-        links.add(new Link("dataset", dataset(datasetId)));
+        links.add(new Link("self", record(eaIdId, datasetId, record.getId())));
+        links.add(new Link("dataset", dataset(eaIdId, datasetId)));
         record.setLinks(links);
     }
 
