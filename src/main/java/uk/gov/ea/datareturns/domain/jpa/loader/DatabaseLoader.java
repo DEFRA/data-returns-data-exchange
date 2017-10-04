@@ -7,9 +7,12 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import uk.gov.ea.datareturns.domain.jpa.entities.masterdata.impl.*;
+import uk.gov.ea.datareturns.domain.jpa.entities.userdata.impl.DatasetCollection;
 import uk.gov.ea.datareturns.domain.jpa.repositories.masterdata.*;
+import uk.gov.ea.datareturns.domain.jpa.repositories.userdata.DatasetCollectionRepository;
 
 import javax.inject.Inject;
+import java.time.Instant;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -34,6 +37,7 @@ public interface DatabaseLoader {
         final SiteRepository siteRepository;
         final UniqueIdentifierRepository uniqueIdentifierRepository;
         final UniqueIdentifierAliasRepository uniqueIdentifierAliasRepository;
+        final DatasetCollectionRepository datasetCollectionRepository;
 
         @Inject public SiteAndPermitLoader(SiteRepository siteRepository,
                 UniqueIdentifierRepository uniqueIdentifierRepository,
@@ -102,6 +106,21 @@ public interface DatabaseLoader {
             if (!duplicates.isEmpty()) {
                 LOGGER.error("*** Duplicates were found in both the primary and alias permit lists: " + duplicates.toString() + " ***");
             }
+
+            // Finally, create collection objects for datasets against each permit
+            primaryIdentifiers.values().forEach((uniqueIdentifier -> {
+                DatasetCollection collection = datasetCollectionRepository.getByUniqueIdentifier(uniqueIdentifier);
+                if (collection == null) {
+                    Instant timestamp = Instant.now();
+                    collection = new DatasetCollection();
+                    collection.setUniqueIdentifier(uniqueIdentifier);
+                    collection.setDatasets(new ArrayList<>());
+                    collection.setCreateDate(timestamp);
+                    collection.setLastChangedDate(timestamp);
+                    datasetCollectionRepository.saveAndFlush(collection);
+                }
+            }));
+
         }
     }
 

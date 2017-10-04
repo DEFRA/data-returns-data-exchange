@@ -115,15 +115,4 @@ public class DatasetService {
         DatasetCollection collection = datasetCollectionRepository.getByUniqueIdentifier(uniqueIdentifier);
         return datasetRepository.getByParentCollectionAndIdentifier(collection, datasetIdentifier);
     }
-
-    private DatasetCollection createCollection(UniqueIdentifier uniqueIdentifier) {
-        Instant timestamp = Instant.now();
-        DatasetCollection collection = new DatasetCollection();
-        collection.setUniqueIdentifier(uniqueIdentifier);
-        collection.setDatasets(new ArrayList<>());
-        collection.setCreateDate(timestamp);
-        collection.setLastChangedDate(timestamp);
-        datasetCollectionRepository.saveAndFlush(collection);
-        return collection;
-    }
 }
