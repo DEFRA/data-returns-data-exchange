@@ -39,12 +39,15 @@ public interface DatabaseLoader {
         final UniqueIdentifierAliasRepository uniqueIdentifierAliasRepository;
         final DatasetCollectionRepository datasetCollectionRepository;
 
-        @Inject public SiteAndPermitLoader(SiteRepository siteRepository,
-                UniqueIdentifierRepository uniqueIdentifierRepository,
-                UniqueIdentifierAliasRepository uniqueIdentifierAliasRepository) {
+        @Inject public SiteAndPermitLoader(
+                final SiteRepository siteRepository,
+                final UniqueIdentifierRepository uniqueIdentifierRepository,
+                final UniqueIdentifierAliasRepository uniqueIdentifierAliasRepository,
+                final DatasetCollectionRepository datasetCollectionRepository) {
             this.siteRepository = siteRepository;
             this.uniqueIdentifierRepository = uniqueIdentifierRepository;
             this.uniqueIdentifierAliasRepository = uniqueIdentifierAliasRepository;
+            this.datasetCollectionRepository = datasetCollectionRepository;
         }
 
         @Transactional

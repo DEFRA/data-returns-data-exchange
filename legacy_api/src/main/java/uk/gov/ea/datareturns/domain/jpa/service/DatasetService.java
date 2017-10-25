@@ -14,8 +14,6 @@ import uk.gov.ea.datareturns.domain.jpa.repositories.userdata.DatasetRepository;
 
 import javax.inject.Inject;
 import java.time.Instant;
-import java.util.ArrayList;
-import java.util.Optional;
 import java.util.UUID;
 
 /**
@@ -58,9 +56,7 @@ public class DatasetService {
         if (uniqueIdentifier == null) {
             return;
         }
-        DatasetCollection collection = Optional.ofNullable(datasetCollectionRepository.getByUniqueIdentifier(uniqueIdentifier))
-                .orElseGet(() -> createCollection(uniqueIdentifier));
-
+        DatasetCollection collection = datasetCollectionRepository.getByUniqueIdentifier(uniqueIdentifier);
         newDatasetEntity.setCreateDate(timestamp);
         newDatasetEntity.setLastChangedDate(timestamp);
         newDatasetEntity.setRecordChangedDate(timestamp);
@@ -87,8 +83,7 @@ public class DatasetService {
 
     @Transactional
     public DatasetCollection getDatasets(UniqueIdentifier uniqueIdentifier) {
-        return Optional.ofNullable(datasetCollectionRepository.getByUniqueIdentifier(uniqueIdentifier))
-                .orElseGet(() -> this.createCollection(uniqueIdentifier));
+        return datasetCollectionRepository.getByUniqueIdentifier(uniqueIdentifier);
     }
 
     @Transactional
