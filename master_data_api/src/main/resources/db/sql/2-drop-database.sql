@@ -1,0 +1,5 @@
+/*
+ * DROP ALL DATA OWNED BY THE DATABASE USER
+ */
+DROP OWNED BY ${db.md_api.username} CASCADE;
+DROP DATABASE IF EXISTS ${db.md_api.name};

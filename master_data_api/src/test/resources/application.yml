@@ -1,0 +1,169 @@
+###############################################################################
+#
+# Data Returns Master Data API Configuration Settings (TESTING)
+#
+# This file is split into different sections, the first provides defaults
+# for all environments.  Subsequent sections provide profile-specific
+# configurations which may be enabled to override the default values.
+#
+###############################################################################
+spring:
+  application:
+    name: Data Returns Master Data API
+  datasource:
+    url: jdbc:h2:mem:test
+
+  data:
+    jpa:
+      repositories:
+        enabled: true
+    rest:
+      detection-strategy: annotated
+      base-path: /api
+      return-body-on-create: true
+      return-body-on-update: true
+      default-page-size: 100
+      max-page-size: 1000
+
+  # Spring cache configuration settings.  Use type: simple for local concurrent map cache or type: redis to use a redis backed cache
+  cache:
+    type: simple
+
+  aop:
+    auto: true
+    proxy-target-class: true
+
+  jackson:
+    serialization:
+      FAIL_ON_EMPTY_BEANS: false
+    deserialization:
+      FAIL_ON_UNKNOWN_PROPERTIES: false
+
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.H2Dialect
+        jdbc.fetch_size: 30
+        jdbc.batch_size: 30
+        order_inserts: true
+        order_updates: true
+        search:
+          default:
+            directory_provider: filesystem
+            indexBase: /tmp/dr_api_md_index
+
+# Configuration for the web server
+server:
+  display-name: ${spring.application.name}
+  address: 0.0.0.0
+  port: 9020
+  compression:
+    enabled: true
+
+# Configuration for the management server and its endpoints
+management:
+  port: 9021
+  security:
+    enabled: false
+endpoints:
+  shutdown:
+    enabled: true
+    sensitive: false
+  info:
+    enabled: true
+
+# Liquibase database migration configuration values
+liquibase:
+  changeLog: classpath:/db/changelog/db.changelog-master.xml
+  dropFirst: false
+  enabled: true
+
+# Default logging levels (provide minimal level of logging here)
+logging:
+  level:
+    root: WARN
+    jndi: WARN
+    uk.gov.defra.datareturns: INFO
+    org.eclipse.jetty: WARN
+    org.apache.http: WARN
+    org.springframework: WARN
+    org.springframework.boot: WARN
+    org.springframework.boot.context.embedded.jetty.JettyEmbeddedServletContainer: INFO
+    org.springframework.boot.autoconfigure.security: info
+    org.springframework.security: info
+    org.springframework.beans: info
+    org.springframework.aop: info
+    org.springframework.cache: debug
+    javax.xml.bind: WARN
+
+    # Database
+    org.hibernate: WARN
+    org.hibernate.engine.jdbc.spi.SqlExceptionHelper: OFF
+
+    liquibase: INFO
+
+    # Amazon S3 API
+    com.amazonaws: WARN
+    org.apache.http.wire: WARN
+    # Metrics logging
+    metrics: INFO
+
+
+---
+###############################################################################
+#
+# Profile: IntegrationTests
+#
+###############################################################################
+spring:
+  profiles: IntegrationTests
+
+# Configuration for the web server
+server:
+  display-name: ${spring.application.name}
+  address: 127.0.0.1
+  port: 9120
+  compression:
+    enabled: true
+
+# Security configuration
+security:
+  method-level-enabled: false
+
+# Configuration for the management server and its endpoints
+management:
+  port: -1
+
+logging:
+  level:
+    root: INFO
+    jndi: INFO
+    uk.gov.defra.datareturns: DEBUG
+    org.eclipse.jetty: INFO
+    org.eclipse.jetty.server.Server: INFO
+    org.eclipse.jetty.server.session: INFO
+    org.eclipse.jetty.servlet.ServletHandler: INFO
+    org.apache.http: INFO
+    org.jvnet.mimepull: INFO
+
+    org.springframework: INFO
+    org.springframework.beans.factory: INFO
+    org.springframework.boot: INFO
+    org.springframework.jndi: INFO
+    org.springframework.core: INFO
+    org.springframework.context.annotation: INFO
+    org.springframework.boot.context.embedded.jetty.JettyEmbeddedServletContainer: INFO
+    org.springframework.boot.web.servlet: warn
+
+    # Set to DEBUG to enable the auto-configuration report at startup
+    org.springframework.boot.autoconfigure.logging: INFO
+
+    # Database
+    org.hibernate: INFO
+    liquibase: INFO
+
+    # Amazon S3 API
+    com.amazonaws: INFO
+    org.apache.http.wire: INFO

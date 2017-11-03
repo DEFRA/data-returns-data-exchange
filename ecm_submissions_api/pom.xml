@@ -1,0 +1,154 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>uk.gov.defra.datareturns</groupId>
+        <artifactId>data-returns-platform</artifactId>
+        <version>1.0.0</version>
+        <relativePath>../</relativePath>
+    </parent>
+
+
+    <artifactId>ecm_submissions_api</artifactId>
+    <version>1.0.0</version>
+    <packaging>jar</packaging>
+
+    <name>ECM Submissions API</name>
+
+    <dependencies>
+        <dependency>
+            <groupId>uk.gov.defra.datareturns</groupId>
+            <artifactId>common</artifactId>
+        </dependency>
+
+        <!-- Spring boot annotation processor -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-configuration-processor</artifactId>
+            <optional>true</optional>
+        </dependency>
+
+
+        <!-- Redis support for spring cache -->
+        <!--
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-data-redis</artifactId>
+        </dependency>
+        -->
+
+        <!-- special dependency to fix liquibase's logging fetish -->
+        <dependency>
+            <groupId>com.mattbertolini</groupId>
+            <artifactId>liquibase-slf4j</artifactId>
+            <version>${liquibase-slf4j.version}</version>
+        </dependency>
+
+        <!-- Errbit error reporting -->
+        <dependency>
+            <groupId>net.anthavio</groupId>
+            <artifactId>airbrake-logback</artifactId>
+            <version>${airbrake-logback.version}</version>
+        </dependency>
+    </dependencies>
+
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <source>${java.version}</source>
+                    <target>${java.version}</target>
+                    <encoding>${project.build.sourceEncoding}</encoding>
+                </configuration>
+            </plugin>
+
+
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+                <configuration>
+                    <executable>true</executable>
+                    <mainClass>uk.gov.defra.datareturns.EcmApi</mainClass>
+                </configuration>
+            </plugin>
+
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>sql-maven-plugin</artifactId>
+                <version>1.5</version>
+
+                <dependencies>
+                    <dependency>
+                        <groupId>org.postgresql</groupId>
+                        <artifactId>postgresql</artifactId>
+                        <version>${postgresql.version}</version>
+                    </dependency>
+                </dependencies>
+
+                <!-- common configuration shared by all executions -->
+                <configuration>
+                    <driver>${db.ecm_api.driver}</driver>
+                    <url>${db.ecm_api.url}</url>
+                    <username>${db.ecm_api.username}</username>
+                    <password>${db.ecm_api.password}</password>
+                    <autocommit>true</autocommit>
+                    <enableFiltering>true</enableFiltering>
+                </configuration>
+
+                <executions>
+                    <!-- This command can be executed using mvn sql:execute@drop-connections -->
+                    <execution>
+                        <id>drop-connections</id>
+                        <configuration>
+                            <url>${db.ecm_api.mgt.url}</url>
+                            <srcFiles>
+                                <srcFile>${project.build.outputDirectory}/db/sql/1-drop-connections.sql</srcFile>
+                            </srcFiles>
+                        </configuration>
+                    </execution>
+                    <!-- This command can be executed using mvn sql:execute@drop-database -->
+                    <execution>
+                        <id>drop-database</id>
+                        <configuration>
+                            <url>${db.ecm_api.mgt.url}</url>
+                            <srcFiles>
+                                <srcFile>${project.build.outputDirectory}/db/sql/2-drop-database.sql</srcFile>
+                            </srcFiles>
+                        </configuration>
+                    </execution>
+                    <!-- This command can be executed using mvn sql:execute@create-database -->
+                    <execution>
+                        <id>create-database</id>
+                        <configuration>
+                            <url>${db.ecm_api.mgt.url}</url>
+                            <srcFiles>
+                                <srcFile>${project.build.outputDirectory}/db/sql/3-create-database.sql</srcFile>
+                            </srcFiles>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <plugin>
+                <groupId>com.spotify</groupId>
+                <artifactId>docker-maven-plugin</artifactId>
+                <version>1.0.0</version>
+                <configuration>
+                    <imageName>${docker.image.prefix}/${project.artifactId}</imageName>
+                    <dockerDirectory>src/main/docker</dockerDirectory>
+                    <resources>
+                        <resource>
+                            <targetPath>/</targetPath>
+                            <directory>${project.build.directory}</directory>
+                            <include>${project.build.finalName}.jar</include>
+                        </resource>
+                    </resources>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+</project>

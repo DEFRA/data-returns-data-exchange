@@ -1,7 +1,0 @@
-"EA_ID","Site_Name","Rtn_Type","Mon_Date","Rtn_Period","Mon_Point","Parameter","Value","Unit","Ref_Period"
-"42355","Biffa - Marchington Landfill Site","Landfill gas borehole",2016-04-01,"Qtr 1 2016","Monitor point 1","Temperature",123,"mg","Annual"
-"42355","Biffa - Marchington Landfill Site","Landfill gas borehole",2016-04-01,"Water year 2016","Monitor point 1","Temperature",123,"mg","Annual"
-"42355","Biffa - Marchington Landfill Site","Landfill gas borehole",2016-04-01,"2016/17","Monitor point 1","16-(Thienylmethylene)Androstane-3,17-Diol SVOCS",123,"mg","Annual"
-"AP3192NT","Seearo Construction Ltd - Barrington Park Farm","Landfill gas borehole",2016-04-01,"16/17","Borehole 10","1,1,1,2-Tetrachloroethane",123,"mg","Annual"
-"AP3192NT","Seearo Construction Ltd - Barrington Park Farm","Landfill gas borehole",2016-04-01,"Week 01 2017","Chimney 4","1,3-Butadiene",123,"mg","Annual"
-"AP3192NT","Seearo Construction Ltd - Barrington Park Farm","Air point source emissions,2016-04-01,""Week 52 2016","Sample Ref","Sampled by 1",123,"mg","Annual","Test method 1","Test comments"

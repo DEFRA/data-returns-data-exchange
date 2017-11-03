@@ -1,0 +1,17 @@
+name,applicability
+Air point source emissions,ECM
+Ambient air quality,ECM
+Emissions to groundwater,ECM
+Emissions to sewer,ECM
+Emissions to surface water,ECM
+Landfill annual monitoring report,ECM
+Landfill gas borehole,ECM
+Landfill gas engine,ECM
+Landfill gas flare,ECM
+Landfill leachate monitoring,ECM
+Methane capped surfaces,ECM
+Tankered emissions,ECM
+Releases to air,PI
+Releases to land,PI
+Releases to controlled waters,PI
+Off-site transfers in wastewater,PI

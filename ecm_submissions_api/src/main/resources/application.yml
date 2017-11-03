@@ -1,0 +1,203 @@
+###############################################################################
+#
+# Data Returns ECM Submissions API Configuration Settings
+#
+# This file is split into different sections, the first provides defaults
+# for all environments.  Subsequent sections provide profile-specific
+# configurations which may be enabled to override the default values.
+#
+###############################################################################
+spring:
+  application:
+    name: Data Returns ECM Submissions API
+    admin:
+      enabled: true
+  datasource:
+    url: @db.ecm_api.url@
+    username: @db.ecm_api.username@
+    password: @db.ecm_api.password@
+    driverClassName: @db.ecm_api.driver@
+
+  data:
+    jpa:
+      repositories:
+        enabled: true
+    rest:
+      detection-strategy: annotated
+      base-path: /api
+      return-body-on-create: true
+      return-body-on-update: true
+      default-page-size: 100
+      max-page-size: 1000
+
+  # Spring cache configuration settings.  Use type: simple for local concurrent map cache or type: redis to use a redis backed cache
+  cache:
+    type: simple
+
+  http:
+    multipart:
+      max-file-size: 4MB
+
+  redis:
+    host: localhost
+    port: 6379
+
+#  aop:
+#    auto: true
+#    proxy-target-class: true
+  jackson:
+    serialization:
+      FAIL_ON_EMPTY_BEANS: false
+    deserialization:
+      FAIL_ON_UNKNOWN_PROPERTIES: false
+
+    property-naming-strategy: SNAKE_CASE
+
+  jpa:
+    database-platform: @db.ecm_api.dialect@
+    hibernate:
+      ddl-auto: validate
+    properties:
+      # disable validation via jpa/hibernate, spring will take care of this
+      javax:
+        persistence:
+          validation:
+            mode: none
+      hibernate:
+        jdbc.fetch_size: 30
+        jdbc.batch_size: 30
+        order_inserts: true
+        order_updates: true
+
+        cache:
+          use_query_cache: false
+#          use_second_level_cache: false
+#          region:
+#            factory_class: com.hazelcast.hibernate.HazelcastCacheRegionFactory
+#          hazelcast:
+#            use_native_client: true
+#            native_client_address: localhost:5701
+#            native_client_group: dev
+#            native_client_password: dev-pass
+
+
+security:
+  user:
+    name: user
+    password: user
+
+# Configuration for the web server
+server:
+  display-name: ${spring.application.name}
+  address: 0.0.0.0
+  port: 10020
+  compression:
+    enabled: true
+
+# Configuration for the management server and its endpoints
+management:
+  port: 10021
+  security:
+    enabled: false
+endpoints:
+  shutdown:
+    enabled: true
+    sensitive: false
+  info:
+    enabled: true
+
+# Liquibase database migration configuration values
+liquibase:
+  changeLog: classpath:/db/changelog/db.changelog-master.xml
+  dropFirst: false
+  enabled: true
+
+# Default logging levels (provide minimal level of logging here)
+logging:
+  level: 
+    root: WARN
+    jndi: WARN
+    uk.gov.defra.datareturns: INFO
+    org.eclipse.jetty: WARN
+    org.apache.http: WARN
+    org.springframework: WARN
+    org.springframework.boot: WARN
+    org.springframework.boot.context.embedded.jetty.JettyEmbeddedServletContainer: INFO
+    org.springframework.boot.autoconfigure.security: info
+    org.springframework.security: info
+    org.springframework.beans: info
+    org.springframework.aop: info
+    org.aopalliance.aop: info
+    org.springframework.cache: debug
+    javax.xml.bind: WARN
+    
+    # Database
+    org.hibernate: WARN
+    org.hibernate.engine.jdbc.spi.SqlExceptionHelper: OFF
+
+    liquibase: INFO
+    
+    # Amazon S3 API
+    com.amazonaws: WARN
+    org.apache.http.wire: WARN
+    # Metrics logging
+    metrics: INFO
+
+---
+###############################################################################
+#
+# Profile: debug
+#
+###############################################################################
+spring:
+  profiles: debug
+  jpa:
+    show-sql: true
+    properties:
+      hibernate.use_sql_comments: true
+      hibernate.format_sql: true
+      hibernate.generate_statistics: true
+
+# Spring boot debug flag 
+debug: false
+
+# Configure loggers for debug - should configure DEBUG by default and use WARN/INFO on stuff that is not useful to reduce unwanted spam
+logging:
+  level: 
+    root: DEBUG
+    jndi: INFO
+    uk.gov.defra.datareturns: DEBUG
+    org.eclipse.jetty: INFO
+    org.eclipse.jetty.server.Server: DEBUG
+    org.eclipse.jetty.server.session: INFO
+    org.eclipse.jetty.servlet.ServletHandler: info
+    org.apache.http: INFO
+    org.jvnet.mimepull: INFO
+    
+    org.springframework: INFO
+    org.springframework.beans.factory: INFO
+    org.springframework.boot: INFO
+    org.springframework.jndi: INFO
+    org.springframework.core: INFO
+    org.springframework.context.annotation: INFO
+    org.springframework.boot.context.embedded.jetty.JettyEmbeddedServletContainer: INFO
+    
+    # Set to DEBUG to enable the auto-configuration report at startup
+    org.springframework.boot.autoconfigure: DEBUG
+    org.reflections: INFO
+
+    # Database
+    org.hibernate: INFO
+    org.hibernate.stat: DEBUG
+    org.hibernate.engine.internal.StatisticalLoggingSessionEventListener: DEBUG
+    liquibase: INFO
+    
+    # Amazon S3 API
+    com.amazonaws: INFO
+    org.apache.http.wire: INFO
+    # Glassfish
+    org.glassfish: INFO
+    # Useful to log REST requests and responses (set to INFO for headers or DEBUG for full request/response logging)
+    org.glassfish.jersey.logging.LoggingFeature: DEBUG
+    # Metrics logging
+    metrics: DEBUG

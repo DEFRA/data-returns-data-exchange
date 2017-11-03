@@ -1,10 +1,8 @@
-/target/
-.idea
-*.iml
-nbactions.xml
-/.apt_generated/
+**/target/*
+**/.idea
+**/*.iml
+**/.apt_generated/
 /.settings/
 .project
 .classpath
-/log/*.log
-/work/
+**/log/*.log
