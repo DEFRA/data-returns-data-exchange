@@ -11,10 +11,7 @@ import org.hibernate.id.enhanced.SequenceStyleGenerator;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.rest.core.annotation.RestResource;
 import org.springframework.data.rest.core.config.Projection;
-import uk.gov.defra.datareturns.data.model.AbstractBaseEntity;
-import uk.gov.defra.datareturns.data.model.AbstractMasterDataEntity;
-import uk.gov.defra.datareturns.data.model.AliasedEntity;
-import uk.gov.defra.datareturns.data.model.MasterDataEntity;
+import uk.gov.defra.datareturns.data.model.*;
 
 import javax.persistence.Cacheable;
 import javax.persistence.Entity;
@@ -36,10 +33,5 @@ import java.util.Set;
 )
 @Getter
 @Setter
-public class TextValue extends AbstractMasterDataEntity implements AliasedEntity<TextValueAlias> {
-    @JsonIgnore
-    @OneToMany(mappedBy = "preferred", fetch = FetchType.EAGER, orphanRemoval = true)
-    @Cascade(org.hibernate.annotations.CascadeType.ALL)
-    private Set<TextValueAlias> aliases;
-
+public class TextValue extends AbstractAliasedEntity<TextValueAlias> implements AliasedEntity<TextValueAlias> {
 }

@@ -10,14 +10,18 @@ import uk.gov.defra.datareturns.data.model.MasterDataEntity;
 
 import javax.validation.ValidationException;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.Consumer;
 import java.util.function.Function;
+import java.util.function.Supplier;
 
 /**
  * Utility class to facilitate loading CSV data into the database.
@@ -66,7 +70,7 @@ final class LoaderUtils {
      *
      * @param persistenceHandler the underlying persistence handler (usually the add method on the repository)
      * @param data               the data read from the csv file
-     * @param factory            a factory for creating the persistable entity from a row of CSV data
+     * @param entityFactory      a factory for creating the persistable entity from a row of CSV data
      * @param <E>
      */
     static <E extends AliasingEntity<E>> void persistSelfReferencingEntityFile(
@@ -133,7 +137,7 @@ final class LoaderUtils {
             }
             final E primary = primaryEntityData.get(preferred);
             if (primary == null) {
-                String msg = "Unable to find preferred value " + preferred;
+                final String msg = "Unable to find preferred value " + preferred;
                 log.warn(msg);
 //                throw new ValidationException(msg);
             }
@@ -173,5 +177,21 @@ final class LoaderUtils {
         }
         primaryEntityData.forEach(persistenceHandler);
         aliasEntityData.forEach(persistenceHandler);
+    }
+
+    static <E extends MasterDataEntity> Function<Map<String, String>, E> basicFactory(final Supplier<E> entityClassSupplier) {
+        return (rowData) -> {
+            final E entity = entityClassSupplier.get();
+            entity.setNomenclature(rowData.get("name"));
+            return entity;
+        };
+    }
+
+
+    static Set<String> extractGroupSet(final String cellValue) {
+        if (cellValue != null) {
+            return new LinkedHashSet<>(Arrays.asList(cellValue.split("\\W+")));
+        }
+        return Collections.emptySet();
     }
 }

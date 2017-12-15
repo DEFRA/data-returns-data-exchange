@@ -16,9 +16,9 @@ public class DataQualityTests {
 
     @Test
     public void testUTF8Characters() throws URISyntaxException {
-        File dbDataDir = new File(DataQualityTests.class.getResource("/db/data/").toURI());
+        final File dbDataDir = new File(DataQualityTests.class.getResource("/db/data/").toURI());
         int count = 0;
-        for (File f : dbDataDir.listFiles()) {
+        for (final File f : dbDataDir.listFiles()) {
             if (f.isFile()) {
                 count += UTF8Checker.checkFile(f, UTF8Checker.MAX_ASCII_EXTENDED).size();
             }

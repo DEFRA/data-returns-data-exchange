@@ -1,5 +1,6 @@
 package uk.gov.defra.datareturns.data.model.site;
 
+import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.GenericGenerator;
@@ -15,7 +16,8 @@ import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * The persistent class for the unique_identifiers database table.
@@ -28,11 +30,13 @@ import java.util.List;
 @GenericGenerator(name = AbstractBaseEntity.DEFINITIONS_ID_GENERATOR,
         strategy = AbstractBaseEntity.DEFINITIONS_ID_SEQUENCE_STRATEGY,
         parameters = {
-                @org.hibernate.annotations.Parameter(name = SequenceStyleGenerator.SEQUENCE_PARAM, value = "md_site_id_seq") }
+                @org.hibernate.annotations.Parameter(name = SequenceStyleGenerator.SEQUENCE_PARAM, value = "md_site_id_seq")}
 )
-@Getter @Setter
+@Getter
+@Setter
 public class Site extends AbstractMasterDataEntity implements MasterDataEntity {
     @OneToMany(fetch = FetchType.EAGER)
     @JoinColumn(name = "site_id")
-    private List<UniqueIdentifier> uniqueIdentifiers;
+    @Setter(AccessLevel.NONE)
+    private Set<UniqueIdentifier> uniqueIdentifiers = new HashSet<>();
 }

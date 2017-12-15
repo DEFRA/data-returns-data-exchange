@@ -17,14 +17,4 @@ public interface MasterDataEntity extends Serializable {
     String getNomenclature();
 
     void setNomenclature(final String nomenclature);
-
-    @JsonIgnore
-    default boolean isAlias() {
-        return false;
-    }
-
-    @JsonIgnore
-    default boolean isPrimary() {
-        return true;
-    }
 }

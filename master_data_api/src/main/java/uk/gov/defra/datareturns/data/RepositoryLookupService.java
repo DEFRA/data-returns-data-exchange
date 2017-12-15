@@ -10,7 +10,6 @@ import org.springframework.data.rest.core.mapping.ResourceMappings;
 import org.springframework.data.rest.core.mapping.ResourceMetadata;
 import org.springframework.stereotype.Service;
 import uk.gov.defra.datareturns.data.model.AbstractBaseEntity;
-import uk.gov.defra.datareturns.data.model.BaseRepository;
 
 import javax.annotation.PostConstruct;
 import java.lang.reflect.Field;

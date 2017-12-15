@@ -1,4 +1,4 @@
-package uk.gov.defra.datareturns.data.model;
+package uk.gov.defra.datareturns.data;
 
 import lombok.extern.slf4j.Slf4j;
 import org.hibernate.search.jpa.FullTextEntityManager;

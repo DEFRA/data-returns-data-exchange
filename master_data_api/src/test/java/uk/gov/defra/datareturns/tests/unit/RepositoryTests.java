@@ -49,7 +49,7 @@ public class RepositoryTests {
 
     @Test
     public void testAddParameter() {
-        Parameter p = new Parameter();
+        final Parameter p = new Parameter();
         p.setNomenclature("Test");
         p.setCas("Test");
         parameterRepository.saveAndFlush(p);
@@ -57,11 +57,11 @@ public class RepositoryTests {
 
     @Test(expected = DataIntegrityViolationException.class)
     public void testDuplicateFailure() {
-        Parameter p1 = new Parameter();
+        final Parameter p1 = new Parameter();
         p1.setNomenclature("Test Duplicate");
         parameterRepository.saveAndFlush(p1);
 
-        Parameter p2 = new Parameter();
+        final Parameter p2 = new Parameter();
         p2.setNomenclature("Test Duplicate");
         parameterRepository.saveAndFlush(p2);
     }

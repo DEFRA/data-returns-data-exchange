@@ -9,18 +9,4 @@ public interface AliasingEntity<E extends MasterDataEntity> extends MasterDataEn
     E getPreferred();
 
     void setPreferred(E preferred);
-
-    //    Set<E> getAliases();
-    //
-    //    void setAliases(Set<E> aliases);
-
-    @JsonIgnore
-    default boolean isAlias() {
-        return getPreferred() != null;
-    }
-
-    @JsonIgnore
-    default boolean isPrimary() {
-        return getPreferred() == null;
-    }
 }

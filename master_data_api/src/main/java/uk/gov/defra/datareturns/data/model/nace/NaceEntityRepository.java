@@ -2,7 +2,7 @@ package uk.gov.defra.datareturns.data.model.nace;
 
 import org.springframework.data.repository.NoRepositoryBean;
 import org.springframework.data.repository.query.Param;
-import uk.gov.defra.datareturns.data.model.BaseRepository;
+import uk.gov.defra.datareturns.data.BaseRepository;
 
 
 /**

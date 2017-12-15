@@ -6,6 +6,7 @@ import lombok.Setter;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.id.enhanced.SequenceStyleGenerator;
+import uk.gov.defra.datareturns.data.model.AbstractAliasedEntity;
 import uk.gov.defra.datareturns.data.model.AbstractBaseEntity;
 import uk.gov.defra.datareturns.data.model.AbstractMasterDataEntity;
 import uk.gov.defra.datareturns.data.model.AliasedEntity;
@@ -32,13 +33,8 @@ import java.util.Set;
 )
 @Getter
 @Setter
-public class ReferencePeriod extends AbstractMasterDataEntity implements AliasedEntity<ReferencePeriodAlias> {
+public class ReferencePeriod extends AbstractAliasedEntity<ReferencePeriodAlias> implements AliasedEntity<ReferencePeriodAlias> {
     @Basic
     @Column(name = "notes", length = 250)
     private String notes;
-
-    @JsonIgnore
-    @OneToMany(mappedBy = "preferred", fetch = FetchType.EAGER, orphanRemoval = true)
-    @Cascade(org.hibernate.annotations.CascadeType.ALL)
-    private Set<ReferencePeriodAlias> aliases;
 }

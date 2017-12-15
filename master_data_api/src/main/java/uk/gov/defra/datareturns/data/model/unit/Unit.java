@@ -1,22 +1,18 @@
 package uk.gov.defra.datareturns.data.model.unit;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Getter;
 import lombok.Setter;
-import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.id.enhanced.SequenceStyleGenerator;
+import uk.gov.defra.datareturns.data.model.AbstractAliasedEntity;
 import uk.gov.defra.datareturns.data.model.AbstractBaseEntity;
-import uk.gov.defra.datareturns.data.model.AbstractMasterDataEntity;
 import uk.gov.defra.datareturns.data.model.AliasedEntity;
 
 import javax.persistence.Basic;
 import javax.persistence.Cacheable;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.OneToMany;
-import java.util.Set;
+import javax.persistence.ManyToOne;
 
 /**
  * The persistent class for the units database table.
@@ -32,7 +28,7 @@ import java.util.Set;
 )
 @Getter
 @Setter
-public class Unit extends AbstractMasterDataEntity implements AliasedEntity<UnitAlias> {
+public class Unit extends AbstractAliasedEntity<UnitAlias> implements AliasedEntity<UnitAlias> {
     @Basic
     @Column(name = "long_name", length = 50)
     private String longName;
@@ -45,12 +41,6 @@ public class Unit extends AbstractMasterDataEntity implements AliasedEntity<Unit
     @Column(name = "description", length = 200)
     private String description;
 
-    @Basic
-    @Column(name = "type", length = 50)
-    private String type;
-
-    @JsonIgnore
-    @OneToMany(mappedBy = "preferred", fetch = FetchType.EAGER, orphanRemoval = true)
-    @Cascade(org.hibernate.annotations.CascadeType.ALL)
-    private Set<UnitAlias> aliases;
+    @ManyToOne(optional = false)
+    private UnitType type;
 }

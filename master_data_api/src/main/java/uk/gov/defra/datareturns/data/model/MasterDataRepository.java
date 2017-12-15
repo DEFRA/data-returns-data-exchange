@@ -3,6 +3,7 @@ package uk.gov.defra.datareturns.data.model;
 import org.springframework.data.repository.NoRepositoryBean;
 import org.springframework.data.repository.query.Param;
 import org.springframework.security.access.prepost.PreAuthorize;
+import uk.gov.defra.datareturns.data.BaseRepository;
 
 import java.util.List;
 
@@ -22,10 +23,6 @@ public interface MasterDataRepository<E extends MasterDataEntity> extends BaseRe
      */
     @SuppressWarnings("unused")
     E getByNomenclature(@Param("nomenclature") String nomenclature);
-
-
-//    @SuppressWarnings("unused")
-//    List<E> getByApplicabilityContaining(@Param("applicability") String applicability);
 
     // FIXME Security needs further work..
     @Override

@@ -1,0 +1,21 @@
+name,definition,example
+Week XX YYYY,A week number for a calendar week starting with a Monday. Use a leading 0 for the first 9 weeks. This is defined in ISO 8601.,Week 01 2016
+Jan YYYY,Month of January,Jan 2016
+Feb YYYY,Month of February,Feb 2016
+Mar YYYY,Month of March,Mar 2016
+Apr YYYY,Month of April,Apr 2016
+May YYYY,Month of May,May 2016
+Jun YYYY,Month of June,Jun 2016
+Jul YYYY,Month of July,Jul 2016
+Aug YYYY,Month of August,Aug 2016
+Sep YYYY,Month of September,Sep 2016
+Oct YYYY,Month of October,Oct 2016
+Nov YYYY,Month of November,Nov 2016
+Dec YYYY,Month of December,Dec 2016
+Qtr 1 YYYY,Financial quarter 1 - April to June YYYY,Qtr 1 2016
+Qtr 2 YYYY,Financial quarter 2 - July to September YYYY,Qtr 2 2016
+Qtr 3 YYYY,Financial quarter 3 - October to December YYYY,Qtr 3 2016
+Qtr 4 YYYY,Financial quarter 4 - January to March YYYY,Qtr 4 2016
+YYYY,A calendar year - as defined in ISO 8601,2016
+YYYY/YY,The financial year - 1 April to 31 March. You can also use the format YY/YY.,2016/17 or 16/17
+Water year YYYY,The hydrological water year - 1 October to 30 September,Water year 2016

@@ -48,7 +48,7 @@ spring:
   jpa:
     database-platform: @db.md_api.dialect@
     hibernate:
-      ddl-auto: update
+      ddl-auto: validate
     properties:
       hibernate:
         jdbc.fetch_size: 30
@@ -76,7 +76,6 @@ spring:
 # Security configuration
 security:
   method-level-enabled: true
-
 
 # Configuration for the web server
 server:
@@ -114,6 +113,7 @@ logging:
     org.apache.http: warn
     org.springframework: warn
     org.springframework.boot: warn
+    org.springframework.web.servlet.mvc: info
     org.springframework.boot.context.embedded.jetty.JettyEmbeddedServletContainer: info
     org.springframework.boot.autoconfigure.security: info
     org.springframework.security: info
@@ -176,6 +176,10 @@ logging:
     # Set to debug to enable the auto-configuration report at startup
     org.springframework.boot.autoconfigure: debug
     org.reflections: info
+
+    sun.rmi: info
+
+    springfox: debug
 
     # Database
     org.hibernate: info
