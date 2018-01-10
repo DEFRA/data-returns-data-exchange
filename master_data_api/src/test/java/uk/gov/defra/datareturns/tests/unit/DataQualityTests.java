@@ -17,10 +17,14 @@ public class DataQualityTests {
     @Test
     public void testUTF8Characters() throws URISyntaxException {
         final File dbDataDir = new File(DataQualityTests.class.getResource("/db/data/").toURI());
+        final File[] files = dbDataDir.listFiles();
+
         int count = 0;
-        for (final File f : dbDataDir.listFiles()) {
-            if (f.isFile()) {
-                count += UTF8Checker.checkFile(f, UTF8Checker.MAX_ASCII_EXTENDED).size();
+        if (files != null) {
+            for (final File f : files) {
+                if (f.isFile()) {
+                    count += UTF8Checker.checkFile(f, UTF8Checker.MAX_ASCII_EXTENDED).size();
+                }
             }
         }
         if (VALID_UTF8_CHAR_COUNT != count) {

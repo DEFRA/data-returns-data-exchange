@@ -1,6 +1,5 @@
 package uk.gov.defra.datareturns.data.model.returntype;
 
-import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.GenericGenerator;
@@ -12,9 +11,6 @@ import uk.gov.defra.datareturns.data.model.MasterDataEntity;
 
 import javax.persistence.Cacheable;
 import javax.persistence.Entity;
-import javax.persistence.ManyToMany;
-import java.util.HashSet;
-import java.util.Set;
 
 /**
  * The persistent class for the return_types database table.

@@ -1,5 +1,6 @@
 package uk.gov.defra.datareturns.data.model.unit;
 
+import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.GenericGenerator;
@@ -30,5 +31,6 @@ import java.util.Set;
 @Setter
 public class UnitType extends AbstractMasterDataEntity implements MasterDataEntity {
     @OneToMany(mappedBy = "type")
+    @Setter(AccessLevel.NONE)
     private Set<Unit> units = new HashSet<>();
 }

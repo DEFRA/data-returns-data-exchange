@@ -1,5 +1,6 @@
 package uk.gov.defra.datareturns.data.model.applicability;
 
+import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.GenericGenerator;
@@ -37,14 +38,18 @@ import java.util.Set;
 @Setter
 public class Applicability extends AbstractMasterDataEntity implements MasterDataEntity {
     @ManyToMany
+    @Setter(AccessLevel.NONE)
     private Set<UniqueIdentifierGroup> uniqueIdentifierGroups = new HashSet<>();
 
     @ManyToMany
+    @Setter(AccessLevel.NONE)
     private Set<ReturnTypeGroup> returnTypeGroups = new HashSet<>();
 
     @ManyToMany
+    @Setter(AccessLevel.NONE)
     private Set<ParameterGroup> parameterGroups = new HashSet<>();
 
     @ManyToMany
+    @Setter(AccessLevel.NONE)
     private Set<UnitGroup> unitGroups = new HashSet<>();
 }

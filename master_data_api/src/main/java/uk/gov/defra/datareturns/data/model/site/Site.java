@@ -13,8 +13,6 @@ import uk.gov.defra.datareturns.data.model.eaid.UniqueIdentifier;
 
 import javax.persistence.Cacheable;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
 import java.util.HashSet;
 import java.util.Set;
@@ -35,8 +33,7 @@ import java.util.Set;
 @Getter
 @Setter
 public class Site extends AbstractMasterDataEntity implements MasterDataEntity {
-    @OneToMany(fetch = FetchType.EAGER)
-    @JoinColumn(name = "site_id")
+    @OneToMany(mappedBy = "site")
     @Setter(AccessLevel.NONE)
     private Set<UniqueIdentifier> uniqueIdentifiers = new HashSet<>();
 }

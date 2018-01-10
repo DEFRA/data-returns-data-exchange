@@ -871,7 +871,6 @@
             <column name="nomenclature" type="varchar(8)">
                 <constraints nullable="false" unique="true"/>
             </column>
-
             <column name="description" type="varchar(255)">
                 <constraints nullable="false" unique="false"/>
             </column>
@@ -918,7 +917,7 @@
             <column name="details" type="varchar(8000)">
                 <constraints nullable="true" unique="false"/>
             </column>
-            <column name="section_id" type="bigint">
+            <column name="nace_section_id" type="bigint">
                 <constraints nullable="false"
                              foreignKeyName="fk_nace_division__section"
                              references="md_nace_section(id)"/>
@@ -963,7 +962,7 @@
             <column name="details" type="varchar(8000)">
                 <constraints nullable="true" unique="false"/>
             </column>
-            <column name="division_id" type="bigint">
+            <column name="nace_division_id" type="bigint">
                 <constraints nullable="false"
                              foreignKeyName="fk_nace_group__division"
                              references="md_nace_division(id)"/>
@@ -1007,7 +1006,7 @@
             <column name="details" type="varchar(8000)">
                 <constraints nullable="true" unique="false"/>
             </column>
-            <column name="group_id" type="bigint">
+            <column name="nace_group_id" type="bigint">
                 <constraints nullable="false"
                              foreignKeyName="fk_nace_class__nace_group"
                              references="md_nace_group(id)"/>

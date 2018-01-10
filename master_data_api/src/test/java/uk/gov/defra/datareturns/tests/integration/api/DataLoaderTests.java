@@ -93,7 +93,7 @@ public class DataLoaderTests {
     public void testApplicabilities() {
         final int expectedApplicCount = 2;
 
-        ValidatableResponse response = given()
+        final ValidatableResponse response = given()
                 .contentType(ContentType.JSON)
                 .when().get(ApiResource.APPLICABILITIES.url())
                 .then()
@@ -101,39 +101,39 @@ public class DataLoaderTests {
                 .log().all();
 
 
-        ExtractableResponse<?> res = response.extract();
-        List<Map<String, String>> applics = res.jsonPath().getList("_embedded.applicabilities");
+        final ExtractableResponse<?> res = response.extract();
+        final List<Map<String, String>> applics = res.jsonPath().getList("_embedded.applicabilities");
 
         log.info("Found applics {}", applics);
 
         for (int i = 0; i < expectedApplicCount; i++) {
-            Map<String, ?> applicData = applics.get(i);
+            final Map<String, ?> applicData = applics.get(i);
             Assertions.assertThat(applicData.get("nomenclature")).isEqualTo("Applic" + i);
 
-            Map<String, Map<String, String>> applicLinks = (Map<String, Map<String, String>>) applicData.get("_links");
+            final Map<String, Map<String, String>> applicLinks = (Map<String, Map<String, String>>) applicData.get("_links");
 
             // Extract links for each entity group associated with the applicability.
-            String uniqueIdentifierGroupLocation = applicLinks.get(ApiResource.UNIQUE_IDENTIFIER_GROUPS.resourceName()).get("href");
-            String returnTypeGroupLocation = applicLinks.get(ApiResource.RETURN_TYPE_GROUPS.resourceName()).get("href");
-            String parameterGroupLocation = applicLinks.get(ApiResource.PARAMETER_GROUPS.resourceName()).get("href");
-            String unitGroupLocation = applicLinks.get(ApiResource.UNIT_GROUPS.resourceName()).get("href");
+            final String uniqueIdentifierGroupLocation = applicLinks.get(ApiResource.UNIQUE_IDENTIFIER_GROUPS.resourceName()).get("href");
+            final String returnTypeGroupLocation = applicLinks.get(ApiResource.RETURN_TYPE_GROUPS.resourceName()).get("href");
+            final String parameterGroupLocation = applicLinks.get(ApiResource.PARAMETER_GROUPS.resourceName()).get("href");
+            final String unitGroupLocation = applicLinks.get(ApiResource.UNIT_GROUPS.resourceName()).get("href");
 
-            String expectedGroupName = "GRP" + (i + 1);
+            final String expectedGroupName = "GRP" + (i + 1);
 
-            String groupCollectionRoot  = "_embedded." + ApiResource.PARAMETER_GROUPS.resourceName() + "[0]";
+            final String groupCollectionRoot  = "_embedded." + ApiResource.PARAMETER_GROUPS.resourceName() + "[0]";
 
 
-            ValidatableResponse parameterGroupResponse = given()
+            final ValidatableResponse parameterGroupResponse = given()
                     .contentType(ContentType.JSON)
                     .when().get(parameterGroupLocation)
                     .then()
                     .statusCode(HttpStatus.OK.value())
                     .body(groupCollectionRoot + ".nomenclature", equalTo(expectedGroupName))
                     .log().all();
-            String parameterEntriesLocation = parameterGroupResponse.extract().body()
+            final String parameterEntriesLocation = parameterGroupResponse.extract().body()
                     .jsonPath().getString(groupCollectionRoot + "._links." + ApiResource.PARAMETERS.resourceName() + ".href");
 
-            ValidatableResponse parameterEntryResponse  = given()
+            final ValidatableResponse parameterEntryResponse  = given()
                     .contentType(ContentType.JSON)
                     .when().get(parameterEntriesLocation)
                     .then()
@@ -142,7 +142,7 @@ public class DataLoaderTests {
                     .log().all();
 
 
-            ExtractableResponse<?> pExtractableResponse = parameterEntryResponse.extract();
+            final ExtractableResponse<?> pExtractableResponse = parameterEntryResponse.extract();
         }
     }
 

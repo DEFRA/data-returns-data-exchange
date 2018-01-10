@@ -22,11 +22,14 @@ import javax.persistence.ManyToOne;
 @GenericGenerator(name = AbstractBaseEntity.DEFINITIONS_ID_GENERATOR,
         strategy = AbstractBaseEntity.DEFINITIONS_ID_SEQUENCE_STRATEGY,
         parameters = {
-                @org.hibernate.annotations.Parameter(name = SequenceStyleGenerator.SEQUENCE_PARAM, value = "md_nace_class_id_seq") }
+                @org.hibernate.annotations.Parameter(name = SequenceStyleGenerator.SEQUENCE_PARAM, value = "md_nace_class_id_seq")}
 )
-@Getter @Setter
+@Getter
+@Setter
 public final class NaceClass extends AbstractNaceEntity {
-    /** The parent group for this class */
+    /**
+     * The parent group for this class
+     */
     @ManyToOne(optional = false)
-    private NaceGroup group;
+    private NaceGroup naceGroup;
 }

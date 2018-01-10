@@ -1,5 +1,6 @@
 package uk.gov.defra.datareturns.data.model.nace;
 
+import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.GenericGenerator;
@@ -9,10 +10,9 @@ import uk.gov.defra.datareturns.data.model.AbstractBaseEntity;
 
 import javax.persistence.Cacheable;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * The persistent class for the NACE section codes
@@ -25,11 +25,12 @@ import java.util.List;
 @GenericGenerator(name = AbstractBaseEntity.DEFINITIONS_ID_GENERATOR,
         strategy = AbstractBaseEntity.DEFINITIONS_ID_SEQUENCE_STRATEGY,
         parameters = {
-                @org.hibernate.annotations.Parameter(name = SequenceStyleGenerator.SEQUENCE_PARAM, value = "md_nace_section_id_seq") }
+                @org.hibernate.annotations.Parameter(name = SequenceStyleGenerator.SEQUENCE_PARAM, value = "md_nace_section_id_seq")}
 )
-@Getter @Setter
+@Getter
+@Setter
 public final class NaceSection extends AbstractNaceEntity {
-    @OneToMany(fetch = FetchType.LAZY)
-    @JoinColumn(name = "section_id")
-    private List<NaceDivision> divisions;
+    @OneToMany(mappedBy = "naceSection")
+    @Setter(AccessLevel.NONE)
+    private Set<NaceDivision> naceDivisions = new HashSet<>();
 }

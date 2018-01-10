@@ -18,11 +18,9 @@ import org.hibernate.search.annotations.TokenizerDef;
 import org.hibernate.validator.constraints.NotBlank;
 import uk.gov.defra.datareturns.data.events.MasterDataUpdateEventListener;
 
-import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.EntityListeners;
 import javax.persistence.MappedSuperclass;
-import javax.persistence.UniqueConstraint;
 import java.io.Serializable;
 import java.util.Objects;
 

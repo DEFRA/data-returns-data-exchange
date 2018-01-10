@@ -1,6 +1,6 @@
 package uk.gov.defra.datareturns.data.model.parameter;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.GenericGenerator;
@@ -36,5 +36,6 @@ import java.util.Set;
 public class ParameterGroup extends AbstractMasterDataEntity implements MasterDataEntity {
     @ManyToMany
     @JoinTable(name = "md_parameter_group_entries")
+    @Setter(AccessLevel.NONE)
     private Set<Parameter> parameters = new HashSet<>();
 }

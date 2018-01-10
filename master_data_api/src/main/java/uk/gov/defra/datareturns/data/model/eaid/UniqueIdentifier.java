@@ -1,6 +1,5 @@
 package uk.gov.defra.datareturns.data.model.eaid;
 
-import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.GenericGenerator;
@@ -14,11 +13,7 @@ import uk.gov.defra.datareturns.data.model.site.Site;
 import javax.persistence.Cacheable;
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
-import java.util.HashSet;
-import java.util.Set;
 
 /**
  * The persistent class for the unique_identifiers database table.
@@ -37,6 +32,5 @@ import java.util.Set;
 @Setter
 public class UniqueIdentifier extends AbstractAliasedEntity<UniqueIdentifierAlias> implements AliasedEntity<UniqueIdentifierAlias> {
     @ManyToOne(cascade = CascadeType.ALL, optional = false)
-    @JoinColumn(name = "site_id")
     private Site site;
 }

@@ -50,7 +50,7 @@ public class ApplicabilityTests {
     }
 
 
-    private EntityAndGroupResponse createEntityAndGroup(ApiResource groupResource, ApiResource entityResource) {
+    private EntityAndGroupResponse createEntityAndGroup(final ApiResource groupResource, final ApiResource entityResource) {
         // Create a new group
         final String pathExtractString = "_links." + entityResource.resourceName() + ".href";
 

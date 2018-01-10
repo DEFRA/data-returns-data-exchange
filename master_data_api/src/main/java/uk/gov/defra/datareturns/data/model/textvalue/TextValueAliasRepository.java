@@ -1,6 +1,5 @@
 package uk.gov.defra.datareturns.data.model.textvalue;
 
-import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 import org.springframework.stereotype.Repository;
 import uk.gov.defra.datareturns.data.model.MasterDataRepository;
 

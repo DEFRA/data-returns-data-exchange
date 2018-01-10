@@ -7,6 +7,4 @@ import java.util.Set;
  */
 public interface AliasedEntity<E extends MasterDataEntity> extends MasterDataEntity {
     Set<E> getAliases();
-
-    void setAliases(Set<E> aliases);
 }

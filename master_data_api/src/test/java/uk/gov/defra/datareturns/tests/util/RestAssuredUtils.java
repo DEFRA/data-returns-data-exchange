@@ -16,7 +16,7 @@ public class RestAssuredUtils {
         return "{ \"nomenclature\": \"" + nomenclature + "\" }";
     }
 
-    public ValidatableResponse createEntity(ApiResource resource, final String body) {
+    public ValidatableResponse createEntity(final ApiResource resource, final String body) {
         return given()
                 .contentType(ContentType.JSON)
                 .body(body)
@@ -29,7 +29,7 @@ public class RestAssuredUtils {
     }
 
 
-    public ValidatableResponse createSimpleEntity(ApiResource resource, final String nomenclature) {
+    public ValidatableResponse createSimpleEntity(final ApiResource resource, final String nomenclature) {
         return createEntity(resource, nomenclatureJson(nomenclature));
     }
 

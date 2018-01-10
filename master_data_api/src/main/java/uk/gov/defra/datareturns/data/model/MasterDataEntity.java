@@ -1,7 +1,5 @@
 package uk.gov.defra.datareturns.data.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-
 import java.io.Serializable;
 
 /**

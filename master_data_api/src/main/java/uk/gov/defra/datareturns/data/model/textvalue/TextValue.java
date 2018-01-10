@@ -1,23 +1,13 @@
 package uk.gov.defra.datareturns.data.model.textvalue;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonIgnoreType;
 import lombok.Getter;
 import lombok.Setter;
-import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.id.enhanced.SequenceStyleGenerator;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.data.rest.core.annotation.RestResource;
-import org.springframework.data.rest.core.config.Projection;
 import uk.gov.defra.datareturns.data.model.*;
 
 import javax.persistence.Cacheable;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.OneToMany;
-import java.util.Set;
 
 /**
  * The persistent class for the text value database table.

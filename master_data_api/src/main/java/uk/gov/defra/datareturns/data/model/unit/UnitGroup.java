@@ -1,5 +1,6 @@
 package uk.gov.defra.datareturns.data.model.unit;
 
+import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.GenericGenerator;
@@ -35,5 +36,6 @@ import java.util.Set;
 public class UnitGroup extends AbstractMasterDataEntity implements MasterDataEntity {
     @ManyToMany
     @JoinTable(name = "md_unit_group_entries")
+    @Setter(AccessLevel.NONE)
     private Set<Unit> units = new HashSet<>();
 }

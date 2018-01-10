@@ -1,5 +1,6 @@
 package uk.gov.defra.datareturns.data.model.returntype;
 
+import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.GenericGenerator;
@@ -10,7 +11,6 @@ import uk.gov.defra.datareturns.data.model.AbstractMasterDataEntity;
 import uk.gov.defra.datareturns.data.model.MasterDataEntity;
 
 import javax.persistence.Cacheable;
-import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
@@ -35,5 +35,6 @@ import java.util.Set;
 public class ReturnTypeGroup extends AbstractMasterDataEntity implements MasterDataEntity {
     @ManyToMany
     @JoinTable(name = "md_return_type_group_entries")
+    @Setter(AccessLevel.NONE)
     private Set<ReturnType> returnTypes = new HashSet<>();
 }

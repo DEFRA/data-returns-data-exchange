@@ -143,16 +143,14 @@ public interface DatabaseLoader {
                     return id;
                 });
 
-                final Set<UniqueIdentifierAlias> historicalIdentifiers = new HashSet<>();
                 final String alternative = rowData.get("ALTERNATIVES");
                 if (StringUtils.isNotEmpty(alternative)) {
                     // Alternatives column only holds a single value
                     final UniqueIdentifierAlias alias = new UniqueIdentifierAlias();
                     alias.setNomenclature(alternative);
                     alias.setPreferred(primaryId);
-                    historicalIdentifiers.add(alias);
+                    primaryId.getAliases().add(alias);
                 }
-                primaryId.setAliases(historicalIdentifiers);
             }
 
             // Load all sites
@@ -160,12 +158,12 @@ public interface DatabaseLoader {
             uniqueIdentifierRepository.save(primaryIdentifiers.values());
 
             // TODO: Substitute this for real data - no point in finalising this until we have a new permit extract
-            UniqueIdentifierGroup ecmGroup = new UniqueIdentifierGroup();
+            final UniqueIdentifierGroup ecmGroup = new UniqueIdentifierGroup();
             ecmGroup.setNomenclature("ECM");
             ecmGroup.getUniqueIdentifiers().addAll(primaryIdentifiers.values());
             uniqueIdentifierGroupRepository.save(ecmGroup);
 
-            UniqueIdentifierGroup piGroup = new UniqueIdentifierGroup();
+            final UniqueIdentifierGroup piGroup = new UniqueIdentifierGroup();
             piGroup.setNomenclature("PI");
             ecmGroup.getUniqueIdentifiers().addAll(primaryIdentifiers.values().stream()
                     .filter(i -> i.getNomenclature().startsWith("A"))
@@ -497,7 +495,6 @@ public interface DatabaseLoader {
                         section.setNomenclature(code);
                         section.setDescription(description);
                         section.setDetails(details);
-
                         naceSections.put(code, section);
                         break;
                     case 2:
@@ -505,8 +502,7 @@ public interface DatabaseLoader {
                         division.setNomenclature(code);
                         division.setDescription(description);
                         division.setDetails(details);
-
-                        division.setSection(naceSections.get(parentCode));
+                        division.setNaceSection(naceSections.get(parentCode));
                         naceDivisions.put(code, division);
 
                         break;
@@ -515,8 +511,7 @@ public interface DatabaseLoader {
                         group.setNomenclature(code);
                         group.setDescription(description);
                         group.setDetails(details);
-
-                        group.setDivision(naceDivisions.get(parentCode));
+                        group.setNaceDivision(naceDivisions.get(parentCode));
                         naceGroups.put(code, group);
                         break;
                     case 4:
@@ -524,8 +519,7 @@ public interface DatabaseLoader {
                         naceClass.setNomenclature(code);
                         naceClass.setDescription(description);
                         naceClass.setDetails(details);
-
-                        naceClass.setGroup(naceGroups.get(parentCode));
+                        naceClass.setNaceGroup(naceGroups.get(parentCode));
                         naceClasses.add(naceClass);
                         break;
                     default:

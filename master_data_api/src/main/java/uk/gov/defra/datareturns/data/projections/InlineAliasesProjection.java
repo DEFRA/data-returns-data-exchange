@@ -8,8 +8,11 @@ import java.util.Set;
 
 /**
  * Projection to display aliases inline as an array.
+ *
+ * @author Sam Gardner-Dell
  */
 @Projection(name = "inlineAliases", types = AliasedEntity.class)
+@SuppressWarnings("unused")
 public interface InlineAliasesProjection {
     Long getId();
 

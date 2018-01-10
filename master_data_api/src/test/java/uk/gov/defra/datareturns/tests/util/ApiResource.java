@@ -15,7 +15,7 @@ public enum ApiResource {
 
     private final String resourceName;
 
-    private ApiResource(String resourceName) {
+    ApiResource(final String resourceName) {
         this.resourceName = resourceName;
     }
 
