@@ -14,6 +14,12 @@ import uk.gov.defra.datareturns.data.model.eaid.UniqueIdentifierAliasRepository;
 import uk.gov.defra.datareturns.data.model.eaid.UniqueIdentifierGroup;
 import uk.gov.defra.datareturns.data.model.eaid.UniqueIdentifierGroupRepository;
 import uk.gov.defra.datareturns.data.model.eaid.UniqueIdentifierRepository;
+import uk.gov.defra.datareturns.data.model.ewc.EwcActivity;
+import uk.gov.defra.datareturns.data.model.ewc.EwcActivityRepository;
+import uk.gov.defra.datareturns.data.model.ewc.EwcChapter;
+import uk.gov.defra.datareturns.data.model.ewc.EwcChapterRepository;
+import uk.gov.defra.datareturns.data.model.ewc.EwcSubchapter;
+import uk.gov.defra.datareturns.data.model.ewc.EwcSubchapterRepository;
 import uk.gov.defra.datareturns.data.model.methodorstandard.MethodOrStandard;
 import uk.gov.defra.datareturns.data.model.methodorstandard.MethodOrStandardRepository;
 import uk.gov.defra.datareturns.data.model.nace.NaceClass;
@@ -68,6 +74,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.Function;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import static uk.gov.defra.datareturns.data.loader.LoaderUtils.basicFactory;
@@ -533,4 +541,64 @@ public interface DatabaseLoader {
         }
     }
 
+
+    @Slf4j
+    @RequiredArgsConstructor
+    @Component
+    class EwcLoader implements DatabaseLoader {
+        private static final Pattern EWC_NOMEN_PATTERN = Pattern.compile("\\s*(?<Chapter>\\d{2})(\\s+(?<Subchapter>\\d{2}))?" +
+                "(\\s+(?<Activity>\\d{2}))?(\\s*(?<Hazardous>\\*))?\\s*");
+        private final EwcChapterRepository ewcChapterRepository;
+        private final EwcSubchapterRepository ewcSubchapterRepository;
+        private final EwcActivityRepository ewcActivityRepository;
+
+        @Transactional
+        @Override
+        public void load() {
+            final List<Map<String, String>> data = LoaderUtils.readCsvData("/db/data/EWC.csv");
+
+            final Map<String, EwcChapter> ewcChapterMap = new HashMap<>();
+            final Map<String, EwcSubchapter> ewcSubchapterMap = new HashMap<>();
+            data.forEach(entry -> {
+                final String ewcCode = entry.get("ewc_code").trim();
+                final String description = entry.get("description").trim();
+
+                // Determine EWC entity type from description
+                final Matcher matcher = EWC_NOMEN_PATTERN.matcher(ewcCode);
+                if (matcher.matches()) {
+                    final String chapterCode = matcher.group("Chapter");
+                    final String subchapterCode = matcher.group("Subchapter");
+                    final String activityCode = matcher.group("Activity");
+                    final boolean hazardous = matcher.group("Hazardous") != null;
+
+                    if (activityCode != null) {
+                        final EwcActivity activity = new EwcActivity();
+                        activity.setNomenclature(chapterCode + " " + subchapterCode + " " + activityCode);
+                        activity.setCode(activityCode);
+                        activity.setDescription(description);
+                        activity.setHazardous(hazardous);
+                        activity.setEwcSubchapter(ewcSubchapterMap.get(subchapterCode));
+                        ewcActivityRepository.save(activity);
+                    } else if (subchapterCode != null) {
+                        final EwcSubchapter subchapter = new EwcSubchapter();
+                        subchapter.setNomenclature(chapterCode + " " + subchapterCode);
+                        subchapter.setCode(subchapterCode);
+                        subchapter.setDescription(description);
+                        subchapter.setEwcChapter(ewcChapterMap.get(chapterCode));
+                        ewcSubchapterRepository.save(subchapter);
+                        ewcSubchapterMap.put(subchapterCode, subchapter);
+                    } else {
+                        final EwcChapter chapter = new EwcChapter();
+                        chapter.setNomenclature(chapterCode);
+                        chapter.setCode(chapterCode);
+                        chapter.setDescription(description);
+                        ewcChapterRepository.save(chapter);
+                        ewcChapterMap.put(chapterCode, chapter);
+                    }
+                } else {
+                    log.error("Unable to parse EWC nomenclature: '{}'", ewcCode);
+                }
+            });
+        }
+    }
 }

@@ -1037,6 +1037,142 @@
     </changeSet>
 
     <!--
+     ****************************************************************
+     EWC Codes
+     ****************************************************************
+    -->
+    <changeSet id="create-table: md_ewc_chapter" author="DEFRA">
+        <createSequence sequenceName="md_ewc_chapter_id_seq" startValue="1"/>
+        <createTable tableName="md_ewc_chapter">
+            <column name="id" type="bigint" defaultValueSequenceNext="md_ewc_chapter_id_seq">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="nomenclature" type="varchar(2)">
+                <constraints nullable="false" unique="true"/>
+            </column>
+            <column name="code" type="varchar(2)">
+                <constraints nullable="false" unique="false"/>
+            </column>
+            <column name="description" type="varchar(500)">
+                <constraints nullable="false" unique="false"/>
+            </column>
+            <column name="created" type="timestamp">
+                <constraints nullable="false"/>
+            </column>
+            <column name="last_modified" type="timestamp">
+                <constraints nullable="false"/>
+            </column>
+            <column name="version" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <rollback>
+            <dropTable tableName="md_ewc_chapter"/>
+            <dropSequence sequenceName="md_ewc_chapter_id_seq"/>
+        </rollback>
+    </changeSet>
+    <changeSet id="create-index: md_ewc_chapter" author="DEFRA">
+        <createIndex indexName="idx_md_ewc_chapter_code" tableName="md_ewc_chapter" unique="true">
+            <column name="nomenclature"/>
+        </createIndex>
+        <rollback>
+            <dropIndex tableName="md_ewc_chapter" indexName="idx_md_ewc_chapter"/>
+        </rollback>
+    </changeSet>
+
+    <changeSet id="create-table: md_ewc_subchapter" author="DEFRA">
+        <createSequence sequenceName="md_ewc_subchapter_id_seq" startValue="1"/>
+        <createTable tableName="md_ewc_subchapter">
+            <column name="id" type="bigint" defaultValueSequenceNext="md_ewc_subchapter_id_seq">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="nomenclature" type="varchar(5)">
+                <constraints nullable="false" unique="true"/>
+            </column>
+            <column name="code" type="varchar(2)">
+                <constraints nullable="false" unique="false"/>
+            </column>
+            <column name="description" type="varchar(500)">
+                <constraints nullable="false" unique="false"/>
+            </column>
+            <column name="ewc_chapter_id" type="bigint">
+                <constraints nullable="false"
+                             foreignKeyName="fk_ewc_subchapter__chapter"
+                             references="md_ewc_chapter(id)"/>
+            </column>
+            <column name="created" type="timestamp">
+                <constraints nullable="false"/>
+            </column>
+            <column name="last_modified" type="timestamp">
+                <constraints nullable="false"/>
+            </column>
+            <column name="version" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <rollback>
+            <dropTable tableName="md_ewc_subchapter"/>
+            <dropSequence sequenceName="md_ewc_subchapter_id_seq"/>
+        </rollback>
+    </changeSet>
+    <changeSet id="create-index: md_ewc_subchapter" author="DEFRA">
+        <createIndex indexName="idx_md_ewc_subchapter_code" tableName="md_ewc_subchapter" unique="true">
+            <column name="nomenclature"/>
+        </createIndex>
+        <rollback>
+            <dropIndex tableName="md_ewc_subchapter" indexName="idx_md_ewc_subchapter"/>
+        </rollback>
+    </changeSet>
+
+    <changeSet id="create-table: md_ewc_activity" author="DEFRA">
+        <createSequence sequenceName="md_ewc_activity_id_seq" startValue="1"/>
+        <createTable tableName="md_ewc_activity">
+            <column name="id" type="bigint" defaultValueSequenceNext="md_ewc_activity_id_seq">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="nomenclature" type="varchar(8)">
+                <constraints nullable="false" unique="true"/>
+            </column>
+            <column name="code" type="varchar(2)">
+                <constraints nullable="false" unique="false"/>
+            </column>
+            <column name="hazardous" type="boolean">
+                <constraints nullable="false"/>
+            </column>
+            <column name="description" type="varchar(500)">
+                <constraints nullable="false" unique="false"/>
+            </column>
+            <column name="ewc_subchapter_id" type="bigint">
+                <constraints nullable="false"
+                             foreignKeyName="fk_ewc_activity__subchapter"
+                             references="md_ewc_subchapter(id)"/>
+            </column>
+            <column name="created" type="timestamp">
+                <constraints nullable="false"/>
+            </column>
+            <column name="last_modified" type="timestamp">
+                <constraints nullable="false"/>
+            </column>
+            <column name="version" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <rollback>
+            <dropTable tableName="md_ewc_activity"/>
+            <dropSequence sequenceName="md_ewc_activity_id_seq"/>
+        </rollback>
+    </changeSet>
+    <changeSet id="create-index: md_ewc_activity" author="DEFRA">
+        <createIndex indexName="idx_md_ewc_activity_code" tableName="md_ewc_activity" unique="true">
+            <column name="nomenclature"/>
+        </createIndex>
+        <rollback>
+            <dropIndex tableName="md_ewc_activity" indexName="idx_md_ewc_activity"/>
+        </rollback>
+    </changeSet>
+    
+    
+    <!--
     ****************************************************************
     Applicability
     ****************************************************************
