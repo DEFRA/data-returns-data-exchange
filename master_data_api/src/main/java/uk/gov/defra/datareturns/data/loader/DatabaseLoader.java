@@ -8,6 +8,10 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import uk.gov.defra.datareturns.data.model.applicability.Applicability;
 import uk.gov.defra.datareturns.data.model.applicability.ApplicabilityRepository;
+import uk.gov.defra.datareturns.data.model.disposalsandrecoveries.DisposalCode;
+import uk.gov.defra.datareturns.data.model.disposalsandrecoveries.DisposalCodeRepository;
+import uk.gov.defra.datareturns.data.model.disposalsandrecoveries.RecoveryCode;
+import uk.gov.defra.datareturns.data.model.disposalsandrecoveries.RecoveryCodeRepository;
 import uk.gov.defra.datareturns.data.model.eaid.UniqueIdentifier;
 import uk.gov.defra.datareturns.data.model.eaid.UniqueIdentifierAlias;
 import uk.gov.defra.datareturns.data.model.eaid.UniqueIdentifierAliasRepository;
@@ -535,6 +539,32 @@ public interface DatabaseLoader {
         }
     }
 
+    @RequiredArgsConstructor
+    @Component
+    class DisposalsAndRecoveryLoader implements DatabaseLoader {
+        //private final MethodOrStandardRepository methodOrStandardRepository;
+        private final DisposalCodeRepository disposalCodeRepository;
+        private final RecoveryCodeRepository recoveryCodeRepository;
+        @Transactional
+        @Override
+        public void load() {
+            final List<Map<String, String>> cdata = LoaderUtils.readCsvData("/db/data/DisposalCodes.csv");
+            for (final Map<String, String> rowData : cdata) {
+                final DisposalCode entity = new DisposalCode();
+                entity.setNomenclature(rowData.get("code"));
+                entity.setDescription(rowData.get("description"));
+                disposalCodeRepository.saveAndFlush(entity);
+            }
+
+            final List<Map<String, String>> rdata = LoaderUtils.readCsvData("/db/data/RecoveryCodes.csv");
+            for (final Map<String, String> rowData : rdata) {
+                final RecoveryCode entity = new RecoveryCode();
+                entity.setNomenclature(rowData.get("code"));
+                entity.setDescription(rowData.get("description"));
+                recoveryCodeRepository.saveAndFlush(entity);
+            }
+        }
+    }
 
     @Slf4j
     @RequiredArgsConstructor

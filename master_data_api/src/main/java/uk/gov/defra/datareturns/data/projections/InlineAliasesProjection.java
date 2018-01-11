@@ -7,7 +7,7 @@ import uk.gov.defra.datareturns.data.model.AliasedEntity;
 import java.util.Set;
 
 /**
- * Projection to display aliases inline as an array.
+ * InlineEwcSubchapterProjection to display aliases inline as an array.
  *
  * @author Sam Gardner-Dell
  */
