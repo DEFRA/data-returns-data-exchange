@@ -56,10 +56,18 @@ public class SpringDataRestConfiguration implements RepositoryRestConfigurer {
         final Set<Class<?>> projections = rf.getTypesAnnotatedWith(Projection.class);
         for (final Class<?> c : projections) {
             final Projection p = c.getAnnotation(Projection.class);
+
+            // Add entity classes with projection annotation
             final Set<Class<?>> entityClasses = Arrays.stream(p.types())
+                    .filter(t -> t.isAnnotationPresent(Entity.class))
+                    .collect(Collectors.toSet());
+
+            // Append any entity subtypes
+            entityClasses.addAll(Arrays.stream(p.types())
                     .flatMap(e -> rf.getSubTypesOf(e).stream())
                     .filter(e -> e.isAnnotationPresent(Entity.class))
-                    .collect(Collectors.toSet());
+                    .collect(Collectors.toSet()));
+
             log.info("Registering projection {} from class {} with entity classes {}", p.name(), c.getSimpleName(), entityClasses);
             config.getProjectionConfiguration().addProjection(c, p.name(), entityClasses.toArray(new Class[entityClasses.size()]));
         }

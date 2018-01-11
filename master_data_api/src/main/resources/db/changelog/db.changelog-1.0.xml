@@ -1276,4 +1276,89 @@
             <dropTable tableName="md_applicability_unit_groups"/>
         </rollback>
     </changeSet>
+
+    <!--
+****************************************************************
+Disposal Codes
+****************************************************************
+-->
+
+    <changeSet id="create-table: md_disposal_codes" author="DEFRA">
+        <createSequence sequenceName="md_disposal_codes_id_seq" startValue="1"/>
+        <createTable tableName="md_disposal_codes">
+            <column name="id" type="bigint" defaultValueSequenceNext="md_disposal_codes_id_seq">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="nomenclature" type="varchar(3)">
+                <constraints nullable="false" unique="true"/>
+            </column>
+            <column name="description" type="varchar(255)">
+                <constraints nullable="false" unique="false"/>
+            </column>
+            <column name="created" type="timestamp">
+                <constraints nullable="false"/>
+            </column>
+            <column name="last_modified" type="timestamp">
+                <constraints nullable="false"/>
+            </column>
+            <column name="version" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <rollback>
+            <dropTable tableName="md_disposal_codes"/>
+            <dropSequence sequenceName="md_disposal_codes_id_seq"/>
+        </rollback>
+    </changeSet>
+    <changeSet id="create-index: idx_md_disposal_codes" author="DEFRA`">
+        <createIndex indexName="idx_md_disposal_codes" tableName="md_disposal_codes" unique="true">
+            <column name="nomenclature"/>
+        </createIndex>
+        <rollback>
+            <dropIndex tableName="md_disposal_codes" indexName="idx_md_disposal_codes"/>
+        </rollback>
+    </changeSet>
+
+    <!--
+     ****************************************************************
+     Recovery Codes
+     ****************************************************************
+     -->
+
+    <changeSet id="create-table: md_recovery_codes" author="DEFRA">
+        <createSequence sequenceName="md_recovery_codes_id_seq" startValue="1"/>
+        <createTable tableName="md_recovery_codes">
+            <column name="id" type="bigint" defaultValueSequenceNext="md_recovery_codes_id_seq">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="nomenclature" type="varchar(3)">
+                <constraints nullable="false" unique="true"/>
+            </column>
+            <column name="description" type="varchar(255)">
+                <constraints nullable="false" unique="false"/>
+            </column>
+            <column name="created" type="timestamp">
+                <constraints nullable="false"/>
+            </column>
+            <column name="last_modified" type="timestamp">
+                <constraints nullable="false"/>
+            </column>
+            <column name="version" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <rollback>
+            <dropTable tableName="md_recovery_codes"/>
+            <dropSequence sequenceName="md_recovery_codes_id_seq"/>
+        </rollback>
+    </changeSet>
+    <changeSet id="create-index: idx_md_recovery_codes" author="DEFRA`">
+        <createIndex indexName="idx_md_recovery_codes" tableName="md_recovery_codes" unique="true">
+            <column name="nomenclature"/>
+        </createIndex>
+        <rollback>
+            <dropIndex tableName="md_recovery_codes" indexName="idx_md_recovery_codes"/>
+        </rollback>
+    </changeSet>
+
 </databaseChangeLog>

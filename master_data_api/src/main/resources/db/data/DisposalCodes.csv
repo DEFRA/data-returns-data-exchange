@@ -1,0 +1,16 @@
+code,description
+D1,"Deposit into or onto land, e.g. landfill"
+D2,"Land treatment, e.g. biodegradation of liquid or sludgy discards in soils"
+D3,"Deep injection, e.g. injection of pumpable discards into wells, salt domes or naturally occurring repositories"
+D4,"Surface impoundment, e.g. placement of liquid or sludgy discards into pits, ponds or lagoons"
+D5,"Specially engineered landfill, e.g. placement into lined discrete cells which are capped and isolated from one another and the environment"
+D6,"Release into a water body, except seas/oceans"
+D7,"Release into seas/oceans, including sea-bed insertion"
+D8,Biological treatment resulting in final compounds or mixtures which are discarded by any of the operations numbered D1 to D12
+D9,"Physico-chemical treatment resulting in final compounds or mixtures which are discarded by any of the operations numbered D1 to D12, e.g. evaporation, drying, calcination"
+D10,Incineration on land
+D11,Incineration at sea
+D12,"Permanent storage, e.g. emplacement of containers in a mine"
+D13,Blending or mixing prior to submission to any of the operations numbered D1 to D12
+D14,Repackaging prior to submission to any of the operations numbered D1 to D13
+D15,"Storage pending any of the operations numbered D1 to D14 (excluding temporary storage, pending collection, on the site where it is produced)"
