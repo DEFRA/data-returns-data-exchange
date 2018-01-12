@@ -51,7 +51,7 @@ public abstract class AbstractBaseEntity {
      * Creation date of the entity
      */
     @CreatedDate
-    @Column(nullable = false)
+    @Column(nullable = false, updatable = false)
     @JsonProperty("_created")
     private Date created;
 
@@ -68,7 +68,7 @@ public abstract class AbstractBaseEntity {
      */
     @Version
     @Column(nullable = false)
-    private Long version;
+    private short version;
 
     /*
      * Force subclasses to implement equals(Object)

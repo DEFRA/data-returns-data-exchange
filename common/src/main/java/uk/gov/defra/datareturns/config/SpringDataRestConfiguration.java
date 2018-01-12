@@ -8,7 +8,6 @@ import org.reflections.Reflections;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Import;
 import org.springframework.core.convert.support.ConfigurableConversionService;
 import org.springframework.data.rest.core.config.Projection;
 import org.springframework.data.rest.core.config.RepositoryRestConfiguration;
@@ -36,7 +35,6 @@ import java.util.stream.Collectors;
 @Configuration
 @ConditionalOnWebApplication
 @Slf4j
-@Import(SwaggerConfiguration.class)
 @RequiredArgsConstructor
 public class SpringDataRestConfiguration implements RepositoryRestConfigurer {
     /**

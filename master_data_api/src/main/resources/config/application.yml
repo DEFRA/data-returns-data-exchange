@@ -1,0 +1,40 @@
+###############################################################################
+#
+# Data Returns Master Data API Configuration Settings
+#
+###############################################################################
+spring:
+  application:
+    name: Data Returns Master Data API
+  datasource:
+    url: @db.md_api.url@
+    username: @db.md_api.username@
+    password: @db.md_api.password@
+    driverClassName: @db.md_api.driver@
+  jpa:
+    database-platform: @db.md_api.dialect@
+
+# Security configuration
+security:
+  method-level-enabled: true
+
+# Configuration for the web server
+server:
+  display-name: ${spring.application.name}
+  port: 9020
+# Configuration for the management server and its endpoints
+management:
+  port: 9021
+
+---
+###############################################################################
+#
+# Profile: dataloader
+#
+###############################################################################
+spring:
+  profiles: dataloader
+
+# Security configuration
+security:
+  method-level-enabled: false

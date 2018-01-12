@@ -21,7 +21,7 @@
             <column name="last_modified" type="timestamp">
                 <constraints nullable="false"/>
             </column>
-            <column name="version" type="bigint">
+            <column name="version" type="smallint">
                 <constraints nullable="false"/>
             </column>
             <column name="filename" type="varchar(255)">
@@ -54,7 +54,7 @@
             <column name="last_modified" type="timestamp">
                 <constraints nullable="false"/>
             </column>
-            <column name="version" type="bigint">
+            <column name="version" type="smallint">
                 <constraints nullable="false"/>
             </column>
             <column name="ea_id" type="varchar(12)">
@@ -109,7 +109,7 @@
             <column name="last_modified" type="timestamp">
                 <constraints nullable="false"/>
             </column>
-            <column name="version" type="bigint">
+            <column name="version" type="smallint">
                 <constraints nullable="false"/>
             </column>
 

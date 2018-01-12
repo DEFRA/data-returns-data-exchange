@@ -1,7 +1,5 @@
 package uk.gov.defra.datareturns.service;
 
-import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.config.BeanDefinition;
@@ -10,20 +8,14 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.hateoas.PagedResources;
 import org.springframework.hateoas.Resource;
-import org.springframework.hateoas.ResourceSupport;
-import org.springframework.hateoas.hal.Jackson2HalModule;
-import org.springframework.hateoas.mvc.TypeConstrainedMappingJackson2HttpMessageConverter;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.client.support.BasicAuthorizationInterceptor;
-import org.springframework.http.converter.HttpMessageConverter;
-import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
+import uk.gov.defra.datareturns.rest.HalRestTemplate;
 
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -62,7 +54,8 @@ public interface MasterDataCacheService {
         }
 
         private List<MasterDataEntity> retrieveAll(final String entityName) {
-            final RestTemplate restTemplate = getRestTemplateWithHalMessageConverter();
+            final RestTemplate restTemplate = new HalRestTemplate();
+            restTemplate.getInterceptors().add(new BasicAuthorizationInterceptor("user", "password"));
             // FIXME: URL should not be hardcoded
             final ResponseEntity<PagedResources<Resource<MasterDataEntity>>> responseEntity =
                     restTemplate.exchange("http://localhost:9020/api/" + entityName,
@@ -76,22 +69,6 @@ public interface MasterDataCacheService {
                 return resources.stream().map(Resource::getContent).collect(Collectors.toList());
             }
             return Collections.emptyList();
-        }
-
-        private RestTemplate getRestTemplateWithHalMessageConverter() {
-            final RestTemplate restTemplate = new RestTemplate(Arrays.asList(getHalMessageConverter()));
-            restTemplate.getInterceptors().add(new BasicAuthorizationInterceptor("user", "password"));
-            return restTemplate;
-        }
-
-        private HttpMessageConverter getHalMessageConverter() {
-            final ObjectMapper objectMapper = new ObjectMapper();
-            objectMapper.registerModule(new Jackson2HalModule());
-            objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-            final MappingJackson2HttpMessageConverter halConverter = new TypeConstrainedMappingJackson2HttpMessageConverter(ResourceSupport.class);
-            halConverter.setSupportedMediaTypes(MediaType.parseMediaTypes("application/hal+json"));
-            halConverter.setObjectMapper(objectMapper);
-            return halConverter;
         }
     }
 }

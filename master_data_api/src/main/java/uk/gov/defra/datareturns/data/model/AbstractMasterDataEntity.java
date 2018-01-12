@@ -58,25 +58,18 @@ public abstract class AbstractMasterDataEntity extends AbstractBaseEntity implem
     @NotBlank
     private String nomenclature;
 
-    /*
-     * Prevent subclasses from overriding equals and hashCode
-     */
     @Override
     public final boolean equals(final Object o) {
-        // Use interface for equality checking.
         if (this == o) {
             return true;
         }
-        if (!(o instanceof MasterDataEntity)) {
+        if (o == null || getClass() != o.getClass()) {
             return false;
         }
-        final MasterDataEntity that = (MasterDataEntity) o;
+        final AbstractMasterDataEntity that = (AbstractMasterDataEntity) o;
         return Objects.equals(getNomenclature(), that.getNomenclature());
     }
 
-    /*
-     * Prevent subclasses from overriding equals and hashCode
-     */
     @Override
     public final int hashCode() {
         return Objects.hash(getNomenclature());

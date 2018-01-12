@@ -5,7 +5,7 @@ cd ${base_dir}
 
 # Build and install all modules
 cd ${base_dir}/../ > /dev/null
-mvn -Dcheckstyle.skip=true -Ddependency-check.skip=true -DskipTests=true -T 1C -pl ecm_submissions_api install
+mvn -Dcheckstyle.skip=true -Ddependency-check.skip=true -DskipTests=true -T 1C -am -pl ecm_submissions_api install
 rc=$?;
 if [[ ${rc} != 0 ]]; then
 	echo -e "\nAn error occurred when attempting to compile project artifacts."

@@ -1,0 +1,28 @@
+###############################################################################
+#
+# Data Returns ECM Submissions API Configuration Settings
+#
+# This file is split into different sections, the first provides defaults
+# for all environments.  Subsequent sections provide profile-specific
+# configurations which may be enabled to override the default values.
+#
+###############################################################################
+spring:
+  application:
+    name: Data Returns ECM Submissions API
+  datasource:
+    url: @db.ecm_api.url@
+    username: @db.ecm_api.username@
+    password: @db.ecm_api.password@
+    driverClassName: @db.ecm_api.driver@
+  jpa:
+    database-platform: @db.ecm_api.dialect@
+
+# Configuration for the web server
+server:
+  display-name: ${spring.application.name}
+  port: 9220
+
+# Configuration for the management server and its endpoints
+management:
+  port: 9221

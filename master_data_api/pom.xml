@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
@@ -18,36 +19,6 @@
         <dependency>
             <groupId>uk.gov.defra.datareturns</groupId>
             <artifactId>common</artifactId>
-        </dependency>
-
-        <!-- Spring boot annotation processor -->
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-configuration-processor</artifactId>
-            <optional>true</optional>
-        </dependency>
-
-
-        <!-- Redis support for spring cache -->
-        <!--
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-data-redis</artifactId>
-        </dependency>
-        -->
-
-        <!-- special dependency to fix liquibase's logging fetish -->
-        <dependency>
-            <groupId>com.mattbertolini</groupId>
-            <artifactId>liquibase-slf4j</artifactId>
-            <version>${liquibase-slf4j.version}</version>
-        </dependency>
-
-        <!-- Errbit error reporting -->
-        <dependency>
-            <groupId>net.anthavio</groupId>
-            <artifactId>airbrake-logback</artifactId>
-            <version>${airbrake-logback.version}</version>
         </dependency>
     </dependencies>
 
@@ -150,7 +121,7 @@
                     <defaultSchemaName>${db.md_api.schema}</defaultSchemaName>
                     <username>${db.md_api.username}</username>
                     <password>${db.md_api.password}</password>
-                    <referenceUrl>hibernate:spring:uk.gov.defra.datareturns.data.model?dialect=${db.md_api.dialect}&amp;hibernate.implicit_naming_strategy=org.springframework.boot.orm.jpa.hibernate.SpringImplicitNamingStrategy&amp;hibernate.physical_naming_strategy=org.springframework.boot.orm.jpa.hibernate.SpringPhysicalNamingStrategy</referenceUrl>
+                    <referenceUrl>hibernate:spring:uk.gov.defra.datareturns.data.model?dialect=${db.md_api.dialect}&amp;hibernate.implicit_naming_strategy=uk.gov.defra.datareturns.persistence.DataReturnsImplicitNamingStrategy&amp;hibernate.physical_naming_strategy=org.springframework.boot.orm.jpa.hibernate.SpringPhysicalNamingStrategy</referenceUrl>
                 </configuration>
             </plugin>
 

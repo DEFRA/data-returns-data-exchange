@@ -1,0 +1,64 @@
+{
+  "reporting_reference": 1,
+  "applicable_year": 2017,
+  "releases_to_air": [
+    {
+      "substance_id": 660,
+      "method": "Measurement",
+      "value": 30.1,
+      "below_reporting_threshold": false,
+      "unit_id": 143
+    }
+  ],
+  "releases_to_land": [
+    {
+      "substance_id": 664,
+      "method": "Calculation",
+      "value": 30.2,
+      "below_reporting_threshold": false,
+      "unit_id": 139
+    }
+  ],
+  "releases_to_controlled_water": [
+    {
+      "substance_id": 548,
+      "method": "Calculation",
+      "value": 30.2,
+      "below_reporting_threshold": false,
+      "unit_id": 141
+    }
+  ],
+  "overseas_waste_transfers": [
+    {
+      "substance_id": 612,
+      "operation": "Disposal",
+      "method": "Calculation",
+      "tonnage": 30.2,
+      "below_reporting_threshold": false,
+      "unit_id": 142,
+      "responsible_company_name": "A company ltd",
+      "responsible_company_address": {
+        "line1": "100 Acorn Close",
+        "line2": "Nutsville",
+        "town_or_city": "Nutston",
+        "post_code": "NU1 1AC",
+        "country": "UK"
+      },
+      "destination_address": {
+        "line1": "100 Acorn Close",
+        "line2": "Nutsville",
+        "town_or_city": "Nutston",
+        "post_code": "NU1 1AC",
+        "country": "UK"
+      }
+    }
+  ],
+  "offsite_waste_transfers": [
+    {
+      "ewc_activity_id": 1,
+      "wfd_disposal_id": 1,
+      "wfd_recovery_id": 1,
+      "tonnage": 1
+    }
+  ]
+}

@@ -1,0 +1,33 @@
+###############################################################################
+#
+# Data Returns Master Data API Configuration Settings (TESTING)
+#
+###############################################################################
+spring:
+  application:
+    name: Data Returns Master Data API
+  datasource:
+    url: jdbc:h2:mem:test
+
+# Configuration for the management server and its endpoints
+management:
+  port: -1
+
+
+---
+###############################################################################
+#
+# Profile: IntegrationTests
+#
+###############################################################################
+spring:
+  profiles: IntegrationTests
+
+# Configuration for the web server
+server:
+  address: 127.0.0.1
+  port: 9120
+
+# Security configuration
+security:
+  method-level-enabled: false

@@ -5,7 +5,7 @@ cd ${base_dir}
 
 # Build and install all modules
 cd ${base_dir}/../ > /dev/null
-mvn -Dcheckstyle.skip=true -Ddependency-check.skip=true -DskipTests=true -T 1C -pl master_data_api -am install
+mvn -Dcheckstyle.skip=true -Ddependency-check.skip=true -DskipTests=true -T 1C -am -pl master_data_api install
 # Get return code from maven
 rc=$?;
 if [[ ${rc} != 0 ]]; then

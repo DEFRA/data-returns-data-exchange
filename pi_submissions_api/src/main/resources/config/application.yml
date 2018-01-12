@@ -1,0 +1,33 @@
+###############################################################################
+#
+# Data Returns PI Submissions API Configuration Settings
+#
+# This file is split into different sections, the first provides defaults
+# for all environments.  Subsequent sections provide profile-specific
+# configurations which may be enabled to override the default values.
+#
+###############################################################################
+spring:
+  application:
+    name: Data Returns PI Submissions API
+  datasource:
+    url: @db.pi_api.url@
+    username: @db.pi_api.username@
+    password: @db.pi_api.password@
+    driverClassName: @db.pi_api.driver@
+  jpa:
+    database-platform: @db.pi_api.dialect@
+
+security:
+  user:
+    name: user
+    password: user
+
+# Configuration for the web server
+server:
+  display-name: ${spring.application.name}
+  port: 9220
+
+# Configuration for the management server and its endpoints
+management:
+  port: 9221

@@ -21,36 +21,6 @@
             <groupId>uk.gov.defra.datareturns</groupId>
             <artifactId>common</artifactId>
         </dependency>
-
-        <!-- Spring boot annotation processor -->
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-configuration-processor</artifactId>
-            <optional>true</optional>
-        </dependency>
-
-
-        <!-- Redis support for spring cache -->
-        <!--
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-data-redis</artifactId>
-        </dependency>
-        -->
-
-        <!-- special dependency to fix liquibase's logging fetish -->
-        <dependency>
-            <groupId>com.mattbertolini</groupId>
-            <artifactId>liquibase-slf4j</artifactId>
-            <version>${liquibase-slf4j.version}</version>
-        </dependency>
-
-        <!-- Errbit error reporting -->
-        <dependency>
-            <groupId>net.anthavio</groupId>
-            <artifactId>airbrake-logback</artifactId>
-            <version>${airbrake-logback.version}</version>
-        </dependency>
     </dependencies>
 
 
@@ -65,7 +35,6 @@
                     <encoding>${project.build.sourceEncoding}</encoding>
                 </configuration>
             </plugin>
-
 
             <plugin>
                 <groupId>org.springframework.boot</groupId>

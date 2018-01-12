@@ -26,6 +26,7 @@
         <module>common</module>
         <module>master_data_api</module>
         <module>ecm_submissions_api</module>
+        <module>pi_submissions_api</module>
         <module>build_tools</module>
     </modules>
 
@@ -317,6 +318,12 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-actuator</artifactId>
         </dependency>
+        <!-- Spring boot annotation processor -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-configuration-processor</artifactId>
+            <optional>true</optional>
+        </dependency>
 
         <!-- Expose dropwizard metrics via management port -->
         <dependency>
@@ -379,6 +386,20 @@
         <dependency>
             <groupId>org.liquibase</groupId>
             <artifactId>liquibase-core</artifactId>
+        </dependency>
+
+        <!-- special dependency to fix liquibase's logging fetish -->
+        <dependency>
+            <groupId>com.mattbertolini</groupId>
+            <artifactId>liquibase-slf4j</artifactId>
+            <version>${liquibase-slf4j.version}</version>
+        </dependency>
+
+        <!-- Errbit error reporting -->
+        <dependency>
+            <groupId>net.anthavio</groupId>
+            <artifactId>airbrake-logback</artifactId>
+            <version>${airbrake-logback.version}</version>
         </dependency>
 
         <dependency>
@@ -562,38 +583,6 @@
         </pluginManagement>
 
         <plugins>
-            <!-- Run required annotation processors -->
-            <plugin>
-                <groupId>org.bsc.maven</groupId>
-                <artifactId>maven-processor-plugin</artifactId>
-                <configuration>
-                    <processors>
-                        <!-- Hibernate metamodel processor -->
-                        <processor>org.hibernate.jpamodelgen.JPAMetaModelEntityProcessor</processor>
-                        <!-- QueryDSL processor -->
-                        <processor>com.querydsl.apt.jpa.JPAAnnotationProcessor</processor>
-                    </processors>
-                    <outputDiagnostics>true</outputDiagnostics>
-                    <addOutputDirectoryToCompilationSources>true</addOutputDirectoryToCompilationSources>
-                </configuration>
-                <executions>
-                    <execution>
-                        <id>process</id>
-                        <goals>
-                            <goal>process</goal>
-                        </goals>
-                        <phase>generate-sources</phase>
-                    </execution>
-                    <execution>
-                        <id>process-test</id>
-                        <goals>
-                            <goal>process-test</goal>
-                        </goals>
-                        <phase>generate-test-sources</phase>
-                    </execution>
-                </executions>
-            </plugin>
-
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
@@ -602,8 +591,9 @@
                     <target>${java.version}</target>
                     <encoding>${project.build.sourceEncoding}</encoding>
                     <annotationProcessors>
-                        <annotationProcessor>lombok.launch.AnnotationProcessorHider$AnnotationProcessor
-                        </annotationProcessor>
+                        <annotationProcessor>lombok.launch.AnnotationProcessorHider$AnnotationProcessor</annotationProcessor>
+                        <annotationProcessor>org.hibernate.jpamodelgen.JPAMetaModelEntityProcessor</annotationProcessor>
+                        <annotationProcessor>com.querydsl.apt.jpa.JPAAnnotationProcessor</annotationProcessor>
                     </annotationProcessors>
                 </configuration>
             </plugin>
