@@ -679,7 +679,7 @@
 662,Aldicarb,,Chemical,,ECM
 663,Aldrin,,Chemical,309-00-2,ECM PI_RTA PI_RTL PI_RTW PI_OSW
 664,Aldrin-R (ug/l),Aldrin,,,ECM
-665,Algae Blue/Green,,Biological Parameter,,ECM
+665,Algae Blue/Green,,Biological Parameter,,ECM PI_RTW PI_OSW
 666,Algae Diatoms,,Biological Parameter,,ECM
 667,Algae Green,,Biological Parameter,,ECM
 668,Algae others,,Biological Parameter,,ECM
@@ -699,8 +699,8 @@
 692,"Aliphatics and aromatics C12-C35, total",,Chemical Group,,ECM
 681,Aliphatics C10-C12,,Chemical Group,,ECM
 682,"Aliphatics C10-C35, total",,Chemical Group,,ECM
-683,Aliphatics C12-C16 (aq),,Chemical Group,,ECM
-684,Aliphatics C12-C35 (aq),,Chemical Group,,ECM
+683,Aliphatics C12-C16 (aq),,Chemical Group,,ECM PI_RTA PI_RTL
+684,Aliphatics C12-C35 (aq),,Chemical Group,,ECM PI_RTA PI_RTL
 685,Aliphatics C16-C21 (aq),,Chemical Group,,ECM
 686,Aliphatics C21-C35 (aq),,Chemical Group,,ECM
 687,Aliphatics C5-C12,,Chemical Group,,ECM
@@ -752,7 +752,7 @@
 3247,ammonia as total ammonia,Ammonia,,,ECM
 3466,Ammonia un-ionised as N,,Chemical,,ECM
 3443,Ammonia unionised as N,Ammonia un-ionised as N,Chemical,,ECM
-723,Ammoniacal nitrogen,,Chemical,,ECM
+723,Ammoniacal nitrogen,,Chemical,,ECM PI_RTA PI_RTL
 724,Ammoniacal nitrogen (nitrogen),Ammoniacal nitrogen as N,,,ECM
 725,Ammoniacal nitrogen as N,,Chemical,,ECM
 722,Ammoniacal Nitrogen as NH4,,Chemical,,ECM
@@ -810,9 +810,9 @@
 766,Arochlor 1250,Aroclor 1250,,,ECM
 767,Arochlor 1252,Aroclor 1252,,,ECM
 768,Arochlor 1254,Aroclor 1254,,,ECM
-769,Arochlor 1255,Aroclor 1255,,,ECM
+769,Arochlor 1255,Aroclor 1255,,,ECM PI_RTW PI_OSW
 770,Arochlor 1256,Aroclor 1256,,,ECM
-771,Arochlor 1258,Aroclor 1258,,,ECM
+771,Arochlor 1258,Aroclor 1258,,,ECM PI_RTW PI_OSW
 772,Arochlor 1259,Aroclor 1259,,,ECM
 773,Arochlor 1260,Aroclor 1260,,,ECM
 774,Arochlor 1261,Aroclor 1261,,,ECM
@@ -827,7 +827,7 @@
 783,Aroclor 1232,,Chemical,,ECM
 784,Aroclor 1240,,Chemical,,ECM
 785,Aroclor 1242,,Chemical,,ECM
-786,Aroclor 1248,,Chemical,,ECM
+786,Aroclor 1248,,Chemical,,ECM PI_RTW PI_OSW
 787,Aroclor 1250,,Chemical,,ECM
 788,Aroclor 1252,,Chemical,,ECM
 789,Aroclor 1254,,Chemical,,ECM
@@ -1919,17 +1919,17 @@
 1702,HCH-epsilon,,Chemical,,ECM
 1703,HCH-gamma,,Chemical,58-89-9,ECM
 1721,Heat Exported,,Physical parameter,,ECM
-1722,Heavy metals,,Chemical Group,,ECM
+1722,Heavy metals,,Chemical Group,,ECM PI_RTL PI_RTW
 1723,Helium,,Chemical,,ECM
 1724,Heneicosane,,Chemical,,ECM
-1725,"Heneicosane, 11-pentyl-",,Chemical,14739-72-1,ECM
+1725,"Heneicosane, 11-pentyl-",,Chemical,14739-72-1,ECM PI_RTL PI_RTW
 1726,Hentriacontane,,Chemical,,ECM
 1727,Heptachlor,,Chemical,76-44-8,ECM
 1728,Heptachlor (and heptachor epoxide),,Chemical,76-44-8 and 102-57-3,ECM
 1729,Heptachlor epoxide,Heptachlorepoxide,,,ECM
 1730,Heptachlorepoxide,,Chemical,1024-57-3,ECM
 1731,Heptachlorobiphenyl,,Chemical,,ECM
-1732,Heptacosane,,Chemical,,ECM
+1732,Heptacosane,,Chemical,,ECM PI_RTL PI_RTW
 1733,Heptadecane,,Chemical,,ECM
 1734,"Heptadecane, 2,6,10,15-tetramethyl-",,Chemical,54833-48-6,ECM
 1735,"Heptadecane,8-methyl",,Chemical,13287-23-5,ECM
