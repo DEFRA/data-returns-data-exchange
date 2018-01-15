@@ -10,7 +10,7 @@ import uk.gov.defra.datareturns.data.model.ewc.EwcSubchapter;
 public interface EwcSubchaperIncludeChaperId {
     Long getId();
 
-    @Value("#{target.id}")
+    @Value("#{target.ewcChapter.id}")
     Long getEwcChapter();
 
     String getNomenclature();
