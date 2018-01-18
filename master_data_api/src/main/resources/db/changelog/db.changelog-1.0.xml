@@ -1169,8 +1169,8 @@
             <dropIndex tableName="md_ewc_activity" indexName="idx_md_ewc_activity"/>
         </rollback>
     </changeSet>
-    
-    
+
+
     <!--
     ****************************************************************
     Applicability
@@ -1278,10 +1278,10 @@
     </changeSet>
 
     <!--
-****************************************************************
-Disposal Codes
-****************************************************************
--->
+    ****************************************************************
+    Disposal Codes
+    ****************************************************************
+    -->
 
     <changeSet id="create-table: md_disposal_codes" author="DEFRA">
         <createSequence sequenceName="md_disposal_codes_id_seq" startValue="1"/>
@@ -1301,7 +1301,7 @@ Disposal Codes
             <column name="last_modified" type="timestamp">
                 <constraints nullable="false"/>
             </column>
-            <column name="version" type="bigint">
+            <column name="version" type="smallint">
                 <constraints nullable="false"/>
             </column>
         </createTable>
@@ -1343,7 +1343,7 @@ Disposal Codes
             <column name="last_modified" type="timestamp">
                 <constraints nullable="false"/>
             </column>
-            <column name="version" type="bigint">
+            <column name="version" type="smallint">
                 <constraints nullable="false"/>
             </column>
         </createTable>

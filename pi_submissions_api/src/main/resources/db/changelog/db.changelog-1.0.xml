@@ -54,16 +54,9 @@
                 <constraints primaryKey="true" nullable="false"/>
             </column>
             <column name="submission_id" type="bigint">
-                <constraints foreignKeyName="fk_release_to_air__submission"
-                             references="pi_submission(id)"/>
-                <!-- FIXME: Understand how Spring Data REST handles updating this table when a submission is submitted -->
-                <!--
                 <constraints nullable="false"
-                             initiallyDeferred="true"
-                             deferrable="true"
                              foreignKeyName="fk_release_to_air__submission"
                              references="pi_submission(id)"/>
-                -->
             </column>
             <column name="method" type="varchar(50)">
                 <constraints nullable="false"/>
@@ -71,8 +64,9 @@
             <column name="below_reporting_threshold" type="BOOLEAN">
                 <constraints nullable="false"/>
             </column>
-            <column name="value" type="numeric(19, 2)"/>
-
+            <column name="value" type="numeric(19, 2)">
+                <constraints nullable="false"/>
+            </column>
             <column name="unit_id" type="int">
                 <constraints nullable="false"/>
             </column>
@@ -112,18 +106,9 @@
                 <constraints primaryKey="true" nullable="false"/>
             </column>
             <column name="submission_id" type="bigint">
-
-                <constraints foreignKeyName="fk_release_to_land__submission"
-                             references="pi_submission(id)"/>
-
-                <!-- FIXME: Understand how Spring Data REST handles updating this table when a submission is submitted -->
-                <!--
                 <constraints nullable="false"
-                             initiallyDeferred="true"
-                             deferrable="true"
                              foreignKeyName="fk_release_to_land__submission"
                              references="pi_submission(id)"/>
-                -->
             </column>
             <column name="method" type="varchar(50)">
                 <constraints nullable="false"/>
@@ -131,16 +116,15 @@
             <column name="below_reporting_threshold" type="BOOLEAN">
                 <constraints nullable="false"/>
             </column>
-            <column name="value" type="numeric(19, 2)"/>
-
+            <column name="value" type="numeric(19, 2)">
+                <constraints nullable="false"/>
+            </column>
             <column name="unit_id" type="int">
                 <constraints nullable="false"/>
             </column>
             <column name="substance_id" type="INT">
                 <constraints nullable="false"/>
             </column>
-
-
             <column name="created" type="timestamp">
                 <constraints nullable="false"/>
             </column>
@@ -174,17 +158,9 @@
                 <constraints primaryKey="true" nullable="false"/>
             </column>
             <column name="submission_id" type="bigint">
-                <constraints foreignKeyName="fk_release_to_controlled_water__submission"
-                             references="pi_submission(id)"/>
-
-                <!-- FIXME: Understand how Spring Data REST handles updating this table when a submission is submitted -->
-                <!--
                 <constraints nullable="false"
-                             initiallyDeferred="true"
-                             deferrable="true"
                              foreignKeyName="fk_release_to_controlled_water__submission"
                              references="pi_submission(id)"/>
-                -->
             </column>
             <column name="method" type="varchar(50)">
                 <constraints nullable="false"/>
@@ -192,8 +168,9 @@
             <column name="below_reporting_threshold" type="BOOLEAN">
                 <constraints nullable="false"/>
             </column>
-            <column name="value" type="numeric(19, 2)"/>
-
+            <column name="value" type="numeric(19, 2)">
+                <constraints nullable="false"/>
+            </column>
             <column name="unit_id" type="int">
                 <constraints nullable="false"/>
             </column>
@@ -234,18 +211,9 @@
                 <constraints primaryKey="true" nullable="false"/>
             </column>
             <column name="submission_id" type="bigint">
-
-                <constraints foreignKeyName="fk_release_to_waste_water__submission"
-                             references="pi_submission(id)"/>
-
-                <!-- FIXME: Understand how Spring Data REST handles updating this table when a submission is submitted -->
-                <!--
                 <constraints nullable="false"
-                             initiallyDeferred="true"
-                             deferrable="true"
                              foreignKeyName="fk_release_to_waste_water__submission"
                              references="pi_submission(id)"/>
-                -->
             </column>
             <column name="method" type="varchar(50)">
                 <constraints nullable="false"/>
@@ -253,8 +221,9 @@
             <column name="below_reporting_threshold" type="BOOLEAN">
                 <constraints nullable="false"/>
             </column>
-            <column name="value" type="numeric(19, 2)"/>
-
+            <column name="value" type="numeric(19, 2)">
+                <constraints nullable="false"/>
+            </column>
             <column name="unit_id" type="int">
                 <constraints nullable="false"/>
             </column>
@@ -294,22 +263,17 @@
                 <constraints primaryKey="true" nullable="false"/>
             </column>
             <column name="submission_id" type="bigint">
-                <constraints foreignKeyName="fk_transfer_overseas_waste__submission"
-                             references="pi_submission(id)"/>
-
-                <!-- FIXME: Understand how Spring Data REST handles updating this table when a submission is submitted -->
-                <!--
                 <constraints
                         nullable="false"
-                        initiallyDeferred="true"
-                        deferrable="true"
                         foreignKeyName="fk_transfer_overseas_waste__submission"
                         references="pi_submission(id)"/>
-                -->
             </column>
-            <column name="method" type="varchar(100)"/>
-            <column name="operation" type="varchar(100)"/>
-
+            <column name="method" type="varchar(100)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="operation" type="varchar(100)">
+                <constraints nullable="false"/>
+            </column>
             <column name="substance_id" type="int">
                 <constraints nullable="false"/>
             </column>
@@ -377,16 +341,9 @@
                 <constraints primaryKey="true" nullable="false"/>
             </column>
             <column name="submission_id" type="bigint">
-                <constraints foreignKeyName="fk_transfer_offsite__submission"
-                             references="pi_submission(id)"/>
-                <!-- FIXME: Understand how Spring Data REST handles updating this table when a submission is submitted -->
-                <!--
                 <constraints nullable="false"
-                             initiallyDeferred="true"
-                             deferrable="true"
                              foreignKeyName="fk_transfer_offsite__submission"
                              references="pi_submission(id)"/>
-                 -->
             </column>
             <column name="ewc_activity_id" type="int">
                 <constraints nullable="false"/>

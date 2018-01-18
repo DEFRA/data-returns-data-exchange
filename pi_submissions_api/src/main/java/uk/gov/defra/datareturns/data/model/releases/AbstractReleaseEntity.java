@@ -1,5 +1,6 @@
 package uk.gov.defra.datareturns.data.model.releases;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import lombok.Getter;
 import lombok.Setter;
 import uk.gov.defra.datareturns.data.model.AbstractBaseEntity;
@@ -25,20 +26,22 @@ import java.util.Objects;
 @Getter
 @Setter
 public abstract class AbstractReleaseEntity extends AbstractBaseEntity implements Serializable {
-    @ManyToOne
+    @ManyToOne(optional = false)
+    @JsonBackReference
     private Submission submission;
 
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     private ReleaseMethod method;
 
-    @Basic
+    @Column(nullable = false)
     private BigDecimal value;
 
     @Basic
+    @Column(nullable = false)
     private boolean belowReportingThreshold;
 
-    @Basic
+    @Column(nullable = false)
     @ValidId(resourceCollectionUris = "unitGroups/2/units")
     private int unitId;
 

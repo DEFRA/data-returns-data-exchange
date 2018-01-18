@@ -1,5 +1,6 @@
 package uk.gov.defra.datareturns.data.model.submissions;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.GenericGenerator;
@@ -55,31 +56,37 @@ public class Submission extends AbstractBaseEntity {
 
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "submission_id")
+    @JsonManagedReference
     @Valid
     private Set<ReleaseToAir> releasesToAir;
 
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "submission_id")
+    @JsonManagedReference
     @Valid
     private Set<ReleaseToLand> releasesToLand;
 
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "submission_id")
+    @JsonManagedReference
     @Valid
     private Set<ReleaseToControlledWater> releasesToControlledWater;
 
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "submission_id")
+    @JsonManagedReference
     @Valid
     private Set<ReleaseToWasteWater> releasesToWasteWater;
 
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "submission_id")
+    @JsonManagedReference
     @Valid
     private Set<OverseasWasteTransfer> overseasWasteTransfers;
 
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "submission_id")
+    @JsonManagedReference
     @Valid
     private Set<OffsiteWasteTransfer> offsiteWasteTransfers;
 

@@ -1,5 +1,6 @@
 package uk.gov.defra.datareturns.data.model.transfers;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.GenericGenerator;
@@ -9,6 +10,7 @@ import uk.gov.defra.datareturns.data.model.Address;
 import uk.gov.defra.datareturns.data.model.submissions.Submission;
 
 import javax.persistence.Basic;
+import javax.persistence.Column;
 import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -31,7 +33,8 @@ import java.util.Objects;
 @Getter
 @Setter
 public class OverseasWasteTransfer extends AbstractBaseEntity {
-    @ManyToOne
+    @ManyToOne(optional = false)
+    @JsonBackReference
     private Submission submission;
 
     @Basic
@@ -43,16 +46,18 @@ public class OverseasWasteTransfer extends AbstractBaseEntity {
     @Embedded
     private Address destinationAddress;
 
-    @Basic
+    @Column(nullable = false)
     private int substanceId;
 
-    @Basic
+    @Column(nullable = false)
     private BigDecimal tonnage;
 
     @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
     private OverseasWasteTransferOperation operation;
 
     @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
     private OverseasWasteTransferMethod method;
 
     @Override

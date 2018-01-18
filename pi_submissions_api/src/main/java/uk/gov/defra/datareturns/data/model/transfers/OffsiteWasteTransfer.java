@@ -1,5 +1,6 @@
 package uk.gov.defra.datareturns.data.model.transfers;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.GenericGenerator;
@@ -8,6 +9,7 @@ import uk.gov.defra.datareturns.data.model.AbstractBaseEntity;
 import uk.gov.defra.datareturns.data.model.submissions.Submission;
 
 import javax.persistence.Basic;
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.ManyToOne;
 import java.math.BigDecimal;
@@ -27,7 +29,8 @@ import java.util.Objects;
 @Getter
 @Setter
 public class OffsiteWasteTransfer extends AbstractBaseEntity {
-    @ManyToOne
+    @ManyToOne(optional = false)
+    @JsonBackReference
     private Submission submission;
 
     @Basic
@@ -39,7 +42,7 @@ public class OffsiteWasteTransfer extends AbstractBaseEntity {
     @Basic
     private int wfdRecoveryId;
 
-    @Basic
+    @Column(nullable = false)
     private BigDecimal tonnage;
 
     @Override
