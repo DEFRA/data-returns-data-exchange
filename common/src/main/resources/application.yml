@@ -91,6 +91,16 @@ server:
   compression:
     enabled: true
 
+# Service endpoints
+service-endpoints:
+  master_data_api:
+    uri: http://localhost:9020/api/
+    auth:
+      type: BASIC
+      properties:
+        user: user
+        password: password
+
 # Configuration for the management server and its endpoints
 management:
   security:
