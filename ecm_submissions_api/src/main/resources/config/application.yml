@@ -11,12 +11,12 @@ spring:
   application:
     name: Data Returns ECM Submissions API
   datasource:
-    url: @db.ecm_api.url@
-    username: @db.ecm_api.username@
-    password: @db.ecm_api.password@
-    driverClassName: @db.ecm_api.driver@
+    url: jdbc:postgresql://localhost:5432/dr_ecm_api
+    username: data_returns_owner
+    password: data_returns_owner
+    driverClassName: org.postgresql.Driver
   jpa:
-    database-platform: @db.ecm_api.dialect@
+    database-platform: org.hibernate.dialect.PostgreSQL95Dialect
 
 # Configuration for the web server
 server:

@@ -7,12 +7,12 @@ spring:
   application:
     name: Data Returns Master Data API
   datasource:
-    url: @db.md_api.url@
-    username: @db.md_api.username@
-    password: @db.md_api.password@
-    driverClassName: @db.md_api.driver@
+    url: jdbc:postgresql://localhost:5432/dr_md_api
+    username: data_returns_owner
+    password: data_returns_owner
+    driverClassName: org.postgresql.Driver
   jpa:
-    database-platform: @db.md_api.dialect@
+    database-platform: org.hibernate.dialect.PostgreSQL95Dialect
 
 # Security configuration
 security:

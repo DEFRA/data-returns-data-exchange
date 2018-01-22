@@ -11,12 +11,12 @@ spring:
   application:
     name: Data Returns PI Submissions API
   datasource:
-    url: @db.pi_api.url@
-    username: @db.pi_api.username@
-    password: @db.pi_api.password@
-    driverClassName: @db.pi_api.driver@
+    url: jdbc:postgresql://localhost:5432/dr_pi_api
+    username: data_returns_owner
+    password: data_returns_owner
+    driverClassName: org.postgresql.Driver
   jpa:
-    database-platform: @db.pi_api.dialect@
+    database-platform: org.hibernate.dialect.PostgreSQL95Dialect
 
 security:
   user:
