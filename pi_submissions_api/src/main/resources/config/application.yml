@@ -25,7 +25,7 @@ security:
 
 # Configuration for the web server
 server:
-  display-name: ${spring.application.name}
+  display-name: dr_pi_api
   port: 9220
 
 # Configuration for the management server and its endpoints
