@@ -16,6 +16,8 @@ import uk.gov.defra.datareturns.data.model.transfers.OverseasWasteTransfer;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
@@ -53,6 +55,9 @@ public class Submission extends AbstractBaseEntity {
      */
     @Column(nullable = false)
     private short applicableYear;
+
+    @Enumerated(EnumType.STRING)
+    private SubmissionStatus status;
 
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "submission_id")
@@ -108,5 +113,12 @@ public class Submission extends AbstractBaseEntity {
     @Override
     public final int hashCode() {
         return Objects.hash(getId());
+    }
+
+
+    public enum SubmissionStatus {
+        Unsubmitted,
+        Submitted,
+        Approved;
     }
 }

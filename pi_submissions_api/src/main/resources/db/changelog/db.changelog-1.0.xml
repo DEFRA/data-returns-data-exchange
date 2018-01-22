@@ -21,6 +21,9 @@
             <column name="applicable_year" type="smallint">
                 <constraints nullable="false"/>
             </column>
+            <column name="status" type="varchar(20)">
+                <constraints nullable="false"/>
+            </column>
             <column name="created" type="timestamp">
                 <constraints nullable="false"/>
             </column>
@@ -61,7 +64,7 @@
             <column name="method" type="varchar(50)">
                 <constraints nullable="false"/>
             </column>
-            <column name="below_reporting_threshold" type="BOOLEAN">
+            <column name="below_reporting_threshold" type="boolean">
                 <constraints nullable="false"/>
             </column>
             <column name="value" type="numeric(19, 2)">
@@ -113,7 +116,7 @@
             <column name="method" type="varchar(50)">
                 <constraints nullable="false"/>
             </column>
-            <column name="below_reporting_threshold" type="BOOLEAN">
+            <column name="below_reporting_threshold" type="boolean">
                 <constraints nullable="false"/>
             </column>
             <column name="value" type="numeric(19, 2)">
@@ -165,7 +168,7 @@
             <column name="method" type="varchar(50)">
                 <constraints nullable="false"/>
             </column>
-            <column name="below_reporting_threshold" type="BOOLEAN">
+            <column name="below_reporting_threshold" type="boolean">
                 <constraints nullable="false"/>
             </column>
             <column name="value" type="numeric(19, 2)">
@@ -218,7 +221,7 @@
             <column name="method" type="varchar(50)">
                 <constraints nullable="false"/>
             </column>
-            <column name="below_reporting_threshold" type="BOOLEAN">
+            <column name="below_reporting_threshold" type="boolean">
                 <constraints nullable="false"/>
             </column>
             <column name="value" type="numeric(19, 2)">
