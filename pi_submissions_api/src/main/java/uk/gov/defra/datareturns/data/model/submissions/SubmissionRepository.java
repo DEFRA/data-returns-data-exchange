@@ -5,6 +5,7 @@ import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 import uk.gov.defra.datareturns.data.BaseRepository;
 
 import java.util.List;
+import java.util.Set;
 
 
 /**
@@ -36,4 +37,12 @@ public interface SubmissionRepository extends BaseRepository<Submission, Long> {
 
     @SuppressWarnings("unused")
     List<Submission> findByReportingReference(@Param("reporting_reference") Long reportingReference);
+
+    /**
+     * Retrieve a list of {@link Submission}s for a set of reporting references for a given year
+     * @return
+     */
+    @SuppressWarnings("unused")
+    List<Submission> findByReportingReferenceInAndApplicableYear(@Param("reporting_references") Set<Long> reportingReferences,
+                                                                 @Param("applicable_year") Short applicableYear);
 }
