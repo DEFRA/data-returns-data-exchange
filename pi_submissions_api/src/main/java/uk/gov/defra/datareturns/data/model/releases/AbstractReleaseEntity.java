@@ -34,15 +34,17 @@ public abstract class AbstractReleaseEntity extends AbstractBaseEntity implement
     @Enumerated(EnumType.STRING)
     private ReleaseMethod method;
 
-    @Column(nullable = false)
+    // Fixme - need class level validation for BRT = false
+    @Column
     private BigDecimal value;
 
     @Basic
     @Column(nullable = false)
     private boolean belowReportingThreshold;
 
-    @Column(nullable = false)
-    @ValidId(resourceCollectionUris = "unitGroups/2/units")
+    // Fixme - need class level validation for BRT = false
+    // @ValidId(resourceCollectionUris = "unitGroups/2/units")
+    @Column
     private int unitId;
 
     @Override

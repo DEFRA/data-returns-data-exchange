@@ -68,10 +68,10 @@
                 <constraints nullable="false"/>
             </column>
             <column name="value" type="numeric(19, 2)">
-                <constraints nullable="false"/>
+                <constraints nullable="true"/>
             </column>
             <column name="unit_id" type="int">
-                <constraints nullable="false"/>
+                <constraints nullable="true"/>
             </column>
             <column name="substance_id" type="INT">
                 <constraints nullable="false"/>
@@ -120,10 +120,10 @@
                 <constraints nullable="false"/>
             </column>
             <column name="value" type="numeric(19, 2)">
-                <constraints nullable="false"/>
+                <constraints nullable="true"/>
             </column>
             <column name="unit_id" type="int">
-                <constraints nullable="false"/>
+                <constraints nullable="true"/>
             </column>
             <column name="substance_id" type="INT">
                 <constraints nullable="false"/>
@@ -172,10 +172,10 @@
                 <constraints nullable="false"/>
             </column>
             <column name="value" type="numeric(19, 2)">
-                <constraints nullable="false"/>
+                <constraints nullable="true"/>
             </column>
             <column name="unit_id" type="int">
-                <constraints nullable="false"/>
+                <constraints nullable="true"/>
             </column>
             <column name="substance_id" type="INT">
                 <constraints nullable="false"/>
@@ -225,10 +225,10 @@
                 <constraints nullable="false"/>
             </column>
             <column name="value" type="numeric(19, 2)">
-                <constraints nullable="false"/>
+                <constraints nullable="true"/>
             </column>
             <column name="unit_id" type="int">
-                <constraints nullable="false"/>
+                <constraints nullable="true"/>
             </column>
             <column name="substance_id" type="INT">
                 <constraints nullable="false"/>
