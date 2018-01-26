@@ -31,3 +31,4 @@ server:
 # Configuration for the management server and its endpoints
 management:
   port: 9221
+
