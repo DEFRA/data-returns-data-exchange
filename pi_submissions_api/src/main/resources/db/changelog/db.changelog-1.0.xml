@@ -5,6 +5,27 @@
 
     <!--
     ****************************************************************
+    Envers audit revision info
+    ****************************************************************
+    -->
+
+    <changeSet id="create-table: revinfo" author="Defra">
+        <createTable tableName="revinfo">
+            <column name="rev" type="integer">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="revtstmp" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <rollback>
+            <dropTable tableName="revinfo"/>
+        </rollback>
+    </changeSet>
+
+    <!--
+    ****************************************************************
     Submissions
     ****************************************************************
     -->
@@ -40,6 +61,28 @@
         <rollback>
             <dropTable tableName="pi_submission"/>
             <dropSequence sequenceName="pi_submission_id_seq"/>
+        </rollback>
+    </changeSet>
+
+    <changeSet id="create-table: pi_submission_aud" author="Defra">
+        <createTable tableName="pi_submission_aud">
+            <column name="id" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+            <column name="rev" type="integer">
+                <constraints nullable="false"/>
+            </column>
+            <column name="revtype" type="smallint">
+                <constraints nullable="false"/>
+            </column>
+            <column name="reporting_reference" type="bigint"/>
+            <column name="applicable_year" type="smallint"/>
+            <column name="status" type="varchar(20)"/>
+        </createTable>
+
+        <addPrimaryKey tableName="pi_submission_aud" columnNames="id, rev"/>
+        <rollback>
+            <dropTable tableName="pi_submission_aud"/>
         </rollback>
     </changeSet>
 
@@ -95,6 +138,30 @@
         </rollback>
     </changeSet>
 
+    <changeSet id="create-table: pi_release_to_air_aud" author="Defra">
+        <createTable tableName="pi_release_to_air_aud">
+            <column name="id" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+            <column name="rev" type="integer">
+                <constraints nullable="false"/>
+            </column>
+            <column name="revtype" type="smallint">
+                <constraints nullable="false"/>
+            </column>
+            <column name="submission_id" type="bigint"/>
+            <column name="method" type="varchar(50)"/>
+            <column name="below_reporting_threshold" type="boolean"/>
+            <column name="value" type="numeric(19, 2)"/>
+            <column name="unit_id" type="int"/>
+            <column name="substance_id" type="INT"/>
+        </createTable>
+
+        <addPrimaryKey tableName="pi_release_to_air_aud" columnNames="id, rev"/>
+        <rollback>
+            <dropTable tableName="pi_release_to_air_aud"/>
+        </rollback>
+    </changeSet>
 
     <!--
     ****************************************************************
@@ -145,6 +212,31 @@
         <rollback>
             <dropTable tableName="pi_release_to_land"/>
             <dropSequence sequenceName="pi_release_to_land_id_seq"/>
+        </rollback>
+    </changeSet>
+
+    <changeSet id="create-table: pi_release_to_land_aud" author="Defra">
+        <createTable tableName="pi_release_to_land_aud">
+            <column name="id" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+            <column name="rev" type="int">
+                <constraints nullable="false"/>
+            </column>
+            <column name="revtype" type="smallint">
+                <constraints nullable="false"/>
+            </column>
+            <column name="submission_id" type="bigint"/>
+            <column name="method" type="varchar(50)"/>
+            <column name="below_reporting_threshold" type="boolean"/>
+            <column name="value" type="numeric(19, 2)"/>
+            <column name="unit_id" type="int"/>
+            <column name="substance_id" type="INT"/>
+        </createTable>
+
+        <addPrimaryKey tableName="pi_release_to_land_aud" columnNames="id, rev"/>
+        <rollback>
+            <dropTable tableName="pi_release_to_land_aud"/>
         </rollback>
     </changeSet>
 
@@ -200,6 +292,30 @@
         </rollback>
     </changeSet>
 
+    <changeSet id="create-table: pi_release_to_controlled_water_aud" author="Defra">
+        <createTable tableName="pi_release_to_controlled_water_aud">
+            <column name="id" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+            <column name="rev" type="int">
+                <constraints nullable="false"/>
+            </column>
+            <column name="revtype" type="smallint">
+                <constraints nullable="false"/>
+            </column>
+            <column name="submission_id" type="bigint"/>
+            <column name="method" type="varchar(50)"/>
+            <column name="below_reporting_threshold" type="boolean"/>
+            <column name="value" type="numeric(19, 2)"/>
+            <column name="unit_id" type="int"/>
+            <column name="substance_id" type="INT"/>
+        </createTable>
+
+        <addPrimaryKey tableName="pi_release_to_controlled_water_aud" columnNames="id, rev"/>
+        <rollback>
+            <dropTable tableName="pi_release_to_controlled_water_aud"/>
+        </rollback>
+    </changeSet>
 
     <!--
     ****************************************************************
@@ -253,6 +369,30 @@
         </rollback>
     </changeSet>
 
+    <changeSet id="create-table: pi_release_to_waste_water_aud" author="Defra">
+        <createTable tableName="pi_release_to_waste_water_aud">
+            <column name="id" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+            <column name="rev" type="int">
+                <constraints nullable="false"/>
+            </column>
+            <column name="revtype" type="smallint">
+                <constraints nullable="false"/>
+            </column>
+            <column name="submission_id" type="bigint"/>
+            <column name="method" type="varchar(50)"/>
+            <column name="below_reporting_threshold" type="boolean"/>
+            <column name="value" type="numeric(19, 2)"/>
+            <column name="unit_id" type="int"/>
+            <column name="substance_id" type="INT"/>
+        </createTable>
+
+        <addPrimaryKey tableName="pi_release_to_waste_water_aud" columnNames="id, rev"/>
+        <rollback>
+            <dropTable tableName="pi_release_to_waste_water_aud"/>
+        </rollback>
+    </changeSet>
 
     <!--
     ****************************************************************
@@ -283,8 +423,6 @@
             <column name="tonnage" type="numeric(19, 2)">
                 <constraints nullable="false"/>
             </column>
-
-
             <column name="responsible_company_name" type="varchar(255)"/>
             <column name="responsible_company_address_country" type="varchar(2)">
                 <constraints nullable="false"/>
@@ -331,6 +469,42 @@
         </rollback>
     </changeSet>
 
+
+    <changeSet id="create-table: pi_transfer_overseas_waste_aud" author="Defra">
+        <createTable tableName="pi_transfer_overseas_waste_aud">
+            <column name="id" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+            <column name="rev" type="int">
+                <constraints nullable="false"/>
+            </column>
+            <column name="revtype" type="smallint">
+                <constraints nullable="false"/>
+            </column>
+            <column name="submission_id" type="bigint"/>
+            <column name="method" type="varchar(100)"/>
+            <column name="operation" type="varchar(100)"/>
+            <column name="substance_id" type="int"/>
+            <column name="tonnage" type="numeric(19, 2)"/>
+            <column name="responsible_company_name" type="varchar(255)"/>
+            <column name="responsible_company_address_country" type="varchar(2)"/>
+            <column name="responsible_company_address_line1" type="varchar(255)"/>
+            <column name="responsible_company_address_line2" type="varchar(255)"/>
+            <column name="responsible_company_address_post_code" type="varchar(20)"/>
+            <column name="responsible_company_address_town_or_city" type="varchar(100)"/>
+            <column name="destination_address_country" type="varchar(2)"/>
+            <column name="destination_address_line1" type="varchar(255)"/>
+            <column name="destination_address_line2" type="varchar(255)"/>
+            <column name="destination_address_post_code" type="varchar(20)"/>
+            <column name="destination_address_town_or_city" type="varchar(100)"/>
+        </createTable>
+
+        <addPrimaryKey tableName="pi_transfer_overseas_waste_aud" columnNames="id, rev"/>
+        <rollback>
+            <dropTable tableName="pi_transfer_overseas_waste_aud"/>
+        </rollback>
+    </changeSet>
+
     <!--
     ****************************************************************
     Offsite transfers
@@ -372,5 +546,27 @@
         </createTable>
     </changeSet>
 
+    <changeSet id="create-table: pi_transfer_offsite_aud" author="Defra">
+        <createTable tableName="pi_transfer_offsite_aud">
+            <column name="id" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+            <column name="rev" type="int">
+                <constraints nullable="false"/>
+            </column>
+            <column name="revtype" type="smallint">
+                <constraints nullable="false"/>
+            </column>
+            <column name="submission_id" type="bigint"/>
+            <column name="ewc_activity_id" type="int"/>
+            <column name="tonnage" type="numeric(19, 2)"/>
+            <column name="wfd_disposal_id" type="int"/>
+            <column name="wfd_recovery_id" type="int"/>
+        </createTable>
 
+        <addPrimaryKey tableName="pi_transfer_offsite_aud" columnNames="id, rev"/>
+        <rollback>
+            <dropTable tableName="pi_transfer_offsite_aud"/>
+        </rollback>
+    </changeSet>
 </databaseChangeLog>

@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.GenericGenerator;
+import org.hibernate.envers.Audited;
 import org.hibernate.id.enhanced.SequenceStyleGenerator;
 import uk.gov.defra.datareturns.data.model.AbstractBaseEntity;
 import uk.gov.defra.datareturns.data.model.releases.ReleaseToAir;
@@ -18,7 +19,6 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
-import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
@@ -40,7 +40,7 @@ import java.util.Set;
         parameters = {
                 @org.hibernate.annotations.Parameter(name = SequenceStyleGenerator.SEQUENCE_PARAM, value = "pi_submission_id_seq")}
 )
-
+@Audited
 @Getter
 @Setter
 public class Submission extends AbstractBaseEntity {
@@ -59,38 +59,32 @@ public class Submission extends AbstractBaseEntity {
     @Enumerated(EnumType.STRING)
     private SubmissionStatus status;
 
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
-    @JoinColumn(name = "submission_id")
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "submission")
     @JsonManagedReference
     @Valid
     private Set<ReleaseToAir> releasesToAir;
 
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
-    @JoinColumn(name = "submission_id")
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "submission")
     @JsonManagedReference
     @Valid
     private Set<ReleaseToLand> releasesToLand;
 
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
-    @JoinColumn(name = "submission_id")
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "submission")
     @JsonManagedReference
     @Valid
     private Set<ReleaseToControlledWater> releasesToControlledWater;
 
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
-    @JoinColumn(name = "submission_id")
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "submission")
     @JsonManagedReference
     @Valid
     private Set<ReleaseToWasteWater> releasesToWasteWater;
 
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
-    @JoinColumn(name = "submission_id")
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "submission")
     @JsonManagedReference
     @Valid
     private Set<OverseasWasteTransfer> overseasWasteTransfers;
 
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
-    @JoinColumn(name = "submission_id")
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "submission")
     @JsonManagedReference
     @Valid
     private Set<OffsiteWasteTransfer> offsiteWasteTransfers;

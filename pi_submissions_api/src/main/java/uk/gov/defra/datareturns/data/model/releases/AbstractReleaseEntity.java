@@ -3,6 +3,7 @@ package uk.gov.defra.datareturns.data.model.releases;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import lombok.Getter;
 import lombok.Setter;
+import org.hibernate.envers.Audited;
 import uk.gov.defra.datareturns.data.model.AbstractBaseEntity;
 import uk.gov.defra.datareturns.data.model.submissions.Submission;
 import uk.gov.defra.datareturns.validation.validators.id.ValidId;
@@ -23,6 +24,7 @@ import java.util.Objects;
  * @author Sam Gardner-Dell
  */
 @MappedSuperclass
+@Audited
 @Getter
 @Setter
 public abstract class AbstractReleaseEntity extends AbstractBaseEntity implements Serializable {

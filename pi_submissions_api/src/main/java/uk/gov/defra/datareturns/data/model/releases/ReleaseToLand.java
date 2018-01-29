@@ -3,6 +3,7 @@ package uk.gov.defra.datareturns.data.model.releases;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.GenericGenerator;
+import org.hibernate.envers.Audited;
 import org.hibernate.id.enhanced.SequenceStyleGenerator;
 import uk.gov.defra.datareturns.data.model.AbstractBaseEntity;
 import uk.gov.defra.datareturns.validation.validators.id.ValidId;
@@ -26,6 +27,7 @@ import javax.persistence.UniqueConstraint;
         parameters = {
                 @org.hibernate.annotations.Parameter(name = SequenceStyleGenerator.SEQUENCE_PARAM, value = "pi_release_to_land_id_seq")}
 )
+@Audited
 @Getter
 @Setter
 public class ReleaseToLand extends AbstractReleaseEntity {
