@@ -22,7 +22,3 @@ spring:
 server:
   display-name: dr_ecm_api
   port: 9220
-
-# Configuration for the management server and its endpoints
-management:
-  port: 9221

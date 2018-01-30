@@ -22,9 +22,6 @@ security:
 server:
   display-name: dr_md_api
   port: 9020
-# Configuration for the management server and its endpoints
-management:
-  port: 9021
 
 ---
 ###############################################################################

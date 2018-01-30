@@ -287,10 +287,6 @@
                     <groupId>org.springframework.boot</groupId>
                     <artifactId>spring-boot-starter-tomcat</artifactId>
                 </exclusion>
-                <exclusion>
-                    <groupId>org.glassfish.jersey.media</groupId>
-                    <artifactId>jersey-media-jaxb</artifactId>
-                </exclusion>
             </exclusions>
         </dependency>
         <dependency>
@@ -299,7 +295,7 @@
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-jetty</artifactId>
+            <artifactId>spring-boot-starter-undertow</artifactId>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -338,10 +334,6 @@
         <dependency>
             <groupId>io.dropwizard.metrics</groupId>
             <artifactId>metrics-jvm</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>io.dropwizard.metrics</groupId>
-            <artifactId>metrics-jetty9</artifactId>
         </dependency>
 
         <!-- Spring fox Swagger Integration -->

@@ -27,8 +27,3 @@ security:
 server:
   display-name: dr_pi_api
   port: 9220
-
-# Configuration for the management server and its endpoints
-management:
-  port: 9221
-

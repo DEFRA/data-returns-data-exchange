@@ -4,7 +4,6 @@ import com.codahale.metrics.JmxReporter;
 import com.codahale.metrics.JvmAttributeGaugeSet;
 import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.Slf4jReporter;
-import com.codahale.metrics.jetty9.InstrumentedHandler;
 import com.codahale.metrics.jvm.ClassLoadingGaugeSet;
 import com.codahale.metrics.jvm.FileDescriptorRatioGauge;
 import com.codahale.metrics.jvm.GarbageCollectorMetricSet;
@@ -12,12 +11,7 @@ import com.codahale.metrics.jvm.MemoryUsageGaugeSet;
 import com.codahale.metrics.jvm.ThreadStatesGaugeSet;
 import com.ryantenney.metrics.spring.config.annotation.EnableMetrics;
 import com.ryantenney.metrics.spring.config.annotation.MetricsConfigurerAdapter;
-import org.eclipse.jetty.server.Server;
-import org.springframework.boot.context.embedded.EmbeddedServletContainerCustomizer;
-import org.springframework.boot.context.embedded.jetty.JettyEmbeddedServletContainerFactory;
-import org.springframework.boot.context.embedded.jetty.JettyServerCustomizer;
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 import java.util.concurrent.TimeUnit;
@@ -30,9 +24,7 @@ import java.util.concurrent.TimeUnit;
 @Configuration
 @EnableMetrics
 @ConfigurationProperties(prefix = "metrics")
-public class DropWizardMetricsConfiguration extends MetricsConfigurerAdapter implements JettyServerCustomizer {
-    private InstrumentedHandler metricsHandler;
-
+public class DropWizardMetricsConfiguration extends MetricsConfigurerAdapter {
     /**
      * Configure the available metrics reporters
      *
@@ -46,7 +38,6 @@ public class DropWizardMetricsConfiguration extends MetricsConfigurerAdapter imp
         metricRegistry.register("jvm.gc", new GarbageCollectorMetricSet());
         metricRegistry.register("jvm.memory", new MemoryUsageGaugeSet());
         metricRegistry.register("jvm.threads", new ThreadStatesGaugeSet());
-        this.metricsHandler = new InstrumentedHandler(metricRegistry, "jetty");
 
         // Report metrics over JMX
         registerReporter(JmxReporter.forRegistry(metricRegistry).build()).start();
@@ -55,32 +46,5 @@ public class DropWizardMetricsConfiguration extends MetricsConfigurerAdapter imp
         registerReporter(Slf4jReporter.forRegistry(metricRegistry)
                 .withLoggingLevel(Slf4jReporter.LoggingLevel.DEBUG).build())
                 .start(120, TimeUnit.SECONDS);
-    }
-
-    /**
-     * Bean factory for the {@link EmbeddedServletContainerCustomizer} which allows us to customise the
-     * servlet container
-     *
-     * @return the EmbeddedServletContainerCustomizer
-     */
-    @Bean
-    public EmbeddedServletContainerCustomizer customizer() {
-        return container -> {
-            if (container instanceof JettyEmbeddedServletContainerFactory) {
-                ((JettyEmbeddedServletContainerFactory) container).addServerCustomizers(DropWizardMetricsConfiguration.this);
-            }
-        };
-    }
-
-    /**
-     * Customisation hook for the Jetty server.
-     * Allows us to hook up the metrics system to Jetty
-     *
-     * @param server the Jetty {@link Server} instance
-     */
-    @Override
-    public void customize(final Server server) {
-        this.metricsHandler.setHandler(server.getHandler());
-        server.setHandler(this.metricsHandler);
     }
 }

@@ -1,5 +1,4 @@
-FROM frolvlad/alpine-oraclejdk8:slim
-# TODO: For production we don't need JDK support - investigate develar/java
+FROM frolvlad/alpine-oraclejre8:slim
 
 # Arguments supplied by maven dockerfile plugin
 ARG JAR_FILE
@@ -27,4 +26,4 @@ EXPOSE 9120 9121
 
 ENV JAR=${IMG_SERVICE_DIR}/${JAR_FILE}
 ENV JAVA_OPTS=""
-ENTRYPOINT [ "sh", "-c", "java $JAVA_OPTS -Djava.security.egd=file:/dev/./urandom -jar ${JAR}" ]
+ENTRYPOINT [ "sh", "-c", "java $JAVA_OPTS -jar ${JAR}" ]
