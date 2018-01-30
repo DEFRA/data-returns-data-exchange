@@ -58,7 +58,7 @@ public interface ValidationCacheService {
 
         private Collection<Resource<RestResultEntry>> retrieveAll(final String collectionResource) {
             final RestTemplate restTemplate = new HalRestTemplate();
-            final ServiceEndpointConfiguration.Endpoint endpoint = services.getEndpoint(ServiceEndpointConfiguration.MASTER_DATA_API);
+            final ServiceEndpointConfiguration.Endpoint endpoint = services.getMasterDataApi();
             endpoint.getAuth().configure(restTemplate);
             final URI target = endpoint.getUri().resolve(collectionResource);
             log.info("Fetching resource listing from {}", target);

@@ -102,7 +102,7 @@ errbit:
 
 # Service endpoints
 service-endpoints:
-  master_data_api:
+  master-data-api:
     uri: http://localhost:9020/api/
     auth:
       type: BASIC

@@ -25,7 +25,7 @@ import java.util.function.BiConsumer;
  */
 @Configuration
 @EnableConfigurationProperties
-@ConfigurationProperties
+@ConfigurationProperties(prefix = "service-endpoints")
 @RequiredArgsConstructor
 @Slf4j
 @Data
@@ -33,31 +33,21 @@ public class ServiceEndpointConfiguration implements InitializingBean {
     /**
      * Master data API endpoint ID
      */
-    public static final String MASTER_DATA_API = "master_data_api";
     private final ApplicationContext context;
-    private Map<String, Endpoint> serviceEndpoints;
 
-
-    /**
-     * Retrieve the {@link Endpoint} configuration for a given identifier
-     *
-     * @param endpointId the identifier of the endpoint
-     * @return the configuration for the endpoint, or null if not found
-     */
-    public Endpoint getEndpoint(final String endpointId) {
-        return serviceEndpoints.get(endpointId);
-    }
+    private Endpoint masterDataApi;
 
     @Override
     public void afterPropertiesSet() throws Exception {
-        serviceEndpoints.forEach((api, endpoint) -> {
+        final Endpoint[] serviceEndpoints = new Endpoint[] {masterDataApi};
+        for (Endpoint endpoint : serviceEndpoints) {
             if (!endpoint.getUri().getPath().endsWith("/")) {
                 log.error(
                         "Endpoint URI path for {} should be terminated by a / but is set to: {}   Terminating.",
-                        api, endpoint.getUri());
+                        endpoint.toString(), endpoint.getUri());
                 SpringApplication.exit(context, () -> 1);
             }
-        });
+        }
     }
 
     /**
