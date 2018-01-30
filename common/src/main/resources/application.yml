@@ -67,6 +67,9 @@ spring:
           default:
             directory_provider: filesystem
             indexBase: /tmp/dr_api_md_index
+      org.hibernate.envers:
+        # Configure envers to use a sequence style generator
+        use_revision_entity_with_native_id: false
 
         cache:
           use_query_cache: false

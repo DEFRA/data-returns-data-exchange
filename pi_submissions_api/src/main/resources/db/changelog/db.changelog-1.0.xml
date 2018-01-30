@@ -10,8 +10,9 @@
     -->
 
     <changeSet id="create-table: revinfo" author="Defra">
+        <createSequence sequenceName="revision_generator" startValue="1"/>
         <createTable tableName="revinfo">
-            <column name="rev" type="integer">
+            <column name="rev" type="integer" defaultValueSequenceNext="revision_generator">
                 <constraints primaryKey="true" nullable="false"/>
             </column>
             <column name="revtstmp" type="bigint">
@@ -21,6 +22,7 @@
 
         <rollback>
             <dropTable tableName="revinfo"/>
+            <dropSequence sequenceName="revision_generator"/>
         </rollback>
     </changeSet>
 
