@@ -1,0 +1,32 @@
+@Library('defra-shared') _
+
+pipeline {
+    agent {
+        label 'POI-JENKINS-SLAVE'
+    }
+    tools {
+        maven 'MVN_352'
+    }
+    stages {
+        stage('Build project artifacts') {
+            steps {
+                sh 'printenv'
+                sh "mvn -B -DskipTests -Ddependency-check.skip=true -DskipTests=true -Dcheckstyle.skip=true clean package"
+            }
+        }
+        stage('Build docker image') {
+            steps {
+                sh "mvn -f master_data_api/pom.xml dockerfile:build"
+            }
+        }
+        stage('Push docker image') {
+            steps {
+                script {
+                    docker.withRegistry('https://989140231452.dkr.ecr.eu-west-1.amazonaws.com', 'ecr:eu-west-1:sandpit-admin') {
+                        docker.image('defra/master_data_api:latest').push(generateBuildTag())
+                    }
+                }
+            }
+        }
+    }
+}
