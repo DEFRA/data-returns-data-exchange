@@ -1,11 +1,15 @@
 @Library('defra-shared') _
+@Library('data-returns-ci')
+
+def buildProperties
+node {
+    buildProperties = buildConfiguration('pi_api.groovy')
+}
 
 pipeline {
-    agent {
-        label 'POI-JENKINS-SLAVE'
-    }
+    agent { label buildProperties['jenkins.slave'] }
     tools {
-        maven 'MVN_352'
+        maven 'maven-latest'
     }
     stages {
         stage('Build project artifacts') {
@@ -22,10 +26,15 @@ pipeline {
         stage('Push docker image') {
             steps {
                 script {
-                    docker.withRegistry('https://989140231452.dkr.ecr.eu-west-1.amazonaws.com', 'ecr:eu-west-1:sandpit-admin') {
-                        docker.image('defra/pi_submissions_api:latest').push(generateBuildTag())
+                    docker.withRegistry(buildProperties['ecr.registry.url'], buildProperties['ecr.registry.credentials']) {
+                        docker.image(buildProperties['ecr.repository.name'] + ':latest').push(generateBuildTag())
                     }
                 }
+            }
+        }
+        stage("Cleanup") {
+            steps {
+                cleanWs cleanWhenFailure: false
             }
         }
     }
