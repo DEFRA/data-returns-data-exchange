@@ -10,10 +10,7 @@ import uk.gov.defra.datareturns.data.model.AbstractBaseEntity;
 import uk.gov.defra.datareturns.data.model.AliasedEntity;
 import uk.gov.defra.datareturns.data.model.site.Site;
 
-import javax.persistence.Cacheable;
-import javax.persistence.CascadeType;
-import javax.persistence.Entity;
-import javax.persistence.ManyToOne;
+import javax.persistence.*;
 
 /**
  * The persistent class for the unique_identifiers database table.
@@ -31,6 +28,21 @@ import javax.persistence.ManyToOne;
 @Getter
 @Setter
 public class UniqueIdentifier extends AbstractAliasedEntity<UniqueIdentifierAlias> implements AliasedEntity<UniqueIdentifierAlias> {
+
+    public enum Type {
+        IPC,
+        RAS,
+        IPPC,
+        WML,
+        WIA,
+        EPRTR
+    }
+
     @ManyToOne(cascade = CascadeType.ALL, optional = false)
     private Site site;
+
+    @Column
+    @Enumerated(EnumType.STRING)
+    private Type type;
+
 }

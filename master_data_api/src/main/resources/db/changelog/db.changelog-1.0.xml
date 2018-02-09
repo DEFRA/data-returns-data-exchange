@@ -64,7 +64,9 @@
             <column name="nomenclature" type="varchar(18)">
                 <constraints nullable="false" unique="true"/>
             </column>
-
+            <column name="type" type="varchar(5)">
+                <constraints nullable="true"/>
+            </column>
             <column name="site_id" type="bigint">
                 <constraints nullable="false"
                              foreignKeyName="fk_unique_identifier__site"
