@@ -1,0 +1,389 @@
+name,preferred,long_name,unicode,description,type,unit_groups
+ATU,,Accumulated thermal unit,,A measure of temperature over time. 1 ATU is equal to 1 degree Celsius over 1 day.,Accumulated temperature,ECM
+cm2,,Square centimetre,,A unit of area,Area,ECM
+cm²,cm2,Square centimetre,cm(U+00B2),A unit of area,Area,ECM
+ha,,Hectare,,A unit of area,Area,ECM
+km2,,Square kilometre,,A unit of area,Area,ECM
+km²,km2,Square kilometre,km(U+00B2),A unit of area,Area,ECM
+m2,,Square metre,,A unit of area,Area,ECM
+m²,m2,Square metre,m(U+00B2),A unit of area,Area,ECM
+mm2,,Square millimetre,,A unit of area,Area,ECM
+mm²,mm2,Square millimetre,mm(U+00B2),A unit of area,Area,ECM
+f/ml,,Fibers per millilitre,,A unit of concentration,Concentration,ECM
+ppv,,Parts per volume,,A measure of concentration,Concentration,ECM
+g/m2,,Gramme per square metre,,A unit of concentration,Concentration (mass/area),ECM
+g/m²,g/m2,Gramme per square metre,g/m(U+00B2),A unit of concentration,Concentration (mass/area),ECM
+kg/m2,,Kilograms per square metre,,A unit of concentration,Concentration (mass/area),ECM
+kg/m²,kg/m2,Kilograms per square metre,kg/m(U+00B2),A unit of concentration,Concentration (mass/area),ECM
+mg/m2,,Milligrams per square metre,,A unit of concentration,Concentration (mass/area),ECM
+mg/m²,mg/m2,Milligram per square metre,mg/m(U+00B2),A unit of concentration,Concentration (mass/area),ECM
+mg/m2/d,,Milligrams per square metre per day,,A unit of concentration,Concentration (mass/area),ECM
+g/kg,gkg-1,Grams per kilograms,,A unit of concentration used for chemicals in biota,Concentration (Mass/Mass),ECM
+gkg-1,,Grams per kilograms,,A unit of concentration used for chemicals in biota,Concentration (Mass/Mass),ECM
+gkg⁻¹,gkg-1,Grams per kilograms,gkg(U+207B)(U+00B9),A unit of concentration used for chemicals in biota,Concentration (Mass/Mass),ECM
+mg/kg,mgkg-1,Milligrams per kilogram,,A unit of concentration used for chemicals in biota,Concentration (Mass/Mass),ECM
+mgkg-1,,Milligrams per Kilograms,,A unit of concentration used for chemicals in biota,Concentration (Mass/Mass),ECM
+mgkg⁻¹,mgkg-1,Milligrams per Kilograms,mgkg(U+207B)(U+00B9),A unit of concentration used for chemicals in biota,Concentration (Mass/Mass),ECM
+mol/kg,,Moles per kilogram,,A unit of concentration (molality),Concentration (Mass/Mass),ECM
+ng/kg,ngkg-1,Nanograms per kilograms,,A unit of concentration used for chemicals in biota,Concentration (Mass/Mass),ECM
+ngkg-1,,Nanograms per kilograms,,A unit of concentration used for chemicals in biota,Concentration (Mass/Mass),ECM
+ngkg⁻¹,ngkg-1,Nanograms per kilograms,ngkg(U+207B)(U+00B9),A unit of concentration used for chemicals in biota,Concentration (Mass/Mass),ECM
+ug/kg,µgkg-1,Micrograms per kilogram,,A unit of concentration used for chemicals in biota,Concentration (Mass/Mass),ECM
+ugkg⁻¹,µgkg-1,Micrograms per kilogram,ugkg(U+207B)(U+00B9),A unit of concentration used for chemicals in biota,Concentration (Mass/Mass),ECM
+µg/kg,µgkg-1,Micrograms per Kilograms,(U+00B5)g/kg,A unit of concentration used for chemicals in biota,Concentration (Mass/Mass),ECM
+µgkg-1,,Micrograms per kilograms,(U+00B5)g/kg,A unit of concentration used for chemicals in biota,Concentration (Mass/Mass),ECM
+µgkg⁻¹,µgkg-1,Micrograms per kilogram,(U+00B5)gkg(U+207B)(U+00B9),A unit of concentration used for chemicals in biota,Concentration (Mass/Mass),ECM
+g/cm3,gcm-3,Grams per cubic centimetre,,A unit of density,Concentration (mass/vol),ECM
+g/cm³,gcm-3,Grams per cubic centimetre,g/cm(U+00B3),A unit of density,Concentration (mass/vol),ECM
+g/l,,Grams per litre,,A unit of concentration,Concentration (mass/vol),ECM
+g/m3,,Grams per cubic metre,,A unit of concentration,Concentration (mass/vol),ECM
+g/m³,g/m3,Grams per cubic metre,g/m(U+00B3),A unit of concentration,Concentration (mass/vol),ECM
+g/ml,,Grams per millilitre,,A unit of density,Concentration (mass/vol),ECM
+g/t,,Grams per tonne,,A unit of concentration,Concentration (mass/vol),ECM
+gcm-3,,Grams per Cubic centimetre,,A unit of density,Concentration (mass/vol),ECM
+gcm⁻³,gcm-3,Grams per Cubic centimetre,gcm(U+207B)(U+00B3),A unit of density,Concentration (mass/vol),ECM
+kg/l,,Kilograms per litre,,A unit of concentration,Concentration (mass/vol),ECM
+kg/m3,kgm-3,Kilograms per cubic metre,,A unit of concentration (and density),Concentration (mass/vol),ECM
+kg/m³,kgm-3,Kilograms per cubic metre,kg/m(U+00B3),A unit of concentration (and density),Concentration (mass/vol),ECM
+kg/t,,Kilograms per tonne,,A unit of concentration,Concentration (mass/vol),ECM
+kgm-3,,Kilograms per cubic metre,,A unit of concentration (and density),Concentration (mass/vol),ECM
+kgm⁻³,kgm-3,Kilograms per cubic metre,kgm(U+207B)(U+00B3),A unit of concentration (and density),Concentration (mass/vol),ECM
+mg/l,,Milligrams per litre,,A unit of concentration,Concentration (mass/vol),ECM
+mg/m3,,Milligrams per cubic metre,,A unit of concentration,Concentration (mass/vol),ECM
+mg/m³,mg/m3,Milligrams per cubic metre,mg/m(U+00B3),A unit of concentration,Concentration (mass/vol),ECM
+mg/m3/d,,Milligrams per cubic metre per day,,A unit of concentration,Concentration (mass/vol),ECM
+mg/Nm3,mgNm-3,Emissions versus normal gas volume,,A unit of gas concentration,Concentration (mass/vol),ECM
+mgNm-3,,Emissions versus normal gas volume,,A unit of gas concentration,Concentration (mass/vol),ECM
+mgNm⁻³,mgNm-3,Emissions versus normal gas volume,mgNm(U+207B)(U+00B3),A unit of gas concentration,Concentration (mass/vol),ECM
+mmol/l,,Millimoles per litre,,A unit of concentration,Concentration (mass/vol),ECM
+mol/l,,Moles per litre,,A unit of concentration (molarity),Concentration (mass/vol),ECM
+mol/m3,,Moles per cubic metre,,A unit of concentration,Concentration (mass/vol),ECM
+mol/m³,mol/m3,Moles per cubic metre,mol/m(U+00B3),A unit of concentration,Concentration (mass/vol),ECM
+ng/l,,Nanograms per litre,,A unit of concentration,Concentration (mass/vol),ECM
+ng/m3,,Nanograms per cubic metre,,A unit of concentration,Concentration (mass/vol),ECM
+ng/m³,ng/m3,Nanograms per cubic metre,ng/m(U+00B3),A unit of concentration,Concentration (mass/vol),ECM
+pg/l,,Picograms per litre,,A unit of concentration,Concentration (mass/vol),ECM
+pg/m3,,Picograms per cubic metre ,,A unit of concentration,Concentration (mass/vol),ECM
+pg/m³,pg/m3,Picograms per cubic metre ,pg/m(U+00B3),A unit of concentration,Concentration (mass/vol),ECM
+ug/l,µg/l,Micrograms per litre,,A unit of concentration,Concentration (mass/vol),ECM
+ug/m2,µg/m2,Micrograms per square metre,,A unit of concentration,Concentration (mass/vol),ECM
+ug/m²,µg/m2,Micrograms per square metre,ug/m(U+00B2),A unit of concentration,Concentration (mass/vol),ECM
+ug/m3,µg/m3,Micrograms per cubic metre,,A unit of concentration,Concentration (mass/vol),ECM
+ug/m³,µg/m3,Micrograms per cubic metre,ug/m(U+00B3),A unit of concentration,Concentration (mass/vol),ECM
+umol/l,µmol/l,Micromoles per litre,,A unit of concentration,Concentration (mass/vol),ECM
+µg/l,,Micrograms per Litre,(U+00B5)g/l,A unit of concentration,Concentration (mass/vol),ECM
+µg/m2,,Micrograms per cubic metre,(U+00B5)g/m2,A unit of concentration,Concentration (mass/vol),ECM
+µg/m²,µg/m2,Micrograms per cubic metre,(U+00B5)g/m(U+00B2),A unit of concentration,Concentration (mass/vol),ECM
+µg/m3,,Micrograms per cubic metre,(U+00B5)g/m3,A unit of concentration,Concentration (mass/vol),ECM
+µg/m³,µg/m3,Micrograms per cubic metre,(U+00B5)g/m(U+00B3),A unit of concentration,Concentration (mass/vol),ECM
+µmol/l,,Micromoles per litre,(U+00B5)mol/l,A unit of concentration,Concentration (mass/vol),ECM
+%v/v,,Percentage volume for volume,,A unit of volume percent concentration,Concentration (Vol/Vol),ECM
+%Vol,%v/v,Percentage volume for volume,,A unit of volume percent concentration,Concentration (Vol/Vol),ECM
+%Wt/Wt,,Percentage weight for weight,,A unit of weight percent concentration,Concentration (Wt/Wt),ECM
+mS/cm,mScm-1,Millisiemens per centimetre,,A unit of conductivity,Electrical conductivity,ECM
+mS/m,mSm-1,Millisiemens per metre,,A unit of conductivity,Electrical conductivity,ECM
+mScm-1,,Millisiemens per centimetre,,A unit of conductivity,Electrical conductivity,ECM
+mScm⁻¹,mScm-1,Millisiemens per centimetre,mScm(U+207B)(U+00B9),A unit of conductivity,Electrical conductivity,ECM
+mSm-1,,Millisiemens per metre,,A unit of conductivity,Electrical conductivity,ECM
+mSm⁻¹,mSm-1,Millisiemens per metre,mSm(U+207B)(U+00B9),A unit of conductivity,Electrical conductivity,ECM
+uS/cm,µScm-1,Microsiemens per centimetre,,A unit of conductivity,Electrical conductivity,ECM
+uScm⁻¹,µScm-1,Microsiemens per centimetre,uScm(U+207B)(U+00B9),A unit of conductivity,Electrical conductivity,ECM
+µS/cm,µScm-1,Microsiemens per centimetre,(U+00B5)S/cm,A unit of conductivity,Electrical conductivity,ECM
+µScm-1,,Microsiemens per centimetre,(U+00B5)S/cm,A unit of conductivity,Electrical conductivity,ECM
+µScm⁻¹,µScm-1,Microsiemens per centimetre,(U+00B5)Scm(U+207B)(U+00B9),A unit of conductivity,Electrical conductivity,ECM
+GWh,,Gigawatt hour,,A unit of energy,Electrical Flow,ECM
+kWh,,Kilowatt hour,,A unit of energy,Electrical Flow,ECM
+MWh,,Megawatt hour,,A unit of energy,Electrical Flow,ECM
+A,,Ampere,,A unit of electric current,Electricity,ECM
+kV,,Kilovolt,,A unit of electrical potential,Electricity,ECM
+mA,,Milliamp,,A unit of electric current,Electricity,ECM
+mV,,Millivolt,,A unit of electrical potential,Electricity,ECM
+MV,,Megavolt,,A unit of electrical potential,Electricity,ECM
+uV,µV,Microvolt,,A unit of electrical potential,Electricity,ECM
+V,,Volt,,A unit of electrical potential,Electricity,ECM
+µV,,Microvolt,(U+00B5)V,A unit of electrical potential,Electricity,ECM
+Hz,,Hertz,,A unit of frequency,Electromagnetic Radiation,ECM
+kHz,,Kilohertz,,A unit of frequency,Electromagnetic Radiation,ECM
+MHz,,Megahertz,,A unit of frequency,Electromagnetic Radiation,ECM
+GW,,Gigawatt,,A unit of power,Energy and power,ECM
+J,,Joule,,A unit of energy,Energy and power,ECM
+kJ,,Kilojoule,,A unit of energy,Energy and power,ECM
+kW,,Kilowatt,,A unit of power,Energy and power,ECM
+MJ,,Megajoule,,A unit of energy,Energy and power,ECM
+MW,,Megawatt,,A unit of power,Energy and power,ECM
+mW/m2,mWm-2,Milliwatts per square metre,,A unit of power density,Energy and power,ECM
+mW/m²,mWm-2,Milliwatts per square metre,mW/m(U+00B2),A unit of power density,Energy and power,ECM
+mWm-2,,Milliwatts per square metre,,A unit of power density,Energy and power,ECM
+mWm⁻²,mWm-2,Milliwatts per square metre,mWm(U+207B)(U+00B2),A unit of power density,Energy and power,ECM
+TJ,,Terrajoule,,A unit of energy,Energy and power,ECM
+TJ/m3,TJm-3,Terrajoules per cubic metre,,A unit of energy density,Energy and power,ECM
+TJm-3,,Terrajoules per cubic metre,,A unit of energy density,Energy and power,ECM
+TJm⁻³,TJm-3,Terrajoules per cubic metre,TJm(U+207B)(U+00B3),A unit of energy density,Energy and power,ECM
+tSO2/GWh,,Emissions versus electrical power generated,,A unit of emissions versus power generated,Energy and power,ECM
+tSO²/GWh,tSO2/GWh,Emissions versus electrical power generated,tSO(U+00B2)/GWh,A unit of emissions versus power generated,Energy and power,ECM
+TW,,Terrawatt,,A unit of power,Energy and power,ECM
+TWh,,Terrawatt hour,,A unit of energy,Energy and power,ECM
+W,,Watt,,A unit of power,Energy and power,ECM
+W/m2,Wm-2,Watts per square metre,,A unit of power density,Energy and power,ECM
+Wm-2,,Watts per square metre,,A unit of power density,Energy and power,ECM
+Wm⁻²,Wm-2,Watts per square metre,Wm(U+207B)(U+00B2),A unit of power density,Energy and power,ECM
+mg/m2/s,,Milligrams per square metre per second,,A measure of volume flow rate or discharge,Flow (Mass/Area/Time),ECM
+mg/m²/s,mg/m2/s,Milligrams per square metre per second,mg/m(U+00B2)/s,A measure of volume flow rate or discharge,Flow (Mass/Area/Time),ECM
+g/day,,Grams per day,,A measure of volume flow rate or discharge,Flow (mass/time),ECM
+g/hr,,Grams per hour,,A measure of volume flow rate or discharge,Flow (mass/time),ECM
+g/min,,Grams per minute,,A measure of volume flow rate or discharge,Flow (mass/time),ECM
+g/s,,Grams per second,,A measure of volume flow rate or discharge,Flow (mass/time),ECM
+g/wk,,Grams per week,,A measure of volume flow rate or discharge,Flow (mass/time),ECM
+kg/a,,Kilograms per year,,A measure of mass flow rate,Flow (mass/time),ECM
+kg/d,,Kilograms per day,,A measure of volume flow rate or discharge,Flow (mass/time),ECM
+kg/h,,Kilograms per hour,,A measure of volume flow rate or discharge,Flow (mass/time),ECM
+kg/min,,Kilograms per minute,,A measure of volume flow rate or discharge,Flow (mass/time),ECM
+kg/month,,Kilograms per month,,A measure of volume flow rate or discharge,Flow (mass/time),ECM
+kg/s,,Kilograms per second,,A measure of mass flow rate,Flow (mass/time),ECM
+kg/wk,,Kilograms per week,,A measure of mass flow rate,Flow (mass/time),ECM
+kg/y,kg/a,Kilograms per year,,A measure of mass flow rate,Flow (mass/time),ECM
+mg/d,,Milligrams per day,,A measure of volume flow rate or discharge,Flow (mass/time),ECM
+mg/day,mg/d,Milligrams per day,,A measure of volume flow rate or discharge,Flow (mass/time),ECM
+mg/h,,Milligrams per hour,,A measure of volume flow rate or discharge,Flow (mass/time),ECM
+mg/hr,mg/h,Milligrams per hour,,A measure of volume flow rate or discharge,Flow (mass/time),ECM
+mg/m,mg/min,Milligrams per minute,,A measure of volume flow rate or discharge,Flow (mass/time),ECM
+mg/min,,Milligrams per minute,,A measure of volume flow rate or discharge,Flow (mass/time),ECM
+mg/s,,Milligrams per second,,A measure of volume flow rate or discharge,Flow (mass/time),ECM
+mg/wk,,Milligrams per week,,A measure of volume flow rate or discharge,Flow (mass/time),ECM
+t/a,,Tonnes per year,,A measure of mass flow rate,Flow (mass/time),ECM
+t/d,,Tonnes per day,,A measure of mass flow rate,Flow (mass/time),ECM
+t/h,,Tonnes per hour,,A measure of mass flow rate,Flow (mass/time),ECM
+t/hr,t/h,Tonnes per hour,,A measure of mass flow rate,Flow (mass/time),ECM
+t/min,,Tonnes per minute,,A measure of mass flow rate,Flow (mass/time),ECM
+t/s,,Tonnes per second,,A measure of mass flow rate,Flow (mass/time),ECM
+t/wk,,Tonnes per week,,A measure of mass flow rate,Flow (mass/time),ECM
+t/y,t/a,Tonnes per year,,A measure of mass flow rate,Flow (mass/time),ECM
+t/yr,t/a,Tonnes per year,,A measure of mass flow rate,Flow (mass/time),ECM
+ug/day,µg/day,Micrograms per day,,A measure of volume flow rate or discharge,Flow (mass/time),ECM
+ug/h,µg/h,Micrograms per hour,,A measure of volume flow rate or discharge,Flow (mass/time),ECM
+ug/hr,µg/h,Micrograms per hour,,A measure of volume flow rate or discharge,Flow (mass/time),ECM
+ug/m,µg/min,Micrograms per minute,,A measure of volume flow rate or discharge,Flow (mass/time),ECM
+ug/min,µg/min,Micrograms per minute,,A measure of volume flow rate or discharge,Flow (mass/time),ECM
+ug/s,µg/s,Micrograms per second,,A measure of volume flow rate or discharge,Flow (mass/time),ECM
+ug/wk,µg/wk,Micrograms per week,,A measure of volume flow rate or discharge,Flow (mass/time),ECM
+µg/day,,Micrograms per day,(U+00B5)g/day,A measure of volume flow rate or discharge,Flow (mass/time),ECM
+µg/h,,Micrograms per hour,(U+00B5)g/h,A measure of volume flow rate or discharge,Flow (mass/time),ECM
+µg/hr,µg/h,Micrograms per hour,(U+00B5)g/hr,A measure of volume flow rate or discharge,Flow (mass/time),ECM
+µg/m,µg/min,Micrograms per minute,(U+00B5)g/m,A measure of volume flow rate or discharge,Flow (mass/time),ECM
+µg/min,,Micrograms per minute,(U+00B5)g/min,A measure of volume flow rate or discharge,Flow (mass/time),ECM
+µg/s,,Micrograms per second,(U+00B5)g/s,A measure of volume flow rate or discharge,Flow (mass/time),ECM
+µg/wk,,Micrograms per week,(U+00B5)g/wk,A measure of volume flow rate or discharge,Flow (mass/time),ECM
+cm3/day,,Cubic centimetres per day,,A measure of volume flow rate or discharge,Flow (vol/time),ECM
+cm³/day,cm3/day,Cubic centimetres per day,cm(U+00B3)/day,A measure of volume flow rate or discharge,Flow (vol/time),ECM
+cm3/hr,,Cubic centimetres per hour,,A measure of volume flow rate or discharge,Flow (vol/time),ECM
+cm³/hr,cm3/hr,Cubic centimetres per hour,cm(U+00B3)/hr,A measure of volume flow rate or discharge,Flow (vol/time),ECM
+cm3/min,,Cubic centimetres per minute,,A measure of volume flow rate or discharge,Flow (vol/time),ECM
+cm³/min,cm3/min,Cubic centimetres per minute,cm(U+00B3)/min,A measure of volume flow rate or discharge,Flow (vol/time),ECM
+cm3/s,,Cubic centimetres per second,,A measure of volume flow rate or discharge,Flow (vol/time),ECM
+cm³/s,cm3/s,Cubic centimetres per second,cm(U+00B3)/s,A measure of volume flow rate or discharge,Flow (vol/time),ECM
+l/a,,Litres per year,,A measure of volume flow rate or discharge,Flow (vol/time),ECM
+l/d,,Litres per day,,A measure of volume flow rate or discharge,Flow (vol/time),ECM
+l/h,,Litres per hour,,A measure of volume flow rate or discharge,Flow (vol/time),ECM
+l/min,,Litres per minute,,A measure of volume flow rate or discharge,Flow (vol/time),ECM
+l/s,,Litres per second,,A measure of volume flow rate or discharge,Flow (vol/time),ECM
+l/wk,,Litres per week,,A measure of volume flow rate or discharge,Flow (vol/time),ECM
+l/y,l/a,Litres per year,,A measure of volume flow rate or discharge,Flow (vol/time),ECM
+m3/d,,Cubic metres per day,,A measure of volume flow rate or discharge,Flow (vol/time),ECM
+m³/d,m3/d,Cubic metres per day,m(U+00B3)/d,A measure of volume flow rate or discharge,Flow (vol/time),ECM
+m3/h,,Cubic metres per hour,,A measure of volume flow rate or discharge,Flow (vol/time),ECM
+m³/h,m3/h,Cubic metres per hour,m(U+00B3)/h,A measure of volume flow rate or discharge,Flow (vol/time),ECM
+m3/m,m3/min,Cubic metres per minute,,A measure of volume flow rate or discharge,Flow (vol/time),ECM
+m3/min,,Cubic metres per minute,,A measure of volume flow rate or discharge,Flow (vol/time),ECM
+m³/min,m3/min,Cubic metres per minute,m(U+00B3)/min,A measure of volume flow rate or discharge,Flow (vol/time),ECM
+m3/s,,Cubic metres per second,,A measure of volume flow rate or discharge,Flow (vol/time),ECM
+m³/s,m3/s,Cubic metres per second,m(U+00B3)/s,A measure of volume flow rate or discharge,Flow (vol/time),ECM
+m3/wk,,Cubic metres per week,,A measure of volume flow rate or discharge,Flow (vol/time),ECM
+m³/wk,m3/wk,Cubic metres per week,m(U+00B3)/wk,A measure of volume flow rate or discharge,Flow (vol/time),ECM
+m3/y,,Cubic metres per year,,A measure of volume flow rate or discharge,Flow (vol/time),ECM
+m³/y,m3/y,Cubic metres per year,m(U+00B3)/y,A measure of volume flow rate or discharge,Flow (vol/time),ECM
+ml/d,,Millilitres per day,,A measure of volume flow rate or discharge,Flow (vol/time),ECM
+Ml/d,,Megalitres per day,,A measure of volume flow rate or discharge,Flow (vol/time),ECM
+ml/day,ml/d,Millilitres per day,,A measure of volume flow rate or discharge,Flow (vol/time),ECM
+ml/h,,Millilitres per hour,,A measure of volume flow rate or discharge,Flow (vol/time),ECM
+ml/hr,ml/h,Millilitres per hour,,A measure of volume flow rate or discharge,Flow (vol/time),ECM
+ml/m,ml/min,Millilitres per minute,,A measure of volume flow rate or discharge,Flow (vol/time),ECM
+ml/min,,Millilitres per minute,,A measure of volume flow rate or discharge,Flow (vol/time),ECM
+ml/s,,Millilitres per second,,A measure of volume flow rate or discharge,Flow (vol/time),ECM
+ml/wk,,Millilitres per week,,A measure of volume flow rate or discharge,Flow (vol/time),ECM
+mm3/d,,Cubic millimetres per day,,A measure of volume flow rate or discharge,Flow (vol/time),ECM
+mm³/d,mm3/d,Cubic millimetres per day,mm(U+00B3)/d,A measure of volume flow rate or discharge,Flow (vol/time),ECM
+mm3/day,mm3/d,Cubic millimetres per day,,A measure of volume flow rate or discharge,Flow (vol/time),ECM
+mm³/day,mm3/d,Cubic millimetres per day,mm(U+00B3)/day,A measure of volume flow rate or discharge,Flow (vol/time),ECM
+mm3/h,,Cubic millimetres per hour,,A measure of volume flow rate or discharge,Flow (vol/time),ECM
+mm³/h,mm3/h,Cubic millimetres per hour,mm(U+00B3)/h,A measure of volume flow rate or discharge,Flow (vol/time),ECM
+mm3/hr,mm3/h,Cubic millimetres per hour,,A measure of volume flow rate or discharge,Flow (vol/time),ECM
+mm³/hr,mm3/h,Cubic millimetres per hour,mm(U+00B3)/hr,A measure of volume flow rate or discharge,Flow (vol/time),ECM
+mm3/m,mm3/min,Cubic millimetres per minute,,A measure of volume flow rate or discharge,Flow (vol/time),ECM
+mm³/m,mm3/min,Cubic millimetres per minute,mm(U+00B3)/m,A measure of volume flow rate or discharge,Flow (vol/time),ECM
+mm3/min,,Cubic millimetres per minute,,A measure of volume flow rate or discharge,Flow (vol/time),ECM
+mm³/min,mm3/min,Cubic millimetres per minute,mm(U+00B3)/min,A measure of volume flow rate or discharge,Flow (vol/time),ECM
+mm3/s,,Cubic millimetres per second,,A measure of volume flow rate or discharge,Flow (vol/time),ECM
+mm³/s,mm3/s,Cubic millimetres per second,mm(U+00B3)/s,A measure of volume flow rate or discharge,Flow (vol/time),ECM
+mm3/wk,,Cubic millimetres per week,,A measure of volume flow rate or discharge,Flow (vol/time),ECM
+mm³/wk,mm3/wk,Cubic millimetres per week,mm(U+00B3)/wk,A measure of volume flow rate or discharge,Flow (vol/time),ECM
+ul/day,µl/day,Microlitres per day,,A measure of mass flow rate,Flow (vol/time),ECM
+ul/h,µl/h,Microlitres per hour,,A measure of mass flow rate,Flow (vol/time),ECM
+ul/hr,µl/h,Microlitres per hour,,A measure of mass flow rate,Flow (vol/time),ECM
+ul/m,µl/min,Microlitres per minute,,A measure of mass flow rate,Flow (vol/time),ECM
+ul/min,µl/min,Microlitres per minute,,A measure of mass flow rate,Flow (vol/time),ECM
+ul/s,µl/s,Microlitres per second,,A measure of mass flow rate,Flow (vol/time),ECM
+ul/wk,µl/wk,Microlitres per week,,A measure of mass flow rate,Flow (vol/time),ECM
+µl/day,,Microlitres per day,(U+00B5)l/day,A measure of mass flow rate,Flow (vol/time),ECM
+µl/h,,Microlitres per hour,(U+00B5)l/h,A measure of mass flow rate,Flow (vol/time),ECM
+µl/hr,µl/h,Microlitres per hour,(U+00B5)l/hr,A measure of mass flow rate,Flow (vol/time),ECM
+µl/m,µl/min,Microlitres per minute,(U+00B5)l/m,A measure of mass flow rate,Flow (vol/time),ECM
+µl/min,,Microlitres per minute,(U+00B5)l/min,A measure of mass flow rate,Flow (vol/time),ECM
+µl/s,,Microlitres per second,(U+00B5)l/s,A measure of mass flow rate,Flow (vol/time),ECM
+µl/wk,,Microlitres per week,(U+00B5)l/wk,A measure of mass flow rate,Flow (vol/time),ECM
+cm,,Centimetre,,A unit of distance,Length,ECM
+km,,Kilometre,,A unit of distance,Length,ECM
+m,,Metre,,A unit of distance,Length,ECM
+mm,,Millimetre,,A unit of distance,Length,ECM
+nm,,Nanometre,,A unit of distance,Length,ECM
+g,,Gram,,A unit of mass,Mass,ECM PI
+kg,,Kilograms,,A unit of mass,Mass,ECM PI
+kt,,Kilotonnes,,A unit of weight,Mass,ECM PI
+mg,,Milligram,,A unit of mass,Mass,ECM PI
+t,,Metric tonne,,A unit of mass,Mass,ECM PI
+ug,µg,Microgram,,A unit of mass,Mass,ECM
+µg,,Microgram,(U+00B5)g,A unit of mass,Mass,ECM
+',,Minute,,"This character is a quote, an allowable alternative to a prime - a unit of angular measure used in geographic coordinates (latitude or longitude)",Misc,ECM
+"""",,Second,,This character is a double quote allowable alternative to double prime - a unit of angular measure used in geographic coordinates (latitude or longitude),Misc,ECM
+%,,Percentage,,A number expressed as a fraction of 100,Misc,ECM
+% Diff,,Percentage difference  ,,A number expressed as a fraction of 100,Misc,ECM
+% REC,,Percentage difference  ,,A number expressed as a fraction of 100,Misc,ECM
+% Sat,,Percentage difference  ,,A number expressed as a fraction of 100,Misc,ECM
+‰,,Percentage per mille,(U+2030),A number expressed as a fraction of 1000,Misc,ECM
+′,',Minute,(U+2032),This character is a prime - a unit of angular measure used in geographic coordinates (latitude or longitude),Misc,ECM
+″,"""",Second,(U+2033),This character is a double prime - a unit of angular measure used in geographic coordinates (latitude or longitude),Misc,ECM
+°,,Degree,(U+00B0),A unit of angular measure used in geographic coordinates (latitude or longitude),Misc,ECM
+95%ile,,95th percentile,,The value below which 95% of recorded measurements or observations occur,Misc,ECM
+ABS/cm,cm-1,Absorption per centimetre,,A unit of absorption,Misc,ECM
+ABS/m,m-1,Absorbance per metre,,A unit of absorbance,Misc,ECM
+CFU,,Colony Forming Unit,,A unit used to estimate the number of viable bacteria or fungal cells,Misc,ECM
+cm-1,,Absorption per centimetre,,A unit of absorption,Misc,ECM
+cm⁻¹,cm-1,Absorption per centimetre,cm(U+207B)(U+00B9),A unit of absorption,Misc,ECM
+FTU,,Formazin Turbidity Unit,,A unit for turbidity,Misc,ECM
+gal/h,,Gallons per hour,,A measure of fuel consumption,Misc,ECM
+GWh/GJ,,Gigawatt hours per gigajoule,,A unit of energy comparison,Misc,ECM
+HU,,Hazen Unit,,A measure of discoloration of water,Misc,ECM
+J/cm2,Jcm-2,Joules per square centimetre,,A unit of energy density,Misc,ECM
+J/cm²,Jcm-2,Joules per square Centimetre,J/cm(U+00B2),A unit of energy density,Misc,ECM
+J/m2,Jm-2,Joules per square metre,,A unit of energy density,Misc,ECM
+J/m²,Jm-2,Joules per square metre,J/m(U+00B2),A unit of energy density,Misc,ECM
+Jcm-2,,Joules per square centimetre,,A unit of energy density,Misc,ECM
+Jcm⁻²,Jcm-2,Joules per square centimetre,Jcm(U+207B)(U+00B2),A unit of energy density,Misc,ECM
+Jm-2,,Joules per square metre,,A unit of energy density,Misc,ECM
+Jm⁻²,Jm-2,Joules per square metre,Jm(U+207B)(U+00B2),A unit of energy density,Misc,ECM
+km/l,,Kilometres per litre,,A measure of fuel consumption,Misc,ECM
+l/s/m,,Litres per second per metre,,A measure of weir overflow rate,Misc,ECM
+m-1,,Absorbance per metre,,A unit of absorbance,Misc,ECM
+m⁻¹,m-1,Absorbance per metre,m(U+207B)(U+00B9),A unit of absorbance,Misc,ECM
+m2/s,,Square metres per second,,A unit of kinematic viscosity,Misc,ECM
+m²/s,m2/s,Square metres per second,m(U+00B2)/s,A unit of kinematic viscosity,Misc,ECM
+mol,,Mole,,An amount of a substance,Misc,ECM
+mpg,,Miles per gallon,,A measure of fuel consumption,Misc,ECM
+NTU,,Nephelometric Turbidity Unit,,A unit of turbidity,Misc,ECM
+PFU,,Plaque Forming Unit,,A unit used in phage quantification,Misc,ECM
+pH,,Potential of hydrogen,,A measure of acidity,Misc,ECM
+ppbv,ppb,Parts per billion,,A measure of concentration,Misc,ECM
+ppb,,Parts per billion,,A measure of concentration,Misc,ECM
+ppmv,ppm,Parts per million,,A measure of concentration,Misc,ECM
+ppm,,Parts per million,,A measure of concentration,Misc,ECM
+㎭,rad,Radian,(U+33AD),A unit of angular measure,Misc,ECM
+rad,,Radian,,A unit of angular measure,Misc,ECM
+RFU,,Relative Fluorescence Unit,,A measurement of fluorescence,Misc,ECM
+SU/Week,,Standard unit per week,,,Misc,ECM
+Bar,,Bar,,A unit of pressure,Pressure,ECM
+mBar,,Millibar,,A unit of pressure,Pressure,ECM
+MPa,,Megapascal,,A unit of pressure,Pressure,ECM
+Pa,,Pascal,,A unit of pressure,Pressure,ECM
+Bq,,Becquerel,,A unit of radioactivity,Radioactive decay,ECM
+GBq,,Gigabecquerel,,A unit of radioactivity,Radioactive decay,ECM
+kBq,,Kilobecquerel,,A unit of radioactivity,Radioactive decay,ECM
+MBq,,Megabecquerel,,A unit of radioactivity,Radioactive decay,ECM
+TBq,,Terabecquerel,,A unit of radioactivity,Radioactive decay,ECM
+Bq/cm2,Bqcm-2,Becquerels per square centimetre,,A unit of radioactive surface contamination,Radioactivity,ECM
+Bq/cm²,Bqcm-2,Becquerels per square centimetre,Bq/cm(U+00B2),A unit of radioactive surface contamination,Radioactivity,ECM
+Bq/cm3,Bqcm-3,Becquerels per cubic centimetre,,A unit of radioactivity concentration,Radioactivity,ECM
+Bq/cm³,Bqcm-3,Becquerels per cubic centimetre,Bq/cm(U+00B3),A unit of radioactivity concentration,Radioactivity,ECM
+Bq/g,,Becquerels per gram,,A unit of radioactivity concentration,Radioactivity,ECM
+Bq/kg,Bqkg-1,Becquerels per kilograms,,A unit of radioactivity concentration,Radioactivity,ECM
+Bq/l,,Becquerels per litre,,A unit of radioactivity concentration,Radioactivity,ECM
+Bq/m2,Bqm-2,Becquerels per square metre,,A unit of radioactive surface contamination,Radioactivity,ECM
+Bq/m²,Bqm-2,Becquerels per square metre,Bq/m(U+00B2),A unit of radioactive surface contamination,Radioactivity,ECM
+Bq/m3,Bqm-3,Becquerels per cubic metre,,A unit of radioactivity concentration,Radioactivity,ECM
+Bq/m³,Bqm-3,Becquerels per cubic metre,Bq/m(U+00B3),A unit of radioactivity concentration,Radioactivity,ECM
+Bqcm-2,,Becquerels per square centimetre,,A unit of radioactive surface contamination,Radioactivity,ECM
+Bqcm-3,,Becquerels per cubic centimetre,,A unit of radioactivity concentration,Radioactivity,ECM
+Bqcm⁻²,Bqcm-2,Becquerels per square centimetre,Bqcm(U+207B)(U+00B2),A unit of radioactive surface contamination,Radioactivity,ECM
+Bqcm⁻³,Bqcm-3,Becquerels per cubic centimetre,Bqcm(U+207B)(U+00B3),A unit of radioactivity concentration,Radioactivity,ECM
+Bqkg-1,,Becquerels per kilograms,,A unit of radioactivity concentration,Radioactivity,ECM
+Bqkg⁻¹,Bqkg-1,Becquerels per kilograms,Bqkg(U+207B)(U+00B9),A unit of radioactivity concentration,Radioactivity,ECM
+Bqm-2,,Becquerels per square metre,,A unit of radioactivity concentration,Radioactivity,ECM
+Bqm-3,,Becquerels per cubic metre,,A unit of radioactivity concentration,Radioactivity,ECM
+Bqm⁻²,Bqm-2,Becquerels per square metre,Bqm(U+207B)(U+00B2),A unit of radioactive surface contamination,Radioactivity,ECM
+Bqm⁻³,Bqm-3,Becquerels per cubic metre,Bqm(U+207B)(U+00B3),A unit of radioactivity concentration,Radioactivity,ECM
+dB,,Decibel,,A measure of sound,Sound,ECM
+cm/a,,Centimetres per year,,A unit of velocity and speed,Speed (Length/Time),ECM
+cm/day,,Centimetres per day,,A unit of velocity and speed,Speed (Length/Time),ECM
+cm/hr,,Centimetres per hour,,A unit of velocity and speed,Speed (Length/Time),ECM
+cm/min,,Centimetres per minute,,A unit of velocity and speed,Speed (Length/Time),ECM
+cm/mth,,Centimetres per month,,A unit of velocity and speed,Speed (Length/Time),ECM
+cm/s,,Centimetres per second,,A unit of velocity and speed,Speed (Length/Time),ECM
+cm/wk,,Centimetres per week,,A unit of velocity and speed,Speed (Length/Time),ECM
+cm/y,cm/a,Centimetres per year,,A unit of velocity and speed,Speed (Length/Time),ECM
+km/a,,Kilometres per year,,A unit of velocity and speed,Speed (Length/Time),ECM
+km/day,,Kilometres per day,,A unit of velocity and speed,Speed (Length/Time),ECM
+km/h,,Kilometres per hour,,A unit of velocity and speed,Speed (Length/Time),ECM
+km/hr,km/h,Kilometres per hour,,A unit of velocity and speed,Speed (Length/Time),ECM
+km/mth,,Kilometres per month,,A unit of velocity and speed,Speed (Length/Time),ECM
+km/wk,,Kilometres per week,,A unit of velocity and speed,Speed (Length/Time),ECM
+km/y,km/a,Kilometres per year,,A unit of velocity and speed,Speed (Length/Time),ECM
+m/a,,Metres per year,,A unit of velocity and speed,Speed (Length/Time),ECM
+m/day,,Metres per day,,A unit of velocity and speed,Speed (Length/Time),ECM
+m/hr,,Metres per hour,,A unit of velocity and speed,Speed (Length/Time),ECM
+m/min,,Metres per minute,,A unit of velocity and speed,Speed (Length/Time),ECM
+m/mth,,Metres per month,,A unit of velocity and speed,Speed (Length/Time),ECM
+m/s,ms-1,Metres per second,,A unit of velocity and speed,Speed (Length/Time),ECM
+m/wk,,Metres per week,,A unit of velocity and speed,Speed (Length/Time),ECM
+m/y,m/a,Metres per year,,A unit of velocity and speed,Speed (Length/Time),ECM
+mm/h,,Millimetres per hour,,A unit of velocity and speed,Speed (Length/Time),ECM
+mph,,Miles per hour,,A unit of speed,Speed (Length/Time),ECM
+ms-1,,Metres per second,,A unit of velocity and speed,Speed (Length/Time),ECM
+ms⁻¹,ms-1,Metres per second,ms(U+207B)(U+00B9),A unit of velocity and speed,Speed (Length/Time),ECM
+DegC,°C,,,A unit of temperature,Temperature,ECM
+°C,,,(U+00B0)C,A unit of temperature,Temperature,ECM
+K,,Kelvin,,A measure of temperature,Temperature,ECM
+ºC,,Degrees Celsius,(U+00B0)C,A measure of temperature,Temperature,ECM
+a,,Year,,A unit of time,Time,ECM
+d,,Day,,A unit of time,Time,ECM
+day,d,Day,,A unit of time,Time,ECM
+h,,Hour,,A unit of time,Time,ECM
+hr,h,Hour,,A unit of time,Time,ECM
+min,,Minute,,A unit of time,Time,ECM
+mth,,Month,,A unit of time,Time,ECM
+qrt,,Quarter,,A unit of time,Time,ECM
+s,,Second,,A unit of time,Time,ECM
+uS,µs,Microseconds,,A unit of time,Time,ECM
+us ,µs,Microseconds, ,A unit of time,Time,ECM
+µs,,Microseconds,,A unit of time,Time,ECM
+wk,,Week,,A unit of time,Time,ECM
+y,a,Year,,A unit of time,Time,ECM
+cm3,,Cubic centimetre,,A unit of volume,Volume,ECM
+cm³,cm3,Cubic centimetre,cm(U+00B3),A unit of volume,Volume,ECM
+l,,Litre,,A unit of volume,Volume,ECM
+m3,,Cubic metre,,A unit of volume,Volume,ECM
+m³,m3,Cubic metre,m(U+00B3),A unit of volume,Volume,ECM
+meq,,Milliequivalents of solute per litre of solvent,,A unit of volume,Volume,ECM
+ml,,Millilitre,,A unit of volume,Volume,ECM
+Ml,,Megalitre,,A unit of volume,Volume,ECM
+mm3,,Cubic millimetres,,A unit of volume,Volume,ECM
+mm³,mm3,Cubic millimetres,mm(U+00B3),A unit of volume,Volume,ECM
+ul,µl,Microlitre,,A unit of volume,Volume,ECM
+µl,,Microlitre,(U+00B5)l,A unit of volume,Volume,ECM

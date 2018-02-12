@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE xml>
+<configuration>
+    <include resource="org/springframework/boot/logging/logback/defaults.xml"/>
+    <conversionRule conversionWord="loglvl" converterClass="uk.gov.defra.datareturns.util.LogHighlightingConverter"/>
+
+    <springProperty scope="context" name="applicationName" source="server.display-name" defaultValue="name_not_configured"/>
+    <springProperty scope="context" name="errbitEnabled" source="errbit.enabled" defaultValue="false"/>
+    <springProperty scope="context" name="errbitApiKey" source="errbit.api.key" defaultValue=""/>
+    <springProperty scope="context" name="errbitEnv" source="errbit.env" defaultValue="Local Development Environment"/>
+    <springProperty scope="context" name="errbitUrl" source="errbit.url" defaultValue="https://localhost:8080/notifier_api/v2/notices"/>
+
+    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <charset>UTF-8</charset>
+            <pattern>%white(%d{HH:mm:ss.SSS}) %loglvl(%-5level %40.40logger{35}): %boldWhite(%msg) %n</pattern>
+        </encoder>
+    </appender>
+
+    <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>log/${applicationName}.log</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+            <fileNamePattern>log/${applicationName}.%d{yyyy-MM-dd}.%i.log</fileNamePattern>
+            <maxFileSize>15MB</maxFileSize>
+            <maxHistory>30</maxHistory>
+            <totalSizeCap>1GB</totalSizeCap>
+        </rollingPolicy>
+
+        <encoder>
+            <pattern>%d{HH:mm:ss.SSS} %loglvl(%-5level %40.40logger{35}): %boldWhite(%msg) %n</pattern>
+        </encoder>
+    </appender>
+
+    <appender name="ERRBIT" class="net.anthavio.airbrake.AirbrakeLogbackAppender">
+        <apiKey>${errbitApiKey}</apiKey>
+        <env>${errbitEnv}</env>
+        <enabled>${errbitEnabled}</enabled>
+        <url>${errbitUrl}</url>
+        <!-- Notify all log events even if they do not contain an instance of Throwable -->
+        <notify>ALL</notify>
+        <!-- Only log errors -->
+        <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+            <level>ERROR</level>
+        </filter>
+    </appender>
+
+    <root level="INFO">
+        <appender-ref ref="STDOUT"/>
+        <appender-ref ref="FILE"/>
+        <appender-ref ref="ERRBIT"/>
+    </root>
+</configuration>

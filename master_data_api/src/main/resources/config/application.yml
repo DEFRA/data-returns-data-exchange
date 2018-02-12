@@ -1,0 +1,37 @@
+###############################################################################
+#
+# Data Returns Master Data API Configuration Settings
+#
+###############################################################################
+spring:
+  application:
+    name: Data Returns Master Data API
+  datasource:
+    url: jdbc:postgresql://localhost:5432/dr_md_api
+    username: data_returns_owner
+    password: data_returns_owner
+    driverClassName: org.postgresql.Driver
+  jpa:
+    database-platform: org.hibernate.dialect.PostgreSQL95Dialect
+
+# Security configuration
+security:
+  method-level-enabled: true
+
+# Configuration for the web server
+server:
+  display-name: dr_md_api
+  port: 9020
+
+---
+###############################################################################
+#
+# Profile: dataloader
+#
+###############################################################################
+spring:
+  profiles: dataloader
+
+# Security configuration
+security:
+  method-level-enabled: false

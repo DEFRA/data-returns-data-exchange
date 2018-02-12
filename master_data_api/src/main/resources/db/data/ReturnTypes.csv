@@ -1,0 +1,17 @@
+name,rtn_type_groups
+Air point source emissions,ECM
+Ambient air quality,ECM
+Emissions to groundwater,ECM
+Emissions to sewer,ECM
+Emissions to surface water,ECM
+Landfill annual monitoring report,ECM
+Landfill gas borehole,ECM
+Landfill gas engine,ECM
+Landfill gas flare,ECM
+Landfill leachate monitoring,ECM
+Methane capped surfaces,ECM
+Tankered emissions,ECM
+Releases to air,PI_RTA
+Releases to land,PI_RTL
+Releases to controlled waters,PI_RTW
+Off-site transfers in wastewater,PI_OSW

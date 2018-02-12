@@ -1,0 +1,181 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd">
+
+    <!--
+    ****************************************************************
+    Uploads
+    ****************************************************************
+    -->
+    <changeSet id="create-table: ecm_upload" author="Defra">
+        <createSequence sequenceName="ecm_upload_id_seq" startValue="1"/>
+
+        <createTable tableName="ecm_upload">
+            <column name="id" type="bigint" defaultValueSequenceNext="ecm_upload_id_seq">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="created" type="timestamp">
+                <constraints nullable="false"/>
+            </column>
+            <column name="last_modified" type="timestamp">
+                <constraints nullable="false"/>
+            </column>
+            <column name="version" type="smallint">
+                <constraints nullable="false"/>
+            </column>
+            <column name="filename" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <rollback>
+            <dropTable tableName="ecm_upload"/>
+            <dropSequence sequenceName="ecm_upload_id_seq"/>
+        </rollback>
+    </changeSet>
+
+
+    <!--
+    ****************************************************************
+    Datasets
+    ****************************************************************
+    -->
+    <changeSet id="create-table: ecm_dataset" author="Defra">
+        <createSequence sequenceName="ecm_dataset_id_seq" startValue="1"/>
+
+        <createTable tableName="ecm_dataset">
+            <column name="id" type="bigint" defaultValueSequenceNext="ecm_dataset_id_seq">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="created" type="timestamp">
+                <constraints nullable="false"/>
+            </column>
+            <column name="last_modified" type="timestamp">
+                <constraints nullable="false"/>
+            </column>
+            <column name="version" type="smallint">
+                <constraints nullable="false"/>
+            </column>
+            <column name="ea_id" type="varchar(12)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="status" type="varchar(11)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="originator_email" type="varchar(500)">
+                <constraints nullable="true"/>
+            </column>
+            <column name="upload" type="bigint">
+                <constraints nullable="true"/>
+            </column>
+        </createTable>
+
+        <createIndex indexName="idx_ecm_dataset" tableName="ecm_dataset" unique="false">
+            <column name="ea_id"/>
+        </createIndex>
+
+        <addForeignKeyConstraint
+                constraintName="fk_dataset_upload"
+                baseTableName="ecm_dataset"
+                baseColumnNames="upload"
+                referencedColumnNames="id"
+                referencedTableName="ecm_upload"/>
+
+
+        <rollback>
+            <dropIndex tableName="ecm_dataset" indexName="idx_ecm_dataset"/>
+            <dropTable tableName="ecm_dataset"/>
+            <dropSequence sequenceName="ecm_dataset_id_seq"/>
+            <dropForeignKeyConstraint baseTableName="ecm_dataset" constraintName="fk_dataset_upload"/>
+        </rollback>
+    </changeSet>
+
+    <!--
+    ****************************************************************
+    Records
+    ****************************************************************
+    -->
+    <changeSet id="create-table: ecm_record" author="Defra">
+        <createSequence sequenceName="ecm_record_id_seq" startValue="1"/>
+
+        <createTable tableName="ecm_record">
+            <column name="id" type="bigint" defaultValueSequenceNext="ecm_record_id_seq">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="created" type="timestamp">
+                <constraints nullable="false"/>
+            </column>
+            <column name="last_modified" type="timestamp">
+                <constraints nullable="false"/>
+            </column>
+            <column name="version" type="smallint">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="dataset" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+
+
+            <column name="return_type" type="varchar(80)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="mon_point" type="varchar(50)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="mon_date" type="timestamp">
+                <constraints nullable="false"/>
+            </column>
+            <column name="return_period" type="varchar(20)">
+                <constraints nullable="true"/>
+            </column>
+            <column name="parameter" type="varchar(150)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="numeric_value" type="decimal">
+                <constraints nullable="true"/>
+            </column>
+            <column name="numeric_equality" type="varchar(25)">
+                <constraints nullable="true"/>
+            </column>
+            <column name="text_value" type="varchar(30)">
+                <constraints nullable="true"/>
+            </column>
+            <column name="qualifier" type="varchar(100)">
+                <constraints nullable="true"/>
+            </column>
+            <column name="unit" type="varchar(10)">
+                <constraints nullable="true"/>
+            </column>
+            <column name="reference_period" type="varchar(100)">
+                <constraints nullable="true"/>
+            </column>
+            <column name="method_or_standard" type="varchar(30)">
+                <constraints nullable="true"/>
+            </column>
+            <column name="comments" type="varchar(255)">
+                <constraints nullable="true"/>
+            </column>
+        </createTable>
+
+        <createIndex indexName="idx_ecm_record" tableName="ecm_record" unique="false">
+            <column name="dataset"/>
+        </createIndex>
+
+        <addForeignKeyConstraint
+                constraintName="fk_record_dataset"
+                baseTableName="ecm_record"
+                baseColumnNames="dataset"
+                referencedColumnNames="id"
+                referencedTableName="ecm_dataset"/>
+
+        <rollback>
+            <dropIndex tableName="ecm_record" indexName="idx_ecm_record"/>
+            <dropForeignKeyConstraint baseTableName="ecm_record" constraintName="fk_record_dataset"/>
+            <dropTable tableName="ecm_record"/>
+            <dropSequence sequenceName="ecm_record_id_seq"/>
+        </rollback>
+    </changeSet>
+
+</databaseChangeLog>

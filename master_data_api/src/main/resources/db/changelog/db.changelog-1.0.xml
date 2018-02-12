@@ -1,0 +1,1366 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd">
+
+    <property name="WML" value="/db/data/stage_data_initialization/EA-WML.csv"/>
+    <property name="IPPC" value="/db/data/stage_data_initialization/IPPC.csv"/>
+    <property name="PRE" value="/db/data/stage_data_initialization/Pre-EA.csv"/>
+    <property name="EPR" value="/db/data/stage_data_initialization/EPR.csv"/>
+
+    <!--
+    ****************************************************************
+    Sites
+    ****************************************************************
+    -->
+    <changeSet id="create-table: site" author="DEFRA">
+        <createSequence sequenceName="md_site_id_seq" startValue="1"/>
+
+        <createTable tableName="md_site">
+            <column name="id" type="bigint" defaultValueSequenceNext="md_site_id_seq">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="nomenclature" type="varchar(80)">
+                <constraints nullable="false" unique="true"/>
+            </column>
+
+            <column name="created" type="timestamp">
+                <constraints nullable="false"/>
+            </column>
+            <column name="last_modified" type="timestamp">
+                <constraints nullable="false"/>
+            </column>
+            <column name="version" type="smallint">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <rollback>
+            <dropTable tableName="md_site"/>
+            <dropSequence sequenceName="md_site_id_seq"/>
+        </rollback>
+    </changeSet>
+
+    <changeSet id="create-index: site" author="DEFRA">
+        <createIndex indexName="idx_md_site_code" tableName="md_site" unique="true">
+            <column name="nomenclature"/>
+        </createIndex>
+        <rollback>
+            <dropIndex tableName="site" indexName="idx_md_site_code"/>
+        </rollback>
+    </changeSet>
+
+    <!--
+    ****************************************************************
+    Unique Identifiers
+    ****************************************************************
+    -->
+    <changeSet id="create-table: unique_identifier" author="DEFRA">
+        <createSequence sequenceName="md_unique_identifier_id_seq" startValue="1"/>
+        <createTable tableName="md_unique_identifier">
+            <column name="id" type="bigint" defaultValueSequenceNext="md_unique_identifier_id_seq">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="nomenclature" type="varchar(18)">
+                <constraints nullable="false" unique="true"/>
+            </column>
+            <column name="type" type="varchar(5)">
+                <constraints nullable="true"/>
+            </column>
+            <column name="site_id" type="bigint">
+                <constraints nullable="false"
+                             foreignKeyName="fk_unique_identifier__site"
+                             references="md_site(id)"/>
+            </column>
+            <column name="created" type="timestamp">
+                <constraints nullable="false"/>
+            </column>
+            <column name="last_modified" type="timestamp">
+                <constraints nullable="false"/>
+            </column>
+            <column name="version" type="smallint">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <rollback>
+            <dropTable tableName="md_unique_identifier"/>
+            <dropSequence sequenceName="md_unique_identifier_id_seq"/>
+        </rollback>
+    </changeSet>
+
+    <changeSet id="create-index: unique_identifier" author="DEFRA">
+        <createIndex indexName="idx_md_unique_identifier_code" tableName="md_unique_identifier" unique="true">
+            <column name="nomenclature"/>
+        </createIndex>
+        <rollback>
+            <dropIndex tableName="md_unique_identifier" indexName="idx_md_unique_identifier_code"/>
+        </rollback>
+    </changeSet>
+
+    <changeSet id="create-table: md_unique_identifier_group" author="DEFRA">
+        <createSequence sequenceName="md_unique_identifier_group_id_seq" startValue="1"/>
+        <createTable tableName="md_unique_identifier_group">
+            <column name="id" type="bigint" defaultValueSequenceNext="md_unique_identifier_group_id_seq">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="nomenclature" type="varchar(255)">
+                <constraints nullable="false" unique="true"/>
+            </column>
+            <column name="created" type="timestamp">
+                <constraints nullable="false"/>
+            </column>
+            <column name="last_modified" type="timestamp">
+                <constraints nullable="false"/>
+            </column>
+            <column name="version" type="smallint">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <rollback>
+            <dropTable tableName="md_unique_identifier_group"/>
+            <dropSequence sequenceName="md_unique_identifier_group_id_seq"/>
+        </rollback>
+    </changeSet>
+    <changeSet id="create-table: md_unique_identifier_group_entries" author="DEFRA">
+        <createTable tableName="md_unique_identifier_group_entries">
+            <column name="md_unique_identifier_group_id" type="bigint">
+                <constraints nullable="false"
+                             foreignKeyName="fk_unique_identifier_group_entries__group"
+                             referencedTableName="md_unique_identifier_group"
+                             referencedColumnNames="id"/>
+            </column>
+            <column name="unique_identifiers_id" type="bigint">
+                <constraints nullable="false"
+                             foreignKeyName="fk_unique_identifier_group_entries__unique_identifier"
+                             referencedTableName="md_unique_identifier"
+                             referencedColumnNames="id"/>
+            </column>
+        </createTable>
+        <addPrimaryKey columnNames="md_unique_identifier_group_id, unique_identifiers_id" tableName="md_unique_identifier_group_entries"/>
+        <rollback>
+            <dropTable tableName="md_unique_identifier_group_entries"/>
+        </rollback>
+    </changeSet>
+
+    <!--
+    ****************************************************************
+    Unique Identifier Aliases
+    ****************************************************************
+    -->
+    <changeSet id="create-table: unique_identifier_alias" author="DEFRA">
+        <createSequence sequenceName="md_unique_identifier_alias_id_seq" startValue="1"/>
+        <createTable tableName="md_unique_identifier_alias">
+            <column name="id" type="bigint" defaultValueSequenceNext="md_unique_identifier_alias_id_seq">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="nomenclature" type="varchar(18)">
+                <constraints nullable="false" unique="true"/>
+            </column>
+
+            <column name="preferred" type="bigint">
+                <constraints nullable="false"
+                             foreignKeyName="fk_unique_identifier_alias_preferred"
+                             references="md_unique_identifier(id)"/>
+            </column>
+            <column name="created" type="timestamp">
+                <constraints nullable="false"/>
+            </column>
+            <column name="last_modified" type="timestamp">
+                <constraints nullable="false"/>
+            </column>
+            <column name="version" type="smallint">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <rollback>
+            <dropTable tableName="md_unique_identifier_alias"/>
+            <dropSequence sequenceName="md_unique_identifier_alias_id_seq"/>
+        </rollback>
+    </changeSet>
+
+    <changeSet id="create-index: unique_identifier_alias" author="DEFRA">
+        <createIndex indexName="idx_md_unique_identifier_alias" tableName="md_unique_identifier_alias" unique="true">
+            <column name="nomenclature"/>
+        </createIndex>
+        <rollback>
+            <dropIndex tableName="md_unique_identifier_alias" indexName="idx_md_unique_identifier_alias"/>
+        </rollback>
+    </changeSet>
+
+    <!--
+    ****************************************************************
+    Return Types
+    ****************************************************************
+    -->
+    <changeSet id="create-table: return_type" author="DEFRA">
+        <createSequence sequenceName="md_return_type_id_seq" startValue="1"/>
+        <createTable tableName="md_return_type">
+            <column name="id" type="bigint" defaultValueSequenceNext="md_return_type_id_seq">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="nomenclature" type="varchar(80)">
+                <constraints nullable="false" unique="true"/>
+            </column>
+
+            <column name="created" type="timestamp">
+                <constraints nullable="false"/>
+            </column>
+            <column name="last_modified" type="timestamp">
+                <constraints nullable="false"/>
+            </column>
+            <column name="version" type="smallint">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <rollback>
+            <dropTable tableName="md_return_type"/>
+            <dropSequence sequenceName="md_return_type_id_seq"/>
+        </rollback>
+    </changeSet>
+
+    <changeSet id="create-index: return_type" author="DEFRA">
+        <createIndex indexName="idx_md_return_type_code" tableName="md_return_type" unique="true">
+            <column name="nomenclature"/>
+        </createIndex>
+        <rollback>
+            <dropIndex tableName="md_return_type" indexName="idx_md_return_type_code"/>
+        </rollback>
+    </changeSet>
+
+    <changeSet id="create-table: md_return_type_group" author="DEFRA">
+        <createSequence sequenceName="md_return_type_group_id_seq" startValue="1"/>
+        <createTable tableName="md_return_type_group">
+            <column name="id" type="bigint" defaultValueSequenceNext="md_return_type_group_id_seq">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="nomenclature" type="varchar(255)">
+                <constraints nullable="false" unique="true"/>
+            </column>
+            <column name="created" type="timestamp">
+                <constraints nullable="false"/>
+            </column>
+            <column name="last_modified" type="timestamp">
+                <constraints nullable="false"/>
+            </column>
+            <column name="version" type="smallint">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <rollback>
+            <dropTable tableName="md_return_type_group"/>
+            <dropSequence sequenceName="md_return_type_group_id_seq"/>
+        </rollback>
+    </changeSet>
+
+    <changeSet id="create-table: md_return_type_group_entries" author="DEFRA">
+        <createTable tableName="md_return_type_group_entries">
+            <column name="md_return_type_group_id" type="bigint">
+                <constraints nullable="false"
+                             foreignKeyName="fk_return_type_group_entries__group"
+                             references="md_return_type_group(id)"/>
+            </column>
+            <column name="return_types_id" type="bigint">
+                <constraints nullable="false"
+                             foreignKeyName="fk_return_type_group_entries__return_type"
+                             references="md_return_type(id)"/>
+            </column>
+        </createTable>
+        <addPrimaryKey columnNames="md_return_type_group_id, return_types_id" tableName="md_return_type_group_entries"/>
+        <rollback>
+            <dropTable tableName="md_return_type_group_entries"/>
+        </rollback>
+    </changeSet>
+
+
+    <!--
+    ****************************************************************
+    Parameters
+    ****************************************************************
+    -->
+    <changeSet id="create-table: parameter" author="DEFRA">
+        <createSequence sequenceName="md_parameter_id_seq" startValue="1"/>
+        <createTable tableName="md_parameter">
+            <column name="id" type="bigint" defaultValueSequenceNext="md_parameter_id_seq">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="nomenclature" type="varchar(150)">
+                <constraints nullable="false" unique="true"/>
+            </column>
+            <column name="type" type="varchar(100)"/>
+            <column name="cas" type="varchar(50)"/>
+            <column name="created" type="timestamp">
+                <constraints nullable="false"/>
+            </column>
+            <column name="last_modified" type="timestamp">
+                <constraints nullable="false"/>
+            </column>
+            <column name="version" type="smallint">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <rollback>
+            <dropTable tableName="md_parameter"/>
+            <dropSequence sequenceName="md_parameter_id_seq"/>
+        </rollback>
+    </changeSet>
+
+    <changeSet id="create-index: parameter" author="DEFRA">
+        <createIndex indexName="idx_md_parameter_code" tableName="md_parameter" unique="true">
+            <column name="nomenclature"/>
+        </createIndex>
+        <rollback>
+            <dropIndex tableName="md_parameter" indexName="idx_md_parameter_code"/>
+        </rollback>
+    </changeSet>
+
+    <changeSet id="create-table: md_parameter_group" author="DEFRA">
+        <createSequence sequenceName="md_parameter_group_id_seq" startValue="1"/>
+        <createTable tableName="md_parameter_group">
+            <column name="id" type="bigint" defaultValueSequenceNext="md_parameter_group_id_seq">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="nomenclature" type="varchar(255)">
+                <constraints nullable="false" unique="true"/>
+            </column>
+            <column name="created" type="timestamp">
+                <constraints nullable="false"/>
+            </column>
+            <column name="last_modified" type="timestamp">
+                <constraints nullable="false"/>
+            </column>
+            <column name="version" type="smallint">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <rollback>
+            <dropTable tableName="md_parameter_group"/>
+            <dropSequence sequenceName="md_parameter_group_id_seq"/>
+        </rollback>
+    </changeSet>
+
+    <changeSet id="create-table: md_parameter_group_entries" author="DEFRA">
+        <createTable tableName="md_parameter_group_entries">
+            <column name="md_parameter_group_id" type="bigint">
+                <constraints nullable="false"
+                             foreignKeyName="fk_parameter_group_entries__group"
+                             references="md_parameter_group(id)"/>
+            </column>
+            <column name="parameters_id" type="bigint">
+                <constraints nullable="false"
+                             foreignKeyName="fk_parameter_group_entries__parameter"
+                             references="md_parameter(id)"/>
+            </column>
+        </createTable>
+        <addPrimaryKey columnNames="md_parameter_group_id, parameters_id" tableName="md_parameter_group_entries"/>
+        <rollback>
+            <dropTable tableName="md_parameter_group_entries"/>
+        </rollback>
+    </changeSet>
+
+    <!--
+    ****************************************************************
+    Parameter Aliases
+    ****************************************************************
+    -->
+    <changeSet id="create-table: parameter_alias" author="DEFRA">
+        <createSequence sequenceName="md_parameter_alias_id_seq" startValue="1"/>
+        <createTable tableName="md_parameter_alias">
+            <column name="id" type="bigint" defaultValueSequenceNext="md_parameter_alias_id_seq">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="nomenclature" type="varchar(150)">
+                <constraints nullable="false" unique="true"/>
+            </column>
+
+            <column name="preferred" type="bigint">
+                <constraints nullable="false"
+                             foreignKeyName="fk_parameter_alias__preferred"
+                             references="md_parameter(id)"/>
+            </column>
+            <column name="created" type="timestamp">
+                <constraints nullable="false"/>
+            </column>
+            <column name="last_modified" type="timestamp">
+                <constraints nullable="false"/>
+            </column>
+            <column name="version" type="smallint">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <rollback>
+            <dropTable tableName="md_parameter_alias"/>
+            <dropSequence sequenceName="md_parameter_alias_id_seq"/>
+        </rollback>
+    </changeSet>
+
+    <changeSet id="create-index: parameter_alias" author="DEFRA">
+        <createIndex indexName="idx_md_parameter_alias" tableName="md_parameter_alias" unique="true">
+            <column name="nomenclature"/>
+        </createIndex>
+        <rollback>
+            <dropIndex tableName="md_parameter_alias" indexName="idx_md_parameter_alias"/>
+        </rollback>
+    </changeSet>
+
+    <!--
+    ****************************************************************
+    Units
+    ****************************************************************
+    -->
+    <changeSet id="create-table: md_unit_type" author="DEFRA">
+        <createSequence sequenceName="md_unit_type_id_seq" startValue="1"/>
+        <createTable tableName="md_unit_type">
+            <column name="id" type="bigint" defaultValueSequenceNext="md_unit_type_id_seq">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="nomenclature" type="varchar(255)">
+                <constraints nullable="false" unique="true"/>
+            </column>
+            <column name="created" type="timestamp">
+                <constraints nullable="false"/>
+            </column>
+            <column name="last_modified" type="timestamp">
+                <constraints nullable="false"/>
+            </column>
+            <column name="version" type="smallint">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <rollback>
+            <dropTable tableName="md_unit_type"/>
+            <dropSequence sequenceName="md_unit_type_id_seq"/>
+        </rollback>
+    </changeSet>
+
+    <changeSet id="create-table: unit" author="DEFRA">
+        <createSequence sequenceName="md_unit_id_seq" startValue="1"/>
+        <createTable tableName="md_unit">
+            <column name="id" type="bigint" defaultValueSequenceNext="md_unit_id_seq">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="nomenclature" type="varchar(10)">
+                <constraints nullable="false" unique="true"/>
+            </column>
+            <column name="long_name" type="varchar(50)"/>
+            <column name="unicode" type="varchar(50)"/>
+            <column name="description" type="varchar(200)"/>
+            <column name="type_id" type="bigint">
+                <constraints nullable="false"
+                             foreignKeyName="fk_unit__type"
+                             references="md_unit_type(id)"/>
+            </column>
+            <column name="created" type="timestamp">
+                <constraints nullable="false"/>
+            </column>
+            <column name="last_modified" type="timestamp">
+                <constraints nullable="false"/>
+            </column>
+            <column name="version" type="smallint">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <rollback>
+            <dropTable tableName="md_unit"/>
+            <dropSequence sequenceName="md_unit_id_seq"/>
+        </rollback>
+    </changeSet>
+
+    <changeSet id="create-index: unit" author="DEFRA">
+        <createIndex indexName="idx_md_unit_code" tableName="md_unit" unique="true">
+            <column name="nomenclature"/>
+        </createIndex>
+        <rollback>
+            <dropIndex tableName="md_unit" indexName="idx_md_unit_code"/>
+        </rollback>
+    </changeSet>
+
+    <changeSet id="create-table: md_unit_group" author="DEFRA">
+        <createSequence sequenceName="md_unit_group_id_seq" startValue="1"/>
+        <createTable tableName="md_unit_group">
+            <column name="id" type="bigint" defaultValueSequenceNext="md_unit_group_id_seq">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="nomenclature" type="varchar(255)">
+                <constraints nullable="false" unique="true"/>
+            </column>
+            <column name="created" type="timestamp">
+                <constraints nullable="false"/>
+            </column>
+            <column name="last_modified" type="timestamp">
+                <constraints nullable="false"/>
+            </column>
+            <column name="version" type="smallint">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <rollback>
+            <dropTable tableName="md_unit_group"/>
+            <dropSequence sequenceName="md_unit_group_id_seq"/>
+        </rollback>
+    </changeSet>
+    <changeSet id="create-table: md_unit_group_entries" author="DEFRA">
+        <createTable tableName="md_unit_group_entries">
+            <column name="md_unit_group_id" type="bigint">
+                <constraints nullable="false"
+                             foreignKeyName="fk_unit_group_entries__group"
+                             references="md_unit_group(id)"/>
+            </column>
+            <column name="units_id" type="bigint">
+                <constraints nullable="false"
+                             foreignKeyName="fk_unit_group_entries__unit"
+                             references="md_unit(id)"/>
+            </column>
+        </createTable>
+        <addPrimaryKey columnNames="md_unit_group_id, units_id" tableName="md_unit_group_entries"/>
+        <rollback>
+            <dropTable tableName="md_unit_group_entries"/>
+        </rollback>
+    </changeSet>
+
+    <!--
+    ****************************************************************
+    Unit Aliases
+    ****************************************************************
+    -->
+    <changeSet id="create-table: unit_alias" author="DEFRA">
+        <createSequence sequenceName="md_unit_alias_id_seq" startValue="1"/>
+        <createTable tableName="md_unit_alias">
+            <column name="id" type="bigint" defaultValueSequenceNext="md_unit_alias_id_seq">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="nomenclature" type="varchar(150)">
+                <constraints nullable="false" unique="true"/>
+            </column>
+
+            <column name="preferred" type="bigint">
+                <constraints nullable="false"
+                             foreignKeyName="fk_unit__preferred"
+                             references="md_unit(id)"/>
+            </column>
+            <column name="created" type="timestamp">
+                <constraints nullable="false"/>
+            </column>
+            <column name="last_modified" type="timestamp">
+                <constraints nullable="false"/>
+            </column>
+            <column name="version" type="smallint">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <rollback>
+            <dropTable tableName="md_unit_alias"/>
+            <dropSequence sequenceName="md_unit_alias_id_seq"/>
+        </rollback>
+    </changeSet>
+
+    <changeSet id="create-index: unit_alias" author="DEFRA">
+        <createIndex indexName="idx_md_unit_alias" tableName="md_unit_alias" unique="true">
+            <column name="nomenclature"/>
+        </createIndex>
+        <rollback>
+            <dropIndex tableName="md_unit_alias" indexName="idx_md_unit_alias"/>
+        </rollback>
+    </changeSet>
+
+
+    <!--
+    ****************************************************************
+    Method Or Standard
+    ****************************************************************
+    -->
+    <changeSet id="create-table: method_or_standard" author="DEFRA">
+        <createSequence sequenceName="md_method_or_standard_id_seq" startValue="1"/>
+
+        <createTable tableName="md_method_or_standard">
+            <column name="id" type="bigint" defaultValueSequenceNext="md_method_or_standard_id_seq">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="nomenclature" type="varchar(30)">
+                <constraints nullable="false" unique="true"/>
+            </column>
+
+            <column name="notes" type="varchar(250)"/>
+            <column name="created" type="timestamp">
+                <constraints nullable="false"/>
+            </column>
+            <column name="last_modified" type="timestamp">
+                <constraints nullable="false"/>
+            </column>
+            <column name="version" type="smallint">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <rollback>
+            <dropTable tableName="md_method_or_standard"/>
+            <dropSequence sequenceName="md_method_or_standard_id_seq"/>
+        </rollback>
+    </changeSet>
+
+    <changeSet id="create-index: method_or_standard" author="DEFRA">
+        <createIndex indexName="idx_md_method_or_standard_code" tableName="md_method_or_standard" unique="true">
+            <column name="nomenclature"/>
+        </createIndex>
+        <rollback>
+            <dropIndex tableName="md_method_or_standard" indexName="idx_md_method_or_standard_code"/>
+        </rollback>
+    </changeSet>
+
+    <!--
+    ****************************************************************
+    Qualifiers
+    ****************************************************************
+    -->
+    <changeSet id="create-table: qualifier" author="DEFRA">
+        <createSequence sequenceName="md_qualifier_id_seq" startValue="1"/>
+        <createTable tableName="md_qualifier">
+            <column name="id" type="bigint" defaultValueSequenceNext="md_qualifier_id_seq">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="nomenclature" type="varchar(100)">
+                <constraints nullable="false" unique="true"/>
+            </column>
+
+            <column name="notes" type="varchar(100)"/>
+            <column name="type" type="varchar(50)"/>
+            <column name="singleormultiple" type="varchar(20)"/>
+            <column name="created" type="timestamp">
+                <constraints nullable="false"/>
+            </column>
+            <column name="last_modified" type="timestamp">
+                <constraints nullable="false"/>
+            </column>
+            <column name="version" type="smallint">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <rollback>
+            <dropTable tableName="md_qualifier"/>
+            <dropSequence sequenceName="md_qualifier_id_seq"/>
+        </rollback>
+    </changeSet>
+
+    <changeSet id="create-index: qualifier" author="DEFRA">
+        <createIndex indexName="idx_md_qualifier_code" tableName="md_qualifier" unique="true">
+            <column name="nomenclature"/>
+        </createIndex>
+        <rollback>
+            <dropIndex tableName="md_qualifier" indexName="idx_md_qualifier_code"/>
+        </rollback>
+    </changeSet>
+    <!--
+    ****************************************************************
+    Reference Periods
+    ****************************************************************
+    -->
+    <changeSet id="create-table: reference_period" author="DEFRA">
+        <createSequence sequenceName="md_reference_period_id_seq" startValue="1"/>
+        <createTable tableName="md_reference_period">
+            <column name="id" type="bigint" defaultValueSequenceNext="md_reference_period_id_seq">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="nomenclature" type="varchar(100)">
+                <constraints nullable="false" unique="true"/>
+            </column>
+            <column name="notes" type="varchar(250)"/>
+            <column name="created" type="timestamp">
+                <constraints nullable="false"/>
+            </column>
+            <column name="last_modified" type="timestamp">
+                <constraints nullable="false"/>
+            </column>
+            <column name="version" type="smallint">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <rollback>
+            <dropTable tableName="md_reference_period"/>
+            <dropSequence sequenceName="md_reference_period_id_seq"/>
+        </rollback>
+    </changeSet>
+
+    <changeSet id="create-index: reference_period" author="DEFRA">
+        <createIndex indexName="idx_md_reference_period_code" tableName="md_reference_period" unique="true">
+            <column name="nomenclature"/>
+        </createIndex>
+        <rollback>
+            <dropIndex tableName="md_reference_period" indexName="idx_md_reference_period_code"/>
+        </rollback>
+    </changeSet>
+
+    <!--
+    ****************************************************************
+    Reference Period Aliases
+    ****************************************************************
+    -->
+    <changeSet id="create-table: reference_period_alias" author="DEFRA">
+        <createSequence sequenceName="md_reference_period_alias_id_seq" startValue="1"/>
+        <createTable tableName="md_reference_period_alias">
+            <column name="id" type="bigint" defaultValueSequenceNext="md_reference_period_alias_id_seq">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="nomenclature" type="varchar(150)">
+                <constraints nullable="false" unique="true"/>
+            </column>
+
+            <column name="preferred" type="bigint">
+                <constraints nullable="false"
+                             foreignKeyName="fk_reference_period__preferred"
+                             references="md_reference_period(id)"/>
+            </column>
+            <column name="created" type="timestamp">
+                <constraints nullable="false"/>
+            </column>
+            <column name="last_modified" type="timestamp">
+                <constraints nullable="false"/>
+            </column>
+            <column name="version" type="smallint">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <rollback>
+            <dropTable tableName="md_reference_period_alias"/>
+            <dropSequence sequenceName="md_reference_period_alias_id_seq"/>
+        </rollback>
+    </changeSet>
+
+    <changeSet id="create-index: reference_period_alias" author="DEFRA">
+        <createIndex indexName="idx_md_reference_period_alias" tableName="md_reference_period_alias" unique="true">
+            <column name="nomenclature"/>
+        </createIndex>
+        <rollback>
+            <dropIndex tableName="md_reference_period_alias" indexName="idx_md_reference_period_alias"/>
+        </rollback>
+    </changeSet>
+
+
+    <!--
+    ****************************************************************
+    Return Periods
+    ****************************************************************
+    -->
+
+    <changeSet id="create-table: return_period" author="DEFRA">
+        <createSequence sequenceName="md_return_period_id_seq" startValue="1"/>
+        <createTable tableName="md_return_period">
+            <column name="id" type="bigint" defaultValueSequenceNext="md_return_period_id_seq">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="nomenclature" type="varchar(20)">
+                <constraints nullable="false" unique="true"/>
+            </column>
+            <column name="definition" type="varchar(600)"/>
+            <column name="example" type="varchar(20)"/>
+            <column name="created" type="timestamp">
+                <constraints nullable="false"/>
+            </column>
+            <column name="last_modified" type="timestamp">
+                <constraints nullable="false"/>
+            </column>
+            <column name="version" type="smallint">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <rollback>
+            <dropTable tableName="md_return_period"/>
+            <dropSequence sequenceName="md_return_period_id_seq"/>
+        </rollback>
+    </changeSet>
+
+    <changeSet id="create-index: return_period" author="DEFRA">
+        <createIndex indexName="idx_md_return_period_code" tableName="md_return_period" unique="true">
+            <column name="nomenclature"/>
+        </createIndex>
+        <rollback>
+            <dropIndex tableName="md_return_period" indexName="idx_md_return_period_code"/>
+        </rollback>
+    </changeSet>
+
+    <!--
+    ****************************************************************
+    Text Values
+    ****************************************************************
+    -->
+    <changeSet id="create-table: text_value" author="DEFRA">
+        <createSequence sequenceName="md_text_value_id_seq" startValue="1"/>
+        <createTable tableName="md_text_value">
+            <column name="id" type="bigint" defaultValueSequenceNext="md_text_value_id_seq">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="nomenclature" type="varchar(30)">
+                <constraints nullable="false" unique="true"/>
+            </column>
+            <column name="created" type="timestamp">
+                <constraints nullable="false"/>
+            </column>
+            <column name="last_modified" type="timestamp">
+                <constraints nullable="false"/>
+            </column>
+            <column name="version" type="smallint">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <rollback>
+            <dropTable tableName="md_text_value"/>
+            <dropSequence sequenceName="md_text_value_id_seq"/>
+        </rollback>
+    </changeSet>
+    <changeSet id="create-index: text_value" author="DEFRA">
+        <createIndex indexName="idx_md_text_value_code" tableName="md_text_value" unique="true">
+            <column name="nomenclature"/>
+        </createIndex>
+        <rollback>
+            <dropIndex tableName="md_text_value" indexName="idx_md_text_value_code"/>
+        </rollback>
+    </changeSet>
+
+    <!--
+    ****************************************************************
+    Text Value Aliases
+    ****************************************************************
+    -->
+    <changeSet id="create-table: text_value_alias" author="DEFRA">
+        <createSequence sequenceName="md_text_value_alias_id_seq" startValue="1"/>
+        <createTable tableName="md_text_value_alias">
+            <column name="id" type="bigint" defaultValueSequenceNext="md_text_value_alias_id_seq">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="nomenclature" type="varchar(150)">
+                <constraints nullable="false" unique="true"/>
+            </column>
+
+            <column name="preferred" type="bigint">
+                <constraints nullable="false"
+                             foreignKeyName="fk_text_value__preferred"
+                             references="md_text_value(id)"/>
+            </column>
+            <column name="created" type="timestamp">
+                <constraints nullable="false"/>
+            </column>
+            <column name="last_modified" type="timestamp">
+                <constraints nullable="false"/>
+            </column>
+            <column name="version" type="smallint">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <rollback>
+            <dropTable tableName="md_text_value_alias"/>
+            <dropSequence sequenceName="md_text_value_alias_id_seq"/>
+        </rollback>
+    </changeSet>
+
+    <changeSet id="create-index: text_value_alias" author="DEFRA">
+        <createIndex indexName="idx_md_text_value_alias" tableName="md_text_value_alias" unique="true">
+            <column name="nomenclature"/>
+        </createIndex>
+        <rollback>
+            <dropIndex tableName="md_text_value_alias" indexName="idx_md_text_value_alias"/>
+        </rollback>
+    </changeSet>
+
+
+    <!--
+    ****************************************************************
+    NACE Codes
+    ****************************************************************
+    -->
+    <changeSet id="create-table: md_nace_section" author="DEFRA">
+        <createSequence sequenceName="md_nace_section_id_seq" startValue="1"/>
+        <createTable tableName="md_nace_section">
+            <column name="id" type="bigint" defaultValueSequenceNext="md_nace_section_id_seq">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="nomenclature" type="varchar(8)">
+                <constraints nullable="false" unique="true"/>
+            </column>
+            <column name="description" type="varchar(255)">
+                <constraints nullable="false" unique="false"/>
+            </column>
+            <column name="details" type="varchar(8000)">
+                <constraints nullable="true" unique="false"/>
+            </column>
+            <column name="created" type="timestamp">
+                <constraints nullable="false"/>
+            </column>
+            <column name="last_modified" type="timestamp">
+                <constraints nullable="false"/>
+            </column>
+            <column name="version" type="smallint">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <rollback>
+            <dropTable tableName="md_nace_section"/>
+            <dropSequence sequenceName="md_nace_section_id_seq"/>
+        </rollback>
+    </changeSet>
+    <changeSet id="create-index: md_nace_section" author="DEFRA">
+        <createIndex indexName="idx_md_nace_section_code" tableName="md_nace_section" unique="true">
+            <column name="nomenclature"/>
+        </createIndex>
+        <rollback>
+            <dropIndex tableName="md_nace_section" indexName="idx_md_nace_section"/>
+        </rollback>
+    </changeSet>
+
+    <changeSet id="create-table: md_nace_division" author="DEFRA">
+        <createSequence sequenceName="md_nace_division_id_seq" startValue="1"/>
+        <createTable tableName="md_nace_division">
+            <column name="id" type="bigint" defaultValueSequenceNext="md_nace_division_id_seq">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="nomenclature" type="varchar(8)">
+                <constraints nullable="false" unique="true"/>
+            </column>
+
+            <column name="description" type="varchar(255)">
+                <constraints nullable="false" unique="false"/>
+            </column>
+            <column name="details" type="varchar(8000)">
+                <constraints nullable="true" unique="false"/>
+            </column>
+            <column name="nace_section_id" type="bigint">
+                <constraints nullable="false"
+                             foreignKeyName="fk_nace_division__section"
+                             references="md_nace_section(id)"/>
+            </column>
+            <column name="created" type="timestamp">
+                <constraints nullable="false"/>
+            </column>
+            <column name="last_modified" type="timestamp">
+                <constraints nullable="false"/>
+            </column>
+            <column name="version" type="smallint">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <rollback>
+            <dropTable tableName="md_nace_division"/>
+            <dropSequence sequenceName="md_nace_division_id_seq"/>
+        </rollback>
+    </changeSet>
+    <changeSet id="create-index: md_nace_division" author="DEFRA">
+        <createIndex indexName="idx_md_nace_division_code" tableName="md_nace_division" unique="true">
+            <column name="nomenclature"/>
+        </createIndex>
+        <rollback>
+            <dropIndex tableName="md_nace_division" indexName="idx_md_nace_division"/>
+        </rollback>
+    </changeSet>
+
+    <changeSet id="create-table: md_nace_group" author="DEFRA">
+        <createSequence sequenceName="md_nace_group_id_seq" startValue="1"/>
+        <createTable tableName="md_nace_group">
+            <column name="id" type="bigint" defaultValueSequenceNext="md_nace_group_id_seq">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="nomenclature" type="varchar(8)">
+                <constraints nullable="false" unique="true"/>
+            </column>
+
+            <column name="description" type="varchar(255)">
+                <constraints nullable="false" unique="false"/>
+            </column>
+            <column name="details" type="varchar(8000)">
+                <constraints nullable="true" unique="false"/>
+            </column>
+            <column name="nace_division_id" type="bigint">
+                <constraints nullable="false"
+                             foreignKeyName="fk_nace_group__division"
+                             references="md_nace_division(id)"/>
+            </column>
+            <column name="created" type="timestamp">
+                <constraints nullable="false"/>
+            </column>
+            <column name="last_modified" type="timestamp">
+                <constraints nullable="false"/>
+            </column>
+            <column name="version" type="smallint">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <rollback>
+            <dropTable tableName="md_nace_group"/>
+            <dropSequence sequenceName="md_nace_group_id_seq"/>
+        </rollback>
+    </changeSet>
+    <changeSet id="create-index: md_nace_group" author="DEFRA">
+        <createIndex indexName="idx_md_nace_group_code" tableName="md_nace_group" unique="true">
+            <column name="nomenclature"/>
+        </createIndex>
+        <rollback>
+            <dropIndex tableName="md_nace_group" indexName="idx_md_nace_group"/>
+        </rollback>
+    </changeSet>
+
+    <changeSet id="create-table: md_nace_class" author="DEFRA">
+        <createSequence sequenceName="md_nace_class_id_seq" startValue="1"/>
+        <createTable tableName="md_nace_class">
+            <column name="id" type="bigint" defaultValueSequenceNext="md_nace_class_id_seq">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="nomenclature" type="varchar(8)">
+                <constraints nullable="false" unique="true"/>
+            </column>
+            <column name="description" type="varchar(255)">
+                <constraints nullable="false" unique="false"/>
+            </column>
+            <column name="details" type="varchar(8000)">
+                <constraints nullable="true" unique="false"/>
+            </column>
+            <column name="nace_group_id" type="bigint">
+                <constraints nullable="false"
+                             foreignKeyName="fk_nace_class__nace_group"
+                             references="md_nace_group(id)"/>
+            </column>
+            <column name="created" type="timestamp">
+                <constraints nullable="false"/>
+            </column>
+            <column name="last_modified" type="timestamp">
+                <constraints nullable="false"/>
+            </column>
+            <column name="version" type="smallint">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <rollback>
+            <dropTable tableName="md_nace_class"/>
+            <dropSequence sequenceName="md_nace_class_id_seq"/>
+        </rollback>
+    </changeSet>
+    <changeSet id="create-index: md_nace_class" author="DEFRA`">
+        <createIndex indexName="idx_md_nace_class_code" tableName="md_nace_class" unique="true">
+            <column name="nomenclature"/>
+        </createIndex>
+        <rollback>
+            <dropIndex tableName="md_nace_class" indexName="idx_md_nace_class"/>
+        </rollback>
+    </changeSet>
+
+    <!--
+     ****************************************************************
+     EWC Codes
+     ****************************************************************
+    -->
+    <changeSet id="create-table: md_ewc_chapter" author="DEFRA">
+        <createSequence sequenceName="md_ewc_chapter_id_seq" startValue="1"/>
+        <createTable tableName="md_ewc_chapter">
+            <column name="id" type="bigint" defaultValueSequenceNext="md_ewc_chapter_id_seq">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="nomenclature" type="varchar(2)">
+                <constraints nullable="false" unique="true"/>
+            </column>
+            <column name="code" type="varchar(2)">
+                <constraints nullable="false" unique="false"/>
+            </column>
+            <column name="description" type="varchar(500)">
+                <constraints nullable="false" unique="false"/>
+            </column>
+            <column name="created" type="timestamp">
+                <constraints nullable="false"/>
+            </column>
+            <column name="last_modified" type="timestamp">
+                <constraints nullable="false"/>
+            </column>
+            <column name="version" type="smallint">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <rollback>
+            <dropTable tableName="md_ewc_chapter"/>
+            <dropSequence sequenceName="md_ewc_chapter_id_seq"/>
+        </rollback>
+    </changeSet>
+    <changeSet id="create-index: md_ewc_chapter" author="DEFRA">
+        <createIndex indexName="idx_md_ewc_chapter_code" tableName="md_ewc_chapter" unique="true">
+            <column name="nomenclature"/>
+        </createIndex>
+        <rollback>
+            <dropIndex tableName="md_ewc_chapter" indexName="idx_md_ewc_chapter"/>
+        </rollback>
+    </changeSet>
+
+    <changeSet id="create-table: md_ewc_subchapter" author="DEFRA">
+        <createSequence sequenceName="md_ewc_subchapter_id_seq" startValue="1"/>
+        <createTable tableName="md_ewc_subchapter">
+            <column name="id" type="bigint" defaultValueSequenceNext="md_ewc_subchapter_id_seq">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="nomenclature" type="varchar(5)">
+                <constraints nullable="false" unique="true"/>
+            </column>
+            <column name="code" type="varchar(2)">
+                <constraints nullable="false" unique="false"/>
+            </column>
+            <column name="description" type="varchar(500)">
+                <constraints nullable="false" unique="false"/>
+            </column>
+            <column name="ewc_chapter_id" type="bigint">
+                <constraints nullable="false"
+                             foreignKeyName="fk_ewc_subchapter__chapter"
+                             references="md_ewc_chapter(id)"/>
+            </column>
+            <column name="created" type="timestamp">
+                <constraints nullable="false"/>
+            </column>
+            <column name="last_modified" type="timestamp">
+                <constraints nullable="false"/>
+            </column>
+            <column name="version" type="smallint">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <rollback>
+            <dropTable tableName="md_ewc_subchapter"/>
+            <dropSequence sequenceName="md_ewc_subchapter_id_seq"/>
+        </rollback>
+    </changeSet>
+    <changeSet id="create-index: md_ewc_subchapter" author="DEFRA">
+        <createIndex indexName="idx_md_ewc_subchapter_code" tableName="md_ewc_subchapter" unique="true">
+            <column name="nomenclature"/>
+        </createIndex>
+        <rollback>
+            <dropIndex tableName="md_ewc_subchapter" indexName="idx_md_ewc_subchapter"/>
+        </rollback>
+    </changeSet>
+
+    <changeSet id="create-table: md_ewc_activity" author="DEFRA">
+        <createSequence sequenceName="md_ewc_activity_id_seq" startValue="1"/>
+        <createTable tableName="md_ewc_activity">
+            <column name="id" type="bigint" defaultValueSequenceNext="md_ewc_activity_id_seq">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="nomenclature" type="varchar(8)">
+                <constraints nullable="false" unique="true"/>
+            </column>
+            <column name="code" type="varchar(2)">
+                <constraints nullable="false" unique="false"/>
+            </column>
+            <column name="hazardous" type="boolean">
+                <constraints nullable="false"/>
+            </column>
+            <column name="description" type="varchar(500)">
+                <constraints nullable="false" unique="false"/>
+            </column>
+            <column name="ewc_subchapter_id" type="bigint">
+                <constraints nullable="false"
+                             foreignKeyName="fk_ewc_activity__subchapter"
+                             references="md_ewc_subchapter(id)"/>
+            </column>
+            <column name="created" type="timestamp">
+                <constraints nullable="false"/>
+            </column>
+            <column name="last_modified" type="timestamp">
+                <constraints nullable="false"/>
+            </column>
+            <column name="version" type="smallint">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <rollback>
+            <dropTable tableName="md_ewc_activity"/>
+            <dropSequence sequenceName="md_ewc_activity_id_seq"/>
+        </rollback>
+    </changeSet>
+    <changeSet id="create-index: md_ewc_activity" author="DEFRA">
+        <createIndex indexName="idx_md_ewc_activity_code" tableName="md_ewc_activity" unique="true">
+            <column name="nomenclature"/>
+        </createIndex>
+        <rollback>
+            <dropIndex tableName="md_ewc_activity" indexName="idx_md_ewc_activity"/>
+        </rollback>
+    </changeSet>
+
+
+    <!--
+    ****************************************************************
+    Applicability
+    ****************************************************************
+    -->
+    <changeSet id="create-table: md_applicability" author="DEFRA">
+        <createSequence sequenceName="md_applicability_id_seq" startValue="1"/>
+        <createTable tableName="md_applicability">
+            <column name="id" type="bigint" defaultValueSequenceNext="md_applicability_id_seq">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="nomenclature" type="varchar(255)">
+                <constraints nullable="false" unique="true"/>
+            </column>
+            <column name="created" type="timestamp">
+                <constraints nullable="false"/>
+            </column>
+            <column name="last_modified" type="timestamp">
+                <constraints nullable="false"/>
+            </column>
+            <column name="version" type="smallint">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <rollback>
+            <dropTable tableName="md_applicability"/>
+            <dropSequence sequenceName="md_applicability_id_seq"/>
+        </rollback>
+    </changeSet>
+
+    <changeSet id="create-table: md_applicability_parameter_groups" author="DEFRA">
+        <createTable tableName="md_applicability_parameter_groups">
+            <column name="md_applicability_id" type="bigint">
+                <constraints nullable="false"
+                             foreignKeyName="fk_applicability_parameter_groups__applic"
+                             references="md_applicability(id)"/>
+            </column>
+            <column name="parameter_groups_id" type="bigint">
+                <constraints nullable="false"
+                             foreignKeyName="fk_applicability_parameter_groups__group"
+                             references="md_parameter_group(id)"/>
+            </column>
+        </createTable>
+        <addPrimaryKey columnNames="md_applicability_id, parameter_groups_id" tableName="md_applicability_parameter_groups"/>
+        <rollback>
+            <dropTable tableName="md_applicability_parameter_groups"/>
+        </rollback>
+    </changeSet>
+
+    <changeSet id="create-table: md_applicability_return_type_groups" author="DEFRA">
+        <createTable tableName="md_applicability_return_type_groups">
+            <column name="md_applicability_id" type="bigint">
+                <constraints nullable="false"
+                             foreignKeyName="fk_applicability_return_type_groups__applic"
+                             references="md_applicability(id)"/>
+            </column>
+            <column name="return_type_groups_id" type="bigint">
+                <constraints nullable="false"
+                             foreignKeyName="fk_applicability_return_type_groups__group"
+                             references="md_return_type_group(id)"/>
+            </column>
+        </createTable>
+        <addPrimaryKey columnNames="md_applicability_id, return_type_groups_id" tableName="md_applicability_return_type_groups"/>
+        <rollback>
+            <dropTable tableName="md_applicability_return_type_groups"/>
+        </rollback>
+    </changeSet>
+
+    <changeSet id="create-table: md_applicability_unique_identifier_groups" author="DEFRA">
+        <createTable tableName="md_applicability_unique_identifier_groups">
+            <column name="md_applicability_id" type="bigint">
+                <constraints nullable="false"
+                             foreignKeyName="fk_applicability_unique_identifier_groups__applic"
+                             references="md_applicability(id)"/>
+            </column>
+            <column name="unique_identifier_groups_id" type="bigint">
+                <constraints nullable="false"
+                             foreignKeyName="fk_applicability_unique_identifier_groups__group"
+                             references="md_unique_identifier_group(id)"/>
+            </column>
+        </createTable>
+        <addPrimaryKey columnNames="md_applicability_id, unique_identifier_groups_id" tableName="md_applicability_unique_identifier_groups"/>
+        <rollback>
+            <dropTable tableName="md_applicability_unique_identifier_groups"/>
+        </rollback>
+    </changeSet>
+
+    <changeSet id="create-table: md_applicability_unit_groups" author="DEFRA">
+        <createTable tableName="md_applicability_unit_groups">
+            <column name="md_applicability_id" type="bigint">
+                <constraints nullable="false"
+                             foreignKeyName="fk_applicability_unit_groups__applic"
+                             references="md_applicability(id)"/>
+            </column>
+            <column name="unit_groups_id" type="bigint">
+                <constraints nullable="false"
+                             foreignKeyName="fk_applicability_unit_groups__group"
+                             references="md_unit_group(id)"/>
+            </column>
+        </createTable>
+        <addPrimaryKey columnNames="md_applicability_id, unit_groups_id" tableName="md_applicability_unit_groups"/>
+        <rollback>
+            <dropTable tableName="md_applicability_unit_groups"/>
+        </rollback>
+    </changeSet>
+
+    <!--
+    ****************************************************************
+    Disposal Codes
+    ****************************************************************
+    -->
+
+    <changeSet id="create-table: md_disposal_codes" author="DEFRA">
+        <createSequence sequenceName="md_disposal_codes_id_seq" startValue="1"/>
+        <createTable tableName="md_disposal_codes">
+            <column name="id" type="bigint" defaultValueSequenceNext="md_disposal_codes_id_seq">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="nomenclature" type="varchar(3)">
+                <constraints nullable="false" unique="true"/>
+            </column>
+            <column name="description" type="varchar(255)">
+                <constraints nullable="false" unique="false"/>
+            </column>
+            <column name="created" type="timestamp">
+                <constraints nullable="false"/>
+            </column>
+            <column name="last_modified" type="timestamp">
+                <constraints nullable="false"/>
+            </column>
+            <column name="version" type="smallint">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <rollback>
+            <dropTable tableName="md_disposal_codes"/>
+            <dropSequence sequenceName="md_disposal_codes_id_seq"/>
+        </rollback>
+    </changeSet>
+    <changeSet id="create-index: idx_md_disposal_codes" author="DEFRA`">
+        <createIndex indexName="idx_md_disposal_codes" tableName="md_disposal_codes" unique="true">
+            <column name="nomenclature"/>
+        </createIndex>
+        <rollback>
+            <dropIndex tableName="md_disposal_codes" indexName="idx_md_disposal_codes"/>
+        </rollback>
+    </changeSet>
+
+    <!--
+     ****************************************************************
+     Recovery Codes
+     ****************************************************************
+     -->
+
+    <changeSet id="create-table: md_recovery_codes" author="DEFRA">
+        <createSequence sequenceName="md_recovery_codes_id_seq" startValue="1"/>
+        <createTable tableName="md_recovery_codes">
+            <column name="id" type="bigint" defaultValueSequenceNext="md_recovery_codes_id_seq">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="nomenclature" type="varchar(3)">
+                <constraints nullable="false" unique="true"/>
+            </column>
+            <column name="description" type="varchar(255)">
+                <constraints nullable="false" unique="false"/>
+            </column>
+            <column name="created" type="timestamp">
+                <constraints nullable="false"/>
+            </column>
+            <column name="last_modified" type="timestamp">
+                <constraints nullable="false"/>
+            </column>
+            <column name="version" type="smallint">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <rollback>
+            <dropTable tableName="md_recovery_codes"/>
+            <dropSequence sequenceName="md_recovery_codes_id_seq"/>
+        </rollback>
+    </changeSet>
+    <changeSet id="create-index: idx_md_recovery_codes" author="DEFRA`">
+        <createIndex indexName="idx_md_recovery_codes" tableName="md_recovery_codes" unique="true">
+            <column name="nomenclature"/>
+        </createIndex>
+        <rollback>
+            <dropIndex tableName="md_recovery_codes" indexName="idx_md_recovery_codes"/>
+        </rollback>
+    </changeSet>
+
+</databaseChangeLog>

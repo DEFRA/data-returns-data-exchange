@@ -1,3 +1,0 @@
-"EA_ID","Site_Name","Rtn_Type","Mon_Date","Rtn_Period","Mon_Point","Parameter","Value","Unit","Ref_Period"
-"42355","Biffa - Marchington Landfill Site","Landfill gas borehole",2015-08-05,"2016/17","Monitor point 1","16-(Thienylmethylene)Androstane-3,17-Diol SVOCS","<-123.45","mg","Instantaneous"
-"42355","Biffa - Marchington Landfill Site","Landfill gas borehole",2015-08-05,"Water year 2016","Monitor point 1","16-(Thienylmethylene)Androstane-3,17-Diol SVOCS",">123.45","mg","Spot sample"

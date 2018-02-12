@@ -1,0 +1,29 @@
+###############################################################################
+#
+# Data Returns PI Submissions API Configuration Settings
+#
+# This file is split into different sections, the first provides defaults
+# for all environments.  Subsequent sections provide profile-specific
+# configurations which may be enabled to override the default values.
+#
+###############################################################################
+spring:
+  application:
+    name: Data Returns PI Submissions API
+  datasource:
+    url: jdbc:postgresql://localhost:5432/dr_pi_api
+    username: data_returns_owner
+    password: data_returns_owner
+    driverClassName: org.postgresql.Driver
+  jpa:
+    database-platform: org.hibernate.dialect.PostgreSQL95Dialect
+
+security:
+  user:
+    name: user
+    password: user
+
+# Configuration for the web server
+server:
+  display-name: dr_pi_api
+  port: 9220

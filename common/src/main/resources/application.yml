@@ -1,0 +1,231 @@
+###############################################################################
+#
+# Data Returns Common API Settings
+#
+# This configuration file defines default which may be overridden by each APIs
+# application.yml file.  This is achieved by using leveraging spring boots
+# configuration file resolver which will apply precedence to configuration
+# files if they are located in a "config" folder under the classpath root.
+# This file is located and loaded from the classpath root to provide defaults.
+###############################################################################
+spring:
+  application:
+    admin:
+      enabled: true
+
+  data:
+    jpa:
+      repositories:
+        enabled: true
+    rest:
+      detection-strategy: annotated
+      base-path: /api
+      return-body-on-create: true
+      return-body-on-update: true
+      default-page-size: 100
+      max-page-size: 1000
+
+  # Spring cache configuration settings.  Use type: simple for local concurrent map cache or type: redis to use a redis backed cache
+  cache:
+    type: simple
+
+  http:
+    multipart:
+      max-file-size: 4MB
+
+  redis:
+    host: localhost
+    port: 6379
+
+  aop:
+    auto: true
+    proxy-target-class: true
+  jackson:
+    serialization:
+      FAIL_ON_EMPTY_BEANS: false
+    deserialization:
+      FAIL_ON_UNKNOWN_PROPERTIES: false
+    property-naming-strategy: SNAKE_CASE
+
+  jpa:
+    hibernate:
+      ddl-auto: validate
+      naming:
+        implicit-strategy: uk.gov.defra.datareturns.persistence.DataReturnsImplicitNamingStrategy
+    properties:
+      # disable validation via jpa/hibernate, spring will take care of this
+      javax:
+        persistence:
+          validation:
+            mode: none
+      hibernate:
+        jdbc.fetch_size: 30
+        jdbc.batch_size: 30
+        order_inserts: true
+        order_updates: true
+        search:
+          default:
+            directory_provider: filesystem
+            indexBase: /tmp/dr_api_md_index
+      org.hibernate.envers:
+        # Configure envers to use a sequence style generator
+        use_revision_entity_with_native_id: false
+
+        cache:
+          use_query_cache: false
+#          use_second_level_cache: false
+##          region:
+##            factory_class: com.hazelcast.hibernate.HazelcastCacheRegionFactory
+##          hazelcast:
+##            use_native_client: true
+##            native_client_address: localhost:5701
+##            native_client_group: dev
+##            native_client_password: dev-pass
+
+#security:
+#  user:
+#    name: user
+#    password: user
+#
+## Configuration for the web server
+server:
+  display-name: ${spring.application.name}
+  address: 0.0.0.0
+  compression:
+    enabled: true
+
+errbit:
+  enabled: false
+  api.key: 1234567890
+  env: Local Development Environment
+  url: https://localhost:8080/notifier_api/v2/notices
+
+# Service endpoints
+service-endpoints:
+  master-data-api:
+    uri: http://localhost:9020/api/
+    auth:
+      type: BASIC
+      properties:
+        user: user
+        password: password
+
+# Configuration for the management server and its endpoints
+management:
+  port: -1
+endpoints:
+  enabled: false
+
+# Liquibase database migration configuration values
+liquibase:
+  changeLog: classpath:/db/changelog/db.changelog-master.xml
+  dropFirst: false
+  enabled: true
+# Default logging levels (provide minimal level of logging here)
+logging:
+  level:
+    root: warn
+    jndi: warn
+    uk.gov.defra.datareturns: info
+
+    io.undertow: info
+    io.undertow.websockets: error
+    org.xnio: info
+
+    org.eclipse.jetty: warn
+    org.apache.http: warn
+    org.springframework: warn
+    org.springframework.boot: warn
+    org.springframework.boot.context.embedded.jetty.JettyEmbeddedServletContainer: info
+    org.springframework.boot.autoconfigure.security: info
+    org.springframework.security: info
+    org.springframework.beans: info
+    org.springframework.aop: info
+    org.aopalliance.aop: info
+    org.springframework.cache: debug
+    javax.xml.bind: warn
+
+    # Database
+    org.hibernate: warn
+    org.hibernate.engine.jdbc.spi.SqlExceptionHelper: off
+
+    liquibase: info
+
+    # Amazon S3 API
+    com.amazonaws: warn
+    org.apache.http.wire: warn
+    # Metrics logging
+    metrics: info
+
+---
+###############################################################################
+#
+# Profile: debug
+#
+###############################################################################
+spring:
+  profiles: debug
+  jpa:
+    show-sql: true
+    properties:
+      hibernate.use_sql_comments: true
+      hibernate.format_sql: true
+      hibernate.generate_statistics: true
+
+# Spring boot debug flag
+debug: false
+
+# Configuration for the management server and its endpoints
+management:
+  security:
+    enabled: false
+endpoints:
+  enabled: true
+  shutdown:
+    enabled: true
+    sensitive: false
+  info:
+    enabled: true
+
+# Configure loggers for debug - should configure debug by default and use warn/info on stuff that is not useful to reduce unwanted spam
+logging:
+  level:
+    root: debug
+    jndi: info
+    uk.gov.defra.datareturns: debug
+    io.undertow: info
+    org.xnio: info
+    org.eclipse.jetty: info
+    org.eclipse.jetty.server.Server: debug
+    org.eclipse.jetty.server.session: info
+    org.eclipse.jetty.servlet.ServletHandler: info
+    org.apache.http: info
+    org.jvnet.mimepull: info
+
+    org.springframework: info
+    org.springframework.beans.factory: info
+    org.springframework.boot: info
+    org.springframework.jndi: info
+    org.springframework.core: info
+    org.springframework.context.annotation: info
+    org.springframework.boot.context.embedded.jetty.JettyEmbeddedServletContainer: info
+
+    # Set to debug to enable the auto-configuration report at startup
+    org.springframework.boot.autoconfigure: debug
+    org.reflections: info
+
+    # Database
+    org.hibernate: info
+    org.hibernate.stat: debug
+    org.hibernate.engine.internal.StatisticalLoggingSessionEventListener: debug
+    liquibase: info
+
+    # Amazon S3 API
+    com.amazonaws: info
+    org.apache.http.wire: info
+    # Glassfish
+    org.glassfish: info
+    # Useful to log REST requests and responses (set to info for headers or debug for full request/response logging)
+    org.glassfish.jersey.logging.LoggingFeature: debug
+    # Metrics logging
+    metrics: debug
