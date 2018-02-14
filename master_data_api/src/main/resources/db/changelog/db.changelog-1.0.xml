@@ -1363,4 +1363,93 @@
         </rollback>
     </changeSet>
 
+    <!--
+     ****************************************************************
+     Region
+     ****************************************************************
+     -->
+    <changeSet id="create-table: md_region" author="DEFRA">
+        <createSequence sequenceName="md_region_id_seq" startValue="1"/>
+        <createTable tableName="md_region">
+            <column name="id" type="bigint" defaultValueSequenceNext="md_region_id_seq">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="nomenclature" type="varchar(4)">
+                <constraints nullable="false" unique="true"/>
+            </column>
+            <column name="description" type="varchar(255)">
+                <constraints nullable="false" unique="false"/>
+            </column>
+            <column name="created" type="timestamp">
+                <constraints nullable="false"/>
+            </column>
+            <column name="last_modified" type="timestamp">
+                <constraints nullable="false"/>
+            </column>
+            <column name="version" type="smallint">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <rollback>
+            <dropTable tableName="md_region"/>
+            <dropSequence sequenceName="md_region_id_seq"/>
+        </rollback>
+    </changeSet>
+    <changeSet id="create-index: idx_md_region" author="DEFRA`">
+        <createIndex indexName="idx_md_region" tableName="md_region" unique="true">
+            <column name="nomenclature"/>
+        </createIndex>
+        <rollback>
+            <dropIndex tableName="md_region" indexName="idx_md_region"/>
+        </rollback>
+    </changeSet>
+
+    <!--
+     ****************************************************************
+     Area
+     ****************************************************************
+     -->
+    <changeSet id="create-table: md_area" author="DEFRA">
+        <createSequence sequenceName="md_area_id_seq" startValue="1"/>
+        <createTable tableName="md_area">
+            <column name="id" type="bigint" defaultValueSequenceNext="md_area_id_seq">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="region_id" type="bigint">
+                <constraints nullable="false"
+                             foreignKeyName="fk_area__region"
+                             referencedTableName="md_region"
+                             referencedColumnNames="id"/>
+            </column>
+            <column name="nomenclature" type="varchar(4)">
+                <constraints nullable="false" unique="true"/>
+            </column>
+            <column name="description" type="varchar(255)">
+                <constraints nullable="false" unique="false"/>
+            </column>
+            <column name="created" type="timestamp">
+                <constraints nullable="false"/>
+            </column>
+            <column name="last_modified" type="timestamp">
+                <constraints nullable="false"/>
+            </column>
+            <column name="version" type="smallint">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <rollback>
+            <dropTable tableName="md_area"/>
+            <dropSequence sequenceName="md_area_id_seq"/>
+        </rollback>
+    </changeSet>
+    <changeSet id="create-index: idx_md_area" author="DEFRA`">
+        <createIndex indexName="idx_md_area" tableName="md_area" unique="true">
+            <column name="nomenclature"/>
+        </createIndex>
+        <rollback>
+            <dropIndex tableName="md_area" indexName="idx_md_area"/>
+        </rollback>
+    </changeSet>
+
+
 </databaseChangeLog>
