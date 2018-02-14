@@ -1452,4 +1452,43 @@
     </changeSet>
 
 
+    <!--
+     ****************************************************************
+     Operator
+     ****************************************************************
+     -->
+    <changeSet id="create-table: md_operator" author="DEFRA">
+        <createSequence sequenceName="md_operator_id_seq" startValue="1"/>
+        <createTable tableName="md_operator">
+            <column name="id" type="bigint" defaultValueSequenceNext="md_operator_id_seq">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="nomenclature" type="varchar(255)">
+                <constraints nullable="false" unique="true"/>
+            </column>
+            <column name="created" type="timestamp">
+                <constraints nullable="false"/>
+            </column>
+            <column name="last_modified" type="timestamp">
+                <constraints nullable="false"/>
+            </column>
+            <column name="version" type="smallint">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <rollback>
+            <dropTable tableName="md_operator"/>
+            <dropSequence sequenceName="md_operator_id_seq"/>
+        </rollback>
+    </changeSet>
+    <changeSet id="create-index: idx_md_operator" author="DEFRA`">
+        <createIndex indexName="idx_md_operator" tableName="md_operator" unique="true">
+            <column name="nomenclature"/>
+        </createIndex>
+        <rollback>
+            <dropIndex tableName="md_operator" indexName="idx_md_operator"/>
+        </rollback>
+    </changeSet>
+
+
 </databaseChangeLog>
