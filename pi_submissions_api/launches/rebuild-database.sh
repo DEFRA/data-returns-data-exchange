@@ -16,7 +16,7 @@ echo "Current directory ${base_dir}"
 
 # Execute maven commands to rebuild the database
 cd ${base_dir} > /dev/null
-mvn -Dcheckstyle.skip=true -Ddependency-check.skip=true -DskipTests=true sql:execute@drop-database sql:execute@create-database
+mvn -Dcheckstyle.skip=true -Ddependency-check.skip=true -DskipTests=true sql:execute@drop-database sql:execute@create-database liquibase:update
 
 # Get return code from maven
 rc=$?;
