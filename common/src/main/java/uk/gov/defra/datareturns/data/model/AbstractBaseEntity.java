@@ -1,6 +1,7 @@
 package uk.gov.defra.datareturns.data.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import io.swagger.annotations.ApiModelProperty;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.data.annotation.CreatedDate;
@@ -45,6 +46,7 @@ public abstract class AbstractBaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = DEFINITIONS_ID_GENERATOR)
     @Column(name = "id")
+    @ApiModelProperty(readOnly = true)
     private Long id;
 
     /**
@@ -53,6 +55,7 @@ public abstract class AbstractBaseEntity {
     @CreatedDate
     @Column(nullable = false, updatable = false)
     @JsonProperty("_created")
+    @ApiModelProperty(readOnly = true)
     private Date created;
 
     /**
@@ -61,6 +64,7 @@ public abstract class AbstractBaseEntity {
     @LastModifiedDate
     @Column(nullable = false)
     @JsonProperty("_last_modified")
+    @ApiModelProperty(readOnly = true)
     private Date lastModified;
 
     /**
@@ -68,6 +72,7 @@ public abstract class AbstractBaseEntity {
      */
     @Version
     @Column(nullable = false)
+    @ApiModelProperty(readOnly = true)
     private short version;
 
     /*

@@ -24,6 +24,10 @@ spring:
       return-body-on-update: true
       default-page-size: 100
       max-page-size: 1000
+  autoconfigure:
+    exclude:
+      - org.springframework.boot.autoconfigure.liquibase.LiquibaseAutoConfiguration
+      - org.springframework.boot.actuate.autoconfigure.EndpointAutoConfiguration
 
   # Spring cache configuration settings.  Use type: simple for local concurrent map cache or type: redis to use a redis backed cache
   cache:
@@ -119,8 +123,8 @@ endpoints:
 # Liquibase database migration configuration values
 liquibase:
   changeLog: classpath:/db/changelog/db.changelog-master.xml
-  dropFirst: false
-  enabled: true
+  enabled: false
+
 # Default logging levels (provide minimal level of logging here)
 logging:
   level:
@@ -173,7 +177,7 @@ spring:
       hibernate.generate_statistics: true
 
 # Spring boot debug flag
-debug: false
+debug: true
 
 # Configuration for the management server and its endpoints
 management:
@@ -219,6 +223,12 @@ logging:
     org.hibernate.stat: debug
     org.hibernate.engine.internal.StatisticalLoggingSessionEventListener: debug
     liquibase: info
+
+    # Sun rmi
+    sun.rmi: info
+
+    # Springfox swagger gen
+#    springfox.documentation.schema: info
 
     # Amazon S3 API
     com.amazonaws: info

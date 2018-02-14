@@ -30,6 +30,14 @@ import java.io.Serializable;
 @Configuration
 @ConfigurationProperties(prefix = "security")
 public class SecurityConfiguration {
+    private static final String[] AUTH_WHITELIST = {
+            // -- swagger ui
+            "/swagger-resources/**",
+            "/swagger-ui.html",
+            "/v2/api-docs",
+            "/webjars/**"
+    };
+
     private boolean methodLevelEnabled;
 
     public boolean isMethodLevelEnabled() {
@@ -73,7 +81,7 @@ public class SecurityConfiguration {
         protected void configure(final HttpSecurity http) throws Exception {
             http.csrf().disable()
                     .authorizeRequests()
-                    .antMatchers("/", "/swagger-ui.html").permitAll()
+                    .antMatchers(AUTH_WHITELIST).permitAll()
                     //.antMatchers("/api/**").hasAnyRole("USER").anyRequest()
                     .antMatchers("/api/**").fullyAuthenticated().anyRequest()
                     .authenticated()
