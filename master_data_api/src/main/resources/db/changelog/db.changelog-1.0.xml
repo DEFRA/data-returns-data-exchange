@@ -1374,11 +1374,11 @@
             <column name="id" type="bigint" defaultValueSequenceNext="md_region_id_seq">
                 <constraints primaryKey="true" nullable="false"/>
             </column>
-            <column name="nomenclature" type="varchar(4)">
+            <column name="nomenclature" type="varchar(255)">
                 <constraints nullable="false" unique="true"/>
             </column>
-            <column name="description" type="varchar(255)">
-                <constraints nullable="false" unique="false"/>
+            <column name="code" type="varchar(2)">
+                <constraints nullable="false" unique="true"/>
             </column>
             <column name="created" type="timestamp">
                 <constraints nullable="false"/>
@@ -1416,16 +1416,16 @@
                 <constraints primaryKey="true" nullable="false"/>
             </column>
             <column name="region_id" type="bigint">
-                <constraints nullable="false"
+                <constraints nullable="true"
                              foreignKeyName="fk_area__region"
                              referencedTableName="md_region"
                              referencedColumnNames="id"/>
             </column>
-            <column name="nomenclature" type="varchar(4)">
+            <column name="nomenclature" type="varchar(255)">
                 <constraints nullable="false" unique="true"/>
             </column>
-            <column name="description" type="varchar(255)">
-                <constraints nullable="false" unique="false"/>
+            <column name="code" type="varchar(4)">
+                <constraints nullable="true" unique="false"/>
             </column>
             <column name="created" type="timestamp">
                 <constraints nullable="false"/>

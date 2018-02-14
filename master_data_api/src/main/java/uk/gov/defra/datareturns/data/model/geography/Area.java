@@ -34,10 +34,10 @@ import java.util.Set;
 public class Area extends AbstractMasterDataEntity implements MasterDataEntity {
 
 
-    @ManyToOne(optional = false)
+    @ManyToOne
     private Region region;
 
     @Basic
-    @Column(name = "description", length = 255, nullable = false)
-    private String description;
+    @Column(name = "code", length = 4, nullable = false)
+    private String code;
 }
