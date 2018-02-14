@@ -510,6 +510,7 @@
                         </diffChangeLogFile>
                         <propertyFile>src/main/resources/db/changelog/liquibase.properties</propertyFile>
                         <changeSetAuthor>DEFRA</changeSetAuthor>
+                        <promptOnNonLocalDatabase>false</promptOnNonLocalDatabase>
                     </configuration>
                     <dependencies>
                         <dependency>
