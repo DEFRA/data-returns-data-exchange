@@ -8,6 +8,7 @@ import org.hibernate.search.annotations.Indexed;
 import uk.gov.defra.datareturns.data.model.AbstractAliasedEntity;
 import uk.gov.defra.datareturns.data.model.AbstractBaseEntity;
 import uk.gov.defra.datareturns.data.model.AliasedEntity;
+import uk.gov.defra.datareturns.data.model.geography.Area;
 import uk.gov.defra.datareturns.data.model.site.Site;
 
 import javax.persistence.*;
@@ -44,5 +45,14 @@ public class UniqueIdentifier extends AbstractAliasedEntity<UniqueIdentifierAlia
     @Column
     @Enumerated(EnumType.STRING)
     private Type type;
+
+    @ManyToOne(cascade = CascadeType.ALL)
+    private Operator operator;
+
+    @ManyToOne(cascade = CascadeType.ALL)
+    private Area area;
+
+    @ManyToOne(cascade = CascadeType.ALL)
+    private AsrCode asrCode;
 
 }

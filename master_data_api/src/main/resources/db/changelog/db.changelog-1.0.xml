@@ -51,143 +51,6 @@
 
     <!--
     ****************************************************************
-    Unique Identifiers
-    ****************************************************************
-    -->
-    <changeSet id="create-table: unique_identifier" author="DEFRA">
-        <createSequence sequenceName="md_unique_identifier_id_seq" startValue="1"/>
-        <createTable tableName="md_unique_identifier">
-            <column name="id" type="bigint" defaultValueSequenceNext="md_unique_identifier_id_seq">
-                <constraints primaryKey="true" nullable="false"/>
-            </column>
-            <column name="nomenclature" type="varchar(18)">
-                <constraints nullable="false" unique="true"/>
-            </column>
-            <column name="type" type="varchar(5)">
-                <constraints nullable="true"/>
-            </column>
-            <column name="site_id" type="bigint">
-                <constraints nullable="false"
-                             foreignKeyName="fk_unique_identifier__site"
-                             references="md_site(id)"/>
-            </column>
-            <column name="created" type="timestamp">
-                <constraints nullable="false"/>
-            </column>
-            <column name="last_modified" type="timestamp">
-                <constraints nullable="false"/>
-            </column>
-            <column name="version" type="smallint">
-                <constraints nullable="false"/>
-            </column>
-        </createTable>
-        <rollback>
-            <dropTable tableName="md_unique_identifier"/>
-            <dropSequence sequenceName="md_unique_identifier_id_seq"/>
-        </rollback>
-    </changeSet>
-
-    <changeSet id="create-index: unique_identifier" author="DEFRA">
-        <createIndex indexName="idx_md_unique_identifier_code" tableName="md_unique_identifier" unique="true">
-            <column name="nomenclature"/>
-        </createIndex>
-        <rollback>
-            <dropIndex tableName="md_unique_identifier" indexName="idx_md_unique_identifier_code"/>
-        </rollback>
-    </changeSet>
-
-    <changeSet id="create-table: md_unique_identifier_group" author="DEFRA">
-        <createSequence sequenceName="md_unique_identifier_group_id_seq" startValue="1"/>
-        <createTable tableName="md_unique_identifier_group">
-            <column name="id" type="bigint" defaultValueSequenceNext="md_unique_identifier_group_id_seq">
-                <constraints primaryKey="true" nullable="false"/>
-            </column>
-            <column name="nomenclature" type="varchar(255)">
-                <constraints nullable="false" unique="true"/>
-            </column>
-            <column name="created" type="timestamp">
-                <constraints nullable="false"/>
-            </column>
-            <column name="last_modified" type="timestamp">
-                <constraints nullable="false"/>
-            </column>
-            <column name="version" type="smallint">
-                <constraints nullable="false"/>
-            </column>
-        </createTable>
-        <rollback>
-            <dropTable tableName="md_unique_identifier_group"/>
-            <dropSequence sequenceName="md_unique_identifier_group_id_seq"/>
-        </rollback>
-    </changeSet>
-    <changeSet id="create-table: md_unique_identifier_group_entries" author="DEFRA">
-        <createTable tableName="md_unique_identifier_group_entries">
-            <column name="md_unique_identifier_group_id" type="bigint">
-                <constraints nullable="false"
-                             foreignKeyName="fk_unique_identifier_group_entries__group"
-                             referencedTableName="md_unique_identifier_group"
-                             referencedColumnNames="id"/>
-            </column>
-            <column name="unique_identifiers_id" type="bigint">
-                <constraints nullable="false"
-                             foreignKeyName="fk_unique_identifier_group_entries__unique_identifier"
-                             referencedTableName="md_unique_identifier"
-                             referencedColumnNames="id"/>
-            </column>
-        </createTable>
-        <addPrimaryKey columnNames="md_unique_identifier_group_id, unique_identifiers_id" tableName="md_unique_identifier_group_entries"/>
-        <rollback>
-            <dropTable tableName="md_unique_identifier_group_entries"/>
-        </rollback>
-    </changeSet>
-
-    <!--
-    ****************************************************************
-    Unique Identifier Aliases
-    ****************************************************************
-    -->
-    <changeSet id="create-table: unique_identifier_alias" author="DEFRA">
-        <createSequence sequenceName="md_unique_identifier_alias_id_seq" startValue="1"/>
-        <createTable tableName="md_unique_identifier_alias">
-            <column name="id" type="bigint" defaultValueSequenceNext="md_unique_identifier_alias_id_seq">
-                <constraints primaryKey="true" nullable="false"/>
-            </column>
-            <column name="nomenclature" type="varchar(18)">
-                <constraints nullable="false" unique="true"/>
-            </column>
-
-            <column name="preferred" type="bigint">
-                <constraints nullable="false"
-                             foreignKeyName="fk_unique_identifier_alias_preferred"
-                             references="md_unique_identifier(id)"/>
-            </column>
-            <column name="created" type="timestamp">
-                <constraints nullable="false"/>
-            </column>
-            <column name="last_modified" type="timestamp">
-                <constraints nullable="false"/>
-            </column>
-            <column name="version" type="smallint">
-                <constraints nullable="false"/>
-            </column>
-        </createTable>
-        <rollback>
-            <dropTable tableName="md_unique_identifier_alias"/>
-            <dropSequence sequenceName="md_unique_identifier_alias_id_seq"/>
-        </rollback>
-    </changeSet>
-
-    <changeSet id="create-index: unique_identifier_alias" author="DEFRA">
-        <createIndex indexName="idx_md_unique_identifier_alias" tableName="md_unique_identifier_alias" unique="true">
-            <column name="nomenclature"/>
-        </createIndex>
-        <rollback>
-            <dropIndex tableName="md_unique_identifier_alias" indexName="idx_md_unique_identifier_alias"/>
-        </rollback>
-    </changeSet>
-
-    <!--
-    ****************************************************************
     Return Types
     ****************************************************************
     -->
@@ -1240,25 +1103,6 @@
         </rollback>
     </changeSet>
 
-    <changeSet id="create-table: md_applicability_unique_identifier_groups" author="DEFRA">
-        <createTable tableName="md_applicability_unique_identifier_groups">
-            <column name="md_applicability_id" type="bigint">
-                <constraints nullable="false"
-                             foreignKeyName="fk_applicability_unique_identifier_groups__applic"
-                             references="md_applicability(id)"/>
-            </column>
-            <column name="unique_identifier_groups_id" type="bigint">
-                <constraints nullable="false"
-                             foreignKeyName="fk_applicability_unique_identifier_groups__group"
-                             references="md_unique_identifier_group(id)"/>
-            </column>
-        </createTable>
-        <addPrimaryKey columnNames="md_applicability_id, unique_identifier_groups_id" tableName="md_applicability_unique_identifier_groups"/>
-        <rollback>
-            <dropTable tableName="md_applicability_unique_identifier_groups"/>
-        </rollback>
-    </changeSet>
-
     <changeSet id="create-table: md_applicability_unit_groups" author="DEFRA">
         <createTable tableName="md_applicability_unit_groups">
             <column name="md_applicability_id" type="bigint">
@@ -1535,4 +1379,176 @@
             <dropIndex tableName="md_asr_code" indexName="idx_md_asr_code"/>
         </rollback>
     </changeSet>
+
+    <!--
+    ****************************************************************
+    Unique Identifiers
+    ****************************************************************
+    -->
+    <changeSet id="create-table: unique_identifier" author="DEFRA">
+        <createSequence sequenceName="md_unique_identifier_id_seq" startValue="1"/>
+        <createTable tableName="md_unique_identifier">
+            <column name="id" type="bigint" defaultValueSequenceNext="md_unique_identifier_id_seq">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="nomenclature" type="varchar(18)">
+                <constraints nullable="false" unique="true"/>
+            </column>
+            <column name="type" type="varchar(5)">
+                <constraints nullable="true"/>
+            </column>
+            <column name="site_id" type="bigint">
+                <constraints nullable="false"
+                             foreignKeyName="fk_unique_identifier__site"
+                             references="md_site(id)"/>
+            </column>
+            <column name="asr_code_id" type="bigint">
+                <constraints nullable="true"
+                             foreignKeyName="fk_unique_identifier__asr_code"
+                             references="md_asr_code(id)"/>
+            </column>
+            <column name="operator_id" type="bigint">
+                <constraints nullable="true"
+                             foreignKeyName="fk_unique_identifier__operator"
+                             references="md_operator(id)"/>
+            </column>
+            <column name="area_id" type="bigint">
+                <constraints nullable="true"
+                             foreignKeyName="fk_unique_identifier__area"
+                             references="md_area(id)"/>
+            </column>
+            <column name="created" type="timestamp">
+                <constraints nullable="false"/>
+            </column>
+            <column name="last_modified" type="timestamp">
+                <constraints nullable="false"/>
+            </column>
+            <column name="version" type="smallint">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <rollback>
+            <dropTable tableName="md_unique_identifier"/>
+            <dropSequence sequenceName="md_unique_identifier_id_seq"/>
+        </rollback>
+    </changeSet>
+
+    <changeSet id="create-index: unique_identifier" author="DEFRA">
+        <createIndex indexName="idx_md_unique_identifier_code" tableName="md_unique_identifier" unique="true">
+            <column name="nomenclature"/>
+        </createIndex>
+        <rollback>
+            <dropIndex tableName="md_unique_identifier" indexName="idx_md_unique_identifier_code"/>
+        </rollback>
+    </changeSet>
+
+    <changeSet id="create-table: md_unique_identifier_group" author="DEFRA">
+        <createSequence sequenceName="md_unique_identifier_group_id_seq" startValue="1"/>
+        <createTable tableName="md_unique_identifier_group">
+            <column name="id" type="bigint" defaultValueSequenceNext="md_unique_identifier_group_id_seq">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="nomenclature" type="varchar(255)">
+                <constraints nullable="false" unique="true"/>
+            </column>
+            <column name="created" type="timestamp">
+                <constraints nullable="false"/>
+            </column>
+            <column name="last_modified" type="timestamp">
+                <constraints nullable="false"/>
+            </column>
+            <column name="version" type="smallint">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <rollback>
+            <dropTable tableName="md_unique_identifier_group"/>
+            <dropSequence sequenceName="md_unique_identifier_group_id_seq"/>
+        </rollback>
+    </changeSet>
+    <changeSet id="create-table: md_unique_identifier_group_entries" author="DEFRA">
+        <createTable tableName="md_unique_identifier_group_entries">
+            <column name="md_unique_identifier_group_id" type="bigint">
+                <constraints nullable="false"
+                             foreignKeyName="fk_unique_identifier_group_entries__group"
+                             referencedTableName="md_unique_identifier_group"
+                             referencedColumnNames="id"/>
+            </column>
+            <column name="unique_identifiers_id" type="bigint">
+                <constraints nullable="false"
+                             foreignKeyName="fk_unique_identifier_group_entries__unique_identifier"
+                             referencedTableName="md_unique_identifier"
+                             referencedColumnNames="id"/>
+            </column>
+        </createTable>
+        <addPrimaryKey columnNames="md_unique_identifier_group_id, unique_identifiers_id" tableName="md_unique_identifier_group_entries"/>
+        <rollback>
+            <dropTable tableName="md_unique_identifier_group_entries"/>
+        </rollback>
+    </changeSet>
+
+    <changeSet id="create-table: md_applicability_unique_identifier_groups" author="DEFRA">
+        <createTable tableName="md_applicability_unique_identifier_groups">
+            <column name="md_applicability_id" type="bigint">
+                <constraints nullable="false"
+                             foreignKeyName="fk_applicability_unique_identifier_groups__applic"
+                             references="md_applicability(id)"/>
+            </column>
+            <column name="unique_identifier_groups_id" type="bigint">
+                <constraints nullable="false"
+                             foreignKeyName="fk_applicability_unique_identifier_groups__group"
+                             references="md_unique_identifier_group(id)"/>
+            </column>
+        </createTable>
+        <addPrimaryKey columnNames="md_applicability_id, unique_identifier_groups_id" tableName="md_applicability_unique_identifier_groups"/>
+        <rollback>
+            <dropTable tableName="md_applicability_unique_identifier_groups"/>
+        </rollback>
+    </changeSet>
+
+    <!--
+    ****************************************************************
+    Unique Identifier Aliases
+    ****************************************************************
+    -->
+    <changeSet id="create-table: unique_identifier_alias" author="DEFRA">
+        <createSequence sequenceName="md_unique_identifier_alias_id_seq" startValue="1"/>
+        <createTable tableName="md_unique_identifier_alias">
+            <column name="id" type="bigint" defaultValueSequenceNext="md_unique_identifier_alias_id_seq">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="nomenclature" type="varchar(18)">
+                <constraints nullable="false" unique="true"/>
+            </column>
+
+            <column name="preferred" type="bigint">
+                <constraints nullable="false"
+                             foreignKeyName="fk_unique_identifier_alias_preferred"
+                             references="md_unique_identifier(id)"/>
+            </column>
+            <column name="created" type="timestamp">
+                <constraints nullable="false"/>
+            </column>
+            <column name="last_modified" type="timestamp">
+                <constraints nullable="false"/>
+            </column>
+            <column name="version" type="smallint">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <rollback>
+            <dropTable tableName="md_unique_identifier_alias"/>
+            <dropSequence sequenceName="md_unique_identifier_alias_id_seq"/>
+        </rollback>
+    </changeSet>
+
+    <changeSet id="create-index: unique_identifier_alias" author="DEFRA">
+        <createIndex indexName="idx_md_unique_identifier_alias" tableName="md_unique_identifier_alias" unique="true">
+            <column name="nomenclature"/>
+        </createIndex>
+        <rollback>
+            <dropIndex tableName="md_unique_identifier_alias" indexName="idx_md_unique_identifier_alias"/>
+        </rollback>
+    </changeSet>
+
 </databaseChangeLog>
