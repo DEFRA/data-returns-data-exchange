@@ -34,6 +34,7 @@ import uk.gov.defra.datareturns.data.model.nace.NaceGroup;
 import uk.gov.defra.datareturns.data.model.nace.NaceGroupRepository;
 import uk.gov.defra.datareturns.data.model.nace.NaceSection;
 import uk.gov.defra.datareturns.data.model.nace.NaceSectionRepository;
+import uk.gov.defra.datareturns.data.model.nosep.*;
 import uk.gov.defra.datareturns.data.model.parameter.Parameter;
 import uk.gov.defra.datareturns.data.model.parameter.ParameterAlias;
 import uk.gov.defra.datareturns.data.model.parameter.ParameterAliasRepository;
@@ -465,6 +466,55 @@ public interface DatabaseLoader {
         }
     }
 
+
+    @Slf4j
+    @RequiredArgsConstructor
+    @Component
+    class NoseLoader implements DatabaseLoader {
+        private final NoseActivityClassRepository noseActivityClassRepository;
+        private final NoseActivityRepository noseActivityRepository;
+        private final NoseProcessRepository noseProcessRepository;
+
+        @Transactional
+        @Override
+        public void load() {
+            List<String[]> rows = LoaderUtils.readTabData("/db/data/nose_p_activity.txt");
+
+            final Set<NoseActivityClass> noseActivityClasses = new HashSet<>();
+            final Set<NoseActivity> noseActivities = new HashSet<>();
+            final Set<NoseProcess> noseProcesses = new HashSet<>();
+
+            NoseActivityClass noseActivityClass = null;
+            NoseActivity noseActivity = null;
+            NoseProcess noseProcess = null;
+
+            for (String[] entry : rows) {
+                if (entry.length == 1) {
+                    noseActivityClass = new NoseActivityClass();
+                    noseActivityClass.setNomenclature(entry[0]);
+                    noseActivityClasses.add(noseActivityClass);
+                }
+
+                if (entry.length == 2) {
+                    noseActivity = new NoseActivity();
+                    noseActivity.setNomenclature(entry[1]);
+                    noseActivity.setNoseActivityClass(noseActivityClass);
+                    noseActivities.add(noseActivity);
+                }
+
+                if (entry.length == 3) {
+                    noseProcess = new NoseProcess();
+                    noseProcess.setNomenclature(entry[2]);
+                    noseProcess.setNoseActivity(noseActivity);
+                    noseProcesses.add(noseProcess);
+                }
+            }
+
+            noseActivityClassRepository.save(noseActivityClasses);
+            noseActivityRepository.save(noseActivities);
+            noseProcessRepository.save(noseProcesses);
+        }
+    }
 
     @Slf4j
     @RequiredArgsConstructor

@@ -720,6 +720,133 @@
         </rollback>
     </changeSet>
 
+    <!--
+    ****************************************************************
+    Nose_activity_class
+    ****************************************************************
+    -->
+    <changeSet id="create-table: md_nose_activity_class" author="DEFRA">
+        <createSequence sequenceName="md_nose_activity_class_id_seq" startValue="1"/>
+        <createTable tableName="md_nose_activity_class">
+            <column name="id" type="bigint" defaultValueSequenceNext="md_nose_activity_class_id_seq">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="nomenclature" type="varchar(50)">
+                <constraints nullable="false" unique="true"/>
+            </column>
+            <column name="created" type="timestamp">
+                <constraints nullable="false"/>
+            </column>
+            <column name="last_modified" type="timestamp">
+                <constraints nullable="false"/>
+            </column>
+            <column name="version" type="smallint">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <rollback>
+            <dropTable tableName="md_nose_activity_class"/>
+            <dropSequence sequenceName="md_nose_activity_class_id_seq"/>
+        </rollback>
+    </changeSet>
+
+    <changeSet id="create-index: idx_md_nose_activity_class" author="DEFRA">
+        <createIndex indexName="idx_md_nose_activity_class" tableName="md_nose_activity_class" unique="true">
+            <column name="nomenclature"/>
+        </createIndex>
+        <rollback>
+            <dropIndex tableName="md_nose_activity_class" indexName="idx_md_nose_activity_class"/>
+        </rollback>
+    </changeSet>
+
+    <!--
+    ****************************************************************
+    Nose_activity
+    ****************************************************************
+    -->
+    <changeSet id="create-table: md_nose_activity" author="DEFRA">
+        <createSequence sequenceName="md_nose_activity_id_seq" startValue="1"/>
+        <createTable tableName="md_nose_activity">
+            <column name="id" type="bigint" defaultValueSequenceNext="md_nose_activity_id_seq">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="nomenclature" type="varchar(255)">
+                <constraints nullable="false" unique="true"/>
+            </column>
+            <column name="nose_activity_class_id" type="bigint">
+                <constraints nullable="false"
+                             foreignKeyName="fk_md_nose_activity_class"
+                             references="md_nose_activity_class(id)"/>
+            </column>
+            <column name="created" type="timestamp">
+                <constraints nullable="false"/>
+            </column>
+            <column name="last_modified" type="timestamp">
+                <constraints nullable="false"/>
+            </column>
+            <column name="version" type="smallint">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <rollback>
+            <dropTable tableName="md_nose_activity"/>
+            <dropSequence sequenceName="md_nose_activity_id_seq"/>
+        </rollback>
+    </changeSet>
+
+    <changeSet id="create-index: idx_md_nose_activity" author="DEFRA">
+        <createIndex indexName="idx_md_nose_activity" tableName="md_nose_activity" unique="true">
+            <column name="nomenclature"/>
+        </createIndex>
+        <rollback>
+            <dropIndex tableName="md_nose_activity" indexName="idx_md_nose_activity"/>
+        </rollback>
+    </changeSet>
+
+    <!--
+    ****************************************************************
+    Nose_activity_process
+    ****************************************************************
+    -->
+    <changeSet id="create-table: md_nose_activity_process" author="DEFRA">
+        <createSequence sequenceName="md_nose_activity_process_id_seq" startValue="1"/>
+        <createTable tableName="md_nose_activity_process">
+            <column name="id" type="bigint" defaultValueSequenceNext="md_nose_activity_process_id_seq">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="nomenclature" type="varchar(500)">
+                <constraints nullable="false" unique="true"/>
+            </column>
+            <column name="nose_activity_id" type="bigint">
+                <constraints nullable="false"
+                             foreignKeyName="fk_md_nose_activity"
+                             references="md_nose_activity(id)"/>
+            </column>
+            <column name="created" type="timestamp">
+                <constraints nullable="false"/>
+            </column>
+            <column name="last_modified" type="timestamp">
+                <constraints nullable="false"/>
+            </column>
+            <column name="version" type="smallint">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <rollback>
+            <dropTable tableName="md_nose_activity_process"/>
+            <dropSequence sequenceName="md_nose_activity_process_id_seq"/>
+        </rollback>
+    </changeSet>
+
+    <changeSet id="create-index: idx_md_nose_activity_process" author="DEFRA">
+        <createIndex indexName="idx_md_nose_activity_process" tableName="md_nose_activity_process" unique="true">
+            <column name="nomenclature"/>
+        </createIndex>
+        <rollback>
+            <dropIndex tableName="md_nose_activity_process" indexName="idx_md_nose_activity_process"/>
+        </rollback>
+    </changeSet>
+
 
     <!--
     ****************************************************************
