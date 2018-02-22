@@ -18,6 +18,10 @@ import uk.gov.defra.datareturns.data.model.eaid.UniqueIdentifierAliasRepository;
 import uk.gov.defra.datareturns.data.model.eaid.UniqueIdentifierGroup;
 import uk.gov.defra.datareturns.data.model.eaid.UniqueIdentifierGroupRepository;
 import uk.gov.defra.datareturns.data.model.eaid.UniqueIdentifierRepository;
+import uk.gov.defra.datareturns.data.model.eprtr.EprtrActivity;
+import uk.gov.defra.datareturns.data.model.eprtr.EprtrActivityRepository;
+import uk.gov.defra.datareturns.data.model.eprtr.EprtrSector;
+import uk.gov.defra.datareturns.data.model.eprtr.EprtrSectorRepository;
 import uk.gov.defra.datareturns.data.model.ewc.EwcActivity;
 import uk.gov.defra.datareturns.data.model.ewc.EwcActivityRepository;
 import uk.gov.defra.datareturns.data.model.ewc.EwcChapter;
@@ -478,7 +482,7 @@ public interface DatabaseLoader {
         @Transactional
         @Override
         public void load() {
-            List<String[]> rows = LoaderUtils.readTabData("/db/data/nose_p_activity.txt");
+            List<String[]> rows = LoaderUtils.readTabData("/db/data/nose_p_activity.tsv");
 
             final Set<NoseActivityClass> noseActivityClasses = new HashSet<>();
             final Set<NoseActivity> noseActivities = new HashSet<>();
@@ -513,6 +517,46 @@ public interface DatabaseLoader {
             noseActivityClassRepository.save(noseActivityClasses);
             noseActivityRepository.save(noseActivities);
             noseProcessRepository.save(noseProcesses);
+        }
+    }
+
+    @Slf4j
+    @RequiredArgsConstructor
+    @Component
+    class EprtrLoader implements DatabaseLoader {
+        private final EprtrActivityRepository eprtrActivityRepository;
+        private final EprtrSectorRepository eprtrSectorRepository;
+
+        @Override
+        public void load() {
+            List<String[]> rows = LoaderUtils.readTabData("/db/data/EPRTR.tsv");
+
+            final Set<EprtrActivity> eprtrActivities = new HashSet<>();
+            final Set<EprtrSector> eprtrSectors = new HashSet<>();
+
+            EprtrActivity eprtrActivity = null;
+            EprtrSector eprtrSector = null;
+
+            for (String[] entry : rows) {
+                if (entry.length == 2) {
+                    eprtrSector = new EprtrSector();
+                    eprtrSector.setNomenclature(entry[0]);
+                    eprtrSector.setDescription(entry[1]);
+                    eprtrSectors.add(eprtrSector);
+                } else {
+                    eprtrActivity = new EprtrActivity();
+                    eprtrActivity.setNomenclature(entry[1]);
+                    eprtrActivity.setDescription(entry[2]);
+                    if (entry.length == 4) {
+                        eprtrActivity.setThreshold(entry[3]);
+                    }
+                    eprtrActivity.setEprtrSector(eprtrSector);
+                    eprtrActivities.add(eprtrActivity);
+                }
+            }
+            eprtrSectorRepository.save(eprtrSectors);
+            eprtrActivityRepository.save(eprtrActivities);
+
         }
     }
 
