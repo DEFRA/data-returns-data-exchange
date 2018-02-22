@@ -3,6 +3,8 @@ package uk.gov.defra.datareturns.data.loader;
 import com.univocity.parsers.common.processor.RowListProcessor;
 import com.univocity.parsers.csv.CsvParser;
 import com.univocity.parsers.csv.CsvParserSettings;
+import com.univocity.parsers.tsv.TsvParser;
+import com.univocity.parsers.tsv.TsvParserSettings;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.input.BOMInputStream;
 import uk.gov.defra.datareturns.data.model.AliasingEntity;
@@ -193,5 +195,19 @@ final class LoaderUtils {
             return new LinkedHashSet<>(Arrays.asList(cellValue.split("\\W+")));
         }
         return Collections.emptySet();
+    }
+
+    public static List<String[]> readTabData(final String path) {
+        TsvParserSettings settings = new TsvParserSettings();
+        //the file used in the example uses '\n' as the line separator sequence.
+        //the line separator sequence is defined here to ensure systems such as MacOS and Windows
+        //are able to process this file correctly (MacOS uses '\r'; and Windows uses '\r\n').
+        settings.getFormat().setLineSeparator("\n");
+
+        // creates a TSV parser
+        TsvParser parser = new TsvParser(settings);
+
+        // parses all rows in one go.
+        return parser.parseAll(new BOMInputStream(LoaderUtils.class.getResourceAsStream(path)));
     }
 }

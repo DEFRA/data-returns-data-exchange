@@ -18,6 +18,10 @@ import uk.gov.defra.datareturns.data.model.eaid.UniqueIdentifierAliasRepository;
 import uk.gov.defra.datareturns.data.model.eaid.UniqueIdentifierGroup;
 import uk.gov.defra.datareturns.data.model.eaid.UniqueIdentifierGroupRepository;
 import uk.gov.defra.datareturns.data.model.eaid.UniqueIdentifierRepository;
+import uk.gov.defra.datareturns.data.model.eprtr.EprtrActivity;
+import uk.gov.defra.datareturns.data.model.eprtr.EprtrActivityRepository;
+import uk.gov.defra.datareturns.data.model.eprtr.EprtrSector;
+import uk.gov.defra.datareturns.data.model.eprtr.EprtrSectorRepository;
 import uk.gov.defra.datareturns.data.model.ewc.EwcActivity;
 import uk.gov.defra.datareturns.data.model.ewc.EwcActivityRepository;
 import uk.gov.defra.datareturns.data.model.ewc.EwcChapter;
@@ -34,6 +38,7 @@ import uk.gov.defra.datareturns.data.model.nace.NaceGroup;
 import uk.gov.defra.datareturns.data.model.nace.NaceGroupRepository;
 import uk.gov.defra.datareturns.data.model.nace.NaceSection;
 import uk.gov.defra.datareturns.data.model.nace.NaceSectionRepository;
+import uk.gov.defra.datareturns.data.model.nosep.*;
 import uk.gov.defra.datareturns.data.model.parameter.Parameter;
 import uk.gov.defra.datareturns.data.model.parameter.ParameterAlias;
 import uk.gov.defra.datareturns.data.model.parameter.ParameterAliasRepository;
@@ -465,6 +470,95 @@ public interface DatabaseLoader {
         }
     }
 
+
+    @Slf4j
+    @RequiredArgsConstructor
+    @Component
+    class NoseLoader implements DatabaseLoader {
+        private final NoseActivityClassRepository noseActivityClassRepository;
+        private final NoseActivityRepository noseActivityRepository;
+        private final NoseProcessRepository noseProcessRepository;
+
+        @Transactional
+        @Override
+        public void load() {
+            List<String[]> rows = LoaderUtils.readTabData("/db/data/nose_p_activity.tsv");
+
+            final Set<NoseActivityClass> noseActivityClasses = new HashSet<>();
+            final Set<NoseActivity> noseActivities = new HashSet<>();
+            final Set<NoseProcess> noseProcesses = new HashSet<>();
+
+            NoseActivityClass noseActivityClass = null;
+            NoseActivity noseActivity = null;
+            NoseProcess noseProcess = null;
+
+            for (String[] entry : rows) {
+                if (entry.length == 1) {
+                    noseActivityClass = new NoseActivityClass();
+                    noseActivityClass.setNomenclature(entry[0]);
+                    noseActivityClasses.add(noseActivityClass);
+                }
+
+                if (entry.length == 2) {
+                    noseActivity = new NoseActivity();
+                    noseActivity.setNomenclature(entry[1]);
+                    noseActivity.setNoseActivityClass(noseActivityClass);
+                    noseActivities.add(noseActivity);
+                }
+
+                if (entry.length == 3) {
+                    noseProcess = new NoseProcess();
+                    noseProcess.setNomenclature(entry[2]);
+                    noseProcess.setNoseActivity(noseActivity);
+                    noseProcesses.add(noseProcess);
+                }
+            }
+
+            noseActivityClassRepository.save(noseActivityClasses);
+            noseActivityRepository.save(noseActivities);
+            noseProcessRepository.save(noseProcesses);
+        }
+    }
+
+    @Slf4j
+    @RequiredArgsConstructor
+    @Component
+    class EprtrLoader implements DatabaseLoader {
+        private final EprtrActivityRepository eprtrActivityRepository;
+        private final EprtrSectorRepository eprtrSectorRepository;
+
+        @Override
+        public void load() {
+            List<String[]> rows = LoaderUtils.readTabData("/db/data/EPRTR.tsv");
+
+            final Set<EprtrActivity> eprtrActivities = new HashSet<>();
+            final Set<EprtrSector> eprtrSectors = new HashSet<>();
+
+            EprtrActivity eprtrActivity = null;
+            EprtrSector eprtrSector = null;
+
+            for (String[] entry : rows) {
+                if (entry.length == 2) {
+                    eprtrSector = new EprtrSector();
+                    eprtrSector.setNomenclature(entry[0]);
+                    eprtrSector.setDescription(entry[1]);
+                    eprtrSectors.add(eprtrSector);
+                } else {
+                    eprtrActivity = new EprtrActivity();
+                    eprtrActivity.setNomenclature(entry[1]);
+                    eprtrActivity.setDescription(entry[2]);
+                    if (entry.length == 4) {
+                        eprtrActivity.setThreshold(entry[3]);
+                    }
+                    eprtrActivity.setEprtrSector(eprtrSector);
+                    eprtrActivities.add(eprtrActivity);
+                }
+            }
+            eprtrSectorRepository.save(eprtrSectors);
+            eprtrActivityRepository.save(eprtrActivities);
+
+        }
+    }
 
     @Slf4j
     @RequiredArgsConstructor

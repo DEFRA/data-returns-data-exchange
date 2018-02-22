@@ -600,7 +600,6 @@
     Return Periods
     ****************************************************************
     -->
-
     <changeSet id="create-table: return_period" author="DEFRA">
         <createSequence sequenceName="md_return_period_id_seq" startValue="1"/>
         <createTable tableName="md_return_period">
@@ -717,6 +716,226 @@
         </createIndex>
         <rollback>
             <dropIndex tableName="md_text_value_alias" indexName="idx_md_text_value_alias"/>
+        </rollback>
+    </changeSet>
+
+    <!--
+    ****************************************************************
+    EPRTR EPRTRSector.
+    ****************************************************************
+    -->
+    <changeSet id="create-table: md_eprtr_sector" author="DEFRA">
+        <createSequence sequenceName="md_eprtr_sector_id_seq" startValue="1"/>
+        <createTable tableName="md_eprtr_sector">
+            <column name="id" type="bigint" defaultValueSequenceNext="md_eprtr_sector_id_seq">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="nomenclature" type="varchar(8)">
+                <constraints nullable="false" unique="true"/>
+            </column>
+            <column name="description" type="varchar(80)">
+                <constraints nullable="false" unique="true"/>
+            </column>
+            <column name="created" type="timestamp">
+                <constraints nullable="false"/>
+            </column>
+            <column name="last_modified" type="timestamp">
+                <constraints nullable="false"/>
+            </column>
+            <column name="version" type="smallint">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <rollback>
+            <dropTable tableName="md_eprtr_sector"/>
+            <dropSequence sequenceName="md_eprtr_sector_id_seq"/>
+        </rollback>
+    </changeSet>
+
+    <changeSet id="create-index: idx_md_eprtr_sector" author="DEFRA">
+        <createIndex indexName="idx_md_eprtr_sector" tableName="md_eprtr_sector" unique="true">
+            <column name="nomenclature"/>
+        </createIndex>
+        <rollback>
+            <dropIndex tableName="md_eprtr_sector" indexName="idx_md_eprtr_sector"/>
+        </rollback>
+    </changeSet>
+
+    <!--
+    ****************************************************************
+    EPRTR Activity
+    ****************************************************************
+    -->
+    <changeSet id="create-table: md_eprtr_activity" author="DEFRA">
+        <createSequence sequenceName="md_eprtr_activity_id_seq" startValue="1"/>
+        <createTable tableName="md_eprtr_activity">
+            <column name="id" type="bigint" defaultValueSequenceNext="md_eprtr_activity_id_seq">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="nomenclature" type="varchar(8)">
+                <constraints nullable="false" unique="true"/>
+            </column>
+            <column name="description" type="varchar(500)">
+                <constraints nullable="false" unique="true"/>
+            </column>
+            <column name="threshold" type="varchar(500)">
+                <constraints nullable="true" unique="false"/>
+            </column>
+            <column name="eprtr_sector_id" type="bigint">
+                <constraints
+                        nullable="false"
+                        foreignKeyName="fk_md_eprtr_sector"
+                        references="md_eprtr_sector(id)"/>
+            </column>
+            <column name="created" type="timestamp">
+                <constraints nullable="false"/>
+            </column>
+            <column name="last_modified" type="timestamp">
+                <constraints nullable="false"/>
+            </column>
+            <column name="version" type="smallint">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <rollback>
+            <dropTable tableName="md_eprtr_activity"/>
+            <dropSequence sequenceName="md_eprtr_activity_id_seq"/>
+        </rollback>
+    </changeSet>
+
+    <changeSet id="create-index: idx_md_eprtr_activity" author="DEFRA">
+        <createIndex indexName="idx_md_eprtr_activity" tableName="md_eprtr_activity" unique="true">
+            <column name="nomenclature"/>
+        </createIndex>
+        <rollback>
+            <dropIndex tableName="md_eprtr_activity" indexName="idx_md_eprtr_activity"/>
+        </rollback>
+    </changeSet>
+
+    <!--
+    ****************************************************************
+    Nose_activity_class
+    ****************************************************************
+    -->
+    <changeSet id="create-table: md_nose_activity_class" author="DEFRA">
+        <createSequence sequenceName="md_nose_activity_class_id_seq" startValue="1"/>
+        <createTable tableName="md_nose_activity_class">
+            <column name="id" type="bigint" defaultValueSequenceNext="md_nose_activity_class_id_seq">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="nomenclature" type="varchar(50)">
+                <constraints nullable="false" unique="true"/>
+            </column>
+            <column name="created" type="timestamp">
+                <constraints nullable="false"/>
+            </column>
+            <column name="last_modified" type="timestamp">
+                <constraints nullable="false"/>
+            </column>
+            <column name="version" type="smallint">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <rollback>
+            <dropTable tableName="md_nose_activity_class"/>
+            <dropSequence sequenceName="md_nose_activity_class_id_seq"/>
+        </rollback>
+    </changeSet>
+
+    <changeSet id="create-index: idx_md_nose_activity_class" author="DEFRA">
+        <createIndex indexName="idx_md_nose_activity_class" tableName="md_nose_activity_class" unique="true">
+            <column name="nomenclature"/>
+        </createIndex>
+        <rollback>
+            <dropIndex tableName="md_nose_activity_class" indexName="idx_md_nose_activity_class"/>
+        </rollback>
+    </changeSet>
+
+    <!--
+    ****************************************************************
+    Nose_activity
+    ****************************************************************
+    -->
+    <changeSet id="create-table: md_nose_activity" author="DEFRA">
+        <createSequence sequenceName="md_nose_activity_id_seq" startValue="1"/>
+        <createTable tableName="md_nose_activity">
+            <column name="id" type="bigint" defaultValueSequenceNext="md_nose_activity_id_seq">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="nomenclature" type="varchar(255)">
+                <constraints nullable="false" unique="true"/>
+            </column>
+            <column name="nose_activity_class_id" type="bigint">
+                <constraints nullable="false"
+                             foreignKeyName="fk_md_nose_activity_class"
+                             references="md_nose_activity_class(id)"/>
+            </column>
+            <column name="created" type="timestamp">
+                <constraints nullable="false"/>
+            </column>
+            <column name="last_modified" type="timestamp">
+                <constraints nullable="false"/>
+            </column>
+            <column name="version" type="smallint">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <rollback>
+            <dropTable tableName="md_nose_activity"/>
+            <dropSequence sequenceName="md_nose_activity_id_seq"/>
+        </rollback>
+    </changeSet>
+
+    <changeSet id="create-index: idx_md_nose_activity" author="DEFRA">
+        <createIndex indexName="idx_md_nose_activity" tableName="md_nose_activity" unique="true">
+            <column name="nomenclature"/>
+        </createIndex>
+        <rollback>
+            <dropIndex tableName="md_nose_activity" indexName="idx_md_nose_activity"/>
+        </rollback>
+    </changeSet>
+
+    <!--
+    ****************************************************************
+    Nose_activity_process
+    ****************************************************************
+    -->
+    <changeSet id="create-table: md_nose_activity_process" author="DEFRA">
+        <createSequence sequenceName="md_nose_activity_process_id_seq" startValue="1"/>
+        <createTable tableName="md_nose_activity_process">
+            <column name="id" type="bigint" defaultValueSequenceNext="md_nose_activity_process_id_seq">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="nomenclature" type="varchar(500)">
+                <constraints nullable="false" unique="true"/>
+            </column>
+            <column name="nose_activity_id" type="bigint">
+                <constraints nullable="false"
+                             foreignKeyName="fk_md_nose_activity"
+                             references="md_nose_activity(id)"/>
+            </column>
+            <column name="created" type="timestamp">
+                <constraints nullable="false"/>
+            </column>
+            <column name="last_modified" type="timestamp">
+                <constraints nullable="false"/>
+            </column>
+            <column name="version" type="smallint">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <rollback>
+            <dropTable tableName="md_nose_activity_process"/>
+            <dropSequence sequenceName="md_nose_activity_process_id_seq"/>
+        </rollback>
+    </changeSet>
+
+    <changeSet id="create-index: idx_md_nose_activity_process" author="DEFRA">
+        <createIndex indexName="idx_md_nose_activity_process" tableName="md_nose_activity_process" unique="true">
+            <column name="nomenclature"/>
+        </createIndex>
+        <rollback>
+            <dropIndex tableName="md_nose_activity_process" indexName="idx_md_nose_activity_process"/>
         </rollback>
     </changeSet>
 
@@ -890,7 +1109,8 @@
             <dropSequence sequenceName="md_nace_class_id_seq"/>
         </rollback>
     </changeSet>
-    <changeSet id="create-index: md_nace_class" author="DEFRA`">
+
+    <changeSet id="create-index: md_nace_class" author="DEFRA">
         <createIndex indexName="idx_md_nace_class_code" tableName="md_nace_class" unique="true">
             <column name="nomenclature"/>
         </createIndex>
@@ -1155,7 +1375,7 @@
             <dropSequence sequenceName="md_disposal_codes_id_seq"/>
         </rollback>
     </changeSet>
-    <changeSet id="create-index: idx_md_disposal_codes" author="DEFRA`">
+    <changeSet id="create-index: idx_md_disposal_codes" author="DEFRA">
         <createIndex indexName="idx_md_disposal_codes" tableName="md_disposal_codes" unique="true">
             <column name="nomenclature"/>
         </createIndex>
@@ -1197,7 +1417,7 @@
             <dropSequence sequenceName="md_recovery_codes_id_seq"/>
         </rollback>
     </changeSet>
-    <changeSet id="create-index: idx_md_recovery_codes" author="DEFRA`">
+    <changeSet id="create-index: idx_md_recovery_codes" author="DEFRA">
         <createIndex indexName="idx_md_recovery_codes" tableName="md_recovery_codes" unique="true">
             <column name="nomenclature"/>
         </createIndex>
@@ -1238,7 +1458,7 @@
             <dropSequence sequenceName="md_region_id_seq"/>
         </rollback>
     </changeSet>
-    <changeSet id="create-index: idx_md_region" author="DEFRA`">
+    <changeSet id="create-index: idx_md_region" author="DEFRA">
         <createIndex indexName="idx_md_region" tableName="md_region" unique="true">
             <column name="nomenclature"/>
         </createIndex>
@@ -1285,7 +1505,7 @@
             <dropSequence sequenceName="md_area_id_seq"/>
         </rollback>
     </changeSet>
-    <changeSet id="create-index: idx_md_area" author="DEFRA`">
+    <changeSet id="create-index: idx_md_area" author="DEFRA">
         <createIndex indexName="idx_md_area" tableName="md_area" unique="true">
             <column name="nomenclature"/>
         </createIndex>
@@ -1324,7 +1544,7 @@
             <dropSequence sequenceName="md_operator_id_seq"/>
         </rollback>
     </changeSet>
-    <changeSet id="create-index: idx_md_operator" author="DEFRA`">
+    <changeSet id="create-index: idx_md_operator" author="DEFRA">
         <createIndex indexName="idx_md_operator" tableName="md_operator" unique="true">
             <column name="nomenclature"/>
         </createIndex>
@@ -1371,7 +1591,7 @@
             <dropSequence sequenceName="md_asr_code_id_seq"/>
         </rollback>
     </changeSet>
-    <changeSet id="create-index: idx_md_asr_code" author="DEFRA`">
+    <changeSet id="create-index: idx_md_asr_code" author="DEFRA">
         <createIndex indexName="idx_md_asr_code" tableName="md_asr_code" unique="true">
             <column name="nomenclature"/>
         </createIndex>
