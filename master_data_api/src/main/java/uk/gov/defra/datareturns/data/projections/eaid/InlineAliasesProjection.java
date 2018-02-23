@@ -1,4 +1,4 @@
-package uk.gov.defra.datareturns.data.projections;
+package uk.gov.defra.datareturns.data.projections.eaid;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.rest.core.config.Projection;

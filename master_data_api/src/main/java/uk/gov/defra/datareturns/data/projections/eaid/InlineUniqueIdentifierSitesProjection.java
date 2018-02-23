@@ -1,4 +1,4 @@
-package uk.gov.defra.datareturns.data.projections;
+package uk.gov.defra.datareturns.data.projections.eaid;
 
 import org.springframework.data.rest.core.config.Projection;
 import uk.gov.defra.datareturns.data.model.eaid.UniqueIdentifier;
