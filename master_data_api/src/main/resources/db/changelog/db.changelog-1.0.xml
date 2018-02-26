@@ -900,19 +900,14 @@
     Nose_activity_process
     ****************************************************************
     -->
-    <changeSet id="create-table: md_nose_activity_process" author="DEFRA">
-        <createSequence sequenceName="md_nose_activity_process_id_seq" startValue="1"/>
-        <createTable tableName="md_nose_activity_process">
-            <column name="id" type="bigint" defaultValueSequenceNext="md_nose_activity_process_id_seq">
+    <changeSet id="create-table: md_nose_process" author="DEFRA">
+        <createSequence sequenceName="md_nose_process_id_seq" startValue="1"/>
+        <createTable tableName="md_nose_process">
+            <column name="id" type="bigint" defaultValueSequenceNext="md_nose_process_id_seq">
                 <constraints primaryKey="true" nullable="false"/>
             </column>
             <column name="nomenclature" type="varchar(500)">
                 <constraints nullable="false" unique="true"/>
-            </column>
-            <column name="nose_activity_id" type="bigint">
-                <constraints nullable="false"
-                             foreignKeyName="fk_md_nose_activity"
-                             references="md_nose_activity(id)"/>
             </column>
             <column name="created" type="timestamp">
                 <constraints nullable="false"/>
@@ -925,20 +920,56 @@
             </column>
         </createTable>
         <rollback>
-            <dropTable tableName="md_nose_activity_process"/>
-            <dropSequence sequenceName="md_nose_activity_process_id_seq"/>
+            <dropTable tableName="md_nose_process"/>
+            <dropSequence sequenceName="md_nose_process_id_seq"/>
         </rollback>
     </changeSet>
 
-    <changeSet id="create-index: idx_md_nose_activity_process" author="DEFRA">
-        <createIndex indexName="idx_md_nose_activity_process" tableName="md_nose_activity_process" unique="true">
+    <changeSet id="create-index: idx_md_nose_process" author="DEFRA">
+        <createIndex indexName="idx_md_nose_process" tableName="md_nose_process" unique="true">
             <column name="nomenclature"/>
         </createIndex>
         <rollback>
-            <dropIndex tableName="md_nose_activity_process" indexName="idx_md_nose_activity_process"/>
+            <dropIndex tableName="md_nose_process" indexName="idx_md_nose_process"/>
         </rollback>
     </changeSet>
 
+    <!--
+    ****************************************************************
+    Many-to-Many Nose_activity_process
+    ****************************************************************
+    -->
+    <changeSet id="create-table: md_nose_activity_process" author="DEFRA">
+
+        <createTable tableName="md_nose_activity_process">
+            <column name="nose_activity_id" type="bigint">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+
+            <column name="nose_process_id" type="bigint">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+        </createTable>
+
+        <addForeignKeyConstraint baseColumnNames="nose_activity_id"
+                                 baseTableName="md_nose_activity_process"
+                                 constraintName="fk_nose_activity"
+                                 onDelete="CASCADE"
+                                 referencedColumnNames="id"
+                                 referencedTableName="md_nose_activity"/>
+
+        <addForeignKeyConstraint baseColumnNames="nose_process_id"
+                                 baseTableName="md_nose_activity_process"
+                                 constraintName="fk_nose_process"
+                                 onDelete="CASCADE"
+                                 referencedColumnNames="id"
+                                 referencedTableName="md_nose_process"/>
+
+        <rollback>
+            <dropTable tableName="md_nose_activity_process"/>
+        </rollback>
+
+    </changeSet>
 
     <!--
     ****************************************************************

@@ -486,7 +486,7 @@ public interface DatabaseLoader {
 
             final Set<NoseActivityClass> noseActivityClasses = new HashSet<>();
             final Set<NoseActivity> noseActivities = new HashSet<>();
-            final Set<NoseProcess> noseProcesses = new HashSet<>();
+            final Map<String, NoseProcess> noseProcesses = new HashMap<>();
 
             NoseActivityClass noseActivityClass = null;
             NoseActivity noseActivity = null;
@@ -507,16 +507,21 @@ public interface DatabaseLoader {
                 }
 
                 if (entry.length == 3) {
-                    noseProcess = new NoseProcess();
-                    noseProcess.setNomenclature(entry[2]);
-                    noseProcess.setNoseActivity(noseActivity);
-                    noseProcesses.add(noseProcess);
+                    if (noseProcesses.containsKey(entry[2])) {
+                        noseProcess = noseProcesses.get(entry[2]);
+                        noseProcess.getNoseActivities().add(noseActivity);
+                    } else {
+                        noseProcess = new NoseProcess();
+                        noseProcess.setNomenclature(entry[2]);
+                        noseProcess.setNoseActivities(new HashSet<>(Arrays.asList(noseActivity)));
+                        noseProcesses.put(entry[2], noseProcess);
+                    }
                 }
             }
 
             noseActivityClassRepository.save(noseActivityClasses);
             noseActivityRepository.save(noseActivities);
-            noseProcessRepository.save(noseProcesses);
+            noseProcessRepository.save(noseProcesses.values());
         }
     }
 

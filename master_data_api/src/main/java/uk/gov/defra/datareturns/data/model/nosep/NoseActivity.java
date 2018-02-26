@@ -1,6 +1,5 @@
 package uk.gov.defra.datareturns.data.model.nosep;
 
-import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.GenericGenerator;
@@ -9,10 +8,7 @@ import org.hibernate.search.annotations.Indexed;
 import uk.gov.defra.datareturns.data.model.AbstractBaseEntity;
 import uk.gov.defra.datareturns.data.model.AbstractMasterDataEntity;
 
-import javax.persistence.Cacheable;
-import javax.persistence.Entity;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
+import javax.persistence.*;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -31,7 +27,6 @@ public class NoseActivity extends AbstractMasterDataEntity {
     @ManyToOne(optional = false)
     private NoseActivityClass noseActivityClass;
 
-    @OneToMany(mappedBy = "noseActivity")
-    @Setter(AccessLevel.NONE)
+    @ManyToMany(mappedBy = "noseActivities")
     private Set<NoseProcess> noseProcesses = new HashSet<>();
 }
