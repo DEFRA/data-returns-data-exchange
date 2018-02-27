@@ -26,4 +26,4 @@ EXPOSE 9020 9021
 
 ENV JAR=${IMG_SERVICE_DIR}/${JAR_FILE}
 ENV JAVA_OPTS=""
-ENTRYPOINT [ "sh", "-c", "java $JAVA_OPTS -jar ${JAR}" ]
+ENTRYPOINT [ "sh", "-c", "java $JAVA_OPTS -Djava.security.egd=file:/dev/./urandom -jar ${JAR}" ]

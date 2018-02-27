@@ -1,6 +1,7 @@
 package uk.gov.defra.datareturns.config;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
@@ -16,6 +17,7 @@ import springfox.documentation.swagger2.annotations.EnableSwagger2;
  * @author Sam Gardner-Dell
  */
 @Configuration
+@ConditionalOnWebApplication
 @EnableSwagger2
 @Import(springfox.documentation.spring.data.rest.configuration.SpringDataRestConfiguration.class)
 @Slf4j

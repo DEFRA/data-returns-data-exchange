@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.hibernate.search.annotations.Indexed;
 import org.reflections.ReflectionUtils;
 import org.springframework.beans.factory.ListableBeanFactory;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.data.repository.support.Repositories;
 import org.springframework.data.rest.core.mapping.ResourceMappings;
 import org.springframework.data.rest.core.mapping.ResourceMetadata;
@@ -27,6 +28,7 @@ import java.util.function.Predicate;
 @Service
 @Slf4j
 @RequiredArgsConstructor
+@ConditionalOnWebApplication
 public class RepositoryLookupService {
     /**
      * Spring data rest {@link org.springframework.data.rest.core.mapping.ResourceMapping} configuration
