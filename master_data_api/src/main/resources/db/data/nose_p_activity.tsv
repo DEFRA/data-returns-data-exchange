@@ -1,71 +1,71 @@
 ENERGY INDUSTRIES
 	Combustion activities >50MW
-		101.01 Combustion plants > 300 MW
-		101.02 Combustion plants > 50 and < 300 MW
-		101.04 Gas turbines
-		101.05 Stationary engines
+		101.01	Combustion plants > 300 MW
+		101.02	Combustion plants > 50 and < 300 MW
+		101.04	Gas turbines
+		101.05	Stationary engines
 	Burning waste fuels 
-		101.03 Combustion plants < 50MW
+		101.03	Combustion plants < 50MW
 	Mineral oil and gas refineries 
-		105.08 Petroleum product processing
+		105.08	Petroleum product processing
 	Operating coke ovens 
-		104.08 Coke oven furnaces
+		104.08	Coke oven furnaces
 	Coal or lignite gasification and liquefaction plants
-		104.08 Solid fuel transformation
+		104.08	Solid fuel transformation
 PRODUCTION AND PROCESSING OF METALS
 	Ferrous and non-ferrous metal production
-		104.12 Primary and secondary processes in the manufacture of metal and fabricated metal products or sinter plants (involving fuel combustion).
-		105.12 Processes in the manufacture of metals and fabricated metal products or sinter plants (not involving fuel combustion)
+		104.12	Primary and secondary processes in the manufacture of metal and fabricated metal products or sinter plants (involving fuel combustion).
+		105.12	Processes in the manufacture of metals and fabricated metal products or sinter plants (not involving fuel combustion)
 	Surface treating metals and plastic materials
-		105.01 Surface treatment of metals and plastics
+		105.01	Surface treatment of metals and plastics
 MINERAL INDUSTRIES
 	Production of cement and lime, manufacturing glass & glass fibre, other mineral fibres and ceramic production
-		104.11 Manufacture of plaster, asphalt, concrete, cement, glass, fibres, bricks, tiles or ceramic products
+		104.11	Manufacture of plaster, asphalt, concrete, cement, glass, fibres, bricks, tiles or ceramic products
 	Activities involving asbestos 
-		105.11 Manufacture of asbestos and asbestos-based products
+		105.11	Manufacture of asbestos and asbestos-based products
 THE CHEMICAL INDUSTRY
 	Organic chemicals 
-		105.09 Manufacture of organic chemicals
-		107.03 Manufacture or processing of solvent-based organic products 
+		105.09	Manufacture of organic chemicals
+		107.03	Manufacture or processing of solvent-based organic products 
 	Inorganic chemicals, chemical fertiliser production, plant health products & biocides and explosives production
-		105.09 Manufacture of inorganic chemicals, NPK fertilisers, pesticides or explosives
+		105.09	Manufacture of inorganic chemicals, NPK fertilisers, pesticides or explosives
 	Pharmaceutical production and manufacturing activities involving carbon disulphide or ammonia
-		107.03 Manufacture of pharmaceutical and other solvent-based products
+		107.03	Manufacture of pharmaceutical and other solvent-based products
 WASTE MANAGEMENT
 	Disposal of waste by incineration 
-		109.03 Waste incineration
+		109.03	Waste incineration
 	Disposal of waste by landfill 
-		109.06 Landfilling
+		109.06	Landfilling
 	Disposal of waste other than by incineration or landfill and production of fuel from waste
-		109.07 Other waste treatment, transfer etc
+		109.07	Other waste treatment, transfer etc
 	Recovery of waste 
-		105.14 Regeneration/recovery of waste materials
+		105.14	Regeneration/recovery of waste materials
 OTHER ACTIVITIES
 	Paper, pulp and board manufacturing 
-		105.07 Manufacture of pulp, paper and paper products
+		105.07	Manufacture of pulp, paper and paper products
 	Carbon activities 
-		105.09 Manufacture of carbon or graphite 
+		105.09	Manufacture of carbon or graphite 
 	Tar and bitumen activities 
-		104.08 Petroleum product processing
+		104.08	Petroleum product processing
 	Applying coatings containing tributyltin or triphenyltin compounds in certain boatyards
-		107.01 Paint application
+		107.01	Paint application
 	Pre-treatment or dyeing fibres or textiles
-		105.04 Manufacture of textiles and textile products
+		105.04	Manufacture of textiles and textile products
 	Treating textiles 
-		107.03 Textile finishing
+		107.03	Textile finishing
 	Timber activities 
-		105.06 Processes in the manufacture of wood and wood products
+		105.06	Processes in the manufacture of wood and wood products
 	Tanning of hides and skins 
-		105.05 Processes in the manufacture of leather and leather products
+		105.05	Processes in the manufacture of leather and leather products
 	Slaughterhouses and treating and processing materials intended for food production including milk
-		105.03 Manufacture of food products and beverages
+		105.03	Manufacture of food products and beverages
 	Disposal or recycling of animal carcasses and animal waste
-		109.03 Incineration of animal carcasses and animal waste
-		109.06 Landfilling
-		105.14 Recycling of animal carcasses/waste
+		109.03	Incineration of animal carcasses and animal waste
+		109.06	Landfilling
+		105.14	Recycling of animal carcasses/waste
 	Other processing of animal or vegetable material
-		105.14 Recycling of animal carcasses/waste
-		105.03 Manufacture of food products and beverages
+		105.14	Recycling of animal carcasses/waste
+		105.03	Manufacture of food products and beverages
 	Intensive farming 
-		110.04 Enteric fermentation
-		110.05 Manure management
+		110.04	Enteric fermentation
+		110.05	Manure management

@@ -4,7 +4,8 @@ import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.id.enhanced.SequenceStyleGenerator;
-import org.hibernate.search.annotations.Indexed;
+import org.hibernate.search.annotations.*;
+import org.hibernate.search.annotations.Index;
 import uk.gov.defra.datareturns.data.model.AbstractBaseEntity;
 import uk.gov.defra.datareturns.data.model.AbstractMasterDataEntity;
 
@@ -25,6 +26,10 @@ import java.util.Set;
 @Getter
 @Setter
 public class NoseProcess extends AbstractMasterDataEntity {
+
+    @Basic
+    @Column(name = "description", length = 500, nullable = false)
+    private String description;
 
     @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     @JoinTable(name = "md_nose_activity_process",

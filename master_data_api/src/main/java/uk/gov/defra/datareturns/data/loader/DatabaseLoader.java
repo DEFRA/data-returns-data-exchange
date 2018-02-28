@@ -506,13 +506,14 @@ public interface DatabaseLoader {
                     noseActivities.add(noseActivity);
                 }
 
-                if (entry.length == 3) {
+                if (entry.length == 4) {
                     if (noseProcesses.containsKey(entry[2])) {
                         noseProcess = noseProcesses.get(entry[2]);
                         noseProcess.getNoseActivities().add(noseActivity);
                     } else {
                         noseProcess = new NoseProcess();
                         noseProcess.setNomenclature(entry[2]);
+                        noseProcess.setDescription(entry[3]);
                         noseProcess.setNoseActivities(new HashSet<>(Arrays.asList(noseActivity)));
                         noseProcesses.put(entry[2], noseProcess);
                     }
