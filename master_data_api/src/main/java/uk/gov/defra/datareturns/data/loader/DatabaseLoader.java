@@ -72,6 +72,7 @@ import uk.gov.defra.datareturns.data.model.unit.UnitRepository;
 import uk.gov.defra.datareturns.data.model.unit.UnitType;
 import uk.gov.defra.datareturns.data.model.unit.UnitTypeRepository;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -81,6 +82,7 @@ import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.regex.Matcher;
@@ -329,6 +331,7 @@ public interface DatabaseLoader {
     }
 
     @RequiredArgsConstructor
+    @Slf4j
     @Component
     class UnitsLoader implements DatabaseLoader {
         private final UnitRepository unitRepository;
@@ -351,6 +354,14 @@ public interface DatabaseLoader {
                 entity.setDescription(rowData.get("description"));
                 entity.setLongName(rowData.get("long_name"));
                 entity.setUnicode(rowData.get("unicode"));
+
+                final String conversionFactorString = Objects.toString(rowData.get("conversion"), "0");
+                final BigDecimal conversionFactor = new BigDecimal(conversionFactorString);
+                if (conversionFactor.equals(BigDecimal.ZERO)) {
+                    log.warn("Conversion factor for unit {} is not set, or is set to zero.  " +
+                            "Data submitted using this unit will be excluded from reporting.", entity.getNomenclature());
+                }
+                entity.setConversion(conversionFactor);
 
                 final String typeName = rowData.get("type");
                 UnitType type = unitTypes.get(typeName);

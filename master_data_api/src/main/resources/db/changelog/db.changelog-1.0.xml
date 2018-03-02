@@ -305,6 +305,7 @@
             <column name="long_name" type="varchar(50)"/>
             <column name="unicode" type="varchar(50)"/>
             <column name="description" type="varchar(200)"/>
+            <column name="conversion" type="numeric(30, 15)"/>
             <column name="type_id" type="bigint">
                 <constraints nullable="false"
                              foreignKeyName="fk_unit__type"

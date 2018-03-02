@@ -6,8 +6,14 @@ import lombok.Setter;
 import org.hibernate.envers.Audited;
 import uk.gov.defra.datareturns.data.model.AbstractBaseEntity;
 import uk.gov.defra.datareturns.data.model.submissions.Submission;
+import uk.gov.defra.datareturns.validation.validators.id.ValidId;
 
-import javax.persistence.*;
+import javax.persistence.Basic;
+import javax.persistence.Column;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.persistence.ManyToOne;
+import javax.persistence.MappedSuperclass;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.Objects;
@@ -30,9 +36,11 @@ public abstract class AbstractReleaseEntity extends AbstractBaseEntity implement
     @Enumerated(EnumType.STRING)
     private ReleaseMethod method;
 
-    // Fixme - need class level validation for BRT = false
-    @Column
+    @Column(precision = 30, scale = 15)
     private BigDecimal value;
+
+    @Column(precision = 30, scale = 15)
+    private BigDecimal standardValue;
 
     @Basic
     @Column(nullable = false)
@@ -40,6 +48,12 @@ public abstract class AbstractReleaseEntity extends AbstractBaseEntity implement
 
     @Column
     private int unitId;
+
+    @PrePersist
+    private void calculateStandardValue() {
+        final ValueStandardisationService svc = SpringApplicationContextProvider.getApplicationContext().getBean(ValueStandardisationService.class);
+        this.standardValue = svc.getStandardValue(value, String.valueOf(unitId));
+    }
 
     @Column
     private BigDecimal notifiableValue;

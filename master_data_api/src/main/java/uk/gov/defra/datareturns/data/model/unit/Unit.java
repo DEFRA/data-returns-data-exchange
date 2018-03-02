@@ -8,11 +8,11 @@ import uk.gov.defra.datareturns.data.model.AbstractAliasedEntity;
 import uk.gov.defra.datareturns.data.model.AbstractBaseEntity;
 import uk.gov.defra.datareturns.data.model.AliasedEntity;
 
-import javax.persistence.Basic;
 import javax.persistence.Cacheable;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.ManyToOne;
+import java.math.BigDecimal;
 
 /**
  * The persistent class for the units database table.
@@ -29,17 +29,17 @@ import javax.persistence.ManyToOne;
 @Getter
 @Setter
 public class Unit extends AbstractAliasedEntity<UnitAlias> implements AliasedEntity<UnitAlias> {
-    @Basic
     @Column(name = "long_name", length = 50)
     private String longName;
 
-    @Basic
     @Column(name = "unicode", length = 50)
     private String unicode;
 
-    @Basic
     @Column(name = "description", length = 200)
     private String description;
+
+    @Column(name = "conversion", precision = 30, scale = 15)
+    private BigDecimal conversion;
 
     @ManyToOne(optional = false)
     private UnitType type;

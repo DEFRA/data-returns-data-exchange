@@ -44,7 +44,7 @@ public class OffsiteWasteTransfer extends AbstractBaseEntity {
     @Basic
     private int wfdRecoveryId;
 
-    @Column(nullable = false)
+    @Column(nullable = false, precision = 30, scale = 15)
     private BigDecimal tonnage;
 
     @Override

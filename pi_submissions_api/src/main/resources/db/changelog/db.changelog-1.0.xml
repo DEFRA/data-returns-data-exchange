@@ -167,7 +167,10 @@
             <column name="below_reporting_threshold" type="boolean">
                 <constraints nullable="false"/>
             </column>
-            <column name="value" type="numeric(19, 2)">
+            <column name="value" type="numeric(30, 15)">
+                <constraints nullable="true"/>
+            </column>
+            <column name="standard_value" type="numeric(30, 15)">
                 <constraints nullable="true"/>
             </column>
             <column name="unit_id" type="int">
@@ -218,7 +221,8 @@
             <column name="submission_id" type="bigint"/>
             <column name="method" type="varchar(50)"/>
             <column name="below_reporting_threshold" type="boolean"/>
-            <column name="value" type="numeric(19, 2)"/>
+            <column name="value" type="numeric(30, 15)"/>
+            <column name="standard_value" type="numeric(30, 15)"/>
             <column name="unit_id" type="int"/>
             <column name="notifiable_value" type="numeric(19, 2)"/>
             <column name="notifiable_unit_id" type="int"/>
@@ -255,7 +259,10 @@
             <column name="below_reporting_threshold" type="boolean">
                 <constraints nullable="false"/>
             </column>
-            <column name="value" type="numeric(19, 2)">
+            <column name="value" type="numeric(30, 15)">
+                <constraints nullable="true"/>
+            </column>
+            <column name="standard_value" type="numeric(30, 15)">
                 <constraints nullable="true"/>
             </column>
             <column name="unit_id" type="int">
@@ -307,7 +314,8 @@
             <column name="submission_id" type="bigint"/>
             <column name="method" type="varchar(50)"/>
             <column name="below_reporting_threshold" type="boolean"/>
-            <column name="value" type="numeric(19, 2)"/>
+            <column name="value" type="numeric(30, 15)"/>
+            <column name="standard_value" type="numeric(30, 15)"/>
             <column name="unit_id" type="int"/>
             <column name="notifiable_value" type="numeric(19, 2)"/>
             <column name="notifiable_unit_id" type="int"/>
@@ -344,7 +352,10 @@
             <column name="below_reporting_threshold" type="boolean">
                 <constraints nullable="false"/>
             </column>
-            <column name="value" type="numeric(19, 2)">
+            <column name="value" type="numeric(30, 15)">
+                <constraints nullable="true"/>
+            </column>
+            <column name="standard_value" type="numeric(30, 15)">
                 <constraints nullable="true"/>
             </column>
             <column name="unit_id" type="int">
@@ -396,7 +407,8 @@
             <column name="submission_id" type="bigint"/>
             <column name="method" type="varchar(50)"/>
             <column name="below_reporting_threshold" type="boolean"/>
-            <column name="value" type="numeric(19, 2)"/>
+            <column name="value" type="numeric(30, 15)"/>
+            <column name="standard_value" type="numeric(30, 15)"/>
             <column name="unit_id" type="int"/>
             <column name="notifiable_value" type="numeric(19, 2)"/>
             <column name="notifiable_unit_id" type="int"/>
@@ -433,7 +445,10 @@
             <column name="below_reporting_threshold" type="boolean">
                 <constraints nullable="false"/>
             </column>
-            <column name="value" type="numeric(19, 2)">
+            <column name="value" type="numeric(30, 15)">
+                <constraints nullable="true"/>
+            </column>
+            <column name="standard_value" type="numeric(30, 15)">
                 <constraints nullable="true"/>
             </column>
             <column name="unit_id" type="int">
@@ -485,7 +500,8 @@
             <column name="submission_id" type="bigint"/>
             <column name="method" type="varchar(50)"/>
             <column name="below_reporting_threshold" type="boolean"/>
-            <column name="value" type="numeric(19, 2)"/>
+            <column name="value" type="numeric(30, 15)"/>
+            <column name="standard_value" type="numeric(30, 15)"/>
             <column name="unit_id" type="int"/>
             <column name="notifiable_value" type="numeric(19, 2)"/>
             <column name="notifiable_unit_id" type="int"/>
@@ -525,7 +541,7 @@
             <column name="substance_id" type="int">
                 <constraints nullable="false"/>
             </column>
-            <column name="tonnage" type="numeric(19, 2)">
+            <column name="tonnage" type="numeric(30, 15)">
                 <constraints nullable="false"/>
             </column>
             <column name="responsible_company_name" type="varchar(255)"/>
@@ -590,7 +606,7 @@
             <column name="method" type="varchar(100)"/>
             <column name="operation" type="varchar(100)"/>
             <column name="substance_id" type="int"/>
-            <column name="tonnage" type="numeric(19, 2)"/>
+            <column name="tonnage" type="numeric(30, 15)"/>
             <column name="responsible_company_name" type="varchar(255)"/>
             <column name="responsible_company_address_country" type="varchar(2)"/>
             <column name="responsible_company_address_line1" type="varchar(255)"/>
@@ -630,7 +646,7 @@
             <column name="ewc_activity_id" type="int">
                 <constraints nullable="false"/>
             </column>
-            <column name="tonnage" type="numeric(19, 2)">
+            <column name="tonnage" type="numeric(30, 15)">
                 <constraints nullable="false"/>
             </column>
             <column name="wfd_disposal_id" type="int">
@@ -664,7 +680,7 @@
             </column>
             <column name="submission_id" type="bigint"/>
             <column name="ewc_activity_id" type="int"/>
-            <column name="tonnage" type="numeric(19, 2)"/>
+            <column name="tonnage" type="numeric(30, 15)"/>
             <column name="wfd_disposal_id" type="int"/>
             <column name="wfd_recovery_id" type="int"/>
         </createTable>
