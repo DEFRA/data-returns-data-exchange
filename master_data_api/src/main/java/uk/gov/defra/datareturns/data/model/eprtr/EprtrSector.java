@@ -26,7 +26,7 @@ import java.util.Set;
 public class EprtrSector extends AbstractMasterDataEntity {
 
     @Basic(optional = false)
-    @Column(length = 40)
+    @Column(length = 40, unique = true)
     private String description;
 
     @OneToMany(mappedBy = "eprtrSector")

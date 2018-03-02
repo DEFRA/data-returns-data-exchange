@@ -1,20 +1,15 @@
 package uk.gov.defra.datareturns.data.model.geography;
 
-import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.id.enhanced.SequenceStyleGenerator;
-import org.hibernate.search.annotations.*;
-import org.hibernate.search.annotations.Index;
+import org.hibernate.search.annotations.Indexed;
 import uk.gov.defra.datareturns.data.model.AbstractBaseEntity;
 import uk.gov.defra.datareturns.data.model.AbstractMasterDataEntity;
 import uk.gov.defra.datareturns.data.model.MasterDataEntity;
-import uk.gov.defra.datareturns.data.model.eaid.UniqueIdentifier;
 
 import javax.persistence.*;
-import java.util.HashSet;
-import java.util.Set;
 
 /**
  * The persistent class for the unique_identifiers database table.
@@ -38,6 +33,6 @@ public class Area extends AbstractMasterDataEntity implements MasterDataEntity {
     private Region region;
 
     @Basic
-    @Column(name = "code", length = 4, nullable = false)
+    @Column(name = "code", length = 4, nullable = false, unique = true)
     private String code;
 }

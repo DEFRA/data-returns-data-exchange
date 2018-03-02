@@ -63,7 +63,6 @@
             <column name="nomenclature" type="varchar(80)">
                 <constraints nullable="false" unique="true"/>
             </column>
-
             <column name="created" type="timestamp">
                 <constraints nullable="false"/>
             </column>
@@ -965,6 +964,11 @@
                                  referencedColumnNames="id"
                                  referencedTableName="md_nose_process"/>
 
+        <createIndex indexName="md_nose_activity_idx" tableName="md_nose_activity_process" unique="true">
+            <column name="nose_process_id"/>
+            <column name="nose_activity_id"/>
+        </createIndex>
+        
         <rollback>
             <dropTable tableName="md_nose_activity_process"/>
         </rollback>
