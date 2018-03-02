@@ -1,4 +1,4 @@
-package uk.gov.defra.datareturns.data.projections.eaid;
+package uk.gov.defra.datareturns.data.projections;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.rest.core.config.Projection;
@@ -7,7 +7,7 @@ import uk.gov.defra.datareturns.data.model.AliasedEntity;
 import java.util.Set;
 
 /**
- * InlineEwcSubchapterProjection to display aliases inline as an array.
+ * InlineAliasesProjection to display aliases inline as an array.
  *
  * @author Sam Gardner-Dell
  */

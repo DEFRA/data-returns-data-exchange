@@ -5,6 +5,7 @@ import io.restassured.RestAssured;
 import io.restassured.filter.log.LogDetail;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.rules.ExternalResource;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.context.embedded.EmbeddedWebApplicationContext;
 import org.springframework.stereotype.Service;
 
@@ -12,6 +13,7 @@ import javax.inject.Inject;
 
 import static io.restassured.RestAssured.basic;
 
+@ConditionalOnWebApplication
 @Service
 @Slf4j
 public class RestAssuredRule extends ExternalResource {

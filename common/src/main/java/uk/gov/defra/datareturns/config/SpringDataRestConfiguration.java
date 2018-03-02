@@ -117,6 +117,8 @@ public class SpringDataRestConfiguration implements RepositoryRestConfigurer {
     public HateoasPageableHandlerMethodArgumentResolver customResolver(final HateoasPageableHandlerMethodArgumentResolver pageableResolver) {
         pageableResolver.setOneIndexedParameters(true);
         pageableResolver.setFallbackPageable(null);
+        // TODO: Spring boot 2:
+//        pageableResolver.setFallbackPageable(Pageable.unpaged());
         return pageableResolver;
     }
 }

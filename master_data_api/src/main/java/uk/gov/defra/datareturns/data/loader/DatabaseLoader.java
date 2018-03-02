@@ -38,31 +38,48 @@ import uk.gov.defra.datareturns.data.model.nace.NaceGroup;
 import uk.gov.defra.datareturns.data.model.nace.NaceGroupRepository;
 import uk.gov.defra.datareturns.data.model.nace.NaceSection;
 import uk.gov.defra.datareturns.data.model.nace.NaceSectionRepository;
-import uk.gov.defra.datareturns.data.model.nosep.*;
+import uk.gov.defra.datareturns.data.model.nosep.NoseActivity;
+import uk.gov.defra.datareturns.data.model.nosep.NoseActivityClass;
+import uk.gov.defra.datareturns.data.model.nosep.NoseActivityClassRepository;
+import uk.gov.defra.datareturns.data.model.nosep.NoseActivityRepository;
+import uk.gov.defra.datareturns.data.model.nosep.NoseProcess;
+import uk.gov.defra.datareturns.data.model.nosep.NoseProcessRepository;
 import uk.gov.defra.datareturns.data.model.parameter.Parameter;
 import uk.gov.defra.datareturns.data.model.parameter.ParameterAlias;
 import uk.gov.defra.datareturns.data.model.parameter.ParameterAliasRepository;
 import uk.gov.defra.datareturns.data.model.parameter.ParameterGroup;
 import uk.gov.defra.datareturns.data.model.parameter.ParameterGroupRepository;
 import uk.gov.defra.datareturns.data.model.parameter.ParameterRepository;
+import uk.gov.defra.datareturns.data.model.parameter.ParameterType;
+import uk.gov.defra.datareturns.data.model.parameter.ParameterTypeRepository;
 import uk.gov.defra.datareturns.data.model.qualifier.Qualifier;
 import uk.gov.defra.datareturns.data.model.qualifier.QualifierRepository;
 import uk.gov.defra.datareturns.data.model.referenceperiod.ReferencePeriod;
 import uk.gov.defra.datareturns.data.model.referenceperiod.ReferencePeriodAlias;
 import uk.gov.defra.datareturns.data.model.referenceperiod.ReferencePeriodAliasRepository;
 import uk.gov.defra.datareturns.data.model.referenceperiod.ReferencePeriodRepository;
+import uk.gov.defra.datareturns.data.model.regime.Regime;
+import uk.gov.defra.datareturns.data.model.regime.RegimeRepository;
 import uk.gov.defra.datareturns.data.model.returnperiod.ReturnPeriod;
 import uk.gov.defra.datareturns.data.model.returnperiod.ReturnPeriodRepository;
 import uk.gov.defra.datareturns.data.model.returntype.ReturnType;
 import uk.gov.defra.datareturns.data.model.returntype.ReturnTypeGroup;
 import uk.gov.defra.datareturns.data.model.returntype.ReturnTypeGroupRepository;
 import uk.gov.defra.datareturns.data.model.returntype.ReturnTypeRepository;
+import uk.gov.defra.datareturns.data.model.route.Route;
+import uk.gov.defra.datareturns.data.model.route.RouteRepository;
+import uk.gov.defra.datareturns.data.model.route.Subroute;
+import uk.gov.defra.datareturns.data.model.route.SubrouteRepository;
 import uk.gov.defra.datareturns.data.model.site.Site;
 import uk.gov.defra.datareturns.data.model.site.SiteRepository;
+import uk.gov.defra.datareturns.data.model.regimeobligation.RegimeObligation;
+import uk.gov.defra.datareturns.data.model.regimeobligation.RegimeObligationRepository;
 import uk.gov.defra.datareturns.data.model.textvalue.TextValue;
 import uk.gov.defra.datareturns.data.model.textvalue.TextValueAlias;
 import uk.gov.defra.datareturns.data.model.textvalue.TextValueAliasRepository;
 import uk.gov.defra.datareturns.data.model.textvalue.TextValueRepository;
+import uk.gov.defra.datareturns.data.model.threshold.Threshold;
+import uk.gov.defra.datareturns.data.model.threshold.ThresholdRepository;
 import uk.gov.defra.datareturns.data.model.unit.Unit;
 import uk.gov.defra.datareturns.data.model.unit.UnitAlias;
 import uk.gov.defra.datareturns.data.model.unit.UnitAliasRepository;
@@ -264,30 +281,50 @@ public interface DatabaseLoader {
         @Override
         public void load() {
             final List<Map<String, String>> data = LoaderUtils.readCsvData("/db/data/ReturnTypes.csv");
+            data.stream().map(basicFactory(ReturnType::new)).forEach(returnTypeRepository::save);
+        }
+    }
 
-            // Map to store return type groups as we encounter them
-            final Map<String, ReturnTypeGroup> returnTypeGroups = new HashMap<>();
+    @RequiredArgsConstructor
+    @Component
+    @Slf4j
+    class RoutesLoader implements DatabaseLoader {
+        private final RouteRepository routeRepository;
 
-            // Now process return types
-            for (final Map<String, String> rowData : data) {
-                final ReturnType entity = new ReturnType();
-                entity.setNomenclature(rowData.get("name"));
+        @Transactional
+        @Override
+        public void load() {
+            final List<Map<String, String>> data = LoaderUtils.readCsvData("/db/data/Routes.csv");
+            data.stream().map(basicFactory(Route::new)).forEach(routeRepository::save);
+        }
+    }
 
-                final Set<String> groupNames = LoaderUtils.extractGroupSet(rowData.get("rtn_type_groups"));
-                for (final String groupName : groupNames) {
-                    ReturnTypeGroup group = returnTypeGroups.get(groupName);
-                    if (group == null) {
-                        group = new ReturnTypeGroup();
-                        group.setNomenclature(groupName);
-                        returnTypeGroups.put(groupName, group);
-                    }
-                    group.getReturnTypes().add(entity);
-                }
-                returnTypeRepository.save(entity);
-            }
-            returnTypeGroupRepository.save(returnTypeGroups.values().stream()
-                    .sorted(Comparator.comparing(ReturnTypeGroup::getNomenclature))
-                    .collect(Collectors.toList()));
+
+    @RequiredArgsConstructor
+    @Component
+    @Slf4j
+    class SubroutesLoader implements DatabaseLoader {
+        private final RouteRepository routeRepository;
+        private final SubrouteRepository subrouteRepository;
+
+        @Transactional
+        @Override
+        public void load() {
+            final List<Map<String, String>> data = LoaderUtils.readCsvData("/db/data/Subroutes.csv");
+            data.stream()
+                    .map(rowData -> {
+                        final Subroute subroute = new Subroute();
+                        subroute.setNomenclature(rowData.get("name"));
+                        subroute.setRoute(routeRepository.getByNomenclature(rowData.get("route_name")));
+                        return subroute;
+                    })
+                    .forEach(subrouteRepository::save);
+        }
+
+
+        @Override
+        public Set<Class<? extends DatabaseLoader>> dependsOn() {
+            return new HashSet<>(Collections.singletonList(RoutesLoader.class));
         }
     }
 
@@ -403,6 +440,7 @@ public interface DatabaseLoader {
     @Component
     class ParametersLoader implements DatabaseLoader {
         private final ParameterRepository parameterRepository;
+        private final ParameterTypeRepository parameterTypeRepository;
         private final ParameterAliasRepository parameterAliasRepository;
         private final ParameterGroupRepository parameterGroupRepository;
 
@@ -411,12 +449,28 @@ public interface DatabaseLoader {
         public void load() {
             final Map<String, ParameterGroup> parameterGroups = new HashMap<>();
 
+            // Map to store parameter types as they are read from the file.
+            final Map<String, ParameterType> parameterTypes = new HashMap<>();
+
             final List<Map<String, String>> data = LoaderUtils.readCsvData("/db/data/Parameters.csv");
             final Function<Map<String, String>, Parameter> parameterFactory = (rowData) -> {
                 final Parameter entity = new Parameter();
                 entity.setNomenclature(rowData.get("name"));
                 entity.setCas(rowData.get("cas"));
-                entity.setType(rowData.get("type"));
+
+                final String typeName = rowData.get("type");
+                ParameterType type = parameterTypes.get(typeName);
+                if (type == null) {
+                    // Haven't encountered this type before
+                    type = new ParameterType();
+                    type.setNomenclature(typeName);
+                    parameterTypes.put(typeName, type);
+                    parameterTypeRepository.save(type);
+                }
+                // Associate the unit and the type
+                entity.setType(type);
+                type.getParameters().add(entity);
+
                 final Set<String> groupNames = LoaderUtils.extractGroupSet(rowData.get("parameter_groups"));
                 for (final String groupName : groupNames) {
                     ParameterGroup group = parameterGroups.get(groupName);
@@ -444,8 +498,8 @@ public interface DatabaseLoader {
     @Slf4j
     @RequiredArgsConstructor
     @Component
-    class ApplicabilityLoader implements DatabaseLoader {
-        private final ApplicabilityRepository applicabilityRepository;
+    class RegimeLoader implements DatabaseLoader {
+        private final RegimeRepository regimeRepository;
         private final UniqueIdentifierGroupRepository uniqueIdentifierGroupRepository;
         private final ReturnTypeGroupRepository returnTypeGroupRepository;
         private final ParameterGroupRepository parameterGroupRepository;
@@ -454,30 +508,88 @@ public interface DatabaseLoader {
         @Transactional
         @Override
         public void load() {
-            final List<Map<String, String>> data = LoaderUtils.readCsvData("/db/data/Applicability.csv");
+            final List<Map<String, String>> data = LoaderUtils.readCsvData("/db/data/Regimes.csv");
             for (final Map<String, String> rowData : data) {
-                final Applicability entity = new Applicability();
+                final Regime entity = new Regime();
                 entity.setNomenclature(rowData.get("name"));
 
                 final Set<String> eaIdGroups = LoaderUtils.extractGroupSet(rowData.get("ea_id_groups"));
                 eaIdGroups.stream().map(uniqueIdentifierGroupRepository::getByNomenclature).forEach(entity.getUniqueIdentifierGroups()::add);
 
-                final Set<String> rtnTypeGroups = LoaderUtils.extractGroupSet(rowData.get("rtn_type_groups"));
-                rtnTypeGroups.stream().map(returnTypeGroupRepository::getByNomenclature).forEach(entity.getReturnTypeGroups()::add);
+                regimeRepository.save(entity);
+            }
+        }
+
+        @Override
+        public Set<Class<? extends DatabaseLoader>> dependsOn() {
+            return new HashSet<>(Collections.singletonList(SiteAndPermitLoader.class));
+        }
+    }
+
+    @Slf4j
+    @RequiredArgsConstructor
+    @Component
+    class ThresholdLoader implements DatabaseLoader {
+        private final RegimeObligationRepository regimeObligationRepository;
+        private final ThresholdRepository thresholdRepository;
+        private final ParameterRepository parameterRepository;
+        private final UnitRepository unitRepository;
+
+        @Transactional
+        @Override
+        public void load() {
+            final List<Map<String, String>> data = LoaderUtils.readCsvData("/db/data/Thresholds.csv");
+            for (final Map<String, String> rowData : data) {
+                final Threshold entity = new Threshold();
+                entity.setType(Threshold.ThresholdType.valueOf(rowData.get("type")));
+                entity.setRegimeObligation(regimeObligationRepository.getByNomenclature(rowData.get("regime_obligation_name")));
+                entity.setParameter(parameterRepository.getByNomenclature(rowData.get("parameter_name")));
+                entity.setUnit(unitRepository.getByNomenclature(rowData.get("unit")));
+                entity.setValue(new BigDecimal(rowData.get("threshold")));
+                thresholdRepository.save(entity);
+            }
+        }
+
+        @Override
+        public Set<Class<? extends DatabaseLoader>> dependsOn() {
+            return new HashSet<>(Arrays.asList(ParametersLoader.class, UnitsLoader.class, RegimeObligationsLoader.class));
+        }
+    }
+
+
+    @Slf4j
+    @RequiredArgsConstructor
+    @Component
+    class RegimeObligationsLoader implements DatabaseLoader {
+        private final RegimeObligationRepository regimeObligationRepository;
+        private final RegimeRepository regimeRepository;
+        private final RouteRepository routeRepository;
+        private final ParameterGroupRepository parameterGroupRepository;
+        private final UnitGroupRepository unitGroupRepository;
+
+        @Transactional
+        @Override
+        public void load() {
+            final List<Map<String, String>> data = LoaderUtils.readCsvData("/db/data/RegimeObligations.csv");
+            for (final Map<String, String> rowData : data) {
+                final RegimeObligation entity = new RegimeObligation();
+                entity.setNomenclature(rowData.get("name"));
+                entity.setDescription(rowData.get("description"));
+                entity.setRegime(regimeRepository.getByNomenclature(rowData.get("regime_name")));
+                entity.setRoute(routeRepository.getByNomenclature(rowData.get("route_name")));
 
                 final Set<String> parameterGroups = LoaderUtils.extractGroupSet(rowData.get("parameter_groups"));
                 parameterGroups.stream().map(parameterGroupRepository::getByNomenclature).forEach(entity.getParameterGroups()::add);
 
                 final Set<String> unitGroups = LoaderUtils.extractGroupSet(rowData.get("unit_groups"));
                 unitGroups.stream().map(unitGroupRepository::getByNomenclature).forEach(entity.getUnitGroups()::add);
-
-                applicabilityRepository.save(entity);
+                regimeObligationRepository.save(entity);
             }
         }
 
         @Override
         public Set<Class<? extends DatabaseLoader>> dependsOn() {
-            return new HashSet<>(Arrays.asList(ReturnTypesLoader.class, ParametersLoader.class, UnitsLoader.class));
+            return new HashSet<>(Arrays.asList(RegimeLoader.class, RoutesLoader.class, ParametersLoader.class, UnitsLoader.class));
         }
     }
 
@@ -546,7 +658,7 @@ public interface DatabaseLoader {
 
         @Override
         public void load() {
-            List<String[]> rows = LoaderUtils.readTabData("/db/data/EPRTR.tsv");
+            final List<String[]> rows = LoaderUtils.readTabData("/db/data/EPRTR.tsv");
 
             final Set<EprtrActivity> eprtrActivities = new HashSet<>();
             final Set<EprtrSector> eprtrSectors = new HashSet<>();
@@ -554,14 +666,14 @@ public interface DatabaseLoader {
             EprtrActivity eprtrActivity = null;
             EprtrSector eprtrSector = null;
 
-            for (String[] entry : rows) {
+            for (final String[] entry : rows) {
                 if (entry.length == 2) {
                     eprtrSector = new EprtrSector();
                     eprtrSector.setNomenclature(entry[0]);
                     eprtrSector.setDescription(entry[1]);
                     eprtrSectors.add(eprtrSector);
                 } else {
-                    eprtrActivity = new EprtrActivity();
+                    final EprtrActivity eprtrActivity = new EprtrActivity();
                     eprtrActivity.setNomenclature(entry[1]);
                     eprtrActivity.setDescription(entry[2]);
                     if (entry.length == 4) {
@@ -650,12 +762,14 @@ public interface DatabaseLoader {
         }
     }
 
+    @Slf4j
     @RequiredArgsConstructor
     @Component
     class DisposalsAndRecoveryLoader implements DatabaseLoader {
         //private final MethodOrStandardRepository methodOrStandardRepository;
         private final DisposalCodeRepository disposalCodeRepository;
         private final RecoveryCodeRepository recoveryCodeRepository;
+
         @Transactional
         @Override
         public void load() {

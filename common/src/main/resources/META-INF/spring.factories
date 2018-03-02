@@ -1,2 +1,5 @@
+#Spring boot 1.X
 org.springframework.context.ApplicationListener=org.springframework.boot.system.ApplicationPidFileWriter
+# TODO: Spring boot 2:
+#org.springframework.context.ApplicationListener=org.springframework.boot.context.ApplicationPidFileWriter
 org.springframework.boot.env.EnvironmentPostProcessor=uk.gov.defra.datareturns.util.ConfigurationLogger

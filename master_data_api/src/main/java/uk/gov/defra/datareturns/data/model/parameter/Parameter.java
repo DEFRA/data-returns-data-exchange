@@ -1,6 +1,5 @@
 package uk.gov.defra.datareturns.data.model.parameter;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.GenericGenerator;
@@ -18,6 +17,7 @@ import javax.persistence.Basic;
 import javax.persistence.Cacheable;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.ManyToOne;
 
 /**
  * The persistent class for the parameters database table.
@@ -41,9 +41,6 @@ public class Parameter extends AbstractAliasedEntity<ParameterAlias> implements 
     @Field(index = Index.YES, analyze = Analyze.NO, store = Store.NO)
     private String cas;
 
-    @JsonIgnore
-    @Basic
-    @Column(name = "type", length = 100)
-    @Field(index = Index.YES, analyze = Analyze.YES, store = Store.NO)
-    private String type;
+    @ManyToOne(optional = false)
+    private ParameterType type;
 }

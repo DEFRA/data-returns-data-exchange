@@ -1,19 +1,35 @@
 package uk.gov.defra.datareturns.tests.util;
 
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import io.restassured.http.ContentType;
 import io.restassured.response.ValidatableResponse;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.math.NumberUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
+
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Objects;
 
 import static io.restassured.RestAssured.given;
 
 @Slf4j
+@RequiredArgsConstructor
 @Component
 public class RestAssuredUtils {
-    private static String nomenclatureJson(final String nomenclature) {
-        return "{ \"nomenclature\": \"" + nomenclature + "\" }";
+    private final ObjectMapper mapper;
+
+    private String toJson(final Map<String, Object> fields) {
+        try {
+            return mapper.writeValueAsString(fields);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     public ValidatableResponse createEntity(final ApiResource resource, final String body) {
@@ -29,8 +45,12 @@ public class RestAssuredUtils {
     }
 
 
+    public ValidatableResponse createSimpleEntity(final ApiResource resource, final Map<String, Object> fields) {
+        return createEntity(resource, toJson(fields));
+    }
+
     public ValidatableResponse createSimpleEntity(final ApiResource resource, final String nomenclature) {
-        return createEntity(resource, nomenclatureJson(nomenclature));
+        return createSimpleEntity(resource, Collections.singletonMap("nomenclature", nomenclature));
     }
 
 }

@@ -1,4 +1,4 @@
-package uk.gov.defra.datareturns.data.model.applicability;
+package uk.gov.defra.datareturns.data.model.regime;
 
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -10,46 +10,37 @@ import uk.gov.defra.datareturns.data.model.AbstractBaseEntity;
 import uk.gov.defra.datareturns.data.model.AbstractMasterDataEntity;
 import uk.gov.defra.datareturns.data.model.MasterDataEntity;
 import uk.gov.defra.datareturns.data.model.eaid.UniqueIdentifierGroup;
-import uk.gov.defra.datareturns.data.model.parameter.ParameterGroup;
-import uk.gov.defra.datareturns.data.model.returntype.ReturnTypeGroup;
-import uk.gov.defra.datareturns.data.model.unit.UnitGroup;
+import uk.gov.defra.datareturns.data.model.regimeobligation.RegimeObligation;
 
 import javax.persistence.Cacheable;
 import javax.persistence.Entity;
 import javax.persistence.ManyToMany;
+import javax.persistence.OneToMany;
 import java.util.HashSet;
 import java.util.Set;
 
 /**
- * The persistent class for the md_applicability database table.
+ * The persistent class for the md_regime database table.
  *
  * @author Sam Gardner-Dell
  */
-@Entity(name = "md_applicability")
+@Entity(name = "md_regime")
 @Cacheable
 @Indexed
 @GenericGenerator(name = AbstractBaseEntity.DEFINITIONS_ID_GENERATOR,
         strategy = AbstractBaseEntity.DEFINITIONS_ID_SEQUENCE_STRATEGY,
         parameters = {
-                @org.hibernate.annotations.Parameter(name = SequenceStyleGenerator.SEQUENCE_PARAM, value = "md_applicability_id_seq")
+                @org.hibernate.annotations.Parameter(name = SequenceStyleGenerator.SEQUENCE_PARAM, value = "md_regime_id_seq")
         }
 )
 @Getter
 @Setter
-public class Applicability extends AbstractMasterDataEntity implements MasterDataEntity {
+public class Regime extends AbstractMasterDataEntity implements MasterDataEntity {
     @ManyToMany
     @Setter(AccessLevel.NONE)
     private Set<UniqueIdentifierGroup> uniqueIdentifierGroups = new HashSet<>();
 
-    @ManyToMany
+    @OneToMany(mappedBy = "regime")
     @Setter(AccessLevel.NONE)
-    private Set<ReturnTypeGroup> returnTypeGroups = new HashSet<>();
-
-    @ManyToMany
-    @Setter(AccessLevel.NONE)
-    private Set<ParameterGroup> parameterGroups = new HashSet<>();
-
-    @ManyToMany
-    @Setter(AccessLevel.NONE)
-    private Set<UnitGroup> unitGroups = new HashSet<>();
+    private Set<RegimeObligation> regimeObligations = new HashSet<>();
 }

@@ -1,7 +1,5 @@
 package uk.gov.defra.datareturns.validation.validators.id;
 
-import org.springframework.core.annotation.AliasFor;
-
 import javax.validation.Constraint;
 import javax.validation.Payload;
 import java.lang.annotation.Documented;

@@ -38,9 +38,9 @@ public class ServiceEndpointConfiguration implements InitializingBean {
     private Endpoint masterDataApi;
 
     @Override
-    public void afterPropertiesSet() throws Exception {
+    public void afterPropertiesSet() {
         final Endpoint[] serviceEndpoints = new Endpoint[] {masterDataApi};
-        for (Endpoint endpoint : serviceEndpoints) {
+        for (final Endpoint endpoint : serviceEndpoints) {
             if (!endpoint.getUri().getPath().endsWith("/")) {
                 log.error(
                         "Endpoint URI path for {} should be terminated by a / but is set to: {}   Terminating.",
