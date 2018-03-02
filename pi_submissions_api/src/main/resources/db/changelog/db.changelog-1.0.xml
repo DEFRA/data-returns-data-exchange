@@ -44,6 +44,9 @@
             <column name="applicable_year" type="smallint">
                 <constraints nullable="false"/>
             </column>
+            <column name="nace_id" type="smallint">
+                <constraints nullable="true"/>
+            </column>
             <column name="status" type="varchar(20)">
                 <constraints nullable="false"/>
             </column>
@@ -80,6 +83,7 @@
             <column name="reporting_reference" type="bigint"/>
             <column name="applicable_year" type="smallint"/>
             <column name="status" type="varchar(20)"/>
+            <column name="nace_id" type="smallint"/>
         </createTable>
 
         <addPrimaryKey tableName="pi_submission_aud" columnNames="id, rev"/>
@@ -88,6 +92,57 @@
         </rollback>
     </changeSet>
 
+    <!--
+     ****************************************************************
+     One-to-Many nose nose_activity_id (Really M:M but only storing Ids in the PI-API
+     ****************************************************************
+     -->
+    <changeSet id="create-table: pi_submission_nose_process" author="DEFRA">
+
+        <createTable tableName="pi_submission_nose_process">
+            <column name="submission_id" type="bigint">
+                <constraints primaryKey="true"
+                             nullable="false"
+                             foreignKeyName="fk_nose_process__submission"
+                             references="pi_submission(id)"/>
+            </column>
+            <column name="nose_process_id" type="bigint">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+        </createTable>
+
+        <createIndex indexName="pi_submission_nose_process_idx" tableName="pi_submission_nose_process" unique="true">
+            <column name="submission_id"/>
+            <column name="nose_process_id"/>
+        </createIndex>
+
+        <rollback>
+            <dropTable tableName="pi_submission_nose_process"/>
+        </rollback>
+
+    </changeSet>
+
+    <changeSet id="create-table: pi_submission_nose_process_aud" author="DEFRA">
+
+        <createTable tableName="pi_submission_nose_process_aud">
+            <column name="rev" type="integer">
+                <constraints nullable="false"/>
+            </column>
+            <column name="revtype" type="smallint">
+                <constraints nullable="false"/>
+            </column>
+            <column name="submission_id" type="bigint"/>
+            <column name="nose_process_id" type="bigint"/>
+
+        </createTable>
+
+        <addPrimaryKey tableName="pi_submission_nose_process_aud" columnNames="submission_id, nose_process_id, rev"/>
+
+        <rollback>
+            <dropTable tableName="pi_submission_nose_process_aud"/>
+        </rollback>
+
+    </changeSet>
 
     <!--
     ****************************************************************
@@ -116,6 +171,15 @@
                 <constraints nullable="true"/>
             </column>
             <column name="unit_id" type="int">
+                <constraints nullable="true"/>
+            </column>
+            <column name="notifiable_value" type="numeric(19, 2)">
+                <constraints nullable="true"/>
+            </column>
+            <column name="notifiable_unit_id" type="int">
+                <constraints nullable="true"/>
+            </column>
+            <column name="notifiable_reason" type="varchar(500)">
                 <constraints nullable="true"/>
             </column>
             <column name="substance_id" type="INT">
@@ -156,7 +220,10 @@
             <column name="below_reporting_threshold" type="boolean"/>
             <column name="value" type="numeric(19, 2)"/>
             <column name="unit_id" type="int"/>
-            <column name="substance_id" type="INT"/>
+            <column name="notifiable_value" type="numeric(19, 2)"/>
+            <column name="notifiable_unit_id" type="int"/>
+            <column name="notifiable_reason" type="varchar(500)"/>
+            <column name="substance_id" type="int"/>
         </createTable>
 
         <addPrimaryKey tableName="pi_release_to_air_aud" columnNames="id, rev"/>
@@ -192,6 +259,15 @@
                 <constraints nullable="true"/>
             </column>
             <column name="unit_id" type="int">
+                <constraints nullable="true"/>
+            </column>
+            <column name="notifiable_value" type="numeric(19, 2)">
+                <constraints nullable="true"/>
+            </column>
+            <column name="notifiable_unit_id" type="int">
+                <constraints nullable="true"/>
+            </column>
+            <column name="notifiable_reason" type="varchar(500)">
                 <constraints nullable="true"/>
             </column>
             <column name="substance_id" type="INT">
@@ -233,6 +309,9 @@
             <column name="below_reporting_threshold" type="boolean"/>
             <column name="value" type="numeric(19, 2)"/>
             <column name="unit_id" type="int"/>
+            <column name="notifiable_value" type="numeric(19, 2)"/>
+            <column name="notifiable_unit_id" type="int"/>
+            <column name="notifiable_reason" type="varchar(500)"/>
             <column name="substance_id" type="INT"/>
         </createTable>
 
@@ -269,6 +348,15 @@
                 <constraints nullable="true"/>
             </column>
             <column name="unit_id" type="int">
+                <constraints nullable="true"/>
+            </column>
+            <column name="notifiable_value" type="numeric(19, 2)">
+                <constraints nullable="true"/>
+            </column>
+            <column name="notifiable_unit_id" type="int">
+                <constraints nullable="true"/>
+            </column>
+            <column name="notifiable_reason" type="varchar(500)">
                 <constraints nullable="true"/>
             </column>
             <column name="substance_id" type="INT">
@@ -310,6 +398,9 @@
             <column name="below_reporting_threshold" type="boolean"/>
             <column name="value" type="numeric(19, 2)"/>
             <column name="unit_id" type="int"/>
+            <column name="notifiable_value" type="numeric(19, 2)"/>
+            <column name="notifiable_unit_id" type="int"/>
+            <column name="notifiable_reason" type="varchar(500)"/>
             <column name="substance_id" type="INT"/>
         </createTable>
 
@@ -346,6 +437,15 @@
                 <constraints nullable="true"/>
             </column>
             <column name="unit_id" type="int">
+                <constraints nullable="true"/>
+            </column>
+            <column name="notifiable_value" type="numeric(19, 2)">
+                <constraints nullable="true"/>
+            </column>
+            <column name="notifiable_unit_id" type="int">
+                <constraints nullable="true"/>
+            </column>
+            <column name="notifiable_reason" type="varchar(500)">
                 <constraints nullable="true"/>
             </column>
             <column name="substance_id" type="INT">
@@ -387,6 +487,9 @@
             <column name="below_reporting_threshold" type="boolean"/>
             <column name="value" type="numeric(19, 2)"/>
             <column name="unit_id" type="int"/>
+            <column name="notifiable_value" type="numeric(19, 2)"/>
+            <column name="notifiable_unit_id" type="int"/>
+            <column name="notifiable_reason" type="varchar(500)"/>
             <column name="substance_id" type="INT"/>
         </createTable>
 

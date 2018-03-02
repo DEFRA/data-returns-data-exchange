@@ -14,14 +14,7 @@ import uk.gov.defra.datareturns.data.model.releases.ReleaseToWasteWater;
 import uk.gov.defra.datareturns.data.model.transfers.OffsiteWasteTransfer;
 import uk.gov.defra.datareturns.data.model.transfers.OverseasWasteTransfer;
 
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.OneToMany;
-import javax.persistence.Table;
-import javax.persistence.UniqueConstraint;
+import javax.persistence.*;
 import javax.validation.Valid;
 import java.util.Objects;
 import java.util.Set;
@@ -58,6 +51,14 @@ public class Submission extends AbstractBaseEntity {
 
     @Enumerated(EnumType.STRING)
     private SubmissionStatus status;
+
+//    @Column(nullable = false)
+//    private short naceId;
+
+//    @ElementCollection
+//    @CollectionTable(name = "pi_submission_nose_process", joinColumns = @JoinColumn(name = "submission_id"))
+//    @Column(name = "nose_process_id")
+//    private Set<Long> noseIds;
 
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "submission")
     @JsonManagedReference
