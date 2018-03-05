@@ -905,7 +905,10 @@
             <column name="id" type="bigint" defaultValueSequenceNext="md_nose_process_id_seq">
                 <constraints primaryKey="true" nullable="false"/>
             </column>
-            <column name="nomenclature" type="varchar(500)">
+             <column name="nomenclature" type="varchar(10)">
+                <constraints nullable="false" unique="true"/>
+            </column>
+            <column name="description" type="varchar(255)">
                 <constraints nullable="false" unique="true"/>
             </column>
             <column name="created" type="timestamp">

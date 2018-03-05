@@ -26,6 +26,10 @@ import java.util.Set;
 @Setter
 public class NoseProcess extends AbstractMasterDataEntity {
 
+    @Basic
+    @Column(name = "description")
+    String description;
+
     @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     @JoinTable(name = "md_nose_activity_process",
             joinColumns = @JoinColumn(name = "nose_process_id", referencedColumnName="id"),
