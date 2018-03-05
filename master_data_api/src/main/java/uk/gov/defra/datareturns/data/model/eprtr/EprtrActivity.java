@@ -27,7 +27,7 @@ public class EprtrActivity extends AbstractMasterDataEntity {
     private EprtrSector eprtrSector;
 
     @Basic(optional = false)
-    @Column(length = 500)
+    @Column(length = 500, unique = true)
     private String description;
 
     @Basic

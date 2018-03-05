@@ -31,6 +31,6 @@ import javax.persistence.Entity;
 @Setter
 public class Region extends AbstractMasterDataEntity implements MasterDataEntity {
     @Basic
-    @Column(name = "code", length = 2, nullable = false)
+    @Column(name = "code", length = 2, nullable = false, unique = true)
     private String code;
 }
