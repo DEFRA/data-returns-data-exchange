@@ -6,14 +6,8 @@ import lombok.Setter;
 import org.hibernate.envers.Audited;
 import uk.gov.defra.datareturns.data.model.AbstractBaseEntity;
 import uk.gov.defra.datareturns.data.model.submissions.Submission;
-import uk.gov.defra.datareturns.validation.validators.id.ValidId;
 
-import javax.persistence.Basic;
-import javax.persistence.Column;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.ManyToOne;
-import javax.persistence.MappedSuperclass;
+import javax.persistence.*;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.Objects;
@@ -44,10 +38,17 @@ public abstract class AbstractReleaseEntity extends AbstractBaseEntity implement
     @Column(nullable = false)
     private boolean belowReportingThreshold;
 
-    // Fixme - need class level validation for BRT = false
-    // @ValidId(resourceCollectionUris = "unitGroups/2/units")
     @Column
     private int unitId;
+
+    @Column
+    private BigDecimal notifiableValue;
+
+    @Column
+    private int notifiableUnitId;
+
+    @Column(length = 500)
+    private String notifiableReason;
 
     @Override
     public final boolean equals(final Object o) {

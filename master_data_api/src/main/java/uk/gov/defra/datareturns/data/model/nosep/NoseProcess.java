@@ -28,7 +28,7 @@ import java.util.Set;
 public class NoseProcess extends AbstractMasterDataEntity {
 
     @Basic
-    @Column(name = "description", length = 500, nullable = false)
+    @Column(name = "description", nullable = false)
     private String description;
 
     @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
