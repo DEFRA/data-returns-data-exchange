@@ -55,7 +55,7 @@ public class Submission extends AbstractBaseEntity {
     @Column(nullable = false)
     private short naceId;
 
-    @ElementCollection
+    @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(name = "pi_submission_nose_process", joinColumns = @JoinColumn(name = "submission_id"))
     @Column(name = "nose_process_id")
     private Set<Long> noseIds;
