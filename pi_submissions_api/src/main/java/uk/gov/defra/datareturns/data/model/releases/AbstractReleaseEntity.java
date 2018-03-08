@@ -6,14 +6,10 @@ import lombok.Setter;
 import org.hibernate.envers.Audited;
 import uk.gov.defra.datareturns.data.model.AbstractBaseEntity;
 import uk.gov.defra.datareturns.data.model.submissions.Submission;
-import uk.gov.defra.datareturns.validation.validators.id.ValidId;
+import uk.gov.defra.datareturns.service.ValueStandardisationService;
+import uk.gov.defra.datareturns.util.SpringApplicationContextProvider;
 
-import javax.persistence.Basic;
-import javax.persistence.Column;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.ManyToOne;
-import javax.persistence.MappedSuperclass;
+import javax.persistence.*;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.Objects;

@@ -320,49 +320,6 @@
         </rollback>
     </changeSet>
 
-    <changeSet id="create-table: md_unit_group" author="DEFRA">
-        <createSequence sequenceName="md_unit_group_id_seq" startValue="1"/>
-        <createTable tableName="md_unit_group">
-            <column name="id" type="bigint" defaultValueSequenceNext="md_unit_group_id_seq">
-                <constraints primaryKey="true" nullable="false"/>
-            </column>
-            <column name="nomenclature" type="varchar(255)">
-                <constraints nullable="false" unique="true"/>
-            </column>
-            <column name="created" type="timestamp">
-                <constraints nullable="false"/>
-            </column>
-            <column name="last_modified" type="timestamp">
-                <constraints nullable="false"/>
-            </column>
-            <column name="version" type="smallint">
-                <constraints nullable="false"/>
-            </column>
-        </createTable>
-        <rollback>
-            <dropTable tableName="md_unit_group"/>
-            <dropSequence sequenceName="md_unit_group_id_seq"/>
-        </rollback>
-    </changeSet>
-    <changeSet id="create-table: md_unit_group_entries" author="DEFRA">
-        <createTable tableName="md_unit_group_entries">
-            <column name="md_unit_group_id" type="bigint">
-                <constraints nullable="false"
-                             foreignKeyName="fk_unit_group_entries__group"
-                             references="md_unit_group(id)"/>
-            </column>
-            <column name="units_id" type="bigint">
-                <constraints nullable="false"
-                             foreignKeyName="fk_unit_group_entries__unit"
-                             references="md_unit(id)"/>
-            </column>
-        </createTable>
-        <addPrimaryKey columnNames="md_unit_group_id, units_id" tableName="md_unit_group_entries"/>
-        <rollback>
-            <dropTable tableName="md_unit_group_entries"/>
-        </rollback>
-    </changeSet>
-
     <!--
     ****************************************************************
     Unit Aliases
@@ -1430,22 +1387,22 @@
         </rollback>
     </changeSet>
 
-    <changeSet id="create-table: md_regime_obligation_unit_groups" author="DEFRA">
-        <createTable tableName="md_regime_obligation_unit_groups">
-            <column name="md_regime_obligation_id" type="bigint">
+    <changeSet id="create-table: md_regime_obligation_units" author="DEFRA">
+        <createTable tableName="md_regime_obligation_units">
+            <column name="regime_obligation_id" type="bigint">
                 <constraints nullable="false"
-                             foreignKeyName="fk_regime_obligation_unit_groups__regime_obligation"
+                             foreignKeyName="fk_regime_obligation_units__regime_obligation"
                              references="md_regime_obligation(id)"/>
             </column>
-            <column name="unit_groups_id" type="bigint">
+            <column name="unit_id" type="bigint">
                 <constraints nullable="false"
-                             foreignKeyName="fk_regime_obligation_unit_groups__unit_group"
-                             references="md_unit_group(id)"/>
+                             foreignKeyName="fk_regime_obligation_units__unit"
+                             references="md_unit(id)"/>
             </column>
         </createTable>
-        <addPrimaryKey columnNames="md_regime_obligation_id, unit_groups_id" tableName="md_regime_obligation_unit_groups"/>
+        <addPrimaryKey columnNames="regime_obligation_id, unit_id" tableName="md_regime_obligation_units"/>
         <rollback>
-            <dropTable tableName="md_regime_obligation_unit_groups"/>
+            <dropTable tableName="md_regime_obligation_units"/>
         </rollback>
     </changeSet>
 
@@ -1768,9 +1725,6 @@
             <column name="nomenclature" type="varchar(18)">
                 <constraints nullable="false" unique="true"/>
             </column>
-            <column name="type" type="varchar(5)">
-                <constraints nullable="true"/>
-            </column>
             <column name="site_id" type="bigint">
                 <constraints nullable="false"
                              foreignKeyName="fk_unique_identifier__site"
@@ -1816,67 +1770,32 @@
         </rollback>
     </changeSet>
 
-    <changeSet id="create-table: md_unique_identifier_group" author="DEFRA">
-        <createSequence sequenceName="md_unique_identifier_group_id_seq" startValue="1"/>
-        <createTable tableName="md_unique_identifier_group">
-            <column name="id" type="bigint" defaultValueSequenceNext="md_unique_identifier_group_id_seq">
-                <constraints primaryKey="true" nullable="false"/>
+    <!--
+    ****************************************************************
+    Regime Unique Identifier M:M join table
+    ****************************************************************
+    -->
+    <changeSet id="create-table: md_regime_unique_identifiers" author="DEFRA">
+        <createTable tableName="md_regime_unique_identifiers">
+            <column name="context" type="varchar(10)">
+                <constraints nullable="false"></constraints>
             </column>
-            <column name="nomenclature" type="varchar(255)">
-                <constraints nullable="false" unique="true"/>
-            </column>
-            <column name="created" type="timestamp">
-                <constraints nullable="false"/>
-            </column>
-            <column name="last_modified" type="timestamp">
-                <constraints nullable="false"/>
-            </column>
-            <column name="version" type="smallint">
-                <constraints nullable="false"/>
-            </column>
-        </createTable>
-        <rollback>
-            <dropTable tableName="md_unique_identifier_group"/>
-            <dropSequence sequenceName="md_unique_identifier_group_id_seq"/>
-        </rollback>
-    </changeSet>
-    <changeSet id="create-table: md_unique_identifier_group_entries" author="DEFRA">
-        <createTable tableName="md_unique_identifier_group_entries">
-            <column name="md_unique_identifier_group_id" type="bigint">
+            <column name="regime_id" type="bigint">
                 <constraints nullable="false"
-                             foreignKeyName="fk_unique_identifier_group_entries__group"
-                             referencedTableName="md_unique_identifier_group"
+                             foreignKeyName="fk_regime_unique_identifiers__regime"
+                             referencedTableName="md_regime"
                              referencedColumnNames="id"/>
             </column>
-            <column name="unique_identifiers_id" type="bigint">
+            <column name="unique_identifier_id" type="bigint">
                 <constraints nullable="false"
-                             foreignKeyName="fk_unique_identifier_group_entries__unique_identifier"
+                             foreignKeyName="fk_regime_unique_identifiers__unique_identifier"
                              referencedTableName="md_unique_identifier"
                              referencedColumnNames="id"/>
             </column>
         </createTable>
-        <addPrimaryKey columnNames="md_unique_identifier_group_id, unique_identifiers_id" tableName="md_unique_identifier_group_entries"/>
+        <addPrimaryKey columnNames="context, regime_id, unique_identifier_id" tableName="md_regime_unique_identifiers"/>
         <rollback>
-            <dropTable tableName="md_unique_identifier_group_entries"/>
-        </rollback>
-    </changeSet>
-
-    <changeSet id="create-table: md_regime_unique_identifier_groups" author="DEFRA">
-        <createTable tableName="md_regime_unique_identifier_groups">
-            <column name="md_regime_id" type="bigint">
-                <constraints nullable="false"
-                             foreignKeyName="fk_regime_unique_identifier_groups__applic"
-                             references="md_regime(id)"/>
-            </column>
-            <column name="unique_identifier_groups_id" type="bigint">
-                <constraints nullable="false"
-                             foreignKeyName="fk_regime_unique_identifier_groups__group"
-                             references="md_unique_identifier_group(id)"/>
-            </column>
-        </createTable>
-        <addPrimaryKey columnNames="md_regime_id, unique_identifier_groups_id" tableName="md_regime_unique_identifier_groups"/>
-        <rollback>
-            <dropTable tableName="md_regime_unique_identifier_groups"/>
+            <dropTable tableName="md_regime_unique_identifiers"/>
         </rollback>
     </changeSet>
 

@@ -9,12 +9,10 @@ import org.hibernate.search.annotations.Indexed;
 import uk.gov.defra.datareturns.data.model.AbstractBaseEntity;
 import uk.gov.defra.datareturns.data.model.AbstractMasterDataEntity;
 import uk.gov.defra.datareturns.data.model.MasterDataEntity;
-import uk.gov.defra.datareturns.data.model.eaid.UniqueIdentifierGroup;
 import uk.gov.defra.datareturns.data.model.regimeobligation.RegimeObligation;
 
 import javax.persistence.Cacheable;
 import javax.persistence.Entity;
-import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
 import java.util.HashSet;
 import java.util.Set;
@@ -36,10 +34,6 @@ import java.util.Set;
 @Getter
 @Setter
 public class Regime extends AbstractMasterDataEntity implements MasterDataEntity {
-    @ManyToMany
-    @Setter(AccessLevel.NONE)
-    private Set<UniqueIdentifierGroup> uniqueIdentifierGroups = new HashSet<>();
-
     @OneToMany(mappedBy = "regime")
     @Setter(AccessLevel.NONE)
     private Set<RegimeObligation> regimeObligations = new HashSet<>();

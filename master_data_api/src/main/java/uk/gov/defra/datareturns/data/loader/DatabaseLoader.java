@@ -6,8 +6,7 @@ import org.apache.commons.collections4.ListUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
-import uk.gov.defra.datareturns.data.model.applicability.Applicability;
-import uk.gov.defra.datareturns.data.model.applicability.ApplicabilityRepository;
+import uk.gov.defra.datareturns.data.model.Context;
 import uk.gov.defra.datareturns.data.model.disposalsandrecoveries.DisposalCode;
 import uk.gov.defra.datareturns.data.model.disposalsandrecoveries.DisposalCodeRepository;
 import uk.gov.defra.datareturns.data.model.disposalsandrecoveries.RecoveryCode;
@@ -15,8 +14,6 @@ import uk.gov.defra.datareturns.data.model.disposalsandrecoveries.RecoveryCodeRe
 import uk.gov.defra.datareturns.data.model.eaid.UniqueIdentifier;
 import uk.gov.defra.datareturns.data.model.eaid.UniqueIdentifierAlias;
 import uk.gov.defra.datareturns.data.model.eaid.UniqueIdentifierAliasRepository;
-import uk.gov.defra.datareturns.data.model.eaid.UniqueIdentifierGroup;
-import uk.gov.defra.datareturns.data.model.eaid.UniqueIdentifierGroupRepository;
 import uk.gov.defra.datareturns.data.model.eaid.UniqueIdentifierRepository;
 import uk.gov.defra.datareturns.data.model.eprtr.EprtrActivity;
 import uk.gov.defra.datareturns.data.model.eprtr.EprtrActivityRepository;
@@ -63,8 +60,6 @@ import uk.gov.defra.datareturns.data.model.regime.RegimeRepository;
 import uk.gov.defra.datareturns.data.model.returnperiod.ReturnPeriod;
 import uk.gov.defra.datareturns.data.model.returnperiod.ReturnPeriodRepository;
 import uk.gov.defra.datareturns.data.model.returntype.ReturnType;
-import uk.gov.defra.datareturns.data.model.returntype.ReturnTypeGroup;
-import uk.gov.defra.datareturns.data.model.returntype.ReturnTypeGroupRepository;
 import uk.gov.defra.datareturns.data.model.returntype.ReturnTypeRepository;
 import uk.gov.defra.datareturns.data.model.route.Route;
 import uk.gov.defra.datareturns.data.model.route.RouteRepository;
@@ -83,8 +78,6 @@ import uk.gov.defra.datareturns.data.model.threshold.ThresholdRepository;
 import uk.gov.defra.datareturns.data.model.unit.Unit;
 import uk.gov.defra.datareturns.data.model.unit.UnitAlias;
 import uk.gov.defra.datareturns.data.model.unit.UnitAliasRepository;
-import uk.gov.defra.datareturns.data.model.unit.UnitGroup;
-import uk.gov.defra.datareturns.data.model.unit.UnitGroupRepository;
 import uk.gov.defra.datareturns.data.model.unit.UnitRepository;
 import uk.gov.defra.datareturns.data.model.unit.UnitType;
 import uk.gov.defra.datareturns.data.model.unit.UnitTypeRepository;
@@ -107,6 +100,7 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import static uk.gov.defra.datareturns.data.loader.LoaderUtils.basicFactory;
+import static uk.gov.defra.datareturns.data.model.Context.ECM;
 
 /**
  * Simple database loader interface for master data
@@ -134,11 +128,29 @@ public interface DatabaseLoader {
     @Slf4j
     @RequiredArgsConstructor
     @Component
+    class RegimeLoader implements DatabaseLoader {
+        private final RegimeRepository regimeRepository;
+
+        @Transactional
+        @Override
+        public void load() {
+            final List<Map<String, String>> data = LoaderUtils.readCsvData("/db/data/Regimes.csv");
+            for (final Map<String, String> rowData : data) {
+                final Regime entity = new Regime();
+                entity.setNomenclature(rowData.get("name"));
+                regimeRepository.save(entity);
+            }
+        }
+    }
+
+    @Slf4j
+    @RequiredArgsConstructor
+    @Component
     class SiteAndPermitLoader implements DatabaseLoader {
         private final SiteRepository siteRepository;
         private final UniqueIdentifierRepository uniqueIdentifierRepository;
-        private final UniqueIdentifierGroupRepository uniqueIdentifierGroupRepository;
         private final UniqueIdentifierAliasRepository uniqueIdentifierAliasRepository;
+        private final RegimeRepository regimeRepository;
 
         @Transactional
         @Override
@@ -151,6 +163,8 @@ public interface DatabaseLoader {
             };
             final List<Map<String, String>> data = new ArrayList<>();
             Arrays.stream(permitFiles).forEach(pf -> data.addAll(LoaderUtils.readCsvData(pf)));
+
+            Regime ecm = regimeRepository.getOne(1L);
 
             final Map<String, Site> sites = new HashMap<>();
             final Map<String, UniqueIdentifier> primaryIdentifiers = new HashMap<>();
@@ -168,6 +182,7 @@ public interface DatabaseLoader {
                     final UniqueIdentifier id = new UniqueIdentifier();
                     id.setNomenclature(ps);
                     id.setSite(site);
+                    id.getRegime().put(ECM, ecm);
                     return id;
                 });
 
@@ -185,19 +200,6 @@ public interface DatabaseLoader {
             siteRepository.save(sites.values());
             uniqueIdentifierRepository.save(primaryIdentifiers.values());
 
-            // TODO: Substitute this for real data - no point in finalising this until we have a new permit extract
-            final UniqueIdentifierGroup ecmGroup = new UniqueIdentifierGroup();
-            ecmGroup.setNomenclature("ECM");
-            ecmGroup.getUniqueIdentifiers().addAll(primaryIdentifiers.values());
-            uniqueIdentifierGroupRepository.save(ecmGroup);
-
-            final UniqueIdentifierGroup piGroup = new UniqueIdentifierGroup();
-            piGroup.setNomenclature("PI");
-            ecmGroup.getUniqueIdentifiers().addAll(primaryIdentifiers.values().stream()
-                    .filter(i -> i.getNomenclature().startsWith("A"))
-                    .collect(Collectors.toSet()));
-            uniqueIdentifierGroupRepository.save(piGroup);
-
             // Sanity check
             final List<String> aliasNames = uniqueIdentifierAliasRepository.findAll().stream()
                     .map(UniqueIdentifierAlias::getNomenclature)
@@ -211,6 +213,10 @@ public interface DatabaseLoader {
             }
         }
 
+        @Override
+        public Set<Class<? extends DatabaseLoader>> dependsOn() {
+            return new HashSet<>(Collections.singletonList(RegimeLoader.class));
+        }
     }
 
     @RequiredArgsConstructor
@@ -274,7 +280,6 @@ public interface DatabaseLoader {
     @Component
     @Slf4j
     class ReturnTypesLoader implements DatabaseLoader {
-        private final ReturnTypeGroupRepository returnTypeGroupRepository;
         private final ReturnTypeRepository returnTypeRepository;
 
         @Transactional
@@ -374,7 +379,9 @@ public interface DatabaseLoader {
         private final UnitRepository unitRepository;
         private final UnitAliasRepository unitAliasRepository;
         private final UnitTypeRepository unitTypeRepository;
-        private final UnitGroupRepository unitGroupRepository;
+        private final RegimeObligationRepository regimeObligationRepository;
+
+        // regimeObligationRepository
 
         @Transactional
         @Override
@@ -383,7 +390,10 @@ public interface DatabaseLoader {
 
             // Map to store unit types as they are read from the file.
             final Map<String, UnitType> unitTypes = new HashMap<>();
-            final Map<String, UnitGroup> unitGroups = new HashMap<>();
+
+            Map<String, RegimeObligation> regimeObligationMap = regimeObligationRepository.findAll()
+                    .stream().collect(Collectors.toMap(RegimeObligation::getNomenclature, Function.identity()));
+
             // Unit factory
             final Function<Map<String, String>, Unit> unitFactory = (rowData) -> {
                 final Unit entity = new Unit();
@@ -414,24 +424,46 @@ public interface DatabaseLoader {
                 type.getUnits().add(entity);
 
                 final Set<String> groupNames = LoaderUtils.extractGroupSet(rowData.get("unit_groups"));
+
+
                 for (final String groupName : groupNames) {
-                    UnitGroup group = unitGroups.get(groupName);
-                    if (group == null) {
-                        group = new UnitGroup();
-                        group.setNomenclature(groupName);
-                        unitGroups.put(groupName, group);
+                    switch (groupName) {
+                        case "ECM":
+                            regimeObligationMap.get("ECM").getUnits().add(entity);
+                            break;
+                        case "PI_RSR":
+                            regimeObligationMap.get("PI_RSR_RTA").getUnits().add(entity);
+                            regimeObligationMap.get("PI_RSR_OSTW").getUnits().add(entity);
+                            regimeObligationMap.get("PI_RSR_RTCW").getUnits().add(entity);
+                            break;
+                        case "PI":
+                            regimeObligationMap.get("PI_A1_RTA").getUnits().add(entity);
+                            regimeObligationMap.get("PI_A1_RTL").getUnits().add(entity);
+                            regimeObligationMap.get("PI_A1_RTCW").getUnits().add(entity);
+                            regimeObligationMap.get("PI_A1_OSTW").getUnits().add(entity);
+                            regimeObligationMap.get("PI_A1LFIA_RTA").getUnits().add(entity);
+                            regimeObligationMap.get("PI_A1LFIA_RTL").getUnits().add(entity);
+                            regimeObligationMap.get("PI_A1LFIA_RTCW").getUnits().add(entity);
+                            regimeObligationMap.get("PI_A1LFIA_OSTW").getUnits().add(entity);
+                            regimeObligationMap.get("PI_EPRTR_RTA").getUnits().add(entity);
+                            regimeObligationMap.get("PI_EPRTR_RTL").getUnits().add(entity);
+                            regimeObligationMap.get("PI_EPRTR_RTCW").getUnits().add(entity);
+                            regimeObligationMap.get("PI_EPRTR_OSTW").getUnits().add(entity);
+                            break;
                     }
-                    group.getUnits().add(entity);
                 }
                 return entity;
             };
+
             LoaderUtils.persistSelfReferencingEntityFile(data, unitRepository::save, unitFactory,
                     unitAliasRepository::save, basicFactory(UnitAlias::new));
 
-            // Save unit group relationships to units
-            unitGroupRepository.save(unitGroups.values().stream()
-                    .sorted(Comparator.comparing(UnitGroup::getNomenclature))
-                    .collect(Collectors.toList()));
+            regimeObligationRepository.save(regimeObligationMap.values());
+        }
+
+        @Override
+        public Set<Class<? extends DatabaseLoader>> dependsOn() {
+            return new HashSet<>(Collections.singletonList(RegimeObligationsLoader.class));
         }
     }
 
@@ -494,38 +526,6 @@ public interface DatabaseLoader {
         }
     }
 
-
-    @Slf4j
-    @RequiredArgsConstructor
-    @Component
-    class RegimeLoader implements DatabaseLoader {
-        private final RegimeRepository regimeRepository;
-        private final UniqueIdentifierGroupRepository uniqueIdentifierGroupRepository;
-        private final ReturnTypeGroupRepository returnTypeGroupRepository;
-        private final ParameterGroupRepository parameterGroupRepository;
-        private final UnitGroupRepository unitGroupRepository;
-
-        @Transactional
-        @Override
-        public void load() {
-            final List<Map<String, String>> data = LoaderUtils.readCsvData("/db/data/Regimes.csv");
-            for (final Map<String, String> rowData : data) {
-                final Regime entity = new Regime();
-                entity.setNomenclature(rowData.get("name"));
-
-                final Set<String> eaIdGroups = LoaderUtils.extractGroupSet(rowData.get("ea_id_groups"));
-                eaIdGroups.stream().map(uniqueIdentifierGroupRepository::getByNomenclature).forEach(entity.getUniqueIdentifierGroups()::add);
-
-                regimeRepository.save(entity);
-            }
-        }
-
-        @Override
-        public Set<Class<? extends DatabaseLoader>> dependsOn() {
-            return new HashSet<>(Collections.singletonList(SiteAndPermitLoader.class));
-        }
-    }
-
     @Slf4j
     @RequiredArgsConstructor
     @Component
@@ -565,7 +565,6 @@ public interface DatabaseLoader {
         private final RegimeRepository regimeRepository;
         private final RouteRepository routeRepository;
         private final ParameterGroupRepository parameterGroupRepository;
-        private final UnitGroupRepository unitGroupRepository;
 
         @Transactional
         @Override
@@ -580,19 +579,15 @@ public interface DatabaseLoader {
 
                 final Set<String> parameterGroups = LoaderUtils.extractGroupSet(rowData.get("parameter_groups"));
                 parameterGroups.stream().map(parameterGroupRepository::getByNomenclature).forEach(entity.getParameterGroups()::add);
-
-                final Set<String> unitGroups = LoaderUtils.extractGroupSet(rowData.get("unit_groups"));
-                unitGroups.stream().map(unitGroupRepository::getByNomenclature).forEach(entity.getUnitGroups()::add);
                 regimeObligationRepository.save(entity);
             }
         }
 
         @Override
         public Set<Class<? extends DatabaseLoader>> dependsOn() {
-            return new HashSet<>(Arrays.asList(RegimeLoader.class, RoutesLoader.class, ParametersLoader.class, UnitsLoader.class));
+            return new HashSet<>(Arrays.asList(RegimeLoader.class, RoutesLoader.class, ParametersLoader.class));
         }
     }
-
 
     @Slf4j
     @RequiredArgsConstructor
@@ -613,7 +608,7 @@ public interface DatabaseLoader {
 
             NoseActivityClass noseActivityClass = null;
             NoseActivity noseActivity = null;
-            NoseProcess noseProcess = null;
+            NoseProcess noseProcess;
 
             for (String[] entry : rows) {
                 if (entry.length == 1) {
@@ -663,7 +658,6 @@ public interface DatabaseLoader {
             final Set<EprtrActivity> eprtrActivities = new HashSet<>();
             final Set<EprtrSector> eprtrSectors = new HashSet<>();
 
-            EprtrActivity eprtrActivity = null;
             EprtrSector eprtrSector = null;
 
             for (final String[] entry : rows) {

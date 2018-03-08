@@ -14,14 +14,9 @@ import uk.gov.defra.datareturns.data.model.parameter.ParameterGroup;
 import uk.gov.defra.datareturns.data.model.regime.Regime;
 import uk.gov.defra.datareturns.data.model.route.Route;
 import uk.gov.defra.datareturns.data.model.threshold.Threshold;
-import uk.gov.defra.datareturns.data.model.unit.UnitGroup;
+import uk.gov.defra.datareturns.data.model.unit.Unit;
 
-import javax.persistence.Cacheable;
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.ManyToMany;
-import javax.persistence.ManyToOne;
+import javax.persistence.*;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -67,8 +62,12 @@ public class RegimeObligation extends AbstractMasterDataEntity implements Master
      * Unit groups belonging to this {@link RegimeObligation}
      */
     @ManyToMany
+    @JoinTable(
+            name="md_regime_obligation_units",
+            joinColumns={ @JoinColumn(name="regime_obligation_id", referencedColumnName="id") },
+            inverseJoinColumns={ @JoinColumn(name="unit_id", referencedColumnName="id" ) })
     @Setter(AccessLevel.NONE)
-    private Set<UnitGroup> unitGroups = new HashSet<>();
+    private Set<Unit> units = new HashSet<>();
 
     /**
      * The set of {@link Threshold}s associated with this {@link RegimeObligation}
