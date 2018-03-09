@@ -6,7 +6,6 @@ import org.apache.commons.collections4.ListUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
-import uk.gov.defra.datareturns.data.model.Context;
 import uk.gov.defra.datareturns.data.model.disposalsandrecoveries.DisposalCode;
 import uk.gov.defra.datareturns.data.model.disposalsandrecoveries.DisposalCodeRepository;
 import uk.gov.defra.datareturns.data.model.disposalsandrecoveries.RecoveryCode;
@@ -19,36 +18,12 @@ import uk.gov.defra.datareturns.data.model.eprtr.EprtrActivity;
 import uk.gov.defra.datareturns.data.model.eprtr.EprtrActivityRepository;
 import uk.gov.defra.datareturns.data.model.eprtr.EprtrSector;
 import uk.gov.defra.datareturns.data.model.eprtr.EprtrSectorRepository;
-import uk.gov.defra.datareturns.data.model.ewc.EwcActivity;
-import uk.gov.defra.datareturns.data.model.ewc.EwcActivityRepository;
-import uk.gov.defra.datareturns.data.model.ewc.EwcChapter;
-import uk.gov.defra.datareturns.data.model.ewc.EwcChapterRepository;
-import uk.gov.defra.datareturns.data.model.ewc.EwcSubchapter;
-import uk.gov.defra.datareturns.data.model.ewc.EwcSubchapterRepository;
+import uk.gov.defra.datareturns.data.model.ewc.*;
 import uk.gov.defra.datareturns.data.model.methodorstandard.MethodOrStandard;
 import uk.gov.defra.datareturns.data.model.methodorstandard.MethodOrStandardRepository;
-import uk.gov.defra.datareturns.data.model.nace.NaceClass;
-import uk.gov.defra.datareturns.data.model.nace.NaceClassRepository;
-import uk.gov.defra.datareturns.data.model.nace.NaceDivision;
-import uk.gov.defra.datareturns.data.model.nace.NaceDivisionRepository;
-import uk.gov.defra.datareturns.data.model.nace.NaceGroup;
-import uk.gov.defra.datareturns.data.model.nace.NaceGroupRepository;
-import uk.gov.defra.datareturns.data.model.nace.NaceSection;
-import uk.gov.defra.datareturns.data.model.nace.NaceSectionRepository;
-import uk.gov.defra.datareturns.data.model.nosep.NoseActivity;
-import uk.gov.defra.datareturns.data.model.nosep.NoseActivityClass;
-import uk.gov.defra.datareturns.data.model.nosep.NoseActivityClassRepository;
-import uk.gov.defra.datareturns.data.model.nosep.NoseActivityRepository;
-import uk.gov.defra.datareturns.data.model.nosep.NoseProcess;
-import uk.gov.defra.datareturns.data.model.nosep.NoseProcessRepository;
-import uk.gov.defra.datareturns.data.model.parameter.Parameter;
-import uk.gov.defra.datareturns.data.model.parameter.ParameterAlias;
-import uk.gov.defra.datareturns.data.model.parameter.ParameterAliasRepository;
-import uk.gov.defra.datareturns.data.model.parameter.ParameterGroup;
-import uk.gov.defra.datareturns.data.model.parameter.ParameterGroupRepository;
-import uk.gov.defra.datareturns.data.model.parameter.ParameterRepository;
-import uk.gov.defra.datareturns.data.model.parameter.ParameterType;
-import uk.gov.defra.datareturns.data.model.parameter.ParameterTypeRepository;
+import uk.gov.defra.datareturns.data.model.nace.*;
+import uk.gov.defra.datareturns.data.model.nosep.*;
+import uk.gov.defra.datareturns.data.model.parameter.*;
 import uk.gov.defra.datareturns.data.model.qualifier.Qualifier;
 import uk.gov.defra.datareturns.data.model.qualifier.QualifierRepository;
 import uk.gov.defra.datareturns.data.model.referenceperiod.ReferencePeriod;
@@ -57,6 +32,8 @@ import uk.gov.defra.datareturns.data.model.referenceperiod.ReferencePeriodAliasR
 import uk.gov.defra.datareturns.data.model.referenceperiod.ReferencePeriodRepository;
 import uk.gov.defra.datareturns.data.model.regime.Regime;
 import uk.gov.defra.datareturns.data.model.regime.RegimeRepository;
+import uk.gov.defra.datareturns.data.model.regimeobligation.RegimeObligation;
+import uk.gov.defra.datareturns.data.model.regimeobligation.RegimeObligationRepository;
 import uk.gov.defra.datareturns.data.model.returnperiod.ReturnPeriod;
 import uk.gov.defra.datareturns.data.model.returnperiod.ReturnPeriodRepository;
 import uk.gov.defra.datareturns.data.model.returntype.ReturnType;
@@ -67,33 +44,16 @@ import uk.gov.defra.datareturns.data.model.route.Subroute;
 import uk.gov.defra.datareturns.data.model.route.SubrouteRepository;
 import uk.gov.defra.datareturns.data.model.site.Site;
 import uk.gov.defra.datareturns.data.model.site.SiteRepository;
-import uk.gov.defra.datareturns.data.model.regimeobligation.RegimeObligation;
-import uk.gov.defra.datareturns.data.model.regimeobligation.RegimeObligationRepository;
 import uk.gov.defra.datareturns.data.model.textvalue.TextValue;
 import uk.gov.defra.datareturns.data.model.textvalue.TextValueAlias;
 import uk.gov.defra.datareturns.data.model.textvalue.TextValueAliasRepository;
 import uk.gov.defra.datareturns.data.model.textvalue.TextValueRepository;
 import uk.gov.defra.datareturns.data.model.threshold.Threshold;
 import uk.gov.defra.datareturns.data.model.threshold.ThresholdRepository;
-import uk.gov.defra.datareturns.data.model.unit.Unit;
-import uk.gov.defra.datareturns.data.model.unit.UnitAlias;
-import uk.gov.defra.datareturns.data.model.unit.UnitAliasRepository;
-import uk.gov.defra.datareturns.data.model.unit.UnitRepository;
-import uk.gov.defra.datareturns.data.model.unit.UnitType;
-import uk.gov.defra.datareturns.data.model.unit.UnitTypeRepository;
+import uk.gov.defra.datareturns.data.model.unit.*;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 import java.util.function.Function;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -101,6 +61,7 @@ import java.util.stream.Collectors;
 
 import static uk.gov.defra.datareturns.data.loader.LoaderUtils.basicFactory;
 import static uk.gov.defra.datareturns.data.model.Context.ECM;
+import static uk.gov.defra.datareturns.data.model.Context.PI;
 
 /**
  * Simple database loader interface for master data
@@ -147,10 +108,10 @@ public interface DatabaseLoader {
     @RequiredArgsConstructor
     @Component
     class SiteAndPermitLoader implements DatabaseLoader {
+        private final RegimeRepository regimeRepository;
         private final SiteRepository siteRepository;
         private final UniqueIdentifierRepository uniqueIdentifierRepository;
         private final UniqueIdentifierAliasRepository uniqueIdentifierAliasRepository;
-        private final RegimeRepository regimeRepository;
 
         @Transactional
         @Override
@@ -161,15 +122,23 @@ public interface DatabaseLoader {
                     "/db/data/stage_data_initialization/IPPC.csv",
                     "/db/data/stage_data_initialization/Pre-EA.csv"
             };
-            final List<Map<String, String>> data = new ArrayList<>();
-            Arrays.stream(permitFiles).forEach(pf -> data.addAll(LoaderUtils.readCsvData(pf)));
 
             Regime ecm = regimeRepository.getOne(1L);
+            Regime[] piRegimes = {
+                    regimeRepository.getOne(2L),
+                    regimeRepository.getOne(3L),
+                    regimeRepository.getOne(4L),
+                    regimeRepository.getOne(5L)
+            };
+
+            final List<Map<String, String>> data = new ArrayList<>();
+            Arrays.stream(permitFiles).forEach(pf -> data.addAll(LoaderUtils.readCsvData(pf)));
 
             final Map<String, Site> sites = new HashMap<>();
             final Map<String, UniqueIdentifier> primaryIdentifiers = new HashMap<>();
 
             for (final Map<String, String> rowData : data) {
+
                 final String siteName = rowData.get("SITE");
                 final Site site = sites.computeIfAbsent(siteName, (sn) -> {
                     final Site st = new Site();
@@ -183,6 +152,7 @@ public interface DatabaseLoader {
                     id.setNomenclature(ps);
                     id.setSite(site);
                     id.getRegime().put(ECM, ecm);
+                    id.getRegime().put(PI, piRegimes[ps.charAt(0) % 4]);
                     return id;
                 });
 
