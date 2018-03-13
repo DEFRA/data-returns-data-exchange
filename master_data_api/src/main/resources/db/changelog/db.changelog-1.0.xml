@@ -850,7 +850,7 @@
             <column name="nomenclature" type="varchar(10)">
                 <constraints nullable="false" unique="true"/>
             </column>
-             <column name="description" type="varchar(255)">
+            <column name="description" type="varchar(255)">
                 <constraints nullable="false" unique="true"/>
             </column>
             <column name="created" type="timestamp">
@@ -913,7 +913,7 @@
             <column name="nose_process_id"/>
             <column name="nose_activity_id"/>
         </createIndex>
-        
+
         <rollback>
             <dropTable tableName="md_nose_activity_process"/>
         </rollback>
@@ -1307,6 +1307,9 @@
             </column>
             <column name="nomenclature" type="varchar(255)">
                 <constraints nullable="false" unique="true"/>
+            </column>
+            <column name="context" type="varchar(100)">
+                <constraints nullable="false"/>
             </column>
             <column name="created" type="timestamp">
                 <constraints nullable="false"/>

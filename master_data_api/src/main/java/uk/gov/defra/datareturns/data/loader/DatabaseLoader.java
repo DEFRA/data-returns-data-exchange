@@ -6,6 +6,7 @@ import org.apache.commons.collections4.ListUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
+import uk.gov.defra.datareturns.data.model.Context;
 import uk.gov.defra.datareturns.data.model.disposalsandrecoveries.DisposalCode;
 import uk.gov.defra.datareturns.data.model.disposalsandrecoveries.DisposalCodeRepository;
 import uk.gov.defra.datareturns.data.model.disposalsandrecoveries.RecoveryCode;
@@ -99,6 +100,7 @@ public interface DatabaseLoader {
             for (final Map<String, String> rowData : data) {
                 final Regime entity = new Regime();
                 entity.setNomenclature(rowData.get("name"));
+                entity.setContext(Context.valueOf(rowData.get("context")));
                 regimeRepository.save(entity);
             }
         }

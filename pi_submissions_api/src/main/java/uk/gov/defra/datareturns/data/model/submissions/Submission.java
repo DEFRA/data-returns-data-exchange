@@ -1,20 +1,32 @@
 package uk.gov.defra.datareturns.data.model.submissions;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.envers.Audited;
 import org.hibernate.id.enhanced.SequenceStyleGenerator;
+import org.springframework.data.rest.core.annotation.RestResource;
 import uk.gov.defra.datareturns.data.model.AbstractBaseEntity;
-import uk.gov.defra.datareturns.data.model.releases.ReleaseToAir;
-import uk.gov.defra.datareturns.data.model.releases.ReleaseToControlledWater;
-import uk.gov.defra.datareturns.data.model.releases.ReleaseToLand;
-import uk.gov.defra.datareturns.data.model.releases.ReleaseToWasteWater;
+import uk.gov.defra.datareturns.data.model.releases.Release;
 import uk.gov.defra.datareturns.data.model.transfers.OffsiteWasteTransfer;
 import uk.gov.defra.datareturns.data.model.transfers.OverseasWasteTransfer;
+import uk.gov.defra.datareturns.validation.validators.submission.ValidId;
+import uk.gov.defra.datareturns.validation.validators.submission.ValidSubmission;
 
-import javax.persistence.*;
+import javax.persistence.CascadeType;
+import javax.persistence.CollectionTable;
+import javax.persistence.Column;
+import javax.persistence.ElementCollection;
+import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
+import javax.persistence.JoinColumn;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
+import javax.persistence.UniqueConstraint;
 import javax.validation.Valid;
 import java.util.Objects;
 import java.util.Set;
@@ -36,6 +48,7 @@ import java.util.Set;
 @Audited
 @Getter
 @Setter
+@ValidSubmission
 public class Submission extends AbstractBaseEntity {
     /**
      * The unique identifier for the operation the submission relates to (permit or reference number)
@@ -60,25 +73,27 @@ public class Submission extends AbstractBaseEntity {
     @Column(name = "nose_process_id")
     private Set<Long> noseIds;
 
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "submission")
-    @JsonManagedReference
-    @Valid
-    private Set<ReleaseToAir> releasesToAir;
+    /*
+    TODO: Investigate/report bug with the spring data rest framework.
 
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "submission")
-    @JsonManagedReference
-    @Valid
-    private Set<ReleaseToLand> releasesToLand;
+    This field has had to be called "releasesData" to avoid a strange issue with the spring data rest framework.  When named "releases" without
+    any camel-casing attempting to POST a new submission with an array of releases would result in the following error:
+    {"cause":null,"message":"Can not handle managed/back reference 'defaultReference': type: value deserializer of type org.springframework.data
+    .rest.webmvc.json.PersistentEntityJackson2Module$UriStringDeserializer does not support them"}
 
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "submission")
-    @JsonManagedReference
-    @Valid
-    private Set<ReleaseToControlledWater> releasesToControlledWater;
+    As a workaround, applying the following annotations to re-map it to "releases" works OK.
+        @RestResource(path = "releases", rel = "releases")
+        @JsonProperty(value = "releases")
 
+    Once the bug is resolved in the SDR framework, the property can be renamed back to "releases" and these annotations can be removed.
+     */
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "submission")
+    @RestResource(path = "releases", rel = "releases")
+    @JsonProperty(value = "releases")
     @JsonManagedReference
     @Valid
-    private Set<ReleaseToWasteWater> releasesToWasteWater;
+    private Set<Release> releasesData;
+
 
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "submission")
     @JsonManagedReference
@@ -111,9 +126,4 @@ public class Submission extends AbstractBaseEntity {
     }
 
 
-    public enum SubmissionStatus {
-        Unsubmitted,
-        Submitted,
-        Approved;
-    }
 }

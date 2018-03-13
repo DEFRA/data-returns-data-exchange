@@ -77,7 +77,7 @@
             <column name="rev" type="integer">
                 <constraints nullable="false"/>
             </column>
-            <column name="revtype" type="smallint">
+            <column name="revtype" type="tinyint">
                 <constraints nullable="false"/>
             </column>
             <column name="reporting_reference" type="bigint"/>
@@ -128,15 +128,12 @@
             <column name="rev" type="integer">
                 <constraints nullable="false"/>
             </column>
-            <column name="revtype" type="smallint">
+            <column name="revtype" type="tinyint">
                 <constraints nullable="false"/>
             </column>
             <column name="submission_id" type="bigint"/>
             <column name="nose_process_id" type="bigint"/>
-
         </createTable>
-
-        <addPrimaryKey tableName="pi_submission_nose_process_aud" columnNames="submission_id, nose_process_id, rev"/>
 
         <rollback>
             <dropTable tableName="pi_submission_nose_process_aud"/>
@@ -146,20 +143,29 @@
 
     <!--
     ****************************************************************
-    Releases to air
+    Releases
     ****************************************************************
     -->
-    <changeSet id="create-table: pi_release_to_air" author="Defra">
-        <createSequence sequenceName="pi_release_to_air_id_seq" startValue="1"/>
+    <changeSet id="create-table: pi_release" author="Defra">
+        <createSequence sequenceName="pi_release_id_seq" startValue="1"/>
 
-        <createTable tableName="pi_release_to_air">
-            <column name="id" type="bigint" defaultValueSequenceNext="pi_release_to_air_id_seq">
+        <createTable tableName="pi_release">
+            <column name="id" type="bigint" defaultValueSequenceNext="pi_release_id_seq">
                 <constraints primaryKey="true" nullable="false"/>
             </column>
             <column name="submission_id" type="bigint">
                 <constraints nullable="false"
-                             foreignKeyName="fk_release_to_air__submission"
+                             foreignKeyName="fk_release__submission"
                              references="pi_submission(id)"/>
+            </column>
+            <column name="substance_id" type="INT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="route_id" type="int">
+                <constraints nullable="false"/>
+            </column>
+            <column name="subroute_id" type="int">
+                <constraints nullable="true"/>
             </column>
             <column name="method" type="varchar(50)">
                 <constraints nullable="false"/>
@@ -176,7 +182,7 @@
             <column name="unit_id" type="int">
                 <constraints nullable="true"/>
             </column>
-            <column name="notifiable_value" type="numeric(19, 2)">
+            <column name="notifiable_value" type="numeric(30, 15)">
                 <constraints nullable="true"/>
             </column>
             <column name="notifiable_unit_id" type="int">
@@ -184,9 +190,6 @@
             </column>
             <column name="notifiable_reason" type="varchar(500)">
                 <constraints nullable="true"/>
-            </column>
-            <column name="substance_id" type="INT">
-                <constraints nullable="false"/>
             </column>
             <column name="created" type="timestamp">
                 <constraints nullable="false"/>
@@ -199,321 +202,45 @@
             </column>
         </createTable>
 
-        <addUniqueConstraint columnNames="submission_id, substance_id" constraintName="uniq_release_to_air_substance" tableName="pi_release_to_air"/>
+        <addUniqueConstraint columnNames="submission_id, route_id, substance_id" constraintName="uniq_submission_route_substance" tableName="pi_release"/>
 
         <rollback>
-            <dropTable tableName="pi_release_to_air"/>
-            <dropSequence sequenceName="pi_release_to_air_id_seq"/>
+            <dropTable tableName="pi_release"/>
+            <dropSequence sequenceName="pi_release_id_seq"/>
         </rollback>
     </changeSet>
 
-    <changeSet id="create-table: pi_release_to_air_aud" author="Defra">
-        <createTable tableName="pi_release_to_air_aud">
+    <changeSet id="create-table: pi_release_aud" author="Defra">
+        <createTable tableName="pi_release_aud">
             <column name="id" type="bigint">
                 <constraints nullable="false"/>
             </column>
             <column name="rev" type="integer">
                 <constraints nullable="false"/>
             </column>
-            <column name="revtype" type="smallint">
+            <column name="revtype" type="tinyint">
                 <constraints nullable="false"/>
             </column>
             <column name="submission_id" type="bigint"/>
+            <column name="route_id" type="int"/>
+            <column name="subroute_id" type="int"/>
             <column name="method" type="varchar(50)"/>
             <column name="below_reporting_threshold" type="boolean"/>
             <column name="value" type="numeric(30, 15)"/>
             <column name="standard_value" type="numeric(30, 15)"/>
             <column name="unit_id" type="int"/>
-            <column name="notifiable_value" type="numeric(19, 2)"/>
+            <column name="notifiable_value" type="numeric(30, 15)"/>
             <column name="notifiable_unit_id" type="int"/>
             <column name="notifiable_reason" type="varchar(500)"/>
             <column name="substance_id" type="int"/>
         </createTable>
 
-        <addPrimaryKey tableName="pi_release_to_air_aud" columnNames="id, rev"/>
+        <addPrimaryKey tableName="pi_release_aud" columnNames="id, rev"/>
         <rollback>
-            <dropTable tableName="pi_release_to_air_aud"/>
+            <dropTable tableName="pi_release_aud"/>
         </rollback>
     </changeSet>
 
-    <!--
-    ****************************************************************
-    Releases to land
-    ****************************************************************
-    -->
-    <changeSet id="create-table: pi_release_to_land" author="Defra">
-        <createSequence sequenceName="pi_release_to_land_id_seq" startValue="1"/>
-
-        <createTable tableName="pi_release_to_land">
-            <column name="id" type="bigint" defaultValueSequenceNext="pi_release_to_land_id_seq">
-                <constraints primaryKey="true" nullable="false"/>
-            </column>
-            <column name="submission_id" type="bigint">
-                <constraints nullable="false"
-                             foreignKeyName="fk_release_to_land__submission"
-                             references="pi_submission(id)"/>
-            </column>
-            <column name="method" type="varchar(50)">
-                <constraints nullable="false"/>
-            </column>
-            <column name="below_reporting_threshold" type="boolean">
-                <constraints nullable="false"/>
-            </column>
-            <column name="value" type="numeric(30, 15)">
-                <constraints nullable="true"/>
-            </column>
-            <column name="standard_value" type="numeric(30, 15)">
-                <constraints nullable="true"/>
-            </column>
-            <column name="unit_id" type="int">
-                <constraints nullable="true"/>
-            </column>
-            <column name="notifiable_value" type="numeric(19, 2)">
-                <constraints nullable="true"/>
-            </column>
-            <column name="notifiable_unit_id" type="int">
-                <constraints nullable="true"/>
-            </column>
-            <column name="notifiable_reason" type="varchar(500)">
-                <constraints nullable="true"/>
-            </column>
-            <column name="substance_id" type="INT">
-                <constraints nullable="false"/>
-            </column>
-            <column name="created" type="timestamp">
-                <constraints nullable="false"/>
-            </column>
-            <column name="last_modified" type="timestamp">
-                <constraints nullable="false"/>
-            </column>
-            <column name="version" type="smallint">
-                <constraints nullable="false"/>
-            </column>
-        </createTable>
-
-        <addUniqueConstraint columnNames="submission_id, substance_id" constraintName="uniq_release_to_land_substance"
-                             tableName="pi_release_to_land"/>
-
-        <rollback>
-            <dropTable tableName="pi_release_to_land"/>
-            <dropSequence sequenceName="pi_release_to_land_id_seq"/>
-        </rollback>
-    </changeSet>
-
-    <changeSet id="create-table: pi_release_to_land_aud" author="Defra">
-        <createTable tableName="pi_release_to_land_aud">
-            <column name="id" type="bigint">
-                <constraints nullable="false"/>
-            </column>
-            <column name="rev" type="int">
-                <constraints nullable="false"/>
-            </column>
-            <column name="revtype" type="smallint">
-                <constraints nullable="false"/>
-            </column>
-            <column name="submission_id" type="bigint"/>
-            <column name="method" type="varchar(50)"/>
-            <column name="below_reporting_threshold" type="boolean"/>
-            <column name="value" type="numeric(30, 15)"/>
-            <column name="standard_value" type="numeric(30, 15)"/>
-            <column name="unit_id" type="int"/>
-            <column name="notifiable_value" type="numeric(19, 2)"/>
-            <column name="notifiable_unit_id" type="int"/>
-            <column name="notifiable_reason" type="varchar(500)"/>
-            <column name="substance_id" type="INT"/>
-        </createTable>
-
-        <addPrimaryKey tableName="pi_release_to_land_aud" columnNames="id, rev"/>
-        <rollback>
-            <dropTable tableName="pi_release_to_land_aud"/>
-        </rollback>
-    </changeSet>
-
-    <!--
-    ****************************************************************
-    Releases to controlled water
-    ****************************************************************
-    -->
-    <changeSet id="create-table: pi_release_to_controlled_water" author="Defra">
-        <createSequence sequenceName="pi_release_to_controlled_water_id_seq" startValue="1"/>
-
-        <createTable tableName="pi_release_to_controlled_water">
-            <column name="id" type="bigint" defaultValueSequenceNext="pi_release_to_controlled_water_id_seq">
-                <constraints primaryKey="true" nullable="false"/>
-            </column>
-            <column name="submission_id" type="bigint">
-                <constraints nullable="false"
-                             foreignKeyName="fk_release_to_controlled_water__submission"
-                             references="pi_submission(id)"/>
-            </column>
-            <column name="method" type="varchar(50)">
-                <constraints nullable="false"/>
-            </column>
-            <column name="below_reporting_threshold" type="boolean">
-                <constraints nullable="false"/>
-            </column>
-            <column name="value" type="numeric(30, 15)">
-                <constraints nullable="true"/>
-            </column>
-            <column name="standard_value" type="numeric(30, 15)">
-                <constraints nullable="true"/>
-            </column>
-            <column name="unit_id" type="int">
-                <constraints nullable="true"/>
-            </column>
-            <column name="notifiable_value" type="numeric(19, 2)">
-                <constraints nullable="true"/>
-            </column>
-            <column name="notifiable_unit_id" type="int">
-                <constraints nullable="true"/>
-            </column>
-            <column name="notifiable_reason" type="varchar(500)">
-                <constraints nullable="true"/>
-            </column>
-            <column name="substance_id" type="INT">
-                <constraints nullable="false"/>
-            </column>
-            <column name="created" type="timestamp">
-                <constraints nullable="false"/>
-            </column>
-            <column name="last_modified" type="timestamp">
-                <constraints nullable="false"/>
-            </column>
-            <column name="version" type="smallint">
-                <constraints nullable="false"/>
-            </column>
-        </createTable>
-
-        <addUniqueConstraint columnNames="submission_id, substance_id" constraintName="uniq_release_to_controlled_water_substance"
-                             tableName="pi_release_to_controlled_water"/>
-
-        <rollback>
-            <dropTable tableName="pi_release_to_controlled_water"/>
-            <dropSequence sequenceName="pi_release_to_controlled_water_id_seq"/>
-        </rollback>
-    </changeSet>
-
-    <changeSet id="create-table: pi_release_to_controlled_water_aud" author="Defra">
-        <createTable tableName="pi_release_to_controlled_water_aud">
-            <column name="id" type="bigint">
-                <constraints nullable="false"/>
-            </column>
-            <column name="rev" type="int">
-                <constraints nullable="false"/>
-            </column>
-            <column name="revtype" type="smallint">
-                <constraints nullable="false"/>
-            </column>
-            <column name="submission_id" type="bigint"/>
-            <column name="method" type="varchar(50)"/>
-            <column name="below_reporting_threshold" type="boolean"/>
-            <column name="value" type="numeric(30, 15)"/>
-            <column name="standard_value" type="numeric(30, 15)"/>
-            <column name="unit_id" type="int"/>
-            <column name="notifiable_value" type="numeric(19, 2)"/>
-            <column name="notifiable_unit_id" type="int"/>
-            <column name="notifiable_reason" type="varchar(500)"/>
-            <column name="substance_id" type="INT"/>
-        </createTable>
-
-        <addPrimaryKey tableName="pi_release_to_controlled_water_aud" columnNames="id, rev"/>
-        <rollback>
-            <dropTable tableName="pi_release_to_controlled_water_aud"/>
-        </rollback>
-    </changeSet>
-
-    <!--
-    ****************************************************************
-    Releases to waste water
-    ****************************************************************
-    -->
-    <changeSet id="create-table: pi_release_to_waste_water" author="Defra">
-        <createSequence sequenceName="pi_release_to_waste_water_id_seq" startValue="1"/>
-
-        <createTable tableName="pi_release_to_waste_water">
-            <column name="id" type="bigint" defaultValueSequenceNext="pi_release_to_waste_water_id_seq">
-                <constraints primaryKey="true" nullable="false"/>
-            </column>
-            <column name="submission_id" type="bigint">
-                <constraints nullable="false"
-                             foreignKeyName="fk_release_to_waste_water__submission"
-                             references="pi_submission(id)"/>
-            </column>
-            <column name="method" type="varchar(50)">
-                <constraints nullable="false"/>
-            </column>
-            <column name="below_reporting_threshold" type="boolean">
-                <constraints nullable="false"/>
-            </column>
-            <column name="value" type="numeric(30, 15)">
-                <constraints nullable="true"/>
-            </column>
-            <column name="standard_value" type="numeric(30, 15)">
-                <constraints nullable="true"/>
-            </column>
-            <column name="unit_id" type="int">
-                <constraints nullable="true"/>
-            </column>
-            <column name="notifiable_value" type="numeric(19, 2)">
-                <constraints nullable="true"/>
-            </column>
-            <column name="notifiable_unit_id" type="int">
-                <constraints nullable="true"/>
-            </column>
-            <column name="notifiable_reason" type="varchar(500)">
-                <constraints nullable="true"/>
-            </column>
-            <column name="substance_id" type="INT">
-                <constraints nullable="false"/>
-            </column>
-            <column name="created" type="timestamp">
-                <constraints nullable="false"/>
-            </column>
-            <column name="last_modified" type="timestamp">
-                <constraints nullable="false"/>
-            </column>
-            <column name="version" type="smallint">
-                <constraints nullable="false"/>
-            </column>
-        </createTable>
-
-        <addUniqueConstraint columnNames="submission_id, substance_id" constraintName="uniq_release_to_waste_water_substance"
-                             tableName="pi_release_to_waste_water"/>
-
-        <rollback>
-            <dropTable tableName="pi_release_to_waste_water"/>
-            <dropSequence sequenceName="pi_release_to_waste_water_id_seq"/>
-        </rollback>
-    </changeSet>
-
-    <changeSet id="create-table: pi_release_to_waste_water_aud" author="Defra">
-        <createTable tableName="pi_release_to_waste_water_aud">
-            <column name="id" type="bigint">
-                <constraints nullable="false"/>
-            </column>
-            <column name="rev" type="int">
-                <constraints nullable="false"/>
-            </column>
-            <column name="revtype" type="smallint">
-                <constraints nullable="false"/>
-            </column>
-            <column name="submission_id" type="bigint"/>
-            <column name="method" type="varchar(50)"/>
-            <column name="below_reporting_threshold" type="boolean"/>
-            <column name="value" type="numeric(30, 15)"/>
-            <column name="standard_value" type="numeric(30, 15)"/>
-            <column name="unit_id" type="int"/>
-            <column name="notifiable_value" type="numeric(19, 2)"/>
-            <column name="notifiable_unit_id" type="int"/>
-            <column name="notifiable_reason" type="varchar(500)"/>
-            <column name="substance_id" type="INT"/>
-        </createTable>
-
-        <addPrimaryKey tableName="pi_release_to_waste_water_aud" columnNames="id, rev"/>
-        <rollback>
-            <dropTable tableName="pi_release_to_waste_water_aud"/>
-        </rollback>
-    </changeSet>
 
     <!--
     ****************************************************************
@@ -599,7 +326,7 @@
             <column name="rev" type="int">
                 <constraints nullable="false"/>
             </column>
-            <column name="revtype" type="smallint">
+            <column name="revtype" type="tinyint">
                 <constraints nullable="false"/>
             </column>
             <column name="submission_id" type="bigint"/>
@@ -675,7 +402,7 @@
             <column name="rev" type="int">
                 <constraints nullable="false"/>
             </column>
-            <column name="revtype" type="smallint">
+            <column name="revtype" type="tinyint">
                 <constraints nullable="false"/>
             </column>
             <column name="submission_id" type="bigint"/>
