@@ -8,7 +8,7 @@ import org.hibernate.id.enhanced.SequenceStyleGenerator;
 import org.hibernate.search.annotations.Indexed;
 import uk.gov.defra.datareturns.data.model.AbstractBaseEntity;
 import uk.gov.defra.datareturns.data.model.AbstractMasterDataEntity;
-import uk.gov.defra.datareturns.data.model.Context;
+import uk.gov.defra.datareturns.data.Context;
 import uk.gov.defra.datareturns.data.model.MasterDataEntity;
 import uk.gov.defra.datareturns.data.model.eaid.UniqueIdentifier;
 import uk.gov.defra.datareturns.data.model.regimeobligation.RegimeObligation;

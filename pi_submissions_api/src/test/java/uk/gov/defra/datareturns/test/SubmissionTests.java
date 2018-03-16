@@ -43,4 +43,21 @@ public class SubmissionTests {
                 .statusCode(HttpStatus.CREATED.value());
     }
 
+    @Test
+    public void testSubstanceNotApplicableToRegimeObligation() throws IOException {
+        final String testJson = IOUtils.toString(
+                SubmissionTests.class.getResourceAsStream("/data/submission-invalid-substance.json"),
+                StandardCharsets.UTF_8);
+
+        // Associate the parameter with the group we created (POST one or more parameter URI's to the parameter group parameter collection URI
+        given()
+                .contentType(ContentType.JSON)
+                .body(testJson)
+                .when()
+                .post("/submissions")
+                .then()
+                .log().all()
+                .statusCode(HttpStatus.BAD_REQUEST.value());
+    }
+
 }

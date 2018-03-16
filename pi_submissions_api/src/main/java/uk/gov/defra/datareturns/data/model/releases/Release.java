@@ -10,6 +10,7 @@ import uk.gov.defra.datareturns.data.model.AbstractBaseEntity;
 import uk.gov.defra.datareturns.data.model.submissions.Submission;
 import uk.gov.defra.datareturns.service.ValueStandardisationService;
 import uk.gov.defra.datareturns.util.SpringApplicationContextProvider;
+import uk.gov.defra.datareturns.validation.validators.releases.ValidRelease;
 
 import javax.persistence.Basic;
 import javax.persistence.Column;
@@ -40,6 +41,7 @@ import java.util.Objects;
                 @org.hibernate.annotations.Parameter(name = SequenceStyleGenerator.SEQUENCE_PARAM, value = "pi_release_id_seq")}
 )
 @Audited
+@ValidRelease
 @Getter
 @Setter
 public final class Release extends AbstractBaseEntity {

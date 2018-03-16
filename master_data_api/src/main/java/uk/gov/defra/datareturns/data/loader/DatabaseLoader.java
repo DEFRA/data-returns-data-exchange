@@ -6,7 +6,7 @@ import org.apache.commons.collections4.ListUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
-import uk.gov.defra.datareturns.data.model.Context;
+import uk.gov.defra.datareturns.data.Context;
 import uk.gov.defra.datareturns.data.model.disposalsandrecoveries.DisposalCode;
 import uk.gov.defra.datareturns.data.model.disposalsandrecoveries.DisposalCodeRepository;
 import uk.gov.defra.datareturns.data.model.disposalsandrecoveries.RecoveryCode;
@@ -61,8 +61,8 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import static uk.gov.defra.datareturns.data.loader.LoaderUtils.basicFactory;
-import static uk.gov.defra.datareturns.data.model.Context.ECM;
-import static uk.gov.defra.datareturns.data.model.Context.PI;
+import static uk.gov.defra.datareturns.data.Context.ECM;
+import static uk.gov.defra.datareturns.data.Context.PI;
 
 /**
  * Simple database loader interface for master data
@@ -604,7 +604,7 @@ public interface DatabaseLoader {
                         noseProcess = new NoseProcess();
                         noseProcess.setNomenclature(entry[2]);
                         noseProcess.setDescription(entry[3]);
-                        noseProcess.setNoseActivities(new HashSet<>(Arrays.asList(noseActivity)));
+                        noseProcess.setNoseActivities(new HashSet<>(Collections.singletonList(noseActivity)));
                         noseProcesses.put(entry[2], noseProcess);
                     }
                 }

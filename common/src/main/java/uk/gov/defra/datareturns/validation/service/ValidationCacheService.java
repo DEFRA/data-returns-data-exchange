@@ -1,29 +1,24 @@
 package uk.gov.defra.datareturns.validation.service;
 
 
-import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.context.annotation.Scope;
 import org.springframework.core.ParameterizedTypeReference;
-import org.springframework.hateoas.PagedResources;
 import org.springframework.hateoas.Resource;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.hateoas.Resources;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestTemplate;
-import uk.gov.defra.datareturns.config.ServiceEndpointConfiguration;
-import uk.gov.defra.datareturns.rest.HalRestTemplate;
+import uk.gov.defra.datareturns.validation.service.dto.BaseEntity;
+import uk.gov.defra.datareturns.validation.service.dto.Regime;
+import uk.gov.defra.datareturns.validation.service.dto.RegimeObligation;
 
-import java.net.URI;
 import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 /**
  * Provides caching of master data via the spring cache framework for use in validation.
@@ -39,44 +34,47 @@ public interface ValidationCacheService {
      */
     Map<String, String> getResourceNomenclatureMap(final String collectionResource);
 
+    Map<String, Set<String>> getRouteParameterMapForRegime(Resource<Regime> regime);
+
+
+    /**
+     * Validation cache service implementation
+     */
     @Service
     @Scope(BeanDefinition.SCOPE_SINGLETON)
     @Slf4j
     @RequiredArgsConstructor
     class ValidationCacheServiceImpl implements ValidationCacheService {
-        private final ServiceEndpointConfiguration services;
+        private final MasterDataLookupService lookupService;
 
         @Cacheable(cacheNames = "ValidationCache", key = "#collectionResource", unless = "#result.isEmpty()")
         @Override
         public Map<String, String> getResourceNomenclatureMap(final String collectionResource) {
-            final Map<String, String> map = new HashMap<>();
-            retrieveAll(collectionResource).forEach(
-                    e -> map.put(StringUtils.substringAfterLast(e.getId().getHref(), "/"), e.getContent().getNomenclature())
-            );
-            return map;
+            final ParameterizedTypeReference<Resources<Resource<BaseEntity>>> typeRef = new
+                    ParameterizedTypeReference<Resources<Resource<BaseEntity>>>() {
+                    };
+            final Collection<Resource<BaseEntity>> result = lookupService.retrieve(typeRef, collectionResource).getContent();
+            return result.stream().collect(Collectors.toMap(MasterDataLookupService::getResourceId, e -> e.getContent().getNomenclature()));
         }
 
-        private Collection<Resource<RestResultEntry>> retrieveAll(final String collectionResource) {
-            final RestTemplate restTemplate = new HalRestTemplate();
-            final ServiceEndpointConfiguration.Endpoint endpoint = services.getMasterDataApi();
-            endpoint.getAuth().configure(restTemplate);
-            final URI target = endpoint.getUri().resolve(collectionResource);
-            log.info("Fetching resource listing from {}", target);
-            final ResponseEntity<PagedResources<Resource<RestResultEntry>>> responseEntity =
-                    restTemplate.exchange(
-                            target, HttpMethod.GET, null,
-                            new ParameterizedTypeReference<PagedResources<Resource<RestResultEntry>>>() {
-                            });
-            if (responseEntity.getStatusCode() == HttpStatus.OK) {
-                final PagedResources<Resource<RestResultEntry>> entity = responseEntity.getBody();
-                return entity.getContent();
-            }
-            return Collections.emptyList();
-        }
 
-        @Data
-        private static class RestResultEntry {
-            private String nomenclature;
+        @Cacheable(cacheNames = "ValidationCache:Regime",
+                key = "T(uk.gov.defra.datareturns.validation.service.MasterDataLookupService).getResourceId(#regime) + ':ParametersByRoute'",
+                unless = "#result.isEmpty()")
+        public Map<String, Set<String>> getRouteParameterMapForRegime(final Resource<Regime> regime) {
+            final Map<String, Resource<RegimeObligation>> obligationsByRouteId = lookupService.getRegimeObligations(regime)
+                    .stream()
+                    .collect(Collectors.toMap(o -> MasterDataLookupService.getResourceId(lookupService.getRoute(o)), Function.identity()));
+
+            final Map<String, Set<String>> parametersByRouteId = obligationsByRouteId.entrySet()
+                    .stream()
+                    .collect(
+                            Collectors.toMap(Map.Entry::getKey,
+                                    e -> lookupService.getParametersForRegimeObligation(e.getValue()).stream()
+                                            .map(MasterDataLookupService::getResourceId)
+                                            .collect(Collectors.toSet()))
+                    );
+            return parametersByRouteId;
         }
     }
 }

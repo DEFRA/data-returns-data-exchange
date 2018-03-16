@@ -12,7 +12,6 @@ import uk.gov.defra.datareturns.data.model.AbstractBaseEntity;
 import uk.gov.defra.datareturns.data.model.releases.Release;
 import uk.gov.defra.datareturns.data.model.transfers.OffsiteWasteTransfer;
 import uk.gov.defra.datareturns.data.model.transfers.OverseasWasteTransfer;
-import uk.gov.defra.datareturns.validation.validators.submission.ValidId;
 import uk.gov.defra.datareturns.validation.validators.submission.ValidSubmission;
 
 import javax.persistence.CascadeType;

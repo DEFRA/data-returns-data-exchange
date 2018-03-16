@@ -8,16 +8,14 @@ import org.hibernate.search.annotations.Indexed;
 import uk.gov.defra.datareturns.data.model.AbstractAliasedEntity;
 import uk.gov.defra.datareturns.data.model.AbstractBaseEntity;
 import uk.gov.defra.datareturns.data.model.AliasedEntity;
-import uk.gov.defra.datareturns.data.model.Context;
+import uk.gov.defra.datareturns.data.Context;
 import uk.gov.defra.datareturns.data.model.geography.Area;
 import uk.gov.defra.datareturns.data.model.regime.Regime;
 import uk.gov.defra.datareturns.data.model.site.Site;
 
 import javax.persistence.*;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
-import java.util.Set;
 
 /**
  * The persistent class for the unique_identifiers database table.
