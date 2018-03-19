@@ -56,7 +56,7 @@ public final class Release extends AbstractBaseEntity {
     @Enumerated(EnumType.STRING)
     private ReleaseMethod method;
 
-    @Column(precision = 30, scale = 15, nullable = false)
+    @Column(precision = 30, scale = 15)
     private BigDecimal value;
 
     @Column(nullable = false)
