@@ -303,11 +303,11 @@ Bar,,Bar,,A unit of pressure,0,Pressure,ECM
 mBar,,Millibar,,A unit of pressure,0,Pressure,ECM
 MPa,,Megapascal,,A unit of pressure,0,Pressure,ECM
 Pa,,Pascal,,A unit of pressure,0,Pressure,ECM
-Bq,,Becquerel,,A unit of radioactivity,0,Radioactive decay,ECM PI_RSR
-GBq,,Gigabecquerel,,A unit of radioactivity,0,Radioactive decay,ECM PI_RSR
-kBq,,Kilobecquerel,,A unit of radioactivity,0,Radioactive decay,ECM PI_RSR
-MBq,,Megabecquerel,,A unit of radioactivity,0,Radioactive decay,ECM PI_RSR
-TBq,,Terabecquerel,,A unit of radioactivity,0,Radioactive decay,ECM PI_RSR
+Bq,,Becquerel,,A unit of radioactivity,1,Radioactive decay,ECM PI_RSR
+GBq,,Gigabecquerel,,A unit of radioactivity,1000000000,Radioactive decay,ECM PI_RSR
+kBq,,Kilobecquerel,,A unit of radioactivity,1000.,Radioactive decay,ECM PI_RSR
+MBq,,Megabecquerel,,A unit of radioactivity,1000000,Radioactive decay,ECM PI_RSR
+TBq,,Terabecquerel,,A unit of radioactivity,1000000000000,Radioactive decay,ECM PI_RSR
 Bq/cm2,Bqcm-2,Becquerels per square centimetre,,A unit of radioactive surface contamination,0,Radioactivity,ECM
 Bq/cm²,Bqcm-2,Becquerels per square centimetre,Bq/cm(U+00B2),A unit of radioactive surface contamination,0,Radioactivity,ECM
 Bq/cm3,Bqcm-3,Becquerels per cubic centimetre,,A unit of radioactivity concentration,0,Radioactivity,ECM
