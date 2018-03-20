@@ -45,4 +45,7 @@ public interface SubmissionRepository extends BaseRepository<Submission, Long> {
     @SuppressWarnings("unused")
     List<Submission> findByReportingReferenceInAndApplicableYear(@Param("reporting_references") Set<Long> reportingReferences,
                                                                  @Param("applicable_year") Short applicableYear);
+
+    @SuppressWarnings("unused")
+    List<Submission> findByApplicableYear(@Param("applicable_year") Short applicableYear);
 }

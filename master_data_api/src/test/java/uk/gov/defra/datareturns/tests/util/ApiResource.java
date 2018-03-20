@@ -1,13 +1,15 @@
 package uk.gov.defra.datareturns.tests.util;
 
 public enum ApiResource {
-    APPLICABILITIES("applicabilities"),
+    REGIMES("regimes"),
+    REGIME_OBLIGATIONS("regimeObligations"),
     UNIQUE_IDENTIFIER_GROUPS("uniqueIdentifierGroups"),
     UNIQUE_IDENTIFIERS("uniqueIdentifiers"),
     SITES("sites"),
     RETURN_TYPE_GROUPS("returnTypeGroups"),
     RETURN_TYPES("returnTypes"),
     PARAMETER_GROUPS("parameterGroups"),
+    PARAMETER_TYPES("parameterTypes"),
     PARAMETERS("parameters"),
     UNIT_GROUPS("unitGroups"),
     UNITS("units"),

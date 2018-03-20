@@ -1,6 +1,7 @@
 package uk.gov.defra.datareturns.data.controllers;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.data.rest.webmvc.RepositoryRestController;
 import org.springframework.data.rest.webmvc.RepositorySearchesResource;
 import org.springframework.hateoas.EntityLinks;
@@ -28,6 +29,7 @@ import java.util.List;
 @RepositoryRestController
 @RequestMapping(value = "/{repository}/search")
 @RequiredArgsConstructor
+@ConditionalOnWebApplication
 public class SearchController implements ResourceProcessor<RepositorySearchesResource> {
     private final RepositoryLookupService repositories;
     private final EntityLinks entityLinks;

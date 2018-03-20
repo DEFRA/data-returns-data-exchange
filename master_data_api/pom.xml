@@ -123,6 +123,13 @@
                     <password>${db.md_api.password}</password>
                     <referenceUrl>hibernate:spring:uk.gov.defra.datareturns.data.model?dialect=${db.md_api.dialect}&amp;hibernate.implicit_naming_strategy=uk.gov.defra.datareturns.persistence.DataReturnsImplicitNamingStrategy&amp;hibernate.physical_naming_strategy=org.springframework.boot.orm.jpa.hibernate.SpringPhysicalNamingStrategy</referenceUrl>
                 </configuration>
+                <dependencies>
+                    <dependency>
+                        <groupId>uk.gov.defra.datareturns</groupId>
+                        <artifactId>common</artifactId>
+                        <version>1.0.0</version>
+                    </dependency>
+                </dependencies>
             </plugin>
         </plugins>
     </build>

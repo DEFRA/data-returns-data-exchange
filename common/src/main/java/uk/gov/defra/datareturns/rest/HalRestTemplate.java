@@ -2,6 +2,7 @@ package uk.gov.defra.datareturns.rest;
 
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import org.springframework.hateoas.ResourceSupport;
 import org.springframework.hateoas.hal.Jackson2HalModule;
 import org.springframework.hateoas.mvc.TypeConstrainedMappingJackson2HttpMessageConverter;
@@ -17,6 +18,7 @@ public class HalRestTemplate extends RestTemplate {
     public HalRestTemplate() {
         final ObjectMapper objectMapper = Jackson2ObjectMapperBuilder.json()
                 .modulesToInstall(new Jackson2HalModule())
+                .propertyNamingStrategy(PropertyNamingStrategy.SNAKE_CASE)
                 .featuresToDisable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES)
                 .build();
         final MappingJackson2HttpMessageConverter halConverter = new TypeConstrainedMappingJackson2HttpMessageConverter(ResourceSupport.class);

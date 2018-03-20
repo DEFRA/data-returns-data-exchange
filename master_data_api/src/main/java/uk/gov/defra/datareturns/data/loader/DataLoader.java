@@ -6,6 +6,7 @@ import org.jgrapht.alg.CycleDetector;
 import org.jgrapht.graph.DefaultDirectedGraph;
 import org.jgrapht.graph.DefaultEdge;
 import org.jgrapht.traverse.TopologicalOrderIterator;
+import org.springframework.aop.support.AopUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ClassUtils;
 
@@ -23,7 +24,7 @@ public class DataLoader {
 
     public void loadAll() {
         final Map<Class<?>, DatabaseLoader> loadersByClass = loaderBeans.values().stream()
-                .collect(Collectors.toMap(ClassUtils::getUserClass, Function.identity()));
+                .collect(Collectors.toMap(AopUtils::getTargetClass, Function.identity()));
 
         final DefaultDirectedGraph<Class<?>, DefaultEdge> graph = new DefaultDirectedGraph<>(DefaultEdge.class);
         loadersByClass.keySet().forEach(graph::addVertex);

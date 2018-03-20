@@ -8,10 +8,14 @@ import org.hibernate.search.annotations.Indexed;
 import uk.gov.defra.datareturns.data.model.AbstractAliasedEntity;
 import uk.gov.defra.datareturns.data.model.AbstractBaseEntity;
 import uk.gov.defra.datareturns.data.model.AliasedEntity;
+import uk.gov.defra.datareturns.data.Context;
 import uk.gov.defra.datareturns.data.model.geography.Area;
+import uk.gov.defra.datareturns.data.model.regime.Regime;
 import uk.gov.defra.datareturns.data.model.site.Site;
 
 import javax.persistence.*;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * The persistent class for the unique_identifiers database table.
@@ -30,21 +34,17 @@ import javax.persistence.*;
 @Setter
 public class UniqueIdentifier extends AbstractAliasedEntity<UniqueIdentifierAlias> implements AliasedEntity<UniqueIdentifierAlias> {
 
-    public enum Type {
-        IPC,
-        RAS,
-        IPPC,
-        WML,
-        WIA,
-        EPRTR
-    }
+    @ManyToMany
+    @JoinTable(
+            name="md_regime_unique_identifiers",
+            joinColumns={ @JoinColumn(name="unique_identifier_id", referencedColumnName="id") },
+            inverseJoinColumns={ @JoinColumn(name="regime_id", referencedColumnName="id" ) })
+    @MapKeyColumn(name = "context")
+    @MapKeyEnumerated(EnumType.STRING)
+    private Map<Context, Regime> regime = new HashMap<>();
 
     @ManyToOne(cascade = CascadeType.ALL, optional = false)
     private Site site;
-
-    @Column
-    @Enumerated(EnumType.STRING)
-    private Type type;
 
     @ManyToOne(cascade = CascadeType.ALL)
     private Operator operator;

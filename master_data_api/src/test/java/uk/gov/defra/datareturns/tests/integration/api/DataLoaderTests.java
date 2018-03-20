@@ -90,59 +90,25 @@ public class DataLoaderTests {
     }
 
     @Test
-    public void testApplicabilities() {
-        final int expectedApplicCount = 2;
+    public void testRegimes() {
+        final int expectedRegimeCount = 2;
 
         final ValidatableResponse response = given()
                 .contentType(ContentType.JSON)
-                .when().get(ApiResource.APPLICABILITIES.url())
+                .when().get(ApiResource.REGIMES.url())
                 .then()
                 .statusCode(HttpStatus.OK.value())
                 .log().all();
 
 
         final ExtractableResponse<?> res = response.extract();
-        final List<Map<String, String>> applics = res.jsonPath().getList("_embedded.applicabilities");
+        final List<Map<String, String>> regimes = res.jsonPath().getList("_embedded.regimes");
 
-        log.info("Found applics {}", applics);
+        log.info("Found regimes {}", regimes);
 
-        for (int i = 0; i < expectedApplicCount; i++) {
-            final Map<String, ?> applicData = applics.get(i);
-            Assertions.assertThat(applicData.get("nomenclature")).isEqualTo("Applic" + i);
-
-            final Map<String, Map<String, String>> applicLinks = (Map<String, Map<String, String>>) applicData.get("_links");
-
-            // Extract links for each entity group associated with the applicability.
-            final String uniqueIdentifierGroupLocation = applicLinks.get(ApiResource.UNIQUE_IDENTIFIER_GROUPS.resourceName()).get("href");
-            final String returnTypeGroupLocation = applicLinks.get(ApiResource.RETURN_TYPE_GROUPS.resourceName()).get("href");
-            final String parameterGroupLocation = applicLinks.get(ApiResource.PARAMETER_GROUPS.resourceName()).get("href");
-            final String unitGroupLocation = applicLinks.get(ApiResource.UNIT_GROUPS.resourceName()).get("href");
-
-            final String expectedGroupName = "GRP" + (i + 1);
-
-            final String groupCollectionRoot  = "_embedded." + ApiResource.PARAMETER_GROUPS.resourceName() + "[0]";
-
-
-            final ValidatableResponse parameterGroupResponse = given()
-                    .contentType(ContentType.JSON)
-                    .when().get(parameterGroupLocation)
-                    .then()
-                    .statusCode(HttpStatus.OK.value())
-                    .body(groupCollectionRoot + ".nomenclature", equalTo(expectedGroupName))
-                    .log().all();
-            final String parameterEntriesLocation = parameterGroupResponse.extract().body()
-                    .jsonPath().getString(groupCollectionRoot + "._links." + ApiResource.PARAMETERS.resourceName() + ".href");
-
-            final ValidatableResponse parameterEntryResponse  = given()
-                    .contentType(ContentType.JSON)
-                    .when().get(parameterEntriesLocation)
-                    .then()
-                    .statusCode(HttpStatus.OK.value())
-                    .body("_embedded.parameters.nomenclature", hasItems("P01", "P02", "P03", "P04"))
-                    .log().all();
-
-
-            final ExtractableResponse<?> pExtractableResponse = parameterEntryResponse.extract();
+        for (int i = 0; i < expectedRegimeCount; i++) {
+            final Map<String, ?> regimeData = regimes.get(i);
+            Assertions.assertThat(regimeData.get("nomenclature")).isEqualTo("Regime" + i);
         }
     }
 

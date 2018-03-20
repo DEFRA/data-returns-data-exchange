@@ -57,6 +57,11 @@ final class LoaderUtils {
 
         final List<Map<String, String>> data = new ArrayList<>();
         for (final String[] rowData : rows) {
+            if (rowData.length != headers.length) {
+                log.error("Row encountered with inconsistent number of fields with regard to headers in {}.  Row data: \n{}", path, rowData);
+                throw new RuntimeException("Row encountered with inconsistent number of fields with regard to headers");
+            }
+
             final Map<String, String> values = new HashMap<>();
             for (int i = 0; i < rowData.length; i++) {
                 values.put(headers[i], rowData[i]);
@@ -64,25 +69,6 @@ final class LoaderUtils {
             data.add(values);
         }
         return data;
-    }
-
-
-    /**
-     * Handle persistence of entities that may be aliased via multiple rows which reference each other
-     *
-     * @param persistenceHandler the underlying persistence handler (usually the add method on the repository)
-     * @param data               the data read from the csv file
-     * @param entityFactory      a factory for creating the persistable entity from a row of CSV data
-     * @param <E>
-     */
-    static <E extends AliasingEntity<E>> void persistSelfReferencingEntityFile(
-            final List<Map<String, String>> data,
-            final Consumer<E> persistenceHandler,
-            final Function<Map<String, String>, E> entityFactory) throws ValidationException {
-        persistSelfReferencingEntityFile(
-                data,
-                persistenceHandler, entityFactory,
-                persistenceHandler, entityFactory);
     }
 
 
@@ -198,14 +184,14 @@ final class LoaderUtils {
     }
 
     public static List<String[]> readTabData(final String path) {
-        TsvParserSettings settings = new TsvParserSettings();
+        final TsvParserSettings settings = new TsvParserSettings();
         //the file used in the example uses '\n' as the line separator sequence.
         //the line separator sequence is defined here to ensure systems such as MacOS and Windows
         //are able to process this file correctly (MacOS uses '\r'; and Windows uses '\r\n').
         settings.getFormat().setLineSeparator("\n");
 
         // creates a TSV parser
-        TsvParser parser = new TsvParser(settings);
+        final TsvParser parser = new TsvParser(settings);
 
         // parses all rows in one go.
         return parser.parseAll(new BOMInputStream(LoaderUtils.class.getResourceAsStream(path)));

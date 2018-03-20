@@ -28,7 +28,7 @@ import javax.persistence.Entity;
 @Getter @Setter
 public class RecoveryCode extends AbstractMasterDataEntity implements MasterDataEntity {
     @Basic
-    @Column(name = "description")
+    @Column(name = "description", nullable = false)
     private String description;
 
 }

@@ -31,6 +31,8 @@ server:
 ###############################################################################
 spring:
   profiles: dataloader
+  main:
+    web-environment: false
 
 # Security configuration
 security:

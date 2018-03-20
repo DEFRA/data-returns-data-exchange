@@ -1,5 +1,13 @@
-name,rtn_type_groups
-Test 1A,GRP1
-Test 1B,GRP1
-Test 2A,GRP2
-Test 2B,GRP2
+name
+Air point source emissions
+Ambient air quality
+Emissions to groundwater
+Emissions to sewer
+Emissions to surface water
+Landfill annual monitoring report
+Landfill gas borehole
+Landfill gas engine
+Landfill gas flare
+Landfill leachate monitoring
+Methane capped surfaces
+Tankered emissions

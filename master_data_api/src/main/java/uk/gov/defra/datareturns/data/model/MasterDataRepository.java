@@ -33,6 +33,9 @@ public interface MasterDataRepository<E extends MasterDataEntity> extends BaseRe
     @PreAuthorize("hasRole('ADMIN')")
     <S extends E> List<S> save(Iterable<S> entities);
 
+    // TODO: Spring boot 2:
+    // <S extends E> List<S> saveAll(Iterable<S> entities);
+
     @Override
     @PreAuthorize("hasRole('ADMIN')")
     void deleteInBatch(Iterable<E> entities);
@@ -43,7 +46,9 @@ public interface MasterDataRepository<E extends MasterDataEntity> extends BaseRe
 
     @Override
     @PreAuthorize("hasRole('ADMIN')")
-    void delete(Long aLong);
+    void delete(Long id);
+    // TODO: Spring boot 2:
+    // void deleteById(Long id);
 
     @Override
     @PreAuthorize("hasRole('ADMIN')")
@@ -52,6 +57,8 @@ public interface MasterDataRepository<E extends MasterDataEntity> extends BaseRe
     @Override
     @PreAuthorize("hasRole('ADMIN')")
     void delete(Iterable<? extends E> entities);
+    // TODO: Spring boot 2:
+    // void deleteAll(Iterable<? extends E> entities);
 
     @Override
     @PreAuthorize("hasRole('ADMIN')")

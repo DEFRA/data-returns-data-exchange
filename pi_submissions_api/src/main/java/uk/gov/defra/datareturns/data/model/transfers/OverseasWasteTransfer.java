@@ -51,7 +51,7 @@ public class OverseasWasteTransfer extends AbstractBaseEntity {
     @Column(nullable = false)
     private int substanceId;
 
-    @Column(nullable = false)
+    @Column(nullable = false, precision = 30, scale = 15)
     private BigDecimal tonnage;
 
     @Enumerated(EnumType.STRING)
