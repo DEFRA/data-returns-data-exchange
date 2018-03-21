@@ -9,7 +9,11 @@ import uk.gov.defra.datareturns.data.model.AbstractBaseEntity;
 import uk.gov.defra.datareturns.data.model.AbstractMasterDataEntity;
 import uk.gov.defra.datareturns.data.model.MasterDataEntity;
 
-import javax.persistence.*;
+import javax.persistence.Basic;
+import javax.persistence.Cacheable;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.ManyToOne;
 
 /**
  * The persistent class for the unique_identifiers database table.
@@ -20,9 +24,10 @@ import javax.persistence.*;
 @Cacheable
 @Indexed
 @GenericGenerator(name = AbstractBaseEntity.DEFINITIONS_ID_GENERATOR,
-        strategy = AbstractBaseEntity.DEFINITIONS_ID_SEQUENCE_STRATEGY,
-        parameters = {
-                @org.hibernate.annotations.Parameter(name = SequenceStyleGenerator.SEQUENCE_PARAM, value = "md_area_id_seq")}
+                  strategy = AbstractBaseEntity.DEFINITIONS_ID_SEQUENCE_STRATEGY,
+                  parameters = {
+                          @org.hibernate.annotations.Parameter(name = SequenceStyleGenerator.SEQUENCE_PARAM, value = "md_area_id_seq")
+                  }
 )
 @Getter
 @Setter

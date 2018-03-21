@@ -6,7 +6,9 @@ package uk.gov.defra.datareturns.exceptions;
  * @author Sam Gardner-Dell
  */
 public class UnsubmittableDatasetException extends ProcessingException {
-    /** Appease the gods of serialization */
+    /**
+     * Appease the gods of serialization
+     */
     private static final long serialVersionUID = 1L;
 
     /**
@@ -29,7 +31,7 @@ public class UnsubmittableDatasetException extends ProcessingException {
 
     /**
      * @param message the detailed exception message
-     * @param cause the underlying cause for the {@link UnsubmittableDatasetException}
+     * @param cause   the underlying cause for the {@link UnsubmittableDatasetException}
      */
     public UnsubmittableDatasetException(final String message, final Throwable cause) {
         super(message, cause);

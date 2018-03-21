@@ -6,6 +6,7 @@ import uk.gov.defra.datareturns.data.model.MasterDataEntity;
 
 /**
  * The {@link MasterDataUpdateEvent} is fired whenever an entity extending {@link AbstractMasterDataEntity} is added, updated or deleted
+ *
  * @param <E>
  * @author Sam Gardner-Dell
  */

@@ -9,7 +9,11 @@ import org.hibernate.search.annotations.Indexed;
 import uk.gov.defra.datareturns.data.model.AbstractBaseEntity;
 import uk.gov.defra.datareturns.data.model.AbstractMasterDataEntity;
 
-import javax.persistence.*;
+import javax.persistence.Basic;
+import javax.persistence.Cacheable;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.OneToMany;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -17,9 +21,10 @@ import java.util.Set;
 @Cacheable
 @Indexed
 @GenericGenerator(name = AbstractBaseEntity.DEFINITIONS_ID_GENERATOR,
-        strategy = AbstractBaseEntity.DEFINITIONS_ID_SEQUENCE_STRATEGY,
-        parameters = {
-                @org.hibernate.annotations.Parameter(name = SequenceStyleGenerator.SEQUENCE_PARAM, value = "md_eprtr_sector_id_seq")}
+                  strategy = AbstractBaseEntity.DEFINITIONS_ID_SEQUENCE_STRATEGY,
+                  parameters = {
+                          @org.hibernate.annotations.Parameter(name = SequenceStyleGenerator.SEQUENCE_PARAM, value = "md_eprtr_sector_id_seq")
+                  }
 )
 @Getter
 @Setter

@@ -31,9 +31,10 @@ import java.util.Objects;
  */
 @Entity(name = "ecm_record")
 @GenericGenerator(name = AbstractBaseEntity.DEFINITIONS_ID_GENERATOR,
-        strategy = AbstractBaseEntity.DEFINITIONS_ID_SEQUENCE_STRATEGY,
-        parameters = {
-                @org.hibernate.annotations.Parameter(name = SequenceStyleGenerator.SEQUENCE_PARAM, value = "ecm_record_id_seq")}
+                  strategy = AbstractBaseEntity.DEFINITIONS_ID_SEQUENCE_STRATEGY,
+                  parameters = {
+                          @org.hibernate.annotations.Parameter(name = SequenceStyleGenerator.SEQUENCE_PARAM, value = "ecm_record_id_seq")
+                  }
 )
 @Getter
 @Setter

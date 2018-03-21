@@ -5,10 +5,11 @@ import uk.gov.defra.datareturns.data.model.ewc.EwcChapter;
 
 import java.util.Set;
 
-@Projection(name = "hierarchy", types = { EwcChapter.class })
+@Projection(name = "hierarchy", types = {EwcChapter.class})
 @SuppressWarnings("unused")
 public interface EwcChaptersIncludingSubchapters {
 
     Long getId();
+
     Set<EwcSubchaptersIncludingActivities> getEwcSubchapters();
 }

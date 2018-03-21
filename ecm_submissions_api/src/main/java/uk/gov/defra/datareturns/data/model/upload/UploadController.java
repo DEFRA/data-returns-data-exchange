@@ -14,7 +14,6 @@ import org.springframework.web.multipart.MultipartFile;
 import uk.gov.defra.datareturns.data.model.dataset.Dataset;
 import uk.gov.defra.datareturns.data.model.dataset.DatasetRepository;
 import uk.gov.defra.datareturns.data.model.record.RecordRepository;
-import uk.gov.defra.datareturns.data.model.record.Upload;
 import uk.gov.defra.datareturns.exceptions.ValidationException;
 import uk.gov.defra.datareturns.service.csv.ECMCSVReader;
 

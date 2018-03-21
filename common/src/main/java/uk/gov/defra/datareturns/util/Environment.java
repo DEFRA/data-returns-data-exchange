@@ -31,7 +31,9 @@ public final class Environment {
     private Environment() {
     }
 
-    /** Hostname caching supplier */
+    /**
+     * Hostname caching supplier
+     */
     private static final CachingSupplier<String> HOSTNAME = CachingSupplier.of(() -> {
         String host = trim(defaultString(System.getenv("HOSTNAME"), System.getenv("COMPUTERNAME")));
         String osName = StringUtils.defaultString(System.getProperty("os.name"), "");
@@ -77,6 +79,7 @@ public final class Environment {
 
     /**
      * Retrieve the application version from version.properties
+     *
      * @return the version as a String
      */
     public static String getVersion() {
@@ -97,7 +100,7 @@ public final class Environment {
      * Find all classes within a given package (and subpackages) and applies the given predicate to filter the list.
      *
      * @param packageName the package from which to search
-     * @param predicate the predicate used to filter the list of classes returned
+     * @param predicate   the predicate used to filter the list of classes returned
      * @return a {@link List} of {@link Class}es within the package
      */
     public static List<Class<?>> findClasses(final String packageName, final Predicate<MetadataReader> predicate) {
@@ -107,7 +110,7 @@ public final class Environment {
     /**
      * Find all classes within a given package (and subpackages) and applies the given {@link TypeFilter} predicate to filter the list.
      *
-     * @param packageName the package from which to search
+     * @param packageName   the package from which to search
      * @param includeFilter the predicate used to filter the list of classes returned
      * @return a {@link List} of {@link Class}es within the package
      */

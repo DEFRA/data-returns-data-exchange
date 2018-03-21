@@ -5,9 +5,10 @@ import uk.gov.defra.datareturns.data.model.nosep.NoseActivity;
 
 import java.util.Set;
 
-@Projection(name = "hierarchy", types = { NoseActivity.class })
+@Projection(name = "hierarchy", types = {NoseActivity.class})
 @SuppressWarnings("unused")
 public interface NoseActivitiesIncludingProcesses {
     Long getId();
+
     Set<NoseProcessId> getNoseProcesses();
 }

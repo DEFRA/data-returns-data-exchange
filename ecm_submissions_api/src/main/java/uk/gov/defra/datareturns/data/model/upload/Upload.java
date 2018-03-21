@@ -1,4 +1,4 @@
-package uk.gov.defra.datareturns.data.model.record;
+package uk.gov.defra.datareturns.data.model.upload;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -6,6 +6,7 @@ import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.id.enhanced.SequenceStyleGenerator;
 import uk.gov.defra.datareturns.data.model.AbstractBaseEntity;
 import uk.gov.defra.datareturns.data.model.dataset.Dataset;
+import uk.gov.defra.datareturns.data.model.record.Record;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
@@ -21,9 +22,10 @@ import java.util.Objects;
  */
 @Entity(name = "ecm_upload")
 @GenericGenerator(name = AbstractBaseEntity.DEFINITIONS_ID_GENERATOR,
-        strategy = AbstractBaseEntity.DEFINITIONS_ID_SEQUENCE_STRATEGY,
-        parameters = {
-                @org.hibernate.annotations.Parameter(name = SequenceStyleGenerator.SEQUENCE_PARAM, value = "ecm_upload_id_seq")}
+                  strategy = AbstractBaseEntity.DEFINITIONS_ID_SEQUENCE_STRATEGY,
+                  parameters = {
+                          @org.hibernate.annotations.Parameter(name = SequenceStyleGenerator.SEQUENCE_PARAM, value = "ecm_upload_id_seq")
+                  }
 )
 @Getter
 @Setter
@@ -31,9 +33,9 @@ public class Upload extends AbstractBaseEntity {
     private String filename;
 
     @OneToMany(mappedBy = "upload",
-            fetch = FetchType.LAZY,
-            cascade = CascadeType.REMOVE,
-            orphanRemoval = true
+               fetch = FetchType.LAZY,
+               cascade = CascadeType.REMOVE,
+               orphanRemoval = true
     )
     private List<Dataset> datasets;
 

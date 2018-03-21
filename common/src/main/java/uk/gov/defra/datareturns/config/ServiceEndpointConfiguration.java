@@ -105,6 +105,7 @@ public class ServiceEndpointConfiguration implements InitializingBean {
     @Data
     @ConfigurationProperties
     public static class AuhthorizationConfiguration {
+        @NotNull
         private AuthorizationType type;
         private Map<String, Object> properties;
 

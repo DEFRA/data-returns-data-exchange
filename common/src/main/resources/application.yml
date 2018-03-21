@@ -91,7 +91,7 @@ server:
 
 errbit:
   enabled: false
-  api.key: 1234567890
+  api-key: 1234567890
   env: Local Development Environment
   url: https://localhost:8080/notifier_api/v2/notices
 

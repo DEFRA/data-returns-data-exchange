@@ -8,19 +8,31 @@ import org.apache.commons.lang3.StringUtils;
  * @author Sam Gardner-Dell
  */
 public enum EaIdType {
-    /** EA Unique Identifiers using lowercase numeric identifier */
+    /**
+     * EA Unique Identifiers using lowercase numeric identifier
+     */
     LOWER_NUMERIC,
-    /** EA Unique Identifiers using uppercase numeric identifier */
+    /**
+     * EA Unique Identifiers using uppercase numeric identifier
+     */
     UPPER_NUMERIC,
-    /** EA Unique Identifiers using lowercase alphanumeric identifier */
+    /**
+     * EA Unique Identifiers using lowercase alphanumeric identifier
+     */
     LOWER_ALPHANUMERIC,
-    /** EA Unique Identifiers using uppercase alphanumeric identifier */
+    /**
+     * EA Unique Identifiers using uppercase alphanumeric identifier
+     */
     UPPER_ALPHANUMERIC;
 
-    /** The boundary for numeric EA Unique identifiers */
+    /**
+     * The boundary for numeric EA Unique identifiers
+     */
     public static final char ALPHA_NUMERIC_BOUNDARY = 'H';
 
-    /** The boundary for alphanumeric EA Unique identifiers */
+    /**
+     * The boundary for alphanumeric EA Unique identifiers
+     */
     public static final int NUMERIC_BOUNDARY = 70000;
 
     /**

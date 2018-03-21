@@ -19,12 +19,36 @@ import uk.gov.defra.datareturns.data.model.eprtr.EprtrActivity;
 import uk.gov.defra.datareturns.data.model.eprtr.EprtrActivityRepository;
 import uk.gov.defra.datareturns.data.model.eprtr.EprtrSector;
 import uk.gov.defra.datareturns.data.model.eprtr.EprtrSectorRepository;
-import uk.gov.defra.datareturns.data.model.ewc.*;
+import uk.gov.defra.datareturns.data.model.ewc.EwcActivity;
+import uk.gov.defra.datareturns.data.model.ewc.EwcActivityRepository;
+import uk.gov.defra.datareturns.data.model.ewc.EwcChapter;
+import uk.gov.defra.datareturns.data.model.ewc.EwcChapterRepository;
+import uk.gov.defra.datareturns.data.model.ewc.EwcSubchapter;
+import uk.gov.defra.datareturns.data.model.ewc.EwcSubchapterRepository;
 import uk.gov.defra.datareturns.data.model.methodorstandard.MethodOrStandard;
 import uk.gov.defra.datareturns.data.model.methodorstandard.MethodOrStandardRepository;
-import uk.gov.defra.datareturns.data.model.nace.*;
-import uk.gov.defra.datareturns.data.model.nosep.*;
-import uk.gov.defra.datareturns.data.model.parameter.*;
+import uk.gov.defra.datareturns.data.model.nace.NaceClass;
+import uk.gov.defra.datareturns.data.model.nace.NaceClassRepository;
+import uk.gov.defra.datareturns.data.model.nace.NaceDivision;
+import uk.gov.defra.datareturns.data.model.nace.NaceDivisionRepository;
+import uk.gov.defra.datareturns.data.model.nace.NaceGroup;
+import uk.gov.defra.datareturns.data.model.nace.NaceGroupRepository;
+import uk.gov.defra.datareturns.data.model.nace.NaceSection;
+import uk.gov.defra.datareturns.data.model.nace.NaceSectionRepository;
+import uk.gov.defra.datareturns.data.model.nosep.NoseActivity;
+import uk.gov.defra.datareturns.data.model.nosep.NoseActivityClass;
+import uk.gov.defra.datareturns.data.model.nosep.NoseActivityClassRepository;
+import uk.gov.defra.datareturns.data.model.nosep.NoseActivityRepository;
+import uk.gov.defra.datareturns.data.model.nosep.NoseProcess;
+import uk.gov.defra.datareturns.data.model.nosep.NoseProcessRepository;
+import uk.gov.defra.datareturns.data.model.parameter.Parameter;
+import uk.gov.defra.datareturns.data.model.parameter.ParameterAlias;
+import uk.gov.defra.datareturns.data.model.parameter.ParameterAliasRepository;
+import uk.gov.defra.datareturns.data.model.parameter.ParameterGroup;
+import uk.gov.defra.datareturns.data.model.parameter.ParameterGroupRepository;
+import uk.gov.defra.datareturns.data.model.parameter.ParameterRepository;
+import uk.gov.defra.datareturns.data.model.parameter.ParameterType;
+import uk.gov.defra.datareturns.data.model.parameter.ParameterTypeRepository;
 import uk.gov.defra.datareturns.data.model.qualifier.Qualifier;
 import uk.gov.defra.datareturns.data.model.qualifier.QualifierRepository;
 import uk.gov.defra.datareturns.data.model.referenceperiod.ReferencePeriod;
@@ -51,18 +75,33 @@ import uk.gov.defra.datareturns.data.model.textvalue.TextValueAliasRepository;
 import uk.gov.defra.datareturns.data.model.textvalue.TextValueRepository;
 import uk.gov.defra.datareturns.data.model.threshold.Threshold;
 import uk.gov.defra.datareturns.data.model.threshold.ThresholdRepository;
-import uk.gov.defra.datareturns.data.model.unit.*;
+import uk.gov.defra.datareturns.data.model.unit.Unit;
+import uk.gov.defra.datareturns.data.model.unit.UnitAlias;
+import uk.gov.defra.datareturns.data.model.unit.UnitAliasRepository;
+import uk.gov.defra.datareturns.data.model.unit.UnitRepository;
+import uk.gov.defra.datareturns.data.model.unit.UnitType;
+import uk.gov.defra.datareturns.data.model.unit.UnitTypeRepository;
 
 import java.math.BigDecimal;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
 import java.util.function.Function;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
-import static uk.gov.defra.datareturns.data.loader.LoaderUtils.basicFactory;
 import static uk.gov.defra.datareturns.data.Context.ECM;
 import static uk.gov.defra.datareturns.data.Context.PI;
+import static uk.gov.defra.datareturns.data.loader.LoaderUtils.basicFactory;
 
 /**
  * Simple database loader interface for master data
@@ -125,8 +164,8 @@ public interface DatabaseLoader {
                     "/db/data/stage_data_initialization/Pre-EA.csv"
             };
 
-            Regime ecm = regimeRepository.getOne(1L);
-            List<Regime> piRegimes = regimeRepository.findAll();
+            final Regime ecm = regimeRepository.getOne(1L);
+            final List<Regime> piRegimes = regimeRepository.findAll();
             piRegimes.remove(ecm);
 
             final List<Map<String, String>> data = new ArrayList<>();
@@ -359,7 +398,7 @@ public interface DatabaseLoader {
             // Map to store unit types as they are read from the file.
             final Map<String, UnitType> unitTypes = new HashMap<>();
 
-            Map<String, RegimeObligation> regimeObligationMap = regimeObligationRepository.findAll()
+            final Map<String, RegimeObligation> regimeObligationMap = regimeObligationRepository.findAll()
                     .stream().collect(Collectors.toMap(RegimeObligation::getNomenclature, Function.identity()));
 
             // Unit factory
@@ -373,8 +412,8 @@ public interface DatabaseLoader {
                 final String conversionFactorString = Objects.toString(rowData.get("conversion"), "0");
                 final BigDecimal conversionFactor = new BigDecimal(conversionFactorString);
                 if (conversionFactor.equals(BigDecimal.ZERO)) {
-                    log.warn("Conversion factor for unit {} is not set, or is set to zero.  " +
-                            "Data submitted using this unit will be excluded from reporting.", entity.getNomenclature());
+                    log.warn("Conversion factor for unit {} is not set, or is set to zero.  "
+                            + "Data submitted using this unit will be excluded from reporting.", entity.getNomenclature());
                 }
                 entity.setConversion(conversionFactor);
 
@@ -418,6 +457,7 @@ public interface DatabaseLoader {
                             regimeObligationMap.get("PI_EPRTR_RTCW").getUnits().add(entity);
                             regimeObligationMap.get("PI_EPRTR_OSTW").getUnits().add(entity);
                             break;
+
                     }
                 }
                 return entity;
@@ -568,7 +608,7 @@ public interface DatabaseLoader {
         @Transactional
         @Override
         public void load() {
-            List<String[]> rows = LoaderUtils.readTabData("/db/data/nose_p_activity.tsv");
+            final List<String[]> rows = LoaderUtils.readTabData("/db/data/nose_p_activity.tsv");
 
             final Set<NoseActivityClass> noseActivityClasses = new HashSet<>();
             final Set<NoseActivity> noseActivities = new HashSet<>();
@@ -578,7 +618,7 @@ public interface DatabaseLoader {
             NoseActivity noseActivity = null;
             NoseProcess noseProcess;
 
-            for (String[] entry : rows) {
+            for (final String[] entry : rows) {
                 if (entry.length == 1) {
                     noseActivityClass = new NoseActivityClass();
                     noseActivityClass.setNomenclature(entry[0]);
@@ -757,8 +797,8 @@ public interface DatabaseLoader {
     @RequiredArgsConstructor
     @Component
     class EwcLoader implements DatabaseLoader {
-        private static final Pattern EWC_NOMEN_PATTERN = Pattern.compile("\\s*(?<Chapter>\\d{2})(\\s+(?<Subchapter>\\d{2}))?" +
-                "(\\s+(?<Activity>\\d{2}))?(\\s*(?<Hazardous>\\*))?\\s*");
+        private static final Pattern EWC_NOMEN_PATTERN = Pattern.compile("\\s*(?<Chapter>\\d{2})(\\s+(?<Subchapter>\\d{2}))?"
+                + "(\\s+(?<Activity>\\d{2}))?(\\s*(?<Hazardous>\\*))?\\s*");
         private final EwcChapterRepository ewcChapterRepository;
         private final EwcSubchapterRepository ewcSubchapterRepository;
         private final EwcActivityRepository ewcActivityRepository;

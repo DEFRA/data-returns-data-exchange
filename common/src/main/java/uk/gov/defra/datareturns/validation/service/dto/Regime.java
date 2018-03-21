@@ -1,11 +1,10 @@
 package uk.gov.defra.datareturns.validation.service.dto;
 
 import lombok.Data;
-import org.springframework.hateoas.Resource;
-
-import java.util.List;
+import lombok.EqualsAndHashCode;
 
 @Data
+@EqualsAndHashCode(callSuper = true)
 public class Regime extends BaseEntity {
     private String context;
 }

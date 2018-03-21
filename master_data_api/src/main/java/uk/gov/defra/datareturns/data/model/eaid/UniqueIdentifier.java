@@ -5,15 +5,24 @@ import lombok.Setter;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.id.enhanced.SequenceStyleGenerator;
 import org.hibernate.search.annotations.Indexed;
+import uk.gov.defra.datareturns.data.Context;
 import uk.gov.defra.datareturns.data.model.AbstractAliasedEntity;
 import uk.gov.defra.datareturns.data.model.AbstractBaseEntity;
 import uk.gov.defra.datareturns.data.model.AliasedEntity;
-import uk.gov.defra.datareturns.data.Context;
 import uk.gov.defra.datareturns.data.model.geography.Area;
 import uk.gov.defra.datareturns.data.model.regime.Regime;
 import uk.gov.defra.datareturns.data.model.site.Site;
 
-import javax.persistence.*;
+import javax.persistence.Cacheable;
+import javax.persistence.CascadeType;
+import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
+import javax.persistence.ManyToOne;
+import javax.persistence.MapKeyColumn;
+import javax.persistence.MapKeyEnumerated;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -26,9 +35,10 @@ import java.util.Map;
 @Cacheable
 @Indexed
 @GenericGenerator(name = AbstractBaseEntity.DEFINITIONS_ID_GENERATOR,
-        strategy = AbstractBaseEntity.DEFINITIONS_ID_SEQUENCE_STRATEGY,
-        parameters = {
-                @org.hibernate.annotations.Parameter(name = SequenceStyleGenerator.SEQUENCE_PARAM, value = "md_unique_identifier_id_seq")}
+                  strategy = AbstractBaseEntity.DEFINITIONS_ID_SEQUENCE_STRATEGY,
+                  parameters = {
+                          @org.hibernate.annotations.Parameter(name = SequenceStyleGenerator.SEQUENCE_PARAM, value = "md_unique_identifier_id_seq")
+                  }
 )
 @Getter
 @Setter
@@ -36,9 +46,9 @@ public class UniqueIdentifier extends AbstractAliasedEntity<UniqueIdentifierAlia
 
     @ManyToMany
     @JoinTable(
-            name="md_regime_unique_identifiers",
-            joinColumns={ @JoinColumn(name="unique_identifier_id", referencedColumnName="id") },
-            inverseJoinColumns={ @JoinColumn(name="regime_id", referencedColumnName="id" ) })
+            name = "md_regime_unique_identifiers",
+            joinColumns = {@JoinColumn(name = "unique_identifier_id", referencedColumnName = "id")},
+            inverseJoinColumns = {@JoinColumn(name = "regime_id", referencedColumnName = "id")})
     @MapKeyColumn(name = "context")
     @MapKeyEnumerated(EnumType.STRING)
     private Map<Context, Regime> regime = new HashMap<>();

@@ -55,7 +55,8 @@ public interface BaseRepository<E, ID extends Serializable>
          * @param entityInformation the {@link JpaEntityInformation} for the entity targeted by this repository
          * @param entityManager     the JPA entity manager.
          */
-        public BaseRepositoryImpl(@SuppressWarnings("SpringJavaAutowiringInspection") final JpaEntityInformation<E, ID> entityInformation,
+        public BaseRepositoryImpl(@SuppressWarnings("SpringJavaInjectionPointsAutowiringInspection") final JpaEntityInformation<E, ID>
+                                          entityInformation,
                                   final EntityManager entityManager) {
             super(entityInformation, entityManager);
             this.entityInformation = entityInformation;

@@ -7,7 +7,7 @@ import org.hibernate.id.enhanced.SequenceStyleGenerator;
 import org.hibernate.validator.constraints.NotBlank;
 import uk.gov.defra.datareturns.data.model.AbstractBaseEntity;
 import uk.gov.defra.datareturns.data.model.record.Record;
-import uk.gov.defra.datareturns.data.model.record.Upload;
+import uk.gov.defra.datareturns.data.model.upload.Upload;
 import uk.gov.defra.datareturns.service.MasterDataEntity;
 import uk.gov.defra.datareturns.validation.constraints.controlledlist.ControlledList;
 
@@ -33,9 +33,10 @@ import java.util.Objects;
  */
 @Entity(name = "ecm_dataset")
 @GenericGenerator(name = AbstractBaseEntity.DEFINITIONS_ID_GENERATOR,
-        strategy = AbstractBaseEntity.DEFINITIONS_ID_SEQUENCE_STRATEGY,
-        parameters = {
-                @org.hibernate.annotations.Parameter(name = SequenceStyleGenerator.SEQUENCE_PARAM, value = "ecm_dataset_id_seq")}
+                  strategy = AbstractBaseEntity.DEFINITIONS_ID_SEQUENCE_STRATEGY,
+                  parameters = {
+                          @org.hibernate.annotations.Parameter(name = SequenceStyleGenerator.SEQUENCE_PARAM, value = "ecm_dataset_id_seq")
+                  }
 )
 @Getter
 @Setter
@@ -59,9 +60,9 @@ public class Dataset extends AbstractBaseEntity {
     private Status status = Status.UNSUBMITTED;
 
     @OneToMany(mappedBy = "dataset",
-            fetch = FetchType.LAZY,
-            cascade = CascadeType.REMOVE,
-            orphanRemoval = true
+               fetch = FetchType.LAZY,
+               cascade = CascadeType.REMOVE,
+               orphanRemoval = true
     )
     @Valid
     private List<Record> records = new ArrayList<>();

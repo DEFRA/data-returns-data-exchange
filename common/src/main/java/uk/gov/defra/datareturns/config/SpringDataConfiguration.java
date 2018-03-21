@@ -25,7 +25,7 @@ import uk.gov.defra.datareturns.data.BaseRepository;
 )
 @Slf4j
 @RequiredArgsConstructor
-@SuppressWarnings("checkstyle:HideUtilityClassConstructor")
+@SuppressWarnings({"checkstyle:HideUtilityClassConstructor", "NonFinalUtilityClass"})
 public class SpringDataConfiguration {
     public static final String DATA_PACKAGE = "uk.gov.defra.datareturns.data";
 }

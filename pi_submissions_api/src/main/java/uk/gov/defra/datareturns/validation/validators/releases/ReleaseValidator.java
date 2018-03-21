@@ -34,12 +34,12 @@ public class ReleaseValidator implements ConstraintValidator<ValidRelease, Relea
     @Override
     public boolean isValid(final Release release, final ConstraintValidatorContext context) {
         boolean valid = true;
-        Object submissionId = release.getSubmission().getReportingReference();
-        List<Resource<Regime>> regimes = lookupService.getRegimes(Context.PI, submissionId);
+        final Object submissionId = release.getSubmission().getReportingReference();
+        final List<Resource<Regime>> regimes = lookupService.getRegimes(Context.PI, submissionId);
 
         if (regimes.size() == 1) {
-            Resource<Regime> regime = regimes.iterator().next();
-            Set<String> parametersForRoute = cacheService.getRouteParameterMapForRegime(regime).get("" + release.getRouteId());
+            final Resource<Regime> regime = regimes.iterator().next();
+            final Set<String> parametersForRoute = cacheService.getRouteParameterMapForRegime(regime).get("" + release.getRouteId());
             if (!parametersForRoute.contains("" + release.getSubstanceId())) {
                 context.disableDefaultConstraintViolation();
                 context.buildConstraintViolationWithTemplate("INVALID_RELEASE_SUBSTANCE").addPropertyNode("substanceId").addConstraintViolation();

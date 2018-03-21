@@ -38,9 +38,9 @@ import java.util.Objects;
                         filters = {
                                 @TokenFilterDef(factory = LowerCaseFilterFactory.class),
                                 @TokenFilterDef(factory = SnowballPorterFilterFactory.class,
-                                        params = {
-                                                @Parameter(name = "language", value = "English")
-                                        })
+                                                params = {
+                                                        @Parameter(name = "language", value = "English")
+                                                })
                         })
         }
 )

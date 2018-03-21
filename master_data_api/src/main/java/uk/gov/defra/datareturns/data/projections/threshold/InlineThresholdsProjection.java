@@ -2,11 +2,9 @@ package uk.gov.defra.datareturns.data.projections.threshold;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.rest.core.config.Projection;
-import uk.gov.defra.datareturns.data.model.AliasedEntity;
 import uk.gov.defra.datareturns.data.model.threshold.Threshold;
 
 import java.math.BigDecimal;
-import java.util.Set;
 
 /**
  * InlineThresholdsProjection to display all threshold data inline

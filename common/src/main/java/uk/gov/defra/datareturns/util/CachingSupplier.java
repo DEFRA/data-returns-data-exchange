@@ -4,25 +4,25 @@ import java.util.function.Supplier;
 
 /**
  * Implementation of the {@link Supplier} interface to provide lazy instantiation and caching facilities.
- *
+ * <p>
  * Uses double-checked locking to provide lazy instantiation of the data to be cached.
- *
+ * <p>
  * Examples:
  * <code>
  * public class MyClass {
- *     private CachingSupplier<Map<String, String>> cache = CachingSupplier.of(() -> {
- *         Map<String, String> data = expensiveOperationToBuildCache();
- *         return data;
- *     });
- *     // or better still...
- *     private CachingSupplier<Map<String, String>> cache = CachingSupplier.of(this::expensiveOperationToBuildCache);
- *
- *     ...
- *
- *     public String getValue(String key) {
- *        // expensiveOperationToBuildCache() will be called now if it needs to be
- *        return cache.get().get(key);
- *     }
+ * private CachingSupplier<Map<String, String>> cache = CachingSupplier.of(() -> {
+ * Map<String, String> data = expensiveOperationToBuildCache();
+ * return data;
+ * });
+ * // or better still...
+ * private CachingSupplier<Map<String, String>> cache = CachingSupplier.of(this::expensiveOperationToBuildCache);
+ * <p>
+ * ...
+ * <p>
+ * public String getValue(String key) {
+ * // expensiveOperationToBuildCache() will be called now if it needs to be
+ * return cache.get().get(key);
+ * }
  * }
  * </code>
  *
@@ -35,7 +35,7 @@ public interface CachingSupplier<T> extends Supplier<T> {
      * Wrap a delegate {@link Supplier} with lazy initialisation and caching capabilities.
      *
      * @param delegate the delgate {@link Supplier} (usually a reference to an expensive operation whose result we wish to cache)
-     * @param <T> the type of the data being cached
+     * @param <T>      the type of the data being cached
      * @return a {@link CachingSupplier} wrapping the delegate.
      */
     static <T> CachingSupplier<T> of(final Supplier<T> delegate) {
@@ -47,7 +47,8 @@ public interface CachingSupplier<T> extends Supplier<T> {
      *
      * @return the data being cached.
      */
-    @Override T get();
+    @Override
+    T get();
 
     /**
      * Clear the cache
@@ -80,7 +81,8 @@ public interface CachingSupplier<T> extends Supplier<T> {
          *
          * @return the data being cached.
          */
-        @Override public T get() {
+        @Override
+        public T get() {
             // Local reference to reduce volatile reads
             T local = cache;
             if (local == null) {

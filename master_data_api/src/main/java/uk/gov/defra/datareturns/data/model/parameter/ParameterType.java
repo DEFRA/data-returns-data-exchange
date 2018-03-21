@@ -8,7 +8,6 @@ import org.hibernate.id.enhanced.SequenceStyleGenerator;
 import uk.gov.defra.datareturns.data.model.AbstractBaseEntity;
 import uk.gov.defra.datareturns.data.model.AbstractMasterDataEntity;
 import uk.gov.defra.datareturns.data.model.MasterDataEntity;
-import uk.gov.defra.datareturns.data.model.unit.Unit;
 
 import javax.persistence.Cacheable;
 import javax.persistence.Entity;
@@ -24,9 +23,10 @@ import java.util.Set;
 @Entity(name = "md_parameter_type")
 @Cacheable
 @GenericGenerator(name = AbstractBaseEntity.DEFINITIONS_ID_GENERATOR,
-        strategy = AbstractBaseEntity.DEFINITIONS_ID_SEQUENCE_STRATEGY,
-        parameters = {
-                @org.hibernate.annotations.Parameter(name = SequenceStyleGenerator.SEQUENCE_PARAM, value = "md_parameter_type_id_seq")}
+                  strategy = AbstractBaseEntity.DEFINITIONS_ID_SEQUENCE_STRATEGY,
+                  parameters = {
+                          @org.hibernate.annotations.Parameter(name = SequenceStyleGenerator.SEQUENCE_PARAM, value = "md_parameter_type_id_seq")
+                  }
 )
 @Getter
 @Setter

@@ -7,14 +7,11 @@ import io.restassured.http.ContentType;
 import io.restassured.response.ValidatableResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.math.NumberUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.Map;
-import java.util.Objects;
 
 import static io.restassured.RestAssured.given;
 
@@ -27,7 +24,7 @@ public class RestAssuredUtils {
     private String toJson(final Map<String, Object> fields) {
         try {
             return mapper.writeValueAsString(fields);
-        } catch (JsonProcessingException e) {
+        } catch (final JsonProcessingException e) {
             throw new RuntimeException(e);
         }
     }

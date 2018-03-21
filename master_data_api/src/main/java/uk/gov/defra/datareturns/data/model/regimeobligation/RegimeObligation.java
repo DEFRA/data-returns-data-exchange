@@ -16,7 +16,14 @@ import uk.gov.defra.datareturns.data.model.route.Route;
 import uk.gov.defra.datareturns.data.model.threshold.Threshold;
 import uk.gov.defra.datareturns.data.model.unit.Unit;
 
-import javax.persistence.*;
+import javax.persistence.Cacheable;
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
+import javax.persistence.ManyToOne;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -28,10 +35,10 @@ import java.util.Set;
 @Entity(name = "md_regime_obligation")
 @Cacheable
 @GenericGenerator(name = AbstractBaseEntity.DEFINITIONS_ID_GENERATOR,
-        strategy = AbstractBaseEntity.DEFINITIONS_ID_SEQUENCE_STRATEGY,
-        parameters = {
-                @org.hibernate.annotations.Parameter(name = SequenceStyleGenerator.SEQUENCE_PARAM, value = "md_regime_obligation_id_seq")
-        }
+                  strategy = AbstractBaseEntity.DEFINITIONS_ID_SEQUENCE_STRATEGY,
+                  parameters = {
+                          @org.hibernate.annotations.Parameter(name = SequenceStyleGenerator.SEQUENCE_PARAM, value = "md_regime_obligation_id_seq")
+                  }
 )
 @Getter
 @Setter
@@ -63,9 +70,9 @@ public class RegimeObligation extends AbstractMasterDataEntity implements Master
      */
     @ManyToMany
     @JoinTable(
-            name="md_regime_obligation_units",
-            joinColumns={ @JoinColumn(name="regime_obligation_id", referencedColumnName="id") },
-            inverseJoinColumns={ @JoinColumn(name="unit_id", referencedColumnName="id" ) })
+            name = "md_regime_obligation_units",
+            joinColumns = {@JoinColumn(name = "regime_obligation_id", referencedColumnName = "id")},
+            inverseJoinColumns = {@JoinColumn(name = "unit_id", referencedColumnName = "id")})
     @Setter(AccessLevel.NONE)
     private Set<Unit> units = new HashSet<>();
 

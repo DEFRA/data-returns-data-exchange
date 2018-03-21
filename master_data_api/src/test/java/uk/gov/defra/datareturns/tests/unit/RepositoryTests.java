@@ -14,12 +14,10 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 import uk.gov.defra.datareturns.config.SpringDataConfiguration;
 import uk.gov.defra.datareturns.data.loader.DataLoader;
-import uk.gov.defra.datareturns.data.loader.DatabaseLoader;
 import uk.gov.defra.datareturns.data.model.parameter.Parameter;
 import uk.gov.defra.datareturns.data.model.parameter.ParameterRepository;
 import uk.gov.defra.datareturns.data.model.parameter.ParameterType;
 import uk.gov.defra.datareturns.data.model.parameter.ParameterTypeRepository;
-import uk.gov.defra.datareturns.util.SpringApplicationContextProvider;
 
 import javax.inject.Inject;
 

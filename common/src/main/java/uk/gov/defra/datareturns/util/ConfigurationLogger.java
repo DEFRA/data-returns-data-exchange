@@ -19,7 +19,7 @@ import java.util.TreeMap;
 public class ConfigurationLogger implements EnvironmentPostProcessor {
 
     @Override
-    public void postProcessEnvironment(ConfigurableEnvironment environment, SpringApplication application) {
+    public void postProcessEnvironment(final ConfigurableEnvironment environment, final SpringApplication application) {
         printConfiguration(environment);
     }
 

@@ -21,11 +21,13 @@ import javax.persistence.Entity;
 @Entity(name = "md_qualifier")
 @Cacheable
 @GenericGenerator(name = AbstractBaseEntity.DEFINITIONS_ID_GENERATOR,
-        strategy = AbstractBaseEntity.DEFINITIONS_ID_SEQUENCE_STRATEGY,
-        parameters = {
-                @org.hibernate.annotations.Parameter(name = SequenceStyleGenerator.SEQUENCE_PARAM, value = "md_qualifier_id_seq") }
+                  strategy = AbstractBaseEntity.DEFINITIONS_ID_SEQUENCE_STRATEGY,
+                  parameters = {
+                          @org.hibernate.annotations.Parameter(name = SequenceStyleGenerator.SEQUENCE_PARAM, value = "md_qualifier_id_seq")
+                  }
 )
-@Getter @Setter
+@Getter
+@Setter
 public class Qualifier extends AbstractMasterDataEntity implements MasterDataEntity {
     @Basic
     @Column(name = "notes", length = 100)

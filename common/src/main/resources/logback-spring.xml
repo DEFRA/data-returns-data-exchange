@@ -6,7 +6,7 @@
 
     <springProperty scope="context" name="applicationName" source="server.display-name" defaultValue="name_not_configured"/>
     <springProperty scope="context" name="errbitEnabled" source="errbit.enabled" defaultValue="false"/>
-    <springProperty scope="context" name="errbitApiKey" source="errbit.api.key" defaultValue=""/>
+    <springProperty scope="context" name="errbitApiKey" source="errbit.api-key" defaultValue=""/>
     <springProperty scope="context" name="errbitEnv" source="errbit.env" defaultValue="Local Development Environment"/>
     <springProperty scope="context" name="errbitUrl" source="errbit.url" defaultValue="https://localhost:8080/notifier_api/v2/notices"/>
 

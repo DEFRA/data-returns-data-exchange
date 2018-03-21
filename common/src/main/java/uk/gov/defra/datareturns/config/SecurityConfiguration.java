@@ -1,7 +1,6 @@
 package uk.gov.defra.datareturns.config;
 
 import org.aopalliance.intercept.MethodInvocation;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
@@ -32,6 +31,7 @@ import java.util.Arrays;
  * @author Sam Gardner-Dell
  */
 // FIXME: Prototype code - need to implement production ruleset
+@SuppressWarnings({"NonFinalUtilityClass", "HideUtilityClassConstructor"})
 @Configuration
 @ConfigurationProperties(prefix = "security")
 public class SecurityConfiguration {

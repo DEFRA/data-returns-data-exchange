@@ -14,7 +14,18 @@ import uk.gov.defra.datareturns.data.model.transfers.OffsiteWasteTransfer;
 import uk.gov.defra.datareturns.data.model.transfers.OverseasWasteTransfer;
 import uk.gov.defra.datareturns.validation.validators.submission.ValidSubmission;
 
-import javax.persistence.*;
+import javax.persistence.CascadeType;
+import javax.persistence.CollectionTable;
+import javax.persistence.Column;
+import javax.persistence.ElementCollection;
+import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
+import javax.persistence.JoinColumn;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
+import javax.persistence.UniqueConstraint;
 import javax.validation.Valid;
 import java.util.Objects;
 import java.util.Set;
@@ -29,9 +40,10 @@ import java.util.Set;
         @UniqueConstraint(name = "uniq_reference_and_year", columnNames = {"reportingReference", "applicableYear"})
 })
 @GenericGenerator(name = AbstractBaseEntity.DEFINITIONS_ID_GENERATOR,
-        strategy = AbstractBaseEntity.DEFINITIONS_ID_SEQUENCE_STRATEGY,
-        parameters = {
-                @org.hibernate.annotations.Parameter(name = SequenceStyleGenerator.SEQUENCE_PARAM, value = "pi_submission_id_seq")}
+                  strategy = AbstractBaseEntity.DEFINITIONS_ID_SEQUENCE_STRATEGY,
+                  parameters = {
+                          @org.hibernate.annotations.Parameter(name = SequenceStyleGenerator.SEQUENCE_PARAM, value = "pi_submission_id_seq")
+                  }
 )
 @Audited
 @Getter

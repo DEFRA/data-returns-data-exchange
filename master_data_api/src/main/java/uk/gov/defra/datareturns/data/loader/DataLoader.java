@@ -54,7 +54,7 @@ public class DataLoader {
         if (cycles.isEmpty()) {
             final TopologicalOrderIterator<Class<?>, DefaultEdge> iter = new TopologicalOrderIterator<>(graph);
             return StreamSupport.stream(Spliterators.spliteratorUnknownSize(iter, Spliterator.ORDERED), false)
-                    .map(c -> loadersByClass.get(c))
+                    .map(loadersByClass::get)
                     .collect(Collectors.toList());
         } else {
             final String msg = "Database loaders contain cyclic dependencies " + cycles;

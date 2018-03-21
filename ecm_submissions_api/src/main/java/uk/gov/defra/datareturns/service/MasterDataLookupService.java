@@ -38,7 +38,6 @@ public interface MasterDataLookupService {
          *
          * @param entityName the name of the entity being sought
          * @param naturalKey the natural key to use in the lookup
-         * @param <E>        the generic type of the entity being sought
          * @return a boolean, true if the entity exists, false otherwise.
          */
         boolean exists(String entityName, String naturalKey);
@@ -88,7 +87,7 @@ public interface MasterDataLookupService {
                 final String relaxedKey = masterDataNaturalKeyService.relaxKey(entityName, naturalKey);
                 return masterDataCacheService.getRelaxedNaturalKeyToPkMap(entityName).containsKey(relaxedKey);
             }
-//
+
 //            @Override
 //            public MasterDataEntity find(String entityName, String naturalKey) {
 //                String relaxedKey = masterDataNaturalKeyService.relaxKey(entityName, naturalKey);

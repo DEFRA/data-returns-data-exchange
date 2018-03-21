@@ -17,7 +17,7 @@ import org.hibernate.boot.model.naming.ImplicitNamingStrategyComponentPathImpl;
 public class DataReturnsImplicitNamingStrategy extends ImplicitNamingStrategyComponentPathImpl {
     @Override
     public Identifier determineJoinTableName(final ImplicitJoinTableNameSource source) {
-        String name = source.getOwningPhysicalTableName() + "_"
+        final String name = source.getOwningPhysicalTableName() + "_"
                 + source.getAssociationOwningAttributePath().getProperty();
         return toIdentifier(name, source.getBuildingContext());
     }

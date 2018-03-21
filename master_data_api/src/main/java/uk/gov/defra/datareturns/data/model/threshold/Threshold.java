@@ -28,10 +28,10 @@ import java.util.Objects;
 @Entity(name = "md_threshold")
 @Cacheable
 @GenericGenerator(name = AbstractBaseEntity.DEFINITIONS_ID_GENERATOR,
-        strategy = AbstractBaseEntity.DEFINITIONS_ID_SEQUENCE_STRATEGY,
-        parameters = {
-                @org.hibernate.annotations.Parameter(name = SequenceStyleGenerator.SEQUENCE_PARAM, value = "md_threshold_id_seq")
-        }
+                  strategy = AbstractBaseEntity.DEFINITIONS_ID_SEQUENCE_STRATEGY,
+                  parameters = {
+                          @org.hibernate.annotations.Parameter(name = SequenceStyleGenerator.SEQUENCE_PARAM, value = "md_threshold_id_seq")
+                  }
 )
 @Getter
 @Setter
@@ -53,17 +53,17 @@ public class Threshold extends AbstractBaseEntity {
     private Unit unit;
 
     @Override
-    public boolean equals(Object o) {
+    public boolean equals(final Object o) {
         if (this == o) {
             return true;
         }
         if (!(o instanceof Threshold)) {
             return false;
         }
-        Threshold threshold = (Threshold) o;
-        return Objects.equals(this.getRegimeObligation(), this.getRegimeObligation()) &&
-                Objects.equals(getParameter(), threshold.getParameter()) &&
-                getType() == threshold.getType();
+        final Threshold threshold = (Threshold) o;
+        return Objects.equals(this.getRegimeObligation(), this.getRegimeObligation())
+                && Objects.equals(getParameter(), threshold.getParameter())
+                && getType() == threshold.getType();
     }
 
     @Override

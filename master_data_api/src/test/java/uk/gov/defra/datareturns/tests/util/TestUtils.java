@@ -1,6 +1,3 @@
-/**
- *
- */
 package uk.gov.defra.datareturns.tests.util;
 
 import org.junit.Assert;
@@ -13,7 +10,6 @@ import java.lang.reflect.Modifier;
  * Unit test utlities
  *
  * @author Sam Gardner-Dell
- *
  */
 public final class TestUtils {
 

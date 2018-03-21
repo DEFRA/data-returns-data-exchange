@@ -21,11 +21,13 @@ import javax.persistence.Entity;
 @Entity(name = "md_recovery_codes")
 @Cacheable
 @GenericGenerator(name = AbstractBaseEntity.DEFINITIONS_ID_GENERATOR,
-        strategy = AbstractBaseEntity.DEFINITIONS_ID_SEQUENCE_STRATEGY,
-        parameters = {
-                @org.hibernate.annotations.Parameter(name = SequenceStyleGenerator.SEQUENCE_PARAM, value = "md_recovery_codes_id_seq") }
+                  strategy = AbstractBaseEntity.DEFINITIONS_ID_SEQUENCE_STRATEGY,
+                  parameters = {
+                          @org.hibernate.annotations.Parameter(name = SequenceStyleGenerator.SEQUENCE_PARAM, value = "md_recovery_codes_id_seq")
+                  }
 )
-@Getter @Setter
+@Getter
+@Setter
 public class RecoveryCode extends AbstractMasterDataEntity implements MasterDataEntity {
     @Basic
     @Column(name = "description", nullable = false)

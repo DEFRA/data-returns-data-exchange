@@ -12,6 +12,7 @@ import uk.gov.defra.datareturns.util.Environment;
 
 import java.util.function.Predicate;
 
+@SuppressWarnings("NonFinalUtilityClass")
 @Slf4j
 @RunWith(AllTests.class)
 public class AllUnitTests {

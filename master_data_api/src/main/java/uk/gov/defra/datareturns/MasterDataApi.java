@@ -14,7 +14,7 @@ import uk.gov.defra.datareturns.data.loader.DataLoader;
  */
 @SpringBootApplication
 @Slf4j
-@SuppressWarnings("checkstyle:HideUtilityClassConstructor")
+@SuppressWarnings({"NonFinalUtilityClass", "HideUtilityClassConstructor"})
 public class MasterDataApi {
     /**
      * Application main startup method

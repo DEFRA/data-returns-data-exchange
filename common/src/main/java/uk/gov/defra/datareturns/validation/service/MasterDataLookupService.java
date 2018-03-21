@@ -62,7 +62,7 @@ public interface MasterDataLookupService {
      * @param resource the resource representing the entity whose identifier should be returned
      * @return the identifier
      */
-    public static String getResourceId(final Resource resource) {
+    static String getResourceId(final Resource resource) {
         return StringUtils.substringAfterLast(resource.getId().expand().getHref(), "/");
     }
 

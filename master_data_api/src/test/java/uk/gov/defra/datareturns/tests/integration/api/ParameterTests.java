@@ -19,7 +19,6 @@ import uk.gov.defra.datareturns.tests.util.ApiResource;
 import uk.gov.defra.datareturns.tests.util.RestAssuredUtils;
 
 import javax.inject.Inject;
-
 import java.util.HashMap;
 import java.util.Map;
 
@@ -55,7 +54,8 @@ public class ParameterTests {
         parameterData.put("nomenclature", RandomStringUtils.randomAlphabetic(8));
         parameterData.put("type", createTypePostResponse.extract().header("Location"));
 
-        final EntityAndGroupResponse response = createEntityWithinNewGroup(ApiResource.PARAMETER_GROUPS, groupData, ApiResource.PARAMETERS, parameterData);
+        final EntityAndGroupResponse response = createEntityWithinNewGroup(ApiResource.PARAMETER_GROUPS, groupData, ApiResource.PARAMETERS,
+                parameterData);
 
 
         // Associate the parameter with the group we created (POST one or more parameter URI's to the parameter group parameter collection URI

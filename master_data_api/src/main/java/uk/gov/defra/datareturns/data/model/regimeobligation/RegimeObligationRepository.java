@@ -3,8 +3,6 @@ package uk.gov.defra.datareturns.data.model.regimeobligation;
 import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 import uk.gov.defra.datareturns.data.model.MasterDataRepository;
 
-import java.util.List;
-
 
 /**
  * Spring REST repository for {@link RegimeObligation} entities

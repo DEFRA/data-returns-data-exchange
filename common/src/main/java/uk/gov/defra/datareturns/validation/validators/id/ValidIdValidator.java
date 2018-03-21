@@ -1,7 +1,6 @@
 package uk.gov.defra.datareturns.validation.validators.id;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.core.annotation.AnnotationUtils;
 import uk.gov.defra.datareturns.validation.service.ValidationCacheService;
 
 import javax.validation.ConstraintValidator;

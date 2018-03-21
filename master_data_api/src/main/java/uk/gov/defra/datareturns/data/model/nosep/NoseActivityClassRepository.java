@@ -4,5 +4,5 @@ import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 import uk.gov.defra.datareturns.data.model.MasterDataRepository;
 
 @RepositoryRestResource
-public interface NoseActivityClassRepository extends MasterDataRepository<NoseActivityClass>  {
+public interface NoseActivityClassRepository extends MasterDataRepository<NoseActivityClass> {
 }
