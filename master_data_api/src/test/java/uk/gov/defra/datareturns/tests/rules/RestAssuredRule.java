@@ -36,7 +36,7 @@ public class RestAssuredRule extends ExternalResource {
         RestAssured.baseURI = "http://localhost";
         RestAssured.port = port;
         RestAssured.basePath = "/api";
-        RestAssured.authentication = basic("user", "password");
+        RestAssured.authentication = basic("admin", "password");
         RestAssured.config().getEncoderConfig().defaultContentCharset(Charsets.UTF_8);
         RestAssured.enableLoggingOfRequestAndResponseIfValidationFails(LogDetail.ALL);
     }

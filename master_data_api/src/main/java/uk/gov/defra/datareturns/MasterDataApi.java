@@ -4,6 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.ConfigurableApplicationContext;
+import uk.gov.defra.datareturns.config.DataLoaderConfiguration;
 import uk.gov.defra.datareturns.data.loader.DataLoader;
 
 /**
@@ -23,19 +24,27 @@ public class MasterDataApi {
     public static void main(final String[] args) {
         final ConfigurableApplicationContext context = SpringApplication.run(MasterDataApi.class, args);
 
-        if (context.getEnvironment().acceptsProfiles("dataloader")) {
-            final DataLoader loader = context.getBean(DataLoader.class);
-            try {
-                loader.loadAll();
-            } catch (final Throwable t) {
-                System.exit(-1);
+        final DataLoaderConfiguration dataLoaderConfiguration = context.getBean(DataLoaderConfiguration.class);
+        if (dataLoaderConfiguration.isRunAtStartup()) {
+            loadBaselineData(context);
+            if (dataLoaderConfiguration.isShutdownAfterLoad()) {
+                System.exit(SpringApplication.exit(context));
             }
+        }
+    }
 
-            final int exitCode = SpringApplication.exit(context);
-            if (exitCode != 0) {
-                log.warn("Data loader exited with non-zero exit code: {}", exitCode);
-            }
-            System.exit(exitCode);
+    /**
+     * Load baseline CSV data into the database
+     *
+     * @param context the application context
+     */
+    private static void loadBaselineData(final ConfigurableApplicationContext context) {
+        final DataLoader loader = context.getBean(DataLoader.class);
+        try {
+            loader.loadAll();
+        } catch (final Throwable t) {
+            log.error("Failed to load master data.", t);
+            System.exit(-1);
         }
     }
 }

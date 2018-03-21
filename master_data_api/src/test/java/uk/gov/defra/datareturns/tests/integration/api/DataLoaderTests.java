@@ -29,7 +29,7 @@ import static org.hamcrest.Matchers.hasItems;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = {MasterDataApi.class}, webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
-@ActiveProfiles("IntegrationTests")
+@ActiveProfiles("integration-test")
 @Slf4j
 public class DataLoaderTests {
     private static boolean dbInitialised = false;

@@ -18,9 +18,13 @@ import org.springframework.security.config.annotation.method.configuration.Globa
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.web.authentication.preauth.PreAuthenticatedAuthenticationToken;
 
 import javax.inject.Inject;
 import java.io.Serializable;
+import java.util.Arrays;
 
 /**
  * Spring security configuration
@@ -30,7 +34,6 @@ import java.io.Serializable;
 // FIXME: Prototype code - need to implement production ruleset
 @Configuration
 @ConfigurationProperties(prefix = "security")
-@ConditionalOnWebApplication
 public class SecurityConfiguration {
     private static final String[] AUTH_WHITELIST = {
             // -- swagger ui
@@ -41,14 +44,22 @@ public class SecurityConfiguration {
             "/webjars/**"
     };
 
-    private boolean methodLevelEnabled;
-
-    public boolean isMethodLevelEnabled() {
-        return methodLevelEnabled;
-    }
-
-    public void setMethodLevelEnabled(final boolean methodLevelEnabled) {
-        this.methodLevelEnabled = methodLevelEnabled;
+    /**
+     * Run the code associated with the given {@link Runnable} as a system user (effectively bypassing all security - use with caution!)
+     *
+     * @param invocable the {@link Runnable} to invoke without security - usually a lambda function.
+     */
+    public static void runAsSystemUser(final Runnable invocable) {
+        final Authentication preInvocationAuthentication = SecurityContextHolder.getContext().getAuthentication();
+        try {
+            final Authentication authentication = new PreAuthenticatedAuthenticationToken("system", null,
+                    Arrays.asList(new SimpleGrantedAuthority("ROLE_ADMIN"), new SimpleGrantedAuthority("ROLE_USER")));
+            authentication.setAuthenticated(true);
+            SecurityContextHolder.getContext().setAuthentication(authentication);
+            invocable.run();
+        } finally {
+            SecurityContextHolder.getContext().setAuthentication(preInvocationAuthentication);
+        }
     }
 
     /**
@@ -57,7 +68,6 @@ public class SecurityConfiguration {
      * @author Sam Gardner-Dell
      */
     @Configuration
-    @ConditionalOnProperty(name = "security.method-level-enabled", havingValue = "true")
     @EnableGlobalMethodSecurity(prePostEnabled = true)
     class MethodSecurityConfiguration extends GlobalMethodSecurityConfiguration {
         @Override
@@ -79,6 +89,7 @@ public class SecurityConfiguration {
      * @author Sam Gardner-Dell
      */
     @Configuration
+    @ConditionalOnWebApplication
     class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
         @Override
         protected void configure(final HttpSecurity http) throws Exception {

@@ -28,7 +28,7 @@ import java.util.Set;
  */
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = EcmApi.class, webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
-@ActiveProfiles("IntegrationTests")
+@ActiveProfiles("integration-test")
 public class DataSampleValidatorTests {
 
     private static final RandomStringGenerator generator = new RandomStringGenerator.Builder()

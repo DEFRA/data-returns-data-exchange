@@ -9,6 +9,7 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.FilterType;
 import org.springframework.context.annotation.Import;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 import uk.gov.defra.datareturns.config.SpringDataConfiguration;
@@ -33,7 +34,8 @@ import javax.inject.Inject;
         },
         showSql = false
 )
-@ActiveProfiles("UnitTests")
+@ActiveProfiles("unit-test")
+@WithMockUser(roles = {"ADMIN", "USER"})
 @Slf4j
 public class RepositoryTests {
     private static boolean dbInitialised = false;

@@ -29,7 +29,7 @@ import static org.hamcrest.Matchers.is;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = {MasterDataApi.class}, webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
-@ActiveProfiles("IntegrationTests")
+@ActiveProfiles("integration-test")
 @Slf4j
 public class ParameterTests {
     @Inject
@@ -55,7 +55,7 @@ public class ParameterTests {
         parameterData.put("nomenclature", RandomStringUtils.randomAlphabetic(8));
         parameterData.put("type", createTypePostResponse.extract().header("Location"));
 
-        EntityAndGroupResponse response = createEntityWithinNewGroup(ApiResource.PARAMETER_GROUPS, groupData, ApiResource.PARAMETERS, parameterData);
+        final EntityAndGroupResponse response = createEntityWithinNewGroup(ApiResource.PARAMETER_GROUPS, groupData, ApiResource.PARAMETERS, parameterData);
 
 
         // Associate the parameter with the group we created (POST one or more parameter URI's to the parameter group parameter collection URI

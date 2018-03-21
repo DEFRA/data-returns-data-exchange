@@ -27,7 +27,7 @@ import static io.restassured.RestAssured.given;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = {MasterDataApi.class}, webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
-@ActiveProfiles("IntegrationTests")
+@ActiveProfiles("integration-test")
 @Slf4j
 public class RegimeTests {
     @Inject
