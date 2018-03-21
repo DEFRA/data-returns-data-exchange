@@ -126,12 +126,8 @@ public interface DatabaseLoader {
             };
 
             Regime ecm = regimeRepository.getOne(1L);
-            Regime[] piRegimes = {
-                    regimeRepository.getOne(2L),
-                    regimeRepository.getOne(3L),
-                    regimeRepository.getOne(4L),
-                    regimeRepository.getOne(5L)
-            };
+            List<Regime> piRegimes = regimeRepository.findAll();
+            piRegimes.remove(ecm);
 
             final List<Map<String, String>> data = new ArrayList<>();
             Arrays.stream(permitFiles).forEach(pf -> data.addAll(LoaderUtils.readCsvData(pf)));
@@ -154,7 +150,7 @@ public interface DatabaseLoader {
                     id.setNomenclature(ps);
                     id.setSite(site);
                     id.getRegime().put(ECM, ecm);
-                    id.getRegime().put(PI, piRegimes[ps.charAt(0) % 4]);
+                    id.getRegime().put(PI, piRegimes.get(ps.charAt(0) % piRegimes.size()));
                     return id;
                 });
 
