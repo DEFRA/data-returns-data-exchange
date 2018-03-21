@@ -20,6 +20,7 @@ import uk.gov.defra.datareturns.tests.util.RestAssuredUtils;
 
 import javax.inject.Inject;
 
+import java.util.HashMap;
 import java.util.Map;
 
 import static io.restassured.RestAssured.given;
@@ -40,7 +41,12 @@ public class RegimeTests {
     public void testCreateRegime() {
         // Create a regime
         final String regimeName = RandomStringUtils.randomAlphabetic(8);
-        final ValidatableResponse regimeResponse = rest.createSimpleEntity(ApiResource.REGIMES, regimeName);
+
+        final Map<String, Object> regimeData = new HashMap<>();
+        regimeData.put("nomenclature", regimeName);
+        regimeData.put("context", "ECM");
+
+        final ValidatableResponse regimeResponse = rest.createSimpleEntity(ApiResource.REGIMES, regimeData);
         final String regimeLocation = regimeResponse.extract().header("Location");
         log.info(regimeLocation);
     }
