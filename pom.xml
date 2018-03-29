@@ -557,6 +557,8 @@
                     <configuration>
                         <fork>true</fork>
                         <workingDirectory>${project.build.directory}</workingDirectory>
+                        <wait>10000</wait>
+                        <maxAttempts>12</maxAttempts>
                     </configuration>
                 </plugin>
 
