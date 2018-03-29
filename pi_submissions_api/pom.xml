@@ -13,12 +13,25 @@
     <artifactId>pi_submissions_api</artifactId>
     <version>1.0.0</version>
     <packaging>jar</packaging>
-    <name>PI Submissions API</name>
+
+    <name>Data Returns PI Submissions API</name>
+    <description>Defra Data-Returns Pollution Inventory Submissions API</description>
+
+    <properties>
+        <root.dir>${project.parent.basedir}</root.dir>
+    </properties>
 
     <dependencies>
         <dependency>
             <groupId>uk.gov.defra.datareturns</groupId>
             <artifactId>common</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>uk.gov.defra.datareturns</groupId>
+            <artifactId>common</artifactId>
+            <type>test-jar</type>
+            <classifier>testcommons</classifier>
+            <scope>test</scope>
         </dependency>
     </dependencies>
 
@@ -35,8 +48,46 @@
 
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
+                <artifactId>exec-maven-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>start-masterdata-api</id>
+                        <goals>
+                            <goal>exec</goal>
+                        </goals>
+                        <phase>pre-integration-test</phase>
+                        <configuration>
+                            <executable>${root.dir}/launches/serverctl</executable>
+                            <arguments>
+                                <argument>--quiet</argument>
+                                <argument>--port=9020</argument>
+                                <argument>master_data_api</argument>
+                                <argument>start</argument>
+                                <argument>--spring.profiles.active=h2</argument>
+                            </arguments>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>stop-masterdata-api</id>
+                        <goals>
+                            <goal>exec</goal>
+                        </goals>
+                        <phase>post-integration-test</phase>
+                        <configuration>
+                            <executable>${root.dir}/launches/serverctl</executable>
+                            <arguments>
+                                <argument>master_data_api</argument>
+                                <argument>stop</argument>
+                            </arguments>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
+
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
                 <artifactId>sql-maven-plugin</artifactId>
-                <version>1.5</version>
 
                 <dependencies>
                     <dependency>
@@ -106,26 +157,9 @@
                     <dependency>
                         <groupId>uk.gov.defra.datareturns</groupId>
                         <artifactId>common</artifactId>
-                        <version>1.0.0</version>
+                        <version>${project.parent.version}</version>
                     </dependency>
                 </dependencies>
-            </plugin>
-
-            <plugin>
-                <groupId>com.spotify</groupId>
-                <artifactId>docker-maven-plugin</artifactId>
-                <version>1.0.0</version>
-                <configuration>
-                    <imageName>${docker.image.prefix}/${project.artifactId}</imageName>
-                    <dockerDirectory>src/main/docker</dockerDirectory>
-                    <resources>
-                        <resource>
-                            <targetPath>/</targetPath>
-                            <directory>${project.build.directory}</directory>1`
-                            <include>${project.build.finalName}.jar</include>
-                        </resource>
-                    </resources>
-                </configuration>
             </plugin>
         </plugins>
     </build>

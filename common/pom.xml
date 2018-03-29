@@ -6,12 +6,39 @@
         <groupId>uk.gov.defra.datareturns</groupId>
         <artifactId>data-returns-platform</artifactId>
         <version>1.0.0</version>
+        <relativePath>../</relativePath>
     </parent>
     <modelVersion>4.0.0</modelVersion>
-
     <artifactId>common</artifactId>
 
-    <build>
+    <name>Defra Data-Returns API Common</name>
+    <description>Defra Data-Returns API commons</description>
 
+    <properties>
+        <root.dir>${project.parent.basedir}</root.dir>
+    </properties>
+
+    <build>
+        <plugins>
+            <!-- Export the commons code from the testcommons package in src/test/java for other modules -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>test-jar</id>
+                        <goals>
+                            <goal>test-jar</goal>
+                        </goals>
+                        <configuration>
+                            <classifier>testcommons</classifier>
+                            <includes>
+                                <include>**/testcommons/**</include>
+                            </includes>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
     </build>
 </project>

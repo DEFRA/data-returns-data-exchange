@@ -5,11 +5,9 @@ import org.apache.commons.text.RandomStringGenerator;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
-import uk.gov.defra.datareturns.EcmApi;
 import uk.gov.defra.datareturns.data.model.record.Record;
+import uk.gov.defra.datareturns.testcommons.framework.DataIntegrationTest;
 
 import javax.inject.Inject;
 import javax.validation.ConstraintViolation;
@@ -24,11 +22,10 @@ import java.util.Set;
  * @author Sam Gardner-Dell
  */
 @RunWith(SpringRunner.class)
-@SpringBootTest(classes = EcmApi.class, webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
-@ActiveProfiles("integration-test")
-public class DataSampleValidatorTests {
+@DataIntegrationTest
+public class DataSampleValidatorIT {
 
-    private static final RandomStringGenerator generator = new RandomStringGenerator.Builder()
+    private static final RandomStringGenerator GENERATOR = new RandomStringGenerator.Builder()
             .filteredBy(CharacterPredicates.DIGITS, CharacterPredicates.LETTERS)
             .withinRange('0', 'z')
             .build();
@@ -48,7 +45,7 @@ public class DataSampleValidatorTests {
         record.setMonitoringDate(new Date());
         record.setReturnPeriod("Aug 2016");
         record.setMonitoringPoint("Borehole 1");
-        record.setParameter("1,1,1,2-Tetrachloroethane");
+        record.setParameter("Isopropyl chloroformate");
         record.setNumericValue(BigDecimal.valueOf(0.2323));
         record.setNumericEquality(Record.Equality.LESS_THAN);
         record.setUnit("m3/s");
@@ -293,7 +290,7 @@ public class DataSampleValidatorTests {
     @Test
     public void testReturnPeriodLength() {
         final Record record = createValidNumericRecord();
-        record.setReturnPeriod(generator.generate(20));
+        record.setReturnPeriod(GENERATOR.generate(20));
         final Set<ConstraintViolation<Record>> violations = this.validator.validate(record);
         Assert.assertEquals(1, violations.size());
     }
@@ -323,11 +320,11 @@ public class DataSampleValidatorTests {
     @Test
     public void testMonitoringPointLength() {
         final Record record = createValidNumericRecord();
-        record.setMonitoringPoint(generator.generate(50));
+        record.setMonitoringPoint(GENERATOR.generate(50));
         Set<ConstraintViolation<Record>> violations = this.validator.validate(record);
         Assert.assertEquals(0, violations.size());
 
-        record.setMonitoringPoint(generator.generate(51));
+        record.setMonitoringPoint(GENERATOR.generate(51));
         violations = this.validator.validate(record);
         Assert.assertEquals(1, violations.size());
     }
@@ -567,7 +564,7 @@ public class DataSampleValidatorTests {
     @Test
     public void testReferencePeriodInvalid() {
         final Record record = createValidNumericRecord();
-        record.setReferencePeriod(generator.generate(30));
+        record.setReferencePeriod(GENERATOR.generate(30));
         final Set<ConstraintViolation<Record>> violations = this.validator.validate(record);
         Assert.assertEquals(1, violations.size());
     }
@@ -589,7 +586,7 @@ public class DataSampleValidatorTests {
     @Test
     public void testMethStandInvalid() {
         final Record record = createValidNumericRecord();
-        record.setMethodOrStandard(generator.generate(31));
+        record.setMethodOrStandard(GENERATOR.generate(31));
         final Set<ConstraintViolation<Record>> violations = this.validator.validate(record);
         Assert.assertEquals(1, violations.size());
     }
@@ -611,11 +608,11 @@ public class DataSampleValidatorTests {
     @Test
     public void testCommentsLength() {
         final Record record = createValidNumericRecord();
-        record.setComments(generator.generate(255));
+        record.setComments(GENERATOR.generate(255));
         Set<ConstraintViolation<Record>> violations = this.validator.validate(record);
         Assert.assertEquals(0, violations.size());
 
-        record.setComments(generator.generate(256));
+        record.setComments(GENERATOR.generate(256));
         violations = this.validator.validate(record);
         Assert.assertEquals(1, violations.size());
     }

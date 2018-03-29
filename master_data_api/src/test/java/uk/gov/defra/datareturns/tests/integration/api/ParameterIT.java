@@ -9,11 +9,9 @@ import org.apache.commons.lang3.RandomStringUtils;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpStatus;
-import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
-import uk.gov.defra.datareturns.MasterDataApi;
+import uk.gov.defra.datareturns.testcommons.framework.WebIntegrationTest;
 import uk.gov.defra.datareturns.tests.rules.RestAssuredRule;
 import uk.gov.defra.datareturns.tests.util.ApiResource;
 import uk.gov.defra.datareturns.tests.util.RestAssuredUtils;
@@ -27,10 +25,9 @@ import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
 
 @RunWith(SpringRunner.class)
-@SpringBootTest(classes = {MasterDataApi.class}, webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
-@ActiveProfiles("integration-test")
+@WebIntegrationTest
 @Slf4j
-public class ParameterTests {
+public class ParameterIT {
     @Inject
     @Rule
     public RestAssuredRule restAssuredRule;

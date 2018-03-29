@@ -4,4 +4,4 @@ spring:
 # Configuration for the web server
 server:
   address: 127.0.0.1
-  port: 9120
+  port: 9021

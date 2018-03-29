@@ -1,8 +1,5 @@
 package uk.gov.defra.datareturns.service;
 
-import lombok.Data;
-
-@Data
 public class MasterDataEntity {
     public static final String EA_ID = "uniqueIdentifiers";
     public static final String EA_ID_ALIAS = "uniqueIdentifierAliases";
@@ -15,8 +12,4 @@ public class MasterDataEntity {
     public static final String RELEASE_OR_TRANSFER = "releaseOrTransfers";
     public static final String TEXT_VALUE = "textValues";
     public static final String UNIT = "units";
-
-    private Long id;
-
-    private String nomenclature;
 }

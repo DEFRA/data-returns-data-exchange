@@ -13,12 +13,25 @@
     <artifactId>master_data_api</artifactId>
     <version>1.0.0</version>
     <packaging>jar</packaging>
-    <name>Master Data API</name>
+
+    <name>Data Returns Master Data API</name>
+    <description>Defra Data-Returns Master Data API</description>
+
+    <properties>
+        <root.dir>${project.parent.basedir}</root.dir>
+    </properties>
 
     <dependencies>
         <dependency>
             <groupId>uk.gov.defra.datareturns</groupId>
             <artifactId>common</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>uk.gov.defra.datareturns</groupId>
+            <artifactId>common</artifactId>
+            <type>test-jar</type>
+            <classifier>testcommons</classifier>
+            <scope>test</scope>
         </dependency>
     </dependencies>
 
@@ -36,7 +49,6 @@
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>sql-maven-plugin</artifactId>
-                <version>1.5</version>
 
                 <dependencies>
                     <dependency>
@@ -94,7 +106,6 @@
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>exec-maven-plugin</artifactId>
-                <version>1.6.0</version>
                 <executions>
                     <execution>
                         <id>load-data</id>
@@ -105,6 +116,7 @@
                             <mainClass>uk.gov.defra.datareturns.MasterDataApi</mainClass>
                             <arguments>
                                 <argument>--spring.profiles.active=dataloader</argument>
+                                <argument>--logging.path=${project.build.directory}/log</argument>
                             </arguments>
                         </configuration>
                     </execution>

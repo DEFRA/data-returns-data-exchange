@@ -1,0 +1,21 @@
+language: java
+sudo: false
+
+# Cache maven repository (owasp dependency-check cache also lives in ~/.m2/repository/org/owasp/dependency-check-data
+cache:
+  directories:
+  - $HOME/.m2
+
+jobs:
+  include:
+  - stage: test
+    script:
+    - ./mvnw verify
+
+jdk:
+  - oraclejdk8
+
+addons:
+  apt:
+    packages:
+      - oracle-java8-installer

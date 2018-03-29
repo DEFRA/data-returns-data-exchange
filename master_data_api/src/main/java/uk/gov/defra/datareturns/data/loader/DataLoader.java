@@ -7,7 +7,10 @@ import org.jgrapht.graph.DefaultDirectedGraph;
 import org.jgrapht.graph.DefaultEdge;
 import org.jgrapht.traverse.TopologicalOrderIterator;
 import org.springframework.aop.support.AopUtils;
+import org.springframework.context.event.ContextRefreshedEvent;
+import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Service;
+import uk.gov.defra.datareturns.config.DataLoaderConfiguration;
 import uk.gov.defra.datareturns.config.SecurityConfiguration;
 
 import java.util.List;
@@ -29,6 +32,22 @@ import java.util.stream.StreamSupport;
 @RequiredArgsConstructor
 public class DataLoader {
     private final Map<String, DatabaseLoader> loaderBeans;
+    private final DataLoaderConfiguration configuration;
+
+    /**
+     * Load baseline CSV data into the database
+     */
+    @EventListener
+    private void onApplicationEvent(ContextRefreshedEvent event) {
+        if (configuration.isRunAtStartup()) {
+            try {
+                loadAll();
+            } catch (final Throwable t) {
+                log.error("Failed to load master data.", t);
+                throw t;
+            }
+        }
+    }
 
     /**
      * Invoke all database loaders with respect to their dependency tree

@@ -41,7 +41,6 @@ public interface MasterDataLookupService {
      */
     <T> T retrieve(final ParameterizedTypeReference<T> typeReference, final String resource);
 
-
     Map<Context, List<Resource<Regime>>> getRegimes();
 
     List<Resource<Regime>> getRegimes(final Context context, final Object uniqueIdentifier);
@@ -128,7 +127,7 @@ public interface MasterDataLookupService {
 
         @Override
         public List<Resource<Regime>> getRegimes(final Context context, final Object uniqueIdentifier) {
-            String resource = "regimes/search/findRegimesForContextAndUniqueIdentifier?";//projection=summary";
+            String resource = "regimes/search/findRegimesForContextAndUniqueIdentifier?";
             resource += "context=" + context.name();
             resource += "&id=uniqueIdentifiers/" + Objects.toString(uniqueIdentifier);
 

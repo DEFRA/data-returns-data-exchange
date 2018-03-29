@@ -1,56 +1,28 @@
 package uk.gov.defra.datareturns.tests.unit;
 
 import lombok.extern.slf4j.Slf4j;
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
-import org.springframework.context.annotation.ComponentScan;
-import org.springframework.context.annotation.FilterType;
-import org.springframework.context.annotation.Import;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.test.context.support.WithMockUser;
-import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
-import uk.gov.defra.datareturns.config.SpringDataConfiguration;
-import uk.gov.defra.datareturns.data.loader.DataLoader;
 import uk.gov.defra.datareturns.data.model.parameter.Parameter;
 import uk.gov.defra.datareturns.data.model.parameter.ParameterRepository;
 import uk.gov.defra.datareturns.data.model.parameter.ParameterType;
 import uk.gov.defra.datareturns.data.model.parameter.ParameterTypeRepository;
+import uk.gov.defra.datareturns.testcommons.framework.DataIntegrationTest;
 
 import javax.inject.Inject;
 
 @RunWith(SpringRunner.class)
-@Import(SpringDataConfiguration.class)
-@DataJpaTest(
-        includeFilters = {
-                @ComponentScan.Filter(type = FilterType.REGEX, pattern = "uk.gov.defra.datareturns.*")
-        },
-        excludeFilters = {
-                @ComponentScan.Filter(type = FilterType.REGEX, pattern = "uk.gov.defra.datareturns.tests.*")
-        },
-        showSql = false
-)
-@ActiveProfiles("unit-test")
+@DataIntegrationTest
 @WithMockUser(roles = {"ADMIN", "USER"})
 @Slf4j
 public class RepositoryTests {
-    private static boolean dbInitialised = false;
-    @Inject
-    private DataLoader loader;
     @Inject
     private ParameterRepository parameterRepository;
     @Inject
     private ParameterTypeRepository parameterTypeRepository;
-
-    @Before
-    public void setupDb() {
-        if (!dbInitialised) {
-            dbInitialised = true;
-            loader.loadAll();
-        }
-    }
 
     @Test
     public void testAddParameter() {

@@ -6,10 +6,9 @@ import org.apache.commons.lang3.RandomStringUtils;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.ActiveProfiles;
+import org.springframework.http.HttpStatus;
 import org.springframework.test.context.junit4.SpringRunner;
-import uk.gov.defra.datareturns.MasterDataApi;
+import uk.gov.defra.datareturns.testcommons.framework.WebIntegrationTest;
 import uk.gov.defra.datareturns.tests.rules.RestAssuredRule;
 import uk.gov.defra.datareturns.tests.util.ApiResource;
 import uk.gov.defra.datareturns.tests.util.RestAssuredUtils;
@@ -18,11 +17,12 @@ import javax.inject.Inject;
 import java.util.HashMap;
 import java.util.Map;
 
+import static io.restassured.RestAssured.given;
+
 @RunWith(SpringRunner.class)
-@SpringBootTest(classes = {MasterDataApi.class}, webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
-@ActiveProfiles("integration-test")
+@WebIntegrationTest
 @Slf4j
-public class RegimeTests {
+public class RegimeIT {
     @Inject
     @Rule
     public RestAssuredRule restAssuredRule;
@@ -41,6 +41,19 @@ public class RegimeTests {
 
         final ValidatableResponse regimeResponse = rest.createSimpleEntity(ApiResource.REGIMES, regimeData);
         final String regimeLocation = regimeResponse.extract().header("Location");
-        log.info(regimeLocation);
+
+        // Now delete the regime
+        given()
+                .when()
+                .delete(regimeLocation)
+                .then()
+                .statusCode(HttpStatus.NO_CONTENT.value());
+
+        // Check deleted
+        given()
+                .when()
+                .get(regimeLocation)
+                .then()
+                .statusCode(HttpStatus.NOT_FOUND.value());
     }
 }

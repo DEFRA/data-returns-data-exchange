@@ -3,7 +3,7 @@ package uk.gov.defra.datareturns.validation.constraints.controlledlist;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import uk.gov.defra.datareturns.service.MasterDataLookupService;
+import uk.gov.defra.datareturns.service.MasterDataValidationService;
 
 import javax.inject.Inject;
 import javax.validation.ConstraintValidator;
@@ -17,12 +17,12 @@ import java.util.Objects;
  */
 public class ControlledListValidator implements ConstraintValidator<ControlledList, Object> {
     private final Logger log = LoggerFactory.getLogger(this.getClass());
-    private final MasterDataLookupService lookupService;
+    private final MasterDataValidationService lookupService;
 
     private String[] entityNames;
 
     @Inject
-    public ControlledListValidator(final MasterDataLookupService lookupService) {
+    public ControlledListValidator(final MasterDataValidationService lookupService) {
         this.lookupService = lookupService;
     }
 
@@ -39,7 +39,7 @@ public class ControlledListValidator implements ConstraintValidator<ControlledLi
     public boolean isValid(final Object value, final ConstraintValidatorContext context) {
         // Check for required dependencies
         if (lookupService == null || entityNames == null) {
-            throw new RuntimeException("A MasterDataLookupService instance and an entity class must be provided to perform validation.");
+            throw new RuntimeException("A MasterDataValidationService instance and an entity class must be provided to perform validation.");
         }
 
         // If field is empty then assume it is valid with respect to the list (unused)

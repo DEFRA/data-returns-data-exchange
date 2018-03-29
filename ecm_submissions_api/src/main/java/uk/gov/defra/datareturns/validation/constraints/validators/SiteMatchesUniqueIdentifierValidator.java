@@ -1,7 +1,7 @@
 package uk.gov.defra.datareturns.validation.constraints.validators;
 
 import uk.gov.defra.datareturns.data.model.record.Record;
-import uk.gov.defra.datareturns.service.MasterDataLookupService;
+import uk.gov.defra.datareturns.service.MasterDataValidationService;
 import uk.gov.defra.datareturns.validation.constraints.annotations.SiteMatchesUniqueIdentifier;
 
 import javax.inject.Inject;
@@ -12,10 +12,10 @@ import javax.validation.ConstraintValidatorContext;
  * Created by sam on 11/11/16.
  */
 public class SiteMatchesUniqueIdentifierValidator implements ConstraintValidator<SiteMatchesUniqueIdentifier, Record> {
-    private final MasterDataLookupService lookupService;
+    private final MasterDataValidationService lookupService;
 
     @Inject
-    public SiteMatchesUniqueIdentifierValidator(final MasterDataLookupService lookupService) {
+    public SiteMatchesUniqueIdentifierValidator(final MasterDataValidationService lookupService) {
         this.lookupService = lookupService;
     }
 

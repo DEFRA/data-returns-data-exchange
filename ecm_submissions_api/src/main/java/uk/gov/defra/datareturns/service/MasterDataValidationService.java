@@ -10,7 +10,7 @@ import org.springframework.stereotype.Service;
  *
  * @author Sam Gardner-Dell
  */
-public interface MasterDataLookupService {
+public interface MasterDataValidationService {
     /**
      * Provides lookup operations based on strict key rules.  For all operations, the natural key supplied must exactly match the natural
      * key of the entity being sought
@@ -54,14 +54,14 @@ public interface MasterDataLookupService {
     }
 
     /**
-     * {@link MasterDataLookupService} implementation
+     * {@link MasterDataValidationService} implementation
      *
      * @author Sam Gardner-Dell
      */
     @Service
     @Scope(BeanDefinition.SCOPE_SINGLETON)
     @RequiredArgsConstructor
-    class MasterDataLookupServiceImpl implements MasterDataLookupService {
+    class MasterDataLookupServiceImpl implements MasterDataValidationService {
         private final MasterDataNaturalKeyService masterDataNaturalKeyService;
         private final MasterDataCacheService masterDataCacheService;
         private final Operations strictOperations = new Operations() {

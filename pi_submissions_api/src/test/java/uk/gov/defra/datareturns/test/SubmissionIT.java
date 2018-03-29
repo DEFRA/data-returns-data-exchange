@@ -24,7 +24,7 @@ import static io.restassured.RestAssured.given;
 @SpringBootTest(classes = {PiApi.class}, webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 @ActiveProfiles("integration-test")
 @Slf4j
-public class SubmissionTests {
+public class SubmissionIT {
     @Inject
     @Rule
     public RestAssuredRule restAssuredRule;
@@ -32,7 +32,7 @@ public class SubmissionTests {
 
     @Test
     public void testSimpleSubmission() throws IOException {
-        final String testJson = IOUtils.toString(SubmissionTests.class.getResourceAsStream("/data/submission.json"), StandardCharsets.UTF_8);
+        final String testJson = IOUtils.toString(SubmissionIT.class.getResourceAsStream("/data/submission.json"), StandardCharsets.UTF_8);
 
         // Associate the parameter with the group we created (POST one or more parameter URI's to the parameter group parameter collection URI
         given()
@@ -48,7 +48,7 @@ public class SubmissionTests {
     @Test
     public void testSubstanceNotApplicableToRegimeObligation() throws IOException {
         final String testJson = IOUtils.toString(
-                SubmissionTests.class.getResourceAsStream("/data/submission-invalid-substance.json"),
+                SubmissionIT.class.getResourceAsStream("/data/submission-invalid-substance.json"),
                 StandardCharsets.UTF_8);
 
         // Associate the parameter with the group we created (POST one or more parameter URI's to the parameter group parameter collection URI

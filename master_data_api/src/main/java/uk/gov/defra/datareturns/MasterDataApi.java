@@ -5,7 +5,6 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.ConfigurableApplicationContext;
 import uk.gov.defra.datareturns.config.DataLoaderConfiguration;
-import uk.gov.defra.datareturns.data.loader.DataLoader;
 
 /**
  * Application class for the Data Returns Backend Service.
@@ -25,26 +24,9 @@ public class MasterDataApi {
         final ConfigurableApplicationContext context = SpringApplication.run(MasterDataApi.class, args);
 
         final DataLoaderConfiguration dataLoaderConfiguration = context.getBean(DataLoaderConfiguration.class);
-        if (dataLoaderConfiguration.isRunAtStartup()) {
-            loadBaselineData(context);
-            if (dataLoaderConfiguration.isShutdownAfterLoad()) {
-                System.exit(SpringApplication.exit(context));
-            }
-        }
-    }
-
-    /**
-     * Load baseline CSV data into the database
-     *
-     * @param context the application context
-     */
-    private static void loadBaselineData(final ConfigurableApplicationContext context) {
-        final DataLoader loader = context.getBean(DataLoader.class);
-        try {
-            loader.loadAll();
-        } catch (final Throwable t) {
-            log.error("Failed to load master data.", t);
-            System.exit(-1);
+        if (dataLoaderConfiguration.isRunAtStartup() && dataLoaderConfiguration.isShutdownAfterLoad()) {
+            log.info("Data load complete, shutting down");
+            System.exit(SpringApplication.exit(context));
         }
     }
 }

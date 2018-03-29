@@ -4,6 +4,7 @@
     <include resource="org/springframework/boot/logging/logback/defaults.xml"/>
     <conversionRule conversionWord="loglvl" converterClass="uk.gov.defra.datareturns.util.LogHighlightingConverter"/>
 
+    <springProperty scope="context" name="logDir" source="logging.path" defaultValue="./log"/>
     <springProperty scope="context" name="applicationName" source="server.display-name" defaultValue="name_not_configured"/>
     <springProperty scope="context" name="errbitEnabled" source="errbit.enabled" defaultValue="false"/>
     <springProperty scope="context" name="errbitApiKey" source="errbit.api-key" defaultValue=""/>
@@ -18,14 +19,13 @@
     </appender>
 
     <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
-        <file>log/${applicationName}.log</file>
+        <file>${logDir}/${applicationName}.log</file>
         <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
-            <fileNamePattern>log/${applicationName}.%d{yyyy-MM-dd}.%i.log</fileNamePattern>
+            <fileNamePattern>${logDir}/${applicationName}.%d{yyyy-MM-dd}.%i.log</fileNamePattern>
             <maxFileSize>15MB</maxFileSize>
             <maxHistory>30</maxHistory>
             <totalSizeCap>1GB</totalSizeCap>
         </rollingPolicy>
-
         <encoder>
             <pattern>%d{HH:mm:ss.SSS} %loglvl(%-5level %40.40logger{35}): %boldWhite(%msg) %n</pattern>
         </encoder>
