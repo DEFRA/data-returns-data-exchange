@@ -57,6 +57,7 @@
                         </goals>
                         <phase>pre-integration-test</phase>
                         <configuration>
+                            <skip>${skipITs}</skip>
                             <executable>${root.dir}/launches/serverctl</executable>
                             <arguments>
                                 <argument>--quiet</argument>
@@ -74,6 +75,7 @@
                         </goals>
                         <phase>post-integration-test</phase>
                         <configuration>
+                            <skip>${skipITs}</skip>
                             <executable>${root.dir}/launches/serverctl</executable>
                             <arguments>
                                 <argument>master_data_api</argument>
