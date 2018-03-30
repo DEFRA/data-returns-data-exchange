@@ -75,8 +75,7 @@ public interface MasterDataLookupService {
         @Override
         public Map<Context, List<Resource<Regime>>> getRegimes() {
             final ParameterizedTypeReference<Resources<Resource<Regime>>> typeRef = new
-                    ParameterizedTypeReference<Resources<Resource<Regime>>>
-                            () {
+                    ParameterizedTypeReference<Resources<Resource<Regime>>>() {
                     };
             final Collection<Resource<Regime>> result = retrieve(typeRef, "regimes").getContent();
             return result.stream()
@@ -87,8 +86,7 @@ public interface MasterDataLookupService {
         @Override
         public List<Resource<RegimeObligation>> getRegimeObligations(final Resource<Regime> regime) {
             final ParameterizedTypeReference<Resources<Resource<RegimeObligation>>> typeRef = new
-                    ParameterizedTypeReference<Resources<Resource<RegimeObligation>>>
-                            () {
+                    ParameterizedTypeReference<Resources<Resource<RegimeObligation>>>() {
                     };
             return new ArrayList<>(retrieve(typeRef, regime.getLink("regimeObligations").expand().getHref()).getContent());
         }
@@ -96,8 +94,7 @@ public interface MasterDataLookupService {
         @Override
         public Resource<Route> getRoute(final Resource<RegimeObligation> obligation) {
             final ParameterizedTypeReference<Resource<Route>> typeRef = new
-                    ParameterizedTypeReference<Resource<Route>>
-                            () {
+                    ParameterizedTypeReference<Resource<Route>>() {
                     };
             return retrieve(typeRef, obligation.getLink("route").expand().getHref());
         }
@@ -105,8 +102,7 @@ public interface MasterDataLookupService {
         @Override
         public List<Resource<ParameterGroup>> getParameterGroups(final Resource<RegimeObligation> obligation) {
             final ParameterizedTypeReference<Resources<Resource<ParameterGroup>>> typeRef = new
-                    ParameterizedTypeReference<Resources<Resource<ParameterGroup>>>
-                            () {
+                    ParameterizedTypeReference<Resources<Resource<ParameterGroup>>>() {
                     };
             return new ArrayList<>(retrieve(typeRef, obligation.getLink("parameterGroups").expand().getHref()).getContent());
         }
@@ -119,8 +115,7 @@ public interface MasterDataLookupService {
         @Override
         public List<Resource<Parameter>> getParameters(final Resource<ParameterGroup> parameterGroup) {
             final ParameterizedTypeReference<Resources<Resource<Parameter>>> typeRef = new
-                    ParameterizedTypeReference<Resources<Resource<Parameter>>>
-                            () {
+                    ParameterizedTypeReference<Resources<Resource<Parameter>>>() {
                     };
             return new ArrayList<>(retrieve(typeRef, parameterGroup.getLink("parameters").expand().getHref()).getContent());
         }
@@ -132,8 +127,7 @@ public interface MasterDataLookupService {
             resource += "&id=uniqueIdentifiers/" + Objects.toString(uniqueIdentifier);
 
             final ParameterizedTypeReference<Resources<Resource<Regime>>> typeRef = new
-                    ParameterizedTypeReference<Resources<Resource<Regime>>>
-                            () {
+                    ParameterizedTypeReference<Resources<Resource<Regime>>>() {
                     };
             return new ArrayList<>(retrieve(typeRef, resource).getContent());
         }

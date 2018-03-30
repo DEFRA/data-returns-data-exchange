@@ -432,7 +432,7 @@ public interface DatabaseLoader {
 
                 final Set<String> groupNames = LoaderUtils.extractGroupSet(rowData.get("unit_groups"));
 
-
+                // FIXME: We should just move the values into the CSV file
                 for (final String groupName : groupNames) {
                     switch (groupName) {
                         case "ECM":
@@ -457,7 +457,9 @@ public interface DatabaseLoader {
                             regimeObligationMap.get("PI_EPRTR_RTCW").getUnits().add(entity);
                             regimeObligationMap.get("PI_EPRTR_OSTW").getUnits().add(entity);
                             break;
-
+                        default:
+                            log.error("Unrecognised unit group");
+                            break;
                     }
                 }
                 return entity;

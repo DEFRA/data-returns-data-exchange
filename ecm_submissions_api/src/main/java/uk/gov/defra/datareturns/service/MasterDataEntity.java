@@ -1,6 +1,9 @@
 package uk.gov.defra.datareturns.service;
 
-public class MasterDataEntity {
+public final class MasterDataEntity {
+    private MasterDataEntity() {
+    }
+
     public static final String EA_ID = "uniqueIdentifiers";
     public static final String EA_ID_ALIAS = "uniqueIdentifierAliases";
     public static final String SITE = "sites";

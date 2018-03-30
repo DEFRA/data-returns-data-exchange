@@ -38,7 +38,7 @@ public class DataLoader {
      * Load baseline CSV data into the database
      */
     @EventListener
-    private void onApplicationEvent(ContextRefreshedEvent event) {
+    private void onApplicationEvent(final ContextRefreshedEvent event) {
         if (configuration.isRunAtStartup()) {
             try {
                 loadAll();

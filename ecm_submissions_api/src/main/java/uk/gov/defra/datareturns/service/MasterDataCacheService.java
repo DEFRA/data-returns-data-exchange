@@ -34,8 +34,7 @@ public interface MasterDataCacheService {
             log.info("Building strict master data cache for {} for MasterDataCacheService instance {}", entityName, this.toString());
             final Map<String, Long> idMap = new HashMap<>();
             final ParameterizedTypeReference<Resources<Resource<BaseEntity>>> typeRef = new
-                    ParameterizedTypeReference<Resources<Resource<BaseEntity>>>
-                            () {
+                    ParameterizedTypeReference<Resources<Resource<BaseEntity>>>() {
                     };
             masterDataLookupService.retrieve(typeRef, entityName).forEach(e -> {
                 final Long id = Long.parseLong(MasterDataLookupService.getResourceId(e));
@@ -50,8 +49,7 @@ public interface MasterDataCacheService {
             log.info("Building relaxed master data cache for {} for MasterDataCacheService instance {}", entityName, this.toString());
             final Map<String, Long> idMap = new HashMap<>();
             final ParameterizedTypeReference<Resources<Resource<BaseEntity>>> typeRef = new
-                    ParameterizedTypeReference<Resources<Resource<BaseEntity>>>
-                            () {
+                    ParameterizedTypeReference<Resources<Resource<BaseEntity>>>() {
                     };
             masterDataLookupService.retrieve(typeRef, entityName).forEach(e -> {
                 final Long id = Long.parseLong(MasterDataLookupService.getResourceId(e));
