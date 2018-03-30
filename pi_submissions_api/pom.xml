@@ -59,7 +59,7 @@
                         <configuration>
                             <executable>${root.dir}/launches/serverctl</executable>
                             <arguments>
-                                <!--<argument>&#45;&#45;quiet</argument>-->
+                                <argument>--quiet</argument>
                                 <argument>--port=9020</argument>
                                 <argument>master_data_api</argument>
                                 <argument>start</argument>
