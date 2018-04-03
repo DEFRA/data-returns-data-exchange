@@ -5,6 +5,7 @@ import com.univocity.parsers.csv.CsvParser;
 import com.univocity.parsers.csv.CsvParserSettings;
 import com.univocity.parsers.tsv.TsvParser;
 import com.univocity.parsers.tsv.TsvParserSettings;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.input.BOMInputStream;
 import uk.gov.defra.datareturns.data.model.AliasingEntity;
@@ -82,6 +83,7 @@ final class LoaderUtils {
      * @param aliasEntityFactory        factory method for the aliasing entity
      * @param <E>
      */
+    @SuppressFBWarnings(value = "UC_USELESS_OBJECT", justification = "preferredByAlias is definitely not useless!")
     static <E extends MasterDataEntity, A extends AliasingEntity<E>> void persistSelfReferencingEntityFile(
             final List<Map<String, String>> data,
             final Consumer<E> primaryPersistenceHandler,

@@ -6,7 +6,6 @@ import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.id.enhanced.SequenceStyleGenerator;
 import uk.gov.defra.datareturns.data.model.AbstractBaseEntity;
 import uk.gov.defra.datareturns.data.model.dataset.Dataset;
-import uk.gov.defra.datareturns.data.model.record.Record;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
@@ -45,14 +44,14 @@ public class Upload extends AbstractBaseEntity {
         if (this == o) {
             return true;
         }
-        if (!(o instanceof Record)) {
+        if (!(o instanceof Upload)) {
             return false;
         }
         if (getId() == null) {
             return false;
         }
-        final Record record = (Record) o;
-        return Objects.equals(getId(), record.getId());
+        final Upload upload = (Upload) o;
+        return Objects.equals(getId(), upload.getId());
     }
 
     @Override

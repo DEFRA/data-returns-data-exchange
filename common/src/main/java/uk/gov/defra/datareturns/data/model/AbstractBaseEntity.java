@@ -1,6 +1,7 @@
 package uk.gov.defra.datareturns.data.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Getter;
 import lombok.Setter;
@@ -56,6 +57,7 @@ public abstract class AbstractBaseEntity {
     @Column(nullable = false, updatable = false)
     @JsonProperty("_created")
     @ApiModelProperty(readOnly = true)
+    @SuppressFBWarnings("EI_EXPOSE_REP")
     private Date created;
 
     /**
@@ -65,6 +67,7 @@ public abstract class AbstractBaseEntity {
     @Column(nullable = false)
     @JsonProperty("_last_modified")
     @ApiModelProperty(readOnly = true)
+    @SuppressFBWarnings("EI_EXPOSE_REP")
     private Date lastModified;
 
     /**

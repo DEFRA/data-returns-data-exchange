@@ -1,5 +1,6 @@
 package uk.gov.defra.datareturns.util;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
@@ -28,6 +29,7 @@ public class SpringApplicationContextProvider implements ApplicationContextAware
         return context;
     }
 
+    @SuppressFBWarnings("ST_WRITE_TO_STATIC_FROM_INSTANCE_METHOD")
     @Override
     public void setApplicationContext(final ApplicationContext ctx) {
         context = ctx;

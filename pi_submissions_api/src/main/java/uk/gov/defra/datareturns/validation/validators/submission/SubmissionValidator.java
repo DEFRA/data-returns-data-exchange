@@ -29,8 +29,8 @@ public class SubmissionValidator implements ConstraintValidator<ValidSubmission,
     }
 
     private boolean validateReportingReference(final ConstraintValidatorContext context, final Submission submission) {
-        final Object reference = submission.getReportingReference();
-
+        // TODO: Add validations for unique identifier
+//        final Object reference = submission.getReportingReference();
 //        http://localhost:9020/api/regimes/search/findRegimesForContextAndUniqueIdentifier?context=PI&id=uniqueIdentifiers/7
         return true;
     }

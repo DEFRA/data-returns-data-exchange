@@ -19,7 +19,7 @@ import java.util.Map;
 @RestController
 @RequiredArgsConstructor
 @ConditionalOnWebApplication
-public class ErrorController implements org.springframework.boot.autoconfigure.web.ErrorController {
+public class RestErrorController implements org.springframework.boot.autoconfigure.web.ErrorController {
     /**
      * spring boot server properties bean
      */

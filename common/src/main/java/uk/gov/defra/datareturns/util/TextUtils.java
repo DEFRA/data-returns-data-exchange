@@ -4,10 +4,11 @@ import org.apache.commons.lang3.StringUtils;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
+import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * Text processing utilities
@@ -167,16 +168,13 @@ public final class TextUtils {
         LINE_FEED_LF(0x000a, SPACE),
         CARRIAGE_RETURN_CR(0x000d, SPACE);
 
-        /**
-         * Map of aliases to their target character
-         */
-        private static final int CAPACITY = Math.round(CharacterSubstitution.values().length / 0.75f);
-        public static final Map<Character, Character> SUBSTITUTIONS = new HashMap<>(CAPACITY);
+        public static final Map<Character, Character> SUBSTITUTIONS;
 
         static {
-            Arrays.stream(CharacterSubstitution.values())
+            final Map<Character, Character> subMap = Arrays.stream(CharacterSubstitution.values())
                     .filter(e -> e.substitution() != null)
-                    .forEach(e -> SUBSTITUTIONS.put(e.character(), e.substitution().character()));
+                    .collect(Collectors.toMap(e -> e.character(), e -> e.substitution().character()));
+            SUBSTITUTIONS = Collections.unmodifiableMap(subMap);
         }
 
         private final int codepoint;

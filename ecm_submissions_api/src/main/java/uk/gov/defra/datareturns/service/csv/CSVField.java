@@ -94,7 +94,7 @@ public enum CSVField {
     /**
      * An array of all field names
      */
-    public static final String[] ALL_FIELD_NAMES_ARR = Arrays.stream(values()).map(CSVField::getName)
+    private static final String[] ALL_FIELD_NAMES_ARR = Arrays.stream(values()).map(CSVField::getName)
             .toArray(String[]::new);
 
     /**
@@ -112,7 +112,7 @@ public enum CSVField {
     /**
      * An array of mandatory field names
      */
-    public static final String[] MANDATORY_FIELD_NAMES_ARR = MANDATORY_FIELDS.stream().map(CSVField::getName)
+    private static final String[] MANDATORY_FIELD_NAMES_ARR = MANDATORY_FIELDS.stream().map(CSVField::getName)
             .toArray(String[]::new);
 
     /**

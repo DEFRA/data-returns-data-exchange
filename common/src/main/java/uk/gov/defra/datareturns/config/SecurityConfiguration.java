@@ -69,7 +69,7 @@ public class SecurityConfiguration {
      */
     @Configuration
     @EnableGlobalMethodSecurity(prePostEnabled = true)
-    class MethodSecurityConfiguration extends GlobalMethodSecurityConfiguration {
+    static class MethodSecurityConfiguration extends GlobalMethodSecurityConfiguration {
         @Override
         protected MethodSecurityExpressionHandler createExpressionHandler() {
             final CustomMethodSecurityExpressionHandler expressionHandler = new CustomMethodSecurityExpressionHandler();
@@ -90,7 +90,7 @@ public class SecurityConfiguration {
      */
     @Configuration
     @ConditionalOnWebApplication
-    class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
+    static class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
         @Override
         protected void configure(final HttpSecurity http) throws Exception {
             http.csrf().disable()
@@ -119,7 +119,7 @@ public class SecurityConfiguration {
      *
      * @author Sam Gardner-Dell
      */
-    class PermissionEvaluatorImpl implements PermissionEvaluator {
+    static class PermissionEvaluatorImpl implements PermissionEvaluator {
         @Override
         public boolean hasPermission(final Authentication authentication, final Object targetDomainObject, final Object permission) {
             return true;
@@ -132,7 +132,7 @@ public class SecurityConfiguration {
         }
     }
 
-    class CustomMethodSecurityExpressionRoot extends SecurityExpressionRoot implements MethodSecurityExpressionOperations {
+    public static class CustomMethodSecurityExpressionRoot extends SecurityExpressionRoot implements MethodSecurityExpressionOperations {
         private Object filterObject;
         private Object returnObject;
         private Object target;
@@ -178,7 +178,7 @@ public class SecurityConfiguration {
         }
     }
 
-    public class CustomMethodSecurityExpressionHandler extends DefaultMethodSecurityExpressionHandler {
+    public static class CustomMethodSecurityExpressionHandler extends DefaultMethodSecurityExpressionHandler {
         private final AuthenticationTrustResolver trustResolver = new AuthenticationTrustResolverImpl();
 
         @Override

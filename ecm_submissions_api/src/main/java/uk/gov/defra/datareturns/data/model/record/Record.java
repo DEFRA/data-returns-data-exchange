@@ -1,5 +1,6 @@
 package uk.gov.defra.datareturns.data.model.record;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.GenericGenerator;
@@ -60,6 +61,7 @@ public class Record extends AbstractBaseEntity {
     @Basic
     @Column(name = "mon_date")
     @NotNull(message = "DR9020-Missing")
+    @SuppressFBWarnings("EI_EXPOSE_REP")
     private Date monitoringDate;
 
     @Basic

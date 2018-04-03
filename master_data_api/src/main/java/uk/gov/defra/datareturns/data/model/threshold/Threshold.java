@@ -17,6 +17,7 @@ import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.ManyToOne;
+import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.Objects;
 
@@ -35,7 +36,7 @@ import java.util.Objects;
 )
 @Getter
 @Setter
-public class Threshold extends AbstractBaseEntity {
+public class Threshold extends AbstractBaseEntity implements Serializable {
     @ManyToOne(optional = false)
     private RegimeObligation regimeObligation;
 
