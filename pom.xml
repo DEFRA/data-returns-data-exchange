@@ -602,6 +602,8 @@
                     <version>${findbugs-maven-plugin.version}</version>
                     <configuration>
                         <excludeFilterFile>${root.dir}/.policies/findbugs/findbugs-exclude.xml</excludeFilterFile>
+                        <xmlOutput>true</xmlOutput>
+                        <xmlOutputDirectory>${project.reporting.outputDirectory}</xmlOutputDirectory>
                     </configuration>
                 </plugin>
 
@@ -1044,6 +1046,13 @@
                     </reportSet>
                 </reportSets>
             </plugin>
+
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>findbugs-maven-plugin</artifactId>
+            </plugin>
+
+
             <plugin>
                 <groupId>org.jacoco</groupId>
                 <artifactId>jacoco-maven-plugin</artifactId>
