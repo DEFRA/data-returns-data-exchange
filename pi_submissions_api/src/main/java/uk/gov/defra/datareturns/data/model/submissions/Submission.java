@@ -11,7 +11,6 @@ import org.springframework.data.rest.core.annotation.RestResource;
 import uk.gov.defra.datareturns.data.model.AbstractBaseEntity;
 import uk.gov.defra.datareturns.data.model.releases.Release;
 import uk.gov.defra.datareturns.data.model.transfers.OffsiteWasteTransfer;
-import uk.gov.defra.datareturns.data.model.transfers.OverseasWasteTransfer;
 import uk.gov.defra.datareturns.validation.validators.submission.ValidSubmission;
 
 import javax.persistence.CascadeType;
@@ -76,7 +75,7 @@ public class Submission extends AbstractBaseEntity {
     /*
     TODO: Investigate/report bug with the spring data rest framework.
 
-    This field has had to be called "releasesData" to avoid a strange issue with the spring data rest framework.  When named "releases" without
+    This field has had to be called "submissionReleases" to avoid a strange issue with the spring data rest framework.  When named "releases" without
     any camel-casing attempting to POST a new submission with an array of releases would result in the following error:
     {"cause":null,"message":"Can not handle managed/back reference 'defaultReference': type: value deserializer of type org.springframework.data
     .rest.webmvc.json.PersistentEntityJackson2Module$UriStringDeserializer does not support them"}
@@ -92,18 +91,14 @@ public class Submission extends AbstractBaseEntity {
     @JsonProperty(value = "releases")
     @JsonManagedReference
     @Valid
-    private Set<Release> releasesData;
-
-
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "submission")
-    @JsonManagedReference
-    @Valid
-    private Set<OverseasWasteTransfer> overseasWasteTransfers;
+    private Set<Release> submissionReleases;
 
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "submission")
+    @RestResource(path = "transfers", rel = "transfers")
+    @JsonProperty(value = "transfers")
     @JsonManagedReference
     @Valid
-    private Set<OffsiteWasteTransfer> offsiteWasteTransfers;
+    private Set<OffsiteWasteTransfer> submissionTransfers;
 
     @Override
     public final boolean equals(final Object o) {

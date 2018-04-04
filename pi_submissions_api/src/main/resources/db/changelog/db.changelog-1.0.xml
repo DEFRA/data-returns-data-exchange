@@ -202,7 +202,8 @@
             </column>
         </createTable>
 
-        <addUniqueConstraint columnNames="submission_id, route_id, substance_id" constraintName="uniq_submission_route_substance" tableName="pi_release"/>
+        <addUniqueConstraint columnNames="submission_id, route_id, substance_id" constraintName="uniq_submission_route_substance"
+                             tableName="pi_release"/>
 
         <rollback>
             <dropTable tableName="pi_release"/>
@@ -241,6 +242,78 @@
         </rollback>
     </changeSet>
 
+    <!--
+    ****************************************************************
+    Offsite transfers
+    ****************************************************************
+    -->
+    <changeSet id="create-table: pi_transfer_offsite" author="Defra">
+        <createSequence sequenceName="pi_transfer_offsite_id_seq" startValue="1"/>
+
+        <createTable tableName="pi_transfer_offsite">
+            <column name="id" type="bigint" defaultValueSequenceNext="pi_transfer_offsite_id_seq">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="submission_id" type="bigint">
+                <constraints nullable="false"
+                             foreignKeyName="fk_transfer_offsite__submission"
+                             references="pi_submission(id)"/>
+            </column>
+            <column name="ewc_activity_id" type="int">
+                <constraints nullable="false"/>
+            </column>
+            <column name="method" type="varchar(100)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="tonnage" type="numeric(30, 15)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="below_reporting_threshold" type="boolean">
+                <constraints nullable="false"/>
+            </column>
+            <column name="wfd_disposal_id" type="int">
+                <constraints nullable="false"/>
+            </column>
+            <column name="wfd_recovery_id" type="int">
+                <constraints nullable="false"/>
+            </column>
+            <column name="created" type="timestamp">
+                <constraints nullable="false"/>
+            </column>
+            <column name="last_modified" type="timestamp">
+                <constraints nullable="false"/>
+            </column>
+            <column name="version" type="smallint">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="create-table: pi_transfer_offsite_aud" author="Defra">
+        <createTable tableName="pi_transfer_offsite_aud">
+            <column name="id" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+            <column name="rev" type="int">
+                <constraints nullable="false"/>
+            </column>
+            <column name="revtype" type="tinyint">
+                <constraints nullable="false"/>
+            </column>
+            <column name="submission_id" type="bigint"/>
+            <column name="ewc_activity_id" type="int"/>
+            <column name="method" type="varchar(100)"/>
+            <column name="tonnage" type="numeric(30, 15)"/>
+            <column name="below_reporting_threshold" type="boolean"/>
+            <column name="wfd_disposal_id" type="int"/>
+            <column name="wfd_recovery_id" type="int"/>
+        </createTable>
+
+        <addPrimaryKey tableName="pi_transfer_offsite_aud" columnNames="id, rev"/>
+        <rollback>
+            <dropTable tableName="pi_transfer_offsite_aud"/>
+        </rollback>
+    </changeSet>
 
     <!--
     ****************************************************************
@@ -253,19 +326,13 @@
             <column name="id" type="bigint" defaultValueSequenceNext="pi_transfer_overseas_waste_id_seq">
                 <constraints primaryKey="true" nullable="false"/>
             </column>
-            <column name="submission_id" type="bigint">
+            <column name="transfer_id" type="bigint">
                 <constraints
                         nullable="false"
-                        foreignKeyName="fk_transfer_overseas_waste__submission"
-                        references="pi_submission(id)"/>
+                        foreignKeyName="fk_transfer_overseas_waste__transfer"
+                        references="pi_transfer_offsite(id)"/>
             </column>
             <column name="method" type="varchar(100)">
-                <constraints nullable="false"/>
-            </column>
-            <column name="operation" type="varchar(100)">
-                <constraints nullable="false"/>
-            </column>
-            <column name="substance_id" type="int">
                 <constraints nullable="false"/>
             </column>
             <column name="tonnage" type="numeric(30, 15)">
@@ -329,10 +396,8 @@
             <column name="revtype" type="tinyint">
                 <constraints nullable="false"/>
             </column>
-            <column name="submission_id" type="bigint"/>
+            <column name="transfer_id" type="bigint"/>
             <column name="method" type="varchar(100)"/>
-            <column name="operation" type="varchar(100)"/>
-            <column name="substance_id" type="int"/>
             <column name="tonnage" type="numeric(30, 15)"/>
             <column name="responsible_company_name" type="varchar(255)"/>
             <column name="responsible_company_address_country" type="varchar(2)"/>
@@ -353,68 +418,5 @@
         </rollback>
     </changeSet>
 
-    <!--
-    ****************************************************************
-    Offsite transfers
-    ****************************************************************
-    -->
-    <changeSet id="create-table: pi_transfer_offsite" author="Defra">
-        <createSequence sequenceName="pi_transfer_offsite_id_seq" startValue="1"/>
 
-        <createTable tableName="pi_transfer_offsite">
-            <column name="id" type="bigint" defaultValueSequenceNext="pi_transfer_offsite_id_seq">
-                <constraints primaryKey="true" nullable="false"/>
-            </column>
-            <column name="submission_id" type="bigint">
-                <constraints nullable="false"
-                             foreignKeyName="fk_transfer_offsite__submission"
-                             references="pi_submission(id)"/>
-            </column>
-            <column name="ewc_activity_id" type="int">
-                <constraints nullable="false"/>
-            </column>
-            <column name="tonnage" type="numeric(30, 15)">
-                <constraints nullable="false"/>
-            </column>
-            <column name="wfd_disposal_id" type="int">
-                <constraints nullable="false"/>
-            </column>
-            <column name="wfd_recovery_id" type="int">
-                <constraints nullable="false"/>
-            </column>
-            <column name="created" type="timestamp">
-                <constraints nullable="false"/>
-            </column>
-            <column name="last_modified" type="timestamp">
-                <constraints nullable="false"/>
-            </column>
-            <column name="version" type="smallint">
-                <constraints nullable="false"/>
-            </column>
-        </createTable>
-    </changeSet>
-
-    <changeSet id="create-table: pi_transfer_offsite_aud" author="Defra">
-        <createTable tableName="pi_transfer_offsite_aud">
-            <column name="id" type="bigint">
-                <constraints nullable="false"/>
-            </column>
-            <column name="rev" type="int">
-                <constraints nullable="false"/>
-            </column>
-            <column name="revtype" type="tinyint">
-                <constraints nullable="false"/>
-            </column>
-            <column name="submission_id" type="bigint"/>
-            <column name="ewc_activity_id" type="int"/>
-            <column name="tonnage" type="numeric(30, 15)"/>
-            <column name="wfd_disposal_id" type="int"/>
-            <column name="wfd_recovery_id" type="int"/>
-        </createTable>
-
-        <addPrimaryKey tableName="pi_transfer_offsite_aud" columnNames="id, rev"/>
-        <rollback>
-            <dropTable tableName="pi_transfer_offsite_aud"/>
-        </rollback>
-    </changeSet>
 </databaseChangeLog>

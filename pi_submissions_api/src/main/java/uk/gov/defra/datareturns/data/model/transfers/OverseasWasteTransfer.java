@@ -8,7 +8,6 @@ import org.hibernate.envers.Audited;
 import org.hibernate.id.enhanced.SequenceStyleGenerator;
 import uk.gov.defra.datareturns.data.model.AbstractBaseEntity;
 import uk.gov.defra.datareturns.data.model.Address;
-import uk.gov.defra.datareturns.data.model.submissions.Submission;
 
 import javax.persistence.Basic;
 import javax.persistence.Column;
@@ -39,7 +38,7 @@ import java.util.Objects;
 public class OverseasWasteTransfer extends AbstractBaseEntity {
     @ManyToOne(optional = false)
     @JsonBackReference
-    private Submission submission;
+    private OffsiteWasteTransfer transfer;
 
     @Basic
     private String responsibleCompanyName;
@@ -50,19 +49,12 @@ public class OverseasWasteTransfer extends AbstractBaseEntity {
     @Embedded
     private Address destinationAddress;
 
-    @Column(nullable = false)
-    private int substanceId;
-
     @Column(nullable = false, precision = 30, scale = 15)
     private BigDecimal tonnage;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private OverseasWasteTransferOperation operation;
-
-    @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
-    private OverseasWasteTransferMethod method;
+    private WasteTransferMethod method;
 
     @Override
     public final boolean equals(final Object o) {
@@ -84,11 +76,4 @@ public class OverseasWasteTransfer extends AbstractBaseEntity {
         return Objects.hash(getId());
     }
 
-    public enum OverseasWasteTransferOperation {
-        Disposal, Recovery
-    }
-
-    public enum OverseasWasteTransferMethod {
-        Weighing, Calculation, Estimation
-    }
 }

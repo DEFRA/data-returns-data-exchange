@@ -3,7 +3,11 @@
   "applicable_year": 2017,
   "status": "Submitted",
   "nace_id": 1,
-  "nose_ids": [1, 2,3],
+  "nose_ids": [
+    1,
+    2,
+    3
+  ],
   "releases": [
     {
       "substance_id": 660,
@@ -30,37 +34,54 @@
       "unit_id": 141
     }
   ],
-  "overseas_waste_transfers": [
-    {
-      "substance_id": 612,
-      "operation": "Disposal",
-      "method": "Calculation",
-      "tonnage": 30.2,
-      "below_reporting_threshold": false,
-      "unit_id": 142,
-      "responsible_company_name": "A company ltd",
-      "responsible_company_address": {
-        "line1": "100 Acorn Close",
-        "line2": "Nutsville",
-        "town_or_city": "Nutston",
-        "post_code": "NU1 1AC",
-        "country": "UK"
-      },
-      "destination_address": {
-        "line1": "100 Acorn Close",
-        "line2": "Nutsville",
-        "town_or_city": "Nutston",
-        "post_code": "NU1 1AC",
-        "country": "UK"
-      }
-    }
-  ],
-  "offsite_waste_transfers": [
+  "transfers": [
     {
       "ewc_activity_id": 1,
       "wfd_disposal_id": 1,
       "wfd_recovery_id": 1,
-      "tonnage": 1
+      "method": "Calculation",
+      "tonnage": 100,
+      "below_reporting_threshold": false,
+      "overseas": [
+        {
+          "tonnage": 50,
+          "method": "Calculation",
+          "responsible_company_name": "A company ltd",
+          "responsible_company_address": {
+            "line1": "100 Acorn Close",
+            "line2": "Nutsville",
+            "town_or_city": "Nutston",
+            "post_code": "NU1 1AC",
+            "country": "UK"
+          },
+          "destination_address": {
+            "line1": "100 Acorn Close",
+            "line2": "Nutsville",
+            "town_or_city": "Nutston",
+            "post_code": "NU1 1AC",
+            "country": "UK"
+          }
+        },
+        {
+          "tonnage": 20,
+          "method": "Estimation",
+          "responsible_company_name": "A company ltd",
+          "responsible_company_address": {
+            "line1": "100 Acorn Close",
+            "line2": "Nutsville",
+            "town_or_city": "Nutston",
+            "post_code": "NU1 1AC",
+            "country": "UK"
+          },
+          "destination_address": {
+            "line1": "100 Acorn Close",
+            "line2": "Nutsville",
+            "town_or_city": "Nutston",
+            "post_code": "NU1 1AC",
+            "country": "UK"
+          }
+        }
+      ]
     }
   ]
 }

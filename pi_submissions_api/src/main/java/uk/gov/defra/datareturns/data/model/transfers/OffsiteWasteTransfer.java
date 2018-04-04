@@ -1,20 +1,29 @@
 package uk.gov.defra.datareturns.data.model.transfers;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.envers.Audited;
 import org.hibernate.id.enhanced.SequenceStyleGenerator;
+import org.springframework.data.rest.core.annotation.RestResource;
 import uk.gov.defra.datareturns.data.model.AbstractBaseEntity;
 import uk.gov.defra.datareturns.data.model.submissions.Submission;
 
 import javax.persistence.Basic;
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import javax.validation.Valid;
 import java.math.BigDecimal;
 import java.util.Objects;
+import java.util.Set;
 
 /**
  * PI Off-site waste transfers model
@@ -47,6 +56,21 @@ public class OffsiteWasteTransfer extends AbstractBaseEntity {
 
     @Column(nullable = false, precision = 30, scale = 15)
     private BigDecimal tonnage;
+
+    @Basic
+    @Column(nullable = false)
+    private boolean belowReportingThreshold;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private WasteTransferMethod method;
+
+    @RestResource(path = "overseas", rel = "overseas")
+    @JsonProperty(value = "overseas")
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "transfer")
+    @JsonManagedReference
+    @Valid
+    private Set<OverseasWasteTransfer> overseasTransfers;
 
     @Override
     public final boolean equals(final Object o) {
