@@ -1,31 +1,9 @@
-# Data Returns Backend Service
+[![Build Status - develop](https://travis-ci.org/DEFRA/data-returns-data-exchange.svg?branch=develop)](https://travis-ci.org/DEFRA/data-returns-data-exchange)
+[![Build Status - master](https://travis-ci.org/DEFRA/data-returns-data-exchange.svg?branch=master)](https://travis-ci.org/DEFRA/data-returns-data-exchange)
 
-RESTful service to support the submission and validation of Data Exchange Protocol (DEP) compliant data returns and their
-transmission to downstream systems.
+# Data Returns API Platform
 
-## Running
-
-The service JAR is executable.  A management can be found in launches/aws/datareturns.sh
-
-### Profiles
-
-The will run in standalone mode by default using the local filesystem for persistence.
-
-To run in a cluster it is necessary to supply one of the appropriate profiles for the environment.
-
-Current profiles are
-
-- **debug** - starts the service with increased logging
-- **cluster** - starts the service in cluster mode (AWS S3 persistence)
-- **dev_cluster/test_cluster** - starts the service in debug & cluster modes
-- **pre_prod** - starts the service in cluster mode for pre-production environment
-- **production** - starts the service in production mode
-
-To specify a profile at start-up, add the `spring.profiles.active` argument, for example
-
-```bash
-data-returns-data-exchange-1.0-SNAPSHOT.jar --spring.profiles.active=production
-```
+API platform for data returns services. 
 
 ## Contributing to this project
 
