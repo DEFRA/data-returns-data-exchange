@@ -62,20 +62,21 @@ set -- "${NON_FLAGS[@]}"
 # Location of this script
 SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 # Project root folder (relative to script location)
-PROJECT_ROOT="$( readlink -f "${PROJECT_ROOT:-${SCRIPT_DIR}/../}" )"
+PROJECT_ROOT="$( cd "${SCRIPT_DIR}/../" ; pwd -P )"
 
 # Service to run - first non-flag argument
 if [ -z $1 ] ; then
     die_on "Must specify a project name, trailing / characters are ignored"
 fi
-POM_PATH=$( readlink -f ${PROJECT_ROOT}/$1/pom.xml )
+POM_PATH="${PROJECT_ROOT}/$1/pom.xml"
 
 SERVICE_POM=".${POM_PATH#$PROJECT_ROOT}"
 # Action to take - start/stop/run - second non-flag argument
 ACTION="${2:-run}"
 # Spring boot run arguments (3rd non-flag argument onwards)
 RUN_ARGS="${@:3}"
-declare -A KNOWN_ACTIONS=(["start"]=1 ["stop"]=1 ["run"]=1 )
+
+KNOWN_ACTIONS=('start','stop','run')
 
 cd ${PROJECT_ROOT}
 
@@ -85,8 +86,8 @@ if [ ! -f ${SERVICE_POM} ] ; then
     exit 1
 fi
 
-if [ ! -n "${KNOWN_ACTIONS[$ACTION]}" ] ; then
-    echo "Unrecognised action "${ACTION}", must be one of: ${!KNOWN_ACTIONS[@]}"
+if [[ ! " ${KNOWN_ACTIONS[*]} " == *"$ACTION"* ]] ; then
+    echo "Unrecognised action "${ACTION}", must be one of: ${KNOWN_ACTIONS}"
     print_usage
     exit 2
 fi

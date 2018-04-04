@@ -48,13 +48,13 @@ set -- "${NON_FLAGS[@]}"
 # Location of this script
 SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 # Project root folder (relative to script location)
-PROJECT_ROOT="$( readlink -f "${PROJECT_ROOT:-${SCRIPT_DIR}/../}" )"
+PROJECT_ROOT="$( cd "${SCRIPT_DIR}/../" ; pwd -P )"
 
 # Service whose database to act on - first non-flag argument
 if [ -z $1 ] ; then
     die_on "Must specify a project name, trailing / characters are ignored"
 fi
-POM_PATH=$( readlink -f ${PROJECT_ROOT}/$1/pom.xml )
+POM_PATH="${PROJECT_ROOT}/$1/pom.xml"
 
 SERVICE_POM=".${POM_PATH#$PROJECT_ROOT}"
 
