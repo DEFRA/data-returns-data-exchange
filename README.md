@@ -1,9 +1,12 @@
-[![Build Status - develop](https://travis-ci.org/DEFRA/data-returns-data-exchange.svg?branch=develop)](https://travis-ci.org/DEFRA/data-returns-data-exchange)
-[![Build Status - master](https://travis-ci.org/DEFRA/data-returns-data-exchange.svg?branch=master)](https://travis-ci.org/DEFRA/data-returns-data-exchange)
-
 # Data Returns API Platform
 
 API platform for data returns services. 
+
+## Build status
+
+develop - [![Build Status - develop](https://travis-ci.org/DEFRA/data-returns-data-exchange.svg?branch=develop)](https://travis-ci.org/DEFRA/data-returns-data-exchange)
+
+master - [![Build Status - master](https://travis-ci.org/DEFRA/data-returns-data-exchange.svg?branch=master)](https://travis-ci.org/DEFRA/data-returns-data-exchange)
 
 ## Contributing to this project
 
