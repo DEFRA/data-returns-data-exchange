@@ -8,19 +8,16 @@ node {
 
 pipeline {
     agent { label buildProperties['jenkins.slave'] }
-    tools {
-        maven 'maven-latest'
-    }
     stages {
         stage('Build project artifacts') {
             steps {
                 sh 'printenv'
-                sh "mvn -B -DskipTests -Ddependency-check.skip=true -DskipTests=true -Dcheckstyle.skip=true clean package"
+                sh "./mvnw -B -DskipTests -Ddependency-check.skip=true -DskipTests=true -Dcheckstyle.skip=true clean package"
             }
         }
         stage('Build docker image') {
             steps {
-                sh "mvn -f pi_submissions_api/pom.xml dockerfile:build"
+                sh "./mvnw -f pi_submissions_api/pom.xml dockerfile:build"
             }
         }
         stage('Push docker image') {
