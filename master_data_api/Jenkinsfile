@@ -12,7 +12,7 @@ pipeline {
         stage('Build project artifacts') {
             steps {
                 sh 'printenv'
-                sh "./mvnw -B -DskipTests -Ddependency-check.skip=true -DskipTests=true -Dcheckstyle.skip=true clean package"
+                sh "./mvnw -B -DskipTests -Ddependency-check.skip=true -DskipTests=true -Dcheckstyle.skip=true -T 1C -am -pl master_data_api/pom.xml clean package"
             }
         }
         stage('Build docker image') {
