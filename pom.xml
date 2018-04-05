@@ -76,7 +76,7 @@
         <!--Lombok -->
         <lombok.version>1.16.20</lombok.version>
 
-        <docker.image.prefix>defra</docker.image.prefix>
+        <docker.image.prefix>drp</docker.image.prefix>
         <dockerfile-plugin.version>1.4.0</dockerfile-plugin.version>
 
         <spring-boot.version>1.5.10.RELEASE</spring-boot.version>
