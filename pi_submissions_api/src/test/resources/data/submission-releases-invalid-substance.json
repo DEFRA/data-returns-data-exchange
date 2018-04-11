@@ -3,7 +3,11 @@
   "applicable_year": 2017,
   "status": "Submitted",
   "nace_id": 1,
-  "nose_ids": [1, 2,3],
+  "nose_ids": [
+    1,
+    2,
+    3
+  ],
   "releases": [
     {
       "substance_id": 3233,

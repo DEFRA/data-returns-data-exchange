@@ -11,6 +11,7 @@ import org.hibernate.id.enhanced.SequenceStyleGenerator;
 import org.springframework.data.rest.core.annotation.RestResource;
 import uk.gov.defra.datareturns.data.model.AbstractBaseEntity;
 import uk.gov.defra.datareturns.data.model.submissions.Submission;
+import uk.gov.defra.datareturns.validation.validators.transfers.ValidTransfer;
 
 import javax.persistence.Basic;
 import javax.persistence.CascadeType;
@@ -38,6 +39,7 @@ import java.util.Set;
                   }
 )
 @Audited
+@ValidTransfer
 @Getter
 @Setter
 public class OffsiteWasteTransfer extends AbstractBaseEntity {
