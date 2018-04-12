@@ -5,14 +5,13 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.context.annotation.Scope;
-import org.springframework.core.ParameterizedTypeReference;
-import org.springframework.hateoas.PagedResources;
-import org.springframework.hateoas.Resource;
+import org.springframework.hateoas.Link;
 import org.springframework.stereotype.Service;
 import uk.gov.defra.datareturns.validation.service.MasterDataLookupService;
 import uk.gov.defra.datareturns.validation.service.dto.Unit;
 
 import java.math.BigDecimal;
+import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
@@ -40,13 +39,8 @@ public class ValueStandardisationService {
 
         @Cacheable(cacheNames = "ConversionCache", key = "'Units'", unless = "#result.isEmpty()")
         public Map<String, BigDecimal> getConversionFactorCache() {
-            final ParameterizedTypeReference<PagedResources<Resource<Unit>>> typeReference = new
-                    ParameterizedTypeReference<PagedResources<Resource<Unit>>>() {
-                    };
-            return lookupService.retrieve(typeReference, "units").getContent().stream().collect(
-                    Collectors.toMap(MasterDataLookupService::getResourceId,
-                            e -> e.getContent().getConversion())
-            );
+            final List<Unit> unitList = lookupService.list(Unit.class, new Link("units"));
+            return unitList.stream().collect(Collectors.toMap(MasterDataLookupService::getResourceId, Unit::getConversion));
         }
     }
 }

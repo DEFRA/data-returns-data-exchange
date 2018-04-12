@@ -2,7 +2,7 @@ package uk.gov.defra.datareturns.validation.validators.releases;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.hateoas.Resource;
+import org.springframework.hateoas.Link;
 import uk.gov.defra.datareturns.data.Context;
 import uk.gov.defra.datareturns.data.model.releases.Release;
 import uk.gov.defra.datareturns.validation.service.MasterDataLookupService;
@@ -13,6 +13,7 @@ import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
 import javax.validation.ValidationException;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 
 /**
@@ -34,15 +35,21 @@ public class ReleaseValidator implements ConstraintValidator<ValidRelease, Relea
     @Override
     public boolean isValid(final Release release, final ConstraintValidatorContext context) {
         boolean valid = true;
-        final Object submissionId = release.getSubmission().getReportingReference();
-        final List<Resource<Regime>> regimes = lookupService.getRegimes(Context.PI, submissionId);
+
+        final Object reportingReference = release.getSubmission().getReportingReference();
+        String resource = "regimes/search/findRegimesForContextAndUniqueIdentifier?";
+        resource += "context=" + Context.PI.name();
+        resource += "&id=uniqueIdentifiers/" + Objects.toString(reportingReference);
+        final Link regimesLookup = new Link(resource);
+        final List<Regime> regimes = lookupService.list(Regime.class, regimesLookup);
 
         if (regimes.size() == 1) {
-            final Resource<Regime> regime = regimes.iterator().next();
+            final Regime regime = regimes.get(0);
             final Set<String> parametersForRoute = cacheService.getRouteParameterMapForRegime(regime).get("" + release.getRouteId());
-            if (!parametersForRoute.contains("" + release.getSubstanceId())) {
+            if (parametersForRoute == null || !parametersForRoute.contains("" + release.getSubstanceId())) {
                 context.disableDefaultConstraintViolation();
-                context.buildConstraintViolationWithTemplate("INVALID_RELEASE_SUBSTANCE").addPropertyNode("substanceId").addConstraintViolation();
+                context.buildConstraintViolationWithTemplate("INVALID_RELEASE_SUBSTANCE")
+                        .addPropertyNode("substanceId").addConstraintViolation();
                 valid = false;
             }
         } else {

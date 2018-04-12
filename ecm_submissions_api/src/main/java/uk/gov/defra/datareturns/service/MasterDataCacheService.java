@@ -5,15 +5,13 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.context.annotation.Scope;
-import org.springframework.core.ParameterizedTypeReference;
-import org.springframework.hateoas.Resource;
-import org.springframework.hateoas.Resources;
+import org.springframework.hateoas.Link;
 import org.springframework.stereotype.Service;
 import uk.gov.defra.datareturns.validation.service.MasterDataLookupService;
 import uk.gov.defra.datareturns.validation.service.dto.BaseEntity;
 
-import java.util.HashMap;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 public interface MasterDataCacheService {
     Map<String, Long> getStrictNaturalKeyToPkMap(String entityName);
@@ -32,31 +30,22 @@ public interface MasterDataCacheService {
         @Override
         public Map<String, Long> getStrictNaturalKeyToPkMap(final String entityName) {
             log.info("Building strict master data cache for {} for MasterDataCacheService instance {}", entityName, this.toString());
-            final Map<String, Long> idMap = new HashMap<>();
-            final ParameterizedTypeReference<Resources<Resource<BaseEntity>>> typeRef = new
-                    ParameterizedTypeReference<Resources<Resource<BaseEntity>>>() {
-                    };
-            masterDataLookupService.retrieve(typeRef, entityName).forEach(e -> {
-                final Long id = Long.parseLong(MasterDataLookupService.getResourceId(e));
-                idMap.put(e.getContent().getNomenclature(), id);
-            });
-            return idMap;
+            return masterDataLookupService.list(BaseEntity.class, new Link(entityName)).stream()
+                    .collect(Collectors.toMap(
+                            BaseEntity::getNomenclature,
+                            e -> Long.parseLong(MasterDataLookupService.getResourceId(e)))
+                    );
         }
 
         @Cacheable(cacheNames = "MasterDataCache:Relaxed", key = "#entityName", sync = true)
         @Override
         public Map<String, Long> getRelaxedNaturalKeyToPkMap(final String entityName) {
             log.info("Building relaxed master data cache for {} for MasterDataCacheService instance {}", entityName, this.toString());
-            final Map<String, Long> idMap = new HashMap<>();
-            final ParameterizedTypeReference<Resources<Resource<BaseEntity>>> typeRef = new
-                    ParameterizedTypeReference<Resources<Resource<BaseEntity>>>() {
-                    };
-            masterDataLookupService.retrieve(typeRef, entityName).forEach(e -> {
-                final Long id = Long.parseLong(MasterDataLookupService.getResourceId(e));
-                idMap.put(masterDataNaturalKeyService.relaxKey(entityName, e.getContent().getNomenclature()), id);
-            });
-
-            return idMap;
+            return masterDataLookupService.list(BaseEntity.class, new Link(entityName)).stream()
+                    .collect(Collectors.toMap(
+                            e -> masterDataNaturalKeyService.relaxKey(entityName, e.getNomenclature()),
+                            e -> Long.parseLong(MasterDataLookupService.getResourceId(e)))
+                    );
         }
     }
 }
