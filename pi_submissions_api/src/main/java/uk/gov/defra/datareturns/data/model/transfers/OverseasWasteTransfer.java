@@ -16,6 +16,7 @@ import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.ManyToOne;
+import javax.validation.Valid;
 import java.math.BigDecimal;
 import java.util.Objects;
 
@@ -44,9 +45,11 @@ public class OverseasWasteTransfer extends AbstractBaseEntity {
     private String responsibleCompanyName;
 
     @Embedded
+    @Valid
     private Address responsibleCompanyAddress;
 
     @Embedded
+    @Valid
     private Address destinationAddress;
 
     @Column(nullable = false, precision = 30, scale = 15)

@@ -13,7 +13,8 @@
       "ewc_activity_id": 1,
       "wfd_recovery_id": 1,
       "method": "Calculation",
-      "below_reporting_threshold": true,
+      "tonnage": 50,
+      "below_reporting_threshold": false,
       "overseas": [
         {
           "tonnage": 50,
@@ -24,12 +25,12 @@
             "line2": "Nutsville",
             "town_or_city": "Nutston",
             "post_code": "NU1 1AC",
-            "country": "GB"
+            "country": "aa"
           },
           "destination_address": {
             "line1": "1 Via Ghianda",
             "town_or_city": "Bologna",
-            "country": "IT"
+            "country": "aa"
           }
         }
       ]

@@ -11,7 +11,6 @@
   "transfers": [
     {
       "ewc_activity_id": 1,
-      "wfd_disposal_id": 1,
       "wfd_recovery_id": 1,
       "method": "Calculation",
       "tonnage": 100,
@@ -26,14 +25,12 @@
             "line2": "Nutsville",
             "town_or_city": "Nutston",
             "post_code": "NU1 1AC",
-            "country": "UK"
+            "country": "GB"
           },
           "destination_address": {
-            "line1": "100 Acorn Close",
-            "line2": "Nutsville",
-            "town_or_city": "Nutston",
-            "post_code": "NU1 1AC",
-            "country": "UK"
+            "line1": "1 Via Ghianda",
+            "town_or_city": "Bologna",
+            "country": "IT"
           }
         },
         {
@@ -45,14 +42,12 @@
             "line2": "Nutsville",
             "town_or_city": "Nutston",
             "post_code": "NU1 1AC",
-            "country": "UK"
+            "country": "GB"
           },
           "destination_address": {
-            "line1": "100 Acorn Close",
-            "line2": "Nutsville",
-            "town_or_city": "Nutston",
-            "post_code": "NU1 1AC",
-            "country": "UK"
+            "line1": "1 Via Ghianda",
+            "town_or_city": "Bologna",
+            "country": "IT"
           }
         }
       ]

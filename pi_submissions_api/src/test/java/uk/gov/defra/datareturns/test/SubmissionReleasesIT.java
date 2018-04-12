@@ -1,7 +1,6 @@
 package uk.gov.defra.datareturns.test;
 
 import lombok.extern.slf4j.Slf4j;
-import org.hamcrest.Matchers;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -17,23 +16,23 @@ import javax.inject.Inject;
 import static uk.gov.defra.datareturns.testutils.SubmissionTestUtils.fromJson;
 import static uk.gov.defra.datareturns.testutils.SubmissionTestUtils.runSubmissionTest;
 
+
 /**
- * Integration tests submission-level property validation
+ * Integration tests for the releases component of a submission
  */
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = {PiApi.class}, webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 @ActiveProfiles("integration-test")
 @Slf4j
-public class SubmissionIT {
+public class SubmissionReleasesIT {
     @Inject
     @Rule
     public RestAssuredRule restAssuredRule;
 
     @Test
-    public void testSimpleSubmission() {
-        runSubmissionTest(fromJson("/data/submission.json"), (r) -> {
-            r.statusCode(HttpStatus.CREATED.value());
-            r.body("errors", Matchers.nullValue());
+    public void testSubstanceNotApplicableToRegimeObligation() {
+        runSubmissionTest(fromJson("/data/releases/submission-releases-invalid-substance.json"), (r) -> {
+            r.statusCode(HttpStatus.BAD_REQUEST.value());
         });
     }
 }

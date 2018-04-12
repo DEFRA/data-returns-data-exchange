@@ -1,0 +1,20 @@
+{
+  "reporting_reference": 1,
+  "applicable_year": 2017,
+  "status": "Submitted",
+  "nace_id": 1,
+  "nose_ids": [
+    1,
+    2,
+    3
+  ],
+  "transfers": [
+    {
+      "ewc_activity_id": 1,
+      "wfd_disposal_id": 1,
+      "wfd_recovery_id": 1,
+      "method": "Calculation",
+      "tonnage": 50
+    }
+  ]
+}

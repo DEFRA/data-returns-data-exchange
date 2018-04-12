@@ -272,10 +272,10 @@
                 <constraints nullable="false"/>
             </column>
             <column name="wfd_disposal_id" type="int">
-                <constraints nullable="false"/>
+                <constraints nullable="true"/>
             </column>
             <column name="wfd_recovery_id" type="int">
-                <constraints nullable="false"/>
+                <constraints nullable="true"/>
             </column>
             <column name="created" type="timestamp">
                 <constraints nullable="false"/>
@@ -346,9 +346,7 @@
                 <constraints nullable="false"/>
             </column>
             <column name="responsible_company_address_line2" type="varchar(255)"/>
-            <column name="responsible_company_address_post_code" type="varchar(20)">
-                <constraints nullable="false"/>
-            </column>
+            <column name="responsible_company_address_post_code" type="varchar(20)"/>
             <column name="responsible_company_address_town_or_city" type="varchar(100)">
                 <constraints nullable="false"/>
             </column>
@@ -360,9 +358,7 @@
                 <constraints nullable="false"/>
             </column>
             <column name="destination_address_line2" type="varchar(255)"/>
-            <column name="destination_address_post_code" type="varchar(20)">
-                <constraints nullable="false"/>
-            </column>
+            <column name="destination_address_post_code" type="varchar(20)"/>
             <column name="destination_address_town_or_city" type="varchar(100)">
                 <constraints nullable="false"/>
             </column>

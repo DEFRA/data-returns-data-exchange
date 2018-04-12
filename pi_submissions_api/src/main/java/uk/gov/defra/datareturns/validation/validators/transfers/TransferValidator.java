@@ -23,8 +23,36 @@ public class TransferValidator implements ConstraintValidator<ValidTransfer, Off
 
     @Override
     public boolean isValid(final OffsiteWasteTransfer transfer, final ConstraintValidatorContext context) {
-        boolean valid = checkTotalGreaterThanOverseas(transfer, context);
+        boolean valid = checkOneOfRecoveryOrDisposalSet(transfer, context);
+        valid = checkOverseasSentForDisposal(transfer, context) && valid;
+        valid = checkTotalGreaterThanOverseas(transfer, context) && valid;
         valid = checkTotalNotBrtWithOverseas(transfer, context) && valid;
+        valid = checkOverseasDestinationNotOverseas(transfer, context) && valid;
+
+        return valid;
+    }
+
+    private boolean checkOneOfRecoveryOrDisposalSet(final OffsiteWasteTransfer transfer, final ConstraintValidatorContext context) {
+        boolean valid = true;
+        if (transfer.getWfdDisposalId() != null && transfer.getWfdRecoveryId() != null) {
+            context.disableDefaultConstraintViolation();
+            context.buildConstraintViolationWithTemplate("TRANSFER_WFD_DISPOSAL_AND_RECOVERY_BOTH_SET").addConstraintViolation();
+            valid = false;
+        } else if (transfer.getWfdDisposalId() == null && transfer.getWfdRecoveryId() == null) {
+            context.disableDefaultConstraintViolation();
+            context.buildConstraintViolationWithTemplate("TRANSFER_WFD_DISPOSAL_AND_RECOVERY_NONE_SET").addConstraintViolation();
+            valid = false;
+        }
+        return valid;
+    }
+
+    private boolean checkOverseasSentForDisposal(final OffsiteWasteTransfer transfer, final ConstraintValidatorContext context) {
+        boolean valid = true;
+        if (transfer.getWfdDisposalId() != null && transfer.getOverseasTransfers() != null && !transfer.getOverseasTransfers().isEmpty()) {
+            context.disableDefaultConstraintViolation();
+            context.buildConstraintViolationWithTemplate("OVERSEAS_NOT_ALLOWED_FOR_DISPOSAL").addConstraintViolation();
+            valid = false;
+        }
         return valid;
     }
 
@@ -32,7 +60,7 @@ public class TransferValidator implements ConstraintValidator<ValidTransfer, Off
         boolean valid = true;
 
         final BigDecimal totalTransferTonnage = transfer.getTonnage();
-        if (totalTransferTonnage != null) {
+        if (totalTransferTonnage != null && transfer.getOverseasTransfers() != null) {
             final BigDecimal overseasSum = transfer.getOverseasTransfers().stream()
                     .map(OverseasWasteTransfer::getTonnage)
                     .reduce(BigDecimal.ZERO, BigDecimal::add);
@@ -51,6 +79,21 @@ public class TransferValidator implements ConstraintValidator<ValidTransfer, Off
             context.disableDefaultConstraintViolation();
             context.buildConstraintViolationWithTemplate("OVERSEAS_NOT_ALLOWED_WITH_BRT_TRANSFER").addConstraintViolation();
             valid = false;
+        }
+        return valid;
+    }
+
+    private boolean checkOverseasDestinationNotOverseas(final OffsiteWasteTransfer transfer, final ConstraintValidatorContext context) {
+        boolean valid = true;
+        if (transfer.getOverseasTransfers() != null) {
+            for (final OverseasWasteTransfer overseas : transfer.getOverseasTransfers()) {
+                if ("GB".equals(overseas.getDestinationAddress().getCountry())) {
+                    context.disableDefaultConstraintViolation();
+                    context.buildConstraintViolationWithTemplate("OVERSEAS_DESTINATION_NOT_OVERSEAS").addConstraintViolation();
+                    valid = false;
+                    break;
+                }
+            }
         }
         return valid;
     }

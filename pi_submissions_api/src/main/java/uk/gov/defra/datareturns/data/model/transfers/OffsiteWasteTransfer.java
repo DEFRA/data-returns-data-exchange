@@ -48,13 +48,13 @@ public class OffsiteWasteTransfer extends AbstractBaseEntity {
     private Submission submission;
 
     @Basic
-    private int ewcActivityId;
+    private Integer ewcActivityId;
 
     @Basic
-    private int wfdDisposalId;
+    private Integer wfdDisposalId;
 
     @Basic
-    private int wfdRecoveryId;
+    private Integer wfdRecoveryId;
 
     @Column(nullable = false, precision = 30, scale = 15)
     private BigDecimal tonnage;

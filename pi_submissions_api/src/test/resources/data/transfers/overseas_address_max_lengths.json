@@ -1,0 +1,41 @@
+{
+  "reporting_reference": 1,
+  "applicable_year": 2017,
+  "status": "Submitted",
+  "nace_id": 1,
+  "nose_ids": [
+    1,
+    2,
+    3
+  ],
+  "transfers": [
+    {
+      "ewc_activity_id": 1,
+      "wfd_recovery_id": 1,
+      "method": "Calculation",
+      "tonnage": 100,
+      "below_reporting_threshold": false,
+      "overseas": [
+        {
+          "tonnage": 60,
+          "method": "Calculation",
+          "responsible_company_name": "A company ltd",
+          "responsible_company_address": {
+            "line1": "More than 255 characters More than 255 characters More than 255 characters More than 255 characters More than 255 characters More than 255 characters More than 255 characters More than 255 characters More than 255 characters More than 255 characters.......",
+            "line2": "More than 255 characters More than 255 characters More than 255 characters More than 255 characters More than 255 characters More than 255 characters More than 255 characters More than 255 characters More than 255 characters More than 255 characters.......",
+            "town_or_city": "More than 100 characters More than 100 characters More than 100 characters More than 100 characters..",
+            "post_code": "More than 20 chars...",
+            "country": "3CR"
+          },
+          "destination_address": {
+            "line1": "More than 255 characters More than 255 characters More than 255 characters More than 255 characters More than 255 characters More than 255 characters More than 255 characters More than 255 characters More than 255 characters More than 255 characters.......",
+            "line2": "More than 255 characters More than 255 characters More than 255 characters More than 255 characters More than 255 characters More than 255 characters More than 255 characters More than 255 characters More than 255 characters More than 255 characters.......",
+            "town_or_city": "More than 100 characters More than 100 characters More than 100 characters More than 100 characters..",
+            "post_code": "More than 20 chars...",
+            "country": "3CR"
+          }
+        }
+      ]
+    }
+  ]
+}
