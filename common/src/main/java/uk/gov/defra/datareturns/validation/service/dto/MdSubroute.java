@@ -5,6 +5,5 @@ import lombok.EqualsAndHashCode;
 
 @Data
 @EqualsAndHashCode(callSuper = true)
-public class Regime extends BaseEntity {
-    private String context;
+public class MdSubroute extends MdBaseEntity {
 }

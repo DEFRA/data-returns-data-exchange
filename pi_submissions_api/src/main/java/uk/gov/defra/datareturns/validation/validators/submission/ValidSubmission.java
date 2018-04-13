@@ -23,7 +23,7 @@ public @interface ValidSubmission {
      *
      * @return the constraint violation template
      */
-    String message() default "Submission invalid";
+    String message() default "SUBMISSION_INVALID_UNSPECIFIED_REASON";
 
     /**
      * Validation groups

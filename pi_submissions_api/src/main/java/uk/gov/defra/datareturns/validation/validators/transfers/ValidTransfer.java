@@ -23,7 +23,7 @@ public @interface ValidTransfer {
      *
      * @return the constraint violation template
      */
-    String message() default "Release invalid";
+    String message() default "TRANFER_INVALID_UNSPECIFIED_REASON";
 
     /**
      * Validation groups

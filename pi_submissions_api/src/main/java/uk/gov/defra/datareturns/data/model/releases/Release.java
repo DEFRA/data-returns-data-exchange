@@ -51,7 +51,7 @@ public final class Release extends AbstractBaseEntity {
     private Submission submission;
 
     @Column(nullable = false)
-    private int substanceId;
+    private Integer substanceId;
 
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
@@ -61,26 +61,26 @@ public final class Release extends AbstractBaseEntity {
     private BigDecimal value;
 
     @Column(nullable = false)
-    private int routeId;
+    private Integer routeId;
 
-    @Column(nullable = true)
-    private int subrouteId;
+    @Column
+    private Integer subrouteId;
 
     @Column(precision = 30, scale = 15)
     private BigDecimal standardValue;
 
     @Basic
     @Column(nullable = false)
-    private boolean belowReportingThreshold;
+    private Boolean belowReportingThreshold;
 
     @Column
-    private int unitId;
+    private Integer unitId;
 
     @Column(precision = 30, scale = 15)
     private BigDecimal notifiableValue;
 
     @Column
-    private int notifiableUnitId;
+    private Integer notifiableUnitId;
 
     @Column(length = 500)
     private String notifiableReason;

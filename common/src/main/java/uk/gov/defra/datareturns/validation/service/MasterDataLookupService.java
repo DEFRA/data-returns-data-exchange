@@ -5,6 +5,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.config.BeanDefinition;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.context.annotation.Scope;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.hateoas.Identifiable;
@@ -74,6 +75,7 @@ public interface MasterDataLookupService {
     class MasterDataLookupServiceImpl implements MasterDataLookupService {
         private final ServiceEndpointConfiguration services;
 
+        @Cacheable(cacheNames = "MasterDataCache", key = "#cls.name + ':Entities:' + #entityResource.href.replaceAll(\":\", \"\")")
         @Override
         public <T> T get(final Class<T> cls, final Link entityResource) {
             final RequestFacade request = new RequestFacade(entityResource);
@@ -84,6 +86,8 @@ public interface MasterDataLookupService {
             throw new ValidationException("Unexpected response from master data API: " + responseEntity.getStatusCode());
         }
 
+
+        @Cacheable(cacheNames = "MasterDataCache", key = "#cls.name + ':Collections:' + #collectionResource.href.replaceAll(\":\", \"\")")
         @Override
         public <T> List<T> list(final Class<T> cls, final Link collectionResource) {
             final ParameterizedTypeReference<Resources<T>> typeReference = new ParameterizedTypeReference<Resources<T>>() {
@@ -106,7 +110,7 @@ public interface MasterDataLookupService {
          *
          * @author Sam Gardner-Dell
          */
-        private static class ExplicitParameterizedType implements ParameterizedType {
+        private static final class ExplicitParameterizedType implements ParameterizedType {
             private final ParameterizedType delegate;
             private final Type[] actualTypeArguments;
 
@@ -140,7 +144,7 @@ public interface MasterDataLookupService {
         /**
          * Simple request facade
          */
-        private class RequestFacade {
+        private final class RequestFacade {
             private final RestTemplate template;
             @Getter
             private final URI target;

@@ -28,6 +28,7 @@
     {
       "substance_id": 548,
       "route_id": 3,
+      "subroute_id": 2,
       "method": "Calculation",
       "value": 30.2,
       "below_reporting_threshold": false,

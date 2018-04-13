@@ -8,11 +8,12 @@ import org.springframework.hateoas.Identifiable;
 import org.springframework.hateoas.Link;
 import org.springframework.hateoas.hal.Jackson2HalModule;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
 @Data
-public class BaseEntity implements Identifiable<Link> {
+public class MdBaseEntity implements Identifiable<Link>, Serializable {
     @JsonProperty("_links")
     @JsonSerialize(using = Jackson2HalModule.HalLinkListSerializer.class)
     @JsonDeserialize(using = Jackson2HalModule.HalLinkListDeserializer.class)
@@ -26,8 +27,8 @@ public class BaseEntity implements Identifiable<Link> {
      * @param rel the rel value to find
      * @return the link with the given rel or {@literal null} if none found.
      */
-    public Link getLink(String rel) {
-        for (Link link : links) {
+    public Link getLink(final String rel) {
+        for (final Link link : links) {
             if (link.getRel().equals(rel)) {
                 return link;
             }

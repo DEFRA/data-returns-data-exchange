@@ -8,7 +8,7 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.hateoas.Link;
 import org.springframework.stereotype.Service;
 import uk.gov.defra.datareturns.validation.service.MasterDataLookupService;
-import uk.gov.defra.datareturns.validation.service.dto.Unit;
+import uk.gov.defra.datareturns.validation.service.dto.MdUnit;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -39,8 +39,8 @@ public class ValueStandardisationService {
 
         @Cacheable(cacheNames = "ConversionCache", key = "'Units'", unless = "#result.isEmpty()")
         public Map<String, BigDecimal> getConversionFactorCache() {
-            final List<Unit> unitList = lookupService.list(Unit.class, new Link("units"));
-            return unitList.stream().collect(Collectors.toMap(MasterDataLookupService::getResourceId, Unit::getConversion));
+            final List<MdUnit> unitList = lookupService.list(MdUnit.class, new Link("units"));
+            return unitList.stream().collect(Collectors.toMap(MasterDataLookupService::getResourceId, MdUnit::getConversion));
         }
     }
 }

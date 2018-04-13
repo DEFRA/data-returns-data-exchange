@@ -5,5 +5,5 @@ import lombok.EqualsAndHashCode;
 
 @Data
 @EqualsAndHashCode(callSuper = true)
-public class RegimeObligation extends BaseEntity {
+public class MdRoute extends MdBaseEntity {
 }

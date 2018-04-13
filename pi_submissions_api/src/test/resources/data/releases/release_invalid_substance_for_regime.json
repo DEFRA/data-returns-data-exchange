@@ -1,0 +1,29 @@
+{
+  "reporting_reference": 1,
+  "applicable_year": 2017,
+  "status": "Submitted",
+  "nace_id": 1,
+  "nose_ids": [
+    1,
+    2,
+    3
+  ],
+  "releases": [
+    {
+      "substance_id": 664,
+      "route_id": 1,
+      "method": "Measurement",
+      "value": 1,
+      "below_reporting_threshold": false,
+      "unit_id": 140
+    },
+    {
+      "substance_id": 664,
+      "route_id": 2,
+      "method": "Measurement",
+      "value": 1,
+      "below_reporting_threshold": false,
+      "unit_id": 140
+    }
+  ]
+}

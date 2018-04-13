@@ -23,7 +23,7 @@ public @interface ValidRelease {
      *
      * @return the constraint violation template
      */
-    String message() default "Release invalid";
+    String message() default "RELEASE_INVALID_UNSPECIFIED_REASON";
 
     /**
      * Validation groups

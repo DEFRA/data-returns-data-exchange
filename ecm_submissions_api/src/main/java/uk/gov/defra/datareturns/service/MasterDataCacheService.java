@@ -8,7 +8,7 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.hateoas.Link;
 import org.springframework.stereotype.Service;
 import uk.gov.defra.datareturns.validation.service.MasterDataLookupService;
-import uk.gov.defra.datareturns.validation.service.dto.BaseEntity;
+import uk.gov.defra.datareturns.validation.service.dto.MdBaseEntity;
 
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -30,9 +30,9 @@ public interface MasterDataCacheService {
         @Override
         public Map<String, Long> getStrictNaturalKeyToPkMap(final String entityName) {
             log.info("Building strict master data cache for {} for MasterDataCacheService instance {}", entityName, this.toString());
-            return masterDataLookupService.list(BaseEntity.class, new Link(entityName)).stream()
+            return masterDataLookupService.list(MdBaseEntity.class, new Link(entityName)).stream()
                     .collect(Collectors.toMap(
-                            BaseEntity::getNomenclature,
+                            MdBaseEntity::getNomenclature,
                             e -> Long.parseLong(MasterDataLookupService.getResourceId(e)))
                     );
         }
@@ -41,7 +41,7 @@ public interface MasterDataCacheService {
         @Override
         public Map<String, Long> getRelaxedNaturalKeyToPkMap(final String entityName) {
             log.info("Building relaxed master data cache for {} for MasterDataCacheService instance {}", entityName, this.toString());
-            return masterDataLookupService.list(BaseEntity.class, new Link(entityName)).stream()
+            return masterDataLookupService.list(MdBaseEntity.class, new Link(entityName)).stream()
                     .collect(Collectors.toMap(
                             e -> masterDataNaturalKeyService.relaxKey(entityName, e.getNomenclature()),
                             e -> Long.parseLong(MasterDataLookupService.getResourceId(e)))

@@ -8,12 +8,12 @@ import org.springframework.cache.annotation.Cacheable;
 import org.springframework.context.annotation.Scope;
 import org.springframework.hateoas.Link;
 import org.springframework.stereotype.Service;
-import uk.gov.defra.datareturns.validation.service.dto.BaseEntity;
-import uk.gov.defra.datareturns.validation.service.dto.Parameter;
-import uk.gov.defra.datareturns.validation.service.dto.ParameterGroup;
-import uk.gov.defra.datareturns.validation.service.dto.Regime;
-import uk.gov.defra.datareturns.validation.service.dto.RegimeObligation;
-import uk.gov.defra.datareturns.validation.service.dto.Route;
+import uk.gov.defra.datareturns.validation.service.dto.MdBaseEntity;
+import uk.gov.defra.datareturns.validation.service.dto.MdParameter;
+import uk.gov.defra.datareturns.validation.service.dto.MdParameterGroup;
+import uk.gov.defra.datareturns.validation.service.dto.MdRegime;
+import uk.gov.defra.datareturns.validation.service.dto.MdRegimeObligation;
+import uk.gov.defra.datareturns.validation.service.dto.MdRoute;
 
 import java.util.List;
 import java.util.Map;
@@ -35,7 +35,7 @@ public interface ValidationCacheService {
      */
     Map<String, String> getResourceNomenclatureMap(final String collectionResource);
 
-    Map<String, Set<String>> getRouteParameterMapForRegime(Regime regime);
+    Map<String, Set<String>> getRouteParameterMapForRegime(MdRegime regime);
 
     /**
      * Validation cache service implementation
@@ -50,20 +50,20 @@ public interface ValidationCacheService {
         @Cacheable(cacheNames = "ValidationCache", key = "#collectionResource", unless = "#result.isEmpty()")
         @Override
         public Map<String, String> getResourceNomenclatureMap(final String collectionResource) {
-            final List<BaseEntity> result = lookupService.list(BaseEntity.class, new Link(collectionResource));
-            return result.stream().collect(Collectors.toMap(MasterDataLookupService::getResourceId, BaseEntity::getNomenclature));
+            final List<MdBaseEntity> result = lookupService.list(MdBaseEntity.class, new Link(collectionResource));
+            return result.stream().collect(Collectors.toMap(MasterDataLookupService::getResourceId, MdBaseEntity::getNomenclature));
         }
 
 
         @Cacheable(cacheNames = "ValidationCache:Regime",
                    key = "T(uk.gov.defra.datareturns.validation.service.MasterDataLookupService).getResourceId(#regime) + ':ParametersByRoute'",
                    unless = "#result.isEmpty()")
-        public Map<String, Set<String>> getRouteParameterMapForRegime(final Regime regime) {
-            final List<RegimeObligation> obligations = lookupService.list(RegimeObligation.class, regime.getLink("regimeObligations"));
-            final Map<String, RegimeObligation> obligationsByRouteId = obligations.stream()
+        public Map<String, Set<String>> getRouteParameterMapForRegime(final MdRegime regime) {
+            final List<MdRegimeObligation> obligations = lookupService.list(MdRegimeObligation.class, regime.getLink("regimeObligations"));
+            final Map<String, MdRegimeObligation> obligationsByRouteId = obligations.stream()
                     .collect(
                             Collectors.toMap(
-                                    o -> MasterDataLookupService.getResourceId(lookupService.get(Route.class, o.getLink("route"))),
+                                    o -> MasterDataLookupService.getResourceId(lookupService.get(MdRoute.class, o.getLink("route"))),
                                     Function.identity()
                             )
                     );
@@ -73,10 +73,10 @@ public interface ValidationCacheService {
                             Collectors.toMap(
                                     Map.Entry::getKey,
                                     e -> {
-                                        final List<ParameterGroup> parameterGroups = lookupService
-                                                .list(ParameterGroup.class, e.getValue().getLink("parameterGroups"));
-                                        final List<Parameter> parameters = parameterGroups.stream().flatMap(
-                                                pg -> lookupService.list(Parameter.class, pg.getLink("parameters")).stream()
+                                        final List<MdParameterGroup> parameterGroups = lookupService
+                                                .list(MdParameterGroup.class, e.getValue().getLink("parameterGroups"));
+                                        final List<MdParameter> parameters = parameterGroups.stream().flatMap(
+                                                pg -> lookupService.list(MdParameter.class, pg.getLink("parameters")).stream()
                                         ).collect(Collectors.toList());
                                         return parameters.stream().map(MasterDataLookupService::getResourceId).collect(Collectors.toSet());
                                     }

@@ -5,5 +5,6 @@ import lombok.EqualsAndHashCode;
 
 @Data
 @EqualsAndHashCode(callSuper = true)
-public class ParameterGroup extends BaseEntity {
+public class MdParameter extends MdBaseEntity {
+    private String cas;
 }
