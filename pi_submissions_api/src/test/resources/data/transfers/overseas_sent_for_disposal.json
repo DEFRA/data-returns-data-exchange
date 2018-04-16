@@ -15,7 +15,7 @@
       "method": "Calculation",
       "tonnage": 75,
       "below_reporting_threshold": false,
-      "overseas": [
+      "overseas_transfers": [
         {
           "tonnage": 50,
           "method": "Calculation",

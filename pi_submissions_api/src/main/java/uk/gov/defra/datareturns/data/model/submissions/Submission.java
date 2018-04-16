@@ -10,7 +10,7 @@ import org.hibernate.id.enhanced.SequenceStyleGenerator;
 import org.springframework.data.rest.core.annotation.RestResource;
 import uk.gov.defra.datareturns.data.model.AbstractBaseEntity;
 import uk.gov.defra.datareturns.data.model.releases.Release;
-import uk.gov.defra.datareturns.data.model.transfers.OffsiteWasteTransfer;
+import uk.gov.defra.datareturns.data.model.transfers.Transfer;
 import uk.gov.defra.datareturns.validation.validators.submission.ValidSubmission;
 
 import javax.persistence.CascadeType;
@@ -98,7 +98,7 @@ public class Submission extends AbstractBaseEntity {
     @JsonProperty(value = "transfers")
     @JsonManagedReference
     @Valid
-    private Set<OffsiteWasteTransfer> submissionTransfers;
+    private Set<Transfer> submissionTransfers;
 
     @Override
     public final boolean equals(final Object o) {

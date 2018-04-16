@@ -2,8 +2,8 @@ package uk.gov.defra.datareturns.validation.validators.transfers;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import uk.gov.defra.datareturns.data.model.transfers.OffsiteWasteTransfer;
-import uk.gov.defra.datareturns.data.model.transfers.OverseasWasteTransfer;
+import uk.gov.defra.datareturns.data.model.transfers.OverseasTransfer;
+import uk.gov.defra.datareturns.data.model.transfers.Transfer;
 
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
@@ -16,13 +16,13 @@ import java.math.BigDecimal;
  */
 @RequiredArgsConstructor
 @Slf4j
-public class TransferValidator implements ConstraintValidator<ValidTransfer, OffsiteWasteTransfer> {
+public class TransferValidator implements ConstraintValidator<ValidTransfer, Transfer> {
     @Override
     public void initialize(final ValidTransfer constraintAnnotation) {
     }
 
     @Override
-    public boolean isValid(final OffsiteWasteTransfer transfer, final ConstraintValidatorContext context) {
+    public boolean isValid(final Transfer transfer, final ConstraintValidatorContext context) {
         boolean valid = checkOneOfRecoveryOrDisposalSet(transfer, context);
         valid = checkOverseasSentForDisposal(transfer, context) && valid;
         valid = checkTotalGreaterThanOverseas(transfer, context) && valid;
@@ -32,7 +32,7 @@ public class TransferValidator implements ConstraintValidator<ValidTransfer, Off
         return valid;
     }
 
-    private boolean checkOneOfRecoveryOrDisposalSet(final OffsiteWasteTransfer transfer, final ConstraintValidatorContext context) {
+    private boolean checkOneOfRecoveryOrDisposalSet(final Transfer transfer, final ConstraintValidatorContext context) {
         boolean valid = true;
         if (transfer.getWfdDisposalId() != null && transfer.getWfdRecoveryId() != null) {
             context.disableDefaultConstraintViolation();
@@ -46,9 +46,9 @@ public class TransferValidator implements ConstraintValidator<ValidTransfer, Off
         return valid;
     }
 
-    private boolean checkOverseasSentForDisposal(final OffsiteWasteTransfer transfer, final ConstraintValidatorContext context) {
+    private boolean checkOverseasSentForDisposal(final Transfer transfer, final ConstraintValidatorContext context) {
         boolean valid = true;
-        if (transfer.getWfdDisposalId() != null && transfer.getOverseasTransfers() != null && !transfer.getOverseasTransfers().isEmpty()) {
+        if (transfer.getWfdDisposalId() != null && transfer.getOverseas() != null && !transfer.getOverseas().isEmpty()) {
             context.disableDefaultConstraintViolation();
             context.buildConstraintViolationWithTemplate("OVERSEAS_NOT_ALLOWED_FOR_DISPOSAL").addConstraintViolation();
             valid = false;
@@ -56,13 +56,13 @@ public class TransferValidator implements ConstraintValidator<ValidTransfer, Off
         return valid;
     }
 
-    private boolean checkTotalGreaterThanOverseas(final OffsiteWasteTransfer transfer, final ConstraintValidatorContext context) {
+    private boolean checkTotalGreaterThanOverseas(final Transfer transfer, final ConstraintValidatorContext context) {
         boolean valid = true;
 
         final BigDecimal totalTransferTonnage = transfer.getTonnage();
-        if (totalTransferTonnage != null && transfer.getOverseasTransfers() != null) {
-            final BigDecimal overseasSum = transfer.getOverseasTransfers().stream()
-                    .map(OverseasWasteTransfer::getTonnage)
+        if (totalTransferTonnage != null && transfer.getOverseas() != null) {
+            final BigDecimal overseasSum = transfer.getOverseas().stream()
+                    .map(OverseasTransfer::getTonnage)
                     .reduce(BigDecimal.ZERO, BigDecimal::add);
             if (overseasSum.compareTo(totalTransferTonnage) > 0) {
                 context.disableDefaultConstraintViolation();
@@ -73,9 +73,9 @@ public class TransferValidator implements ConstraintValidator<ValidTransfer, Off
         return valid;
     }
 
-    private boolean checkTotalNotBrtWithOverseas(final OffsiteWasteTransfer transfer, final ConstraintValidatorContext context) {
+    private boolean checkTotalNotBrtWithOverseas(final Transfer transfer, final ConstraintValidatorContext context) {
         boolean valid = true;
-        if (transfer.isBelowReportingThreshold() && !transfer.getOverseasTransfers().isEmpty()) {
+        if (transfer.isBelowReportingThreshold() && !transfer.getOverseas().isEmpty()) {
             context.disableDefaultConstraintViolation();
             context.buildConstraintViolationWithTemplate("OVERSEAS_NOT_ALLOWED_WITH_BRT_TRANSFER").addConstraintViolation();
             valid = false;
@@ -83,10 +83,10 @@ public class TransferValidator implements ConstraintValidator<ValidTransfer, Off
         return valid;
     }
 
-    private boolean checkOverseasDestinationNotOverseas(final OffsiteWasteTransfer transfer, final ConstraintValidatorContext context) {
+    private boolean checkOverseasDestinationNotOverseas(final Transfer transfer, final ConstraintValidatorContext context) {
         boolean valid = true;
-        if (transfer.getOverseasTransfers() != null) {
-            for (final OverseasWasteTransfer overseas : transfer.getOverseasTransfers()) {
+        if (transfer.getOverseas() != null) {
+            for (final OverseasTransfer overseas : transfer.getOverseas()) {
                 if ("GB".equals(overseas.getDestinationAddress().getCountry())) {
                     context.disableDefaultConstraintViolation();
                     context.buildConstraintViolationWithTemplate("OVERSEAS_DESTINATION_NOT_OVERSEAS").addConstraintViolation();

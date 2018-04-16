@@ -5,10 +5,10 @@ import uk.gov.defra.datareturns.data.BaseRepository;
 
 
 /**
- * Spring REST repository for {@link OffsiteWasteTransfer} entities
+ * Spring REST repository for {@link Transfer} entities
  *
  * @author Sam Gardner-Dell
  */
 @RepositoryRestResource
-public interface OffsiteWasteTransferRepository extends BaseRepository<OffsiteWasteTransfer, Long> {
+public interface TransferRepository extends BaseRepository<Transfer, Long> {
 }

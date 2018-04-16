@@ -14,7 +14,7 @@
       "wfd_recovery_id": 1,
       "method": "Calculation",
       "below_reporting_threshold": true,
-      "overseas": [
+      "overseas_transfers": [
         {
           "tonnage": 50,
           "method": "Calculation",

@@ -1,78 +1,63 @@
 package uk.gov.defra.datareturns.data.model.transfers;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.envers.Audited;
 import org.hibernate.id.enhanced.SequenceStyleGenerator;
-import org.springframework.data.rest.core.annotation.RestResource;
 import uk.gov.defra.datareturns.data.model.AbstractBaseEntity;
-import uk.gov.defra.datareturns.data.model.submissions.Submission;
-import uk.gov.defra.datareturns.validation.validators.transfers.ValidTransfer;
+import uk.gov.defra.datareturns.data.model.Address;
 
 import javax.persistence.Basic;
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
+import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
 import javax.validation.Valid;
 import java.math.BigDecimal;
 import java.util.Objects;
-import java.util.Set;
 
 /**
- * PI Off-site waste transfers model
+ * PI Overseas waste transfers model
  *
  * @author Sam Gardner-Dell
  */
-@Entity(name = "pi_transfer_offsite")
+@Entity(name = "pi_transfer_overseas_waste")
 @GenericGenerator(name = AbstractBaseEntity.DEFINITIONS_ID_GENERATOR,
                   strategy = AbstractBaseEntity.DEFINITIONS_ID_SEQUENCE_STRATEGY,
                   parameters = {
-                          @org.hibernate.annotations.Parameter(name = SequenceStyleGenerator.SEQUENCE_PARAM, value = "pi_transfer_offsite_id_seq")
+                          @org.hibernate.annotations.Parameter(name = SequenceStyleGenerator.SEQUENCE_PARAM,
+                                                               value = "pi_transfer_overseas_waste_id_seq")
                   }
 )
 @Audited
-@ValidTransfer
 @Getter
 @Setter
-public class OffsiteWasteTransfer extends AbstractBaseEntity {
+public class OverseasTransfer extends AbstractBaseEntity {
     @ManyToOne(optional = false)
     @JsonBackReference
-    private Submission submission;
+    private Transfer transfer;
 
     @Basic
-    private Integer ewcActivityId;
+    private String responsibleCompanyName;
 
-    @Basic
-    private Integer wfdDisposalId;
+    @Embedded
+    @Valid
+    private Address responsibleCompanyAddress;
 
-    @Basic
-    private Integer wfdRecoveryId;
+    @Embedded
+    @Valid
+    private Address destinationAddress;
 
     @Column(nullable = false, precision = 30, scale = 15)
     private BigDecimal tonnage;
 
-    @Basic
-    @Column(nullable = false)
-    private boolean belowReportingThreshold;
-
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private WasteTransferMethod method;
-
-    @RestResource(path = "overseas", rel = "overseas")
-    @JsonProperty(value = "overseas")
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "transfer")
-    @JsonManagedReference
-    @Valid
-    private Set<OverseasWasteTransfer> overseasTransfers;
+    private TransferMethod method;
 
     @Override
     public final boolean equals(final Object o) {
@@ -85,7 +70,7 @@ public class OffsiteWasteTransfer extends AbstractBaseEntity {
         if (getId() == null) {
             return false;
         }
-        final OffsiteWasteTransfer that = (OffsiteWasteTransfer) o;
+        final OverseasTransfer that = (OverseasTransfer) o;
         return Objects.equals(getId(), that.getId());
     }
 
@@ -93,4 +78,5 @@ public class OffsiteWasteTransfer extends AbstractBaseEntity {
     public final int hashCode() {
         return Objects.hash(getId());
     }
+
 }
