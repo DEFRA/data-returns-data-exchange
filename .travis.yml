@@ -7,7 +7,7 @@ jobs:
   include:
   - stage: test
     script:
-    - "./mvnw verify"
+    - "./mvnw verify -Dspring-boot-plugin.fork.wait=5000 -Dspring-boot-plugin.fork.attempts=24"
 jdk:
 - oraclejdk8
 addons:

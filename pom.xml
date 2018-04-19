@@ -23,7 +23,6 @@
     <description>Defra Data-Returns Platform parent/aggregator project</description>
     <url>https://github.com/DEFRA/data-returns-data-exchange/</url>
 
-
     <modules>
         <module>common</module>
         <module>master_data_api</module>
@@ -72,6 +71,15 @@
         <java.version>1.8</java.version>
         <maven.compiler.source>${java.version}</maven.compiler.source>
         <maven.compiler.target>${java.version}</maven.compiler.target>
+
+        <!--
+            Default for the spring-boot plugin start:stop goals,
+            this allows us to override the defaults for travis where things run a little slower
+        -->
+        <spring-boot-plugin.fork.wait>2500</spring-boot-plugin.fork.wait>
+        <spring-boot-plugin.fork.attempts>10</spring-boot-plugin.fork.attempts>
+        <!-- Default value, MUST be overriden in any API service that uses this parent pom -->
+        <spring-boot-plugin.jmx.port>9001</spring-boot-plugin.jmx.port>
 
         <!--Lombok -->
         <lombok.version>1.16.20</lombok.version>
@@ -574,9 +582,10 @@
                     <artifactId>spring-boot-maven-plugin</artifactId>
                     <configuration>
                         <fork>true</fork>
+                        <jmxPort>${spring-boot-plugin.jmx.port}</jmxPort>
                         <workingDirectory>${project.build.directory}</workingDirectory>
-                        <wait>10000</wait>
-                        <maxAttempts>12</maxAttempts>
+                        <wait>${spring-boot-plugin.fork.wait}</wait>
+                        <maxAttempts>${spring-boot-plugin.fork.attempts}</maxAttempts>
                     </configuration>
                 </plugin>
 

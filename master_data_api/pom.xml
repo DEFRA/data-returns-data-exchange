@@ -19,6 +19,7 @@
 
     <properties>
         <root.dir>${project.parent.basedir}</root.dir>
+        <spring-boot-plugin.jmx.port>9001</spring-boot-plugin.jmx.port>
     </properties>
 
     <dependencies>
