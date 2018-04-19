@@ -76,7 +76,7 @@ public class RestExceptionHandler {
      * @author Sam Gardner-Dell
      */
     @Getter
-    private static class ConstraintViolationExceptionMessage {
+    private static final class ConstraintViolationExceptionMessage {
         @JsonProperty("errors")
         private final List<ValidationError> errors = new ArrayList<>();
 
