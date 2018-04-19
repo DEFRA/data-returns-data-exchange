@@ -7,6 +7,7 @@ import org.springframework.hateoas.Link;
 import uk.gov.defra.datareturns.data.Context;
 import uk.gov.defra.datareturns.data.model.releases.Release;
 import uk.gov.defra.datareturns.service.ValueStandardisationService;
+import uk.gov.defra.datareturns.validation.service.MasterDataLinks;
 import uk.gov.defra.datareturns.validation.service.MasterDataLookupService;
 import uk.gov.defra.datareturns.validation.service.ValidationCacheService;
 import uk.gov.defra.datareturns.validation.service.dto.MdRegime;
@@ -20,6 +21,8 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
+
+import static uk.gov.defra.datareturns.validation.util.ValidationUtil.handleError;
 
 /**
  * Validate a release within a submission
@@ -41,6 +44,7 @@ public class ReleaseValidator implements ConstraintValidator<ValidRelease, Relea
     @Override
     public boolean isValid(final Release release, final ConstraintValidatorContext context) {
         boolean valid = checkRequiredFields(release, context);
+        valid = checkPositiveReleaseValues(release, context) && valid;
         valid = checkValidReleaseSubstance(release, context) && valid;
         valid = checkValidSubrouteForRoute(release, context) && valid;
         valid = checkValidReleaseUnit(release, context) && valid;
@@ -49,23 +53,16 @@ public class ReleaseValidator implements ConstraintValidator<ValidRelease, Relea
         return valid;
     }
 
-
     private boolean checkRequiredFields(final Release release, final ConstraintValidatorContext context) {
         boolean valid = true;
         if (release.getSubstanceId() == null) {
-            context.disableDefaultConstraintViolation();
-            context.buildConstraintViolationWithTemplate("RELEASE_SUBSTANCE_NOT_SPECIFIED").addPropertyNode("substanceId").addConstraintViolation();
-            valid = false;
+            valid = handleError(context, "RELEASE_SUBSTANCE_NOT_SPECIFIED", b -> b.addPropertyNode("substanceId"));
         }
         if (release.getRouteId() == null) {
-            context.disableDefaultConstraintViolation();
-            context.buildConstraintViolationWithTemplate("RELEASE_ROUTE_NOT_SPECIFIED").addPropertyNode("routeId").addConstraintViolation();
-            valid = false;
+            valid = handleError(context, "RELEASE_ROUTE_NOT_SPECIFIED", b -> b.addPropertyNode("routeId"));
         }
         if (release.getMethod() == null) {
-            context.disableDefaultConstraintViolation();
-            context.buildConstraintViolationWithTemplate("RELEASE_METHOD_NOT_SPECIFIED").addPropertyNode("routeId").addConstraintViolation();
-            valid = false;
+            valid = handleError(context, "RELEASE_METHOD_NOT_SPECIFIED", b -> b.addPropertyNode("method"));
         }
         return valid;
     }
@@ -73,26 +70,22 @@ public class ReleaseValidator implements ConstraintValidator<ValidRelease, Relea
     private boolean checkValidReleaseSubstance(final Release release, final ConstraintValidatorContext context) {
         boolean valid = true;
         if (release.getSubstanceId() != null) {
-            final Object reportingReference = release.getSubmission().getReportingReference();
-
-            String resource = "regimes/search/findRegimesForContextAndUniqueIdentifier?";
-            resource += "context=" + Context.PI.name();
-            resource += "&id=uniqueIdentifiers/" + Objects.toString(reportingReference);
-            final Link regimesLookup = new Link(resource);
-            final List<MdRegime> regimes = lookupService.list(MdRegime.class, regimesLookup);
-
-            if (regimes.size() == 1) {
-                final MdRegime regime = regimes.get(0);
-                final Set<String> parametersForRoute = cacheService.getRouteParameterMapForRegime(regime).get("" + release.getRouteId());
-                if (parametersForRoute == null || !parametersForRoute.contains("" + release.getSubstanceId())) {
-                    context.disableDefaultConstraintViolation();
-                    context.buildConstraintViolationWithTemplate("RELEASE_SUBSTANCE_INVALID")
-                            .addPropertyNode("substanceId").addConstraintViolation();
-                    valid = false;
-                }
-            } else {
-                throw new ValidationException("Pollution inventory submissions should be mapped to a single pollution inventory regime.");
+            final MdRegime regime = getRegime(release);
+            final Set<String> parametersForRoute = cacheService.getParametersByRoute(regime).get(String.valueOf(release.getRouteId()));
+            if (parametersForRoute == null || !parametersForRoute.contains(String.valueOf(release.getSubstanceId()))) {
+                valid = handleError(context, "RELEASE_SUBSTANCE_INVALID", b -> b.addPropertyNode("substanceId"));
             }
+        }
+        return valid;
+    }
+
+    private boolean checkPositiveReleaseValues(final Release release, final ConstraintValidatorContext context) {
+        boolean valid = true;
+        if (release.getValue() != null && BigDecimal.ZERO.compareTo(release.getValue()) >= 0) {
+            valid = handleError(context, "RELEASE_VALUE_NOT_GREATER_THAN_ZERO", b -> b.addPropertyNode("value"));
+        }
+        if (release.getNotifiableValue() != null && BigDecimal.ZERO.compareTo(release.getNotifiableValue()) >= 0) {
+            valid = handleError(context, "RELEASE_NOTIFIABLE_VALUE_NOT_GREATER_THAN_ZERO", b -> b.addPropertyNode("value"));
         }
         return valid;
     }
@@ -102,13 +95,13 @@ public class ReleaseValidator implements ConstraintValidator<ValidRelease, Relea
         // Must have a valid unit if value is not below the reporting threshold
         if (!Boolean.TRUE.equals(release.getBelowReportingThreshold())) {
             if (release.getUnitId() == null) {
-                context.disableDefaultConstraintViolation();
-                context.buildConstraintViolationWithTemplate("RELEASE_UNIT_NOT_SPECIFIED")
-                        .addPropertyNode("unitId").addConstraintViolation();
-                valid = false;
-//            } else {
-                // FIXME: Need to do lookup against master data API to determine if valid unit for regime
-
+                valid = handleError(context, "RELEASE_UNIT_NOT_SPECIFIED", b -> b.addPropertyNode("unitId"));
+            } else {
+                final MdRegime regime = getRegime(release);
+                final Set<String> unitsForRoute = cacheService.getUnitsByRoute(regime).get(String.valueOf(release.getRouteId()));
+                if (unitsForRoute == null || !unitsForRoute.contains(String.valueOf(release.getUnitId()))) {
+                    valid = handleError(context, "RELEASE_UNIT_INVALID", b -> b.addPropertyNode("unitId"));
+                }
             }
         }
         return valid;
@@ -121,20 +114,18 @@ public class ReleaseValidator implements ConstraintValidator<ValidRelease, Relea
         if (release.getNotifiableValue() != null) {
             // Must have a valid notifiable release unit value
             if (release.getNotifiableUnitId() == null) {
-                context.disableDefaultConstraintViolation();
-                context.buildConstraintViolationWithTemplate("RELEASE_NOTIFIABLE_UNIT_NOT_SPECIFIED")
-                        .addPropertyNode("notifiableUnitId").addConstraintViolation();
-                valid = false;
-//            } else {
-                // FIXME: Need to do lookup against master data API to determine if valid unit for regime
+                valid = handleError(context, "RELEASE_NOTIFIABLE_UNIT_NOT_SPECIFIED", b -> b.addPropertyNode("notifiableUnitId"));
+            } else {
+                final MdRegime regime = getRegime(release);
+                final Set<String> unitsForRoute = cacheService.getUnitsByRoute(regime).get(String.valueOf(release.getRouteId()));
+                if (unitsForRoute == null || !unitsForRoute.contains(String.valueOf(release.getNotifiableUnitId()))) {
+                    valid = handleError(context, "RELEASE_NOTIFIABLE_UNIT_INVALID", b -> b.addPropertyNode("notifiableUnitId"));
+                }
             }
 
             // Must have a reason for a notifiable release
             if (StringUtils.isEmpty(release.getNotifiableReason())) {
-                context.disableDefaultConstraintViolation();
-                context.buildConstraintViolationWithTemplate("RELEASE_NOTIFIABLE_REASON_NOT_SPECIFIED")
-                        .addPropertyNode("notifiableReason").addConstraintViolation();
-                valid = false;
+                valid = handleError(context, "RELEASE_NOTIFIABLE_REASON_NOT_SPECIFIED", b -> b.addPropertyNode("notifiableReason"));
             }
         }
         return valid;
@@ -143,19 +134,13 @@ public class ReleaseValidator implements ConstraintValidator<ValidRelease, Relea
     private boolean checkNotifiableReleaseLessThanTotalRelease(final Release release, final ConstraintValidatorContext context) {
         boolean valid = true;
 
-        if (release.getNotifiableValue() != null) {
-            if (release.getNotifiableUnitId() != null) {
-                final BigDecimal totalValue = valueStandardisationService.getStandardValue(release.getValue(), String.valueOf(release.getUnitId()));
-                final BigDecimal notifiableValue = valueStandardisationService.getStandardValue(release.getNotifiableValue(),
-                        String.valueOf(release.getNotifiableUnitId()));
+        if (release.getNotifiableValue() != null && release.getNotifiableUnitId() != null) {
+            final BigDecimal totalValue = valueStandardisationService.getStandardValue(release.getValue(), String.valueOf(release.getUnitId()));
+            final BigDecimal notifiableValue = valueStandardisationService.getStandardValue(release.getNotifiableValue(),
+                    String.valueOf(release.getNotifiableUnitId()));
 
-                if (notifiableValue.compareTo(totalValue) > 0) {
-                    context.disableDefaultConstraintViolation();
-                    context.buildConstraintViolationWithTemplate("RELEASE_NOTIFIABLE_VALUE_EXCEEDS_TOTAL")
-                            .addPropertyNode("subrouteId").addConstraintViolation();
-                    valid = false;
-                }
-
+            if (notifiableValue.compareTo(totalValue) > 0) {
+                valid = handleError(context, "RELEASE_NOTIFIABLE_VALUE_EXCEEDS_TOTAL", b -> b.addPropertyNode("notifiableValue"));
             }
         }
         return valid;
@@ -170,18 +155,23 @@ public class ReleaseValidator implements ConstraintValidator<ValidRelease, Relea
 
             if (release.getSubrouteId() == null) {
                 if (!subrouteIds.isEmpty()) {
-                    context.disableDefaultConstraintViolation();
-                    context.buildConstraintViolationWithTemplate("RELEASE_SUBROUTE_REQUIRED_FOR_GIVEN_ROUTE")
-                            .addPropertyNode("subrouteId").addConstraintViolation();
-                    valid = false;
+                    valid = handleError(context, "RELEASE_SUBROUTE_REQUIRED_FOR_GIVEN_ROUTE", b -> b.addPropertyNode("subrouteId"));
                 }
             } else if (!subrouteIds.contains(String.valueOf(release.getSubrouteId()))) {
-                context.disableDefaultConstraintViolation();
-                context.buildConstraintViolationWithTemplate("RELEASE_SUBROUTE_INVALID_FOR_GIVEN_ROUTE")
-                        .addPropertyNode("subrouteId").addConstraintViolation();
-                valid = false;
+                valid = handleError(context, "RELEASE_SUBROUTE_INVALID_FOR_GIVEN_ROUTE", b -> b.addPropertyNode("subrouteId"));
             }
         }
         return valid;
+    }
+
+    private MdRegime getRegime(final Release release) {
+        final Object reportingReference = release.getSubmission().getReportingReference();
+        final Link regimesLookup = MasterDataLinks.findRegimesForContextAndUniqueIdentifier(Context.PI, Objects.toString(reportingReference));
+        final List<MdRegime> regimes = lookupService.list(MdRegime.class, regimesLookup);
+
+        if (regimes.size() != 1) {
+            throw new ValidationException("Pollution inventory submissions should be mapped to a single pollution inventory regime.");
+        }
+        return regimes.get(0);
     }
 }

@@ -14,6 +14,7 @@ import uk.gov.defra.datareturns.test.rules.RestAssuredRule;
 import javax.inject.Inject;
 
 import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.hasItems;
 import static org.hamcrest.Matchers.is;
 import static uk.gov.defra.datareturns.testutils.SubmissionTestUtils.fromJson;
 import static uk.gov.defra.datareturns.testutils.SubmissionTestUtils.runSubmissionTest;
@@ -37,6 +38,15 @@ public class SubmissionReleasesIT {
             r.statusCode(HttpStatus.BAD_REQUEST.value());
             r.body("errors.size()", is(1));
             r.body("errors[0].message", equalTo("RELEASE_SUBSTANCE_INVALID"));
+        });
+    }
+
+    @Test
+    public void testNonPositiveReleaseValuesFail() {
+        runSubmissionTest(fromJson("/data/releases/release_non_positive_values.json"), (r) -> {
+            r.statusCode(HttpStatus.BAD_REQUEST.value());
+            r.body("errors.size()", is(2));
+            r.body("errors.message", hasItems("RELEASE_VALUE_NOT_GREATER_THAN_ZERO", "RELEASE_NOTIFIABLE_VALUE_NOT_GREATER_THAN_ZERO"));
         });
     }
 

@@ -14,7 +14,9 @@ import uk.gov.defra.datareturns.validation.service.dto.MdParameterGroup;
 import uk.gov.defra.datareturns.validation.service.dto.MdRegime;
 import uk.gov.defra.datareturns.validation.service.dto.MdRegimeObligation;
 import uk.gov.defra.datareturns.validation.service.dto.MdRoute;
+import uk.gov.defra.datareturns.validation.service.dto.MdUnit;
 
+import javax.annotation.PostConstruct;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -35,7 +37,11 @@ public interface ValidationCacheService {
      */
     Map<String, String> getResourceNomenclatureMap(final String collectionResource);
 
-    Map<String, Set<String>> getRouteParameterMapForRegime(MdRegime regime);
+    Map<String, Set<String>> getParametersByRoute(MdRegime regime);
+
+    Map<String, Set<String>> getUnitsByRoute(MdRegime regime);
+
+    Map<String, MdRegimeObligation> getObligationsByRouteId(MdRegime regime);
 
     /**
      * Validation cache service implementation
@@ -46,6 +52,13 @@ public interface ValidationCacheService {
     @RequiredArgsConstructor
     class ValidationCacheServiceImpl implements ValidationCacheService {
         private final MasterDataLookupService lookupService;
+        private ValidationCacheService proxy;
+
+        @PostConstruct
+        public void init() {
+            this.proxy = this;
+        }
+
 
         @Cacheable(cacheNames = "ValidationCache", key = "#collectionResource", unless = "#result.isEmpty()")
         @Override
@@ -58,15 +71,8 @@ public interface ValidationCacheService {
         @Cacheable(cacheNames = "ValidationCache:Regime",
                    key = "T(uk.gov.defra.datareturns.validation.service.MasterDataLookupService).getResourceId(#regime) + ':ParametersByRoute'",
                    unless = "#result.isEmpty()")
-        public Map<String, Set<String>> getRouteParameterMapForRegime(final MdRegime regime) {
-            final List<MdRegimeObligation> obligations = lookupService.list(MdRegimeObligation.class, regime.getLink("regimeObligations"));
-            final Map<String, MdRegimeObligation> obligationsByRouteId = obligations.stream()
-                    .collect(
-                            Collectors.toMap(
-                                    o -> MasterDataLookupService.getResourceId(lookupService.get(MdRoute.class, o.getLink("route"))),
-                                    Function.identity()
-                            )
-                    );
+        public Map<String, Set<String>> getParametersByRoute(final MdRegime regime) {
+            final Map<String, MdRegimeObligation> obligationsByRouteId = proxy.getObligationsByRouteId(regime);
 
             final Map<String, Set<String>> parametersByRouteId = obligationsByRouteId.entrySet().stream()
                     .collect(
@@ -84,5 +90,41 @@ public interface ValidationCacheService {
                     );
             return parametersByRouteId;
         }
+
+
+        @Cacheable(cacheNames = "ValidationCache:Regime",
+                   key = "T(uk.gov.defra.datareturns.validation.service.MasterDataLookupService).getResourceId(#regime) + ':UnitsByRoute'",
+                   unless = "#result.isEmpty()")
+        public Map<String, Set<String>> getUnitsByRoute(final MdRegime regime) {
+            final Map<String, MdRegimeObligation> obligationsByRouteId = proxy.getObligationsByRouteId(regime);
+
+            final Map<String, Set<String>> parametersByRouteId = obligationsByRouteId.entrySet().stream()
+                    .collect(
+                            Collectors.toMap(
+                                    Map.Entry::getKey,
+                                    e -> {
+                                        final List<MdUnit> units = lookupService.list(MdUnit.class, e.getValue().getLink("units"));
+                                        return units.stream().map(MasterDataLookupService::getResourceId).collect(Collectors.toSet());
+                                    }
+                            )
+                    );
+            return parametersByRouteId;
+        }
+
+        @Cacheable(cacheNames = "ValidationCache:Regime",
+                   key = "T(uk.gov.defra.datareturns.validation.service.MasterDataLookupService).getResourceId(#regime) + ':ObligationsByRoute'",
+                   unless = "#result.isEmpty()")
+        public Map<String, MdRegimeObligation> getObligationsByRouteId(final MdRegime regime) {
+            final List<MdRegimeObligation> obligations = lookupService.list(MdRegimeObligation.class, regime.getLink("regimeObligations"));
+            final Map<String, MdRegimeObligation> obligationsByRouteId = obligations.stream()
+                    .collect(
+                            Collectors.toMap(
+                                    o -> MasterDataLookupService.getResourceId(lookupService.get(MdRoute.class, o.getLink("route"))),
+                                    Function.identity()
+                            )
+                    );
+            return obligationsByRouteId;
+        }
+
     }
 }
