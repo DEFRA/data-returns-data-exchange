@@ -88,6 +88,8 @@
                             <!--<arguments>-->
                                 <!--<argument>&#45;&#45;quiet</argument>-->
                                 <!--<argument>&#45;&#45;port=9020</argument>-->
+                                <!--<argument>-Dspring-boot-plugin.fork.wait=${spring-boot-plugin.fork.wait}</argument>-->
+                                <!--<argument>-Dspring-boot-plugin.fork.attempts=${spring-boot-plugin.fork.attempts}</argument>-->
                                 <!--<argument>master_data_api</argument>-->
                                 <!--<argument>start</argument>-->
                                 <!--<argument>&#45;&#45;spring.profiles.active=h2</argument>-->

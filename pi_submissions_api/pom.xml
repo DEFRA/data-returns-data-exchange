@@ -63,6 +63,8 @@
                             <arguments>
                                 <argument>--quiet</argument>
                                 <argument>--port=9020</argument>
+                                <argument>-Dspring-boot-plugin.fork.wait=${spring-boot-plugin.fork.wait}</argument>
+                                <argument>-Dspring-boot-plugin.fork.attempts=${spring-boot-plugin.fork.attempts}</argument>
                                 <argument>master_data_api</argument>
                                 <argument>start</argument>
                                 <argument>--spring.profiles.active=h2</argument>
