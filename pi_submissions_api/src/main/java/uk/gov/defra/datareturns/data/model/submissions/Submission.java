@@ -64,7 +64,7 @@ public class Submission extends AbstractBaseEntity {
     @Enumerated(EnumType.STRING)
     private SubmissionStatus status;
 
-    @Column(nullable = false)
+    @Column
     private Short naceId;
 
     @ElementCollection(fetch = FetchType.EAGER)
