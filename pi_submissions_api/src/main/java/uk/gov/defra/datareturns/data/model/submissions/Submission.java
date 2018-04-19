@@ -59,13 +59,13 @@ public class Submission extends AbstractBaseEntity {
      * The year that the submission is applicable to (not necessarily the year of submission)
      */
     @Column(nullable = false)
-    private short applicableYear;
+    private Short applicableYear;
 
     @Enumerated(EnumType.STRING)
     private SubmissionStatus status;
 
     @Column(nullable = false)
-    private short naceId;
+    private Short naceId;
 
     @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(name = "pi_submission_nose_process", joinColumns = @JoinColumn(name = "submission_id"))

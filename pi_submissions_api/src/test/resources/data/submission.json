@@ -37,7 +37,7 @@
   ],
   "transfers": [
     {
-      "ewc_activity_id": 1,
+      "ewc_activity_id": 3,
       "wfd_recovery_id": 1,
       "method": "Calculation",
       "tonnage": 100,

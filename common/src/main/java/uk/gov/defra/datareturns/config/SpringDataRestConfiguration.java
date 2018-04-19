@@ -47,6 +47,7 @@ public class SpringDataRestConfiguration implements RepositoryRestConfigurer {
      */
     private final Validator validator;
 
+
     @Override
     public final void configureRepositoryRestConfiguration(final RepositoryRestConfiguration config) {
         // Scan for and configure projections with sub-type support
@@ -78,13 +79,10 @@ public class SpringDataRestConfiguration implements RepositoryRestConfigurer {
                 config.exposeIdsFor(managedType.getJavaType());
             }
         }
-//        config.setRelProvider(new SpringDataConfiguration.SnakeCaseRelProvider());
-//            config.useHalAsDefaultJsonMediaType(false);
     }
 
     @Override
     public final void configureConversionService(final ConfigurableConversionService conversionService) {
-
     }
 
     @Override

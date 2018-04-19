@@ -1,0 +1,27 @@
+{
+  "reporting_reference": 1,
+  "applicable_year": 2017,
+  "status": "Submitted",
+  "nace_id": 1,
+  "nose_ids": [
+    1,
+    2,
+    3
+  ],
+  "releases": [
+    {
+      "substance_id": 660,
+      "route_id": 1,
+      "method": "Measurement",
+      "below_reporting_threshold": true
+    }
+  ],
+  "transfers": [
+    {
+      "ewc_activity_id": 1,
+      "wfd_disposal_id": 5,
+      "method": "Calculation",
+      "below_reporting_threshold": true
+    }
+  ]
+}
