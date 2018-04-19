@@ -13,7 +13,8 @@
       "ewc_activity_id": 1,
       "wfd_recovery_id": 1,
       "method": "Calculation",
-      "below_reporting_threshold": true,
+      "tonnage": 100,
+      "below_reporting_threshold": false,
       "overseas_transfers": [
         {
           "tonnage": 50,

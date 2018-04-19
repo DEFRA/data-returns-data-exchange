@@ -21,6 +21,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.hasItems;
 import static org.hamcrest.Matchers.is;
 import static uk.gov.defra.datareturns.testutils.SubmissionTestUtils.fromJson;
 import static uk.gov.defra.datareturns.testutils.SubmissionTestUtils.runSubmissionTest;
@@ -38,11 +39,30 @@ public class SubmissionTransfersIT {
     public RestAssuredRule restAssuredRule;
 
     @Test
-    public void testDisposalWithOverseasFails() {
-        runSubmissionTest(fromJson("/data/transfers/overseas_sent_for_disposal.json"), (r) -> {
+    public void testNonPositiveTonnageFails() {
+        runSubmissionTest(fromJson("/data/transfers/transfer_non_positive_tonnages.json"), (r) -> {
+            r.statusCode(HttpStatus.BAD_REQUEST.value());
+            r.body("errors.size()", is(2));
+            r.body("errors.message", hasItems("TRANSFER_TONNAGE_NOT_GREATER_THAN_ZERO", "OVERSEAS_TONNAGE_NOT_GREATER_THAN_ZERO"));
+        });
+    }
+
+    @Test
+    public void testEwcActivityMissing() {
+        runSubmissionTest(fromJson("/data/transfers/transfer_ewc_activity_missing.json"), (r) -> {
             r.statusCode(HttpStatus.BAD_REQUEST.value());
             r.body("errors.size()", is(1));
-            r.body("errors[0].message", equalTo("OVERSEAS_NOT_ALLOWED_FOR_DISPOSAL"));
+            r.body("errors[0].message", equalTo("TRANSFER_EWC_ACTIVITY_REQUIRED"));
+        });
+    }
+
+
+    @Test
+    public void testEwcActivityInvalid() {
+        runSubmissionTest(fromJson("/data/transfers/transfer_ewc_activity_invalid.json"), (r) -> {
+            r.statusCode(HttpStatus.BAD_REQUEST.value());
+            r.body("errors.size()", is(1));
+            r.body("errors[0].message", equalTo("TRANSFER_EWC_ACTIVITY_INVALID"));
         });
     }
 
@@ -65,20 +85,57 @@ public class SubmissionTransfersIT {
     }
 
     @Test
+    public void testTransferRecoveryCodeInvalidFails() {
+        runSubmissionTest(fromJson("/data/transfers/transfer_recovery_code_invalid.json"), (r) -> {
+            r.statusCode(HttpStatus.BAD_REQUEST.value());
+            r.body("errors.size()", is(1));
+            r.body("errors[0].message", equalTo("TRANSFER_WFD_RECOVERY_CODE_INVALID"));
+        });
+    }
+
+    @Test
+    public void testTransferDisposalCodeInvalidFails() {
+        runSubmissionTest(fromJson("/data/transfers/transfer_disposal_code_invalid.json"), (r) -> {
+            r.statusCode(HttpStatus.BAD_REQUEST.value());
+            r.body("errors.size()", is(1));
+            r.body("errors[0].message", equalTo("TRANSFER_WFD_DISPOSAL_CODE_INVALID"));
+        });
+    }
+
+    @Test
+    public void testTransferWithBrtAndHazardousActivityFails() {
+        runSubmissionTest(fromJson("/data/transfers/transfer_brt_with_hazardous_ewc_activity.json"), (r) -> {
+            r.statusCode(HttpStatus.BAD_REQUEST.value());
+            r.body("errors.size()", is(1));
+            r.body("errors[0].message", equalTo("TRANSFER_BRT_NOT_ALLOWED_WITH_HAZARDOUS_EWC"));
+        });
+    }
+
+
+    @Test
+    public void testDisposalWithOverseasFails() {
+        runSubmissionTest(fromJson("/data/transfers/overseas_sent_for_disposal.json"), (r) -> {
+            r.statusCode(HttpStatus.BAD_REQUEST.value());
+            r.body("errors.size()", is(1));
+            r.body("errors[0].message", equalTo("OVERSEAS_NOT_ALLOWED_FOR_DISPOSAL"));
+        });
+    }
+
+    @Test
+    public void testTransferOverseasWithNonHazardousActivityFails() {
+        runSubmissionTest(fromJson("/data/transfers/overseas_non_hazardous_activity.json"), (r) -> {
+            r.statusCode(HttpStatus.BAD_REQUEST.value());
+            r.body("errors.size()", is(1));
+            r.body("errors[0].message", equalTo("OVERSEAS_NOT_ALLOWED_FOR_NON_HAZARDOUS_EWC_ACTIVITY"));
+        });
+    }
+
+    @Test
     public void testOverseasTransfersExceedOffsiteFails() {
         runSubmissionTest(fromJson("/data/transfers/overseas_exceed_offsite.json"), (r) -> {
             r.statusCode(HttpStatus.BAD_REQUEST.value());
             r.body("errors.size()", is(1));
             r.body("errors[0].message", equalTo("OVERSEAS_TONNAGE_EXCEEDS_TOTAL"));
-        });
-    }
-
-    @Test
-    public void testOverseasTransfersWithBrtOffsiteFails() {
-        runSubmissionTest(fromJson("/data/transfers/overseas_with_brt_transfer.json"), (r) -> {
-            r.statusCode(HttpStatus.BAD_REQUEST.value());
-            r.body("errors.size()", is(1));
-            r.body("errors[0].message", equalTo("OVERSEAS_NOT_ALLOWED_WITH_BRT_TRANSFER"));
         });
     }
 

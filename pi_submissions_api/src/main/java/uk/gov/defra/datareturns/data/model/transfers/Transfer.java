@@ -31,11 +31,11 @@ import java.util.Set;
  *
  * @author Sam Gardner-Dell
  */
-@Entity(name = "pi_transfer_offsite")
+@Entity(name = "pi_transfer")
 @GenericGenerator(name = AbstractBaseEntity.DEFINITIONS_ID_GENERATOR,
                   strategy = AbstractBaseEntity.DEFINITIONS_ID_SEQUENCE_STRATEGY,
                   parameters = {
-                          @org.hibernate.annotations.Parameter(name = SequenceStyleGenerator.SEQUENCE_PARAM, value = "pi_transfer_offsite_id_seq")
+                          @org.hibernate.annotations.Parameter(name = SequenceStyleGenerator.SEQUENCE_PARAM, value = "pi_transfer_id_seq")
                   }
 )
 @Audited
@@ -56,7 +56,7 @@ public class Transfer extends AbstractBaseEntity {
     @Basic
     private Integer wfdRecoveryId;
 
-    @Column(nullable = false, precision = 30, scale = 15)
+    @Column(precision = 30, scale = 15)
     private BigDecimal tonnage;
 
     @Basic

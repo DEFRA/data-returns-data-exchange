@@ -10,7 +10,7 @@
   ],
   "transfers": [
     {
-      "ewc_activity_id": 1,
+      "ewc_activity_id": 3,
       "method": "Calculation",
       "tonnage": 50
     }

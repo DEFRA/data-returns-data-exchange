@@ -20,7 +20,6 @@ import org.springframework.web.client.RestTemplate;
 import uk.gov.defra.datareturns.config.ServiceEndpointConfiguration;
 import uk.gov.defra.datareturns.rest.HalRestTemplate;
 
-import javax.validation.ValidationException;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.net.URI;
@@ -80,12 +79,8 @@ public interface MasterDataLookupService {
         public <T> T get(final Class<T> cls, final Link entityResource) {
             final RequestFacade request = new RequestFacade(entityResource);
             final ResponseEntity<T> responseEntity = request.exchange(HttpMethod.GET, null, cls);
-            if (responseEntity.getStatusCode().is2xxSuccessful()) {
-                return responseEntity.getBody();
-            }
-            throw new ValidationException("Unexpected response from master data API: " + responseEntity.getStatusCode());
+            return responseEntity.getBody();
         }
-
 
         @Cacheable(cacheNames = "MasterDataCache", key = "#cls.name + ':Collections:' + #collectionResource.href.replaceAll(\":\", \"\")")
         @Override
@@ -98,10 +93,7 @@ public interface MasterDataLookupService {
             };
             final RequestFacade request = new RequestFacade(collectionResource);
             final ResponseEntity<Resources<T>> responseEntity = request.exchange(HttpMethod.GET, null, typeReference);
-            if (responseEntity.getStatusCode().is2xxSuccessful()) {
-                return new ArrayList<>(responseEntity.getBody().getContent());
-            }
-            throw new ValidationException("Unexpected response from master data API: " + responseEntity.getStatusCode());
+            return new ArrayList<>(responseEntity.getBody().getContent());
         }
 
         /**

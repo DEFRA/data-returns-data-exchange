@@ -247,16 +247,16 @@
     Offsite transfers
     ****************************************************************
     -->
-    <changeSet id="create-table: pi_transfer_offsite" author="Defra">
-        <createSequence sequenceName="pi_transfer_offsite_id_seq" startValue="1"/>
+    <changeSet id="create-table: pi_transfer" author="Defra">
+        <createSequence sequenceName="pi_transfer_id_seq" startValue="1"/>
 
-        <createTable tableName="pi_transfer_offsite">
-            <column name="id" type="bigint" defaultValueSequenceNext="pi_transfer_offsite_id_seq">
+        <createTable tableName="pi_transfer">
+            <column name="id" type="bigint" defaultValueSequenceNext="pi_transfer_id_seq">
                 <constraints primaryKey="true" nullable="false"/>
             </column>
             <column name="submission_id" type="bigint">
                 <constraints nullable="false"
-                             foreignKeyName="fk_transfer_offsite__submission"
+                             foreignKeyName="fk_transfer__submission"
                              references="pi_submission(id)"/>
             </column>
             <column name="ewc_activity_id" type="int">
@@ -266,7 +266,7 @@
                 <constraints nullable="false"/>
             </column>
             <column name="tonnage" type="numeric(30, 15)">
-                <constraints nullable="false"/>
+                <constraints nullable="true"/>
             </column>
             <column name="below_reporting_threshold" type="boolean">
                 <constraints nullable="false"/>
@@ -289,8 +289,8 @@
         </createTable>
     </changeSet>
 
-    <changeSet id="create-table: pi_transfer_offsite_aud" author="Defra">
-        <createTable tableName="pi_transfer_offsite_aud">
+    <changeSet id="create-table: pi_transfer_aud" author="Defra">
+        <createTable tableName="pi_transfer_aud">
             <column name="id" type="bigint">
                 <constraints nullable="false"/>
             </column>
@@ -309,9 +309,9 @@
             <column name="wfd_recovery_id" type="int"/>
         </createTable>
 
-        <addPrimaryKey tableName="pi_transfer_offsite_aud" columnNames="id, rev"/>
+        <addPrimaryKey tableName="pi_transfer_aud" columnNames="id, rev"/>
         <rollback>
-            <dropTable tableName="pi_transfer_offsite_aud"/>
+            <dropTable tableName="pi_transfer_aud"/>
         </rollback>
     </changeSet>
 
@@ -330,13 +330,13 @@
                 <constraints
                         nullable="false"
                         foreignKeyName="fk_transfer_overseas_waste__transfer"
-                        references="pi_transfer_offsite(id)"/>
+                        references="pi_transfer(id)"/>
             </column>
             <column name="method" type="varchar(100)">
                 <constraints nullable="false"/>
             </column>
             <column name="tonnage" type="numeric(30, 15)">
-                <constraints nullable="false"/>
+                <constraints nullable="true"/>
             </column>
             <column name="responsible_company_name" type="varchar(255)"/>
             <column name="responsible_company_address_country" type="varchar(2)">
