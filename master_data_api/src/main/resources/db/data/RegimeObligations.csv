@@ -1,22 +1,22 @@
-name,description,regime_name,route_name,parameter_groups,unit_groups
+name,description,regime_name,route_name,parameter_groups
 
-ECM,Emissions Compliance Monitoring,Emissions Compliance Monitoring,,ECM,ECM
+ECM,Emissions Compliance Monitoring,Emissions Compliance Monitoring,,ECM
 
-PI_A1_RTA,Releases to air,Pollution Inventory reporting,Air,PI_A1_RTA,PI
-PI_A1_RTL,Releases to land,Pollution Inventory reporting,Land,PI_A1_RTL,PI
-PI_A1_RTCW,Releases to controlled waters,Pollution Inventory reporting,Controlled waters,PI_A1_RTCW,PI
-PI_A1_OSTW,Off-site transfers in wastewater,Pollution Inventory reporting,Waste water,PI_A1_OSTW,PI
+PI_A1_RTA,Releases to air,Pollution Inventory reporting,Air,PI_A1_RTA
+PI_A1_RTL,Releases to land,Pollution Inventory reporting,Land,PI_A1_RTL
+PI_A1_RTCW,Releases to controlled waters,Pollution Inventory reporting,Controlled waters,PI_A1_RTCW
+PI_A1_OSTW,Off-site transfers in wastewater,Pollution Inventory reporting,Waste water,PI_A1_OSTW
 
-PI_A1LFIA_RTA,Releases to air,Pollution Inventory reporting for intensive agriculture and landfill operators,Air,PI_A1LFIA_RTA,PI
-PI_A1LFIA_RTL,Releases to land,Pollution Inventory reporting for intensive agriculture and landfill operators,Land,PI_A1LFIA_RTL,PI
-PI_A1LFIA_RTCW,Releases to controlled waters,Pollution Inventory reporting for intensive agriculture and landfill operators,Controlled waters,PI_A1LFIA_RTCW,PI
-PI_A1LFIA_OSTW,Off-site transfers in wastewater,Pollution Inventory reporting for intensive agriculture and landfill operators,Waste water,PI_A1LFIA_OSTW,PI
+PI_A1LFIA_RTA,Releases to air,Pollution Inventory reporting for intensive agriculture and landfill operators,Air,PI_A1LFIA_RTA
+PI_A1LFIA_RTL,Releases to land,Pollution Inventory reporting for intensive agriculture and landfill operators,Land,PI_A1LFIA_RTL
+PI_A1LFIA_RTCW,Releases to controlled waters,Pollution Inventory reporting for intensive agriculture and landfill operators,Controlled waters,PI_A1LFIA_RTCW
+PI_A1LFIA_OSTW,Off-site transfers in wastewater,Pollution Inventory reporting for intensive agriculture and landfill operators,Waste water,PI_A1LFIA_OSTW
 
-PI_EPRTR_RTA,Releases to air,Pollution Inventory reporting for EPRTR,Air,PI_EPRTR_RTA,PI
-PI_EPRTR_RTL,Releases to land,Pollution Inventory reporting for EPRTR,Land,PI_EPRTR_RTL,PI
-PI_EPRTR_RTCW,Releases to controlled waters,Pollution Inventory reporting for EPRTR,Controlled waters,PI_EPRTR_RTCW,PI
-PI_EPRTR_OSTW,Off-site transfers in wastewater,Pollution Inventory reporting for EPRTR,Waste water,PI_EPRTR_OSTW,PI
+PI_EPRTR_RTA,Releases to air,Pollution Inventory reporting for EPRTR,Air,PI_EPRTR_RTA
+PI_EPRTR_RTL,Releases to land,Pollution Inventory reporting for EPRTR,Land,PI_EPRTR_RTL
+PI_EPRTR_RTCW,Releases to controlled waters,Pollution Inventory reporting for EPRTR,Controlled waters,PI_EPRTR_RTCW
+PI_EPRTR_OSTW,Off-site transfers in wastewater,Pollution Inventory reporting for EPRTR,Waste water,PI_EPRTR_OSTW
 
-PI_RSR_RTA,Releases to air,Pollution Inventory reporting for radioactive waste,Air,PI_RSR_RTA,PI_RSR
-PI_RSR_OSTW,Releases to sewer,Pollution Inventory reporting for radioactive waste,Waste water,PI_RSR_OSTW,PI_RSR
-PI_RSR_RTCW,Releases to controlled waters,Pollution Inventory reporting for radioactive waste,Controlled waters,PI_RSR_RTCW,PI_RSR
+PI_RSR_RTA,Releases to air,Pollution Inventory reporting for radioactive waste,Air,PI_RSR_RTA
+PI_RSR_OSTW,Releases to sewer,Pollution Inventory reporting for radioactive waste,Waste water,PI_RSR_OSTW
+PI_RSR_RTCW,Releases to controlled waters,Pollution Inventory reporting for radioactive waste,Controlled waters,PI_RSR_RTCW

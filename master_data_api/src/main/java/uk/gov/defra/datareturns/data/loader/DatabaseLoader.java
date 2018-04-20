@@ -430,37 +430,9 @@ public interface DatabaseLoader {
                 entity.setType(type);
                 type.getUnits().add(entity);
 
-                final Set<String> groupNames = LoaderUtils.extractGroupSet(rowData.get("unit_groups"));
-
-                // FIXME: We should just move the values into the CSV file
-                for (final String groupName : groupNames) {
-                    switch (groupName) {
-                        case "ECM":
-                            regimeObligationMap.get("ECM").getUnits().add(entity);
-                            break;
-                        case "PI_RSR":
-                            regimeObligationMap.get("PI_RSR_RTA").getUnits().add(entity);
-                            regimeObligationMap.get("PI_RSR_OSTW").getUnits().add(entity);
-                            regimeObligationMap.get("PI_RSR_RTCW").getUnits().add(entity);
-                            break;
-                        case "PI":
-                            regimeObligationMap.get("PI_A1_RTA").getUnits().add(entity);
-                            regimeObligationMap.get("PI_A1_RTL").getUnits().add(entity);
-                            regimeObligationMap.get("PI_A1_RTCW").getUnits().add(entity);
-                            regimeObligationMap.get("PI_A1_OSTW").getUnits().add(entity);
-                            regimeObligationMap.get("PI_A1LFIA_RTA").getUnits().add(entity);
-                            regimeObligationMap.get("PI_A1LFIA_RTL").getUnits().add(entity);
-                            regimeObligationMap.get("PI_A1LFIA_RTCW").getUnits().add(entity);
-                            regimeObligationMap.get("PI_A1LFIA_OSTW").getUnits().add(entity);
-                            regimeObligationMap.get("PI_EPRTR_RTA").getUnits().add(entity);
-                            regimeObligationMap.get("PI_EPRTR_RTL").getUnits().add(entity);
-                            regimeObligationMap.get("PI_EPRTR_RTCW").getUnits().add(entity);
-                            regimeObligationMap.get("PI_EPRTR_OSTW").getUnits().add(entity);
-                            break;
-                        default:
-                            log.error("Unrecognised unit group");
-                            break;
-                    }
+                final Set<String> obligations = LoaderUtils.extractGroupSet(rowData.get("regime_obligations"));
+                for (final String obligationName : obligations) {
+                    regimeObligationMap.get(obligationName).getUnits().add(entity);
                 }
                 return entity;
             };

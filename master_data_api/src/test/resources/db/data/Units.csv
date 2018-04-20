@@ -1,5 +1,5 @@
-name,preferred,long_name,unicode,description,conversion,type,unit_groups
-UOM1A,,Test Unit 1A,,Test Unit 1A,1,TestType1,GRP1
-UOM1B,,Test Unit 1B,,Test Unit 1B,1,TestType1,GRP1
-UOM2A,,Test Unit 2A,,Test Unit 2A,1,TestType2,GRP2
-UOM2B,,Test Unit 2B,,Test Unit 2B,1,TestType2,GRP2
+name,preferred,long_name,unicode,description,conversion,type,regime_obligations
+UOM1A,,Test Unit 1A,,Test Unit 1A,1,TestType1,Regime0Obligation1
+UOM1B,,Test Unit 1B,,Test Unit 1B,1,TestType1,Regime0Obligation1
+UOM2A,,Test Unit 2A,,Test Unit 2A,1,TestType2,Regime1Obligation1
+UOM2B,,Test Unit 2B,,Test Unit 2B,1,TestType2,Regime1Obligation1

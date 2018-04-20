@@ -1,4 +1,4 @@
-name,preferred,long_name,unicode,description,conversion,type,unit_groups
+name,preferred,long_name,unicode,description,conversion,type,regime_obligations
 ATU,,Accumulated thermal unit,,A measure of temperature over time. 1 ATU is equal to 1 degree Celsius over 1 day.,1,Accumulated temperature,ECM
 cm2,,Square centimetre,,A unit of area,0.0001,Area,ECM
 cm²,cm2,Square centimetre,cm(U+00B2),A unit of area,0.0001,Area,ECM
@@ -245,11 +245,11 @@ km,,Kilometre,,A unit of distance,1000,Length,ECM
 m,,Metre,,A unit of distance,1,Length,ECM
 mm,,Millimetre,,A unit of distance,0.001,Length,ECM
 nm,,Nanometre,,A unit of distance,1E-09,Length,ECM
-g,,Gram,,A unit of mass,0.001,Mass,ECM PI
-kg,,Kilograms,,A unit of mass,1,Mass,ECM PI
-kt,,Kilotonnes,,A unit of weight,1000000,Mass,ECM PI
-mg,,Milligram,,A unit of mass,1E-06,Mass,ECM PI
-t,,Metric tonne,,A unit of mass,1000,Mass,ECM PI
+g,,Gram,,A unit of mass,0.001,Mass,ECM PI_A1_RTA PI_A1_RTL PI_A1_RTCW PI_A1_OSTW PI_A1LFIA_RTA PI_A1LFIA_RTL PI_A1LFIA_RTCW PI_A1LFIA_OSTW PI_EPRTR_RTA PI_EPRTR_RTL PI_EPRTR_RTCW PI_EPRTR_OSTW
+kg,,Kilograms,,A unit of mass,1,Mass,ECM PI_A1_RTA PI_A1_RTL PI_A1_RTCW PI_A1_OSTW PI_A1LFIA_RTA PI_A1LFIA_RTL PI_A1LFIA_RTCW PI_A1LFIA_OSTW PI_EPRTR_RTA PI_EPRTR_RTL PI_EPRTR_RTCW PI_EPRTR_OSTW
+kt,,Kilotonnes,,A unit of weight,1000000,Mass,ECM PI_A1_RTA PI_A1_RTL PI_A1_RTCW PI_A1_OSTW PI_A1LFIA_RTA PI_A1LFIA_RTL PI_A1LFIA_RTCW PI_A1LFIA_OSTW PI_EPRTR_RTA PI_EPRTR_RTL PI_EPRTR_RTCW PI_EPRTR_OSTW
+mg,,Milligram,,A unit of mass,1E-06,Mass,ECM PI_A1_RTA PI_A1_RTL PI_A1_RTCW PI_A1_OSTW PI_A1LFIA_RTA PI_A1LFIA_RTL PI_A1LFIA_RTCW PI_A1LFIA_OSTW PI_EPRTR_RTA PI_EPRTR_RTL PI_EPRTR_RTCW PI_EPRTR_OSTW
+t,,Metric tonne,,A unit of mass,1000,Mass,ECM PI_A1_RTA PI_A1_RTL PI_A1_RTCW PI_A1_OSTW PI_A1LFIA_RTA PI_A1LFIA_RTL PI_A1LFIA_RTCW PI_A1LFIA_OSTW PI_EPRTR_RTA PI_EPRTR_RTL PI_EPRTR_RTCW PI_EPRTR_OSTW
 ug,µg,Microgram,,A unit of mass,1E-09,Mass,ECM
 µg,,Microgram,(U+00B5)g,A unit of mass,1E-09,Mass,ECM
 ',,Minute,,"This character is a quote, an allowable alternative to a prime - a unit of angular measure used in geographic coordinates (latitude or longitude)",0,Misc,ECM
@@ -303,11 +303,11 @@ Bar,,Bar,,A unit of pressure,0,Pressure,ECM
 mBar,,Millibar,,A unit of pressure,0,Pressure,ECM
 MPa,,Megapascal,,A unit of pressure,0,Pressure,ECM
 Pa,,Pascal,,A unit of pressure,0,Pressure,ECM
-Bq,,Becquerel,,A unit of radioactivity,1,Radioactive decay,ECM PI_RSR
-GBq,,Gigabecquerel,,A unit of radioactivity,1000000000,Radioactive decay,ECM PI_RSR
-kBq,,Kilobecquerel,,A unit of radioactivity,1000.,Radioactive decay,ECM PI_RSR
-MBq,,Megabecquerel,,A unit of radioactivity,1000000,Radioactive decay,ECM PI_RSR
-TBq,,Terabecquerel,,A unit of radioactivity,1000000000000,Radioactive decay,ECM PI_RSR
+Bq,,Becquerel,,A unit of radioactivity,1,Radioactive decay,ECM PI_RSR_RTA PI_RSR_OSTW PI_RSR_RTCW
+GBq,,Gigabecquerel,,A unit of radioactivity,1000000000,Radioactive decay,ECM PI_RSR_RTA PI_RSR_OSTW PI_RSR_RTCW
+kBq,,Kilobecquerel,,A unit of radioactivity,1000.,Radioactive decay,ECM PI_RSR_RTA PI_RSR_OSTW PI_RSR_RTCW
+MBq,,Megabecquerel,,A unit of radioactivity,1000000,Radioactive decay,ECM PI_RSR_RTA PI_RSR_OSTW PI_RSR_RTCW
+TBq,,Terabecquerel,,A unit of radioactivity,1000000000000,Radioactive decay,ECM PI_RSR_RTA PI_RSR_OSTW PI_RSR_RTCW
 Bq/cm2,Bqcm-2,Becquerels per square centimetre,,A unit of radioactive surface contamination,0,Radioactivity,ECM
 Bq/cm²,Bqcm-2,Becquerels per square centimetre,Bq/cm(U+00B2),A unit of radioactive surface contamination,0,Radioactivity,ECM
 Bq/cm3,Bqcm-3,Becquerels per cubic centimetre,,A unit of radioactivity concentration,0,Radioactivity,ECM
