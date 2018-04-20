@@ -7,6 +7,7 @@ import lombok.Data;
 import org.springframework.hateoas.Identifiable;
 import org.springframework.hateoas.Link;
 import org.springframework.hateoas.hal.Jackson2HalModule;
+import uk.gov.defra.datareturns.validation.service.MasterDataEntity;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -34,6 +35,14 @@ public class MdBaseEntity implements Identifiable<Link>, Serializable {
             }
         }
         return null;
+    }
+
+    public Link getCollectionLink(final MasterDataEntity entity) {
+        return getLink(entity.getCollectionRel());
+    }
+
+    public Link getItemLink(final MasterDataEntity entity) {
+        return getLink(entity.getItemRel());
     }
 
     @Override

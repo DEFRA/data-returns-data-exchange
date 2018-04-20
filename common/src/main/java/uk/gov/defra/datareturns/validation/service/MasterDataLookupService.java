@@ -48,9 +48,9 @@ public interface MasterDataLookupService {
      * @param cls            the entity class used to deserialize the response
      * @param entityResource the linked entity resource
      * @param <T>            the generic type of the class used to deserialize the response
-     * @return the deserialized response as an instance of {@link T}
+     * @return an {@link OptionalResult} backed by a the deserialized response as an instance of {@link T}
      */
-    <T> T get(Class<T> cls, final Link entityResource);
+    <T> OptionalResult<T> get(Class<T> cls, final Link entityResource);
 
     /**
      * Retrieve a list of entities by requesting the linked collection resource
@@ -58,9 +58,10 @@ public interface MasterDataLookupService {
      * @param cls                the entity class used to deserialize entities within the response
      * @param collectionResource the linked collection resource
      * @param <T>                the generic type of the class used to deserialize entities within the response
-     * @return a {@link List<T>} containing all entitities that were deserialized from the response
+     * @return an {@link OptionalResult} backed by a {@link List<T>} containing all entities that were deserialized from the response
      */
-    <T> List<T> list(Class<T> cls, final Link collectionResource);
+    <T> OptionalResult<List<T>> list(Class<T> cls, final Link collectionResource);
+
 
     /**
      * Default service implementation for the {@link MasterDataLookupService}
@@ -76,15 +77,14 @@ public interface MasterDataLookupService {
 
         @Cacheable(cacheNames = "MasterDataCache", key = "#cls.name + ':Entities:' + #entityResource.href.replaceAll(\":\", \"\")")
         @Override
-        public <T> T get(final Class<T> cls, final Link entityResource) {
+        public <T> OptionalResult<T> get(final Class<T> cls, final Link entityResource) {
             final RequestFacade request = new RequestFacade(entityResource);
-            final ResponseEntity<T> responseEntity = request.exchange(HttpMethod.GET, null, cls);
-            return responseEntity.getBody();
+            return OptionalResult.of(() -> request.exchange(HttpMethod.GET, null, cls));
         }
 
         @Cacheable(cacheNames = "MasterDataCache", key = "#cls.name + ':Collections:' + #collectionResource.href.replaceAll(\":\", \"\")")
         @Override
-        public <T> List<T> list(final Class<T> cls, final Link collectionResource) {
+        public <T> OptionalResult<List<T>> list(final Class<T> cls, final Link collectionResource) {
             final ParameterizedTypeReference<Resources<T>> typeReference = new ParameterizedTypeReference<Resources<T>>() {
                 @Override
                 public Type getType() {
@@ -92,8 +92,9 @@ public interface MasterDataLookupService {
                 }
             };
             final RequestFacade request = new RequestFacade(collectionResource);
-            final ResponseEntity<Resources<T>> responseEntity = request.exchange(HttpMethod.GET, null, typeReference);
-            return new ArrayList<>(responseEntity.getBody().getContent());
+            return OptionalResult.of(
+                    () -> request.exchange(HttpMethod.GET, null, typeReference),
+                    (r) -> new ArrayList<>(r.getBody().getContent()));
         }
 
         /**

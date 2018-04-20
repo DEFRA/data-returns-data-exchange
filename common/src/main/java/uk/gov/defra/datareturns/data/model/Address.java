@@ -8,6 +8,7 @@ import uk.gov.defra.datareturns.validation.validators.address.Iso3166CountryCode
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
+import javax.validation.constraints.NotNull;
 
 /**
  * Embeddable address type
@@ -23,6 +24,7 @@ public class Address {
      */
     @Basic
     @Column(nullable = false)
+    @NotNull(message = "ADDRESS_LINE1_NOT_SPECIFIED")
     @Length(message = "ADDRESS_LINE1_MAX_LENGTH_EXCEEDED", max = 255)
     private String line1;
 
@@ -55,6 +57,7 @@ public class Address {
      */
     @Basic
     @Column(nullable = false, length = 2)
+    @NotNull(message = "ADDRESS_COUNTRY_NOT_SPECIFIED")
     @Length(message = "ADDRESS_COUNTRY_MAX_LENGTH_EXCEEDED", max = 2)
     @Iso3166CountryCode
     private String country;

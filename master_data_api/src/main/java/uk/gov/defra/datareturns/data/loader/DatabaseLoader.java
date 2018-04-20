@@ -164,8 +164,10 @@ public interface DatabaseLoader {
                     "/db/data/stage_data_initialization/Pre-EA.csv"
             };
 
+            // TODO: This is test data to assign permits to a particular regime, we're still waiting for final permit data
             final Regime ecm = regimeRepository.getOne(1L);
-            final List<Regime> piRegimes = regimeRepository.findAll();
+            final List<Regime> piRegimes = new ArrayList<>(regimeRepository.findAll());
+            piRegimes.add(null);
             piRegimes.remove(ecm);
 
             final List<Map<String, String>> data = new ArrayList<>();
@@ -189,7 +191,12 @@ public interface DatabaseLoader {
                     id.setNomenclature(ps);
                     id.setSite(site);
                     id.getRegime().put(ECM, ecm);
-                    id.getRegime().put(PI, piRegimes.get(ps.charAt(0) % piRegimes.size()));
+
+                    // TODO: This is test data to assign permits to a particular regime, we're still waiting for final permit data.
+                    final Regime piRegime = piRegimes.get(ps.charAt(0) % piRegimes.size());
+                    if (piRegime != null) {
+                        id.getRegime().put(PI, piRegime);
+                    }
                     return id;
                 });
 

@@ -4,8 +4,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.SetUtils;
 import org.springframework.hateoas.Link;
-import org.springframework.http.HttpStatus;
-import org.springframework.web.client.HttpStatusCodeException;
 import uk.gov.defra.datareturns.data.model.transfers.OverseasTransfer;
 import uk.gov.defra.datareturns.data.model.transfers.Transfer;
 import uk.gov.defra.datareturns.validation.service.MasterDataEntity;
@@ -38,26 +36,19 @@ public class TransferValidator implements ConstraintValidator<ValidTransfer, Tra
     @Override
     public boolean isValid(final Transfer transfer, final ConstraintValidatorContext context) {
         boolean valid = checkRecoveryOrDisposalValid(transfer, context);
-        valid = checkPositiveTonnages(transfer, context) && valid;
+        valid = checkPositiveTonnage(transfer, context) && valid;
         valid = checkValidEwcActivityId(transfer, context) && valid;
         valid = checkOverseasSentForDisposal(transfer, context) && valid;
         valid = checkHazardousTransferNotBrt(transfer, context) && valid;
         valid = checkOverseasWithNonHazardousActivity(transfer, context) && valid;
         valid = checkTotalGreaterThanOverseas(transfer, context) && valid;
-        valid = checkOverseasDestinationNotOverseas(transfer, context) && valid;
         return valid;
     }
 
-    private boolean checkPositiveTonnages(final Transfer transfer, final ConstraintValidatorContext context) {
+    private boolean checkPositiveTonnage(final Transfer transfer, final ConstraintValidatorContext context) {
         boolean valid = true;
         if (transfer.getTonnage() != null && BigDecimal.ZERO.compareTo(transfer.getTonnage()) >= 0) {
             valid = handleError(context, "TRANSFER_TONNAGE_NOT_GREATER_THAN_ZERO", b -> b.addPropertyNode("tonnage"));
-        }
-
-        for (final OverseasTransfer os : SetUtils.emptyIfNull(transfer.getOverseas())) {
-            if (os.getTonnage() != null && BigDecimal.ZERO.compareTo(os.getTonnage()) >= 0) {
-                valid = handleError(context, "OVERSEAS_TONNAGE_NOT_GREATER_THAN_ZERO", b -> b.addPropertyNode("tonnage"));
-            }
         }
         return valid;
     }
@@ -71,7 +62,8 @@ public class TransferValidator implements ConstraintValidator<ValidTransfer, Tra
         } else {
             // We have only one field set, now check that the data is actually valid
             if (transfer.getWfdDisposalId() != null) {
-                final Set<String> allowedIds = lookupService.list(MdBaseEntity.class, MasterDataEntity.WFD_DISPOSAL_CODES.getCollectionLink())
+                final Set<String> allowedIds = lookupService.list(MdBaseEntity.class, MasterDataEntity.WFD_DISPOSAL_CODE.getCollectionLink())
+                        .orThrow()
                         .stream()
                         .map(MasterDataLookupService::getResourceId)
                         .collect(Collectors.toSet());
@@ -81,7 +73,8 @@ public class TransferValidator implements ConstraintValidator<ValidTransfer, Tra
             }
 
             if (transfer.getWfdRecoveryId() != null) {
-                final Set<String> allowedIds = lookupService.list(MdBaseEntity.class, MasterDataEntity.WFD_RECOVERY_CODES.getCollectionLink())
+                final Set<String> allowedIds = lookupService.list(MdBaseEntity.class, MasterDataEntity.WFD_RECOVERY_CODE.getCollectionLink())
+                        .orThrow()
                         .stream()
                         .map(MasterDataLookupService::getResourceId)
                         .collect(Collectors.toSet());
@@ -98,7 +91,8 @@ public class TransferValidator implements ConstraintValidator<ValidTransfer, Tra
         if (transfer.getEwcActivityId() == null) {
             valid = handleError(context, "TRANSFER_EWC_ACTIVITY_REQUIRED");
         } else {
-            final Set<String> activityIds = lookupService.list(MdEwcActivity.class, MasterDataEntity.EWC_ACTIVITIES.getCollectionLink()).stream()
+            final Set<String> activityIds = lookupService.list(MdEwcActivity.class, MasterDataEntity.EWC_ACTIVITY.getCollectionLink()).orThrow()
+                    .stream()
                     .map(MasterDataLookupService::getResourceId)
                     .collect(Collectors.toSet());
             if (!activityIds.contains(String.valueOf(transfer.getEwcActivityId()))) {
@@ -111,17 +105,10 @@ public class TransferValidator implements ConstraintValidator<ValidTransfer, Tra
     private boolean checkHazardousTransferNotBrt(final Transfer transfer, final ConstraintValidatorContext context) {
         boolean valid = true;
         if (transfer.isBelowReportingThreshold()) {
-            try {
-                final Link ewcActivityLink = MasterDataEntity.EWC_ACTIVITIES.getEntityLink().expand(transfer.getEwcActivityId());
-                final MdEwcActivity activity = lookupService.get(MdEwcActivity.class, ewcActivityLink);
-                if (activity.isHazardous()) {
-                    valid = handleError(context, "TRANSFER_BRT_NOT_ALLOWED_WITH_HAZARDOUS_EWC");
-                }
-            } catch (final HttpStatusCodeException e) {
-                // Validation of overseas transfers with hazardous ewc activity skipped if ewc activity could not be found.
-                if (!HttpStatus.NOT_FOUND.equals(e.getStatusCode())) {
-                    throw e;
-                }
+            final Link ewcActivityLink = MasterDataEntity.EWC_ACTIVITY.getEntityLink().expand(transfer.getEwcActivityId());
+            final MdEwcActivity activity = lookupService.get(MdEwcActivity.class, ewcActivityLink).orElse(null);
+            if (activity != null && activity.isHazardous()) {
+                valid = handleError(context, "TRANSFER_BRT_NOT_ALLOWED_WITH_HAZARDOUS_EWC");
             }
         }
         return valid;
@@ -138,17 +125,10 @@ public class TransferValidator implements ConstraintValidator<ValidTransfer, Tra
     private boolean checkOverseasWithNonHazardousActivity(final Transfer transfer, final ConstraintValidatorContext context) {
         boolean valid = true;
         if (!SetUtils.emptyIfNull(transfer.getOverseas()).isEmpty()) {
-            try {
-                final Link ewcActivityLink = MasterDataEntity.EWC_ACTIVITIES.getEntityLink().expand(transfer.getEwcActivityId());
-                final MdEwcActivity activity = lookupService.get(MdEwcActivity.class, ewcActivityLink);
-                if (!activity.isHazardous()) {
-                    valid = handleError(context, "OVERSEAS_NOT_ALLOWED_FOR_NON_HAZARDOUS_EWC_ACTIVITY");
-                }
-            } catch (final HttpStatusCodeException e) {
-                // Validation of BRT with hazardous ewc activity skipped if ewc activity could not be found.
-                if (!HttpStatus.NOT_FOUND.equals(e.getStatusCode())) {
-                    throw e;
-                }
+            final Link ewcActivityLink = MasterDataEntity.EWC_ACTIVITY.getEntityLink().expand(transfer.getEwcActivityId());
+            final MdEwcActivity activity = lookupService.get(MdEwcActivity.class, ewcActivityLink).orElse(null);
+            if (activity != null && !activity.isHazardous()) {
+                valid = handleError(context, "OVERSEAS_NOT_ALLOWED_FOR_NON_HAZARDOUS_EWC_ACTIVITY");
             }
         }
         return valid;
@@ -159,22 +139,12 @@ public class TransferValidator implements ConstraintValidator<ValidTransfer, Tra
 
         final BigDecimal totalTransferTonnage = transfer.getTonnage();
         if (totalTransferTonnage != null && transfer.getOverseas() != null) {
-            final BigDecimal overseasSum = transfer.getOverseas().stream().map(OverseasTransfer::getTonnage).reduce(BigDecimal.ZERO, BigDecimal::add);
+            final BigDecimal overseasSum = transfer.getOverseas().stream()
+                    .filter(o -> o.getTonnage() != null)
+                    .map(OverseasTransfer::getTonnage)
+                    .reduce(BigDecimal.ZERO, BigDecimal::add);
             if (overseasSum.compareTo(totalTransferTonnage) > 0) {
                 valid = handleError(context, "OVERSEAS_TONNAGE_EXCEEDS_TOTAL");
-            }
-        }
-        return valid;
-    }
-
-    private boolean checkOverseasDestinationNotOverseas(final Transfer transfer, final ConstraintValidatorContext context) {
-        boolean valid = true;
-        if (transfer.getOverseas() != null) {
-            for (final OverseasTransfer overseas : transfer.getOverseas()) {
-                if ("GB".equals(overseas.getDestinationAddress().getCountry())) {
-                    valid = handleError(context, "OVERSEAS_DESTINATION_NOT_OVERSEAS");
-                    break;
-                }
             }
         }
         return valid;

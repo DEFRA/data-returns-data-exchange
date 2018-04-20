@@ -33,8 +33,19 @@ public class SubmissionReleasesIT {
     public RestAssuredRule restAssuredRule;
 
     @Test
+    public void testEmptyReleaseFails() {
+        runSubmissionTest(fromJson("/data/invalid/releases/release_empty.json"), (r) -> {
+            r.statusCode(HttpStatus.BAD_REQUEST.value());
+            r.body("errors.size()", is(4));
+            r.body("errors.message", hasItems(
+                    "RELEASE_ROUTE_NOT_SPECIFIED", "RELEASE_SUBSTANCE_NOT_SPECIFIED",
+                    "RELEASE_UNIT_NOT_SPECIFIED", "RELEASE_METHOD_NOT_SPECIFIED"));
+        });
+    }
+
+    @Test
     public void testSubstanceNotApplicableToRegimeObligationFails() {
-        runSubmissionTest(fromJson("/data/releases/release_invalid_substance_for_regime.json"), (r) -> {
+        runSubmissionTest(fromJson("/data/invalid/releases/release_invalid_substance_for_regime.json"), (r) -> {
             r.statusCode(HttpStatus.BAD_REQUEST.value());
             r.body("errors.size()", is(1));
             r.body("errors[0].message", equalTo("RELEASE_SUBSTANCE_INVALID"));
@@ -43,7 +54,7 @@ public class SubmissionReleasesIT {
 
     @Test
     public void testNonPositiveReleaseValuesFail() {
-        runSubmissionTest(fromJson("/data/releases/release_non_positive_values.json"), (r) -> {
+        runSubmissionTest(fromJson("/data/invalid/releases/release_non_positive_values.json"), (r) -> {
             r.statusCode(HttpStatus.BAD_REQUEST.value());
             r.body("errors.size()", is(2));
             r.body("errors.message", hasItems("RELEASE_VALUE_NOT_GREATER_THAN_ZERO", "RELEASE_NOTIFIABLE_VALUE_NOT_GREATER_THAN_ZERO"));
@@ -52,7 +63,7 @@ public class SubmissionReleasesIT {
 
     @Test
     public void testInvalidSubrouteForRouteFails() {
-        runSubmissionTest(fromJson("/data/releases/release_subroute_invalid_for_route.json"), (r) -> {
+        runSubmissionTest(fromJson("/data/invalid/releases/release_subroute_invalid_for_route.json"), (r) -> {
             r.statusCode(HttpStatus.BAD_REQUEST.value());
             r.body("errors.size()", is(2));
             r.body("errors[0].message", equalTo("RELEASE_SUBROUTE_INVALID_FOR_GIVEN_ROUTE"));
@@ -62,7 +73,7 @@ public class SubmissionReleasesIT {
 
     @Test
     public void testMissingSubrouteForRouteFails() {
-        runSubmissionTest(fromJson("/data/releases/release_subroute_missing_for_route.json"), (r) -> {
+        runSubmissionTest(fromJson("/data/invalid/releases/release_subroute_missing_for_route.json"), (r) -> {
             r.statusCode(HttpStatus.BAD_REQUEST.value());
             r.body("errors.size()", is(1));
             r.body("errors[0].message", equalTo("RELEASE_SUBROUTE_REQUIRED_FOR_GIVEN_ROUTE"));
@@ -71,7 +82,7 @@ public class SubmissionReleasesIT {
 
     @Test
     public void testNotifiableExceedsTotalFails() {
-        runSubmissionTest(fromJson("/data/releases/release_notifiable_exceeds_total.json"), (r) -> {
+        runSubmissionTest(fromJson("/data/invalid/releases/release_notifiable_exceeds_total.json"), (r) -> {
             r.statusCode(HttpStatus.BAD_REQUEST.value());
             r.body("errors.size()", is(2));
             r.body("errors[0].message", equalTo("RELEASE_NOTIFIABLE_VALUE_EXCEEDS_TOTAL"));
@@ -81,7 +92,7 @@ public class SubmissionReleasesIT {
 
     @Test
     public void testNotifiableWithNoReasonFails() {
-        runSubmissionTest(fromJson("/data/releases/release_notifiable_no_reason.json"), (r) -> {
+        runSubmissionTest(fromJson("/data/invalid/releases/release_notifiable_no_reason.json"), (r) -> {
             r.statusCode(HttpStatus.BAD_REQUEST.value());
             r.body("errors.size()", is(2));
             r.body("errors[0].message", equalTo("RELEASE_NOTIFIABLE_REASON_NOT_SPECIFIED"));

@@ -39,7 +39,7 @@ public class ValueStandardisationService {
 
         @Cacheable(cacheNames = "ConversionCache", key = "'Units'", unless = "#result.isEmpty()")
         public Map<String, BigDecimal> getConversionFactorCache() {
-            final List<MdUnit> unitList = lookupService.list(MdUnit.class, new Link("units"));
+            final List<MdUnit> unitList = lookupService.list(MdUnit.class, new Link("units")).orThrow();
             return unitList.stream().collect(Collectors.toMap(MasterDataLookupService::getResourceId, MdUnit::getConversion));
         }
     }

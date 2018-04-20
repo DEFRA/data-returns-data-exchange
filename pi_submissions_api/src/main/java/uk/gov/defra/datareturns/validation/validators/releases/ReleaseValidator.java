@@ -3,22 +3,19 @@ package uk.gov.defra.datareturns.validation.validators.releases;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.hateoas.Link;
-import uk.gov.defra.datareturns.data.Context;
 import uk.gov.defra.datareturns.data.model.releases.Release;
 import uk.gov.defra.datareturns.service.ValueStandardisationService;
-import uk.gov.defra.datareturns.validation.service.MasterDataLinks;
 import uk.gov.defra.datareturns.validation.service.MasterDataLookupService;
 import uk.gov.defra.datareturns.validation.service.ValidationCacheService;
 import uk.gov.defra.datareturns.validation.service.dto.MdRegime;
+import uk.gov.defra.datareturns.validation.service.dto.MdRoute;
 import uk.gov.defra.datareturns.validation.service.dto.MdSubroute;
+import uk.gov.defra.datareturns.validation.validators.PiValidationUtil;
 
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
-import javax.validation.ValidationException;
 import java.math.BigDecimal;
 import java.util.List;
-import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -70,7 +67,7 @@ public class ReleaseValidator implements ConstraintValidator<ValidRelease, Relea
     private boolean checkValidReleaseSubstance(final Release release, final ConstraintValidatorContext context) {
         boolean valid = true;
         if (release.getSubstanceId() != null) {
-            final MdRegime regime = getRegime(release);
+            final MdRegime regime = PiValidationUtil.getPiRegime(lookupService, release.getSubmission().getReportingReference());
             final Set<String> parametersForRoute = cacheService.getParametersByRoute(regime).get(String.valueOf(release.getRouteId()));
             if (parametersForRoute == null || !parametersForRoute.contains(String.valueOf(release.getSubstanceId()))) {
                 valid = handleError(context, "RELEASE_SUBSTANCE_INVALID", b -> b.addPropertyNode("substanceId"));
@@ -97,7 +94,7 @@ public class ReleaseValidator implements ConstraintValidator<ValidRelease, Relea
             if (release.getUnitId() == null) {
                 valid = handleError(context, "RELEASE_UNIT_NOT_SPECIFIED", b -> b.addPropertyNode("unitId"));
             } else {
-                final MdRegime regime = getRegime(release);
+                final MdRegime regime = PiValidationUtil.getPiRegime(lookupService, release.getSubmission().getReportingReference());
                 final Set<String> unitsForRoute = cacheService.getUnitsByRoute(regime).get(String.valueOf(release.getRouteId()));
                 if (unitsForRoute == null || !unitsForRoute.contains(String.valueOf(release.getUnitId()))) {
                     valid = handleError(context, "RELEASE_UNIT_INVALID", b -> b.addPropertyNode("unitId"));
@@ -116,7 +113,7 @@ public class ReleaseValidator implements ConstraintValidator<ValidRelease, Relea
             if (release.getNotifiableUnitId() == null) {
                 valid = handleError(context, "RELEASE_NOTIFIABLE_UNIT_NOT_SPECIFIED", b -> b.addPropertyNode("notifiableUnitId"));
             } else {
-                final MdRegime regime = getRegime(release);
+                final MdRegime regime = PiValidationUtil.getPiRegime(lookupService, release.getSubmission().getReportingReference());
                 final Set<String> unitsForRoute = cacheService.getUnitsByRoute(regime).get(String.valueOf(release.getRouteId()));
                 if (unitsForRoute == null || !unitsForRoute.contains(String.valueOf(release.getNotifiableUnitId()))) {
                     valid = handleError(context, "RELEASE_NOTIFIABLE_UNIT_INVALID", b -> b.addPropertyNode("notifiableUnitId"));
@@ -151,7 +148,7 @@ public class ReleaseValidator implements ConstraintValidator<ValidRelease, Relea
     private boolean checkValidSubrouteForRoute(final Release release, final ConstraintValidatorContext context) {
         boolean valid = true;
         if (release.getRouteId() != null) {
-            final List<MdSubroute> subroutes = lookupService.list(MdSubroute.class, new Link("routes/" + release.getRouteId() + "/subroutes"));
+            final List<MdSubroute> subroutes = lookupService.list(MdSubroute.class, MdRoute.subroutesLink(release.getRouteId())).orThrow();
             final List<String> subrouteIds = subroutes.stream().map(MasterDataLookupService::getResourceId).collect(Collectors.toList());
 
             if (release.getSubrouteId() == null) {
@@ -163,16 +160,5 @@ public class ReleaseValidator implements ConstraintValidator<ValidRelease, Relea
             }
         }
         return valid;
-    }
-
-    private MdRegime getRegime(final Release release) {
-        final Object reportingReference = release.getSubmission().getReportingReference();
-        final Link regimesLookup = MasterDataLinks.findRegimesForContextAndUniqueIdentifier(Context.PI, Objects.toString(reportingReference));
-        final List<MdRegime> regimes = lookupService.list(MdRegime.class, regimesLookup);
-
-        if (regimes.size() != 1) {
-            throw new ValidationException("Pollution inventory submissions should be mapped to a single pollution inventory regime.");
-        }
-        return regimes.get(0);
     }
 }

@@ -61,8 +61,11 @@ public class Submission extends AbstractBaseEntity {
     @Column(nullable = false)
     private Short applicableYear;
 
+    /**
+     * The status of the submission
+     */
     @Enumerated(EnumType.STRING)
-    private SubmissionStatus status;
+    private SubmissionStatus status = SubmissionStatus.Incomplete;
 
     @Column
     private Short naceId;

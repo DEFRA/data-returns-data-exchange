@@ -8,6 +8,7 @@ import org.hibernate.envers.Audited;
 import org.hibernate.id.enhanced.SequenceStyleGenerator;
 import uk.gov.defra.datareturns.data.model.AbstractBaseEntity;
 import uk.gov.defra.datareturns.data.model.Address;
+import uk.gov.defra.datareturns.validation.validators.transfers.ValidOverseasTransfer;
 
 import javax.persistence.Basic;
 import javax.persistence.Column;
@@ -34,6 +35,7 @@ import java.util.Objects;
                   }
 )
 @Audited
+@ValidOverseasTransfer
 @Getter
 @Setter
 public class OverseasTransfer extends AbstractBaseEntity {

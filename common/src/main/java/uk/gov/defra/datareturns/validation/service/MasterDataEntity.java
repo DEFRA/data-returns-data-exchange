@@ -1,65 +1,71 @@
 package uk.gov.defra.datareturns.validation.service;
 
 import lombok.Getter;
+import org.atteo.evo.inflector.English;
 import org.springframework.hateoas.Link;
 import org.springframework.hateoas.UriTemplate;
 
 @Getter
 public enum MasterDataEntity {
-    SITES("sites"),
-    OPERATORS("operators"),
-    UNIQUE_IDENTIFIERS("uniqueIdentifiers"),
-    AREAS("areas"),
-    REGIONS("regions"),
+    SITE("site"),
+    OPERATOR("operator"),
+    UNIQUE_IDENTIFIER("uniqueIdentifier"),
+    AREA("area"),
+    REGION("region"),
 
-    NOSE_ACTIVITIES("noseActivities"),
-    NOSE_ACTIVITY_CLASSES("noseActivityClasses"),
+    NOSE_ACTIVITY("noseActivity"),
+    NOSE_ACTIVITY_CLASS("noseActivityClass"),
 
+    NACE_SECTION("naceSection"),
+    NACE_DIVISION("naceDivision"),
+    NACE_GROUP("naceGroup"),
+    NACE_CLASS("naceClasse"),
 
-    NACE_SECTIONS("naceSections"),
-    NACE_DIVISIONS("naceDivisions"),
-    NACE_GROUPS("naceGroups"),
-    NACE_CLASSES("naceClasses"),
+    REGIME("regime"),
+    REGIME_OBLIGATION("regimeObligation"),
+    ROUTE("route"),
+    SUB_ROUTE("subroute"),
 
-    REGIMES("regimes"),
-    REGIME_OBLIGATIONS("regimeObligations"),
-    ROUTES("routes"),
-    SUB_ROUTES("subroutes"),
+    PARAMETER("parameter"),
+    PARAMETER_GROUP("parameterGroup"),
+    PARAMETER_TYPE("parameterType"),
 
-    PARAMETERS("parameters"),
-    PARAMETER_GROUPS("parameterGroups"),
-    PARAMETER_TYPES("parameterTypes"),
+    UNIT("unit"),
+    UNIT_TYPE("unitType"),
 
-    UNITS("units"),
-    UNIT_TYPES("unitTypes"),
+    THRESHOLD("threshold"),
 
+    REFERENCE_PERIOD("referencePeriod"),
+    METHOD_OR_STANDARD("methodOrStandard"),
+    QUALIFIER("qualifier"),
+    RETURN_TYPE("returnType"),
+    RETURN_PERIOD("returnPeriod"),
+    TEXT_VALUE("textValue"),
 
-    THRESHOLDS("thresholds"),
+    EPRTR_SECTOR("eprtrSector"),
+    EPRTR_ACTIVITY("eprtrActivity"),
 
+    WFD_DISPOSAL_CODE("disposalCode"),
+    WFD_RECOVERY_CODE("recoveryCode"),
 
-    REFERENCE_PERIODS("referencePeriods"),
-    METHODS_OR_STANDARDS("methodOrStandards"),
-    QUALIFIERS("qualifiers"),
-    RETURN_TYPES("returnTypes"),
-    RETURN_PERIODS("returnPeriods"),
-    TEXT_VALUES("textValues"),
+    EWC_CHAPTER("ewcChapter"),
+    EWC_SUBCHAPTER("ewcSubchapter"),
+    EWC_ACTIVITY("ewcActivity");
 
-
-    EPRTR_SECTORS("eprtrSectors"),
-    EPRTR_ACTIVITIES("eprtrActivities"),
-
-    WFD_DISPOSAL_CODES("disposalCodes"),
-    WFD_RECOVERY_CODES("recoveryCodes"),
-
-    EWC_CHAPTERS("ewcChapters"),
-    EWC_SUBCHAPTERS("ewcSubchapters"),
-    EWC_ACTIVITIES("ewcActivities");
-
+    private final String resourceName;
+    private final String resourcePath;
+    private final String itemRel;
+    private final String collectionRel;
     private final Link collectionLink;
     private final Link entityLink;
 
     MasterDataEntity(final String resourceName) {
-        collectionLink = new Link(new UriTemplate(resourceName), resourceName);
-        entityLink = new Link(new UriTemplate(resourceName + "/{id}"), resourceName);
+        this.resourceName = resourceName;
+        this.itemRel = resourceName;
+        this.collectionRel = English.plural(resourceName);
+        this.resourcePath = this.collectionRel;
+
+        this.collectionLink = new Link(new UriTemplate(this.resourcePath), resourceName);
+        this.entityLink = new Link(new UriTemplate(this.resourcePath + "/{id}"), resourceName);
     }
 }

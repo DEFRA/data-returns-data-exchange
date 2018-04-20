@@ -1,4 +1,4 @@
-package uk.gov.defra.datareturns.validation.validators.address;
+package uk.gov.defra.datareturns.validation.validators.transfers;
 
 import javax.validation.Constraint;
 import javax.validation.Payload;
@@ -9,21 +9,21 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Validate that the annotated value is a valid ISO 3166-2 alpha2 code.
+ * Validate a overseas transfer object
  *
  * @author Sam Gardner-Dell
  */
-@Target({ElementType.FIELD})
+@Target({ElementType.TYPE})
 @Retention(RetentionPolicy.RUNTIME)
-@Constraint(validatedBy = Iso3166Validator.class)
+@Constraint(validatedBy = OverseasTransferValidator.class)
 @Documented
-public @interface Iso3166CountryCode {
+public @interface ValidOverseasTransfer {
     /**
      * Default constraint violation template
      *
      * @return the constraint violation template
      */
-    String message() default "ADDRESS_INVALID_ISO3166-2_COUNTRY_CODE";
+    String message() default "TRANFER_OVERSEAS_INVALID_UNSPECIFIED_REASON";
 
     /**
      * Validation groups

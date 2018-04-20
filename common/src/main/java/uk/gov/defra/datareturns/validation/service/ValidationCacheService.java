@@ -23,6 +23,12 @@ import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import static uk.gov.defra.datareturns.validation.service.MasterDataEntity.PARAMETER;
+import static uk.gov.defra.datareturns.validation.service.MasterDataEntity.PARAMETER_GROUP;
+import static uk.gov.defra.datareturns.validation.service.MasterDataEntity.REGIME_OBLIGATION;
+import static uk.gov.defra.datareturns.validation.service.MasterDataEntity.ROUTE;
+import static uk.gov.defra.datareturns.validation.service.MasterDataEntity.UNIT;
+
 /**
  * Provides caching of master data via the spring cache framework for use in validation.
  *
@@ -63,7 +69,7 @@ public interface ValidationCacheService {
         @Cacheable(cacheNames = "ValidationCache", key = "#collectionResource", unless = "#result.isEmpty()")
         @Override
         public Map<String, String> getResourceNomenclatureMap(final String collectionResource) {
-            final List<MdBaseEntity> result = lookupService.list(MdBaseEntity.class, new Link(collectionResource));
+            final List<MdBaseEntity> result = lookupService.list(MdBaseEntity.class, new Link(collectionResource)).orThrow();
             return result.stream().collect(Collectors.toMap(MasterDataLookupService::getResourceId, MdBaseEntity::getNomenclature));
         }
 
@@ -80,9 +86,9 @@ public interface ValidationCacheService {
                                     Map.Entry::getKey,
                                     e -> {
                                         final List<MdParameterGroup> parameterGroups = lookupService
-                                                .list(MdParameterGroup.class, e.getValue().getLink("parameterGroups"));
+                                                .list(MdParameterGroup.class, e.getValue().getCollectionLink(PARAMETER_GROUP)).orThrow();
                                         final List<MdParameter> parameters = parameterGroups.stream().flatMap(
-                                                pg -> lookupService.list(MdParameter.class, pg.getLink("parameters")).stream()
+                                                pg -> lookupService.list(MdParameter.class, pg.getCollectionLink(PARAMETER)).orThrow().stream()
                                         ).collect(Collectors.toList());
                                         return parameters.stream().map(MasterDataLookupService::getResourceId).collect(Collectors.toSet());
                                     }
@@ -103,7 +109,7 @@ public interface ValidationCacheService {
                             Collectors.toMap(
                                     Map.Entry::getKey,
                                     e -> {
-                                        final List<MdUnit> units = lookupService.list(MdUnit.class, e.getValue().getLink("units"));
+                                        final List<MdUnit> units = lookupService.list(MdUnit.class, e.getValue().getCollectionLink(UNIT)).orThrow();
                                         return units.stream().map(MasterDataLookupService::getResourceId).collect(Collectors.toSet());
                                     }
                             )
@@ -115,16 +121,16 @@ public interface ValidationCacheService {
                    key = "T(uk.gov.defra.datareturns.validation.service.MasterDataLookupService).getResourceId(#regime) + ':ObligationsByRoute'",
                    unless = "#result.isEmpty()")
         public Map<String, MdRegimeObligation> getObligationsByRouteId(final MdRegime regime) {
-            final List<MdRegimeObligation> obligations = lookupService.list(MdRegimeObligation.class, regime.getLink("regimeObligations"));
+            final List<MdRegimeObligation> obligations = lookupService.list(MdRegimeObligation.class, regime.getCollectionLink(REGIME_OBLIGATION))
+                    .orThrow();
             final Map<String, MdRegimeObligation> obligationsByRouteId = obligations.stream()
                     .collect(
                             Collectors.toMap(
-                                    o -> MasterDataLookupService.getResourceId(lookupService.get(MdRoute.class, o.getLink("route"))),
+                                    o -> MasterDataLookupService.getResourceId(lookupService.get(MdRoute.class, o.getItemLink(ROUTE)).orThrow()),
                                     Function.identity()
                             )
                     );
             return obligationsByRouteId;
         }
-
     }
 }

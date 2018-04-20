@@ -1,0 +1,25 @@
+{
+  "reporting_reference": 1,
+  "applicable_year": 2017,
+  "status": "Incomplete",
+  "transfers": [
+    {
+      "ewc_activity_id": 3,
+      "wfd_recovery_id": 1,
+      "method": "Calculation",
+      "tonnage": 50,
+      "below_reporting_threshold": false,
+      "overseas_transfers": [
+        {
+          "tonnage": 10,
+          "method": "Calculation",
+          "responsible_company_name": "A company ltd",
+          "responsible_company_address": {
+          },
+          "destination_address": {
+          }
+        }
+      ]
+    }
+  ]
+}
