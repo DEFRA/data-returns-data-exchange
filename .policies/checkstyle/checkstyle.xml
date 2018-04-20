@@ -75,8 +75,12 @@
         <module name="JavadocMethod">
             <property name="severity" value="warning"/>
         </module>
-        <module name="JavadocType"/>
-        <module name="JavadocVariable"/>
+        <module name="JavadocType">
+            <property name="severity" value="warning"/>
+        </module>
+        <module name="JavadocVariable">
+            <property name="severity" value="warning"/>
+        </module>
 
         <module name="JavadocStyle">
             <!-- Project customisation - don't complain about first sentence not ending with a period. -->

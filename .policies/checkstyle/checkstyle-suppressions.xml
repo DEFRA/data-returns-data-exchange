@@ -10,17 +10,9 @@
     <!--<suppress checks="DesignForExtension" files=".+Repository(Impl)?\.java"/>-->
     <!--<suppress checks="DesignForExtension" files=".+Service\.java"/>-->
 
-    <!-- Don't require package-info.java -->
+    <!-- Allow inline conditionals -->
     <suppress checks="AvoidInlineConditionals" files=".*"/>
 
     <!-- Don't require package-info.java -->
     <suppress checks="JavadocPackage" files=".*"/>
-
-
-    <!-- FIXME: TEMPORARILY SUPPRESS JAVADOC WARNINGS -->
-    <suppress checks="JavadocVariable" files=".*"/>
-    <suppress checks="JavadocMethod" files=".*"/>
-    <suppress checks="JavadocType" files=".*"/>
-
-
 </suppressions>
