@@ -139,7 +139,8 @@ public class ReleaseValidator implements ConstraintValidator<ValidRelease, Relea
             final BigDecimal notifiableValue = valueStandardisationService.getStandardValue(release.getNotifiableValue(),
                     String.valueOf(release.getNotifiableUnitId()));
 
-            if (notifiableValue.compareTo(totalValue) > 0) {
+            // TODO - investigate whether a notifiable release in excess of the threshold for a value submitted as brt should be treated as an error
+            if (totalValue != null && notifiableValue != null && notifiableValue.compareTo(totalValue) > 0) {
                 valid = handleError(context, "RELEASE_NOTIFIABLE_VALUE_EXCEEDS_TOTAL", b -> b.addPropertyNode("notifiableValue"));
             }
         }
