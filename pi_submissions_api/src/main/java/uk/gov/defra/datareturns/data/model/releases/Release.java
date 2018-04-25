@@ -22,7 +22,6 @@ import javax.persistence.PrePersist;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
 import java.math.BigDecimal;
-import java.util.Objects;
 
 /**
  * PI Releases model
@@ -90,26 +89,5 @@ public final class Release extends AbstractBaseEntity {
         final ValueStandardisationService svc = SpringApplicationContextProvider.getApplicationContext().getBean(ValueStandardisationService.class);
         this.standardValue = svc.getStandardValue(value, String.valueOf(unitId));
     }
-
-    @Override
-    public final boolean equals(final Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (o == null || getClass() != o.getClass()) {
-            return false;
-        }
-        if (getId() == null) {
-            return false;
-        }
-        final Release that = (Release) o;
-        return Objects.equals(getId(), that.getId());
-    }
-
-    @Override
-    public final int hashCode() {
-        return Objects.hash(getId());
-    }
-
 }
 

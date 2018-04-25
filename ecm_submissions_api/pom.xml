@@ -13,7 +13,7 @@
     <version>1.0.0</version>
     <packaging>jar</packaging>
 
-    <name>ECM Submissions API</name>
+    <name>Defra Data Returns ECM Submissions API</name>
     <description>Defra Data-Returns Emissions Compliance Monitoring Submissions API</description>
 
     <properties>
@@ -47,78 +47,52 @@
             </plugin>
 
 
-            <!--
-            FIXME: Fix ECM API Unit Tests and renable as part of CI build
-            -->
             <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-surefire-plugin</artifactId>
-                <configuration>
-                    <skipTests>true</skipTests>
-                </configuration>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>exec-maven-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>start-masterdata-api</id>
+                        <goals>
+                            <goal>exec</goal>
+                        </goals>
+                        <phase>pre-integration-test</phase>
+                        <configuration>
+                            <skip>${skipITs}</skip>
+                            <executable>${root.dir}/launches/serverctl</executable>
+                            <arguments>
+                                <argument>--quiet</argument>
+                                <argument>--port=9020</argument>
+                                <argument>-Dspring-boot-plugin.fork.wait=${spring-boot-plugin.fork.wait}</argument>
+                                <argument>-Dspring-boot-plugin.fork.attempts=${spring-boot-plugin.fork.attempts}</argument>
+                                <argument>master_data_api</argument>
+                                <argument>start</argument>
+                                <argument>--spring.profiles.active=h2</argument>
+                            </arguments>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>stop-masterdata-api</id>
+                        <goals>
+                            <goal>exec</goal>
+                        </goals>
+                        <phase>post-integration-test</phase>
+                        <configuration>
+                            <skip>${skipITs}</skip>
+                            <executable>${root.dir}/launches/serverctl</executable>
+                            <arguments>
+                                <argument>master_data_api</argument>
+                                <argument>stop</argument>
+                            </arguments>
+                        </configuration>
+                    </execution>
+                </executions>
             </plugin>
-            <!--
-            FIXME: Fix ECM API Integration Tests and renable as part of CI build
-            -->
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-failsafe-plugin</artifactId>
-                <configuration>
-                    <skipTests>true</skipTests>
-                </configuration>
-            </plugin>
-
-
-            <!--
-            FIXME: Re-enable once integration tests are ready.
-            -->
-            <!--<plugin>-->
-                <!--<groupId>org.codehaus.mojo</groupId>-->
-                <!--<artifactId>exec-maven-plugin</artifactId>-->
-                <!--<executions>-->
-                    <!--<execution>-->
-                        <!--<id>start-masterdata-api</id>-->
-                        <!--<goals>-->
-                            <!--<goal>exec</goal>-->
-                        <!--</goals>-->
-                        <!--<phase>pre-integration-test</phase>-->
-                        <!--<configuration>-->
-                            <!--<skip>${skipITs}</skip>-->
-                            <!--<executable>${root.dir}/launches/serverctl</executable>-->
-                            <!--<arguments>-->
-                                <!--<argument>&#45;&#45;quiet</argument>-->
-                                <!--<argument>&#45;&#45;port=9020</argument>-->
-                                <!--<argument>-Dspring-boot-plugin.fork.wait=${spring-boot-plugin.fork.wait}</argument>-->
-                                <!--<argument>-Dspring-boot-plugin.fork.attempts=${spring-boot-plugin.fork.attempts}</argument>-->
-                                <!--<argument>master_data_api</argument>-->
-                                <!--<argument>start</argument>-->
-                                <!--<argument>&#45;&#45;spring.profiles.active=h2</argument>-->
-                            <!--</arguments>-->
-                        <!--</configuration>-->
-                    <!--</execution>-->
-                    <!--<execution>-->
-                        <!--<id>stop-masterdata-api</id>-->
-                        <!--<goals>-->
-                            <!--<goal>exec</goal>-->
-                        <!--</goals>-->
-                        <!--<phase>post-integration-test</phase>-->
-                        <!--<configuration>-->
-                            <!--<skip>${skipITs}</skip>-->
-                            <!--<executable>${root.dir}/launches/serverctl</executable>-->
-                            <!--<arguments>-->
-                                <!--<argument>master_data_api</argument>-->
-                                <!--<argument>stop</argument>-->
-                            <!--</arguments>-->
-                        <!--</configuration>-->
-                    <!--</execution>-->
-                <!--</executions>-->
-            <!--</plugin>-->
 
 
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>sql-maven-plugin</artifactId>
-
                 <dependencies>
                     <dependency>
                         <groupId>org.postgresql</groupId>

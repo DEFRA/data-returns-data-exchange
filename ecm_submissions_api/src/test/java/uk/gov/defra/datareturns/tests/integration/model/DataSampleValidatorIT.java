@@ -6,6 +6,7 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.test.context.junit4.SpringRunner;
+import uk.gov.defra.datareturns.data.model.dataset.Dataset;
 import uk.gov.defra.datareturns.data.model.record.Record;
 import uk.gov.defra.datareturns.testcommons.framework.DataIntegrationTest;
 
@@ -13,6 +14,9 @@ import javax.inject.Inject;
 import javax.validation.ConstraintViolation;
 import javax.validation.Validator;
 import java.math.BigDecimal;
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import java.util.Date;
 import java.util.Set;
 
@@ -32,27 +36,11 @@ public class DataSampleValidatorIT {
     @Inject
     private Validator validator;
 
-    /**
-     * Creates a {@link Record} instance with all values setup
-     * with a valid entry.
-     *
-     * @return a new {@link Record} which should pass validation
-     * Record
-     */
-    private static Record createValidNumericRecord() {
-        final Record record = new Record();
-        record.setReturnType("Landfill leachate monitoring");
-        record.setMonitoringDate(new Date());
-        record.setReturnPeriod("Aug 2016");
-        record.setMonitoringPoint("Borehole 1");
-        record.setParameter("Isopropyl chloroformate");
-        record.setNumericValue(BigDecimal.valueOf(0.2323));
-        record.setNumericEquality(Record.Equality.LESS_THAN);
-        record.setUnit("m3/s");
-        record.setReferencePeriod("95% of all 10-minute averages in any 24 hour period");
-        record.setMethodOrStandard("BS EN 12260");
-        record.setComments("Free text comments entered in this field.");
-        return record;
+    @Test
+    public void testValidRecord() {
+        final Record record = createValidNumericRecord();
+        final Set<ConstraintViolation<Record>> violations = this.validator.validate(record);
+        Assert.assertEquals(0, violations.size());
     }
 
     /*=================================================================================================================
@@ -62,59 +50,15 @@ public class DataSampleValidatorIT {
      *=================================================================================================================
      */
 
-    /**
-     * Creates a {@link Record} instance using Txt_Value with all values setup with a valid data
-     *
-     * @return a new {@link Record} which should pass validation
-     */
-    private static Record createValidTextRecord() {
-        final Record record = new Record();
-
-        record.setReturnType("Landfill leachate monitoring");
-        record.setMonitoringDate(new Date());
-        record.setReturnPeriod("Aug 2016");
-        record.setMonitoringPoint("Borehole 1");
-        record.setParameter("1,1,1,2-Tetrachloroethane");
-        record.setTextValue("true");
-        record.setReferencePeriod("95% of all 10-minute averages in any 24 hour period");
-        record.setMethodOrStandard("BS EN 12260");
-        record.setComments("Free text comments entered in this field.");
-        return record;
-    }
-
     @Test
-    public void testValidRecord() {
-        final Record record = createValidNumericRecord();
-        final Set<ConstraintViolation<Record>> violations = this.validator.validate(record);
-        Assert.assertEquals(0, violations.size());
+    public void testPermitNumberNull() {
+        final Dataset ds = new Dataset();
+        ds.setEaId(null);
+        ds.addRecord(createValidNumericRecord());
+        final Set<ConstraintViolation<Dataset>> violations = this.validator.validate(ds);
+        // one violation for the field being blank
+        Assert.assertEquals(1, violations.size());
     }
-
-//    @Test
-//    public void testPermitNumberNull() {
-//        final Record record = createValidNumericRecord();
-//        record.setEaId(new EaId(null));
-//        final Set<ConstraintViolation<Record>> violations = this.validator.validate(record);
-//        // one violation for the field being blank
-//        Assert.assertEquals(1, violations.size());
-//    }
-//
-//    @Test
-//    public void testPermitNumberEmpty() {
-//        final Record record = createValidNumericRecord();
-//        record.setEaId(new EaId(""));
-//        final Set<ConstraintViolation<Record>> violations = this.validator.validate(record);
-//        // one violation for the field being blank
-//        Assert.assertEquals(1, violations.size());
-//    }
-//
-//    @Test
-//    public void testPermitNumberIncorrectForSite() {
-//        final Record record = createValidNumericRecord();
-//        record.setEaId(new EaId("70057"));
-//        final Set<ConstraintViolation<Record>> violations = this.validator.validate(record);
-//        // one violation for the field being blank
-//        Assert.assertEquals(1, violations.size());
-//    }
 
     /*=================================================================================================================
      *
@@ -125,16 +69,15 @@ public class DataSampleValidatorIT {
     @Test
     public void testBlankReturnType() {
         final Record record = createValidNumericRecord();
-        record.setReturnType("   ");
+        record.setReturnType(null);
         final Set<ConstraintViolation<Record>> violations = this.validator.validate(record);
-        // We'll get 2 violations back - one for the field being blank, the second for the controlled list value check
-        Assert.assertEquals(2, violations.size());
+        Assert.assertEquals(1, violations.size());
     }
 
     @Test
     public void testInvalidReturnType() {
         final Record record = createValidNumericRecord();
-        record.setReturnType("Invalid Return Type Value");
+        record.setReturnType(Long.MIN_VALUE);
         final Set<ConstraintViolation<Record>> violations = this.validator.validate(record);
         Assert.assertEquals(1, violations.size());
     }
@@ -153,123 +96,14 @@ public class DataSampleValidatorIT {
         Assert.assertFalse(violations.isEmpty());
     }
 
-//    @Test
-//    public void testMonitoringDateEmpty() {
-//        final Record record = createValidNumericRecord();
-//        record.setMonitoringDate(new MonitoringDate(""));
-//        final Set<ConstraintViolation<Record>> violations = this.validator.validate(record);
-//        Assert.assertFalse(violations.isEmpty());
-//    }
-//
-//    @Test
-//    public void testMonitoringDateInvalidFormat() {
-//        final Record record = createValidNumericRecord();
-//        final String testDate = LocalDateTime.now(ZoneOffset.UTC).format(DateTimeFormatter.ofPattern("yyyy/MM/dd"));
-//        record.setMonitoringDate(new MonitoringDate(testDate));
-//        final Set<ConstraintViolation<Record>> violations = this.validator.validate(record);
-//        Assert.assertFalse(violations.isEmpty());
-//    }
-
-//    @Test
-//    public void testMonitoringDateInternationalFormat() {
-//        final Record record = createValidNumericRecord();
-//        final String testDate = LocalDateTime.now(ZoneOffset.UTC).format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
-//        record.setMonitoringDate(new MonitoringDate(testDate));
-//        final Set<ConstraintViolation<Record>> violations = this.validator.validate(record);
-//        Assert.assertEquals(0, violations.size());
-//    }
-//
-//    @Test
-//    public void testMonitoringDateInternationalFormatWithTime() {
-//        final Record record = createValidNumericRecord();
-//        final String testDate = LocalDateTime.now(ZoneOffset.UTC).format(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss"));
-//        record.setMonitoringDate(new MonitoringDate(testDate));
-//        final Set<ConstraintViolation<Record>> violations = this.validator.validate(record);
-//        Assert.assertEquals(0, violations.size());
-//    }
-//
-//    @Test
-//    public void testMonitoringDateInternationalFormatWithTimeSpaceSeparator() {
-//        final Record record = createValidNumericRecord();
-//        final String testDate = LocalDateTime.now(ZoneOffset.UTC).format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
-//        record.setMonitoringDate(new MonitoringDate(testDate));
-//        final Set<ConstraintViolation<Record>> violations = this.validator.validate(record);
-//        Assert.assertEquals(0, violations.size());
-//    }
-//
-//    @Test
-//    public void testMonitoringDateUKFormat() {
-//        final Record record = createValidNumericRecord();
-//        final String testDate = LocalDateTime.now(ZoneOffset.UTC).format(DateTimeFormatter.ofPattern("dd-MM-yyyy"));
-//        record.setMonitoringDate(new MonitoringDate(testDate));
-//        final Set<ConstraintViolation<Record>> violations = this.validator.validate(record);
-//        Assert.assertEquals(0, violations.size());
-//    }
-//
-//    @Test
-//    public void testMonitoringDateUKWithTime() {
-//        final Record record = createValidNumericRecord();
-//        final String testDate = LocalDateTime.now(ZoneOffset.UTC).format(DateTimeFormatter.ofPattern("dd-MM-yyyy'T'HH:mm:ss"));
-//        record.setMonitoringDate(new MonitoringDate(testDate));
-//        final Set<ConstraintViolation<Record>> violations = this.validator.validate(record);
-//        Assert.assertEquals(0, violations.size());
-//    }
-
-//    @Test
-//    public void testMonitoringDateUKWithTimeSpaceSeparator() {
-//        final Record record = createValidNumericRecord();
-//        final String testDate = LocalDateTime.now(ZoneOffset.UTC).format(DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss"));
-//        record.setMonitoringDate(new MonitoringDate(testDate));
-//        final Set<ConstraintViolation<Record>> violations = this.validator.validate(record);
-//        Assert.assertEquals(0, violations.size());
-//    }
-//
-//    @Test
-//    public void testMonitoringDateUKFormatWithSlashes() {
-//        final Record record = createValidNumericRecord();
-//        final String testDate = LocalDateTime.now(ZoneOffset.UTC).format(DateTimeFormatter.ofPattern("dd/MM/yyyy"));
-//        record.setMonitoringDate(new MonitoringDate(testDate));
-//        final Set<ConstraintViolation<Record>> violations = this.validator.validate(record);
-//        Assert.assertEquals(0, violations.size());
-//    }
-//
-//    @Test
-//    public void testMonitoringDateUKWithTimeWithSlashes() {
-//        final Record record = createValidNumericRecord();
-//        final String testDate = LocalDateTime.now(ZoneOffset.UTC).format(DateTimeFormatter.ofPattern("dd/MM/yyyy'T'HH:mm:ss"));
-//        record.setMonitoringDate(new MonitoringDate(testDate));
-//        final Set<ConstraintViolation<Record>> violations = this.validator.validate(record);
-//        Assert.assertEquals(0, violations.size());
-//    }
-//
-//    @Test
-//    public void testMonitoringDateUKWithTimeWithSlashesSpaceSeparator() {
-//        final Record record = createValidNumericRecord();
-//        final String testDate = LocalDateTime.now(ZoneOffset.UTC).format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss"));
-//        record.setMonitoringDate(new MonitoringDate(testDate));
-//        final Set<ConstraintViolation<Record>> violations = this.validator.validate(record);
-//        Assert.assertEquals(0, violations.size());
-//    }
-
-//    @Test
-//    public void testMonitoringDateFutureDateOnly() {
-//        final Record record = createValidNumericRecord();
-//        final LocalDateTime anHourFromNow = LocalDateTime.now().plusDays(1);
-//        final String testDate = anHourFromNow.format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
-//        record.setMonitoringDate(new MonitoringDate(testDate));
-//        final Set<ConstraintViolation<Record>> violations = this.validator.validate(record);
-//        Assert.assertEquals(1, violations.size());
-//    }
-//
-//    @Test
-//    public void testMonitoringDateFutureDateAndTime() {
-//        final Record record = createValidNumericRecord();
-//        final LocalDateTime anHourFromNow = LocalDateTime.now().plusHours(1);
-//        final String testDate = anHourFromNow.format(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss"));
-//        record.setMonitoringDate(new MonitoringDate(testDate));
-//        final Set<ConstraintViolation<Record>> violations = this.validator.validate(record);
-//        Assert.assertEquals(1, violations.size());
-//    }
+    @Test
+    public void testMonitoringDateFutureDate() {
+        final Record record = createValidNumericRecord();
+        final Date date = Date.from(LocalDateTime.now().plusDays(1).toInstant(ZoneOffset.UTC));
+        record.setMonitoringDate(date);
+        final Set<ConstraintViolation<Record>> violations = this.validator.validate(record);
+        Assert.assertEquals(1, violations.size());
+    }
 
     /*=================================================================================================================
      *
@@ -277,8 +111,6 @@ public class DataSampleValidatorIT {
      *
      *=================================================================================================================
      */
-
-
     @Test
     public void testReturnPeriodNull() {
         final Record record = createValidNumericRecord();
@@ -344,17 +176,9 @@ public class DataSampleValidatorIT {
     }
 
     @Test
-    public void testParameterEmpty() {
-        final Record record = createValidNumericRecord();
-        record.setParameter("");
-        final Set<ConstraintViolation<Record>> violations = this.validator.validate(record);
-        Assert.assertEquals(1, violations.size());
-    }
-
-    @Test
     public void testParameterInvalid() {
         final Record record = createValidNumericRecord();
-        record.setParameter("An invalid parameter value");
+        record.setParameter(Long.MIN_VALUE);
         final Set<ConstraintViolation<Record>> violations = this.validator.validate(record);
         Assert.assertEquals(1, violations.size());
     }
@@ -362,10 +186,18 @@ public class DataSampleValidatorIT {
     @Test
     public void testParameterValid() {
         final Record record = createValidNumericRecord();
-        record.setParameter("1,2,3,4-Tetrachlorobenzene");
+        record.setParameter(1L);
         final Set<ConstraintViolation<Record>> violations = this.validator.validate(record);
         Assert.assertEquals(0, violations.size());
     }
+//
+//    @Test
+//    public void testParameterEmpty() {
+//        final Record record = createValidNumericRecord();
+//        record.setParameter("");
+//        final Set<ConstraintViolation<Record>> violations = this.validator.validate(record);
+//        Assert.assertEquals(1, violations.size());
+//    }
 
     /*=================================================================================================================
      *
@@ -381,111 +213,14 @@ public class DataSampleValidatorIT {
         Assert.assertEquals(1, violations.size());
     }
 
-//    @Test
-//    public void testValueEmpty() {
-//        final Record record = createValidNumericRecord();
-//        record.setNumericValue("  ");
-//        final Set<ConstraintViolation<Record>> violations = this.validator.validate(record);
-//        Assert.assertEquals(1, violations.size());
-//    }
-
-//    @Test
-//    public void testValueInvalid() {
-//        final Record record = createValidNumericRecord();
-//        record.setNumericValue(new Value("<>232323"));
-//        final Set<ConstraintViolation<Record>> violations = this.validator.validate(record);
-//        Assert.assertEquals(1, violations.size());
-//    }
-
     @Test
     public void testValueProhibitedWithTextValue() {
         final Record record = createValidNumericRecord();
-        record.setTextValue("true");
-        record.setUnit("m/s");
+        record.setTextValue(2L);
         final Set<ConstraintViolation<Record>> violations = this.validator.validate(record);
         // Two violations, first for text value used with value, second for unit used with text value
         Assert.assertEquals(2, violations.size());
     }
-
-//    @Test
-//    public void testValueValidLessThanInteger() {
-//        final Record record = createValidNumericRecord();
-//        record.setValue(new Value("<1"));
-//        final Set<ConstraintViolation<Record>> violations = this.validator.validate(record);
-//        Assert.assertEquals(0, violations.size());
-//    }
-//
-//    @Test
-//    public void testValueValidGreaterThanInteger() {
-//        final Record record = createValidNumericRecord();
-//        record.setValue(new Value(">1"));
-//        final Set<ConstraintViolation<Record>> violations = this.validator.validate(record);
-//        Assert.assertEquals(0, violations.size());
-//    }
-//
-//    @Test
-//    public void testValueValidLessThanDecimal() {
-//        final Record record = createValidNumericRecord();
-//        record.setValue(new Value("<0.1"));
-//        final Set<ConstraintViolation<Record>> violations = this.validator.validate(record);
-//        Assert.assertEquals(0, violations.size());
-//    }
-//
-//    @Test
-//    public void testValueValidGreaterThanDecimal() {
-//        final Record record = createValidNumericRecord();
-//        record.setValue(new Value(">0.1"));
-//        final Set<ConstraintViolation<Record>> violations = this.validator.validate(record);
-//        Assert.assertEquals(0, violations.size());
-//    }
-
-//    @Test
-//    public void testValueValidWithSpaces() {
-//        final Record record = createValidNumericRecord();
-//        record.setValue(new Value(">   -0.1"));
-//        final Set<ConstraintViolation<Record>> violations = this.validator.validate(record);
-//        Assert.assertEquals(0, violations.size());
-//    }
-//
-//    @Test
-//    public void testValueInvalidLessThanDecimalNoLeadingZero() {
-//        final Record record = createValidNumericRecord();
-//        record.setValue(new Value("<.1"));
-//        final Set<ConstraintViolation<Record>> violations = this.validator.validate(record);
-//        Assert.assertEquals(1, violations.size());
-//    }
-//
-//    @Test
-//    public void testValueInvalidGreaterThanDecimalNoLeadingZero() {
-//        final Record record = createValidNumericRecord();
-//        record.setValue(new Value(">.1"));
-//        final Set<ConstraintViolation<Record>> violations = this.validator.validate(record);
-//        Assert.assertEquals(1, violations.size());
-//    }
-//
-//    @Test
-//    public void testValueInvalidLessThanSignOnly() {
-//        final Record record = createValidNumericRecord();
-//        record.setValue(new Value("<"));
-//        final Set<ConstraintViolation<Record>> violations = this.validator.validate(record);
-//        Assert.assertEquals(1, violations.size());
-//    }
-//
-//    @Test
-//    public void testValueInvalidGreaterThanSignOnly() {
-//        final Record record = createValidNumericRecord();
-//        record.setValue(new Value(">"));
-//        final Set<ConstraintViolation<Record>> violations = this.validator.validate(record);
-//        Assert.assertEquals(1, violations.size());
-//    }
-//
-//    @Test
-//    public void testValueInvalidMinusSignOnly() {
-//        final Record record = createValidNumericRecord();
-//        record.setValue(new Value("-"));
-//        final Set<ConstraintViolation<Record>> violations = this.validator.validate(record);
-//        Assert.assertEquals(1, violations.size());
-//    }
 
     /*=================================================================================================================
      *
@@ -515,6 +250,7 @@ public class DataSampleValidatorIT {
         Assert.assertEquals(1, violations.size());
     }
 
+
     @Test
     public void testUnitNullForTextValue() {
         final Record record = createValidTextRecord();
@@ -524,17 +260,9 @@ public class DataSampleValidatorIT {
     }
 
     @Test
-    public void testUnitEmpty() {
-        final Record record = createValidNumericRecord();
-        record.setUnit("");
-        final Set<ConstraintViolation<Record>> violations = this.validator.validate(record);
-        Assert.assertEquals(1, violations.size());
-    }
-
-    @Test
     public void testUnitValid() {
         final Record record = createValidNumericRecord();
-        record.setUnit("HU");
+        record.setUnit(1L);
         final Set<ConstraintViolation<Record>> violations = this.validator.validate(record);
         Assert.assertEquals(0, violations.size());
     }
@@ -542,7 +270,7 @@ public class DataSampleValidatorIT {
     @Test
     public void testUnitProhibitedWithTextValue() {
         final Record record = createValidTextRecord();
-        record.setUnit("HU");
+        record.setUnit(1L);
         final Set<ConstraintViolation<Record>> violations = this.validator.validate(record);
         Assert.assertEquals(1, violations.size());
     }
@@ -564,7 +292,7 @@ public class DataSampleValidatorIT {
     @Test
     public void testReferencePeriodInvalid() {
         final Record record = createValidNumericRecord();
-        record.setReferencePeriod(GENERATOR.generate(30));
+        record.setReferencePeriod(Long.MIN_VALUE);
         final Set<ConstraintViolation<Record>> violations = this.validator.validate(record);
         Assert.assertEquals(1, violations.size());
     }
@@ -586,7 +314,7 @@ public class DataSampleValidatorIT {
     @Test
     public void testMethStandInvalid() {
         final Record record = createValidNumericRecord();
-        record.setMethodOrStandard(GENERATOR.generate(31));
+        record.setMethodOrStandard(Long.MIN_VALUE);
         final Set<ConstraintViolation<Record>> violations = this.validator.validate(record);
         Assert.assertEquals(1, violations.size());
     }
@@ -615,5 +343,47 @@ public class DataSampleValidatorIT {
         record.setComments(GENERATOR.generate(256));
         violations = this.validator.validate(record);
         Assert.assertEquals(1, violations.size());
+    }
+
+    /**
+     * Creates a {@link Record} instance with all values setup
+     * with a valid entry.
+     *
+     * @return a new {@link Record} which should pass validation
+     * Record
+     */
+    private static Record createValidNumericRecord() {
+        final Record record = new Record();
+        record.setReturnType(10L);
+        record.setMonitoringDate(Date.from(Instant.now().minusSeconds(1)));
+        record.setReturnPeriod("Aug 2016");
+        record.setMonitoringPoint("Borehole 1");
+        record.setParameter(1503L);
+        record.setNumericValue(BigDecimal.valueOf(0.2323));
+        record.setNumericEquality(Record.Equality.LESS_THAN);
+        record.setUnit(115L);
+        record.setReferencePeriod(10L);
+        record.setMethodOrStandard(4L);
+        record.setComments("Free text comments entered in this field.");
+        return record;
+    }
+
+    /**
+     * Creates a {@link Record} instance using TXT_VALUE with all values setup with a valid data
+     *
+     * @return a new {@link Record} which should pass validation
+     */
+    private static Record createValidTextRecord() {
+        final Record record = new Record();
+        record.setReturnType(10L);
+        record.setMonitoringDate(Date.from(Instant.now().minusSeconds(1)));
+        record.setReturnPeriod("Aug 2016");
+        record.setMonitoringPoint("Borehole 1");
+        record.setParameter(798L);
+        record.setTextValue(2L);
+        record.setReferencePeriod(10L);
+        record.setMethodOrStandard(4L);
+        record.setComments("Free text comments entered in this field.");
+        return record;
     }
 }

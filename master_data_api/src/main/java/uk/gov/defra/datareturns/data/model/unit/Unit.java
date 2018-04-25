@@ -4,6 +4,7 @@ import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.id.enhanced.SequenceStyleGenerator;
+import org.springframework.data.rest.core.annotation.RestResource;
 import uk.gov.defra.datareturns.data.model.AbstractAliasedEntity;
 import uk.gov.defra.datareturns.data.model.AbstractBaseEntity;
 import uk.gov.defra.datareturns.data.model.AliasedEntity;
@@ -43,5 +44,6 @@ public class Unit extends AbstractAliasedEntity<UnitAlias> implements AliasedEnt
     private BigDecimal conversion;
 
     @ManyToOne(optional = false)
+    @RestResource(exported = false)
     private UnitType type;
 }

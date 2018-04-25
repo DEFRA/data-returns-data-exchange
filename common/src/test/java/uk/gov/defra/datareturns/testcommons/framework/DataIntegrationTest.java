@@ -1,5 +1,7 @@
 package uk.gov.defra.datareturns.testcommons.framework;
 
+import org.springframework.boot.autoconfigure.cache.CacheType;
+import org.springframework.boot.test.autoconfigure.core.AutoConfigureCache;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.FilterType;
@@ -20,6 +22,7 @@ import java.lang.annotation.Target;
 @Documented
 @Inherited
 @Import({SpringDataConfiguration.class, ValidatorConfiguration.class})
+@AutoConfigureCache(cacheProvider = CacheType.SIMPLE)
 @DataJpaTest(
         includeFilters = {
                 @ComponentScan.Filter(type = FilterType.REGEX, pattern = "uk.gov.defra.datareturns.*")

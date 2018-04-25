@@ -14,7 +14,7 @@
     <version>1.0.0</version>
     <packaging>jar</packaging>
 
-    <name>Data Returns Master Data API</name>
+    <name>Defra Data Returns Master Data API</name>
     <description>Defra Data-Returns Master Data API</description>
 
     <properties>

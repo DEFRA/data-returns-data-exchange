@@ -9,9 +9,15 @@ import org.hibernate.validator.constraints.Length;
 import org.hibernate.validator.constraints.NotBlank;
 import uk.gov.defra.datareturns.data.model.AbstractBaseEntity;
 import uk.gov.defra.datareturns.data.model.dataset.Dataset;
-import uk.gov.defra.datareturns.service.MasterDataEntity;
+import uk.gov.defra.datareturns.service.csv.EcmErrorCodes;
+import uk.gov.defra.datareturns.validation.constraints.annotations.ProhibitTxtValueWithValue;
+import uk.gov.defra.datareturns.validation.constraints.annotations.ProhibitUnitWithTxtValue;
+import uk.gov.defra.datareturns.validation.constraints.annotations.RequireCommentsForTextValueComment;
+import uk.gov.defra.datareturns.validation.constraints.annotations.RequireUnitWithValue;
+import uk.gov.defra.datareturns.validation.constraints.annotations.RequireValueOrTxtValue;
 import uk.gov.defra.datareturns.validation.constraints.annotations.ValidReturnPeriod;
-import uk.gov.defra.datareturns.validation.constraints.controlledlist.ControlledList;
+import uk.gov.defra.datareturns.validation.service.MasterDataEntity;
+import uk.gov.defra.datareturns.validation.validators.id.ValidId;
 
 import javax.persistence.Basic;
 import javax.persistence.Column;
@@ -21,9 +27,9 @@ import javax.persistence.Enumerated;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Past;
 import java.math.BigDecimal;
 import java.util.Date;
-import java.util.Objects;
 
 /**
  * ECM Submission Record
@@ -40,13 +46,11 @@ import java.util.Objects;
 @Getter
 @Setter
 
-// FIXME - record level validation
-//@ProhibitTxtValueWithValue
-//@RequireValueOrTxtValue
-//@ProhibitUnitWithTxtValue
-//@RequireUnitWithValue
-//@SiteMatchesUniqueIdentifier
-//@RequireCommentsForTextValueComment
+@ProhibitTxtValueWithValue
+@RequireValueOrTxtValue
+@ProhibitUnitWithTxtValue
+@RequireUnitWithValue
+@RequireCommentsForTextValueComment
 public class Record extends AbstractBaseEntity {
     @ManyToOne
     @JoinColumn(name = "dataset", updatable = false)
@@ -54,30 +58,31 @@ public class Record extends AbstractBaseEntity {
 
     @Basic
     @Column(name = "return_type")
-    @NotBlank(message = "DR9010-Missing")
-    @ControlledList(entities = MasterDataEntity.RETURN_TYPE, message = "DR9010-Incorrect")
-    private String returnType;
+    @NotNull(message = EcmErrorCodes.Missing.RTN_TYPE)
+    @ValidId(entity = MasterDataEntity.RETURN_TYPE, message = EcmErrorCodes.Incorrect.RTN_TYPE)
+    private Long returnType;
 
     @Basic
     @Column(name = "mon_date")
-    @NotNull(message = "DR9020-Missing")
+    @NotNull(message = EcmErrorCodes.Missing.MON_DATE)
+    @Past(message = EcmErrorCodes.Incorrect.MON_DATE)
     @SuppressFBWarnings("EI_EXPOSE_REP")
     private Date monitoringDate;
 
     @Basic
     @Column(name = "mon_point")
-    @NotBlank(message = "DR9060-Missing")
-    @Length(max = 50, message = "DR9060-Length")
+    @NotBlank(message = EcmErrorCodes.Missing.MON_POINT)
+    @Length(max = 50, message = EcmErrorCodes.Length.MON_POINT)
     private String monitoringPoint;
 
     @Basic
     @Column(name = "parameter")
-    @NotBlank(message = "DR9030-Missing")
-    @ControlledList(entities = MasterDataEntity.PARAMETER, message = "DR9030-Incorrect")
-    private String parameter;
+    @NotNull(message = EcmErrorCodes.Missing.PARAMETER)
+    @ValidId(entity = MasterDataEntity.PARAMETER, message = EcmErrorCodes.Incorrect.PARAMETER)
+    private Long parameter;
 
     @Basic
-    @Column(name = "numeric_value")
+    @Column(precision = 30, scale = 15)
     private BigDecimal numericValue;
 
     @Enumerated(EnumType.STRING)
@@ -87,28 +92,28 @@ public class Record extends AbstractBaseEntity {
 
     @Basic
     @Column(name = "text_value")
-    @ControlledList(entities = MasterDataEntity.TEXT_VALUE, message = "DR9080-Incorrect")
-    private String textValue;
+    @ValidId(entity = MasterDataEntity.TEXT_VALUE, message = EcmErrorCodes.Incorrect.TXT_VALUE)
+    private Long textValue;
 
     @Basic
     @Column(name = "qualifier")
-    @ControlledList(entities = MasterDataEntity.QUALIFIER, message = "DR9180-Incorrect")
-    private String qualifier;
+    @ValidId(entity = MasterDataEntity.QUALIFIER, message = EcmErrorCodes.Incorrect.QUALIFIER)
+    private Long qualifier;
 
     @Basic
     @Column(name = "unit")
-    @ControlledList(entities = MasterDataEntity.UNIT, message = "DR9050-Incorrect")
-    private String unit;
+    @ValidId(entity = MasterDataEntity.UNIT, message = EcmErrorCodes.Incorrect.UNIT)
+    private Long unit;
 
     @Basic
     @Column(name = "reference_period")
-    @ControlledList(entities = MasterDataEntity.REFERENCE_PERIOD, message = "DR9090-Incorrect")
-    private String referencePeriod;
+    @ValidId(entity = MasterDataEntity.REFERENCE_PERIOD, message = EcmErrorCodes.Incorrect.REF_PERIOD)
+    private Long referencePeriod;
 
     @Basic
     @Column(name = "method_or_standard")
-    @ControlledList(entities = MasterDataEntity.METHOD_OR_STANDARD, message = "DR9100-Incorrect")
-    private String methodOrStandard;
+    @ValidId(entity = MasterDataEntity.METHOD_OR_STANDARD, message = EcmErrorCodes.Incorrect.METH_STAND)
+    private Long methodOrStandard;
 
     @Basic
     @Column(name = "return_period")
@@ -117,29 +122,8 @@ public class Record extends AbstractBaseEntity {
 
     @Basic
     @Column(name = "comments")
-    @Length(max = 255, message = "DR9140-Length")
+    @Length(max = 255, message = EcmErrorCodes.Length.COMMENTS)
     private String comments;
-
-    // FIXME: Don't use equality based on primary key!
-    @Override
-    public boolean equals(final Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (!(o instanceof Record)) {
-            return false;
-        }
-        if (getId() == null) {
-            return false;
-        }
-        final Record record = (Record) o;
-        return Objects.equals(getId(), record.getId());
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(getId());
-    }
 
     public enum Equality {
         LESS_THAN, GREATER_THAN, EQUAL;

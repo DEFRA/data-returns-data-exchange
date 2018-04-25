@@ -1,12 +1,12 @@
 package uk.gov.defra.datareturns.validation.service.dto;
 
-import lombok.Data;
-import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.Setter;
 import org.springframework.hateoas.Link;
 import org.springframework.hateoas.UriTemplate;
 
-@Data
-@EqualsAndHashCode(callSuper = true)
+@Getter
+@Setter
 public class MdRoute extends MdBaseEntity {
     /**
      * UriTemplate to fetch the subroutes for a given route

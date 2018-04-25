@@ -1,6 +1,8 @@
 package uk.gov.defra.datareturns.testcommons.framework;
 
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.FilterType;
 import org.springframework.test.context.ActiveProfiles;
 
 import java.lang.annotation.Documented;
@@ -15,6 +17,12 @@ import java.lang.annotation.Target;
 @Documented
 @Inherited
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
+@ComponentScan(
+        basePackages = "uk.gov.defra",
+        includeFilters = {
+                @ComponentScan.Filter(type = FilterType.REGEX, pattern = "uk.gov.defra.datareturns.*")
+        }
+)
 @ActiveProfiles("integration-test")
 public @interface WebIntegrationTest {
 }

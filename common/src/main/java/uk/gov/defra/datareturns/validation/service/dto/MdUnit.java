@@ -1,12 +1,12 @@
 package uk.gov.defra.datareturns.validation.service.dto;
 
-import lombok.Data;
-import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.math.BigDecimal;
 
-@Data
-@EqualsAndHashCode(callSuper = true)
-public class MdUnit extends MdBaseEntity {
+@Getter
+@Setter
+public class MdUnit extends MdAliasableEntity<MdBaseEntity> {
     private BigDecimal conversion;
 }

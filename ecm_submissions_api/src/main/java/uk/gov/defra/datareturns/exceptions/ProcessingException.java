@@ -5,7 +5,7 @@ package uk.gov.defra.datareturns.exceptions;
  *
  * @author Sam Gardner-Dell
  */
-public class ProcessingException extends Exception {
+public class ProcessingException extends RuntimeException {
     /**
      * Appease the gods of serialization
      */

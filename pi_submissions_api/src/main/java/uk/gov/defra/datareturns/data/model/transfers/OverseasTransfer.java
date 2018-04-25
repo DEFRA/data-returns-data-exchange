@@ -19,7 +19,6 @@ import javax.persistence.Enumerated;
 import javax.persistence.ManyToOne;
 import javax.validation.Valid;
 import java.math.BigDecimal;
-import java.util.Objects;
 
 /**
  * PI Overseas waste transfers model
@@ -60,25 +59,4 @@ public class OverseasTransfer extends AbstractBaseEntity {
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private TransferMethod method;
-
-    @Override
-    public final boolean equals(final Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (o == null || getClass() != o.getClass()) {
-            return false;
-        }
-        if (getId() == null) {
-            return false;
-        }
-        final OverseasTransfer that = (OverseasTransfer) o;
-        return Objects.equals(getId(), that.getId());
-    }
-
-    @Override
-    public final int hashCode() {
-        return Objects.hash(getId());
-    }
-
 }

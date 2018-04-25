@@ -36,6 +36,52 @@
     </changeSet>
 
 
+    <changeSet id="create-table: ecm_upload_parser_summary" author="Defra">
+        <createTable tableName="ecm_upload_parser_summary">
+            <column name="submitted_ea_id" type="varchar(18)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="resolved_ea_id" type="varchar(18)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="site_name" type="varchar(150)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="ecm_upload_id" type="bigint">
+                <constraints nullable="false"
+                             foreignKeyName="fk_parser_summary_upload"
+                             references="ecm_upload(id)"
+                />
+            </column>
+        </createTable>
+        <rollback>
+            <dropTable tableName="ecm_upload_parser_summary"/>
+        </rollback>
+    </changeSet>
+
+    <changeSet id="create-table: ecm_upload_substitutions" author="Defra">
+        <createTable tableName="ecm_upload_substitutions">
+            <column name="field" type="varchar(20)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="value" type="varchar(250)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="resolved" type="varchar(250)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="ecm_upload_id" type="bigint">
+                <constraints nullable="false"
+                             foreignKeyName="fk_substitution_upload"
+                             references="ecm_upload(id)"
+                />
+            </column>
+        </createTable>
+        <rollback>
+            <dropTable tableName="ecm_upload_substitutions"/>
+        </rollback>
+    </changeSet>
+
     <!--
     ****************************************************************
     Datasets
@@ -57,7 +103,7 @@
             <column name="version" type="smallint">
                 <constraints nullable="false"/>
             </column>
-            <column name="ea_id" type="varchar(12)">
+            <column name="ea_id" type="bigint">
                 <constraints nullable="false"/>
             </column>
             <column name="status" type="varchar(11)">
@@ -66,7 +112,7 @@
             <column name="originator_email" type="varchar(500)">
                 <constraints nullable="true"/>
             </column>
-            <column name="upload" type="bigint">
+            <column name="upload_id" type="bigint">
                 <constraints nullable="true"/>
             </column>
         </createTable>
@@ -78,7 +124,7 @@
         <addForeignKeyConstraint
                 constraintName="fk_dataset_upload"
                 baseTableName="ecm_dataset"
-                baseColumnNames="upload"
+                baseColumnNames="upload_id"
                 referencedColumnNames="id"
                 referencedTableName="ecm_upload"/>
 
@@ -112,13 +158,10 @@
             <column name="version" type="smallint">
                 <constraints nullable="false"/>
             </column>
-
             <column name="dataset" type="bigint">
                 <constraints nullable="false"/>
             </column>
-
-
-            <column name="return_type" type="varchar(80)">
+            <column name="return_type" type="bigint">
                 <constraints nullable="false"/>
             </column>
             <column name="mon_point" type="varchar(50)">
@@ -130,28 +173,28 @@
             <column name="return_period" type="varchar(20)">
                 <constraints nullable="true"/>
             </column>
-            <column name="parameter" type="varchar(150)">
+            <column name="parameter" type="bigint">
                 <constraints nullable="false"/>
             </column>
-            <column name="numeric_value" type="decimal">
+            <column name="numeric_value" type="numeric(30, 15)">
                 <constraints nullable="true"/>
             </column>
             <column name="numeric_equality" type="varchar(25)">
                 <constraints nullable="true"/>
             </column>
-            <column name="text_value" type="varchar(30)">
+            <column name="text_value" type="bigint">
                 <constraints nullable="true"/>
             </column>
-            <column name="qualifier" type="varchar(100)">
+            <column name="qualifier" type="bigint">
                 <constraints nullable="true"/>
             </column>
-            <column name="unit" type="varchar(10)">
+            <column name="unit" type="bigint">
                 <constraints nullable="true"/>
             </column>
-            <column name="reference_period" type="varchar(100)">
+            <column name="reference_period" type="bigint">
                 <constraints nullable="true"/>
             </column>
-            <column name="method_or_standard" type="varchar(30)">
+            <column name="method_or_standard" type="bigint">
                 <constraints nullable="true"/>
             </column>
             <column name="comments" type="varchar(255)">

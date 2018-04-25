@@ -22,5 +22,5 @@ public interface DatasetRepository extends JpaRepository<Dataset, Long>, JpaSpec
      * @param eaId the EA unique identifier to find relevant datasets
      * @return a {@link List} of all datasets for the given ea_id
      */
-    List<Dataset> findByEaId(@Param("ea_id") String eaId);
+    List<Dataset> findByEaId(@Param("ea_id") Long eaId);
 }

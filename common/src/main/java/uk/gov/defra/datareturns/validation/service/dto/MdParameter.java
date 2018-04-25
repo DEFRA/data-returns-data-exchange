@@ -1,10 +1,10 @@
 package uk.gov.defra.datareturns.validation.service.dto;
 
-import lombok.Data;
-import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.Setter;
 
-@Data
-@EqualsAndHashCode(callSuper = true)
-public class MdParameter extends MdBaseEntity {
+@Getter
+@Setter
+public class MdParameter extends MdAliasableEntity<MdBaseEntity> {
     private String cas;
 }

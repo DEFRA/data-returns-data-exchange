@@ -1,7 +1,7 @@
 package uk.gov.defra.datareturns.validation.constraints.validators;
 
-import org.apache.commons.lang3.StringUtils;
 import uk.gov.defra.datareturns.data.model.record.Record;
+import uk.gov.defra.datareturns.service.csv.EcmErrorCodes;
 import uk.gov.defra.datareturns.validation.constraints.annotations.RequireUnitWithValue;
 
 import javax.validation.ConstraintValidator;
@@ -19,11 +19,11 @@ public class RequireUnitWithValueValidator implements ConstraintValidator<Requir
     @Override
     public boolean isValid(final Record record, final ConstraintValidatorContext constraintValidatorContext) {
         final boolean hasValue = record.getNumericValue() != null;
-        final boolean hasUnit = !StringUtils.isEmpty(record.getUnit());
+        final boolean hasUnit = record.getUnit() != null;
 
         if (hasValue && !hasUnit) {
             constraintValidatorContext.disableDefaultConstraintViolation();
-            constraintValidatorContext.buildConstraintViolationWithTemplate("DR9050-Missing").addConstraintViolation();
+            constraintValidatorContext.buildConstraintViolationWithTemplate(EcmErrorCodes.Missing.UNIT).addConstraintViolation();
             return false;
         }
         return true;

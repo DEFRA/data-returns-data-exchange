@@ -19,7 +19,6 @@ import javax.persistence.Enumerated;
 import javax.persistence.ManyToOne;
 import java.io.Serializable;
 import java.math.BigDecimal;
-import java.util.Objects;
 
 /**
  * The persistent class for the md_threshold database table.
@@ -52,25 +51,6 @@ public class Threshold extends AbstractBaseEntity implements Serializable {
 
     @ManyToOne(optional = false)
     private Unit unit;
-
-    @Override
-    public boolean equals(final Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (!(o instanceof Threshold)) {
-            return false;
-        }
-        final Threshold threshold = (Threshold) o;
-        return Objects.equals(this.getRegimeObligation(), this.getRegimeObligation())
-                && Objects.equals(getParameter(), threshold.getParameter())
-                && getType() == threshold.getType();
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(this.getRegimeObligation(), getParameter(), getType());
-    }
 
     @RequiredArgsConstructor
     @Getter

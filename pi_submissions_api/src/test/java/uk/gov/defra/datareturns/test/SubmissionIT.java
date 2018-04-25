@@ -5,12 +5,10 @@ import org.hamcrest.Matchers;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpStatus;
-import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
-import uk.gov.defra.datareturns.PiApi;
-import uk.gov.defra.datareturns.test.rules.RestAssuredRule;
+import uk.gov.defra.datareturns.testcommons.framework.WebIntegrationTest;
+import uk.gov.defra.datareturns.testcommons.restassured.RestAssuredRule;
 
 import javax.inject.Inject;
 
@@ -24,8 +22,7 @@ import static uk.gov.defra.datareturns.testutils.SubmissionTestUtils.runSubmissi
  * Integration tests submission-level property validation
  */
 @RunWith(SpringRunner.class)
-@SpringBootTest(classes = {PiApi.class}, webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
-@ActiveProfiles("integration-test")
+@WebIntegrationTest
 @Slf4j
 public class SubmissionIT {
     @Inject

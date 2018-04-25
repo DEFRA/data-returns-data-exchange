@@ -1,5 +1,7 @@
 package uk.gov.defra.datareturns.validation.validators.id;
 
+import uk.gov.defra.datareturns.validation.service.MasterDataEntity;
+
 import javax.validation.Constraint;
 import javax.validation.Payload;
 import java.lang.annotation.Documented;
@@ -40,9 +42,9 @@ public @interface ValidId {
     Class<? extends Payload>[] payload() default {};
 
     /**
-     * The collection of URI's to check for existence of the id.
+     * The master data entity to check for existence of the id.
      *
-     * @return the collection of URI's
+     * @return the master data entity to check for existence of the id.
      */
-    String[] resourceCollectionUris();
+    MasterDataEntity entity();
 }

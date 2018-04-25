@@ -1,5 +1,6 @@
 package uk.gov.defra.datareturns.validation.constraints.annotations;
 
+import uk.gov.defra.datareturns.service.csv.EcmErrorCodes;
 import uk.gov.defra.datareturns.validation.constraints.validators.ReturnPeriodValidator;
 
 import javax.validation.Constraint;
@@ -25,7 +26,7 @@ public @interface ValidReturnPeriod {
      *
      * @return the message template to use for violations
      */
-    String message() default "DR9070-Incorrect";
+    String message() default EcmErrorCodes.Incorrect.RTN_PERIOD;
 
     /**
      * Validation groups

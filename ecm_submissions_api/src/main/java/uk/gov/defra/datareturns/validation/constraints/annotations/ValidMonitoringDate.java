@@ -1,5 +1,6 @@
 package uk.gov.defra.datareturns.validation.constraints.annotations;
 
+import uk.gov.defra.datareturns.service.csv.EcmErrorCodes;
 import uk.gov.defra.datareturns.validation.constraints.validators.MonitoringDateValidator;
 
 import javax.validation.Constraint;
@@ -15,9 +16,7 @@ import java.lang.annotation.Target;
  *
  * @author Sam Gardner-Dell
  */
-
-// Date can be yyyy-mm-dd or dd-mm-yyyy optionally followed by Thh:mm:ss (e.g. 2016-03-11T09:00:00)
-@Target({ElementType.TYPE})
+@Target({ElementType.FIELD})
 @Retention(RetentionPolicy.RUNTIME)
 @Constraint(validatedBy = MonitoringDateValidator.class)
 @Documented
@@ -27,14 +26,7 @@ public @interface ValidMonitoringDate {
      *
      * @return the message template to use for violations
      */
-    String message() default "DR9020-Incorrect";
-
-    /**
-     * The message template to use for missing dates
-     *
-     * @return the message template to use for violations
-     */
-    String missingMessage() default "DR9020-Missing";
+    String message() default EcmErrorCodes.Incorrect.MON_DATE;
 
     /**
      * Validation groups

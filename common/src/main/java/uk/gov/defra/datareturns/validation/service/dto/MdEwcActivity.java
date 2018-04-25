@@ -1,10 +1,10 @@
 package uk.gov.defra.datareturns.validation.service.dto;
 
-import lombok.Data;
-import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.Setter;
 
-@Data
-@EqualsAndHashCode(callSuper = true)
+@Getter
+@Setter
 public class MdEwcActivity extends MdBaseEntity {
     /**
      * Determines if the EWC activity is hazardous

@@ -1,0 +1,5 @@
+"EA_ID","Site_Name","Rtn_Type","Mon_Point","Mon_Date","Parameter","Value","Unit","Ref_Period","Rtn_Period","Unrecognised_Field_Not_Used_By_DataReturns"
+"AP3192NT","ABC Limited","Air point source emissions","Borehole 1",2015-02-15,"1,3-Dichloropropene","<1.12345","ug","Continuous","Qtr 1 2016","Unrecognised data"
+"AP3192NT","ABC Limited","Landfill gas borehole","Borehole 10",2015-02-16,"1,1,1,2-Tetrachloroethane",0,"cm3","Daily Mean","2016","Unrecognised data"
+"AP3192NT","ABC Limited","Landfill gas borehole","Chimney 4",2015-02-17,"1,3-Butadiene",0.000001,"km2","Instantaneous","Water year 2016","Unrecognised data"
+"AP3192NT","ABC Limited","Air point source emissions,""Borehole 1",2015-02-17,"1-Chloro-4-nitrobenzene","100-00-5","kg/l","Continuous","Jan 2016","BS EN 12260",

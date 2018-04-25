@@ -17,6 +17,7 @@ import javax.persistence.Id;
 import javax.persistence.MappedSuperclass;
 import javax.persistence.Version;
 import java.util.Date;
+import java.util.Objects;
 
 /**
  * Base class for all entities represented by this API
@@ -78,15 +79,26 @@ public abstract class AbstractBaseEntity {
     @ApiModelProperty(readOnly = true)
     private short version;
 
-    /*
-     * Force subclasses to implement equals(Object)
-     */
     @Override
-    public abstract boolean equals(Object o);
+    public final boolean equals(final Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        if (getId() == null) {
+            return false;
+        }
+        final AbstractBaseEntity that = (AbstractBaseEntity) o;
+        return Objects.equals(getId(), that.getId());
+    }
 
-    /*
-     * Force subclasses to implement hashCode()
-     */
     @Override
-    public abstract int hashCode();
+    public final int hashCode() {
+        if (getId() == null) {
+            return System.identityHashCode(this);
+        }
+        return Objects.hashCode(getId());
+    }
 }

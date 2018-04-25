@@ -1,13 +1,13 @@
 package uk.gov.defra.datareturns.validation.service.dto;
 
-import lombok.Data;
-import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.Setter;
 import org.springframework.hateoas.Link;
 import org.springframework.hateoas.UriTemplate;
 import uk.gov.defra.datareturns.data.Context;
 
-@Data
-@EqualsAndHashCode(callSuper = true)
+@Getter
+@Setter
 public class MdRegime extends MdBaseEntity {
     /**
      * UriTemplate to fetch the list of regimes for a given reporting reference and context

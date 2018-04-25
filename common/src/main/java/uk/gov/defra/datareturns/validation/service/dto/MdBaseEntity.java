@@ -3,7 +3,8 @@ package uk.gov.defra.datareturns.validation.service.dto;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 import org.springframework.hateoas.Identifiable;
 import org.springframework.hateoas.Link;
 import org.springframework.hateoas.hal.Jackson2HalModule;
@@ -13,7 +14,8 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-@Data
+@Getter
+@Setter
 public class MdBaseEntity implements Identifiable<Link>, Serializable {
     @JsonProperty("_links")
     @JsonSerialize(using = Jackson2HalModule.HalLinkListSerializer.class)

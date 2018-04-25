@@ -258,7 +258,7 @@
             <column name="id" type="bigint" defaultValueSequenceNext="md_unit_type_id_seq">
                 <constraints primaryKey="true" nullable="false"/>
             </column>
-            <column name="nomenclature" type="varchar(255)">
+            <column name="nomenclature" type="varchar(150)">
                 <constraints nullable="false" unique="true"/>
             </column>
             <column name="created" type="timestamp">
@@ -331,7 +331,7 @@
             <column name="id" type="bigint" defaultValueSequenceNext="md_unit_alias_id_seq">
                 <constraints primaryKey="true" nullable="false"/>
             </column>
-            <column name="nomenclature" type="varchar(150)">
+            <column name="nomenclature" type="varchar(12)">
                 <constraints nullable="false" unique="true"/>
             </column>
 
@@ -501,7 +501,7 @@
             <column name="id" type="bigint" defaultValueSequenceNext="md_reference_period_alias_id_seq">
                 <constraints primaryKey="true" nullable="false"/>
             </column>
-            <column name="nomenclature" type="varchar(150)">
+            <column name="nomenclature" type="varchar(100)">
                 <constraints nullable="false" unique="true"/>
             </column>
 
@@ -626,7 +626,7 @@
             <column name="id" type="bigint" defaultValueSequenceNext="md_text_value_alias_id_seq">
                 <constraints primaryKey="true" nullable="false"/>
             </column>
-            <column name="nomenclature" type="varchar(150)">
+            <column name="nomenclature" type="varchar(30)">
                 <constraints nullable="false" unique="true"/>
             </column>
 
@@ -1245,7 +1245,7 @@
             <column name="id" type="bigint" defaultValueSequenceNext="md_route_id_seq">
                 <constraints primaryKey="true" nullable="false"/>
             </column>
-            <column name="nomenclature" type="varchar(255)">
+            <column name="nomenclature" type="varchar(50)">
                 <constraints nullable="false" unique="true"/>
             </column>
             <column name="created" type="timestamp">
@@ -1269,7 +1269,7 @@
             <column name="id" type="bigint" defaultValueSequenceNext="md_subroute_id_seq">
                 <constraints primaryKey="true" nullable="false"/>
             </column>
-            <column name="nomenclature" type="varchar(255)">
+            <column name="nomenclature" type="varchar(50)">
                 <constraints nullable="false" unique="true"/>
             </column>
             <column name="route_id" type="bigint">

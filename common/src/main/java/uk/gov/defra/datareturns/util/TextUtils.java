@@ -173,7 +173,7 @@ public final class TextUtils {
         static {
             final Map<Character, Character> subMap = Arrays.stream(CharacterSubstitution.values())
                     .filter(e -> e.substitution() != null)
-                    .collect(Collectors.toMap(e -> e.character(), e -> e.substitution().character()));
+                    .collect(Collectors.toMap(CharacterSubstitution::character, e -> e.substitution().character()));
             SUBSTITUTIONS = Collections.unmodifiableMap(subMap);
         }
 

@@ -33,7 +33,7 @@ do
         shift
     else
         # We haven't hit a non-flag yet, parse command line arguments to this script
-        case $i in
+        case ${i} in
             -q|--quiet)
                 QUIET=" > /dev/null 2>&1"
                 shift

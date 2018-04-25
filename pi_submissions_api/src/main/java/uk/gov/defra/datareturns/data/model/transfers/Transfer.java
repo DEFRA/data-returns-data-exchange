@@ -23,7 +23,6 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.validation.Valid;
 import java.math.BigDecimal;
-import java.util.Objects;
 import java.util.Set;
 
 /**
@@ -73,24 +72,4 @@ public class Transfer extends AbstractBaseEntity {
     @JsonManagedReference
     @Valid
     private Set<OverseasTransfer> overseas;
-
-    @Override
-    public final boolean equals(final Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (o == null || getClass() != o.getClass()) {
-            return false;
-        }
-        if (getId() == null) {
-            return false;
-        }
-        final Transfer that = (Transfer) o;
-        return Objects.equals(getId(), that.getId());
-    }
-
-    @Override
-    public final int hashCode() {
-        return Objects.hash(getId());
-    }
 }

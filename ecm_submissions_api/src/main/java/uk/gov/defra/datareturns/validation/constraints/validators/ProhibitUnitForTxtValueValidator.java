@@ -1,8 +1,8 @@
 package uk.gov.defra.datareturns.validation.constraints.validators;
 
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 import uk.gov.defra.datareturns.data.model.record.Record;
+import uk.gov.defra.datareturns.service.csv.EcmErrorCodes;
 import uk.gov.defra.datareturns.validation.constraints.annotations.ProhibitUnitWithTxtValue;
 
 import javax.validation.ConstraintValidator;
@@ -21,12 +21,13 @@ public class ProhibitUnitForTxtValueValidator implements ConstraintValidator<Pro
 
     @Override
     public boolean isValid(final Record record, final ConstraintValidatorContext constraintValidatorContext) {
-        final boolean hasTxtValue = !StringUtils.isEmpty(record.getTextValue());
-        final boolean hasUnit = !StringUtils.isEmpty(record.getUnit());
+        final boolean hasTxtValue = record.getTextValue() != null;
+        final boolean hasUnit = record.getUnit() != null;
 
         if (hasTxtValue && hasUnit) {
             constraintValidatorContext.disableDefaultConstraintViolation();
-            constraintValidatorContext.buildConstraintViolationWithTemplate("DR9050-Conflict").addConstraintViolation();
+            constraintValidatorContext.buildConstraintViolationWithTemplate(EcmErrorCodes.Conflict.PROHIBIT_UNIT_FOR_TXT_VALUE)
+                    .addConstraintViolation();
             return false;
         }
         return true;

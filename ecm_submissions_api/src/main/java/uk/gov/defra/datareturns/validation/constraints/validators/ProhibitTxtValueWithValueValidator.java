@@ -1,7 +1,7 @@
 package uk.gov.defra.datareturns.validation.constraints.validators;
 
-import org.apache.commons.lang3.StringUtils;
 import uk.gov.defra.datareturns.data.model.record.Record;
+import uk.gov.defra.datareturns.service.csv.EcmErrorCodes;
 import uk.gov.defra.datareturns.validation.constraints.annotations.ProhibitTxtValueWithValue;
 
 import javax.validation.ConstraintValidator;
@@ -18,12 +18,14 @@ public class ProhibitTxtValueWithValueValidator implements ConstraintValidator<P
 
     @Override
     public boolean isValid(final Record record, final ConstraintValidatorContext constraintValidatorContext) {
-        final boolean hasTxtValue = !StringUtils.isEmpty(record.getTextValue());
+        final boolean hasTxtValue = record.getTextValue() != null;
         final boolean hasValue = record.getNumericValue() != null;
 
         if (hasValue && hasTxtValue) {
             constraintValidatorContext.disableDefaultConstraintViolation();
-            constraintValidatorContext.buildConstraintViolationWithTemplate("DR9999-Conflict").addConstraintViolation();
+            constraintValidatorContext
+                    .buildConstraintViolationWithTemplate(EcmErrorCodes.Conflict.PROHIBIT_TEXT_VALUE_WITH_NUMERIC_VALUE)
+                    .addConstraintViolation();
             return false;
         }
         return true;

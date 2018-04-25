@@ -14,7 +14,7 @@
     <version>1.0.0</version>
     <packaging>jar</packaging>
 
-    <name>Data Returns PI Submissions API</name>
+    <name>Defra Data Returns PI Submissions API</name>
     <description>Defra Data-Returns Pollution Inventory Submissions API</description>
 
     <properties>

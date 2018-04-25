@@ -7,12 +7,12 @@ import org.hibernate.id.enhanced.SequenceStyleGenerator;
 import uk.gov.defra.datareturns.data.model.AbstractBaseEntity;
 import uk.gov.defra.datareturns.data.model.dataset.Dataset;
 
+import javax.persistence.Basic;
 import javax.persistence.CascadeType;
+import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
 import javax.persistence.OneToMany;
-import java.util.List;
-import java.util.Objects;
+import java.util.Set;
 
 /**
  * ECM Submission Record
@@ -29,33 +29,15 @@ import java.util.Objects;
 @Getter
 @Setter
 public class Upload extends AbstractBaseEntity {
+    @Basic
     private String filename;
 
-    @OneToMany(mappedBy = "upload",
-               fetch = FetchType.LAZY,
-               cascade = CascadeType.REMOVE,
-               orphanRemoval = true
-    )
-    private List<Dataset> datasets;
+    @OneToMany(mappedBy = "upload", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<Dataset> datasets;
 
-    // FIXME: Don't use equality based on primary key!
-    @Override
-    public boolean equals(final Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (!(o instanceof Upload)) {
-            return false;
-        }
-        if (getId() == null) {
-            return false;
-        }
-        final Upload upload = (Upload) o;
-        return Objects.equals(getId(), upload.getId());
-    }
+    @ElementCollection
+    private Set<ParserSummary> parserSummary;
 
-    @Override
-    public int hashCode() {
-        return Objects.hash(getId());
-    }
+    @ElementCollection
+    private Set<Substitution> substitutions;
 }

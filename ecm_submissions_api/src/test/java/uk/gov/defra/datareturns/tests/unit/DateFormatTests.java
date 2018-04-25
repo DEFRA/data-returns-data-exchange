@@ -2,7 +2,7 @@ package uk.gov.defra.datareturns.tests.unit;
 
 import org.junit.Assert;
 import org.junit.Test;
-import uk.gov.defra.datareturns.validation.payloads.datasample.rules.DateFormat;
+import uk.gov.defra.datareturns.service.csv.fields.DateFormat;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
